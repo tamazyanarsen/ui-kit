@@ -1,4 +1,12 @@
-// TODO: replace with the ui-kit's own "success status" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `CircleCheck`.
-export { CircleCheck } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function CircleCheck(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        d="M14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14C11.3137 14 14 11.3137 14 8ZM10.5176 5.52637C10.9171 5.14503 11.5503 5.16007 11.9316 5.55957C12.313 5.95907 12.2979 6.59229 11.8984 6.97363L7.62109 11.0566C7.23469 11.4255 6.62666 11.4254 6.24023 11.0566L4.10156 9.01465C3.70212 8.63336 3.68719 8.00107 4.06836 7.60156C4.4497 7.20207 5.08293 7.18702 5.48242 7.56836L6.93066 8.9502L10.5176 5.52637ZM16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

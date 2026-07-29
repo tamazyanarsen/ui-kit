@@ -36,7 +36,7 @@ type StatusType =
   | "search-attention"
   | "time-attention"
 
-const STATUS_ICON: Record<StatusType, typeof Check> = {
+const STATUS_ICON: Record<StatusType, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
   success: Check,
   error: X,
   attention: TriangleAlert,

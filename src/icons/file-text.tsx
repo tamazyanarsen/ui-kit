@@ -1,4 +1,12 @@
-// TODO: replace with the ui-kit's own "file/document" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `FileText`.
-export { FileText } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function FileText(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        d="M9.58594 0C10.1163 4.00273e-05 10.625 0.2109 11 0.585938L13.4141 3C13.7891 3.37504 14 3.88368 14 4.41406V14C14 15.1046 13.1046 16 12 16H4C2.89543 16 2 15.1046 2 14V2C2 0.895431 2.89543 0 4 0H9.58594ZM4 14H12V6H9C8.44772 6 8 5.55228 8 5V2H4V14ZM10 10.5C10.5523 10.5 11 10.9477 11 11.5C11 12.0523 10.5523 12.5 10 12.5H6C5.44772 12.5 5 12.0523 5 11.5C5 10.9477 5.44772 10.5 6 10.5H10ZM10 7.5C10.5523 7.5 11 7.94772 11 8.5C11 9.05229 10.5523 9.5 10 9.5H6C5.44772 9.5 5 9.05229 5 8.5C5 7.94772 5.44772 7.5 6 7.5H10ZM10 4H11.5859L10 2.41406V4Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

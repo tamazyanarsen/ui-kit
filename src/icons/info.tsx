@@ -1,4 +1,20 @@
-// TODO: replace with the ui-kit's own "informational status" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `Info`.
-export { Info } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function Info(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        d="M14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14C11.3137 14 14 11.3137 14 8ZM16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8Z"
+        fill="currentColor"
+      />
+      <path
+        d="M7.99996 6.49996C8.55224 6.49996 8.99996 6.94767 8.99996 7.49996V10.1347C9.29862 10.3077 9.49996 10.63 9.49996 11C9.49996 11.5522 9.05224 12 8.49996 12H7.99996C7.44767 12 6.99996 11.5522 6.99996 11V8.36422C6.70153 8.19119 6.49996 7.86975 6.49996 7.49996C6.49996 6.94767 6.94767 6.49996 7.49996 6.49996H7.99996Z"
+        fill="currentColor"
+      />
+      <path
+        d="M7.77696 5.81196C8.46732 5.81196 9.02696 5.25232 9.02696 4.56196C9.02696 3.87161 8.46732 3.31196 7.77696 3.31196C7.08661 3.31196 6.52696 3.87161 6.52696 4.56196C6.52696 5.25232 7.08661 5.81196 7.77696 5.81196Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

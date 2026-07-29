@@ -1,4 +1,12 @@
-// TODO: replace with the ui-kit's own "indeterminate state" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `Minus`.
-export { Minus } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function Minus(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        d="M14 7C14.5523 7 15 7.44772 15 8C15 8.55228 14.5523 9 14 9H2C1.44772 9 1 8.55228 1 8C1 7.44772 1.44772 7 2 7H14Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

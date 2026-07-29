@@ -1,4 +1,14 @@
-// TODO: replace with the ui-kit's own "error status (toast)" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `CircleX`.
-export { CircleX } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function CircleX(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12ZM7.9594 7.9594C8.34992 7.56887 8.98309 7.56887 9.37361 7.9594L12.0001 10.5858L14.6264 7.9595C15.0169 7.56898 15.6501 7.56898 16.0406 7.9595C16.4311 8.35003 16.4311 8.98319 16.0406 9.37372L13.4143 12.0001L16.0406 14.6264C16.4311 15.0169 16.4311 15.6501 16.0406 16.0406C15.6501 16.4311 15.0169 16.4311 14.6264 16.0406L12.0001 13.4143L9.37361 16.0407C8.98309 16.4313 8.34992 16.4313 7.9594 16.0407C7.56887 15.6502 7.56887 15.017 7.9594 14.6265L10.5858 12.0001L7.9594 9.37361C7.56887 8.98309 7.56887 8.34992 7.9594 7.9594Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

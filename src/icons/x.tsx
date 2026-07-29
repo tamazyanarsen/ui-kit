@@ -1,4 +1,12 @@
-// TODO: replace with the ui-kit's own "close/clear" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `X`.
-export { X } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function X(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        d="M11.8778 2.70749C12.2682 2.31711 12.9013 2.31734 13.2919 2.70749C13.6824 3.09801 13.6824 3.73103 13.2919 4.12156L9.41299 7.99949L13.2919 11.8784C13.6824 12.2689 13.6824 12.9019 13.2919 13.2925C12.9014 13.683 12.2683 13.683 11.8778 13.2925L7.99893 9.41355L4.121 13.2934C3.7305 13.6838 3.09743 13.6838 2.70693 13.2934C2.31645 12.9029 2.31653 12.2699 2.70693 11.8794L6.58486 7.99949L2.70693 4.12156C2.31644 3.73104 2.31644 3.09801 2.70693 2.70749C3.09745 2.31698 3.73047 2.31699 4.121 2.70749L7.99893 6.58542L11.8778 2.70749Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

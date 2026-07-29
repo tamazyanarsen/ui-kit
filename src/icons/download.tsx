@@ -1,4 +1,14 @@
-// TODO: replace with the ui-kit's own "download" icon (Figma export).
-// Delete the re-export below and paste the real <svg>...</svg> markup here
-// as a component — keep the export name `Download`.
-export { Download } from "lucide-react"
+import type { SVGProps } from "react"
+
+export function Download(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M7.99998 1C8.36817 1 8.66665 1.29848 8.66665 1.66667V8.11809L10.5514 6.23387C10.8117 5.97355 11.2339 5.97361 11.4942 6.23399C11.7545 6.49438 11.7544 6.91649 11.494 7.1768L8.47132 10.1987C8.21099 10.459 7.78897 10.459 7.52864 10.1987L4.50591 7.1768C4.24553 6.91649 4.24547 6.49438 4.50579 6.23399C4.7661 5.97361 5.18821 5.97355 5.44859 6.23387L7.33331 8.11809V1.66667C7.33331 1.29848 7.63179 1 7.99998 1ZM1.99998 10C2.36817 10 2.66665 10.2985 2.66665 10.6667V14H13.3333V10.6667C13.3333 10.2985 13.6318 10 14 10C14.3682 10 14.6666 10.2985 14.6666 10.6667V14.1667C14.6666 14.4957 14.5235 14.7982 14.2907 15.0117C14.0598 15.2233 13.7582 15.3333 13.4545 15.3333H2.54543C2.24178 15.3333 1.94013 15.2233 1.70926 15.0117C1.47644 14.7982 1.33331 14.4957 1.33331 14.1667V10.6667C1.33331 10.2985 1.63179 10 1.99998 10Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

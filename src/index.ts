@@ -1,0 +1,65 @@
+// Public entry point for the @core/ui-kit package. Every component folder
+// under src/components/ui already curates its own barrel (index.ts) as that
+// component's public API — this file just re-exports all of them, plus the
+// `cn` class-merge helper components are commonly composed with.
+//
+// Side-effect import so the Tailwind build actually has a CSS file to
+// process here (this entry is the library's own module graph — main.tsx,
+// which imports it for the local demo app, is not part of a library build).
+// Extracted to dist/index.css by `cssCodeSplit: false`; host apps import it
+// once alongside the JS (see package.json's "exports" field).
+import "./index.css"
+
+export { cn } from "./lib/utils"
+
+export * from "./components/ui/accordion-card"
+export * from "./components/ui/accordion-list"
+export * from "./components/ui/accordion"
+export * from "./components/ui/autocomplete"
+export * from "./components/ui/badge"
+export * from "./components/ui/banner"
+export * from "./components/ui/button-menu"
+export * from "./components/ui/button"
+export * from "./components/ui/calendar"
+export * from "./components/ui/card"
+export * from "./components/ui/checkbox"
+export * from "./components/ui/chips"
+export * from "./components/ui/combobox"
+export * from "./components/ui/count-button"
+export * from "./components/ui/date-picker"
+export * from "./components/ui/empty-search"
+export * from "./components/ui/error-page"
+export * from "./components/ui/event"
+export * from "./components/ui/file-upload"
+export * from "./components/ui/filter"
+export * from "./components/ui/informer"
+export * from "./components/ui/input"
+export * from "./components/ui/item-information-field"
+export * from "./components/ui/item"
+export * from "./components/ui/modal"
+export * from "./components/ui/notification"
+export * from "./components/ui/nps"
+export * from "./components/ui/otp"
+export * from "./components/ui/pagination"
+export * from "./components/ui/progress-bar"
+export * from "./components/ui/radio"
+export * from "./components/ui/range-input"
+export * from "./components/ui/scrollbar"
+export * from "./components/ui/select"
+export * from "./components/ui/selection-button"
+export * from "./components/ui/shimmer"
+export * from "./components/ui/sidebar"
+export * from "./components/ui/status-screen"
+export * from "./components/ui/steps"
+export * from "./components/ui/switcher"
+export * from "./components/ui/table-top"
+export * from "./components/ui/table"
+export * from "./components/ui/tabs"
+export * from "./components/ui/tag"
+export * from "./components/ui/textarea"
+export * from "./components/ui/thumbnail"
+export * from "./components/ui/toast-message"
+export * from "./components/ui/toggle"
+export * from "./components/ui/tooltip"
+export * from "./components/ui/top-fixed-message"
+export * from "./components/ui/up-button"

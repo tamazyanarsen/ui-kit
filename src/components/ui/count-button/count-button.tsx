@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import type { ButtonProps } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
 
 // Count Button — "Кнопка с индикатором уведомлений": any Button (anatomy
 // and states are the same as Button's own, per ui/button-count/count

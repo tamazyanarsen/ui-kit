@@ -128,19 +128,24 @@ function CompanySearchDropdown() {
     { key: "results", items: resultCompanies },
   ]
 
-  const status = failed
-    ? `Не удалось загрузить результаты (попытка ${attempt}/5). Повторите запрос позже.`
-    : loading
-      ? null
-      : trimmed.length > 0 && trimmed.length < 3
-        ? null
-        : trimmed.length === 0 && selectedCompanies.length > 0
-          ? null
-          : trimmed.length === 0
-            ? "Начните вводить параметры поиска"
-            : results.length === 0
-              ? "Поиск не дал результатов. Попробуйте ввести другое значение"
-              : null
+  // Ordered precedence: a failed fetch always wins, then loading suppresses
+  // any message, then the "too short to search" / "nothing typed yet, but
+  // something's already picked" cases stay silent, and only after all of
+  // that do the actual empty-state hints kick in.
+  function getStatusMessage(): string | null {
+    if (failed) {
+      return `Не удалось загрузить результаты (попытка ${attempt}/5). Повторите запрос позже.`
+    }
+    if (loading) return null
+    if (trimmed.length > 0 && trimmed.length < 3) return null
+    if (trimmed.length === 0 && selectedCompanies.length > 0) return null
+    if (trimmed.length === 0) return "Начните вводить параметры поиска"
+    if (results.length === 0) {
+      return "Поиск не дал результатов. Попробуйте ввести другое значение"
+    }
+    return null
+  }
+  const status = getStatusMessage()
 
   return (
     <Combobox

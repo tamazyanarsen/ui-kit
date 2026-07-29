@@ -157,13 +157,17 @@ function Input({
   // Floating label needs the peer's :placeholder-shown state, so at S size
   // (no floating label) the label prop just becomes the native placeholder.
   const floating = Boolean(label) && size !== "sm"
-  const resolvedPlaceholder = mask
-    ? getMaskPlaceholder(mask)
-    : floating
-      ? " "
-      : (placeholder ??
-        (typeof label === "string" ? label : undefined) ??
-        (clearable ? " " : undefined))
+
+  function resolvePlaceholder(): string | undefined {
+    if (mask) return getMaskPlaceholder(mask)
+    if (floating) return " "
+    return (
+      placeholder ??
+      (typeof label === "string" ? label : undefined) ??
+      (clearable ? " " : undefined)
+    )
+  }
+  const resolvedPlaceholder = resolvePlaceholder()
 
   // Amount's "₽" sits right after the field instead of baked into the
   // masked value, so the field needs to shrink to the number's own width
@@ -209,49 +213,68 @@ function Input({
     onClear?.()
   }
 
-  const trailingSlot = locked ? (
-    <Lock
-      aria-hidden="true"
-      className={cn(
-        ICON_SIZE[size],
-        "shrink-0 text-[var(--input-icon-fg)] group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
-      )}
-    />
-  ) : loading ? (
-    <Loader2
-      aria-hidden="true"
-      className={cn(ICON_SIZE[size], "shrink-0 animate-spin text-[var(--input-border-hover)]")}
-    />
-  ) : isPassword ? (
-    <button
-      type="button"
-      aria-label={passwordVisible ? "Скрыть пароль" : "Показать пароль"}
-      onClick={() => setPasswordVisible((v) => !v)}
-      className="shrink-0 text-[var(--input-icon-fg)] outline-none disabled:hidden"
-      disabled={disabled}
-    >
-      {passwordVisible ? (
-        <EyeOff aria-hidden="true" className={ICON_SIZE[size]} />
-      ) : (
-        <Eye aria-hidden="true" className={ICON_SIZE[size]} />
-      )}
-    </button>
-  ) : trailingIcon ? (
-    <span className="shrink-0 text-[var(--input-icon-fg)]">{trailingIcon}</span>
-  ) : clearable ? (
-    <button
-      type="button"
-      aria-label="Очистить поле"
-      onClick={handleClear}
-      className={cn(
-        "hidden shrink-0 text-[var(--input-icon-fg)] outline-none peer-[&:not(:placeholder-shown)]:block",
-        "disabled:hidden"
-      )}
-      disabled={disabled}
-    >
-      <X aria-hidden="true" className={ICON_SIZE[size]} />
-    </button>
-  ) : null
+  // A one-slot-at-a-time priority order (locked beats loading beats the
+  // password toggle, etc.) — early returns instead of a ternary chain make
+  // that priority explicit and each branch's JSX easy to scan on its own.
+  function renderTrailingSlot() {
+    if (locked) {
+      return (
+        <Lock
+          aria-hidden="true"
+          className={cn(
+            ICON_SIZE[size],
+            "shrink-0 text-[var(--input-icon-fg)] group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
+          )}
+        />
+      )
+    }
+    if (loading) {
+      return (
+        <Loader2
+          aria-hidden="true"
+          className={cn(ICON_SIZE[size], "shrink-0 animate-spin text-[var(--input-border-hover)]")}
+        />
+      )
+    }
+    if (isPassword) {
+      return (
+        <button
+          type="button"
+          aria-label={passwordVisible ? "Скрыть пароль" : "Показать пароль"}
+          onClick={() => setPasswordVisible((v) => !v)}
+          className="shrink-0 text-[var(--input-icon-fg)] outline-none disabled:hidden"
+          disabled={disabled}
+        >
+          {passwordVisible ? (
+            <EyeOff aria-hidden="true" className={ICON_SIZE[size]} />
+          ) : (
+            <Eye aria-hidden="true" className={ICON_SIZE[size]} />
+          )}
+        </button>
+      )
+    }
+    if (trailingIcon) {
+      return <span className="shrink-0 text-[var(--input-icon-fg)]">{trailingIcon}</span>
+    }
+    if (clearable) {
+      return (
+        <button
+          type="button"
+          aria-label="Очистить поле"
+          onClick={handleClear}
+          className={cn(
+            "hidden shrink-0 text-[var(--input-icon-fg)] outline-none peer-[&:not(:placeholder-shown)]:block",
+            "disabled:hidden"
+          )}
+          disabled={disabled}
+        >
+          <X aria-hidden="true" className={ICON_SIZE[size]} />
+        </button>
+      )
+    }
+    return null
+  }
+  const trailingSlot = renderTrailingSlot()
 
   // react-imask's IMaskInput prop type is a large discriminated union keyed
   // off `mask`. TS can't reconcile it once native <input> rest props

@@ -58,6 +58,14 @@ const buttonVariants = cva(
   }
 )
 
+// iconPosition="only" swaps the regular size for its square icon-button
+// counterpart.
+const ICON_ONLY_SIZE: Record<"sm" | "default" | "lg", "icon-sm" | "icon" | "icon-lg"> = {
+  sm: "icon-sm",
+  default: "icon",
+  lg: "icon-lg",
+}
+
 type IconComponent = React.ComponentType<
   React.SVGProps<SVGSVGElement> & { "data-icon"?: string }
 >
@@ -101,13 +109,7 @@ function Button({
     )
   }
 
-  const resolvedSize = iconOnly
-    ? size === "sm"
-      ? "icon-sm"
-      : size === "lg"
-        ? "icon-lg"
-        : "icon"
-    : size
+  const resolvedSize = iconOnly ? ICON_ONLY_SIZE[size ?? "default"] : size
 
   const Glyph = isLoading ? LoaderCircle : isLogoVariant ? GosuslugiLogo : Icon
 

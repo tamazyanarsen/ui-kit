@@ -20,6 +20,39 @@ const ICON_SIZE = { sm: "size-3.5", lg: "size-4" } as const
 // like an oversized fixed-size input, so it's left at its natural width.
 const SINGLE_PANEL_MIN_WIDTH = "min-w-[280px]"
 
+const DEFAULT_LABEL: Record<CalendarMode, string> = {
+  single: "Дата",
+  range: "Дата начала — Дата окончания",
+  month: "Месяц",
+  year: "Год",
+}
+
+// Formats the read-only field's value for the three non-"single" modes
+// (single stays an editable masked <Input>, handled separately — see
+// mode === "single" below). Empty string means "nothing picked yet".
+function formatDisplayValue(
+  mode: Exclude<CalendarMode, "single">,
+  activeRange: [Date | null, Date | null],
+  activeMonth: { year: number; month: number } | null,
+  activeYear: number | null
+): string {
+  switch (mode) {
+    case "range": {
+      const [start, end] = activeRange
+      if (!start) return ""
+      return end
+        ? `${formatDateRu(start)} — ${formatDateRu(end)}`
+        : `${formatDateRu(start)} — `
+    }
+    case "month":
+      return activeMonth
+        ? `${MONTHS_RU_FULL[activeMonth.month]} ${activeMonth.year}`
+        : ""
+    case "year":
+      return activeYear ? String(activeYear) : ""
+  }
+}
+
 // DatePicker — the missing link between Calendar (pure content, no
 // popover/trigger of its own by design — see calendar-demo.tsx) and Input
 // (which already has the `mask="date"` + calendar icon pieces). Per spec:
@@ -108,14 +141,7 @@ function DatePicker({
   const activeMonth = monthValue !== undefined ? monthValue : internalMonth
   const activeYear = yearValue !== undefined ? yearValue : internalYear
 
-  const defaultLabel =
-    mode === "range"
-      ? "Дата начала — Дата окончания"
-      : mode === "month"
-        ? "Месяц"
-        : mode === "year"
-          ? "Год"
-          : "Дата"
+  const defaultLabel = DEFAULT_LABEL[mode]
 
   // Purely decorative — the whole field (see the Trigger wrapping it below)
   // is the click target, not just this glyph.
@@ -208,21 +234,7 @@ function DatePicker({
               size={size}
               label={label ?? defaultLabel}
               readOnly
-              value={
-                mode === "range"
-                  ? activeRange[0]
-                    ? activeRange[1]
-                      ? `${formatDateRu(activeRange[0])} — ${formatDateRu(activeRange[1])}`
-                      : `${formatDateRu(activeRange[0])} — `
-                    : ""
-                  : mode === "month"
-                    ? activeMonth
-                      ? `${MONTHS_RU_FULL[activeMonth.month]} ${activeMonth.year}`
-                      : ""
-                    : activeYear
-                      ? String(activeYear)
-                      : ""
-              }
+              value={formatDisplayValue(mode, activeRange, activeMonth, activeYear)}
               onChange={() => {}}
               disabled={disabled}
               comment={comment}

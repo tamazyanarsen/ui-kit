@@ -104,6 +104,50 @@ function Filter({
   const hasValue = Boolean(activeValue)
   const asChip = chip && hasValue
 
+  // Three mutually exclusive trigger looks (chip / disabled / normal) — only
+  // the "normal" one varies further by open state + background, so an
+  // if/else chain reads more clearly here than nesting that variation
+  // inside a ternary for the other two.
+  let triggerToneClass: string
+  if (asChip) {
+    triggerToneClass =
+      "border-transparent bg-[var(--chips-dark-bg)] hover:bg-[var(--chips-dark-bg-hover)]"
+  } else if (disabled) {
+    triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
+  } else {
+    triggerToneClass = cn(
+      open ? "border-[var(--filter-active-border)]" : "border-transparent",
+      background === "grey"
+        ? "bg-[var(--filter-grey-bg)] hover:bg-[var(--filter-grey-bg-hover)]"
+        : "bg-[var(--filter-white-bg)] hover:bg-[var(--filter-white-bg-hover)]"
+    )
+  }
+
+  function renderTriggerAction() {
+    if (hasValue) {
+      return (
+        <button
+          type="button"
+          aria-label="Сбросить фильтр"
+          disabled={disabled}
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={handleClear}
+          className={cn(
+            "outline-none",
+            asChip ? "text-[var(--chips-dark-fg)]" : "text-[var(--filter-icon-fg)]"
+          )}
+        >
+          <X aria-hidden="true" className={ICON_SIZE} />
+        </button>
+      )
+    }
+    if (asChip) return null
+    const Chevron = open ? ChevronUp : ChevronDown
+    return (
+      <Chevron aria-hidden="true" className={cn(ICON_SIZE, "text-[var(--filter-icon-fg)]")} />
+    )
+  }
+
   return (
     <div className="w-fit">
       <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
@@ -118,18 +162,7 @@ function Filter({
               className={cn(
                 "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 rounded-2xl border whitespace-nowrap outline-none transition-colors select-none focus-visible:ring-3 focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
                 subtitle && !asChip ? "px-4 py-2" : "px-4 py-1.5",
-                asChip
-                  ? "border-transparent bg-[var(--chips-dark-bg)] hover:bg-[var(--chips-dark-bg-hover)]"
-                  : disabled
-                    ? "border-transparent bg-[var(--filter-disabled-bg)]"
-                    : cn(
-                        open
-                          ? "border-[var(--filter-active-border)]"
-                          : "border-transparent",
-                        background === "grey"
-                          ? "bg-[var(--filter-grey-bg)] hover:bg-[var(--filter-grey-bg-hover)]"
-                          : "bg-[var(--filter-white-bg)] hover:bg-[var(--filter-white-bg-hover)]"
-                      ),
+                triggerToneClass,
                 className
               )}
             />
@@ -170,34 +203,7 @@ function Filter({
               />
             )}
             <span className="ml-auto flex shrink-0 items-center">
-              {hasValue ? (
-                <button
-                  type="button"
-                  aria-label="Сбросить фильтр"
-                  disabled={disabled}
-                  onMouseDown={(event) => event.stopPropagation()}
-                  onClick={handleClear}
-                  className={cn(
-                    "outline-none",
-                    asChip ? "text-[var(--chips-dark-fg)]" : "text-[var(--filter-icon-fg)]"
-                  )}
-                >
-                  <X aria-hidden="true" className={ICON_SIZE} />
-                </button>
-              ) : (
-                !asChip &&
-                (open ? (
-                  <ChevronUp
-                    aria-hidden="true"
-                    className={cn(ICON_SIZE, "text-[var(--filter-icon-fg)]")}
-                  />
-                ) : (
-                  <ChevronDown
-                    aria-hidden="true"
-                    className={cn(ICON_SIZE, "text-[var(--filter-icon-fg)]")}
-                  />
-                ))
-              )}
+              {renderTriggerAction()}
             </span>
           </span>
         </PopoverPrimitive.Trigger>

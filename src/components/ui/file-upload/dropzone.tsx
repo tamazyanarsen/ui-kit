@@ -6,6 +6,22 @@ import { cn } from "@/lib/utils"
 // FileUploadDropzone — Drag & Drop target. States: default, hover (drag
 // over — fills with Grey 100 per spec), disabled, error.
 
+type DropzoneTone = "disabled" | "error" | "default"
+
+// Icon and main text share the same three colors; the subtitle's
+// disabled/default tokens differ from them (its own dedicated subtitle-fg
+// tokens), but error still reuses the same border-error token as the rest.
+const CONTENT_COLOR: Record<DropzoneTone, string> = {
+  disabled: "text-[var(--file-upload-fg-disabled)]",
+  error: "text-[var(--file-upload-border-error)]",
+  default: "text-[var(--file-upload-fg)]",
+}
+const SUBTITLE_COLOR: Record<DropzoneTone, string> = {
+  disabled: "text-[var(--file-upload-subtitle-fg-disabled)]",
+  error: "text-[var(--file-upload-border-error)]",
+  default: "text-[var(--file-upload-subtitle-fg)]",
+}
+
 interface FileUploadDropzoneProps
   extends Omit<React.ComponentProps<"div">, "onDrop" | "onChange"> {
   subtitle?: React.ReactNode
@@ -35,6 +51,22 @@ export function FileUploadDropzone({
     if (!disabled) inputRef.current?.click()
   }
 
+  const tone: DropzoneTone = disabled ? "disabled" : error ? "error" : "default"
+
+  let containerToneClass: string
+  if (disabled) {
+    containerToneClass =
+      "cursor-not-allowed border-[var(--file-upload-border-disabled)] bg-[var(--file-upload-bg-disabled)]"
+  } else if (error) {
+    containerToneClass =
+      "cursor-pointer border-[var(--file-upload-border-error)] bg-[var(--file-upload-bg)]"
+  } else {
+    containerToneClass = cn(
+      "cursor-pointer border-[var(--file-upload-border)] bg-[var(--file-upload-bg)] hover:border-[var(--file-upload-border-hover)]",
+      dragOver && "border-[var(--file-upload-border-hover)] bg-[var(--file-upload-bg-hover)]"
+    )
+  }
+
   return (
     <div
       data-slot="file-upload-dropzone"
@@ -42,15 +74,7 @@ export function FileUploadDropzone({
       aria-disabled={disabled || undefined}
       className={cn(
         "relative flex w-full flex-col items-center gap-1 rounded-2xl border border-dashed px-4 py-6 text-center transition-colors",
-        disabled
-          ? "cursor-not-allowed border-[var(--file-upload-border-disabled)] bg-[var(--file-upload-bg-disabled)]"
-          : error
-            ? "cursor-pointer border-[var(--file-upload-border-error)] bg-[var(--file-upload-bg)]"
-            : cn(
-                "cursor-pointer border-[var(--file-upload-border)] bg-[var(--file-upload-bg)] hover:border-[var(--file-upload-border-hover)]",
-                dragOver &&
-                  "border-[var(--file-upload-border-hover)] bg-[var(--file-upload-bg-hover)]"
-              ),
+        containerToneClass,
         className
       )}
       onDragOver={(event) => {
@@ -85,40 +109,12 @@ export function FileUploadDropzone({
           event.target.value = ""
         }}
       />
-      <CirclePlus
-        aria-hidden="true"
-        className={cn(
-          "size-4",
-          disabled
-            ? "text-[var(--file-upload-fg-disabled)]"
-            : error
-              ? "text-[var(--file-upload-border-error)]"
-              : "text-[var(--file-upload-fg)]"
-        )}
-      />
-      <span
-        className={cn(
-          "text-sm font-medium",
-          disabled
-            ? "text-[var(--file-upload-fg-disabled)]"
-            : error
-              ? "text-[var(--file-upload-border-error)]"
-              : "text-[var(--file-upload-fg)]"
-        )}
-      >
+      <CirclePlus aria-hidden="true" className={cn("size-4", CONTENT_COLOR[tone])} />
+      <span className={cn("text-sm font-medium", CONTENT_COLOR[tone])}>
         {children ?? "Перетащите или загрузите файлы"}
       </span>
       {subtitle && (
-        <span
-          className={cn(
-            "text-xs",
-            disabled
-              ? "text-[var(--file-upload-subtitle-fg-disabled)]"
-              : error
-                ? "text-[var(--file-upload-border-error)]"
-                : "text-[var(--file-upload-subtitle-fg)]"
-          )}
-        >
+        <span className={cn("text-xs", SUBTITLE_COLOR[tone])}>
           {subtitle}
         </span>
       )}

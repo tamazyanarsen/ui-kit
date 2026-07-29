@@ -255,15 +255,13 @@ export function CalendarMobile({
     resetSheetScroll()
   }
 
-  return (
-    <div
-      className={cn(
-        "flex w-full max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-foreground/10",
-        className
-      )}
-    >
-      <SheetHeader title={title} onClose={onClose} />
-      {jumpOpen ? (
+  // The header nav and the scrollable body below it each switch between
+  // three entirely different states (jump-to-year picker / year mode /
+  // month|day mode) — early returns instead of a nested ternary chain, one
+  // state per branch.
+  function renderHeaderNav() {
+    if (jumpOpen) {
+      return (
         <NavHeader
           onPrev={() => setJumpDecadeEnd((y) => y - 12)}
           onNext={() => setJumpDecadeEnd((y) => y + 12)}
@@ -272,7 +270,10 @@ export function CalendarMobile({
             {jumpDecadeEnd - 11} — {jumpDecadeEnd}
           </HeaderLabel>
         </NavHeader>
-      ) : mode === "year" ? (
+      )
+    }
+    if (mode === "year") {
+      return (
         <NavHeader
           onPrev={() => {
             setDecadeEnd((y) => y - 12)
@@ -287,61 +288,87 @@ export function CalendarMobile({
             {decadeEnd - 11} — {decadeEnd}
           </HeaderLabel>
         </NavHeader>
-      ) : (
-        <SheetNav
-          label={
-            mode === "month"
-              ? `${focus.year - 11} — ${focus.year}`
-              : String(focus.year)
-          }
-          onBack={openJumpPicker}
+      )
+    }
+    return (
+      <SheetNav
+        label={
+          mode === "month"
+            ? `${focus.year - 11} — ${focus.year}`
+            : String(focus.year)
+        }
+        onBack={openJumpPicker}
+      />
+    )
+  }
+
+  function renderSheetBody() {
+    if (jumpOpen) {
+      return (
+        <YearGrid
+          decadeEnd={jumpDecadeEnd}
+          selectedYear={focus.year}
+          currentYear={today.getFullYear()}
+          onSelectYear={handleJumpToYear}
         />
-      )}
-      <div ref={sheetScrollRef} className="max-h-[60vh] overflow-y-auto">
-        {jumpOpen ? (
-          <YearGrid
-            decadeEnd={jumpDecadeEnd}
-            selectedYear={focus.year}
-            currentYear={today.getFullYear()}
-            onSelectYear={handleJumpToYear}
+      )
+    }
+    if (mode === "month") {
+      return (
+        <>
+          <SheetYearSections
+            anchorYear={focus.year}
+            count={yearsInfinite.count}
+            today={today}
+            monthValue={monthValue}
+            onSelectMonth={(year, m) => onMonthChange?.({ year, month: m })}
           />
-        ) : mode === "month" ? (
-          <>
-            <SheetYearSections
-              anchorYear={focus.year}
-              count={yearsInfinite.count}
-              today={today}
-              monthValue={monthValue}
-              onSelectMonth={(year, m) => onMonthChange?.({ year, month: m })}
-            />
-            <div ref={yearsInfinite.sentinelRef} className="h-px" />
-          </>
-        ) : mode === "year" ? (
-          <>
-            <SheetDecadeSections
-              anchorDecadeEnd={decadeEnd}
-              count={decadesInfinite.count}
-              today={today}
-              yearValue={yearValue ?? null}
-              onSelectYear={(y) => onYearChange?.(y)}
-            />
-            <div ref={decadesInfinite.sentinelRef} className="h-px" />
-          </>
-        ) : (
-          <>
-            <SheetMonthSections
-              mode={mode}
-              anchor={focus}
-              count={monthsInfinite.count}
-              today={today}
-              value={value}
-              normStart={normStart}
-              normEnd={normEnd}
-              onSelectDay={onSelectDay}
-            />
-            <div ref={monthsInfinite.sentinelRef} className="h-px" />
-          </>
-        )}
+          <div ref={yearsInfinite.sentinelRef} className="h-px" />
+        </>
+      )
+    }
+    if (mode === "year") {
+      return (
+        <>
+          <SheetDecadeSections
+            anchorDecadeEnd={decadeEnd}
+            count={decadesInfinite.count}
+            today={today}
+            yearValue={yearValue ?? null}
+            onSelectYear={(y) => onYearChange?.(y)}
+          />
+          <div ref={decadesInfinite.sentinelRef} className="h-px" />
+        </>
+      )
+    }
+    return (
+      <>
+        <SheetMonthSections
+          mode={mode}
+          anchor={focus}
+          count={monthsInfinite.count}
+          today={today}
+          value={value}
+          normStart={normStart}
+          normEnd={normEnd}
+          onSelectDay={onSelectDay}
+        />
+        <div ref={monthsInfinite.sentinelRef} className="h-px" />
+      </>
+    )
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex w-full max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-foreground/10",
+        className
+      )}
+    >
+      <SheetHeader title={title} onClose={onClose} />
+      {renderHeaderNav()}
+      <div ref={sheetScrollRef} className="max-h-[60vh] overflow-y-auto">
+        {renderSheetBody()}
       </div>
       {footer && <CalendarFooter onReset={onReset} onApply={onApply} />}
     </div>

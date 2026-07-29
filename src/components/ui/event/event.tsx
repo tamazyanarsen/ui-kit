@@ -1,0 +1,200 @@
+import * as React from "react"
+import { CircleCheck, Clock, FileText } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+
+import { STATUS_BG, type EventStatus } from "./variants"
+
+// Event — "Событие": one row of a document/status change history timeline
+// (rendered inside the existing `Modal` as a list per the spec's own
+// usage note — this component is just the row). Fixes a single user
+// action or document move *within* one status, without changing the
+// overall stage. `type="tag"` renders the title as a colored status pill
+// (ЕЛК-only per the spec — status history logic doesn't apply to other
+// products); `type="text"` is the plain default. Every section below the
+// title (author, signatories, info, comment, documents, button) is
+// optional and simply omits when its data isn't given — same pattern as
+// Card/Banner's "Show X" toggles.
+interface EventSignatory {
+  status: "success" | "attention"
+  text: React.ReactNode
+}
+
+interface EventInfoRow {
+  label: React.ReactNode
+  value: React.ReactNode
+}
+
+interface EventDocument {
+  name: React.ReactNode
+  meta: React.ReactNode
+  onClick?: () => void
+}
+
+interface EventProps {
+  type?: "text" | "tag"
+  title: React.ReactNode
+  status?: EventStatus
+  timestamp?: React.ReactNode
+  author?: React.ReactNode
+  signatories?: EventSignatory[]
+  info?: EventInfoRow[]
+  commentLabel?: React.ReactNode
+  comment?: React.ReactNode
+  documents?: EventDocument[]
+  buttonLabel?: React.ReactNode
+  onButtonClick?: () => void
+  showConnector?: boolean
+  className?: string
+}
+
+function Event({
+  type = "text",
+  title,
+  status = "attention",
+  timestamp,
+  author,
+  signatories,
+  info,
+  commentLabel = "Комментарий:",
+  comment,
+  documents,
+  buttonLabel,
+  onButtonClick,
+  showConnector = true,
+  className,
+}: EventProps) {
+  return (
+    <div data-slot="event" className={cn("flex gap-4", className)}>
+      <div className="flex w-2 shrink-0 flex-col items-center">
+        <span
+          aria-hidden="true"
+          className="mt-1.5 size-2 shrink-0 rounded-full bg-[var(--event-connector)]"
+        />
+        {showConnector && (
+          <span
+            aria-hidden="true"
+            className="mt-1 w-px flex-1 bg-[var(--event-connector)]"
+          />
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-2 pb-6">
+        <div className="flex items-baseline justify-between gap-4">
+          {type === "tag" ? (
+            <span
+              className="rounded-md px-2 py-0.5 text-xs font-medium text-[var(--event-tag-fg)]"
+              style={{ backgroundColor: STATUS_BG[status] }}
+            >
+              {title}
+            </span>
+          ) : (
+            <span className="font-medium text-[var(--event-title-fg)]">
+              {title}
+            </span>
+          )}
+          {timestamp && (
+            <span className="shrink-0 text-sm text-[var(--event-meta-fg)]">
+              {timestamp}
+            </span>
+          )}
+        </div>
+
+        {author && (
+          <p className="text-sm text-[var(--event-meta-fg)]">{author}</p>
+        )}
+
+        {signatories && signatories.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            {signatories.map((signatory, index) => {
+              const Icon = signatory.status === "success" ? CircleCheck : Clock
+              return (
+                <div key={index} className="flex items-center gap-2 text-sm">
+                  <Icon
+                    aria-hidden="true"
+                    className="size-4 shrink-0"
+                    style={{ color: STATUS_BG[signatory.status] }}
+                  />
+                  <span className="text-[var(--event-title-fg)]">
+                    {signatory.text}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {info && info.length > 0 && (
+          <div className="flex flex-col gap-1 text-sm">
+            {info.map((row, index) => (
+              <p key={index}>
+                <span className="text-[var(--event-meta-fg)]">
+                  {row.label}
+                </span>{" "}
+                <span className="font-medium text-[var(--event-title-fg)]">
+                  {row.value}
+                </span>
+              </p>
+            ))}
+          </div>
+        )}
+
+        {comment && (
+          <div className="text-sm">
+            <p className="text-[var(--event-meta-fg)]">{commentLabel}</p>
+            <p className="text-[var(--event-title-fg)]">{comment}</p>
+          </div>
+        )}
+
+        {documents && documents.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-[var(--event-meta-fg)]">
+              Приложенные документы:
+            </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {documents.map((doc, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={doc.onClick}
+                  className="flex items-center gap-2.5 rounded-lg p-1 text-left outline-none"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--event-file-bg)]">
+                    <FileText
+                      aria-hidden="true"
+                      className="size-4 text-[var(--event-title-fg)]"
+                    />
+                  </span>
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate text-sm font-medium text-[var(--event-title-fg)]">
+                      {doc.name}
+                    </span>
+                    <span className="truncate text-xs text-[var(--event-meta-fg)]">
+                      {doc.meta}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {buttonLabel && (
+          <Button
+            type="button"
+            variant="secondary-grey"
+            size="sm"
+            onClick={onButtonClick}
+            className="self-start"
+          >
+            {buttonLabel}
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export { Event }
+export type { EventProps, EventSignatory, EventInfoRow, EventDocument }

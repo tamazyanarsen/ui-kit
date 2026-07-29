@@ -1,0 +1,97 @@
+import * as React from "react"
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
+import { ChevronDownIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+// AccordionCard — the standalone "card" accordion from the spec (Title +
+// Subtitle header, Default/Blocked color type). Distinct from the plain
+// text-row Accordion in ./accordion.tsx, which is only used for this repo's
+// own docs-page chrome and has a different visual language (no card
+// background, no subtitle, always-visible trailing chevron on the whole
+// row). Each card owns its own single-item Base UI Accordion.Root, so
+// multiple cards stacked on a page open/close independently.
+const ITEM_VALUE = "item"
+
+interface AccordionCardProps {
+  title: React.ReactNode
+  subtitle?: React.ReactNode
+  blocked?: boolean
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
+  className?: string
+}
+
+function AccordionCard({
+  title,
+  subtitle,
+  blocked = false,
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  children,
+  className,
+}: AccordionCardProps) {
+  const controlled = open !== undefined
+
+  return (
+    <AccordionPrimitive.Root
+      data-slot="accordion-card"
+      value={controlled ? (open ? [ITEM_VALUE] : []) : undefined}
+      defaultValue={defaultOpen ? [ITEM_VALUE] : []}
+      onValueChange={
+        onOpenChange
+          ? (value: string[]) => onOpenChange(value.includes(ITEM_VALUE))
+          : undefined
+      }
+      className={cn(
+        "w-full overflow-hidden rounded-[12px]",
+        blocked
+          ? "bg-[var(--accordion-card-blocked-bg)]"
+          : "bg-[var(--accordion-card-bg)]",
+        className
+      )}
+    >
+      <AccordionPrimitive.Item value={ITEM_VALUE}>
+        <AccordionPrimitive.Header>
+          <AccordionPrimitive.Trigger
+            data-slot="accordion-card-trigger"
+            className={cn(
+              "flex w-full flex-col gap-1 p-7 text-left outline-none transition-colors [&[data-panel-open]_svg]:rotate-180",
+              blocked
+                ? "hover:bg-[var(--accordion-card-blocked-bg-hover)]"
+                : "hover:bg-[var(--accordion-card-bg-hover)]"
+            )}
+          >
+            <span className="flex items-center justify-between gap-3">
+              <span className="text-base font-semibold text-[var(--accordion-card-title-fg)]">
+                {title}
+              </span>
+              <ChevronDownIcon
+                aria-hidden="true"
+                className="size-4 shrink-0 text-[var(--accordion-card-icon-fg)] transition-transform duration-200"
+              />
+            </span>
+            {subtitle && (
+              <span className="text-sm text-[var(--accordion-card-subtitle-fg)]">
+                {subtitle}
+              </span>
+            )}
+          </AccordionPrimitive.Trigger>
+        </AccordionPrimitive.Header>
+        {children && (
+          <AccordionPrimitive.Panel
+            data-slot="accordion-card-panel"
+            className="h-(--accordion-panel-height) overflow-hidden text-sm transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+          >
+            <div className="px-7 pb-7">{children}</div>
+          </AccordionPrimitive.Panel>
+        )}
+      </AccordionPrimitive.Item>
+    </AccordionPrimitive.Root>
+  )
+}
+
+export { AccordionCard }

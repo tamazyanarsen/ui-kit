@@ -1,0 +1,5 @@
+export { Modal, ModalTrigger, ModalClose } from "./root"
+export { ModalContent, modalPopupVariants } from "./popup"
+export { ModalHeader, ModalTitle, ModalDescription } from "./header"
+export { ModalBody } from "./body"
+export { ModalFooter } from "./footer"

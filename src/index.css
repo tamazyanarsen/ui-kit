@@ -1,0 +1,878 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Geist Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+}
+
+/* Themed scrollbar (ui/scrollbar) — applied by the `Scrollbar` component.
+   Chromium/WebKit supports distinct vertical/horizontal scrollbar-gutter
+   sizing via the `:vertical`/`:horizontal` pseudo-classes on the
+   `::-webkit-scrollbar` pseudo-element itself, which is exactly what the
+   spec calls for (4px vertical vs 8px horizontal) — Firefox has no
+   equivalent per-axis control (`scrollbar-width` is a single keyword for
+   both axes), so it falls back to its own "thin" preset for both. */
+@layer base {
+  .themed-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+  }
+  .themed-scrollbar::-webkit-scrollbar:vertical {
+    width: 4px;
+  }
+  .themed-scrollbar::-webkit-scrollbar:horizontal {
+    height: 8px;
+  }
+  .themed-scrollbar::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-bg);
+    border-radius: 9999px;
+  }
+  .themed-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-bg);
+    border-radius: 9999px;
+  }
+  .themed-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-bg-hover);
+  }
+}
+
+:root {
+  /* ЕЛК (default product theme) — Button component tokens.
+     Values measured directly from ui/button.svg (Figma export). */
+  --btn-primary-bg: #80E3FF;
+  --btn-primary-bg-hover: #2FCEEF;
+  --btn-primary-bg-active: #14B1D1;
+  --btn-primary-fg: #252628;
+
+  --btn-secondary-black-bg: #012F42;
+  --btn-secondary-black-bg-hover: #114870;
+  --btn-secondary-black-bg-active: #1368A1;
+  --btn-secondary-black-fg: #FFFFFF;
+
+  --btn-secondary-grey-bg: #F4F4F4;
+  --btn-secondary-grey-bg-hover: #EFEFEF;
+  --btn-secondary-grey-bg-active: #E6E6E6;
+  --btn-secondary-grey-fg: #252628;
+
+  --btn-secondary-white-bg: #FFFFFF;
+  --btn-secondary-white-bg-hover: #EFEFEF;
+  --btn-secondary-white-bg-active: #E6E6E6;
+  --btn-secondary-white-fg: #252628;
+
+  --btn-secondary-outline-bg: #FFFFFF;
+  --btn-secondary-outline-bg-hover: #EFEFEF;
+  --btn-secondary-outline-bg-active: #E6E6E6;
+  --btn-secondary-outline-fg: #252628;
+  --btn-secondary-outline-border: #0D4CD3;
+
+  --btn-destructive-bg: #D74B54;
+  --btn-destructive-bg-hover: #F0535E;
+  --btn-destructive-bg-active: #FF737D;
+  --btn-destructive-fg: #FFFFFF;
+
+  /* Secondary Logo (Grey) — the one "Secondary Logo" Type from
+     ui/button/button.png that doesn't reuse an existing secondary-*
+     color (Black/Border-White/White map onto secondary-black/-outline/
+     -white exactly, pixel-confirmed). Base pixel-sampled from the spec's
+     own swatch (#494C4B); hover/active follow the same lighten-on-
+     interaction progression already used by secondary-black. */
+  --btn-secondary-logo-grey-bg: #494C4B;
+  --btn-secondary-logo-grey-bg-hover: #5C5F5E;
+  --btn-secondary-logo-grey-bg-active: #6E7170;
+  --btn-secondary-logo-grey-fg: #FFFFFF;
+
+  /* Shared muted treatment for disabled + loading (identical across all variants in the spec) */
+  --btn-muted-bg: #EFEFEF;
+  --btn-muted-fg: #C8C8CB;
+  --btn-muted-border: #C8C8CB;
+
+  /* Input component tokens. Values measured directly from ui/input.svg
+     (Figma export) and confirmed against the L/Desktop reference render. */
+  --input-bg: #FFFFFF;
+  --input-bg-disabled: #EFEFEF;
+  --input-border: #C8C8CB;
+  --input-border-hover: #999999;
+  --input-border-disabled: #C8C8CB;
+  --input-border-error: #D74B54;
+  --input-border-error-hover: #F0535E;
+
+  --input-fg: #252628;
+  --input-fg-disabled: #C8C8CB;
+  --input-label-fg: #999999;
+  --input-icon-fg: #252628;
+
+  --input-caption-fg: #6D6D6D;
+  --input-caption-error-fg: #D74B54;
+
+  /* Textarea reuses the Input palette above almost entirely (verified
+     against ui/textarea/*.svg — bg, bg-disabled, border, border-disabled,
+     border-error and border-error-hover all matched exactly). Only the
+     non-error hover/focus border color actually differs from Input's
+     (#6D6D6D, not --input-border-hover's #999999), so it gets its own
+     token rather than a whole parallel --textarea-* namespace. */
+  --textarea-border-hover: #6D6D6D;
+
+  /* OTP code tokens. Values measured directly from ui/otp code/*.svg
+     (exact vector rects/paths, not pixel-sampled PNGs). The confirm/resend
+     buttons need no tokens of their own — they map 1:1 onto existing
+     Button variants (primary/secondary-black, muted-disabled) and colors
+     matched exactly, so the card just reuses `Button`. */
+  --otp-fg: #252628;
+  --otp-placeholder-fg: #999999;
+  --otp-underline: #999999;
+  --otp-error-fg: #D74B54;
+  --otp-close-bg: #F4F4F4;
+  --otp-close-fg: #252628;
+  --otp-title-fg: #252628;
+  --otp-subtitle-fg: #6D6D6D;
+
+  /* Modal tokens. Values measured directly from ui/modal/modal-1.svg
+     (exact vector rects). Footer buttons and the close icon button need no
+     tokens of their own — they map 1:1 onto existing Button variants
+     (primary/secondary-grey) and sizes, so Modal just reuses `Button`. */
+  --modal-bg: #FFFFFF;
+  --modal-radius: 32px;
+  --modal-backdrop: #1E2321;
+  --modal-divider: #DEDEDE;
+
+  /* Calendar component tokens. Values measured directly from
+     ui/calendar1.svg + ui/calendar2.svg (Figma export). */
+  --calendar-fg: #252628;
+  --calendar-muted-fg: #999999;
+  --calendar-accent-fg: #14B1D1;
+  --calendar-selected-bg: #012F42;
+  --calendar-selected-fg: #FFFFFF;
+  --calendar-range-bg: #F4F4F4;
+  --calendar-divider: #DEDEDE;
+
+  /* Select trigger tokens. Same palette as Input (identical box treatment
+     in the Figma spec) — kept in its own namespace so it can diverge later. */
+  --select-bg: #FFFFFF;
+  --select-bg-disabled: #EFEFEF;
+  --select-border: #C8C8CB;
+  --select-border-hover: #999999;
+  --select-border-disabled: #C8C8CB;
+  --select-border-error: #D74B54;
+  --select-border-error-hover: #F0535E;
+
+  --select-fg: #252628;
+  --select-fg-disabled: #C8C8CB;
+  --select-label-fg: #999999;
+  --select-icon-fg: #252628;
+
+  --select-caption-fg: #6D6D6D;
+  --select-caption-error-fg: #D74B54;
+
+  /* Checkbox + multi-select Combobox tokens. Checked fill sampled directly
+     from the "Список" multi-select spec screenshot — it's the same cyan as
+     --btn-primary-bg, kept in its own namespace in case that changes.
+     Standalone Checkbox additionally uses the label/caption tokens below,
+     measured from ui/checkbox/checkbox-1.svg — hover border and the
+     checked-hover fill are notably NOT the same as Combobox's static item
+     checkbox, which has no hover state of its own. */
+  --checkbox-bg: #FFFFFF;
+  --checkbox-border: #C8C8CB;
+  --checkbox-border-hover: #252628;
+  --checkbox-border-error: #D74B54;
+  --checkbox-checked-bg: #80E3FF;
+  --checkbox-checked-bg-hover: #2FCEEF;
+  --checkbox-checked-fg: #252628;
+  --checkbox-disabled-bg: #EFEFEF;
+  --checkbox-disabled-border: #C8C8CB;
+  --checkbox-disabled-fg: #C8C8CB;
+  --checkbox-label-fg: #252628;
+  --checkbox-label-fg-disabled: #C8C8CB;
+  --checkbox-caption-fg: #999999;
+  --checkbox-caption-error-fg: #D74B54;
+
+  /* Radio tokens. Same 24×24 box size, gap, and label/caption palette as
+     Checkbox (measured from ui/radio/radio-1.svg) — pixel-sampled directly
+     from the anatomy PNG since checked/hover circles are drawn as filled
+     paths, not <circle> elements grep can pull colors from. Unchecked is a
+     hollow ring (bg + border, no fill); checked is a SOLID filled disc
+     (bg = the accent color, border transparent) with a contrasting dot on
+     top — not a colored ring like Checkbox's box, confirmed by zooming into
+     the raster (a first pass wrongly assumed a ring here). */
+  --radio-bg: #FFFFFF;
+  --radio-border: #C8C8CB;
+  --radio-border-hover: #252628;
+  --radio-border-error: #D74B54;
+  --radio-checked-bg: #80E3FF;
+  --radio-checked-bg-hover: #2FCEEF;
+  --radio-checked-dot: #252628;
+  --radio-disabled-bg: #EFEFEF;
+  --radio-disabled-border: #C8C8CB;
+  --radio-disabled-dot: #C8C8CB;
+  --radio-label-fg: #252628;
+  --radio-label-fg-disabled: #C8C8CB;
+  --radio-caption-fg: #999999;
+  --radio-caption-error-fg: #D74B54;
+
+  /* Toggle tokens, measured from ui/toggle/toggle-1.svg. Unlike
+     Checkbox/Radio, the track itself never gets an error color — only the
+     caption text turns red, and it can stack a comment + a separate error
+     line simultaneously (see ToggleField). */
+  --toggle-track-bg: #999999;
+  --toggle-track-bg-hover: #C8C8CB;
+  --toggle-track-checked-bg: #80E3FF;
+  --toggle-track-checked-bg-hover: #2FCEEF;
+  --toggle-track-bg-disabled: #EFEFEF;
+  --toggle-track-checked-bg-disabled: #B6F3FF;
+  --toggle-thumb-bg: #FFFFFF;
+  --toggle-label-fg: #252628;
+  --toggle-label-fg-disabled: #C8C8CB;
+  --toggle-caption-fg: #999999;
+  --toggle-caption-error-fg: #D74B54;
+
+  /* Range Input tokens, measured from ui/range input/range Input.svg,
+     cross-checked against the raster (thumb/indicator are filled paths, not
+     colored rects — same trap as Radio). Border follows Input's convention
+     (hover/focused = #999999), not Checkbox/Radio's (#252628) — this is a
+     bordered-box field like Input, not a standalone control. Unlike
+     Checkbox/Radio's colored-border error, error here keeps the box border
+     neutral and only recolors the track/thumb accent + caption text. */
+  --range-input-bg: #FFFFFF;
+  --range-input-bg-disabled: #EFEFEF;
+  --range-input-border: #C8C8CB;
+  --range-input-border-hover: #999999;
+  --range-input-border-disabled: #C8C8CB;
+  --range-input-label-fg: #999999;
+  --range-input-value-fg: #252628;
+  --range-input-value-fg-disabled: #C8C8CB;
+  --range-input-track-bg: #EFEFEF;
+  --range-input-accent: #80E3FF;
+  --range-input-accent-hover: #2FCEEF;
+  --range-input-accent-disabled: #C8C8CB;
+  --range-input-accent-error: #D74B54;
+  --range-input-thumb-icon-fg: #252628;
+  --range-input-thumb-icon-fg-error: #FFFFFF;
+  --range-input-scale-fg: #999999;
+  --range-input-caption-fg: #6D6D6D;
+  --range-input-caption-error-fg: #D74B54;
+
+  /* File Upload + File (list item) tokens. Values follow the same
+     border/bg palette as Select/Input; "Grey 100" drag-over fill and the
+     error/loading accents are called out explicitly in the spec text. */
+  --file-upload-bg: #FFFFFF;
+  --file-upload-bg-hover: #F4F4F4;
+  --file-upload-bg-disabled: #F8F8F8;
+  --file-upload-border: #C8C8CB;
+  --file-upload-border-hover: #999999;
+  --file-upload-border-disabled: #DEDEDE;
+  --file-upload-border-error: #D74B54;
+  --file-upload-fg: #252628;
+  --file-upload-fg-disabled: #C8C8CB;
+  --file-upload-subtitle-fg: #6D6D6D;
+  --file-upload-subtitle-fg-disabled: #C8C8CB;
+
+  --file-item-fg: #252628;
+  --file-item-meta-fg: #6D6D6D;
+  --file-item-icon-fg: #999999;
+  --file-item-fg-disabled: #C8C8CB;
+  --file-item-loading-fg: #2FCEEF;
+  --file-item-error-fg: #D74B54;
+  --file-item-error-bg: #FBE8E9;
+
+  /* Accordion (card) tokens. Colors sampled from the Default/Blocked ×
+     Close/Open/Hover states grid PNG (1998px render) — hover only ever
+     darkens the header, never the panel, so bg/bg-hover pairs are scoped
+     to the trigger element only. Geometry (12px radius, p-7/28px padding,
+     no divider between header and panel) later confirmed exactly against
+     ui/accordeon/*.svg — the PNG-based divider guess didn't hold up
+     against the vector source, so there is no --accordion-card-divider. */
+  --accordion-card-bg: #F4F4F4;
+  --accordion-card-bg-hover: #EFEFEF;
+  --accordion-card-blocked-bg: #FFF0F0;
+  --accordion-card-blocked-bg-hover: #FFE8E3;
+  --accordion-card-title-fg: #252628;
+  --accordion-card-subtitle-fg: #6D6D6D;
+  --accordion-card-icon-fg: #252628;
+
+  /* Accordion (content list) tokens. Base palette (border/title/subtitle)
+     follows the same neutral scale as the rest of the kit. The 4 non-default
+     DescriptionType colors could not be pixel-sampled (spec screenshots for
+     this component arrived inline with no cache path, unlike the card
+     Accordion above) — Error reuses the kit's one true red
+     (--input-border-error); Success/Attention/Information are best-effort
+     approximations by semantic convention (green/amber/muted) and should be
+     confirmed against the source Figma file before shipping. */
+  --accordion-list-border: #DEDEDE;
+  --accordion-list-divider: #DEDEDE;
+  --accordion-list-title-fg: #252628;
+  --accordion-list-subtitle-fg: #6D6D6D;
+  --accordion-list-icon-fg: #252628;
+  --accordion-list-description-default-fg: #6D6D6D;
+  --accordion-list-description-success-fg: #1F9254;
+  --accordion-list-description-attention-fg: #B76E00;
+  --accordion-list-description-error-fg: #D74B54;
+  --accordion-list-description-information-fg: #6D6D6D;
+
+  /* Card tokens (bank-card list row). Values pixel-sampled directly from
+     ui/card/card@2x.png + card@2x-1.png (Figma export) — row bg/hover
+     confirmed as exact Grey 106 / Grey 114, title as Grey 1514, and the
+     "· 1135" suffix / subtitle / value all share the same Grey 284, matching
+     the label-color convention used by Input/Select elsewhere in the kit.
+     Tag green (#39C182) and the thumbnail's two accent dots
+     (#DC3030/#FF9F1A) are new — nothing existing matched closely enough to
+     reuse. */
+  --card-bg: #F8F8F8;
+  --card-bg-hover: #EFEFEF;
+  --card-title-fg: #252628;
+  --card-meta-fg: #999999;
+  --card-tag-bg: #39C182;
+  --card-tag-fg: #FFFFFF;
+  --card-thumb-bg: #252628;
+  --card-thumb-fg: #FFFFFF;
+  --card-thumb-dot-a: #DC3030;
+  --card-thumb-dot-b: #FF9F1A;
+
+  /* Progress Bar tokens. Values pixel-sampled directly from
+     ui/progress-bar/progress bar@2x.png + @2x-1.png (Figma export). The
+     step-wizard fill (#2FCEEF) is an exact match for --btn-primary-bg-hover
+     and the hatch stripe (#C8C8CB) for --select-border — reused rather than
+     duplicated. --progress-green also matches Card's tag bg exactly. Red
+     (#D74B54) is an exact match for --input-border-error. Amber is new —
+     brighter than accordion-list's own (unconfirmed, per its own comment)
+     attention approximation, so kept separate rather than reusing it. */
+  --progress-track-bg: #E6E6E6;
+  --progress-step-fill: #2FCEEF;
+  --progress-step-hatch: #C8C8CB;
+  --progress-title-fg: #252628;
+  --progress-meta-fg: #999999;
+  --progress-green: #39C182;
+  --progress-amber: #EEA20F;
+  --progress-red: #D74B54;
+
+  /* Steps tokens. Values pixel-sampled directly from ui/steps/steps@2x.png
+     + @2x-1.png (Figma export). Active ring (#80E3FF) is an exact match for
+     --btn-primary-bg, the fade-arrow circle (#012F42) for
+     --btn-secondary-black-bg, error text (#D85159) is effectively
+     --input-border-error (#D74B54, within anti-aliasing tolerance), and the
+     hover tooltip (#6D6D6D) matches the kit's common muted-description
+     grey — all reused rather than duplicated. */
+  --steps-bg: #FFFFFF;
+  --steps-title-fg: #252628;
+  --steps-status-fg: #999999;
+  --steps-status-error-fg: #D74B54;
+  --steps-active-ring: #80E3FF;
+  --steps-disabled-fg: #999999;
+  --steps-fade-arrow-bg: #012F42;
+  --steps-tooltip-bg: #6D6D6D;
+  --steps-tooltip-fg: #FFFFFF;
+
+  /* Tooltip & Hint tokens. Values pixel-sampled directly from
+     ui/tooltip/tooltip & hint@2x.png + @2x-1.png (Figma export). Bubble bg
+     (#6D6D6D) is the same muted grey already reused above for the Steps
+     hover hint — kept as its own token since Tooltip/Hint is its own
+     component. The mobile "Bottom Sheet" variant isn't a mode of this
+     component — it's the existing `Modal`, which already renders as a
+     bottom sheet on mobile / centered dialog on desktop. */
+  --tooltip-bg: #6D6D6D;
+  --tooltip-fg: #FFFFFF;
+
+  /* Badge tokens ("Счётчик"). Values pixel-sampled directly from
+     ui/badge/badge@2x.png + @2x-1.png (Figma export). Red (#D74B54) is an
+     exact match for --input-border-error; dark-grey/black match the kit's
+     usual muted/near-black neutrals — all reused rather than duplicated.
+     Disabled collapses every color to the same muted grey except
+     light-grey, which just goes one shade lighter (per the spec's own
+     Disabled column — light-grey was already the palest option). */
+  --badge-red-bg: #D74B54;
+  --badge-red-fg: #FFFFFF;
+  --badge-contra-red-border: #FFFFFF;
+  --badge-dark-grey-bg: #6D6D6D;
+  --badge-dark-grey-fg: #FFFFFF;
+  --badge-light-grey-bg: #DEDEDE;
+  --badge-light-grey-fg: #999999;
+  --badge-black-bg: #252628;
+  --badge-black-fg: #FFFFFF;
+  --badge-disabled-bg: #999999;
+  --badge-disabled-fg: #FFFFFF;
+  --badge-disabled-light-grey-bg: #E6E6E6;
+  --badge-disabled-light-grey-fg: #C8C8CB;
+
+  /* Event tokens ("История изменений" timeline row). Values pixel-sampled
+     directly from ui/message/event/event@2x.png. Grey (#999999), amber
+     (#EEA20F) and green (#39C182) are exact matches for tokens already
+     established by Progress Bar/Card — reused rather than duplicated. No
+     error example is shown in the spec but is included for parity with
+     the same Default/Success/Attention/Error/Information set used
+     elsewhere (Card status, Progress Bar status). */
+  --event-title-fg: #252628;
+  --event-meta-fg: #999999;
+  --event-connector: #DEDEDE;
+  --event-tag-fg: #FFFFFF;
+  --event-status-default-bg: #999999;
+  --event-status-success-bg: #39C182;
+  --event-status-attention-bg: #EEA20F;
+  --event-status-error-bg: #D74B54;
+  --event-status-information-bg: #999999;
+  --event-file-bg: #F4F4F4;
+
+  /* Informer tokens ("Уведомление внутри контентного блока"). Values
+     pixel-sampled directly from ui/message/informer/informer@2x.png +
+     @2x-1.png. Red/amber/green/grey icon colors are exact matches for
+     tokens already established elsewhere (--input-border-error,
+     --progress-amber, --progress-green) — reused rather than duplicated.
+     Grey solid bg (#F8F8F8) matches Card's own bg exactly. */
+  --informer-bg-white: #FFFFFF;
+  --informer-bg-grey: #F8F8F8;
+  --informer-title-fg: #252628;
+  --informer-meta-fg: #999999;
+  --informer-icon-red: #D74B54;
+  --informer-icon-yellow: #EEA20F;
+  --informer-icon-green: #39C182;
+  --informer-icon-grey: #999999;
+
+  /* Notification tokens ("Уведомления и новости" panel). Values
+     pixel-sampled directly from ui/message/notification/notification@2x.png
+     + @2x-1.png — marked "Actual old" in the spec (unlike every other
+     message/* component, which are "Actual new"), so treat this one as
+     lower-confidence/likely-to-change. Unread dot (#D74B54) matches
+     --input-border-error exactly. Hover/pressed steps reuse the kit's
+     usual Grey 106 / Grey 114 escalation (same as Card's bg/bg-hover). */
+  --notification-bg: #FFFFFF;
+  --notification-bg-hover: #F8F8F8;
+  --notification-bg-pressed: #EFEFEF;
+  --notification-title-fg: #252628;
+  --notification-meta-fg: #6D6D6D;
+  --notification-dot: #D74B54;
+  --notification-divider: #DEDEDE;
+
+  /* Toast Message tokens ("Всплывающее уведомление"). Values pixel-sampled
+     directly from ui/message/toast message/toast message@2x.png. Icon
+     colors are exact matches for tokens already established elsewhere
+     (--progress-green/--progress-amber/--input-border-error/muted grey) —
+     reused rather than duplicated; only the four pastel backgrounds are
+     new (this is the only message/* component with colored surfaces). */
+  --toast-title-fg: #252628;
+  --toast-description-fg: #6D6D6D;
+  --toast-checked-bg: #BDF8DB;
+  --toast-checked-icon: #39C182;
+  --toast-attention-bg: #FDF0C1;
+  --toast-attention-icon: #EEA20F;
+  --toast-error-bg: #FFE8E3;
+  --toast-error-icon: #D74B54;
+  --toast-information-bg: #EFEFEF;
+  --toast-information-icon: #999999;
+
+  /* Top Fixed Message tokens ("Закреплённое сообщение"). Exact hex values
+     read from ui/message/top foxed message/top fixed message.svg fills
+     (pixel-sampling the PNG was noisy from anti-aliasing on the thin icon
+     ring). --top-fixed-message-*-icon and title/close colors match tokens
+     used elsewhere (--input-border-error, #252628 body text). */
+  --top-fixed-message-title-fg: #252628;
+  --top-fixed-message-close-fg: #252628;
+  --top-fixed-message-blue-bg: #E3EEFF;
+  --top-fixed-message-blue-icon: #5B90E0;
+  --top-fixed-message-red-bg: #FFE8E3;
+  --top-fixed-message-red-icon: #D74B54;
+
+  /* Tag tokens ("Теги"). Status colors (green/orange/red/blue) pixel-sampled
+     from ui/tag/tag@2x-1.png — main colors are exact matches for existing
+     tokens (--informer-icon-green/yellow/red). Secondary-variant tints
+     matched the sampled pixels almost exactly for the formula
+     "main color at 12% opacity over white", so the remaining two
+     (orange/red) are computed via that formula rather than re-sampled.
+     Sign colors (black/white/grey-info) read directly from the labelled
+     swatches in ui/tag/tag@2x.png ("Варианты – признаки" section). */
+  --tag-green-bg: #39C182;
+  --tag-green-fg: #FFFFFF;
+  --tag-green-secondary-bg: #E7F8F0;
+  --tag-orange-bg: #EEA20F;
+  --tag-orange-fg: #FFFFFF;
+  --tag-orange-secondary-bg: #FDF4E2;
+  --tag-red-bg: #D74B54;
+  --tag-red-fg: #FFFFFF;
+  --tag-red-secondary-bg: #FAE9EA;
+  --tag-blue-bg: #2487CA;
+  --tag-blue-fg: #FFFFFF;
+  --tag-blue-secondary-bg: #E5F1F9;
+  --tag-grey-bg: #999999;
+  --tag-grey-fg: #FFFFFF;
+  --tag-grey-secondary-fg: #252628;
+  --tag-black-bg: #252628;
+  --tag-black-fg: #FFFFFF;
+  --tag-white-bg: #FFFFFF;
+  --tag-white-fg: #252628;
+  --tag-white-border: #DEDEDE;
+  --tag-grey-info-bg: #DEDEDE;
+  --tag-grey-info-fg: #252628;
+
+  /* Chips / Filter tokens ("Chips, Filter" + "Table Filter" specs). Every
+     value here is an exact match for a token already established by
+     another component — pixel-sampling the state matrix in
+     ui/chips/chips, filter@2x-1.png landed precisely on
+     --btn-secondary-grey-bg/-hover (#F4F4F4 / #EFEFEF) for Chips' own
+     bg/hover, so the rest of the surface colors are taken from the same
+     source rather than re-sampled: White/Grey Filter bg reuse
+     --btn-secondary-white-bg/--btn-secondary-grey-bg, the Active border
+     reuses --btn-primary-bg (#80E3FF, already the kit's one cyan), the
+     dark "applied value" Chips variant (ui/filter-table's chip anatomy)
+     reuses --btn-secondary-black-bg (#012F42), and text/disabled colors
+     reuse --select-fg/--select-label-fg/--btn-muted-bg/--btn-muted-fg. */
+  --chips-fg: #252628;
+  --chips-subtitle-fg: #999999;
+  --chips-light-bg: #F4F4F4;
+  --chips-light-bg-hover: #EFEFEF;
+  --chips-dark-bg: #012F42;
+  --chips-dark-bg-hover: #114870;
+  --chips-dark-fg: #FFFFFF;
+  --chips-disabled-bg: #EFEFEF;
+  --chips-disabled-fg: #C8C8CB;
+
+  --filter-fg: #252628;
+  --filter-subtitle-fg: #999999;
+  --filter-icon-fg: #252628;
+  --filter-white-bg: #FFFFFF;
+  --filter-white-bg-hover: #EFEFEF;
+  --filter-grey-bg: #F4F4F4;
+  --filter-grey-bg-hover: #EFEFEF;
+  --filter-active-border: #80E3FF;
+  --filter-disabled-bg: #EFEFEF;
+  --filter-disabled-fg: #C8C8CB;
+
+  /* Sidebar tokens ("Боковая панель для сотрудников", ui/sidebar). Item
+     Hover/Active values are given as exact hex in the spec's own text
+     ("Gray 114 (#EFEFEF)" / "Gray 109 (#F4F4F4)") rather than needing to be
+     sampled — both already match existing --btn-secondary-grey-bg(-hover)
+     exactly, so reused under this component's own namespace per the kit's
+     convention rather than cross-referenced. Named --nav-sidebar-* (not
+     --sidebar-*) to avoid the unrelated shadcn --sidebar-* boilerplate
+     tokens already sitting in :root from the initial scaffold. */
+  --nav-sidebar-bg: #FFFFFF;
+  --nav-sidebar-border: #DEDEDE;
+  --nav-sidebar-fg: #252628;
+  --nav-sidebar-icon-fg: #252628;
+  --nav-sidebar-label-fg: #999999;
+  --nav-sidebar-item-hover-bg: #EFEFEF;
+  --nav-sidebar-item-active-bg: #F4F4F4;
+
+  /* Tabs tokens (ui/tabs). Text/underline colors pixel-confirmed via
+     histogram against ui/tabs/tabs@2x-1.png's own "Elements" state table —
+     all three exactly match existing tokens (--select-caption-fg/-fg/
+     -fg-disabled), reused under this component's own namespace. */
+  --tabs-fg: #6D6D6D;
+  --tabs-fg-active: #252628;
+  --tabs-fg-disabled: #C8C8CB;
+  --tabs-underline-hover: #999999;
+  --tabs-underline-active: #252628;
+
+  /* Switcher tokens ("Cell Switcher", ui/switcher). Grey Solid/White Solid
+     surface pair, Active Black, and Hover values are all histogram-
+     confirmed exact matches for existing tokens (page bg #F8F8F8,
+     --btn-secondary-grey-bg #F4F4F4, --tag-black-bg/--select-fg #252628,
+     --btn-secondary-grey-bg-hover #EFEFEF) — reused, not new colors. The
+     border is its own token even though the hex (#C8C8CB) happens to equal
+     --select-fg-disabled/--btn-muted-fg — that's coincidence, not a shared
+     role, so it isn't cross-referenced. */
+  --switcher-fg: #252628;
+  --switcher-fg-inactive: #6D6D6D;
+  --switcher-border: #C8C8CB;
+  --switcher-grey-bg: #F8F8F8;
+  --switcher-white-bg: #FFFFFF;
+  --switcher-active-bg: #FFFFFF;
+  --switcher-active-bg-on-white: #F4F4F4;
+  --switcher-active-black-bg: #252628;
+  --switcher-active-black-fg: #FFFFFF;
+  --switcher-hover-bg: #EFEFEF;
+  --switcher-disabled-fg: #C8C8CB;
+
+  /* Empty Search Results tokens (ui/empty-search). Reusing the kit's usual
+     dark/grey text pair (--select-fg/--select-caption-fg) under this
+     component's own namespace rather than cross-referencing. */
+  --empty-search-icon-fg: #252628;
+  --empty-search-title-fg: #252628;
+  --empty-search-description-fg: #6D6D6D;
+
+  /* NPS tokens ("Обратная связь", ui/nps). Star fill is a genuinely new
+     color (a warm gold, not reused elsewhere in this kit); everything else
+     reuses established text/surface tokens. */
+  --nps-title-fg: #252628;
+  --nps-subtitle-fg: #999999;
+  --nps-star-fg: #F8C000;
+  --nps-star-empty-fg: #DEDEDE;
+  --nps-chip-bg: #F4F4F4;
+  --nps-chip-bg-hover: #EFEFEF;
+  --nps-chip-fg: #252628;
+
+  /* Error Page tokens (ui/error-page). The big "403"/"404" numerals are a
+     flat grey in the spec (the mascot illustration itself is out of scope
+     — see error-page.tsx's own comment), reusing the kit's disabled-grey. */
+  --error-page-title-fg: #252628;
+  --error-page-description-fg: #6D6D6D;
+  --error-page-code-fg: #C8C8CB;
+
+  /* Pagination tokens (ui/pagination). Text/disabled colors reuse the kit's
+     usual dark/muted pair. The three page-pill backgrounds are a genuinely
+     new pale-cyan family — sampled per-state from isolated circle crops
+     (not the kit's saturated --btn-primary-bg cyan): Hover #F0FCFF (barely
+     tinted), Active #CFF7FF (the persistent "current page" highlight),
+     Onclick #B6F3FF (a more saturated momentary press feedback, confirmed
+     as a distinct third shade, not a duplicate of Active). */
+  --pagination-fg: #252628;
+  --pagination-caption-fg: #6D6D6D;
+  --pagination-disabled-fg: #C8C8CB;
+  --pagination-hover-bg: #F0FCFF;
+  --pagination-active-bg: #CFF7FF;
+  --pagination-onclick-bg: #B6F3FF;
+
+  /* Item tokens (ui/item). Hover bg (#EFEFEF, "Grey 114") and the Check
+     icon's cyan (#80E3FF) are exact matches for --btn-secondary-grey-bg-
+     hover / --btn-primary-bg, sampled from the row-hover demo swatch and
+     the Check right-element swatch respectively — reused under this
+     component's own namespace rather than cross-referenced. Comment
+     red/yellow reuse the kit's established error/attention text pair
+     (#D74B54 / #B76E00, same as --accordion-list-description-*). Right-
+     element "Text" example (+1,5%) reuses the kit's success green.
+     Thumbnail placeholder is this kit's own flat stand-in (see Button's
+     GosuslugiLogo precedent) for the spec's generic image/avatar slot. */
+  --item-value-fg: #252628;
+  --item-value-fg-disabled: #C8C8CB;
+  --item-text-fg: #6D6D6D;
+  --item-icon-fg: #252628;
+  --item-divider: #DEDEDE;
+  --item-hover-bg: #EFEFEF;
+  --item-check-fg: #80E3FF;
+  --item-right-text-fg: #1F9254;
+  --item-thumbnail-bg: #F4F4F4;
+  --item-thumbnail-fg: #999999;
+  --item-comment-grey-fg: #999999;
+  --item-comment-red-fg: #D74B54;
+  --item-comment-yellow-fg: #B76E00;
+
+  /* Item.Information Field tokens (ui/item.information-field). Sampled
+     directly from the Value/Sub Text status swatches rather than assumed
+     from other components' reds/greens — turned out to be a mixed bag:
+     Error (#D74B54) is an exact match for the kit-wide error red, but
+     Success (#39C182) and Attention (#EEA20F) are genuinely new, brighter
+     shades distinct from --accordion-list-description-success/attention-fg.
+     Information status reuses the kit's common neutral grey (#999999).
+     Copy icon Default/Hover (#999999 / #6D6D6D, "Grey 284"/"Grey 517" per
+     spec) are also exact matches for existing greys elsewhere in the kit. */
+  --ifield-label-fg: #999999;
+  --ifield-value-fg: #252628;
+  --ifield-subtext-fg: #999999;
+  --ifield-icon-fg: #999999;
+  --ifield-divider: #DEDEDE;
+  --ifield-success-fg: #39C182;
+  --ifield-error-fg: #D74B54;
+  --ifield-attention-fg: #EEA20F;
+  --ifield-information-fg: #999999;
+  --ifield-copy-fg: #999999;
+  --ifield-copy-fg-hover: #6D6D6D;
+
+  /* Status Screen tokens (ui/status-screen). The spec's illustration is a
+     bespoke 3D mascot per status (a whole printer/device scene, not just an
+     icon) — same call as ErrorPage/NPS elsewhere in this kit: a flat
+     colored badge icon stands in rather than vendoring that artwork. Badge
+     colors are exact reuses of the kit's existing semantic pairs (Tag's
+     green/red secondary bg + accordion-list's success/error/attention text)
+     rather than new colors, since a plain status badge doesn't need its
+     own palette. */
+  --status-screen-title-fg: #252628;
+  --status-screen-subtitle-fg: #6D6D6D;
+  --status-screen-success-bg: #E7F8F0;
+  --status-screen-success-fg: #1F9254;
+  --status-screen-error-bg: #FAE9EA;
+  --status-screen-error-fg: #D74B54;
+  --status-screen-attention-bg: #FDF0C1;
+  --status-screen-attention-fg: #B76E00;
+  --status-screen-neutral-bg: #F4F4F4;
+  --status-screen-neutral-fg: #6D6D6D;
+
+  /* Autocomplete tokens. No dedicated Figma spec file for this one (built
+     from a pasted reference screenshot of an ИНН/organization search field,
+     not a ui/* export) — text colors reuse the kit's standard dark/muted
+     pair, and the highlighted-row background reuses the kit's very common
+     "Grey 109" (#F4F4F4, same as --btn-secondary-grey-bg / --chips-light-bg)
+     rather than a freshly sampled value, since the reference couldn't be
+     pixel-sampled directly. */
+  --autocomplete-title-fg: #252628;
+  --autocomplete-subtitle-fg: #999999;
+  --autocomplete-highlighted-bg: #F4F4F4;
+
+  /* Table tokens (ui/table). Values read directly from ui/table/table.svg +
+     table-1.svg fills, not pixel-sampled — grepping the vector source caught
+     two wrong guesses from an earlier PNG pixel-sampling pass: the divider is
+     Grey 517 (#DEDEDE), not #C8C8CB (that's Checkbox's own border, reused
+     unchanged via the `Checkbox` component), and the "Added" row state
+     reuses the exact same fill as Hover (#EFEFEF) rather than being a
+     distinct shade. Text/description/row-hover/row-active are all exact
+     matches for tokens already established elsewhere (--select-fg,
+     --select-label-fg, --btn-secondary-grey-bg-hover/-active) — kept under
+     this component's own namespace per the kit's convention rather than
+     cross-referenced. The Tag cell type reuses `Tag` verbatim (its green
+     example pixel-matches --tag-green-bg exactly) and the Checkbox cell/
+     header type reuses `Checkbox` verbatim — neither needs its own token
+     here. Title Cell's sortable header has no dedicated "sorted" indicator
+     in the spec beyond Default(muted)/Hover+Active(dark) text color, so it
+     reuses --table-description-fg/--table-fg contextually rather than
+     getting its own pair. */
+  --table-fg: #252628;
+  --table-description-fg: #999999;
+  --table-divider: #DEDEDE;
+  --table-row-hover-bg: #EFEFEF;
+  --table-row-active-bg: #E6E6E6;
+  --table-row-added-bg: #EFEFEF;
+
+  /* Shimmer tokens (ui/shimmer). The gradient stops read directly from
+     shimmer.svg/shimmer-1.svg's `<stop>` fills (DEDEDE -> EFEFEF -> DEDEDE on
+     every shimmer rect in both files) — DEDEDE is the same divider grey
+     already used by --table-divider/--accordion-list-divider, EFEFEF the
+     same "Grey 114" hover grey used throughout the kit. Per the spec's own
+     "Описание работы", the highlight itself is static (baked into the
+     gradient) — motion comes entirely from a 1.8s opacity pulse
+     ("Анимация реализована как пульсация с длительностью цикла 1.80"),
+     applied in shimmer.tsx via `animate-pulse` + an explicit duration
+     override rather than a sliding-gradient sweep. */
+  --shimmer-from: #DEDEDE;
+  --shimmer-via: #EFEFEF;
+
+  /* Scrollbar tokens (ui/scrollbar). Track/thumb fills read directly from
+     scrollbar.svg/scrollbar-1.svg rects — identical across every Vertical
+     and Horizontal instance in both files (track #F4F4F4, thumb #C8C8CB),
+     both exact reuses of existing kit greys ("Grey 109"/--filter-grey-bg and
+     the standard field-border grey used by --input-border/--select-border/
+     --checkbox-border). Hover is a new but unremarkable darkening (#999999,
+     the kit's other very common muted-icon grey, e.g. --filter-icon-fg's
+     resting color elsewhere) — not called out explicitly in the spec text,
+     but a standard scrollbar micro-interaction consistent with every other
+     hoverable control in this kit. Thickness genuinely differs by
+     orientation per the spec's own text ("Горизонтальный скролл ... имеет
+     большую толщину") — vertical is 4px (rx=2, i.e. fully rounded),
+     horizontal is 8px (rx=4) — confirmed by the identical rect geometry
+     repeated at every usage site in the spec, not just the anatomy page. */
+  --scrollbar-track-bg: #F4F4F4;
+  --scrollbar-thumb-bg: #C8C8CB;
+  --scrollbar-thumb-bg-hover: #999999;
+}
+
+/* Future ЛКП theme: add data-product="lkp" to <html>, fill in the same
+   variable names here. button.tsx needs zero changes when this is populated. */
+[data-product="lkp"] {
+}

@@ -1,0 +1,122 @@
+import {
+  ButtonMenu,
+  ButtonMenuOverflow,
+  ButtonMenuOverflowItem,
+} from "@/components/ui/button-menu"
+import { Button } from "@/components/ui/button"
+import {
+  AccordionItem,
+  AccordionTrigger,
+  AccordionPanel,
+} from "@/components/ui/accordion"
+
+import { RowLabel } from "./shared"
+
+function ButtonMenuDemo() {
+  return (
+    <AccordionItem value="button-menu">
+      <AccordionTrigger>Button Menu</AccordionTrigger>
+      <AccordionPanel>
+        <div className="space-y-8">
+          <div>
+            <p className="mb-3 text-sm font-medium text-[#252628]">
+              With Primary
+            </p>
+            <div className="flex flex-col gap-4">
+              <div className="space-y-1.5">
+                <RowLabel>1 кнопка</RowLabel>
+                <ButtonMenu>
+                  <Button size="lg">Экспорт</Button>
+                </ButtonMenu>
+              </div>
+              <div className="space-y-1.5">
+                <RowLabel>2 кнопки</RowLabel>
+                <ButtonMenu>
+                  <Button size="lg">Экспорт</Button>
+                  <Button size="lg" variant="secondary-grey">
+                    Печать
+                  </Button>
+                </ButtonMenu>
+              </div>
+              <div className="space-y-1.5">
+                <RowLabel>3 кнопки + Overflow</RowLabel>
+                <ButtonMenu>
+                  <Button size="lg">Экспорт</Button>
+                  <Button size="lg" variant="secondary-grey">
+                    Печать
+                  </Button>
+                  <Button size="lg" variant="secondary-grey">
+                    Архивировать
+                  </Button>
+                  <ButtonMenuOverflow>
+                    <ButtonMenuOverflowItem
+                      text="Дублировать"
+                      description="Создать копию элемента"
+                    />
+                    <ButtonMenuOverflowItem
+                      text="Переместить"
+                      description="Перенести в другую папку"
+                    />
+                    <ButtonMenuOverflowItem
+                      text="Удалить"
+                      description="Действие нельзя отменить"
+                    />
+                  </ButtonMenuOverflow>
+                </ButtonMenu>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-3 text-sm font-medium text-[#252628]">
+              Only Secondary
+            </p>
+            <div className="flex flex-col gap-4">
+              <div className="space-y-1.5">
+                <RowLabel>1 кнопка</RowLabel>
+                <ButtonMenu>
+                  <Button size="lg" variant="secondary-grey">
+                    Печать
+                  </Button>
+                </ButtonMenu>
+              </div>
+              <div className="space-y-1.5">
+                <RowLabel>3 кнопки + Overflow</RowLabel>
+                <ButtonMenu>
+                  <Button size="lg" variant="secondary-grey">
+                    Печать
+                  </Button>
+                  <Button size="lg" variant="secondary-grey">
+                    Скачать
+                  </Button>
+                  <Button size="lg" variant="secondary-grey">
+                    Архивировать
+                  </Button>
+                  <ButtonMenuOverflow>
+                    <ButtonMenuOverflowItem
+                      text="Дублировать"
+                      description="Создать копию элемента"
+                    />
+                    <ButtonMenuOverflowItem
+                      text="Удалить"
+                      description="Действие нельзя отменить"
+                    />
+                  </ButtonMenuOverflow>
+                </ButtonMenu>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          Инлайн-панель действий: контент-фиксированной ширины (не тянется на
+          всю ширину контейнера, в отличие от Selection Bar). Primary-кнопка
+          (если есть) всегда идёт первой/слева; кнопка «...» появляется только
+          когда уже показаны три кнопки и открывает Menu, стилизованное как
+          Select.Dropdown.
+        </p>
+      </AccordionPanel>
+    </AccordionItem>
+  )
+}
+
+export { ButtonMenuDemo }

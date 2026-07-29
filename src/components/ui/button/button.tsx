@@ -76,24 +76,35 @@ interface ButtonOwnProps {
   isLoading?: boolean
 }
 
-type ButtonProps = Omit<ButtonPrimitive.Props, "children"> &
+type ButtonProps = Omit<ButtonPrimitive.Props, "children" | "ref"> &
   Omit<VariantProps<typeof buttonVariants>, "size"> & {
     size?: "sm" | "default" | "lg"
   } & ButtonOwnProps & {
     children?: React.ReactNode
   }
 
-function Button({
-  className,
-  variant,
-  size,
-  icon: Icon,
-  iconPosition,
-  isLoading = false,
-  disabled,
-  children,
-  ...props
-}: ButtonProps) {
+// Base UI's own <Button> is forwardRef'd (it needs the DOM node for its own
+// focus/press handling); this wrapper has to be too, or a ref passed through
+// it — e.g. Base UI's own Trigger components via `render={<Button />}`, see
+// TableRowMenu, ButtonMenuOverflow, ModalContent's default close button —
+// never reaches the underlying element. Under React 19 this happens to work
+// even without forwardRef (function components accept `ref` as a plain
+// prop there), which is how this shipped unnoticed; React 18 has no such
+// fallback and fails outright ("Function components cannot be given refs").
+const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
+  {
+    className,
+    variant,
+    size,
+    icon: Icon,
+    iconPosition,
+    isLoading = false,
+    disabled,
+    children,
+    ...props
+  },
+  ref
+) {
   // "Secondary Logo" variants always carry the Госуслуги glyph as their
   // leading icon — it's fixed brand mark, not the swappable `icon` prop.
   const isLogoVariant =
@@ -115,6 +126,7 @@ function Button({
 
   return (
     <ButtonPrimitive
+      ref={ref}
       data-slot="button"
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
@@ -141,7 +153,7 @@ function Button({
       )}
     </ButtonPrimitive>
   )
-}
+})
 
 export { Button, buttonVariants }
 export type { ButtonProps }

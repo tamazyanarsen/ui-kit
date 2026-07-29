@@ -19,7 +19,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 // and offset from the field. AnchorContext threads a ref to that outer box
 // from field.tsx to content.tsx so the popup anchors to the whole field
 // instead, matching every other trigger-based popup in this kit.
-const AnchorContext = React.createContext<React.RefObject<HTMLDivElement | null> | null>(null)
+const AnchorContext = React.createContext<React.RefObject<HTMLDivElement> | null>(null)
 
 function useAutocompleteAnchor() {
   const ref = React.useContext(AnchorContext)
@@ -36,7 +36,11 @@ function Autocomplete<Value>(
 ) {
   const anchorRef = React.useRef<HTMLDivElement>(null)
   return (
-    <AnchorContext.Provider value={anchorRef}>
+    // useRef's inferred type here differs across @types/react versions
+    // (React 19's RefObject<T> includes `| null` in T itself, React 18's
+    // doesn't) — the cast keeps AnchorContext's declared type stable across
+    // both rather than forking the type by React version.
+    <AnchorContext.Provider value={anchorRef as React.RefObject<HTMLDivElement>}>
       <ComboboxPrimitive.Root multiple={false} filter={null} {...props} />
     </AnchorContext.Provider>
   )

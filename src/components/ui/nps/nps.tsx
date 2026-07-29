@@ -149,11 +149,12 @@ function Nps({
             >
               <Star
                 aria-hidden="true"
+                filled={filled}
                 className={cn(
                   "size-6",
                   filled
-                    ? "fill-[var(--nps-star-fg)] stroke-[var(--nps-star-fg)]"
-                    : "fill-none stroke-[var(--nps-star-empty-fg)]"
+                    ? "text-[var(--nps-star-fg)]"
+                    : "text-[var(--nps-star-empty-fg)]"
                 )}
               />
             </button>

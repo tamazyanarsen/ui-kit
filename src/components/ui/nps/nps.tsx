@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Star, X } from "lucide-react"
+import { Star, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

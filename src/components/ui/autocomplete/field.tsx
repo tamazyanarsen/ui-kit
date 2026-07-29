@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
-import { Loader2, X } from "lucide-react"
+import { Loader2, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import {

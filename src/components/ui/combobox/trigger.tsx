@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
-import { ChevronDown, X } from "lucide-react"
+import { ChevronDown, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import {

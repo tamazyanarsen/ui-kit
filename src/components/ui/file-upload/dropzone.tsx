@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CirclePlus } from "lucide-react"
+import { CirclePlus } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

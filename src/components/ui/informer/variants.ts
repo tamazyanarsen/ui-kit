@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, Clock, Info } from "lucide-react"
+import { CircleAlert, CircleCheck, Clock, Info } from "@/icons"
 
 export type InformerIcon =
   | "attention-red"

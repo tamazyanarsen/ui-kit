@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Image as ImageIcon } from "lucide-react"
+import { Image as ImageIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { X } from "lucide-react"
+import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

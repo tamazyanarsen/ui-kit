@@ -5,7 +5,7 @@ import {
   Clock,
   ImageIcon,
   MoreHorizontal,
-} from "lucide-react"
+} from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"

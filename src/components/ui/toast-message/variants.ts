@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, CircleX, Info } from "lucide-react"
+import { CircleAlert, CircleCheck, CircleX, Info } from "@/icons"
 
 export type ToastType = "checked" | "attention" | "error" | "information"
 

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Eye, EyeOff, Loader2, Lock, X } from "lucide-react"
+import { Eye, EyeOff, Loader2, Lock, X } from "@/icons"
 import { IMaskInput } from "react-imask"
 
 import { cn } from "@/lib/utils"

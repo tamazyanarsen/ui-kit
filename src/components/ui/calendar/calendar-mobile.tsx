@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronLeft, X } from "lucide-react"
+import { ChevronLeft, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { MONTHS_RU_FULL, addMonths, isInRange, isSameDay } from "@/lib/calendar"

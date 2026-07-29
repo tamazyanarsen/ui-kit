@@ -1,0 +1,35 @@
+// The ui-kit's own icon set — see each file in this folder for the
+// per-icon TODO. Every name below is re-exported under every alias the
+// components actually import (some files use lucide's newer `XIcon`
+// naming convention, others the older bare name) so swapping a file's
+// content from a lucide passthrough to the real Figma SVG never requires
+// touching any of the ~48 usage sites — only this barrel's alias list.
+export { ChevronDown, ChevronDown as ChevronDownIcon } from "./chevron-down"
+export { ChevronUp, ChevronUp as ChevronUpIcon } from "./chevron-up"
+export { ChevronLeft } from "./chevron-left"
+export { ChevronRight } from "./chevron-right"
+export { ChevronsUpDown } from "./chevrons-up-down"
+export { Ellipsis, Ellipsis as MoreHorizontal } from "./ellipsis"
+export { X } from "./x"
+export { Loader2, Loader2 as LoaderCircle } from "./loader"
+export { Lock } from "./lock"
+export { Eye } from "./eye"
+export { EyeOff } from "./eye-off"
+export { Info } from "./info"
+export { Copy } from "./copy"
+export { Check, Check as CheckIcon } from "./check"
+export { Minus } from "./minus"
+export { CircleAlert } from "./circle-alert"
+export { CircleCheck } from "./circle-check"
+export { CircleHelp } from "./circle-help"
+export { CircleX } from "./circle-x"
+export { Clock } from "./clock"
+export { TriangleAlert } from "./triangle-alert"
+export { Search } from "./search"
+export { Pencil } from "./pencil"
+export { Download } from "./download"
+export { FileText } from "./file-text"
+export { CirclePlus } from "./circle-plus"
+export { Star } from "./star"
+export { ImageIcon, ImageIcon as Image } from "./image"
+export { CalendarDays } from "./calendar-days"

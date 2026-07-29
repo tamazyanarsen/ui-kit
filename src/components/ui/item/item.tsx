@@ -5,7 +5,7 @@ import {
   Info,
   Check,
   Ellipsis,
-} from "lucide-react"
+} from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Toggle } from "@/components/ui/toggle"

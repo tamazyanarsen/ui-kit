@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
-import { ChevronDownIcon, Ellipsis } from "lucide-react"
+import { ChevronDownIcon, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

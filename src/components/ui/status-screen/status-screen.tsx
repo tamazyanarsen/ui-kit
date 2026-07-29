@@ -8,7 +8,7 @@ import {
   Lock,
   Pencil,
   Clock,
-} from "lucide-react"
+} from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

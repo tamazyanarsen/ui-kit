@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
-import { ChevronDownIcon, Lock, X } from "lucide-react"
+import { ChevronDownIcon, Lock, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import {

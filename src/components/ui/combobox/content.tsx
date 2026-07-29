@@ -1,5 +1,5 @@
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
-import { LoaderCircle, Search, X } from "lucide-react"
+import { LoaderCircle, Search, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

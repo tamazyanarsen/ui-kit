@@ -1,5 +1,5 @@
 import type * as React from "react"
-import { CircleAlert, Download, FileText, LoaderCircle, X } from "lucide-react"
+import { CircleAlert, Download, FileText, LoaderCircle, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

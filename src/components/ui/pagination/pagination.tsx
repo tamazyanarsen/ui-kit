@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Ellipsis } from "lucide-react"
+import { ChevronLeft, ChevronRight, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Lock } from "lucide-react"
+import { Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

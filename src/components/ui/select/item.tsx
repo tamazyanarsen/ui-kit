@@ -1,5 +1,5 @@
 import { Select as SelectPrimitive } from "@base-ui/react/select"
-import { CheckIcon } from "lucide-react"
+import { CheckIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

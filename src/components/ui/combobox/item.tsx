@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
-import { Check } from "lucide-react"
+import { Check } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { ComboboxCheckbox, type ComboboxCheckboxState } from "./checkbox"

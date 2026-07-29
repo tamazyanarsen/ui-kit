@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { CalendarDays } from "lucide-react"
+import { CalendarDays } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { formatDateRu, MONTHS_RU_FULL, parseDateRu } from "@/lib/calendar"

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CircleAlert } from "lucide-react"
+import { CircleAlert } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

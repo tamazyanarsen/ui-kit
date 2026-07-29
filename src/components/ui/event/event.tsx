@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CircleCheck, Clock, FileText } from "lucide-react"
+import { CircleCheck, Clock, FileText } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

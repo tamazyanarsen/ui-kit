@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import { LoaderCircle } from "lucide-react"
+import { LoaderCircle } from "@/icons"
 
 import { cn } from "@/lib/utils"
 

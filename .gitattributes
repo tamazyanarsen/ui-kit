@@ -1,0 +1,4 @@
+# Shell launcher scripts must keep LF line endings — CRLF breaks the
+# #!/bin/bash shebang when they're executed on Mac/Linux.
+*.command text eol=lf
+*.sh text eol=lf

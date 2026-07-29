@@ -30,7 +30,9 @@
     "preview": "vite preview",
     "test": "vitest",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "bootstrap": "npm install && npm run storybook",
+    "update": "git pull && npm install"
   },
   "peerDependencies": {
     "@base-ui/react": "^1.6.0",

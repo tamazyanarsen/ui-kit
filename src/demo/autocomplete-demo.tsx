@@ -56,7 +56,7 @@ function OrganizationSearch() {
       items={results}
       value={selected}
       onValueChange={setSelected}
-      autoHighlight="always"
+      autoHighlight
     >
       <AutocompleteField label="ИНН или название организации" />
       <AutocompleteContent>

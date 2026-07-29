@@ -1,3 +1,5 @@
+import { IMask } from "react-imask"
+
 // Thin config layer over react-imask (wraps the imask.js core) — hand-rolled
 // masking got the classic bugs (literal digits in a fixed prefix like
 // phone's "+7" being mistaken for user input, caret jumping to the end and
@@ -57,7 +59,7 @@ export function getMaskPlaceholder(name: MaskName): string {
 export function getImaskProps(name: MaskName) {
   if (name === "amount") {
     return {
-      mask: Number,
+      mask: IMask.MaskedNumber,
       thousandsSeparator: " ",
       scale: 0,
       min: 0,

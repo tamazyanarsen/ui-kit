@@ -253,6 +253,39 @@ function Input({
     </button>
   ) : null
 
+  // react-imask's IMaskInput prop type is a large discriminated union keyed
+  // off `mask`. TS can't reconcile it once native <input> rest props
+  // (`...props`) are merged in alongside it, even though the merged shape is
+  // valid at runtime — hence the cast at the end.
+  const maskProps = mask
+    ? ({
+        ...getImaskProps(mask),
+        inputRef,
+        id: inputId,
+        "data-slot": "input",
+        disabled,
+        readOnly: locked,
+        placeholder: resolvedPlaceholder,
+        "aria-invalid": invalid || undefined,
+        "aria-describedby": captionId,
+        "aria-readonly": locked || undefined,
+        "aria-label":
+          !floating && typeof label === "string" ? label : undefined,
+        value: maskValue,
+        onAccept: handleMaskAccept,
+        style:
+          mask === "amount" && maskValue && amountWidth !== undefined
+            ? { width: amountWidth }
+            : undefined,
+        className: cn(
+          inputFieldVariants({ size, floating }),
+          mask === "amount" && maskValue && "flex-none",
+          className
+        ),
+        ...props,
+      } as unknown as React.ComponentProps<typeof IMaskInput>)
+    : null
+
   return (
     <div className="flex w-full flex-col gap-1.5">
       <div
@@ -269,36 +302,9 @@ function Input({
             {iconLeft}
           </span>
         )}
-        {mask ? (
+        {mask && maskProps ? (
           <>
-            <IMaskInput
-              {...getImaskProps(mask)}
-              inputRef={inputRef}
-              id={inputId}
-              data-slot="input"
-              disabled={disabled}
-              readOnly={locked}
-              placeholder={resolvedPlaceholder}
-              aria-invalid={invalid || undefined}
-              aria-describedby={captionId}
-              aria-readonly={locked || undefined}
-              aria-label={
-                !floating && typeof label === "string" ? label : undefined
-              }
-              value={maskValue}
-              onAccept={handleMaskAccept}
-              style={
-                mask === "amount" && maskValue && amountWidth !== undefined
-                  ? { width: amountWidth }
-                  : undefined
-              }
-              className={cn(
-                inputFieldVariants({ size, floating }),
-                mask === "amount" && maskValue && "flex-none",
-                className
-              )}
-              {...props}
-            />
+            <IMaskInput {...maskProps} />
             {mask === "amount" && maskValue && (
               <>
                 <span

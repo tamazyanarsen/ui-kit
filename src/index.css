@@ -894,11 +894,17 @@
    Figma source, so they're derived by applying this same file's own
    lighten-on-interaction delta already established for
    --btn-secondary-logo-grey (+19, then +18 per RGB channel) rather than
-   invented outright — flagged as an approximation pending confirmation. */
+   invented outright — flagged as an approximation pending confirmation.
+
+   --btn-primary-fg flips to white here — the color-replacement map only
+   covers backgrounds, but the As-is swatch in that same Button row shows
+   white label text on the old green primary (the current theme's dark
+   #252628 label only works against the new pale-cyan background). */
 [data-product="odl-elk"] {
   --btn-primary-bg: #82BF00;
   --btn-primary-bg-hover: #72A716;
   --btn-primary-bg-active: #699B12;
+  --btn-primary-fg: #FFFFFF;
 
   --btn-secondary-black-bg: #252628;
   --btn-secondary-black-bg-hover: #38393B; /* approximated, see comment above */

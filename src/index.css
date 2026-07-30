@@ -872,7 +872,69 @@
   --scrollbar-thumb-bg-hover: #999999;
 }
 
-/* Future ЛКП theme: add data-product="lkp" to <html>, fill in the same
-   variable names here. button.tsx needs zero changes when this is populated. */
-[data-product="lkp"] {
+/* Старый_ЕЛК theme ("как было") — add data-product="odl-elk" to <html> to render every
+   rebranded component in the pre-rebrand green/near-black palette instead of
+   the current default cyan/navy one. No component needs any changes for this
+   to apply.
+
+   Values are the exact "Было" (old) side of the bank's official color-
+   replacement map (ui/changecolor/Инструкция по замене цветов Банка.svg,
+   "Было: Green colors" -> "Стало: Blue colors (Банк)" table), applied to every
+   token below that currently holds the matching "Стало" (new) hex:
+     #80E3FF -> #82BF00 (Green 223)   #2FCEEF -> #72A716 (Green 289)
+     #14B1D1 -> #699B12 (Green 333)   #B6F3FF -> #C4E88B (Green 137)
+     #CFF7FF -> #D9F0AB (Green 123)   #F0FCFF -> #F3F9E6 (Green 107)
+
+   --btn-secondary-black-* reverts to #252628 (Grey 1514, the kit's plain
+   near-black neutral) rather than a "old navy" — that same instruction doc
+   marks #012F42/#114870 as brand-new additions with no "Было" counterpart,
+   confirming the old brand had no navy accent at all and used near-black
+   instead (also matches the As-is swatch in ui/changecolor/Переходный этап
+   ребрендинга.svg's Button row). Its hover/active shades have no measured
+   Figma source, so they're derived by applying this same file's own
+   lighten-on-interaction delta already established for
+   --btn-secondary-logo-grey (+19, then +18 per RGB channel) rather than
+   invented outright — flagged as an approximation pending confirmation. */
+[data-product="odl-elk"] {
+  --btn-primary-bg: #82BF00;
+  --btn-primary-bg-hover: #72A716;
+  --btn-primary-bg-active: #699B12;
+
+  --btn-secondary-black-bg: #252628;
+  --btn-secondary-black-bg-hover: #38393B; /* approximated, see comment above */
+  --btn-secondary-black-bg-active: #4A4B4D; /* approximated, see comment above */
+
+  --checkbox-checked-bg: #82BF00;
+  --checkbox-checked-bg-hover: #72A716;
+
+  --radio-checked-bg: #82BF00;
+  --radio-checked-bg-hover: #72A716;
+
+  --toggle-track-checked-bg: #82BF00;
+  --toggle-track-checked-bg-hover: #72A716;
+  --toggle-track-checked-bg-disabled: #C4E88B;
+
+  --range-input-accent: #82BF00;
+  --range-input-accent-hover: #72A716;
+
+  --steps-active-ring: #82BF00;
+  --steps-fade-arrow-bg: #252628;
+
+  --progress-step-fill: #72A716;
+
+  --calendar-accent-fg: #699B12;
+  --calendar-selected-bg: #252628;
+
+  --filter-active-border: #82BF00;
+
+  --item-check-fg: #82BF00;
+
+  --file-item-loading-fg: #72A716;
+
+  --chips-dark-bg: #252628;
+  --chips-dark-bg-hover: #38393B; /* approximated, see comment above */
+
+  --pagination-hover-bg: #F3F9E6;
+  --pagination-active-bg: #D9F0AB;
+  --pagination-onclick-bg: #C4E88B;
 }

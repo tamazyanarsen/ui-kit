@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react"
 import { Accordion } from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 
 import { ButtonDemo } from "@/demo/button-demo"
@@ -53,14 +55,31 @@ import { ShimmerDemo } from "@/demo/shimmer-demo"
 import { ScrollbarDemo } from "@/demo/scrollbar-demo"
 
 function App() {
+  const [product, setProduct] = useState<"elk" | "odl-elk">(
+    () => (document.documentElement.getAttribute("data-product") as "elk" | "odl-elk" | null) ?? "elk",
+  )
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-product", product)
+  }, [product])
+
   return (
     <ToastProvider>
       <main className="mx-auto min-h-screen max-w-4xl space-y-10 bg-[#F8F8F8] px-6 py-16">
-        <header className="space-y-1">
-          <h1 className="text-3xl font-semibold">UI-кит</h1>
-          <p className="text-muted-foreground">
-            Button / Input — вариант ЕЛК. Основной размер по умолчанию — L.
-          </p>
+        <header className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-semibold">UI-кит</h1>
+            <p className="text-muted-foreground">
+              Button / Input — вариант ЕЛК. Основной размер по умолчанию — L.
+            </p>
+          </div>
+          <Button
+            variant="secondary-outline"
+            size="sm"
+            onClick={() => setProduct((p) => (p === "elk" ? "odl-elk" : "elk"))}
+          >
+            {product === "elk" ? "Новые цвета (ЕЛК)" : "Старые цвета"}
+          </Button>
         </header>
 
         <Accordion

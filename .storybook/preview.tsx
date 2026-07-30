@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react-vite'
+import { useEffect } from 'react'
 
 import '../src/index.css'
 
@@ -18,6 +19,35 @@ const preview: Preview = {
       test: 'todo'
     }
   },
+
+  globalTypes: {
+    product: {
+      description: 'Цветовая тема продукта (ЕЛК / Старый_ЕЛК)',
+      toolbar: {
+        title: 'Тема',
+        icon: 'paintbrush',
+        items: [
+          { value: 'elk', title: 'ЕЛК — новые цвета' },
+          { value: 'odl-elk', title: 'Старые цвета' },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+
+  initialGlobals: {
+    product: 'elk',
+  },
+
+  decorators: [
+    (Story, context) => {
+      useEffect(() => {
+        document.documentElement.setAttribute('data-product', context.globals.product)
+      }, [context.globals.product])
+
+      return <Story />
+    },
+  ],
 };
 
 export default preview;

@@ -259,7 +259,7 @@ export function CalendarFooter({
       <button
         type="button"
         onClick={onReset}
-        className="flex flex-1 items-center justify-center text-sm font-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex flex-1 items-center justify-center px-3 text-sm font-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         Сбросить
       </button>
@@ -267,7 +267,7 @@ export function CalendarFooter({
       <button
         type="button"
         onClick={onApply}
-        className="flex flex-1 items-center justify-center text-sm font-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex flex-1 items-center justify-center px-3 text-sm font-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         Применить
       </button>

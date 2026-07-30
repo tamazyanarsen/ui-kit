@@ -66,7 +66,7 @@ function PageButton({
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm text-[var(--pagination-fg)] outline-none transition-colors",
+        "flex h-8 min-w-8 shrink-0 cursor-pointer items-center justify-center rounded-full px-1 text-sm text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)] data-active:font-medium"

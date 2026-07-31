@@ -48,9 +48,12 @@ export function FileListItem({
       )}
       {...props}
     >
+      {/* Design-check #23: square with a capped radius across every state,
+          not a circle, with more breathing room around the glyph — was
+          rounded-full at size-6 around a size-4 icon (4px each side). */}
       <span
         className={cn(
-          "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full",
+          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg",
           error && "bg-[var(--file-item-error-bg)]"
         )}
       >

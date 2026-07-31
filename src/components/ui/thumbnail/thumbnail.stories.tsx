@@ -4,7 +4,7 @@ import { Thumbnail } from "./thumbnail"
 import type { PaymentSystem } from "./variants"
 
 const meta = {
-  title: "UI/Thumbnail",
+  title: "Status/Thumbnail",
   component: Thumbnail,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Thumbnail>

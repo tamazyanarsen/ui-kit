@@ -4,7 +4,7 @@ import { Banner } from "./banner"
 import type { BannerColor, BannerSize } from "./variants"
 
 const meta = {
-  title: "UI/Banner",
+  title: "Content/Banner",
   component: Banner,
   parameters: { layout: "padded" },
   argTypes: {

@@ -12,7 +12,7 @@ const ITEMS = [
 ]
 
 const meta = {
-  title: "UI/Tabs",
+  title: "Navigation/Tabs",
   component: Tabs,
   parameters: { layout: "padded" },
   args: { items: ITEMS },

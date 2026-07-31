@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Textarea } from "./textarea"
 
 const meta = {
-  title: "UI/Textarea",
+  title: "Interaction/Textarea",
   component: Textarea,
   parameters: { layout: "padded" },
   args: { label: "Комментарий" },

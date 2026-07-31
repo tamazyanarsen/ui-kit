@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Checkbox } from "./checkbox"
 
 const meta = {
-  title: "UI/Checkbox",
+  title: "Interaction/Checkbox",
   component: Checkbox,
   parameters: { layout: "centered" },
   args: { label: "Согласен с условиями" },

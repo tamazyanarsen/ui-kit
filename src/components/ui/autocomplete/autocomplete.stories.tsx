@@ -66,7 +66,7 @@ function OrganizationSearch() {
 }
 
 const meta = {
-  title: "UI/Autocomplete",
+  title: "Interaction/Autocomplete",
   component: OrganizationSearch,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof OrganizationSearch>

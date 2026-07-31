@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Steps } from "./steps"
 
 const meta = {
-  title: "UI/Steps",
+  title: "Navigation/Steps",
   component: Steps,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Steps>

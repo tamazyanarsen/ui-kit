@@ -11,10 +11,9 @@ describe("Radio", () => {
     expect(screen.getByRole("radio", { name: "Опция" })).toBeInTheDocument()
   })
 
-  it("shows the error message instead of the comment", () => {
-    render(<Radio value="a" label="Опция" comment="Подсказка" error="Ошибка" />)
-    expect(screen.getByText("Ошибка")).toBeInTheDocument()
-    expect(screen.queryByText("Подсказка")).not.toBeInTheDocument()
+  it("shows the comment caption", () => {
+    render(<Radio value="a" label="Опция" comment="Подсказка" />)
+    expect(screen.getByText("Подсказка")).toBeInTheDocument()
   })
 })
 

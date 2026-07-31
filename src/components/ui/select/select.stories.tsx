@@ -41,7 +41,7 @@ function ClearableFruitSelect({
 }
 
 const meta = {
-  title: "UI/Select",
+  title: "Interaction/Select",
   component: ClearableFruitSelect,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof ClearableFruitSelect>

@@ -49,7 +49,7 @@ const inputBoxVariants = cva(
 )
 
 const inputFieldVariants = cva(
-  "peer min-w-0 flex-1 bg-transparent text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] disabled:cursor-not-allowed disabled:text-[var(--input-fg-disabled)]",
+  "peer min-w-0 flex-1 bg-transparent font-medium text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] disabled:cursor-not-allowed disabled:text-[var(--input-fg-disabled)]",
   {
     variants: {
       size: {
@@ -71,8 +71,13 @@ const inputFieldVariants = cva(
   }
 )
 
+// Empty state matches the field's own text size (placeholder-like); once
+// floated up (focused or filled) it shrinks to the kit's usual caption size.
+// Design-check #3/#16/#30: was flat text-xs (12px) in both states — too
+// small for the empty/unfloated label across every size except S (no
+// floating label there at all, see `floating` above).
 const floatingLabelVariants =
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-xs text-[var(--input-label-fg)] transition-all peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-[11px] group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-sm text-[var(--input-label-fg)] transition-all peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-xs group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
 
 const ICON_SIZE = {
   sm: "size-3.5",
@@ -316,6 +321,13 @@ function Input({
           inputBoxVariants({ size, invalid, interactive: !locked }),
           containerClassName
         )}
+        onClick={() => {
+          // Design-check #29: only the text itself was hit-testable —
+          // clicking the box's own padding/gap area (or the leading icon)
+          // silently did nothing. The field fills the box via flex-1, so
+          // focusing it programmatically on any box click covers those gaps.
+          if (!disabled && !locked) inputRef.current?.focus()
+        }}
       >
         {iconLeft && (
           <span
@@ -343,7 +355,11 @@ function Input({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "shrink-0 text-[var(--input-fg)]",
+                    // Pulls in from the box's own flex `gap` (which spaces
+                    // every slot uniformly) down to ~1 space-width, per
+                    // design-check #31 — the mask value and "₽" aren't
+                    // separate flex slots conceptually, just closely-set text.
+                    "-ml-1.5 shrink-0 font-medium text-[var(--input-fg)] md:-ml-2",
                     size === "sm" ? "text-xs" : "text-sm",
                     // The field's own text sits lower than the row's
                     // vertical center once the floating label pushes it

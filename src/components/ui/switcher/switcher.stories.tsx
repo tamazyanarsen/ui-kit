@@ -10,7 +10,7 @@ const ITEMS = [
 ]
 
 const meta = {
-  title: "UI/Switcher",
+  title: "Interaction/Switcher",
   component: Switcher,
   parameters: { layout: "padded" },
   args: { items: ITEMS },

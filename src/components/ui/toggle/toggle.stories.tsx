@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Toggle } from "./toggle"
 
 const meta = {
-  title: "UI/Toggle",
+  title: "Interaction/Toggle",
   component: Toggle,
   parameters: { layout: "centered" },
   args: { label: "Уведомления" },

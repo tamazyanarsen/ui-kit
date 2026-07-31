@@ -34,7 +34,11 @@ function Chips({
       data-slot="chips"
       data-disabled={disabled || undefined}
       className={cn(
-        "group/chips inline-flex w-fit max-w-64 flex-col items-start gap-0 rounded-2xl whitespace-nowrap transition-colors",
+        // Design-check #14: rounded-2xl (18px on this kit's custom radius
+        // scale) reads as a full pill at this height — the Figma source
+        // (ui/chips/chips, filter.svg) uses an 8px corner radius throughout,
+        // which is rounded-md here, not rounded-2xl.
+        "group/chips inline-flex w-fit max-w-64 flex-col items-start gap-0 rounded-md whitespace-nowrap transition-colors",
         subtitle ? "px-4 py-2" : "px-4 py-1.5",
         disabled
           ? "bg-[var(--chips-disabled-bg)]"

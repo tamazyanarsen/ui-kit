@@ -4,7 +4,7 @@ import { Scrollbar } from "./scrollbar"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const meta = {
-  title: "UI/Scrollbar",
+  title: "Pattern/Scrollbar",
   component: Scrollbar,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Scrollbar>

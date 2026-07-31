@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { SelectionButton } from "./selection-button"
 
 const meta = {
-  title: "UI/SelectionButton",
+  title: "Content/ChoosingCards",
   component: SelectionButton,
   parameters: { layout: "centered" },
   args: {

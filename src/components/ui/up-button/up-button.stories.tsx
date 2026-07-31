@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { UpButton } from "./up-button"
 
 const meta = {
-  title: "UI/UpButton",
+  title: "Interaction/Button/UpButton",
   component: UpButton,
   parameters: { layout: "padded" },
   // threshold=-1 keeps it visible immediately in the story canvas — real

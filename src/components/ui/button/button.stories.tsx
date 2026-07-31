@@ -13,7 +13,7 @@ const VARIANTS: NonNullable<ButtonProps["variant"]>[] = [
 ]
 
 const meta = {
-  title: "UI/Button",
+  title: "Interaction/Button/Button",
   component: Button,
   parameters: { layout: "centered" },
   argTypes: {
@@ -41,6 +41,25 @@ export const AllVariants: Story = {
 }
 
 export const Sizes: Story = {
+  render: () => (
+    <div className="flex items-center gap-3">
+      <Button size="sm">Small</Button>
+      <Button size="default">Default</Button>
+      <Button size="lg">Large</Button>
+    </div>
+  ),
+}
+
+// Design-check #9: sizes are already mobile-first responsive per
+// ui/button/button.png's own redline sheet (default/lg switch height+padding
+// at the `md:` breakpoint — 40->48px and 48->56px, matching that sheet's
+// M/L Mobile vs M/L Desktop rows almost to the pixel). `md:` is a viewport
+// media query, not a container one, so this story only reads as "mobile"
+// with the canvas itself under 768px — set via Storybook's own viewport
+// toolbar (Sizes above is the same markup at desktop width).
+export const SizesMobile: Story = {
+  name: "Sizes — Mobile (< 768px)",
+  parameters: { viewport: { defaultViewport: "mobile1" } },
   render: () => (
     <div className="flex items-center gap-3">
       <Button size="sm">Small</Button>

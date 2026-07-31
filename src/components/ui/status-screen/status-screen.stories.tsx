@@ -4,7 +4,7 @@ import { StatusScreen } from "./status-screen"
 import type { StatusType } from "./status-screen"
 
 const meta = {
-  title: "UI/StatusScreen",
+  title: "Template/StatusScreen",
   component: StatusScreen,
   parameters: { layout: "padded" },
   args: {

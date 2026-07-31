@@ -18,7 +18,12 @@ import { STATUS_BG, type EventStatus } from "./variants"
 // Card/Banner's "Show X" toggles.
 interface EventSignatory {
   status: "success" | "attention"
-  text: React.ReactNode
+  name: React.ReactNode
+  // Design-check #21: the spec's own signer example carries a second,
+  // lighter-colored attribute after the name (e.g. "Петров П.П. — Первая
+  // подпись") — was baked into one plain `text` node with no way to give it
+  // a different color from the name.
+  attribute?: React.ReactNode
 }
 
 interface EventInfoRow {
@@ -117,7 +122,13 @@ function Event({
                     style={{ color: STATUS_BG[signatory.status] }}
                   />
                   <span className="text-[var(--event-title-fg)]">
-                    {signatory.text}
+                    {signatory.name}
+                    {signatory.attribute && (
+                      <span className="text-[var(--event-meta-fg)]">
+                        {" "}
+                        — {signatory.attribute}
+                      </span>
+                    )}
                   </span>
                 </div>
               )

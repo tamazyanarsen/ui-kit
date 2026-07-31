@@ -63,9 +63,12 @@ export function CalendarDesktop({
     mode === "single" ? (d: Date) => isSameDay(d, value) : () => false
 
   return (
+    // Design-check #11/#12: min 280px per the Figma component — w-fit alone
+    // let the Month/Year picker views (just a 3-column grid of short labels)
+    // shrink well under that.
     <div
       className={cn(
-        "w-fit overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-foreground/10",
+        "w-fit min-w-[280px] overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-foreground/10",
         className
       )}
     >
@@ -256,9 +259,11 @@ function RangeBody({
   const months = [focus, next]
 
   return (
+    // Design-check #10: no vertical divider between the two month grids —
+    // ui/calendar/calendar@2x-1.png's own Range anatomy runs them together.
     <div className="flex">
       {months.map((m, i) => (
-        <div key={i} className={cn(i === 0 && "border-r border-[var(--calendar-divider)]")}>
+        <div key={i}>
           <NavHeader onPrev={onPrev} onNext={onNext}>
             <HeaderLabel>{MONTHS_RU_FULL[m.month]}</HeaderLabel>
             <HeaderLabel>{m.year}</HeaderLabel>

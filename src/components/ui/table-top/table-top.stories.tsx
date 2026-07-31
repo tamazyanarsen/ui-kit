@@ -155,7 +155,7 @@ function SortSummaryExample() {
 }
 
 const meta = {
-  title: "UI/TableTop",
+  title: "Content/Table/TableTop",
   component: FullExample,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof FullExample>

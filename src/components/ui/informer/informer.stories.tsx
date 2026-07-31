@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Informer } from "./informer"
 
 const meta = {
-  title: "UI/Informer",
+  title: "Status/Message/Informer",
   component: Informer,
   parameters: { layout: "padded" },
   args: {

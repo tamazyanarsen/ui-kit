@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Nps } from "./nps"
 
 const meta = {
-  title: "UI/Nps",
+  title: "Template/Feedback",
   component: Nps,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Nps>

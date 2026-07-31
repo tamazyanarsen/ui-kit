@@ -22,7 +22,7 @@ function DemoSidebar({ defaultOpen = true }: { defaultOpen?: boolean }) {
 }
 
 const meta = {
-  title: "UI/Sidebar",
+  title: "Navigation/Sidebar",
   component: DemoSidebar,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof DemoSidebar>

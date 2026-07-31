@@ -98,39 +98,6 @@ function ItemInformationFieldDemo() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <RowLabel>Line — с пунктирным заполнением и Information-иконкой</RowLabel>
-            <div className="rounded-lg border border-[#DEDEDE]">
-              <ItemInformationField
-                type="line"
-                label="Сумма купюрами"
-                value="5 020 000,00 ₽"
-                subText="Сумма купюрами"
-                valueInfo="Сумма, внесённая купюрами"
-                copyable
-              />
-              <ItemInformationField
-                type="line"
-                label="Сумма"
-                value="Сумма купюр превышает сумму снятия на 4 000 000,00 ₽"
-                copyable
-              />
-              <ItemInformationField
-                type="line"
-                label="Сумма"
-                value="400 000,00 ₽. Общая сумма превышает 300 000,00 ₽. Скорректируйте сумму или измените"
-                valueStatus="error"
-                copyable
-              />
-              <ItemInformationField
-                type="line"
-                label="Срок"
-                value="3 дня"
-                copyable
-                divider={false}
-              />
-            </div>
-          </div>
         </div>
 
         <p className="mt-6 text-xs text-muted-foreground">

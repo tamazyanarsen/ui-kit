@@ -6,30 +6,30 @@ import { cn } from "@/lib/utils"
 interface RadioOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
-  error?: React.ReactNode
 }
 
 type RadioProps = RadioPrimitive.Root.Props & RadioOwnProps
 
 // Individual radio button, meant to be used inside <RadioGroup>. Same
-// label/comment/error field pattern as Checkbox — see that component for
-// the rationale (mirrors Input's built-in caption slot). No `indeterminate`
-// here: unlike Checkbox's "Partial", a single radio has no meaningful mixed
-// state (the spec's properties table lists a "Partial" row for Radio too,
-// but it's a copy-paste artifact from Checkbox's template — nothing in the
-// anatomy or Base UI's Radio primitive supports it).
+// label/comment field pattern as Checkbox — see that component for the
+// rationale (mirrors Input's built-in caption slot). No `indeterminate` here:
+// unlike Checkbox's "Partial", a single radio has no meaningful mixed state
+// (the spec's properties table lists a "Partial" row for Radio too, but it's
+// a copy-paste artifact from Checkbox's template — nothing in the anatomy or
+// Base UI's Radio primitive supports it). No `error` either (design-check
+// #44) — choosing a radio option can't itself be "wrong," so unlike
+// Checkbox/Input there's no error variant in the DS for this component.
 function Radio({
   className,
   disabled,
   label,
   comment,
-  error,
   id,
   ...props
 }: RadioProps) {
   const generatedId = React.useId()
   const radioId = id ?? generatedId
-  const hasCaption = Boolean(comment || error)
+  const hasCaption = Boolean(comment)
   const captionId = hasCaption ? `${radioId}-caption` : undefined
 
   const circle = (
@@ -45,7 +45,6 @@ function Radio({
         "data-[checked]:border-transparent data-[checked]:bg-[var(--radio-checked-bg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--radio-checked-bg-hover)]",
         "focus-visible:ring-3 focus-visible:ring-ring/50",
         "data-[disabled]:cursor-not-allowed data-[disabled]:!border-[var(--radio-disabled-border)] data-[disabled]:!bg-[var(--radio-disabled-bg)]",
-        error && "!border-[var(--radio-border-error)]",
         className
       )}
       {...props}
@@ -85,16 +84,8 @@ function Radio({
           </span>
         )}
         {hasCaption && (
-          <span
-            id={captionId}
-            className={cn(
-              "text-xs",
-              error
-                ? "text-[var(--radio-caption-error-fg)]"
-                : "text-[var(--radio-caption-fg)]"
-            )}
-          >
-            {error ?? comment}
+          <span id={captionId} className="text-xs text-[var(--radio-caption-fg)]">
+            {comment}
           </span>
         )}
       </span>

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Card } from "./card"
 
 const meta = {
-  title: "UI/Card",
+  title: "Content/Card",
   component: Card,
   parameters: { layout: "padded" },
   args: {

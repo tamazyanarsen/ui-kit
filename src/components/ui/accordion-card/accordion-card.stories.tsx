@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { AccordionCard } from "./accordion-card"
 
 const meta = {
-  title: "UI/AccordionCard",
+  title: "Content/Accordion/Card",
   component: AccordionCard,
   parameters: { layout: "padded" },
   args: {

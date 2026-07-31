@@ -15,14 +15,17 @@ describe("ErrorPage", () => {
     expect(screen.getByText("Попробуйте позже")).toBeInTheDocument()
   })
 
-  it("renders the error code when given", () => {
-    render(<ErrorPage title="Заголовок" code="404" />)
-    expect(screen.getByText("404")).toBeInTheDocument()
+  it("renders the error code when given, with each '0' as the mascot illustration", () => {
+    const { container } = render(<ErrorPage title="Заголовок" code="404" />)
+    expect(screen.getAllByText("4")).toHaveLength(2)
+    expect(screen.queryByText("0")).not.toBeInTheDocument()
+    expect(container.querySelectorAll("img")).toHaveLength(1)
   })
 
-  it("omits the code when not given", () => {
-    render(<ErrorPage title="Заголовок" />)
-    expect(screen.queryByText("404")).not.toBeInTheDocument()
+  it("renders the standalone mascot illustration when no code is given", () => {
+    const { container } = render(<ErrorPage title="Заголовок" />)
+    expect(screen.queryByText("4")).not.toBeInTheDocument()
+    expect(container.querySelectorAll("img")).toHaveLength(1)
   })
 
   it("renders the action button and calls onButtonClick", async () => {

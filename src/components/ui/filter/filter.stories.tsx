@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Filter } from "./filter"
 
 const meta = {
-  title: "UI/Filter",
+  title: "Interaction/Filter",
   component: Filter,
   parameters: { layout: "padded" },
   args: { label: "Статус" },
@@ -19,10 +19,6 @@ export const White: Story = {
 
 export const Grey: Story = {
   args: { background: "grey" },
-}
-
-export const WithSubtitle: Story = {
-  args: { subtitle: "Подпись" },
 }
 
 export const WithCount: Story = {

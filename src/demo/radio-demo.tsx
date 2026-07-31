@@ -42,12 +42,6 @@ function RadioDemo() {
             </RadioGroup>
           </div>
           <div className="flex flex-col gap-1.5">
-            <RowLabel>Error</RowLabel>
-            <RadioGroup>
-              <Radio value="a" label="Option Text" error="Text about error here" />
-            </RadioGroup>
-          </div>
-          <div className="flex flex-col gap-1.5">
             <RowLabel>Без текста</RowLabel>
             <RadioGroup>
               <Radio value="a" />

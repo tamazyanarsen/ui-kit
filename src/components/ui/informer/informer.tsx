@@ -53,16 +53,19 @@ function Informer({
   return (
     <div
       data-slot="informer"
+      // Design-check #27: padding/icon-gap read directly off the anatomy
+      // sheet (ui/message/informer) — 24px padding (was 16, p-4) and a 16px
+      // gap between the icon and the text column (was 12, gap-3).
       className={cn(
-        "min-w-[360px] rounded-2xl p-4",
+        "min-w-[360px] rounded-2xl p-6",
         className
       )}
       style={{ backgroundColor: SOLID_BG[solid] }}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-4">
         <Icon
           aria-hidden="true"
-          className="mt-0.5 size-5 shrink-0"
+          className="size-6 shrink-0"
           style={{ color: ICON_COLOR[icon] }}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1">

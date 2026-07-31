@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Pagination } from "./pagination"
 
 const meta = {
-  title: "UI/Pagination",
+  title: "Template/Pagination",
   component: Pagination,
   parameters: { layout: "padded" },
   args: { page: 1, totalPages: 20 },

@@ -10,16 +10,19 @@ import { useToast } from "@/components/ui/toast-message"
 // the spec's own description). Distinct from ./item, which is always an
 // interactive row.
 //
-// Four layouts (the spec's own "Type" property):
-// - label-left (default): Label left, Value right, both on one line.
-// - line: same as label-left but with a dashed rule filling the gap
-//   between them (spec: "Label box width capped at 216px").
+// Three layouts (the spec's own "Type" property):
+// - label-left (default): Label left, Value right, both on one line. Label
+//   and Value each get an even flex-1 share of the row by default, Label
+//   capped at 216px so a long one can't shrink Value below its own share —
+//   both left-aligned within their own half (design-check #33; a stray
+//   ml-auto used to shove Value flush to the row's right edge instead).
 // - label-top: Label stacked above Value (compact, for tight spaces).
 // - large-value: same stacking as label-top, but Value renders larger
 //   ("used for displaying a Factoid").
-// SubText (when present) always renders below Value.
+// SubText (when present) always renders below Value. No dashed "line"
+// variant (design-check #32) — not a real DS variant of this component.
 
-type FieldType = "label-left" | "line" | "label-top" | "large-value"
+type FieldType = "label-left" | "label-top" | "large-value"
 type FieldStatus = "default" | "success" | "error" | "attention" | "information"
 
 const VALUE_COLOR: Record<FieldStatus, string> = {
@@ -79,7 +82,13 @@ function CopyButton({ copyValue }: { copyValue: string }) {
       type="button"
       onClick={handleCopy}
       aria-label="Копировать"
-      className="flex size-8 shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors hover:text-[var(--ifield-copy-fg-hover)]"
+      // Design-check #34: centered on Value's first line, not the row's
+      // own top edge — the row uses items-start, which would otherwise sit
+      // this size-8 hit target's center ~6px below text-sm's 20px line
+      // height (half the (32-20)px difference), noticeably lower than the
+      // text's optical center. Stays pinned there even when subText adds a
+      // second line below.
+      className="-mt-1.5 flex size-8 shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors hover:text-[var(--ifield-copy-fg-hover)]"
     >
       <Copy aria-hidden="true" className="size-4" />
     </button>
@@ -145,14 +154,8 @@ function ItemInformationField({
         </div>
       ) : (
         <div className="flex min-w-0 flex-1 items-baseline gap-2">
-          <span className="max-w-54 shrink-0">{labelRow}</span>
-          {type === "line" && (
-            <span
-              aria-hidden="true"
-              className="min-w-4 flex-1 border-b border-dashed border-[var(--ifield-divider)]"
-            />
-          )}
-          <div className={cn("flex flex-col items-end gap-1", type === "label-left" && "ml-auto")}>
+          <span className="max-w-54 min-w-0 flex-1">{labelRow}</span>
+          <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
             {valueRow}
             {subText && (
               <span className={cn("text-xs", SUBTEXT_COLOR[subTextStatus])}>

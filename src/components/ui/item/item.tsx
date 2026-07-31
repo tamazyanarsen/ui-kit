@@ -71,11 +71,14 @@ function stopPropagation(event: React.SyntheticEvent) {
 
 function DefaultThumbnail() {
   return (
+    // Design-check #35: square with a capped radius, like the kit's own
+    // `Thumbnail` component (ui/thumbnail) — was a small rounded-full
+    // circle, which doesn't match that convention.
     <span
       aria-hidden="true"
-      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
+      className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
     >
-      <Ellipsis className="size-4" />
+      <Ellipsis className="size-5" />
     </span>
   )
 }

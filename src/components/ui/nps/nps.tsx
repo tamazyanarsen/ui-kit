@@ -161,11 +161,18 @@ function Nps({
           )
         })}
       </div>
-      {displayValue && (
-        <p className="mt-1 text-center text-xs text-[var(--nps-subtitle-fg)]">
-          {RATING_LABELS[displayValue]}
-        </p>
-      )}
+      {/* Design-check #42: always rendered (with a reserved-space
+          placeholder when empty) instead of conditionally mounting — the
+          conditional version collapsed to 0 height between hovers, so the
+          card kept growing/shrinking as the cursor moved across the stars. */}
+      <p
+        className={cn(
+          "mt-1 text-center text-xs text-[var(--nps-subtitle-fg)]",
+          !displayValue && "invisible"
+        )}
+      >
+        {displayValue ? RATING_LABELS[displayValue] : " "}
+      </p>
 
       {activeValue !== null && (
         <>

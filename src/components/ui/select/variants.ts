@@ -38,8 +38,11 @@ export const selectTriggerVariants = cva(
 // a11y — closing shouldn't blur it), so tying the float to focus makes the
 // label float indefinitely after every interaction, long after there's any
 // reason to reserve room above the value.
+// Design-check #15: empty-state label was flat text-xs (12px), same as the
+// floated caption state — too small when there's no value yet. Matches
+// Input's own fix: text-sm while empty, shrinks to text-xs once floated.
 export const selectFloatingLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 truncate text-xs text-[var(--select-label-fg)] transition-all group-data-popup-open/trigger:top-2 group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-[11px] group-[&:not([data-placeholder])]/trigger:top-2 group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-[11px] group-data-disabled/trigger:text-[var(--select-fg-disabled)] md:left-5 md:group-data-popup-open/trigger:top-2.5 md:group-[&:not([data-placeholder])]/trigger:top-2.5"
+  "pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 truncate text-sm text-[var(--select-label-fg)] transition-all group-data-popup-open/trigger:top-2 group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-xs group-[&:not([data-placeholder])]/trigger:top-2 group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-xs group-data-disabled/trigger:text-[var(--select-fg-disabled)] md:left-5 md:group-data-popup-open/trigger:top-2.5 md:group-[&:not([data-placeholder])]/trigger:top-2.5"
 
 export const selectStaticLabelClassName =
   "pointer-events-none absolute inset-y-0 left-3 flex items-center truncate text-xs text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-fg-disabled)]"

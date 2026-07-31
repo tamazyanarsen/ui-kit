@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { FileListItem } from "./file-item"
 
 const meta = {
-  title: "UI/FileUpload/FileListItem",
+  title: "Interaction/FileUpload/FileListItem",
   component: FileListItem,
   parameters: { layout: "padded" },
   args: { name: "Договор аренды.pdf", meta: "1.2 МБ" },

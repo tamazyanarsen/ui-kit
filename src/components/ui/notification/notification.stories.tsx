@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { NotificationItem, NotificationPanel } from "./notification"
 
 const meta = {
-  title: "UI/Notification",
+  title: "Status/Message/Notification",
   component: NotificationPanel,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof NotificationPanel>

@@ -4,7 +4,7 @@ import { Badge } from "./badge"
 import type { BadgeColor } from "./variants"
 
 const meta = {
-  title: "UI/Badge",
+  title: "Status/Badge",
   component: Badge,
   parameters: { layout: "centered" },
   argTypes: {

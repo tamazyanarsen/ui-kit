@@ -26,7 +26,6 @@ const ICON_SIZE = "size-4"
 // documented behavior, and a table-usage demo can opt in.
 interface FilterProps {
   label: React.ReactNode
-  subtitle?: React.ReactNode
   icon?: React.ReactNode
   background?: "white" | "grey"
   count?: number
@@ -43,7 +42,6 @@ interface FilterProps {
 
 function Filter({
   label,
-  subtitle,
   icon,
   background = "white",
   count,
@@ -144,7 +142,15 @@ function Filter({
     if (asChip) return null
     const Chevron = open ? ChevronUp : ChevronDown
     return (
-      <Chevron aria-hidden="true" className={cn(ICON_SIZE, "text-[var(--filter-icon-fg)]")} />
+      <Chevron
+        aria-hidden="true"
+        className={cn(
+          ICON_SIZE,
+          // Design-check #26: was the same dark icon color regardless of
+          // disabled, out of step with the label text lightening alongside it.
+          disabled ? "text-[var(--filter-disabled-fg)]" : "text-[var(--filter-icon-fg)]"
+        )}
+      />
     )
   }
 
@@ -160,19 +166,17 @@ function Filter({
               data-slot="filter"
               data-disabled={disabled || undefined}
               className={cn(
-                "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 rounded-2xl border whitespace-nowrap outline-none transition-colors select-none focus-visible:ring-3 focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
-                subtitle && !asChip ? "px-4 py-2" : "px-4 py-1.5",
+                // Design-check #24: the open-state border and the generic
+                // focus-visible ring used to layer into a double outline —
+                // the border alone is the DS's actual "open" indicator, so
+                // the ring only kicks in for keyboard focus while closed.
+                "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 rounded-2xl border whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
                 triggerToneClass,
                 className
               )}
             />
           }
         >
-          {subtitle && !asChip && (
-            <span className="truncate text-xs leading-tight text-[var(--filter-subtitle-fg)]">
-              {subtitle}
-            </span>
-          )}
           <span className="flex w-full min-w-0 items-center gap-2">
             {icon && !asChip && (
               <span

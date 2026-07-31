@@ -35,7 +35,7 @@ function ToastLauncher({
 }
 
 const meta = {
-  title: "UI/ToastMessage",
+  title: "Status/Message/ToastMessage",
   component: ToastLauncher,
   parameters: { layout: "centered" },
   decorators: [

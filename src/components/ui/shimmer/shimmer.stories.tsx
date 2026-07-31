@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Shimmer } from "./shimmer"
 
 const meta = {
-  title: "UI/Shimmer",
+  title: "Pattern/Shimmer",
   component: Shimmer,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Shimmer>

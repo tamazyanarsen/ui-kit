@@ -62,14 +62,6 @@ function FilterDemo() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <RowLabel>С Subtitle</RowLabel>
-          <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" subtitle="Subtitle" background="white" />
-            <Filter label="Filter" subtitle="Subtitle" background="grey" />
-          </div>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-2">
           <RowLabel>Опциональные элементы — Icon / Badge</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
             <Filter label="Filter" icon={<Circle aria-hidden="true" />} />
@@ -84,8 +76,8 @@ function FilterDemo() {
             сбрасывает без открытия попапа)
           </RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" subtitle="Subtitle" defaultValue={null} />
-            <Filter label="Filter" subtitle="Subtitle" defaultValue="Значение" />
+            <Filter label="Filter" defaultValue={null} />
+            <Filter label="Filter" defaultValue="Значение" />
           </div>
         </div>
 
@@ -93,7 +85,7 @@ function FilterDemo() {
           <RowLabel>Disabled</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
             <Filter label="Filter" disabled />
-            <Filter label="Filter" subtitle="Subtitle" disabled />
+            <Filter label="Filter" icon={<Circle aria-hidden="true" />} disabled />
           </div>
         </div>
 

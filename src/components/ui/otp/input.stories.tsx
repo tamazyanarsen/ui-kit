@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { OtpInput } from "./input"
 
 const meta = {
-  title: "UI/Otp/OtpInput",
+  title: "Template/Otp/OtpInput",
   component: OtpInput,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof OtpInput>

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { FileUploadDropzone } from "./dropzone"
 
 const meta = {
-  title: "UI/FileUpload/Dropzone",
+  title: "Interaction/FileUpload/Dropzone",
   component: FileUploadDropzone,
   parameters: { layout: "padded" },
   args: {

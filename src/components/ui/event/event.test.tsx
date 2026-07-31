@@ -21,18 +21,29 @@ describe("Event", () => {
     expect(screen.getByText("Иванов И.И.")).toBeInTheDocument()
   })
 
-  it("renders each signatory's text", () => {
+  it("renders each signatory's name", () => {
     render(
       <Event
         title="Заголовок"
         signatories={[
-          { status: "success", text: "Подписал Иванов" },
-          { status: "attention", text: "Ожидает Петров" },
+          { status: "success", name: "Иванов" },
+          { status: "attention", name: "Петров" },
         ]}
       />
     )
-    expect(screen.getByText("Подписал Иванов")).toBeInTheDocument()
-    expect(screen.getByText("Ожидает Петров")).toBeInTheDocument()
+    expect(screen.getByText("Иванов")).toBeInTheDocument()
+    expect(screen.getByText("Петров")).toBeInTheDocument()
+  })
+
+  it("renders a signatory's attribute in a lighter color, after the name", () => {
+    render(
+      <Event
+        title="Заголовок"
+        signatories={[{ status: "success", name: "Иванов", attribute: "Первая подпись" }]}
+      />
+    )
+    expect(screen.getByText("Иванов")).toBeInTheDocument()
+    expect(screen.getByText("— Первая подпись")).toBeInTheDocument()
   })
 
   it("renders info rows", () => {

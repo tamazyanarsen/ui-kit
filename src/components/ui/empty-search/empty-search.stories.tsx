@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { EmptySearchResults } from "./empty-search"
 
 const meta = {
-  title: "UI/EmptySearchResults",
+  title: "Template/EmptySearchResults",
   component: EmptySearchResults,
   parameters: { layout: "padded" },
   args: {

@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { DatePicker } from "./date-picker"
 
 const meta = {
-  title: "UI/DatePicker",
+  title: "Interaction/Calendar/DatePicker",
   component: DatePicker,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof DatePicker>

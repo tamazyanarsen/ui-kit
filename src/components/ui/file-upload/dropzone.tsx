@@ -72,6 +72,11 @@ export function FileUploadDropzone({
       data-slot="file-upload-dropzone"
       data-disabled={disabled || undefined}
       aria-disabled={disabled || undefined}
+      // Design-check #22: measured against ui/file-upload/file-upload-1.svg
+      // at native scale (icon top edge sits exactly 24px below the card's
+      // own top edge — py-6 already matched). What was actually off is the
+      // layout: the spec puts the icon inline with the title on one row,
+      // not stacked above it, with the subtitle on its own row below.
       className={cn(
         "relative flex w-full flex-col items-center gap-1 rounded-2xl border border-dashed px-4 py-6 text-center transition-colors",
         containerToneClass,
@@ -109,9 +114,11 @@ export function FileUploadDropzone({
           event.target.value = ""
         }}
       />
-      <CirclePlus aria-hidden="true" className={cn("size-4", CONTENT_COLOR[tone])} />
-      <span className={cn("text-sm font-medium", CONTENT_COLOR[tone])}>
-        {children ?? "Перетащите или загрузите файлы"}
+      <span className="flex items-center gap-2">
+        <CirclePlus aria-hidden="true" className={cn("size-4", CONTENT_COLOR[tone])} />
+        <span className={cn("text-sm font-medium", CONTENT_COLOR[tone])}>
+          {children ?? "Перетащите или загрузите файлы"}
+        </span>
       </span>
       {subtitle && (
         <span className={cn("text-xs", SUBTITLE_COLOR[tone])}>

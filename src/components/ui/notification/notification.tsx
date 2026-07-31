@@ -175,7 +175,10 @@ function NotificationPanel({
       </div>
 
       {(primaryButtonLabel || secondaryButtonLabel) && (
-        <div className="flex items-center gap-2 border-t border-[var(--notification-divider)] px-4 py-3">
+        // Design-check #41: each button fills half the row (was sized to
+        // its own text, letting "Прочитать все" and "Настройки" end up
+        // visibly different widths).
+        <div className="flex items-center gap-2 border-t border-[var(--notification-divider)] px-4 py-3 [&>*]:flex-1">
           {primaryButtonLabel && (
             <Button
               type="button"

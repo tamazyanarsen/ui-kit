@@ -4,7 +4,7 @@ import { ItemInformationField } from "./item-information-field"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 
 const meta = {
-  title: "UI/ItemInformationField",
+  title: "Content/Item/InformationField",
   component: ItemInformationField,
   parameters: { layout: "padded" },
   args: { label: "ИНН", value: "7710140123" },
@@ -22,10 +22,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const LabelLeft: Story = {}
-
-export const Line: Story = {
-  args: { type: "line" },
-}
 
 export const LabelTop: Story = {
   args: { type: "label-top" },

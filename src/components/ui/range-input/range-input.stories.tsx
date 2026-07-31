@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { RangeInput } from "./range-input"
 
 const meta = {
-  title: "UI/RangeInput",
+  title: "Interaction/RangeInput",
   component: RangeInput,
   parameters: { layout: "padded" },
   args: { label: "Сумма", min: 0, max: 100, step: 1 },

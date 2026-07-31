@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Item } from "./item"
 
 const meta = {
-  title: "UI/Item",
+  title: "Content/Item/Item",
   component: Item,
   parameters: { layout: "padded" },
   args: { text: "Тип операции", value: "Перевод между счетами" },

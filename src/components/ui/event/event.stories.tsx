@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Event } from "./event"
 
 const meta = {
-  title: "UI/Event",
+  title: "Status/Message/Event",
   component: Event,
   parameters: { layout: "padded" },
   args: {
@@ -25,8 +25,8 @@ export const StatusTag: Story = {
 export const WithSignatories: Story = {
   args: {
     signatories: [
-      { status: "success", text: "Подписал Иванов И.И." },
-      { status: "attention", text: "Ожидает подписи Петров П.П." },
+      { status: "success", name: "Иванов И.И.", attribute: "Первая подпись" },
+      { status: "attention", name: "Петров П.П.", attribute: "Вторая подпись" },
     ],
   },
 }
@@ -74,7 +74,7 @@ export const FullTimeline: Story = {
         title="На согласовании"
         status="attention"
         timestamp="09:15"
-        signatories={[{ status: "attention", text: "Ожидает подписи Петров П.П." }]}
+        signatories={[{ status: "attention", name: "Петров П.П.", attribute: "Первая подпись" }]}
       />
       <Event
         type="tag"

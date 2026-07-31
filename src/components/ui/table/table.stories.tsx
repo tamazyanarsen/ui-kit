@@ -106,7 +106,7 @@ function TableExample() {
 }
 
 const meta = {
-  title: "UI/Table",
+  title: "Content/Table/Table",
   component: TableExample,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof TableExample>

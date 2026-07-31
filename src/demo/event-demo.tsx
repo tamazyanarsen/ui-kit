@@ -8,10 +8,10 @@ import {
 import { RowLabel } from "./shared"
 
 const SIGNATORIES = [
-  { status: "success" as const, text: "Петров Пётр Петрович — Первая подпись" },
+  { status: "success" as const, name: "Петров Пётр Петрович", attribute: "Первая подпись" },
   {
     status: "attention" as const,
-    text: "Для завершения подписания нужна Вторая или Единственная подпись",
+    name: "Для завершения подписания нужна Вторая или Единственная подпись",
   },
 ]
 
@@ -103,7 +103,7 @@ function EventDemo() {
               title="Подписание завершено"
               timestamp="16.03.2023 18:56"
               signatories={[
-                { status: "success", text: "Петров Пётр Петрович — Вторая подпись" },
+                { status: "success", name: "Петров Пётр Петрович", attribute: "Вторая подпись" },
               ]}
             />
             <Event

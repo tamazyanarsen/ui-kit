@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { TopFixedMessage } from "./top-fixed-message"
 
 const meta = {
-  title: "UI/TopFixedMessage",
+  title: "Status/Message/TopFixedMessage",
   component: TopFixedMessage,
   parameters: { layout: "fullscreen" },
   args: { text: "Плановые технические работы с 02:00 до 04:00 мск" },

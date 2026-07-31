@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { ResendCode } from "./resend-code"
 
 const meta = {
-  title: "UI/Otp/ResendCode",
+  title: "Template/Otp/ResendCode",
   component: ResendCode,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof ResendCode>

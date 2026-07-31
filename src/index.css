@@ -362,7 +362,6 @@
   --radio-bg: #FFFFFF;
   --radio-border: #C8C8CB;
   --radio-border-hover: #252628;
-  --radio-border-error: #D74B54;
   --radio-checked-bg: #80E3FF;
   --radio-checked-bg-hover: #2FCEEF;
   --radio-checked-dot: #252628;
@@ -372,7 +371,6 @@
   --radio-label-fg: #252628;
   --radio-label-fg-disabled: #C8C8CB;
   --radio-caption-fg: #999999;
-  --radio-caption-error-fg: #D74B54;
 
   /* Toggle tokens, measured from ui/toggle/toggle-1.svg. Unlike
      Checkbox/Radio, the track itself never gets an error color — only the
@@ -688,7 +686,6 @@
   --chips-disabled-fg: #C8C8CB;
 
   --filter-fg: #252628;
-  --filter-subtitle-fg: #999999;
   --filter-icon-fg: #252628;
   --filter-white-bg: #FFFFFF;
   --filter-white-bg-hover: #EFEFEF;
@@ -964,6 +961,10 @@
 
   --range-input-accent: #82BF00;
   --range-input-accent-hover: #72A716;
+  /* Design-check #45: thumb arrows are white in the old-brand theme (the
+     new theme's dark #252628 icon only reads against the pale cyan thumb —
+     against the old theme's green it needs the light variant instead). */
+  --range-input-thumb-icon-fg: #FFFFFF;
 
   --steps-active-ring: #82BF00;
   --steps-fade-arrow-bg: #252628;

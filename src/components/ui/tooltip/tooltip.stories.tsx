@@ -4,7 +4,7 @@ import { Tooltip } from "./tooltip"
 import { Button } from "@/components/ui/button"
 
 const meta = {
-  title: "UI/Tooltip",
+  title: "Content/Tooltip",
   component: Tooltip,
   parameters: { layout: "centered" },
   args: { content: "Подсказка с пояснением", children: <Button variant="secondary-grey">Наведите курсор</Button> },

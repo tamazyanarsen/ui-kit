@@ -4,7 +4,7 @@ import { Hint } from "./hint"
 import { Button } from "@/components/ui/button"
 
 const meta = {
-  title: "UI/Hint",
+  title: "Content/Hint",
   component: Hint,
   parameters: { layout: "centered" },
   args: {

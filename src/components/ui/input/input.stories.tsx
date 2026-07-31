@@ -4,7 +4,7 @@ import { Search } from "lucide-react"
 import { Input } from "./input"
 
 const meta = {
-  title: "UI/Input",
+  title: "Interaction/Input",
   component: Input,
   parameters: { layout: "padded" },
   args: { label: "Имя" },

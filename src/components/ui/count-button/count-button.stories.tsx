@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { CountButton } from "./count-button"
 
 const meta = {
-  title: "UI/CountButton",
+  title: "Interaction/Button/CountButton",
   component: CountButton,
   parameters: { layout: "centered" },
   args: { children: "Уведомления", count: 3, variant: "secondary-grey" },

@@ -40,7 +40,7 @@ function ConfirmModal({ size = "l" }: { size?: "l" | "m" }) {
 }
 
 const meta = {
-  title: "UI/Modal",
+  title: "Template/Modal",
   component: ConfirmModal,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof ConfirmModal>

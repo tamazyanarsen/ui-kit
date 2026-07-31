@@ -5,7 +5,7 @@ import { Radio } from "./radio"
 import { RadioGroup } from "./root"
 
 const meta = {
-  title: "UI/Radio",
+  title: "Interaction/Radio",
   component: Radio,
   parameters: { layout: "centered" },
   args: { value: "a" },
@@ -27,15 +27,6 @@ function Group() {
 
 export const Default: Story = {
   render: () => <Group />,
-}
-
-export const WithError: Story = {
-  render: () => (
-    <RadioGroup defaultValue="a">
-      <Radio value="a" label="Вариант A" error="Нужно выбрать другой вариант" />
-      <Radio value="b" label="Вариант B" />
-    </RadioGroup>
-  ),
 }
 
 export const Disabled: Story = {

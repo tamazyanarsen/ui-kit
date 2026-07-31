@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Chips } from "./chips"
 
 const meta = {
-  title: "UI/Chips",
+  title: "Interaction/Chips",
   component: Chips,
   parameters: { layout: "centered" },
   args: { children: "Значение" },

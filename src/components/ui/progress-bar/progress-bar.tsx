@@ -55,7 +55,9 @@ function StepTrack({
   const notDone = total - current
 
   return (
-    <div className="flex h-1 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
+    // Design-check #43: 8px per the Figma source (ui/progress-bar/*.svg
+    // rects are all height="8"), not 4px.
+    <div className="flex h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
       <div
         aria-hidden="true"
         className="h-full bg-[var(--progress-step-fill)]"
@@ -90,7 +92,7 @@ function TimelineTrack({
   const resolvedColor = color ?? timelineColorForValue(clamped)
 
   return (
-    <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
+    <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
       <div
         aria-hidden="true"
         className="h-full rounded-full transition-[width]"

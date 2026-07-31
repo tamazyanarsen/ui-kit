@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { ProgressBar } from "./progress-bar"
 
 const meta = {
-  title: "UI/ProgressBar",
+  title: "Content/ProgressBar",
   component: ProgressBar,
   parameters: { layout: "padded" },
   args: { title: "Шаг 2 из 4" },

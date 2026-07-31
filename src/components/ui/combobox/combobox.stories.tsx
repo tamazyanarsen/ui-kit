@@ -130,7 +130,7 @@ function TreeMultiSelect() {
 }
 
 const meta = {
-  title: "UI/Combobox",
+  title: "Interaction/Combobox",
   component: DocumentsMultiSelect,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof DocumentsMultiSelect>

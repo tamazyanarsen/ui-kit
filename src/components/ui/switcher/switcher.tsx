@@ -10,7 +10,10 @@ import { useOverflowCount } from "@/lib/use-overflow-count"
 // Switcher — "Cell Switcher / Переключатель": a segmented control (pill
 // container + a sliding active pill), as opposed to Tabs' underline style.
 // Same usage split as Tabs: Large for a 1st-level switcher, Medium for a
-// 2nd-level one. `greyBackground` is the spec's own "Grey Background"
+// 2nd-level one — the spec's "Elements" matrix additionally labels these
+// two sizes "Desktop"/"Mobile" (its own top matrix on the same page still
+// says Large/Medium, so this reads as an added usage-context label, not a
+// renamed prop). `greyBackground` is the spec's own "Grey Background"
 // property — Grey Solid (true, active segment goes white) vs White Solid
 // (false, white container needs a border + a grey active segment for
 // contrast). `activeVariant="black"` is the separate "Active Black" variant

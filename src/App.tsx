@@ -41,6 +41,7 @@ import { UpButtonDemo } from "@/demo/up-button-demo"
 import { SidebarDemo } from "@/demo/sidebar-demo"
 import { TabsDemo } from "@/demo/tabs-demo"
 import { SwitcherDemo } from "@/demo/switcher-demo"
+import { HeaderDemo } from "@/demo/header-demo"
 import { EmptySearchDemo } from "@/demo/empty-search-demo"
 import { NpsDemo } from "@/demo/nps-demo"
 import { ErrorPageDemo } from "@/demo/error-page-demo"
@@ -125,6 +126,7 @@ function App() {
           <SidebarDemo />
           <TabsDemo />
           <SwitcherDemo />
+          <HeaderDemo />
           <EmptySearchDemo />
           <NpsDemo />
           <ErrorPageDemo />

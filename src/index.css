@@ -711,6 +711,22 @@
   --nav-sidebar-item-hover-bg: #EFEFEF;
   --nav-sidebar-item-active-bg: #F4F4F4;
 
+  /* Header tokens (ui/header, "Шапка"). Accent/hover-blue reuses the same
+     hex as --btn-primary-bg-active/--calendar-accent-fg (#14B1D1) under its
+     own namespace per the kit's convention, rather than cross-referenced —
+     confirmed against the spec's own nav-item/icon hover states. */
+  --header-bg: #FFFFFF;
+  --header-border: #DEDEDE;
+  --header-fg: #252628;
+  --header-meta-fg: #999999;
+  --header-icon-fg: #252628;
+  --header-hover-fg: #14B1D1;
+  --header-item-hover-bg: #EFEFEF;
+  --header-divider: #EFEFEF;
+  --header-check-fg: #14B1D1;
+  --header-logout-fg: #D74B54;
+  --header-unread-dot: #D74B54;
+
   /* Tabs tokens (ui/tabs). Text/underline colors pixel-confirmed via
      histogram against ui/tabs/tabs@2x-1.png's own "Elements" state table —
      all three exactly match existing tokens (--select-caption-fg/-fg/
@@ -986,4 +1002,7 @@
   --pagination-hover-bg: #F3F9E6;
   --pagination-active-bg: #D9F0AB;
   --pagination-onclick-bg: #C4E88B;
+
+  --header-hover-fg: #699B12;
+  --header-check-fg: #699B12;
 }

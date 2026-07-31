@@ -75,7 +75,7 @@ function SwitcherDemo() {
         </div>
 
         <div className="mt-8 flex flex-col items-start gap-2">
-          <RowLabel>Medium — вкладка 2-го уровня</RowLabel>
+          <RowLabel>Medium (Mobile) — вкладка 2-го уровня</RowLabel>
           <Switcher items={BASIC_ITEMS} size="md" defaultValue="day" />
         </div>
 

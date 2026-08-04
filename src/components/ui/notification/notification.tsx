@@ -55,67 +55,82 @@ function NotificationItem({
           : undefined
       }
       className={cn(
-        "flex flex-col gap-1 bg-[var(--notification-bg)] px-4 py-3",
+        "flex items-start gap-4 bg-[var(--notification-bg)] px-4 py-6",
         clickable &&
           "cursor-pointer transition-colors hover:bg-[var(--notification-bg-hover)] active:bg-[var(--notification-bg-pressed)]",
         className
       )}
     >
-      <div className="flex items-start gap-2">
+      <span
+        aria-hidden="true"
+        className="flex h-5 w-2 shrink-0 items-center justify-center"
+      >
         {!viewed && (
-          <span
-            aria-hidden="true"
-            className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--notification-dot)]"
-          />
+          <span className="size-2 rounded-full bg-[var(--notification-dot)]" />
         )}
-        <span
-          className={cn(
-            "text-[var(--notification-title-fg)]",
-            viewed ? "font-normal" : "font-medium"
-          )}
-        >
-          {title}
-        </span>
-      </div>
+      </span>
 
-      {sum && (
-        <p className="font-medium text-[var(--notification-title-fg)]">
-          {sum}
-        </p>
-      )}
-      {status && (
-        <p className="text-sm text-[var(--notification-meta-fg)]">{status}</p>
-      )}
-      {description && (
-        <p className="text-sm text-[var(--notification-meta-fg)]">
-          {description}
-        </p>
-      )}
-
-      {(buttonLabel || timestamp) && (
-        <div className="mt-1 flex items-center justify-between gap-3">
-          {buttonLabel ? (
-            <Button
-              type="button"
-              variant="secondary-grey"
-              size="sm"
-              onClick={(event) => {
-                event.stopPropagation()
-                onButtonClick?.()
-              }}
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-1">
+          <span
+            className={cn(
+              "text-p1 font-medium",
+              viewed
+                ? "text-[var(--notification-meta-fg)]"
+                : "text-[var(--notification-title-fg)]"
+            )}
+          >
+            {title}
+          </span>
+          {sum && (
+            <p
+              className={cn(
+                "text-p2 font-medium",
+                viewed
+                  ? "text-[var(--notification-meta-fg)]"
+                  : "text-[var(--notification-title-fg)]"
+              )}
             >
-              {buttonLabel}
-            </Button>
-          ) : (
-            <span />
-          )}
-          {timestamp && (
-            <span className="shrink-0 text-xs text-[var(--notification-meta-fg)]">
-              {timestamp}
-            </span>
+              {sum}
+            </p>
           )}
         </div>
-      )}
+        {status && (
+          <p className="text-p2 font-medium text-[var(--notification-meta-fg)]">
+            {status}
+          </p>
+        )}
+        {description && (
+          <p className="text-p2 font-medium text-[var(--notification-meta-fg)]">
+            {description}
+          </p>
+        )}
+
+        {(buttonLabel || timestamp) && (
+          <div className="flex items-center justify-between gap-6 pt-2">
+            {buttonLabel ? (
+              <Button
+                type="button"
+                variant="secondary-grey"
+                size="sm"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onButtonClick?.()
+                }}
+              >
+                {buttonLabel}
+              </Button>
+            ) : (
+              <span />
+            )}
+            {timestamp && (
+              <span className="shrink-0 text-p2 font-medium text-[var(--notification-timestamp-fg)]">
+                {timestamp}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -149,13 +164,13 @@ function NotificationPanel({
     <div
       data-slot="notification-panel"
       className={cn(
-        "flex w-[380px] flex-col overflow-hidden rounded-2xl bg-[var(--notification-bg)] shadow-lg ring-1 ring-foreground/10",
+        "flex w-[480px] flex-col overflow-hidden rounded-[16px] bg-[var(--notification-bg)] shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
         className
       )}
     >
       {title && (
-        <div className="border-b border-[var(--notification-divider)] px-4 py-3">
-          <p className="font-medium text-[var(--notification-title-fg)]">
+        <div className="border-b border-[var(--notification-divider)] px-4 pt-4 pb-3">
+          <p className="text-h3 text-[var(--notification-title-fg)]">
             {title}
           </p>
         </div>
@@ -163,7 +178,7 @@ function NotificationPanel({
 
       <div
         className={cn(
-          "flex flex-col overflow-y-auto",
+          "themed-scrollbar flex flex-col overflow-y-auto",
           showDivider && "divide-y divide-[var(--notification-divider)]",
           !showScrollBar && "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         )}
@@ -178,7 +193,7 @@ function NotificationPanel({
         // Design-check #41: each button fills half the row (was sized to
         // its own text, letting "Прочитать все" and "Настройки" end up
         // visibly different widths).
-        <div className="flex items-center gap-2 border-t border-[var(--notification-divider)] px-4 py-3 [&>*]:flex-1">
+        <div className="flex items-center gap-4 border-t border-[var(--notification-divider)] p-4 [&>*]:flex-1">
           {primaryButtonLabel && (
             <Button
               type="button"

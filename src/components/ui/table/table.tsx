@@ -31,7 +31,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       <table
         data-slot="table"
         className={cn(
-          "w-full border-separate border-spacing-0 text-sm text-[var(--table-fg)]",
+          "w-full border-separate border-spacing-0 text-p2 text-[var(--table-fg)]",
           className
         )}
         {...props}
@@ -130,7 +130,7 @@ function TableRowMenu({
         >
           <MenuPrimitive.Popup
             data-slot="table-row-menu-content"
-            className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             {menu}
           </MenuPrimitive.Popup>
@@ -178,13 +178,35 @@ function TableHeadCell({
   const align = type === "subtitle-right" ? "text-right" : "text-left"
   const isSubtitle = type === "subtitle-left" || type === "subtitle-right"
 
+  // Per-type vertical padding, pixel-confirmed against the spec's own
+  // "ELK / table-title-cell" master (get_design_context): Subtitle is
+  // py-[14px] (the default below), Checkbox is py-3 (12px) and Icon is
+  // py-4 (16px) — both distinct from Subtitle's 14px. Button collapses to
+  // a uniform p-2 (8px) rather than px-2/py-[14px], since it wraps its own
+  // 32px `icon-sm` Button already. This matters beyond pixel-pedantry: a
+  // `<tr>`'s rendered height is the max over its cells' own boxes, so
+  // before this fix the Button cell's 14px padding (14+32+14=60px) forced
+  // the *entire* header row to 60px instead of the spec's 48px — confirmed
+  // by measuring the live story (Playwright) before and after. Checkbox's
+  // 14px padding (14+24+14=52px) would likewise have kept the row at 52px
+  // even after fixing Button alone, so both needed correcting together.
+  const headCellPadding =
+    type === "checkbox"
+      ? "px-2 py-3"
+      : type === "icon"
+        ? "px-2 py-4"
+        : type === "button"
+          ? "p-2"
+          : "px-2 py-[14px]"
+
   return (
     <th
       data-slot="table-head-cell"
       data-type={type}
       scope="col"
       className={cn(
-        "h-13 px-4 py-3 font-medium whitespace-nowrap",
+        headCellPadding,
+        "font-medium whitespace-nowrap",
         type === "checkbox" || type === "icon" || type === "button"
           ? "w-px text-center"
           : align,
@@ -201,8 +223,16 @@ function TableHeadCell({
         />
       )}
 
+      {/* `flex`, not `inline-flex` — an inline-level box here would stay in
+          the table cell's inline formatting context and inherit a 20px
+          line-height "strut" from the table's text-sm, forcing the 16px
+          icon's effective box up to 20px regardless of the cell's own
+          declared padding (confirmed empirically: this alone kept the
+          header row at 53px instead of 48px after the checkbox/button
+          padding fixes elsewhere in this file). `flex` makes it a block
+          box, which isn't subject to the strut. */}
       {type === "icon" && (
-        <span className="inline-flex text-[var(--table-fg)]" aria-hidden="true">
+        <span className="flex text-[var(--table-fg)]" aria-hidden="true">
           {icon}
         </span>
       )}
@@ -227,15 +257,11 @@ function TableHeadCell({
         ) : (
           <span
             className={cn(
-              "inline-flex items-center gap-1",
+              "inline-flex items-center gap-1 text-[var(--table-description-fg)]",
               type === "subtitle-right" && "flex-row-reverse"
             )}
           >
-            {icon && (
-              <span aria-hidden="true" className="text-[var(--table-fg)]">
-                {icon}
-              </span>
-            )}
+            {icon && <span aria-hidden="true">{icon}</span>}
             <span>{children}</span>
           </span>
         ))}
@@ -276,7 +302,7 @@ function TableCell({
       data-slot="table-cell"
       data-type={type}
       className={cn(
-        "h-13 px-4 py-3 whitespace-nowrap",
+        "px-2 py-4 whitespace-nowrap",
         type === "checkbox" || type === "icon" || type === "button"
           ? "w-px text-center"
           : align === "right"
@@ -290,17 +316,25 @@ function TableCell({
         <Checkbox checked={checked} onCheckedChange={onCheckedChange} aria-label="Выбрать строку" />
       )}
 
+      {/* `flex`, not `inline-flex` — an inline-level box here would stay in
+          the table cell's inline formatting context and inherit a 20px
+          line-height "strut" from the table's text-sm, forcing the 16px
+          icon's effective box up to 20px regardless of the cell's own
+          declared padding (confirmed empirically: this alone kept the
+          header row at 53px instead of 48px after the checkbox/button
+          padding fixes elsewhere in this file). `flex` makes it a block
+          box, which isn't subject to the strut. */}
       {type === "icon" && (
-        <span className="inline-flex text-[var(--table-fg)]" aria-hidden="true">
+        <span className="flex text-[var(--table-fg)]" aria-hidden="true">
           {icon}
         </span>
       )}
 
       {type === "text" && (
-        <span className="flex flex-col gap-0.5">
+        <span className="flex flex-col">
           <span className="font-medium text-[var(--table-fg)]">{children}</span>
           {description && (
-            <span className="text-xs text-[var(--table-description-fg)]">
+            <span className="text-p3 text-[var(--table-description-fg)]">
               {description}
             </span>
           )}

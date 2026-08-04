@@ -40,15 +40,30 @@ const buttonVariants = cva(
       },
       size: {
         // Mobile-first: unprefixed classes are the mobile form, `md:` switches
-        // to the desktop form at the 768px breakpoint.
-        sm: "h-8 gap-3.5 rounded-2xl px-[17px] text-xs has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
+        // to the desktop form at the 768px breakpoint. Radii use literal
+        // px values (not rounded-xl/2xl) because the button's Figma spec
+        // (16px, 12px only for M-mobile) doesn't line up with the kit's
+        // shared --radius multiplier scale used by cards/inputs/etc.
+        //
+        // Round-2 audit fix: horizontal padding was off at every size (a
+        // systematic +1px vs Figma's literal `get_design_context` values
+        // for the "ELK / button" master, node 32:9064, plus `default`
+        // mobile was off by a lot more — px-17 there looked like a stray
+        // copy of `sm`'s value rather than the real 24px). Figma also
+        // gives the icon-adjacent (has-icon) padding as a genuinely
+        // different pair of numbers per side, not just the icon side —
+        // and `default` and `lg`-mobile turn out to share identical
+        // padding with each other/with `sm` at points where Figma's own
+        // instances happen to match, so there's no md: padding override
+        // needed for `sm`/`default` any more, only for `lg`.
+        sm: "h-8 gap-2 rounded-[16px] px-4 text-p3 md:text-p2 has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-4",
         default:
-          "h-10 gap-3.5 rounded-xl px-[17px] text-xs has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4 md:h-12 md:rounded-2xl md:px-[25px] md:text-sm md:has-data-[icon=inline-end]:pr-5 md:has-data-[icon=inline-start]:pl-5",
-        lg: "h-12 gap-3.5 rounded-2xl px-[25px] text-xs has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-5 md:h-14 md:gap-3 md:px-[33px] md:text-sm md:has-data-[icon=inline-end]:pr-6 md:has-data-[icon=inline-start]:pl-6 md:[&_svg:not([class*='size-'])]:size-5",
-        icon: "size-10 rounded-xl md:size-12 md:rounded-2xl",
-        "icon-sm": "size-8 rounded-2xl",
+          "h-10 gap-2 rounded-[12px] px-6 text-p2 has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-4 md:h-12 md:rounded-[16px] md:text-p1",
+        lg: "h-12 gap-2 rounded-[16px] px-6 text-p2 has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-4 md:h-14 md:px-8 md:text-p1 md:has-data-[icon=inline-end]:pr-8 md:has-data-[icon=inline-start]:pl-6 md:[&_svg:not([class*='size-'])]:size-6",
+        icon: "size-10 rounded-[12px] md:size-12 md:rounded-[16px]",
+        "icon-sm": "size-8 rounded-[16px]",
         "icon-lg":
-          "size-12 rounded-2xl md:size-14 md:[&_svg:not([class*='size-'])]:size-5",
+          "size-12 rounded-[16px] md:size-14 md:[&_svg:not([class*='size-'])]:size-6",
       },
     },
     defaultVariants: {

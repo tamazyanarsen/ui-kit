@@ -90,7 +90,7 @@ const ELLIPSIS_RESERVED = 72
 
 function NavItem({ item }: { item: HeaderNavItem }) {
   const baseClassName = cn(
-    "flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
+    "flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1 font-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
     item.active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
   )
 
@@ -112,14 +112,14 @@ function NavItem({ item }: { item: HeaderNavItem }) {
         {item.label}
         <ChevronDown
           aria-hidden="true"
-          className="size-3.5 shrink-0 transition-transform group-data-popup-open:rotate-180"
+          className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
         />
       </MenuPrimitive.Trigger>
       <MenuPrimitive.Portal>
         <MenuPrimitive.Positioner side="bottom" align="start" sideOffset={8} className="isolate z-50">
           <MenuPrimitive.Popup
             data-slot="header-nav-item-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             {item.items.map((sub) => (
               <ButtonMenuOverflowItem key={sub.value} text={sub.label} onClick={sub.onClick} />
@@ -142,7 +142,8 @@ function NavRow({
 }) {
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     items.length,
-    ELLIPSIS_RESERVED
+    ELLIPSIS_RESERVED,
+    24
   )
   const visibleItems = items.slice(0, visibleCount)
   const hiddenItems = items.slice(visibleCount)
@@ -151,7 +152,7 @@ function NavRow({
     <div
       ref={containerRef}
       data-slot="header-nav-row"
-      className="relative flex min-w-0 flex-1 items-center gap-1 border-t border-[var(--header-border)] px-4 py-1.5"
+      className="relative flex min-w-0 flex-1 items-center gap-6 border-t border-[var(--header-border)] px-4 py-3"
     >
       {showPayment && (
         <Button
@@ -176,21 +177,21 @@ function NavRow({
             render={
               <button
                 type="button"
-                className="group flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
+                className="group flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1 font-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
               />
             }
           >
             Ещё
             <ChevronDown
               aria-hidden="true"
-              className="size-3.5 shrink-0 transition-transform group-data-popup-open:rotate-180"
+              className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
             />
           </MenuPrimitive.Trigger>
           <MenuPrimitive.Portal>
             <MenuPrimitive.Positioner side="bottom" align="start" sideOffset={8} className="isolate z-50">
               <MenuPrimitive.Popup
                 data-slot="header-nav-overflow-content"
-                className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+                className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
               >
                 {hiddenItems.map((item) => (
                   <ButtonMenuOverflowItem key={item.value} text={item.label} onClick={item.onClick} />
@@ -203,18 +204,18 @@ function NavRow({
 
       {/* Off-screen measurement copy — see Switcher/Tabs' own comment on
           why this needs to exist as an always-rendered duplicate row. */}
-      <div aria-hidden="true" className="pointer-events-none invisible absolute top-0 left-0 flex gap-1">
+      <div aria-hidden="true" className="pointer-events-none invisible absolute top-0 left-0 flex gap-6">
         {items.map((item, index) => (
           <div
             key={item.value}
             ref={(el) => {
               itemRefs.current[index] = el
             }}
-            className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium whitespace-nowrap"
+            className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-p1 font-medium whitespace-nowrap"
           >
             {item.icon}
             {item.label}
-            {item.items?.length ? <ChevronDown aria-hidden="true" className="size-3.5" /> : null}
+            {item.items?.length ? <ChevronDown aria-hidden="true" className="size-4" /> : null}
           </div>
         ))}
       </div>
@@ -234,17 +235,17 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
           />
         }
       >
-        <Wallet aria-hidden="true" className="size-5" />
+        <Wallet aria-hidden="true" className="size-6" />
         <ChevronDown
           aria-hidden="true"
-          className="size-3.5 shrink-0 transition-transform group-data-popup-open:rotate-180"
+          className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
         />
       </MenuPrimitive.Trigger>
       <MenuPrimitive.Portal>
         <MenuPrimitive.Positioner side="bottom" align="end" sideOffset={8} className="isolate z-50">
           <MenuPrimitive.Popup
             data-slot="header-document-menu-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             {items.map((item) => (
               <ButtonMenuOverflowItem key={item.value} text={item.label} onClick={item.onClick} />
@@ -269,12 +270,14 @@ function EmployeeUserMenu({
         render={
           <button
             type="button"
-            className="group flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 text-[var(--header-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
+            className="group flex shrink-0 cursor-pointer items-center gap-4 rounded-lg px-2 py-1 text-[var(--header-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
           />
         }
       >
-        <CircleUser aria-hidden="true" className="size-5" />
-        <span className="text-sm font-medium">{name}</span>
+        <span className="flex items-center gap-3">
+          <CircleUser aria-hidden="true" className="size-6" />
+          <span className="text-p1 font-medium">{name}</span>
+        </span>
         <ChevronDown
           aria-hidden="true"
           className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
@@ -284,13 +287,13 @@ function EmployeeUserMenu({
         <MenuPrimitive.Positioner side="bottom" align="end" sideOffset={8} className="isolate z-50">
           <MenuPrimitive.Popup
             data-slot="header-employee-menu-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             <MenuPrimitive.Item
               onClick={onSettingsClick}
-              className="flex cursor-default items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+              className="flex cursor-default items-center gap-2 rounded-xl px-3 py-2.5 text-p1 font-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
             >
-              <Settings aria-hidden="true" className="size-4 shrink-0" />
+              <Settings aria-hidden="true" className="size-6 shrink-0" />
               Профиль и настройки
             </MenuPrimitive.Item>
           </MenuPrimitive.Popup>
@@ -357,12 +360,12 @@ function Header({
             type="button"
             aria-label={sidebarOpen ? "Закрыть меню" : "Открыть меню"}
             onClick={() => onSidebarOpenChange?.(!sidebarOpen)}
-            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
+            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-meta-fg)] outline-none transition-colors hover:bg-[var(--header-menu-toggle-hover-bg)]"
           >
             {sidebarOpen ? (
-              <X aria-hidden="true" className="size-5" />
+              <X aria-hidden="true" className="size-6" />
             ) : (
-              <Menu aria-hidden="true" className="size-5" />
+              <Menu aria-hidden="true" className="size-6" />
             )}
           </button>
         )}
@@ -382,7 +385,7 @@ function Header({
                   onClick={onMessagesClick}
                   className="relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
                 >
-                  <Mail aria-hidden="true" className="size-5" />
+                  <Mail aria-hidden="true" className="size-6" />
                   {messageCount > 0 && (
                     <Badge
                       type="counter"
@@ -420,15 +423,15 @@ function Header({
               onClick={() => setLogoutOpen(true)}
               className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
             >
-              <LogOut aria-hidden="true" className="size-5" />
+              <LogOut aria-hidden="true" className="size-6" />
             </button>
           </div>
         )}
 
         {type === "sign-out" && phoneNumber && (
           <div className="flex shrink-0 flex-col items-end text-right">
-            <span className="text-xs text-[var(--header-meta-fg)]">Звонок по России</span>
-            <span className="text-sm font-semibold text-[var(--header-fg)]">{phoneNumber}</span>
+            <span className="text-p3 text-[var(--header-meta-fg)]">Звонок по России</span>
+            <span className="text-p2 font-semibold text-[var(--header-fg)]">{phoneNumber}</span>
           </div>
         )}
       </div>

@@ -19,7 +19,7 @@ function ButtonMenuDemo() {
       <AccordionPanel>
         <div className="space-y-8">
           <div>
-            <p className="mb-3 text-sm font-medium text-[#252628]">
+            <p className="mb-3 text-p2 font-medium text-[#252628]">
               With Primary
             </p>
             <div className="flex flex-col gap-4">
@@ -68,7 +68,7 @@ function ButtonMenuDemo() {
           </div>
 
           <div>
-            <p className="mb-3 text-sm font-medium text-[#252628]">
+            <p className="mb-3 text-p2 font-medium text-[#252628]">
               Only Secondary
             </p>
             <div className="flex flex-col gap-4">
@@ -107,12 +107,13 @@ function ButtonMenuDemo() {
             </div>
           </div>
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          Инлайн-панель действий: контент-фиксированной ширины (не тянется на
-          всю ширину контейнера, в отличие от Selection Bar). Primary-кнопка
-          (если есть) всегда идёт первой/слева; кнопка «...» появляется только
-          когда уже показаны три кнопки и открывает Menu, стилизованное как
-          Select.Dropdown.
+        <p className="mt-4 text-p3 text-muted-foreground">
+          Панель на всю ширину контейнера, кнопки прижаты слева (по мокапам
+          использования в Figma) — прижимается к нижнему краю экрана/области
+          контента. Primary-кнопка (если есть) всегда идёт первой/слева;
+          кнопка «...» появляется только когда уже показаны три кнопки и
+          открывает Menu, стилизованное как Select.Dropdown. Заменяется
+          чёрной Selection Bar при выборе строк таблицы (см. Table).
         </p>
       </AccordionPanel>
     </AccordionItem>

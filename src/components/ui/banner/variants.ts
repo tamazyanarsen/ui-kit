@@ -73,7 +73,7 @@ export const bannerVariants = cva("relative flex bg-cover", {
       compact:
         "h-32 w-full items-center gap-8 overflow-hidden rounded-[32px] px-14",
       mobile:
-        "w-full max-w-[328px] flex-col overflow-hidden rounded-3xl",
+        "w-full max-w-[328px] flex-col overflow-hidden rounded-[24px]",
     },
   },
   defaultVariants: { size: "desktop" },

@@ -16,9 +16,11 @@ const CONTENT_COLOR: Record<DropzoneTone, string> = {
   error: "text-[var(--file-upload-border-error)]",
   default: "text-[var(--file-upload-fg)]",
 }
+// Error only recolors the icon/title (CONTENT_COLOR) — the subtitle stays
+// its normal grey even in the error state, per the live Figma component.
 const SUBTITLE_COLOR: Record<DropzoneTone, string> = {
   disabled: "text-[var(--file-upload-subtitle-fg-disabled)]",
-  error: "text-[var(--file-upload-border-error)]",
+  error: "text-[var(--file-upload-subtitle-fg)]",
   default: "text-[var(--file-upload-subtitle-fg)]",
 }
 
@@ -78,7 +80,7 @@ export function FileUploadDropzone({
       // layout: the spec puts the icon inline with the title on one row,
       // not stacked above it, with the subtitle on its own row below.
       className={cn(
-        "relative flex w-full flex-col items-center gap-1 rounded-2xl border border-dashed px-4 py-6 text-center transition-colors",
+        "relative flex w-full flex-col items-center gap-1 rounded-[24px] border border-dashed px-4 py-6 text-center transition-colors",
         containerToneClass,
         className
       )}
@@ -115,13 +117,18 @@ export function FileUploadDropzone({
         }}
       />
       <span className="flex items-center gap-2">
-        <CirclePlus aria-hidden="true" className={cn("size-4", CONTENT_COLOR[tone])} />
-        <span className={cn("text-sm font-medium", CONTENT_COLOR[tone])}>
-          {children ?? "Перетащите или загрузите файлы"}
+        <CirclePlus aria-hidden="true" className={cn("size-6", CONTENT_COLOR[tone])} />
+        <span className={cn("text-p2 font-medium md:text-p1", CONTENT_COLOR[tone])}>
+          {children ?? (
+            <>
+              {"Перетащите или "}
+              <span className="underline">загрузите файлы</span>
+            </>
+          )}
         </span>
       </span>
       {subtitle && (
-        <span className={cn("text-xs", SUBTITLE_COLOR[tone])}>
+        <span className={cn("text-p3", SUBTITLE_COLOR[tone])}>
           {subtitle}
         </span>
       )}

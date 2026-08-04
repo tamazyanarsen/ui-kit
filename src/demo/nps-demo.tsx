@@ -36,7 +36,7 @@ function NpsDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
+        <p className="mt-6 text-p3 text-muted-foreground">
           1–5 звёзд: Очень плохо / Плохо / Нормально / Хорошо / Отлично.
           Чипсы — один и тот же фиксированный набор вне зависимости от
           оценки (сверено со спеком — все свотчи 1–4 звезды показывают

@@ -21,7 +21,11 @@ export function ComboboxCheckbox({
     <span
       aria-hidden="true"
       className={cn(
-        "flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors",
+        // Round-2 audit: was size-5 (20px) — the literal "ELK / checkbox"
+        // instances sampled off canvas 666:11 are 24px (size-6); rounded-md
+        // already resolves to this kit's 8px scale, which matches Figma's
+        // literal rounded-[8px], so that class is unchanged.
+        "flex size-6 shrink-0 items-center justify-center rounded-md border transition-colors",
         checked
           ? "border-transparent bg-[var(--checkbox-checked-bg)] text-[var(--checkbox-checked-fg)]"
           : "border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent",
@@ -32,9 +36,9 @@ export function ComboboxCheckbox({
         className
       )}
     >
-      {state === "checked" && <Check className="size-3.5" strokeWidth={3} />}
+      {state === "checked" && <Check className="size-4" strokeWidth={3} />}
       {state === "indeterminate" && (
-        <Minus className="size-3.5" strokeWidth={3} />
+        <Minus className="size-4" strokeWidth={3} />
       )}
     </span>
   )

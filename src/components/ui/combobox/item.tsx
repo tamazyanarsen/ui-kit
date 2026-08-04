@@ -7,7 +7,10 @@ import { ComboboxCheckbox, type ComboboxCheckboxState } from "./checkbox"
 
 // Indent step for tree levels — the spec shows "Уровень 2/3/4" stepping in
 // evenly, only two of which (parent/child) are actually selectable here.
-const COMBOBOX_INDENT_PX = 24
+// Round-2 audit: was 24, sampled against a literal nested "Menu Point
+// (ELK)" instance on canvas 666:11 (level-0 pl-[16px] -> level-1
+// pl-[32px], a 16px step, not 24).
+const COMBOBOX_INDENT_PX = 16
 
 // Item — a real, selectable leaf (checkbox + Text + Description).
 
@@ -27,29 +30,39 @@ export function ComboboxItem({
   return (
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
+      // Round-2 audit: matches the literal checkbox "Menu Point (ELK)"
+      // instances sampled off canvas 666:11 (both the plain and tree-nested
+      // dropdown examples) — p-[16px] all sides (not py-2/pr-3/pl-3),
+      // gap-[16px] between the checkbox and text block (not gap-2.5), and
+      // no independent corner radius (pixel-sampled against a hover-state
+      // Menu Point: hard square corner, rounding only comes from the
+      // popup's own clip) with #F8F8F8 highlighted background instead of
+      // the generic --accent token.
       className={cn(
-        "group/item relative flex w-full cursor-default items-start gap-2.5 rounded-md py-2 pr-3 pl-3 text-sm outline-hidden select-none data-highlighted:bg-accent data-disabled:pointer-events-none data-disabled:opacity-50",
+        "group/item relative flex w-full cursor-default items-start gap-4 p-4 text-p2 outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       style={
-        level ? { paddingLeft: 12 + level * COMBOBOX_INDENT_PX, ...style } : style
+        level
+          ? { paddingLeft: 16 + level * COMBOBOX_INDENT_PX, ...style }
+          : style
       }
       {...props}
     >
       <span
         aria-hidden="true"
-        className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent transition-colors group-data-[selected]/item:border-transparent group-data-[selected]/item:bg-[var(--checkbox-checked-bg)] group-data-[selected]/item:text-[var(--checkbox-checked-fg)] group-data-disabled/item:!border-[var(--checkbox-disabled-border)] group-data-disabled/item:!bg-[var(--checkbox-disabled-bg)]"
+        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md border border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent transition-colors group-data-[selected]/item:border-transparent group-data-[selected]/item:bg-[var(--checkbox-checked-bg)] group-data-[selected]/item:text-[var(--checkbox-checked-fg)] group-data-disabled/item:!border-[var(--checkbox-disabled-border)] group-data-disabled/item:!bg-[var(--checkbox-disabled-bg)]"
       >
         <ComboboxPrimitive.ItemIndicator>
-          <Check className="size-3.5" strokeWidth={3} />
+          <Check className="size-4" strokeWidth={3} />
         </ComboboxPrimitive.ItemIndicator>
       </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="truncate font-medium text-[var(--select-fg)]">
           {children}
         </span>
         {description && (
-          <span className="truncate text-xs text-[var(--select-caption-fg)]">
+          <span className="truncate text-p3 font-medium text-[var(--select-caption-fg)]">
             {description}
           </span>
         )}
@@ -86,17 +99,17 @@ export function ComboboxGroupRow({
       onClick={onToggle}
       data-slot="combobox-group-row"
       className={cn(
-        "relative flex w-full cursor-default items-start gap-2.5 rounded-md py-2 pr-3 pl-3 text-left text-sm outline-hidden select-none hover:bg-accent disabled:pointer-events-none disabled:opacity-50",
+        "relative flex w-full cursor-default items-start gap-4 p-4 text-left text-p2 outline-hidden select-none hover:bg-[#F8F8F8] disabled:pointer-events-none disabled:opacity-50",
         className
       )}
     >
       <ComboboxCheckbox state={state} disabled={disabled} className="mt-0.5" />
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="truncate font-medium text-[var(--select-fg)]">
           {label}
         </span>
         {description && (
-          <span className="truncate text-xs text-[var(--select-caption-fg)]">
+          <span className="truncate text-p3 font-medium text-[var(--select-caption-fg)]">
             {description}
           </span>
         )}

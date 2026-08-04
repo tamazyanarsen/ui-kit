@@ -48,7 +48,7 @@ export function ComboboxTrigger({
   const hasFloatingLabel = floating && Boolean(label)
 
   return (
-    <div className="flex w-full flex-col gap-1.5">
+    <div className="flex w-full flex-col gap-1">
       <ComboboxPrimitive.Trigger
         id={triggerId}
         data-slot="combobox-trigger"
@@ -113,8 +113,10 @@ export function ComboboxTrigger({
         <p
           id={captionId}
           className={cn(
-            "text-xs",
-            size === "sm" ? "px-3" : "px-4 md:px-5",
+            "text-p3 font-medium",
+            // Horizontal padding matches the trigger's own px-4 at both
+            // sizes (see select/variants.ts).
+            "px-4",
             error
               ? "text-[var(--select-caption-error-fg)]"
               : "text-[var(--select-caption-fg)]"

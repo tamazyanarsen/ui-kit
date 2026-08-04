@@ -47,7 +47,7 @@ function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
     <div
       role="status"
       className={cn(
-        "flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--btn-secondary-white-bg)] px-[25px] text-xs font-medium text-[var(--btn-secondary-white-fg)] md:h-14 md:text-sm",
+        "flex h-12 w-full items-center justify-center rounded-[16px] bg-[var(--btn-secondary-white-bg)] px-[25px] text-p2 font-medium text-[var(--btn-secondary-white-fg)] md:h-14 md:px-[33px] md:text-p1",
         className
       )}
     >

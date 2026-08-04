@@ -32,3 +32,12 @@ export const Default: Story = {
 export const Disabled: Story = {
   args: { value: "a", label: "Недоступный вариант", disabled: true },
 }
+
+export const WithError: Story = {
+  args: {
+    value: "a",
+    label: "Вариант с ошибкой",
+    error: "Необходимо выбрать другой вариант",
+    comment: "Это пояснение будет скрыто",
+  },
+}

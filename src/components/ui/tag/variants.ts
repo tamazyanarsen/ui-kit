@@ -50,7 +50,7 @@ const STATUS_COLORS: Record<TagStatusColor, { main: TagStyle; secondary: TagStyl
   grey: {
     main: { bg: "var(--tag-grey-bg)", fg: "var(--tag-grey-fg)" },
     secondary: {
-      bg: "var(--tag-white-bg)",
+      bg: "var(--tag-grey-secondary-bg)",
       fg: "var(--tag-grey-secondary-fg)",
       border: "var(--tag-grey-bg)",
     },

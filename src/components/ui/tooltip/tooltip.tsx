@@ -39,13 +39,18 @@ function Tooltip({
             <TooltipPrimitive.Popup
               data-slot="tooltip-content"
               className={cn(
-                "relative max-w-64 rounded-2xl bg-[var(--tooltip-bg)] px-4 py-3 text-sm text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+                "relative max-w-64 rounded-[8px] bg-[var(--tooltip-bg)] px-4 py-3 text-p3 text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
                 className
               )}
             >
               {content}
+              {/* Same size as Hint's arrow (size-3) — both share the
+                  identical "Direction" polygon geometry in the spec
+                  (get_design_context on both master instances returns the
+                  same 8×20 pre-rotation shape), so there's no basis for
+                  Tooltip's tail to render smaller than Hint's. */}
               <TooltipPrimitive.Arrow className="data-[side=bottom]:top-0 data-[side=bottom]:-translate-y-1/2 data-[side=top]:bottom-0 data-[side=top]:translate-y-1/2 data-[side=left]:right-0 data-[side=left]:translate-x-1/2 data-[side=right]:left-0 data-[side=right]:-translate-x-1/2">
-                <div className="size-2.5 rotate-45 bg-[var(--tooltip-bg)]" />
+                <div className="size-3 rotate-45 bg-[var(--tooltip-bg)]" />
               </TooltipPrimitive.Arrow>
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>

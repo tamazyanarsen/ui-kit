@@ -69,7 +69,13 @@ function InfoIcon({ content }: { content: React.ReactNode }) {
   )
 }
 
-function CopyButton({ copyValue }: { copyValue: string }) {
+function CopyButton({
+  copyValue,
+  large = false,
+}: {
+  copyValue: string
+  large?: boolean
+}) {
   const toast = useToast()
 
   function handleCopy() {
@@ -84,13 +90,19 @@ function CopyButton({ copyValue }: { copyValue: string }) {
       aria-label="Копировать"
       // Design-check #34: centered on Value's first line, not the row's
       // own top edge — the row uses items-start, which would otherwise sit
-      // this size-8 hit target's center ~6px below text-sm's 20px line
-      // height (half the (32-20)px difference), noticeably lower than the
-      // text's optical center. Stays pinned there even when subText adds a
-      // second line below.
-      className="-mt-1.5 flex size-8 shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors hover:text-[var(--ifield-copy-fg-hover)]"
+      // this hit target's center below the text's optical center by half
+      // the (hit-target − line-height) difference. Value is text-base/24px
+      // line-height normally (size-8 hit target, diff 8px, -mt-1) or
+      // text-[32px]/44px for `large-value` (per the spec's "Copy Large"
+      // icon) — a size-11/44px hit target there exactly matches the line
+      // height, so no offset is needed. Stays pinned there even when
+      // subText adds a second line below.
+      className={cn(
+        "flex shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors hover:text-[var(--ifield-copy-fg-hover)]",
+        large ? "size-11" : "-mt-1 size-8"
+      )}
     >
-      <Copy aria-hidden="true" className="size-4" />
+      <Copy aria-hidden="true" className={large ? "size-6" : "size-4"} />
     </button>
   )
 }
@@ -112,7 +124,7 @@ function ItemInformationField({
   const stacked = type === "label-top" || type === "large-value"
 
   const labelRow = (
-    <span className="flex shrink-0 items-center gap-1.5 text-sm text-[var(--ifield-label-fg)]">
+    <span className="flex shrink-0 items-center gap-1.5 text-p1 text-[var(--ifield-label-fg)]">
       {label}
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
@@ -122,8 +134,9 @@ function ItemInformationField({
     <span className="flex items-center gap-1.5">
       <span
         className={cn(
-          "font-medium",
-          type === "large-value" ? "text-2xl" : "text-sm",
+          // text-h2 (32/44) already bakes in weight 500, so it doesn't need
+          // its own font-medium alongside the text-p1 branch that does.
+          type === "large-value" ? "text-h2" : "text-p1 font-medium",
           VALUE_COLOR[valueStatus]
         )}
       >
@@ -137,7 +150,7 @@ function ItemInformationField({
     <div
       data-slot="item-information-field"
       className={cn(
-        "flex items-start gap-2 px-4 py-3",
+        "flex items-start gap-4 px-4 py-4",
         divider && "border-b border-[var(--ifield-divider)]",
         className
       )}
@@ -147,18 +160,18 @@ function ItemInformationField({
           {labelRow}
           {valueRow}
           {subText && (
-            <span className={cn("text-xs", SUBTEXT_COLOR[subTextStatus])}>
+            <span className={cn("text-p2 font-medium", SUBTEXT_COLOR[subTextStatus])}>
               {subText}
             </span>
           )}
         </div>
       ) : (
-        <div className="flex min-w-0 flex-1 items-baseline gap-2">
+        <div className="flex min-w-0 flex-1 items-baseline gap-6">
           <span className="max-w-54 min-w-0 flex-1">{labelRow}</span>
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
             {valueRow}
             {subText && (
-              <span className={cn("text-xs", SUBTEXT_COLOR[subTextStatus])}>
+              <span className={cn("text-p2 font-medium", SUBTEXT_COLOR[subTextStatus])}>
                 {subText}
               </span>
             )}
@@ -167,7 +180,10 @@ function ItemInformationField({
       )}
 
       {copyable && (
-        <CopyButton copyValue={copyValue ?? (typeof value === "string" ? value : "")} />
+        <CopyButton
+          copyValue={copyValue ?? (typeof value === "string" ? value : "")}
+          large={type === "large-value"}
+        />
       )}
     </div>
   )

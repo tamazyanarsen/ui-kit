@@ -41,7 +41,7 @@ interface TabsProps {
 const GAP = { lg: 32, md: 24 }
 const ELLIPSIS_RESERVED = { lg: 44, md: 32 }
 const ELLIPSIS_ICON_SIZE = { lg: "size-6", md: "size-4" }
-const TEXT_SIZE = { lg: "text-base", md: "text-sm" }
+const TEXT_SIZE = { lg: "text-p1", md: "text-p2" }
 
 function TabButton({
   item,
@@ -64,19 +64,33 @@ function TabButton({
       onClick={onClick}
       data-slot="tabs-item"
       data-active={active || undefined}
-      className={cn(
-        "flex shrink-0 cursor-pointer items-center gap-1.5 border-b-2 border-transparent pb-2 font-medium whitespace-nowrap outline-none transition-colors",
-        "text-[var(--tabs-fg)] hover:border-[var(--tabs-underline-hover)]",
-        "data-active:border-[var(--tabs-underline-active)] data-active:font-semibold data-active:text-[var(--tabs-fg-active)]",
-        "disabled:cursor-not-allowed disabled:border-transparent disabled:text-[var(--tabs-fg-disabled)]",
-        TEXT_SIZE[size]
-      )}
+      className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 outline-none disabled:cursor-not-allowed"
     >
-      {item.label}
-      {item.badge !== undefined && (
-        <Badge type="counter" value={item.badge} color="light-grey" disabled={item.disabled} />
-      )}
-      {item.status && <Badge type="point" color="red" disabled={item.disabled} />}
+      <span
+        className={cn(
+          "flex items-center whitespace-nowrap font-medium transition-colors",
+          item.badge !== undefined ? "gap-2" : "gap-1",
+          "text-[var(--tabs-fg)] group-hover:text-[var(--tabs-fg)]",
+          "group-data-active:text-[var(--tabs-fg-active)]",
+          "group-disabled:text-[var(--tabs-fg-disabled)]",
+          TEXT_SIZE[size]
+        )}
+      >
+        {item.label}
+        {item.badge !== undefined && (
+          <Badge type="counter" value={item.badge} color="black" disabled={!active} />
+        )}
+        {item.status && <Badge type="point" color="red" disabled={item.disabled} />}
+      </span>
+      <span
+        aria-hidden="true"
+        className={cn(
+          "h-1 w-full shrink-0 rounded-t-[4px] transition-colors",
+          active
+            ? "bg-[var(--tabs-underline-active)]"
+            : "bg-transparent group-hover:bg-[var(--tabs-underline-hover)] group-disabled:bg-transparent"
+        )}
+      />
     </button>
   )
 }
@@ -114,7 +128,10 @@ function Tabs({
     <div
       ref={containerRef}
       data-slot="tabs"
-      className={cn("relative flex items-center", className)}
+      className={cn(
+        "relative flex items-center border-b border-[var(--tabs-border)]",
+        className
+      )}
       style={{ gap: GAP[size] }}
     >
       {visibleItems.map((item) => (
@@ -135,13 +152,15 @@ function Tabs({
                 type="button"
                 aria-label="Ещё"
                 data-slot="tabs-overflow-trigger"
-                className={cn(
-                  "flex shrink-0 cursor-pointer items-center justify-center border-b-2 border-transparent pb-2 text-[var(--tabs-fg)] outline-none transition-colors hover:border-[var(--tabs-underline-hover)]"
-                )}
+                className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 text-[var(--tabs-fg)] outline-none"
               />
             }
           >
             <Ellipsis aria-hidden="true" className={ELLIPSIS_ICON_SIZE[size]} />
+            <span
+              aria-hidden="true"
+              className="h-1 w-full shrink-0 rounded-t-[4px] bg-transparent transition-colors group-hover:bg-[var(--tabs-underline-hover)]"
+            />
           </MenuPrimitive.Trigger>
           <MenuPrimitive.Portal>
             <MenuPrimitive.Positioner
@@ -152,7 +171,7 @@ function Tabs({
             >
               <MenuPrimitive.Popup
                 data-slot="tabs-overflow-content"
-                className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+                className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
               >
                 {hiddenItems.map((item) => (
                   <ButtonMenuOverflowItem

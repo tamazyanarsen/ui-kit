@@ -46,7 +46,7 @@ function TopFixedMessage({
   return (
     <div
       data-slot="top-fixed-message"
-      className={cn("flex w-full items-center gap-4 px-10 py-3", className)}
+      className={cn("flex h-14 w-full items-center gap-6 px-10 py-3", className)}
       style={{ backgroundColor: TOP_FIXED_MESSAGE_BG[type] }}
     >
       <div className="flex min-w-0 flex-1 items-center gap-4">
@@ -59,7 +59,7 @@ function TopFixedMessage({
         )}
 
         <Tooltip content={text}>
-          <span className="min-w-0 truncate text-sm font-medium text-[var(--top-fixed-message-title-fg)]">
+          <span className="min-w-0 truncate text-p2 font-medium text-[var(--top-fixed-message-title-fg)]">
             {text}
           </span>
         </Tooltip>

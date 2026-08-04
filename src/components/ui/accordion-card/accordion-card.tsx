@@ -59,14 +59,14 @@ function AccordionCard({
           <AccordionPrimitive.Trigger
             data-slot="accordion-card-trigger"
             className={cn(
-              "flex w-full flex-col gap-1 p-7 text-left outline-none transition-colors [&[data-panel-open]_svg]:rotate-180",
+              "flex w-full flex-col gap-1 p-6 text-left outline-none transition-colors [&[data-panel-open]_svg]:rotate-180",
               blocked
                 ? "hover:bg-[var(--accordion-card-blocked-bg-hover)]"
                 : "hover:bg-[var(--accordion-card-bg-hover)]"
             )}
           >
-            <span className="flex items-center justify-between gap-3">
-              <span className="text-base font-semibold text-[var(--accordion-card-title-fg)]">
+            <span className="flex items-center justify-between gap-6">
+              <span className="text-h4 text-[var(--accordion-card-title-fg)]">
                 {title}
               </span>
               <ChevronDownIcon
@@ -75,7 +75,7 @@ function AccordionCard({
               />
             </span>
             {subtitle && (
-              <span className="text-sm text-[var(--accordion-card-subtitle-fg)]">
+              <span className="text-p1 font-medium text-[var(--accordion-card-subtitle-fg)]">
                 {subtitle}
               </span>
             )}
@@ -84,9 +84,18 @@ function AccordionCard({
         {children && (
           <AccordionPrimitive.Panel
             data-slot="accordion-card-panel"
-            className="h-(--accordion-panel-height) overflow-hidden text-sm transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+            className="h-(--accordion-panel-height) overflow-hidden text-p2 transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
-            <div className="px-7 pb-7">{children}</div>
+            {/* Header/content divider — confirmed against get_design_context
+                literal output for the Open=True variants (both Default and
+                Blocked types): "Content" carries border-t grey-134/#DEDEDE
+                plus its own 24px top padding, on top of the header's own
+                24px bottom padding. A prior audit pass concluded there was
+                no divider based on a vector-source re-check that didn't
+                hold up against this literal data. */}
+            <div className="border-t border-[var(--accordion-card-divider)] px-6 pt-6 pb-6">
+              {children}
+            </div>
           </AccordionPrimitive.Panel>
         )}
       </AccordionPrimitive.Item>

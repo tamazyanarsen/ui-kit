@@ -41,7 +41,7 @@ function FileUploadDemo() {
               <FileUploadDropzone subtitle="Перетащите файл в область, чтобы увидеть Grey 100" />
             </div>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             Drag & Drop, а также через кнопку/ссылку «загрузите файлы» (клик
             по всей области открывает системный диалог выбора файла). При
             перетаскивании файла над областью фон меняется на Grey 100 —
@@ -109,7 +109,7 @@ function FileUploadDemo() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             Правило: количество + формат, затем размер. Без лимита на файл —
             «без ограничений по размеру» (без запятой). С лимитом на файл —
             «не более X MB» (запятая перед этой частью), и «... MB каждый и

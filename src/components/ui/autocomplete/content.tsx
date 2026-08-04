@@ -1,6 +1,7 @@
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
 import { cn } from "@/lib/utils"
+import { DROPDOWN_POPUP_CLASS } from "@/components/ui/select/dropdown-chrome"
 
 import { useAutocompleteAnchor } from "./root"
 
@@ -10,6 +11,8 @@ import { useAutocompleteAnchor } from "./root"
 // since the field itself is the search box here. `anchor` is set explicitly
 // to field.tsx's outer box (see root.tsx's AnchorContext comment) — without
 // it Base UI defaults to the bare `<input>`, which is narrower than the box.
+// Shares the same canonical Dropdown surface as Select/Combobox via
+// DROPDOWN_POPUP_CLASS instead of re-deriving its own shadow/radius.
 
 function AutocompleteContent({
   className,
@@ -35,7 +38,8 @@ function AutocompleteContent({
         <ComboboxPrimitive.Popup
           data-slot="autocomplete-content"
           className={cn(
-            "isolate flex max-h-[min(400px,var(--available-height))] w-full flex-col overflow-hidden rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            DROPDOWN_POPUP_CLASS,
+            "isolate flex max-h-[min(400px,var(--available-height))] w-full flex-col overflow-hidden p-2",
             className
           )}
           {...props}
@@ -65,7 +69,12 @@ function AutocompleteStatus({ className, ...props }: ComboboxPrimitive.Status.Pr
   return (
     <ComboboxPrimitive.Status
       data-slot="autocomplete-status"
-      className={cn("px-3 py-2.5 text-sm text-[var(--select-caption-fg)] empty:hidden", className)}
+      // Round-2 audit: same "Text Help" hint padding fix as Combobox's own
+      // Status/Empty (pt-[12px]/pb-[16px]/px-[16px] per canvas 666:11's
+      // search-hint dropdown instance, not a uniform px-3/py-2.5) — no
+      // dedicated Autocomplete frame exists, but this is literally the same
+      // ComboboxPrimitive.Status/Empty pattern reused, not an extrapolation.
+      className={cn("px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden", className)}
       {...props}
     />
   )
@@ -75,7 +84,12 @@ function AutocompleteEmpty({ className, ...props }: ComboboxPrimitive.Empty.Prop
   return (
     <ComboboxPrimitive.Empty
       data-slot="autocomplete-empty"
-      className={cn("px-3 py-2.5 text-sm text-[var(--select-caption-fg)] empty:hidden", className)}
+      // Round-2 audit: same "Text Help" hint padding fix as Combobox's own
+      // Status/Empty (pt-[12px]/pb-[16px]/px-[16px] per canvas 666:11's
+      // search-hint dropdown instance, not a uniform px-3/py-2.5) — no
+      // dedicated Autocomplete frame exists, but this is literally the same
+      // ComboboxPrimitive.Status/Empty pattern reused, not an extrapolation.
+      className={cn("px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden", className)}
       {...props}
     />
   )

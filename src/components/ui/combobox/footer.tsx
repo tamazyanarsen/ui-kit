@@ -25,8 +25,12 @@ export function ComboboxFooter({
   return (
     <div
       data-slot="combobox-footer"
+      // Round-2 audit: the top divider and the vertical divider between the
+      // two buttons are literal grey-134 #DEDEDE in the sampled "ELK /
+      // dropdown" footer (both the checkbox-tree and plain examples on
+      // canvas 666:11), not the kit's generic --border token (#E5E5E5).
       className={cn(
-        "grid shrink-0 grid-cols-2 border-t border-border text-sm",
+        "grid shrink-0 grid-cols-2 border-t border-[#DEDEDE] text-p2",
         className
       )}
     >
@@ -34,7 +38,7 @@ export function ComboboxFooter({
         type="button"
         onClick={onReset}
         disabled={resetDisabled}
-        className="border-r border-border px-4 py-3 font-medium text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)]"
+        className="border-r border-[#DEDEDE] px-8 py-4 font-medium text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
       >
         {resetLabel}
       </button>
@@ -42,7 +46,7 @@ export function ComboboxFooter({
         type="button"
         onClick={onApply}
         disabled={applyDisabled}
-        className="px-4 py-3 font-medium text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)]"
+        className="px-8 py-4 font-medium text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
       >
         {applyLabel}
       </button>

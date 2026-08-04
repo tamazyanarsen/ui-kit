@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "@/icons"
 
 import { Button } from "@/components/ui/button"
 import { SelectionButton } from "@/components/ui/selection-button"
@@ -42,7 +42,7 @@ function SelectionButtonDemo() {
             {DIRECTIONS.map((direction) => (
               <div key={direction} className="flex flex-col items-center gap-3">
                 <SelectionButton items={ITEMS} direction={direction} />
-                <span className="text-xs text-muted-foreground">
+                <span className="text-p3 text-muted-foreground">
                   {direction}
                 </span>
               </div>
@@ -92,7 +92,7 @@ function SelectionButtonDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-p3 text-muted-foreground">
           Кнопка и список настраиваются независимо: по умолчанию триггер —
           иконка-многоточие (<code>secondary-white</code>, размер L/S = 56 /
           32px), но можно передать любую кнопку через{" "}

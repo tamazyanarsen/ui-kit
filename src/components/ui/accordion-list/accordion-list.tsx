@@ -34,8 +34,8 @@ const DESCRIPTION_COLOR: Record<DescriptionType, string> = {
 }
 
 const TITLE_SIZE = {
-  h3: "text-base",
-  h4: "text-sm",
+  h3: "text-h3",
+  h4: "text-h4",
 } as const
 
 interface AccordionListItemProps {
@@ -107,7 +107,7 @@ function AccordionListItem({
             nativeButton={false}
             render={<div />}
             data-slot="accordion-list-trigger"
-            className="flex w-full cursor-pointer items-start gap-3 px-4 py-3 text-left outline-none transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
+            className="flex w-full cursor-pointer items-start gap-4 px-4 py-3 text-left outline-none transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
           >
             {showCheckbox && (
               <span
@@ -126,11 +126,11 @@ function AccordionListItem({
               </span>
             )}
 
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="flex items-center gap-1.5">
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="flex items-center gap-3">
                 <span
                   className={cn(
-                    "truncate font-semibold text-[var(--accordion-list-title-fg)]",
+                    "truncate text-[var(--accordion-list-title-fg)]",
                     TITLE_SIZE[titleAs]
                   )}
                 >
@@ -143,43 +143,55 @@ function AccordionListItem({
                 />
               </span>
               {subtitle && (
-                <span className="truncate text-xs text-[var(--accordion-list-subtitle-fg)]">
+                <span className="truncate text-p1 font-medium text-[var(--accordion-list-subtitle-fg)]">
                   {subtitle}
                 </span>
               )}
             </span>
 
-            <span className="flex shrink-0 items-center gap-2 self-center">
+            {/* Description sits on the Title row in Figma (Text+Status share
+                the "Top" row's own 16px gap), while Button/kebab form their
+                own tight 8px-gap group — a single flat gap here would force
+                both distances to the same value, which pixel-measurement
+                against the rendered spec component didn't support. */}
+            <span className="flex shrink-0 items-start gap-4">
               {description && (
                 <span
-                  className={cn("text-sm", DESCRIPTION_COLOR[descriptionType])}
+                  className={cn(
+                    "text-p1 font-medium",
+                    DESCRIPTION_COLOR[descriptionType]
+                  )}
                 >
                   {description}
                 </span>
               )}
-              {showButton && (
-                <span onMouseDown={stopPropagation} onClick={stopPropagation}>
-                  <Button
-                    type="button"
-                    variant="secondary-grey"
-                    size="sm"
-                    onClick={onButtonClick}
-                  >
-                    {buttonLabel}
-                  </Button>
-                </span>
-              )}
-              {showMore && (
-                <span onMouseDown={stopPropagation} onClick={stopPropagation}>
-                  <Button
-                    type="button"
-                    variant="secondary-grey"
-                    size="sm"
-                    icon={Ellipsis}
-                    iconPosition="only"
-                    aria-label="Ещё"
-                    onClick={onMoreClick}
-                  />
+              {(showButton || showMore) && (
+                <span className="flex items-start gap-2">
+                  {showButton && (
+                    <span onMouseDown={stopPropagation} onClick={stopPropagation}>
+                      <Button
+                        type="button"
+                        variant="secondary-grey"
+                        size="sm"
+                        onClick={onButtonClick}
+                      >
+                        {buttonLabel}
+                      </Button>
+                    </span>
+                  )}
+                  {showMore && (
+                    <span onMouseDown={stopPropagation} onClick={stopPropagation}>
+                      <Button
+                        type="button"
+                        variant="secondary-grey"
+                        size="sm"
+                        icon={Ellipsis}
+                        iconPosition="only"
+                        aria-label="Ещё"
+                        onClick={onMoreClick}
+                      />
+                    </span>
+                  )}
                 </span>
               )}
             </span>
@@ -189,7 +201,7 @@ function AccordionListItem({
         {children && (
           <AccordionPrimitive.Panel
             data-slot="accordion-list-panel"
-            className="h-(--accordion-panel-height) overflow-hidden text-sm transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+            className="h-(--accordion-panel-height) overflow-hidden text-p2 transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
             <div className={cn("pb-3", showCheckbox ? "pl-11" : "pl-4", "pr-4")}>
               {children}

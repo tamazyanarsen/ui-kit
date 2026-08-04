@@ -12,7 +12,7 @@ function ModalFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="modal-footer"
       className={cn(
-        "flex shrink-0 flex-col-reverse gap-3 px-6 py-5 [&>*]:w-full md:flex-row md:justify-start md:px-8 md:py-6 md:[&>*]:w-auto",
+        "flex shrink-0 flex-col-reverse gap-4 px-6 py-5 [&>*]:w-full md:flex-row md:justify-start md:gap-6 md:px-8 md:py-6 md:[&>*]:w-auto",
         className
       )}
       {...props}

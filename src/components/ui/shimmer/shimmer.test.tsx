@@ -16,7 +16,7 @@ describe("Shimmer", () => {
     const { container } = render(<Shimmer />)
     const el = container.querySelector('[data-slot="shimmer"]')!
     expect(el).toHaveAttribute("data-shape", "square")
-    expect(el).toHaveClass("rounded-lg")
+    expect(el).toHaveClass("rounded-[8px]")
   })
 
   it("switches to the circle shape", () => {

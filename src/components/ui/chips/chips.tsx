@@ -47,14 +47,19 @@ function Chips({
       )}
     >
       {subtitle && (
-        <span className="truncate text-xs leading-tight text-[var(--chips-subtitle-fg)]">
+        <span
+          className={cn(
+            "truncate text-xs leading-tight font-medium",
+            disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-subtitle-fg)]"
+          )}
+        >
           {subtitle}
         </span>
       )}
       <span className="flex w-full min-w-0 items-center gap-2">
         <span
           className={cn(
-            "min-w-0 truncate text-sm font-medium",
+            "min-w-0 truncate text-p2 font-medium md:text-p1",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-fg)]"
           )}
         >

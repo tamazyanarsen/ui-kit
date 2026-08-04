@@ -28,14 +28,14 @@ describe("Tag", () => {
     expect(tag).toHaveStyle({ backgroundColor: "var(--tag-green-secondary-bg)" })
   })
 
-  it("renders a leading dot when showIcon is set", () => {
+  it("renders a leading check icon when showIcon is set", () => {
     const { container } = render(<Tag showIcon>Активен</Tag>)
-    expect(container.querySelector(".rounded-full")).toBeInTheDocument()
+    expect(container.querySelector("svg")).toBeInTheDocument()
   })
 
-  it("omits the dot by default", () => {
+  it("omits the icon by default", () => {
     const { container } = render(<Tag>Активен</Tag>)
-    expect(container.querySelector(".rounded-full")).not.toBeInTheDocument()
+    expect(container.querySelector("svg")).not.toBeInTheDocument()
   })
 
   it("sizes down for the small size", () => {

@@ -2,6 +2,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { LoaderCircle, Search, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { DROPDOWN_POPUP_CLASS } from "@/components/ui/select/dropdown-chrome"
 
 // Portal + Positioner + Popup. Per spec: 8px gap to the trigger, width
 // matches the trigger, height clamps between 168 and 504px (and still
@@ -32,7 +33,8 @@ export function ComboboxContent({
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
           className={cn(
-            "isolate flex max-h-[min(504px,var(--available-height))] min-h-42 w-full flex-col overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            DROPDOWN_POPUP_CLASS,
+            "isolate flex max-h-[min(504px,var(--available-height))] min-h-42 w-full flex-col overflow-hidden",
             className
           )}
           {...props}
@@ -54,15 +56,21 @@ export function ComboboxSearchInput({
   ...props
 }: ComboboxPrimitive.Input.Props & { loading?: boolean }) {
   return (
-    <div className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-2.5">
+    // Round-2 audit: matches the literal "ELK / input" search row sampled
+    // off canvas 666:11's own dropdown instances — p-[16px] (not
+    // px-3/py-2.5), search icon size-[24px] (not size-4), text 16px (not
+    // text-sm), and the row's own bottom border is the spec's literal
+    // grey-134 #DEDEDE, not the kit's generic --border token (#E5E5E5,
+    // close but not an exact match).
+    <div className="flex shrink-0 items-center gap-2 border-b border-[#DEDEDE] p-4">
       <Search
         aria-hidden="true"
-        className="size-4 shrink-0 text-[var(--select-icon-fg)]"
+        className="size-6 shrink-0 text-[var(--select-icon-fg)]"
       />
       <ComboboxPrimitive.Input
         data-slot="combobox-search"
         className={cn(
-          "h-5 w-full min-w-0 border-0 bg-transparent text-sm text-[var(--select-fg)] outline-none placeholder:text-[var(--select-label-fg)]",
+          "h-6 w-full min-w-0 border-0 bg-transparent text-p1 text-[var(--select-fg)] outline-none placeholder:text-[var(--select-label-fg)]",
           className
         )}
         {...props}
@@ -95,7 +103,10 @@ export function ComboboxStatus({
     <ComboboxPrimitive.Status
       data-slot="combobox-status"
       className={cn(
-        "px-3 py-2.5 text-sm text-[var(--select-caption-fg)] empty:hidden",
+        // Round-2 audit: matches the literal "Text Help" hint sampled off
+        // canvas 666:11's own search-hint dropdown instance —
+        // pt-[12px]/pb-[16px]/px-[16px] (not a uniform px-3/py-2.5).
+        "px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden",
         className
       )}
       {...props}
@@ -111,7 +122,10 @@ export function ComboboxEmpty({
     <ComboboxPrimitive.Empty
       data-slot="combobox-empty"
       className={cn(
-        "px-3 py-2.5 text-sm text-[var(--select-caption-fg)] empty:hidden",
+        // Round-2 audit: matches the literal "Text Help" hint sampled off
+        // canvas 666:11's own search-hint dropdown instance —
+        // pt-[12px]/pb-[16px]/px-[16px] (not a uniform px-3/py-2.5).
+        "px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden",
         className
       )}
       {...props}
@@ -144,7 +158,7 @@ export function ComboboxSectionLabel({
     <ComboboxPrimitive.GroupLabel
       data-slot="combobox-section-label"
       className={cn(
-        "px-3 pt-2 pb-1 text-xs font-medium text-[var(--select-fg)]",
+        "px-3 pt-2 pb-1 text-p3 font-medium text-[var(--select-fg)]",
         className
       )}
       {...props}

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
-import { ChevronDown, Search, Settings2, X } from "lucide-react"
+import { ChevronDown, Search, Settings as Settings2, X } from "@/icons"
 
 import {
   TableTop,
@@ -67,7 +67,7 @@ function DownloadMenu() {
         >
           <MenuPrimitive.Popup
             data-slot="table-top-download-content"
-            className="min-w-40 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="min-w-40 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             <ButtonMenuOverflowItem text="PDF" />
             <ButtonMenuOverflowItem text="XLSX" />

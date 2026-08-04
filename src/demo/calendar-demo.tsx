@@ -44,7 +44,7 @@ function CalendarDemo() {
               <Calendar mode="year" />
             </div>
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">
+          <p className="mt-6 text-p3 text-muted-foreground">
             В режиме "single" клик по названию месяца/года в шапке открывает
             выбор месяца/года (drill-down), как в макете (отдельные
             hit-области у "Май" и "2024").
@@ -83,7 +83,7 @@ function CalendarDemo() {
               <Calendar mode="year" layout="sheet" />
             </div>
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">
+          <p className="mt-6 text-p3 text-muted-foreground">
             Мобильная версия — не просто уменьшенная сетка, а другой паттерн:
             шапка "Выберите даты" + закрытие, непрерывный бесконечный скролл
             месяцев/лет/декад вниз (IntersectionObserver, без верхней

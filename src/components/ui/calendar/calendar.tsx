@@ -15,6 +15,7 @@ function Calendar({
   onReset,
   onApply,
   defaultMonth,
+  disabledDate,
   value = null,
   onChange,
   rangeValue,
@@ -155,6 +156,7 @@ function Calendar({
         yearValue={yearValue}
         onYearChange={onYearChange}
         onSelectDay={handleSelectDay}
+        disabledDate={disabledDate}
       />
     )
   }
@@ -181,6 +183,7 @@ function Calendar({
       onSelectDay={handleSelectDay}
       onSelectMonth={handleSelectMonth}
       onSelectYear={handleSelectYear}
+      disabledDate={disabledDate}
     />
   )
 }

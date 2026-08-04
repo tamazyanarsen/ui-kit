@@ -21,6 +21,10 @@ export interface CalendarProps {
   onReset?: () => void
   onApply?: () => void
   defaultMonth?: Date
+  /** Marks individual days as unselectable (e.g. outside a min/max range) —
+   * Figma's "Disabled" day state. Only applies to day cells (single/range
+   * modes), not the month/year pickers. */
+  disabledDate?: (date: Date) => boolean
 
   // mode="single"
   value?: Date | null

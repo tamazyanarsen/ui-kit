@@ -55,7 +55,7 @@ function OtpDemo() {
               </div>
             </div>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             Карточка рендерит только контент (как Calendar) — модалку/bottom
             sheet вокруг неё оборачивает страница. Валидация запускается
             только по клику «Подтвердить» — кнопка блокируется лишь пока код

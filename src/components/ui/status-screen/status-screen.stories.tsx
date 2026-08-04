@@ -43,7 +43,7 @@ export const AllStatuses: Story = {
           "attention",
           "question",
           "search",
-          "check",
+          "clock",
           "lock",
           "edit",
           "search-attention",

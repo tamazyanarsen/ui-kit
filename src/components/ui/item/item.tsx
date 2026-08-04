@@ -76,9 +76,9 @@ function DefaultThumbnail() {
     // circle, which doesn't match that convention.
     <span
       aria-hidden="true"
-      className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
+      className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
     >
-      <Ellipsis className="size-5" />
+      <Ellipsis className="size-6" />
     </span>
   )
 }
@@ -102,32 +102,41 @@ function RightElement({
   | "checkboxChecked"
   | "onCheckboxChange"
 > & { type: RightElementType }) {
+  // Round-2 audit: the disabled "icon / arrow next chevron" asset on the
+  // master "ELK / item" component is a distinct fill (#C8C8CB, same as
+  // --item-value-fg-disabled) rather than the default's #999999 dimmed via
+  // opacity — matches the same literal-recolor (not opacity-fade) pattern
+  // already used for the Value/Comment text right above.
+  const iconColorClass = disabled
+    ? "text-[var(--item-value-fg-disabled)]"
+    : "text-[var(--item-icon-fg)]"
+
   switch (type) {
     case "navigation":
       return (
         <ChevronRight
           aria-hidden="true"
-          className="size-5 shrink-0 text-[var(--item-icon-fg)]"
+          className={cn("size-4 shrink-0", iconColorClass)}
         />
       )
     case "accordion":
       return (
         <ChevronDown
           aria-hidden="true"
-          className="size-5 shrink-0 text-[var(--item-icon-fg)]"
+          className={cn("size-4 shrink-0", iconColorClass)}
         />
       )
     case "check":
       return (
         <Check
           aria-hidden="true"
-          className="size-5 shrink-0 text-[var(--item-check-fg)]"
+          className="size-4 shrink-0 text-[var(--item-check-fg)]"
           strokeWidth={2.5}
         />
       )
     case "text":
       return (
-        <span className="shrink-0 text-sm font-medium text-[var(--item-right-text-fg)]">
+        <span className="shrink-0 text-p1 font-medium text-[var(--item-right-text-fg)]">
           {rightText}
         </span>
       )
@@ -143,7 +152,10 @@ function RightElement({
               type="button"
               disabled={disabled}
               aria-label="Информация"
-              className="flex size-11 shrink-0 items-center justify-center text-[var(--item-icon-fg)] outline-none"
+              className={cn(
+                "flex size-11 shrink-0 items-center justify-center outline-none",
+                iconColorClass
+              )}
             >
               <Info aria-hidden="true" className="size-4" />
             </button>
@@ -226,8 +238,8 @@ function Item({
       data-slot="item"
       data-disabled={disabled || undefined}
       className={cn(
-        "flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left outline-none transition-colors",
-        subCategory && "pl-10",
+        "flex w-full cursor-pointer items-center gap-6 px-4 py-4 text-left outline-none transition-colors",
+        subCategory && "pl-16",
         divider && "border-b border-[var(--item-divider)]",
         "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
         "data-[disabled]:cursor-not-allowed",
@@ -235,34 +247,49 @@ function Item({
         className
       )}
     >
-      {hasThumbnail && (thumbnail === true ? <DefaultThumbnail /> : thumbnail)}
+      <span className="flex min-w-0 flex-1 items-center gap-4">
+        {hasThumbnail && (
+          <span className={cn("shrink-0", disabled && "opacity-50")}>
+            {thumbnail === true ? <DefaultThumbnail /> : thumbnail}
+          </span>
+        )}
 
-      <span className="flex min-w-0 flex-1 flex-col">
-        {text && (
-          <span className="truncate text-sm text-[var(--item-text-fg)]">
-            {text}
-          </span>
-        )}
-        <span
-          className={cn(
-            "truncate text-sm font-medium",
-            disabled
-              ? "text-[var(--item-value-fg-disabled)]"
-              : "text-[var(--item-value-fg)]"
-          )}
-        >
-          {value}
-        </span>
-        {comment && (
-          <span
-            className={cn(
-              "truncate text-xs",
-              disabled ? "text-[var(--item-value-fg-disabled)]" : COMMENT_COLOR[commentColor]
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="flex min-w-0 flex-col">
+            {text && (
+              <span
+                className={cn(
+                  "truncate text-p2 font-medium",
+                  disabled
+                    ? "text-[var(--item-value-fg-disabled)]"
+                    : "text-[var(--item-value-fg)]"
+                )}
+              >
+                {text}
+              </span>
             )}
-          >
-            {comment}
+            <span
+              className={cn(
+                "truncate text-p1 font-medium",
+                disabled
+                  ? "text-[var(--item-value-fg-disabled)]"
+                  : "text-[var(--item-value-fg)]"
+              )}
+            >
+              {value}
+            </span>
           </span>
-        )}
+          {comment && (
+            <span
+              className={cn(
+                "truncate text-p2 font-medium",
+                disabled ? "text-[var(--item-value-fg-disabled)]" : COMMENT_COLOR[commentColor]
+              )}
+            >
+              {comment}
+            </span>
+          )}
+        </span>
       </span>
 
       {showRightGap && (

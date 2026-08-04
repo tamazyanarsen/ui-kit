@@ -36,7 +36,7 @@ function BasicModalDemo() {
           </ModalDescription>
         </ModalHeader>
         <ModalBody>
-          <p className="text-sm text-[#6D6D6D]">
+          <p className="text-p2 text-[#6D6D6D]">
             Виртуальная карта •• 4482 привязана к 2 подпискам. После удаления
             платежи по ним перестанут проходить.
           </p>
@@ -73,12 +73,12 @@ function ScrollModalDemo() {
                 className="flex items-center justify-between border-b border-[#F4F4F4] pb-4 last:border-0 last:pb-0"
               >
                 <div>
-                  <p className="text-sm font-medium text-[#252628]">
+                  <p className="text-p2 font-medium text-[#252628]">
                     Операция №{i + 1}
                   </p>
-                  <p className="text-xs text-[#999999]">26 июля, 12:0{i % 10}</p>
+                  <p className="text-p3 text-[#999999]">26 июля, 12:0{i % 10}</p>
                 </div>
-                <p className="text-sm text-[#252628]">−{(i + 1) * 120} ₽</p>
+                <p className="text-p2 text-[#252628]">−{(i + 1) * 120} ₽</p>
               </div>
             ))}
           </div>
@@ -106,7 +106,7 @@ function SmallModalDemo() {
           <ModalTitle>Согласие на обработку данных</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <label className="flex items-start gap-3 text-sm text-[#252628]">
+          <label className="flex items-start gap-3 text-p2 text-[#252628]">
             <Checkbox checked={agree} onCheckedChange={setAgree} />
             Я согласен на обработку персональных данных в соответствии с
             политикой конфиденциальности
@@ -135,10 +135,10 @@ function NoHeaderModalDemo() {
       </ModalTrigger>
       <ModalContent size="l">
         <ModalBody>
-          <h3 className="mb-1 text-lg font-medium text-[#252628] md:text-xl">
+          <h3 className="mb-1 text-lg font-medium text-[#252628] md:text-h4">
             Спасибо за заявку
           </h3>
-          <p className="text-sm text-[#6D6D6D]">
+          <p className="text-p2 text-[#6D6D6D]">
             Modal Top здесь отсутствует («None») — заголовок отрисован как
             обычный контент внутри ModalBody и скроллится вместе с ним, а не
             закреплён сверху.
@@ -177,7 +177,7 @@ function ModalDemo() {
             <NoHeaderModalDemo />
           </div>
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-p3 text-muted-foreground">
           На мобильном (&lt;768px) модалка открывается как bottom sheet,
           закреплённый снизу, со скруглением только сверху; на десктопе — как
           центрированная карточка. Заголовок и кнопки закреплены (sticky),

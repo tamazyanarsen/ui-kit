@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { Search } from "lucide-react"
+import { Search } from "@/icons"
 
 import { Input } from "./input"
 

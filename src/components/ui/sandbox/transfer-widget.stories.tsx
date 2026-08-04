@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ArrowRightLeft } from "lucide-react"
+import { ChevronsUpDown as ArrowRightLeft } from "@/icons"
 
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"

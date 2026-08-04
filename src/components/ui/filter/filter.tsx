@@ -106,12 +106,23 @@ function Filter({
   // the "normal" one varies further by open state + background, so an
   // if/else chain reads more clearly here than nesting that variation
   // inside a ternary for the other two.
+  //
+  // Round-2 audit fix: `disabled` is checked FIRST now, not `asChip` — the
+  // two aren't actually mutually exclusive (chip + disabled + hasValue is a
+  // real combination) and the old asChip-first order silently dropped
+  // disabled styling whenever a chip had a value. Figma's own
+  // State=Disabled,Checked=True pill (filter-table node 1303:99261) is a
+  // literal bg #EFEFEF/fg #C8C8CB — exactly --btn-muted-bg/-fg (which
+  // --filter-disabled-fg already equals hex-for-hex), not
+  // --filter-disabled-bg's lighter #F4F4F4.
   let triggerToneClass: string
-  if (asChip) {
+  if (disabled) {
+    triggerToneClass = asChip
+      ? "border-transparent bg-[var(--btn-muted-bg)]"
+      : "border-transparent bg-[var(--filter-disabled-bg)]"
+  } else if (asChip) {
     triggerToneClass =
       "border-transparent bg-[var(--chips-dark-bg)] hover:bg-[var(--chips-dark-bg-hover)]"
-  } else if (disabled) {
-    triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
   } else {
     triggerToneClass = cn(
       open ? "border-[var(--filter-active-border)]" : "border-transparent",
@@ -132,7 +143,11 @@ function Filter({
           onClick={handleClear}
           className={cn(
             "outline-none",
-            asChip ? "text-[var(--chips-dark-fg)]" : "text-[var(--filter-icon-fg)]"
+            disabled
+              ? "text-[var(--filter-disabled-fg)]"
+              : asChip
+                ? "text-[var(--chips-dark-fg)]"
+                : "text-[var(--filter-icon-fg)]"
           )}
         >
           <X aria-hidden="true" className={ICON_SIZE} />
@@ -170,7 +185,20 @@ function Filter({
                 // focus-visible ring used to layer into a double outline —
                 // the border alone is the DS's actual "open" indicator, so
                 // the ring only kicks in for keyboard focus while closed.
-                "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 rounded-2xl border whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+                //
+                // Round-2 audit fix: border is `border-2` (not the
+                // Tailwind-default 1px) — Figma's Active/Active(Hover)
+                // states (nodes 54887:29390/29395/29400/29405) are a
+                // literal `border-2 border-[#80e3ff]`. Kept at a constant
+                // 2px across every state (color-only swap between
+                // transparent/active) rather than growing on open, so the
+                // box doesn't jump size when the border becomes visible.
+                // Radius is conditionally a full pill for the `asChip`
+                // look — its actual Figma source (the filter-table dark
+                // pill, node 1303:99241) is `rounded-[16px]` on a ~32px
+                // box, i.e. a capsule, not the plain Filter's `rounded-[8px]`.
+                "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+                asChip ? "rounded-[16px]" : "rounded-[8px]",
                 triggerToneClass,
                 className
               )}
@@ -188,7 +216,12 @@ function Filter({
             )}
             <span
               className={cn(
-                "min-w-0 truncate text-sm font-medium",
+                // Round-2 audit fix: the `asChip` look's real Figma source
+                // (filter-table's dark pill, P2 Medium 14/20) has no
+                // separate desktop size — the `md:text-base` bump only
+                // applies to the plain Filter label.
+                "min-w-0 truncate text-p2 font-medium",
+                !asChip && "md:text-p1",
                 disabled
                   ? "text-[var(--filter-disabled-fg)]"
                   : asChip
@@ -221,15 +254,30 @@ function Filter({
           >
             <PopoverPrimitive.Popup
               data-slot="filter-content"
-              className="w-64 overflow-hidden rounded-2xl bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+              // Round-2 audit fix: `rounded-2xl` resolves to 18px under this
+              // kit's `--radius-2xl: calc(var(--radius) * 1.8)` scale (0.625rem
+              // * 1.8), but the popup's literal Figma value (node 15693:35422,
+              // "Filer Value Input") is 16px — use the literal px value instead
+              // of the generic scale step, same reasoning Button already
+              // applies to its own radii.
+              className="w-64 overflow-hidden rounded-[16px] bg-popover text-popover-foreground shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
             >
-              <div className="p-3">
+              {/* Round-2 audit fix: outer padding is 16px (Figma node
+                  15693:35423, "Input area" wrapper), not 12px — and the
+                  input box itself is a literal `px-[16px]` there too
+                  (node 15693:35424), wider than the shared Input `sm`
+                  size's own `px-3`. Overridden locally via
+                  `containerClassName` rather than touching Input's own
+                  `sm` token, since that size is shared by other
+                  consumers not covered by this audit. */}
+              <div className="p-4">
                 <Input
                   size="sm"
                   placeholder={placeholder}
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
                   clearable={false}
+                  containerClassName="px-4"
                 />
               </div>
               <ComboboxFooter

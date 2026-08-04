@@ -11,7 +11,10 @@ const modalPopupVariants = cva(
   // Deliberately no `overflow-hidden` here — it lives on the inner wrapper
   // instead (see ModalContent) so the close button, positioned outside
   // these bounds per design-check #37, doesn't get clipped by it.
-  "fixed inset-x-0 bottom-0 z-50 flex max-h-[87vh] w-full flex-col rounded-t-[32px] bg-[var(--modal-bg)] shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom data-closed:fade-out-0 md:inset-x-auto md:top-1/2 md:bottom-auto md:left-1/2 md:max-h-[87vh] md:w-(--modal-width) md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[var(--modal-radius)] md:data-open:slide-in-from-bottom-0 md:data-open:zoom-in-95 md:data-closed:slide-out-to-bottom-0 md:data-closed:zoom-out-95",
+  // Mobile top-corner radius is 24px (Figma "Size=Mobile, Type=Small Modal"
+  // node 45321:17311, the "Box" layer — the actual bottom-sheet card), a
+  // separate, smaller value from the desktop card's 32px --modal-radius.
+  "fixed inset-x-0 bottom-0 z-50 flex max-h-[87vh] w-full flex-col rounded-t-[24px] bg-[var(--modal-bg)] shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom data-closed:fade-out-0 md:inset-x-auto md:top-1/2 md:bottom-auto md:left-1/2 md:max-h-[87vh] md:w-(--modal-width) md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[var(--modal-radius)] md:data-open:slide-in-from-bottom-0 md:data-open:zoom-in-95 md:data-closed:slide-out-to-bottom-0 md:data-closed:zoom-out-95",
   {
     // Design-check #40: measured directly off ui/modal/modal-1.svg at
     // native scale (pixel-scanned the white card's own left/right edges,
@@ -54,11 +57,14 @@ function ModalContent({
           {children}
         </div>
         <DialogPrimitive.Close
-          // Design-check #37: sits outside the card's own bounds, not
-          // inside it — floats above-right of the bottom sheet on mobile
-          // (over whatever's behind, matching the anatomy sheet), peeks out
-          // past the card's top-right corner on desktop.
-          className="absolute -top-14 right-4 z-10 md:top-4 md:-right-14"
+          // Mobile: sits inside the sheet's own top padding, right of where
+          // the title row would be (confirmed against the Mobile/Large
+          // Modal anatomy — the close button shares a row with the title,
+          // not floating above the sheet). Desktop: floats outside the
+          // card entirely, peeking past its top-right corner at the exact
+          // offset measured off the Desktop Large/Small Modal anatomy
+          // (right:-64px, top:0).
+          className="absolute top-5 right-6 z-10 md:top-0 md:-right-16"
           render={
             <Button
               variant="secondary-grey"

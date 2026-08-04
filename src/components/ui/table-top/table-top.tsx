@@ -54,7 +54,7 @@ function TableTopTitle({
       className={cn("flex items-center justify-between gap-4", className)}
       {...props}
     >
-      <h3 className="text-lg font-semibold text-[var(--table-fg)]">{title}</h3>
+      <h3 className="text-h4 text-[var(--table-fg)]">{title}</h3>
       {action}
     </div>
   )
@@ -95,7 +95,7 @@ function TableTopSummary({
       )}
       {...props}
     >
-      <div className="flex items-center gap-4 text-sm text-[var(--table-description-fg)]">
+      <div className="flex items-center gap-4 text-p2 text-[var(--table-description-fg)]">
         {info}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}

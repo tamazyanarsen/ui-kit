@@ -73,7 +73,7 @@ function TabsDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
+        <p className="mt-6 text-p3 text-muted-foreground">
           Large используется как вкладка 1-го уровня, Medium — 2-го. Активная
           вкладка получает жирный текст и тёмное подчёркивание; при наведении
           на неактивную появляется тонкое серое подчёркивание. Количество

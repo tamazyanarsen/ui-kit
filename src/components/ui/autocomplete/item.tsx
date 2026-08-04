@@ -22,14 +22,20 @@ function AutocompleteItem({
     <ComboboxPrimitive.Item
       data-slot="autocomplete-item"
       className={cn(
-        "flex w-full cursor-default flex-col gap-0.5 rounded-lg px-3 py-2.5 text-sm outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "flex w-full cursor-default flex-col gap-0.5 rounded-lg px-3 py-2.5 text-p2 outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       {...props}
     >
       <span className="font-semibold text-[var(--autocomplete-title-fg)]">{children}</span>
       {subtitle && (
-        <span className="text-xs text-[var(--autocomplete-subtitle-fg)]">{subtitle}</span>
+        // Round-2 audit: added font-medium — every literal "Description"
+        // line sampled on canvas 666:11's Menu Point (ELK) instances uses
+        // Object Sans Medium (500), never Regular, at this same 12px size.
+        // No dedicated Autocomplete frame exists though, so this is an
+        // extrapolation from Select/Combobox's shared list-item component,
+        // not a value confirmed against Autocomplete's own spec.
+        <span className="text-p3 font-medium text-[var(--autocomplete-subtitle-fg)]">{subtitle}</span>
       )}
     </ComboboxPrimitive.Item>
   )

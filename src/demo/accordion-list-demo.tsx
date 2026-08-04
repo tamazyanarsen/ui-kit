@@ -43,7 +43,7 @@ function AccordionListDemo() {
             <AccordionListItem title="Title H4" titleAs="h4" subtitle="Subtitle" />
             <AccordionListItem title="Без checkbox/description/кнопок" />
           </AccordionList>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             Checkbox, Description, Button и «···» (kebab) — независимо
             включаемые элементы (<code>showCheckbox</code>,{" "}
             <code>description</code>, <code>showButtons</code> +{" "}
@@ -102,7 +102,7 @@ function AccordionListDemo() {
               buttonsType="button"
             />
           </AccordionList>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             Цвета статусов Description (кроме error) не удалось сверить с
             пикселями макета — картинки этого компонента пришли инлайном без
             file-пути, в отличие от простого Accordion. Приблизительно по

@@ -1,4 +1,4 @@
-import { Search } from "lucide-react"
+import { Search } from "@/icons"
 
 import { EmptySearchResults } from "@/components/ui/empty-search"
 import {

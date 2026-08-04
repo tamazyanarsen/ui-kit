@@ -46,7 +46,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
           />
         }
       >
-        <Bell aria-hidden="true" className="size-5" />
+        <Bell aria-hidden="true" className="size-6" />
         {unreadCount > 0 && (
           <Badge
             type="counter"
@@ -66,9 +66,9 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
         >
           <MenuPrimitive.Popup
             data-slot="notification-menu-content"
-            className="flex w-[380px] flex-col overflow-hidden rounded-2xl bg-[var(--header-bg)] shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="flex w-[380px] flex-col overflow-hidden rounded-2xl bg-[var(--header-bg)] shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
-            <p className="border-b border-[var(--header-divider)] px-4 py-3 text-base font-medium text-[var(--header-fg)]">
+            <p className="border-b border-[var(--header-divider)] px-4 py-3 text-p1 font-medium text-[var(--header-fg)]">
               Уведомления
             </p>
             {/* Spec: fixed 584px height once content reaches it, then
@@ -93,7 +93,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
                       )}
                       <span
                         className={cn(
-                          "text-sm",
+                          "text-p2",
                           item.viewed
                             ? "font-normal text-[var(--header-meta-fg)]"
                             : "font-medium text-[var(--header-fg)]"
@@ -103,18 +103,18 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
                       </span>
                     </span>
                     {item.status && (
-                      <span className="shrink-0 text-sm font-medium text-[var(--header-fg)]">
+                      <span className="shrink-0 text-p2 font-medium text-[var(--header-fg)]">
                         {item.status}
                       </span>
                     )}
                   </div>
-                  <span className="pl-3.5 text-xs text-[var(--header-meta-fg)]">
+                  <span className="pl-3.5 text-p3 text-[var(--header-meta-fg)]">
                     {item.org}
                   </span>
-                  <span className="pl-3.5 text-xs text-[var(--header-meta-fg)]">
+                  <span className="pl-3.5 text-p3 text-[var(--header-meta-fg)]">
                     {item.timestamp}
                   </span>
-                  <span className="pl-3.5 text-xs text-[var(--header-meta-fg)]">
+                  <span className="pl-3.5 text-p3 text-[var(--header-meta-fg)]">
                     {item.description}
                   </span>
                 </MenuPrimitive.Item>

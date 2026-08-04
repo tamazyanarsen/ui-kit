@@ -9,6 +9,18 @@ import { cn } from "@/lib/utils"
 // left"), not a fixed size, so it's implemented as natural flex-wrap rather
 // than a separate prop.
 //
+// The outer bar itself carries chrome in both the L and M master symbols
+// (confirmed identical on both, and pixel-sampled off a "paginator glued to
+// the bottom of a table" usage example): white background, a 1px top
+// border, and 16px/4px horizontal/vertical padding — this is the
+// component's own footer-style frame, not something callers are expected to
+// wrap it in.
+//
+// All page/size pill text (every state) and the "Показать на странице"
+// caption use the kit's Medium (500) weight per spec, not just the active
+// pill — Default/Hover/Onclick number pills sample as font-medium too, only
+// their background changes.
+//
 // Truncation (Begin/Middle/End, sampled from the spec's own Value swatches):
 // - totalPages <= 7: show every page, no ellipsis.
 // - current near the start ("Begin"): 1 2 3 4 5 … last
@@ -66,10 +78,10 @@ function PageButton({
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex h-8 min-w-8 shrink-0 cursor-pointer items-center justify-center rounded-full px-1 text-sm text-[var(--pagination-fg)] outline-none transition-colors",
+        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2 font-medium text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
-        "data-active:bg-[var(--pagination-active-bg)] data-active:font-medium"
+        "data-active:bg-[var(--pagination-active-bg)]"
       )}
     >
       {page}
@@ -95,7 +107,7 @@ function NavButton({
       onClick={onClick}
       aria-label={label}
       data-slot="pagination-nav"
-      className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-[var(--pagination-fg)] outline-none transition-colors not-disabled:hover:bg-[var(--pagination-hover-bg)] disabled:cursor-not-allowed disabled:text-[var(--pagination-disabled-fg)]"
+      className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-[var(--pagination-fg)] outline-none transition-colors not-disabled:hover:bg-[var(--pagination-hover-bg)] disabled:cursor-not-allowed disabled:text-[var(--pagination-disabled-fg)]"
     >
       <Icon aria-hidden="true" className="size-4" />
     </button>
@@ -118,10 +130,10 @@ function SizeButton({
       data-slot="pagination-size"
       data-active={active || undefined}
       className={cn(
-        "flex h-8 min-w-8 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-sm text-[var(--pagination-fg)] outline-none transition-colors",
+        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2 font-medium text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
-        "data-active:bg-[var(--pagination-active-bg)] data-active:font-medium"
+        "data-active:bg-[var(--pagination-active-bg)]"
       )}
     >
       {size}
@@ -151,11 +163,11 @@ function Pagination({
     <div
       data-slot="pagination"
       className={cn(
-        "flex flex-wrap items-center justify-between gap-x-6 gap-y-3",
+        "flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-[var(--pagination-border)] bg-white px-4 py-1",
         className
       )}
     >
-      <div className="flex items-center gap-0.5">
+      <div className="flex items-center gap-1">
         {showNav && (
           <NavButton
             icon={ChevronLeft}
@@ -170,7 +182,7 @@ function Pagination({
               key={`ellipsis-${index}`}
               aria-hidden="true"
               data-slot="pagination-ellipsis"
-              className="flex size-8 shrink-0 items-center justify-center text-[var(--pagination-fg)]"
+              className="flex size-9 shrink-0 items-center justify-center text-[var(--pagination-fg)]"
             >
               <Ellipsis aria-hidden="true" className="size-4" />
             </span>
@@ -194,11 +206,11 @@ function Pagination({
       </div>
 
       {showPageSize && pageSize !== undefined && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm whitespace-nowrap text-[var(--pagination-caption-fg)]">
+        <div className="flex items-center gap-4">
+          <span className="text-p2 font-medium whitespace-nowrap text-[var(--pagination-caption-fg)]">
             Показать на странице
           </span>
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1">
             {pageSizeOptions.map((size) => (
               <SizeButton
                 key={size}

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Home, CreditCard, Settings, Landmark } from "lucide-react"
+import { Briefcase as Home, Wallet as CreditCard, Settings, Wallet as Landmark } from "@/icons"
 
 import { Sidebar } from "./sidebar"
 import { SidebarItem, SidebarGroup } from "./item"

@@ -94,7 +94,7 @@ function PaginationDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
+        <p className="mt-6 text-p3 text-muted-foreground">
           Максимум 7 элементов страниц без стрелок; при большем количестве
           страниц — усечение через «…» по трём паттернам (Begin/Middle/End).
           Layout «M» из спека — не отдельный size-проп, а реакция на нехватку

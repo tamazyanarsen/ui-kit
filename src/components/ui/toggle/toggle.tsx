@@ -68,11 +68,19 @@ function Toggle({
       )}
     >
       {track}
-      <span className="flex flex-col gap-1">
+      {/* Same 0-gap rule as Checkbox/Radio (verified against 600:9113,
+          whose stacked label+comment+error lines sum to exactly its own
+          height with no extra space). Unlike Checkbox/Radio, `pt-0.5` here
+          only kicks in *below* `md` — Desktop's toggle text wrapper has no
+          top offset (600:9089) while Mobile's does (616:9482, pt-[2px]),
+          the reverse direction from Checkbox/Radio but the same underlying
+          cause: the mobile Option Text line-height (20px) is shorter than
+          the fixed 24px track and needs the nudge to stay centered. */}
+      <span className="flex flex-col pt-0.5 md:pt-0">
         {label && (
           <span
             className={cn(
-              "text-sm font-medium text-[var(--toggle-label-fg)]",
+              "text-p2 font-medium text-[var(--toggle-label-fg)] md:text-p1",
               disabled && "text-[var(--toggle-label-fg-disabled)]"
             )}
           >
@@ -80,14 +88,22 @@ function Toggle({
           </span>
         )}
         {comment && (
-          <span id={commentId} className="text-xs text-[var(--toggle-caption-fg)]">
+          <span
+            id={commentId}
+            className={cn(
+              "text-p3 font-medium",
+              disabled
+                ? "text-[var(--toggle-caption-fg-disabled)]"
+                : "text-[var(--toggle-caption-fg)]"
+            )}
+          >
             {comment}
           </span>
         )}
         {error && (
           <span
             id={errorId}
-            className="text-xs text-[var(--toggle-caption-error-fg)]"
+            className="text-p3 font-medium text-[var(--toggle-caption-error-fg)]"
           >
             {error}
           </span>

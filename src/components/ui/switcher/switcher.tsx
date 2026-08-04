@@ -43,9 +43,9 @@ interface SwitcherProps {
   className?: string
 }
 
-const GAP_PX = { lg: 8, md: 4 }
-const GAP_CLASS = { lg: "gap-2", md: "gap-1" }
-const SEGMENT_PADDING = { lg: "px-4 py-2 text-sm", md: "px-3 py-1.5 text-xs" }
+const GAP_PX = { lg: 4, md: 4 }
+const GAP_CLASS = { lg: "gap-1", md: "gap-1" }
+const SEGMENT_PADDING = { lg: "px-8 py-3 text-p1", md: "px-6 py-2.5 text-p2" }
 const ELLIPSIS_RESERVED = { lg: 56, md: 40 }
 const ELLIPSIS_ICON_SIZE = { lg: "size-6", md: "size-4" }
 
@@ -82,7 +82,7 @@ function SegmentButton({
       data-slot="switcher-item"
       data-active={active || undefined}
       className={cn(
-        "flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] data-active:font-semibold disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent",
+        "flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] font-medium whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
         activeBg,
         className
       )}
@@ -137,10 +137,10 @@ function Switcher({
       ref={containerRef}
       data-slot="switcher"
       className={cn(
-        "relative inline-flex items-center rounded-full p-1",
+        "relative inline-flex items-center rounded-[20px] border border-[var(--switcher-border)] p-1",
         greyBackground
           ? "bg-[var(--switcher-grey-bg)]"
-          : "border border-[var(--switcher-border)] bg-[var(--switcher-white-bg)]",
+          : "bg-[var(--switcher-white-bg)]",
         GAP_CLASS[size],
         className
       )}
@@ -165,7 +165,7 @@ function Switcher({
                 type="button"
                 aria-label="Ещё"
                 data-slot="switcher-overflow-trigger"
-                className="flex shrink-0 cursor-pointer items-center justify-center rounded-full px-2 py-2 text-[var(--switcher-fg-inactive)] outline-none transition-colors hover:bg-[var(--switcher-hover-bg)]"
+                className="flex shrink-0 cursor-pointer items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none transition-colors hover:bg-[var(--switcher-hover-bg)]"
               />
             }
           >
@@ -180,7 +180,7 @@ function Switcher({
             >
               <MenuPrimitive.Popup
                 data-slot="switcher-overflow-content"
-                className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+                className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
               >
                 {hiddenItems.map((item) => (
                   <ButtonMenuOverflowItem

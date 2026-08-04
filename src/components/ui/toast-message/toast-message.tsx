@@ -1,10 +1,9 @@
 import * as React from "react"
 import { X } from "@/icons"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-import { TOAST_BG, TOAST_ICON, TOAST_ICON_COLOR } from "./variants"
+import { TOAST_BG, TOAST_BORDER, TOAST_ICON, TOAST_ICON_COLOR } from "./variants"
 import { ToastContext, useToast, type ToastItem, type ToastOptions } from "./use-toast"
 
 // Toast Message — "Всплывающее уведомление". Shows a notification
@@ -90,63 +89,64 @@ function ToastCard({
     <div
       data-slot="toast"
       role="status"
-      className={cn(
-        "w-full min-w-[320px] animate-in rounded-2xl p-4 shadow-lg fade-in-0 slide-in-from-right-4"
-      )}
-      style={{ backgroundColor: TOAST_BG[type] }}
+      className="w-full min-w-[320px] animate-in rounded-[16px] border p-6 shadow-[0_4px_12px_rgba(139,153,169,0.24)] fade-in-0 slide-in-from-right-4"
+      style={{
+        backgroundColor: TOAST_BG[type],
+        borderColor: TOAST_BORDER[type],
+      }}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <Icon
-              aria-hidden="true"
-              className="mt-0.5 size-5 shrink-0"
-              style={{ color: TOAST_ICON_COLOR[type] }}
-            />
-            <span className="font-medium text-[var(--toast-title-fg)]">
-              {toast.title}
-            </span>
-          </div>
-          <button
-            type="button"
-            aria-label="Закрыть"
-            onClick={onClose}
-            className="shrink-0 text-[var(--toast-title-fg)] outline-none"
-          >
-            <X aria-hidden="true" className="size-4" />
-          </button>
+      <div className="flex items-start gap-4">
+        <Icon
+          aria-hidden="true"
+          className="size-6 shrink-0"
+          style={{ color: TOAST_ICON_COLOR[type] }}
+        />
+
+        <div className="flex min-w-0 flex-1 flex-col gap-2 pt-0.5">
+          <span className="text-p1 font-medium text-[var(--toast-title-fg)]">
+            {toast.title}
+          </span>
+
+          {toast.description && (
+            <p className="text-p2 font-medium text-[var(--toast-description-fg)]">
+              {toast.description}
+            </p>
+          )}
+
+          {(data?.primaryButtonLabel || data?.secondaryButtonLabel) && (
+            <div className="flex items-center gap-2 pt-2">
+              {data?.primaryButtonLabel && (
+                <Button
+                  type="button"
+                  variant="secondary-black"
+                  size="sm"
+                  onClick={data.onPrimaryButtonClick}
+                >
+                  {data.primaryButtonLabel}
+                </Button>
+              )}
+              {data?.secondaryButtonLabel && (
+                <Button
+                  type="button"
+                  variant="secondary-white"
+                  size="sm"
+                  onClick={data.onSecondaryButtonClick}
+                >
+                  {data.secondaryButtonLabel}
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
-        {toast.description && (
-          <p className="pl-8 text-sm text-[var(--toast-description-fg)]">
-            {toast.description}
-          </p>
-        )}
-
-        {(data?.primaryButtonLabel || data?.secondaryButtonLabel) && (
-          <div className="flex items-center gap-2 pl-8">
-            {data?.primaryButtonLabel && (
-              <Button
-                type="button"
-                variant="secondary-black"
-                size="sm"
-                onClick={data.onPrimaryButtonClick}
-              >
-                {data.primaryButtonLabel}
-              </Button>
-            )}
-            {data?.secondaryButtonLabel && (
-              <Button
-                type="button"
-                variant="secondary-white"
-                size="sm"
-                onClick={data.onSecondaryButtonClick}
-              >
-                {data.secondaryButtonLabel}
-              </Button>
-            )}
-          </div>
-        )}
+        <button
+          type="button"
+          aria-label="Закрыть"
+          onClick={onClose}
+          className="shrink-0 text-[var(--toast-title-fg)] outline-none"
+        >
+          <X aria-hidden="true" className="size-6" />
+        </button>
       </div>
     </div>
   )
@@ -162,7 +162,7 @@ function Toaster() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed inset-x-4 top-4 z-50 flex flex-col gap-6 md:inset-x-auto md:top-8 md:right-10 md:w-96"
+      className="fixed inset-x-4 top-4 z-50 flex flex-col gap-6 md:inset-x-auto md:top-8 md:right-10 md:w-[480px]"
     >
       {toasts.map((toast) => (
         <ToastCard key={toast.id} toast={toast} onClose={() => close(toast.id)} />

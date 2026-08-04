@@ -83,7 +83,7 @@ function Sidebar({
         data-open={isOpen || undefined}
         className={cn(
           "flex h-full flex-col overflow-hidden border-r border-[var(--nav-sidebar-border)] bg-[var(--nav-sidebar-bg)] transition-[width] duration-200",
-          isOpen ? "w-64" : "w-12",
+          isOpen ? "w-[312px]" : "w-14",
           className
         )}
       >
@@ -92,8 +92,8 @@ function Sidebar({
           value={activeExpanded}
           onValueChange={(value) => setExpanded(value as string[])}
           className={cn(
-            "flex flex-1 flex-col gap-0.5",
-            isOpen ? "p-4" : "p-3",
+            "flex flex-1 flex-col gap-4 py-6",
+            isOpen ? "px-2" : "items-center",
             showScroll ? "overflow-y-auto" : "overflow-hidden"
           )}
         >

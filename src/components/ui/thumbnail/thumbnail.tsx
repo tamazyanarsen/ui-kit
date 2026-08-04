@@ -62,35 +62,35 @@ function Thumbnail({
   const isCardFamily = CARD_TYPES.has(type)
   const isSbp = SBP_TYPES.has(type)
   const isIconStatus = isIconStatusType(type)
+  const isMore = type === "more"
 
+  const badgeOffset = type === "picture" ? "top-[58%] right-[8%]" : "top-[-4px] right-[-8px]"
   const badge =
     count !== undefined ? (
       <Badge
         type="counter"
         value={count}
         disabled={disabled}
-        className="absolute -top-1.5 -right-1.5 z-10"
+        className={cn("absolute z-10", badgeOffset)}
       />
     ) : showDot ? (
-      <Badge
-        type="point"
-        disabled={disabled}
-        className="absolute -top-1.5 -right-1.5 z-10"
-      />
+      <Badge type="point" disabled={disabled} className={cn("absolute z-10", badgeOffset)} />
     ) : null
 
-  let bg: string | undefined
-  let containerClassName = ""
+  // Disabled is a flat opacity-50 on the whole tile for every type (matches
+  // Figma's Disabled samples) — no per-type background-color swap.
+  const containerClassName = disabled ? "opacity-50" : ""
 
+  let bg: string | undefined
   if (isCardFamily) {
-    bg = disabled ? "var(--tag-grey-bg)" : "var(--tag-black-bg)"
+    bg = "var(--tag-black-bg)"
+  } else if (isMore) {
+    bg = "var(--tag-grey-secondary-bg)"
   } else if (isIconStatus) {
     bg = ICON_STATUS_STYLE[type].bg
-    containerClassName = disabled ? "opacity-60" : ""
-  } else {
-    bg = "var(--tag-red-bg)"
-    containerClassName = disabled ? "opacity-60" : ""
   }
+  // isSbp: left undefined — its dark tile is drawn by the inner absolutely
+  // positioned layer(s) below instead of an outer fill (see isSbp block).
 
   return (
     <span
@@ -99,56 +99,27 @@ function Thumbnail({
       data-size={size}
       data-disabled={disabled || undefined}
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-visible",
-        size === "l" ? "size-12 rounded-xl" : "size-10 rounded-lg",
+        "relative inline-flex shrink-0 items-center justify-center overflow-visible rounded-[8px]",
+        size === "l" ? "size-12" : "size-10",
         containerClassName,
         className
       )}
       style={{ backgroundColor: bg }}
     >
-      <span
-        className={cn(
-          "flex size-full items-center justify-center overflow-hidden",
-          size === "l" ? "rounded-xl" : "rounded-lg"
-        )}
-      >
-        {type === "more" && (
-          <MoreHorizontal
-            aria-hidden="true"
-            className={cn(
-              size === "l" ? "size-6" : "size-5",
-              disabled ? "text-white/50" : "text-white"
-            )}
-          />
+      <span className="flex size-full items-center justify-center overflow-hidden rounded-[8px]">
+        {isMore && (
+          <MoreHorizontal aria-hidden="true" className="size-6 text-[var(--tag-grey-secondary-fg)]" />
         )}
 
         {(type === "card" || type === "sticker") && (
           <PaymentLogo system={paymentSystem} disabled={disabled} />
         )}
 
-        {isSbp && (
-          <span className="flex flex-col items-start gap-0.5 px-1.5">
-            <PaymentLogo system={paymentSystem} disabled={disabled} />
-            <span
-              className={cn(
-                "text-[9px] leading-none",
-                disabled ? "text-white/60" : "text-white/85"
-              )}
-            >
-              · {last4 ?? "0000"}
-            </span>
-          </span>
-        )}
-
         {type === "picture" &&
           (src ? (
-            <img
-              src={src}
-              alt={alt}
-              className="size-full object-cover"
-            />
+            <img src={src} alt={alt} className="size-full object-cover" />
           ) : (
-            <ImageIcon aria-hidden="true" className="size-5 text-white/90" />
+            <ImageIcon aria-hidden="true" className="size-6 text-white/90" />
           ))}
 
         {isIconStatus && (() => {
@@ -156,27 +127,50 @@ function Thumbnail({
           return (
             <Glyph
               aria-hidden="true"
-              className={size === "l" ? "size-6" : "size-5"}
+              className="size-6"
               style={{ color: ICON_STATUS_STYLE[type].fg }}
             />
           )
         })()}
       </span>
 
-      {type === "sticker" && (
+      {isSbp && (
         <span
           aria-hidden="true"
-          className="absolute right-0 bottom-0 size-3.5 rounded-tl-sm rounded-br-xl bg-white/50"
-          style={{ clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }}
-        />
+          className={cn(
+            "absolute inset-x-0 top-0 overflow-hidden rounded-[4px]",
+            type === "sbp-card-account" ? "bottom-[10%]" : "inset-y-0"
+          )}
+          style={{ backgroundColor: "var(--tag-black-bg)" }}
+        >
+          <span className="absolute right-1 bottom-1 flex flex-col items-end gap-0.5">
+            <PaymentLogo system={paymentSystem} disabled={disabled} size="sm" />
+            <span className="text-p4 text-white">
+              · {last4 ?? "0000"}
+            </span>
+          </span>
+        </span>
       )}
 
       {type === "sbp-card-account" && (
         <span
           aria-hidden="true"
-          className="absolute inset-x-1.5 -bottom-1 h-1.5 rounded-b-md"
-          style={{ backgroundColor: bg, opacity: 0.7 }}
+          className="absolute inset-x-[2.5%] top-[92.5%] bottom-0 rounded-b-[4px]"
+          style={{ backgroundColor: "var(--tag-black-bg)" }}
         />
+      )}
+
+      {type === "sticker" && (
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 11 11"
+          className="absolute right-0 bottom-0 size-[11px]"
+        >
+          <path
+            d="M0 4C0 1.79086 1.79086 0 4 0H11V4C11 7.86599 7.86599 11 4 11H0V4Z"
+            fill="var(--badge-dark-grey-bg)"
+          />
+        </svg>
       )}
 
       {badge}

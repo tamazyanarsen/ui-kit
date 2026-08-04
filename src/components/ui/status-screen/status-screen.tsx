@@ -2,7 +2,7 @@ import * as React from "react"
 import {
   Check,
   X,
-  TriangleAlert,
+  CircleAlert,
   CircleHelp,
   Search,
   Lock,
@@ -30,7 +30,7 @@ type StatusType =
   | "attention"
   | "question"
   | "search"
-  | "check"
+  | "clock"
   | "lock"
   | "edit"
   | "search-attention"
@@ -39,22 +39,27 @@ type StatusType =
 const STATUS_ICON: Record<StatusType, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
   success: Check,
   error: X,
-  attention: TriangleAlert,
+  attention: CircleAlert,
   question: CircleHelp,
   search: Search,
-  check: Check,
+  clock: Clock,
   lock: Lock,
   edit: Pencil,
   "search-attention": Search,
   "time-attention": Clock,
 }
 
+// Figma groups the 10 mascots into 3 color families regardless of icon:
+// green (Success/Search/Clock), red (Error), amber (Attention/Question/Lock/
+// Edit/Search(Attention)/Time(Attention)) — Question shares Attention's
+// amber, it is not a neutral/grey state.
 const STATUS_COLOR: Record<StatusType, { bg: string; fg: string }> = {
   success: { bg: "var(--status-screen-success-bg)", fg: "var(--status-screen-success-fg)" },
-  check: { bg: "var(--status-screen-success-bg)", fg: "var(--status-screen-success-fg)" },
+  clock: { bg: "var(--status-screen-success-bg)", fg: "var(--status-screen-success-fg)" },
   search: { bg: "var(--status-screen-success-bg)", fg: "var(--status-screen-success-fg)" },
   error: { bg: "var(--status-screen-error-bg)", fg: "var(--status-screen-error-fg)" },
   attention: { bg: "var(--status-screen-attention-bg)", fg: "var(--status-screen-attention-fg)" },
+  question: { bg: "var(--status-screen-attention-bg)", fg: "var(--status-screen-attention-fg)" },
   lock: { bg: "var(--status-screen-attention-bg)", fg: "var(--status-screen-attention-fg)" },
   edit: { bg: "var(--status-screen-attention-bg)", fg: "var(--status-screen-attention-fg)" },
   "search-attention": {
@@ -65,7 +70,6 @@ const STATUS_COLOR: Record<StatusType, { bg: string; fg: string }> = {
     bg: "var(--status-screen-attention-bg)",
     fg: "var(--status-screen-attention-fg)",
   },
-  question: { bg: "var(--status-screen-neutral-bg)", fg: "var(--status-screen-neutral-fg)" },
 }
 
 interface StatusScreenProps {
@@ -96,7 +100,7 @@ function StatusScreen({
     <div
       data-slot="status-screen"
       className={cn(
-        "flex flex-col items-center px-6 py-10 text-center",
+        "flex flex-col items-center gap-8 px-6 py-10 text-center",
         className
       )}
     >
@@ -108,25 +112,27 @@ function StatusScreen({
         <Icon className="size-8" style={{ color: fg }} strokeWidth={2.5} />
       </span>
 
-      <h2 className="mt-4 text-lg font-semibold text-[var(--status-screen-title-fg)]">
-        {title}
-      </h2>
+      <div className="flex flex-col gap-4">
+        <h2 className="text-h3 text-[var(--status-screen-title-fg)]">
+          {title}
+        </h2>
 
-      {subtitle && (
-        <p className="mt-1 max-w-sm text-sm text-[var(--status-screen-subtitle-fg)]">
-          {subtitle}
-        </p>
-      )}
+        {subtitle && (
+          <p className="max-w-sm text-p1 font-medium text-[var(--status-screen-title-fg)]">
+            {subtitle}
+          </p>
+        )}
+      </div>
 
       {(primaryLabel || secondaryLabel) && (
-        <div className="mt-6 flex items-center gap-3">
+        <div className="flex items-center gap-6">
           {primaryLabel && (
-            <Button type="button" variant="primary" onClick={onPrimaryClick}>
+            <Button type="button" variant="primary" size="lg" onClick={onPrimaryClick}>
               {primaryLabel}
             </Button>
           )}
           {secondaryLabel && (
-            <Button type="button" variant="secondary-grey" onClick={onSecondaryClick}>
+            <Button type="button" variant="secondary-grey" size="lg" onClick={onSecondaryClick}>
               {secondaryLabel}
             </Button>
           )}

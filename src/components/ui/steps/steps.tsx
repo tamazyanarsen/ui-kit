@@ -71,7 +71,7 @@ function StepCard({
           : undefined
       }
       className={cn(
-        "min-w-60 flex-1 shrink-0 rounded-xl border-2 border-transparent bg-[var(--steps-bg)] px-6 py-4",
+        "w-60 shrink-0 rounded-[16px] border-2 border-transparent bg-[var(--steps-bg)] px-6 py-4",
         clickable && "cursor-pointer",
         disabled && "cursor-not-allowed",
         active && "border-[var(--steps-active-ring)]"
@@ -79,7 +79,7 @@ function StepCard({
     >
       <p
         className={cn(
-          "truncate font-medium",
+          "truncate text-p2 font-medium",
           disabled
             ? "text-[var(--steps-disabled-fg)]"
             : "text-[var(--steps-title-fg)]"
@@ -89,7 +89,7 @@ function StepCard({
       </p>
       <p
         className={cn(
-          "mt-1 truncate",
+          "mt-1 truncate text-p2 font-medium",
           disabled
             ? "text-[var(--steps-disabled-fg)]"
             : "text-[var(--steps-title-fg)]"
@@ -99,7 +99,7 @@ function StepCard({
       </p>
       {statusText && (
         <p
-          className="mt-2 truncate text-sm"
+          className="mt-2 truncate text-p2 font-medium"
           style={{
             color: disabled
               ? "var(--steps-disabled-fg)"
@@ -120,7 +120,7 @@ function StepCard({
           <TooltipPrimitive.Positioner side="bottom" sideOffset={8}>
             <TooltipPrimitive.Popup
               data-slot="step-tooltip"
-              className="max-w-64 rounded-xl bg-[var(--steps-tooltip-bg)] px-4 py-3 text-sm text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+              className="min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3 text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
             >
               {disabledHint}
             </TooltipPrimitive.Popup>
@@ -147,8 +147,8 @@ function FadeArrow({
       className={cn(
         "pointer-events-none absolute inset-y-0 z-10 flex w-16 items-center",
         side === "left"
-          ? "left-0 justify-start bg-gradient-to-r from-[var(--steps-bg)] to-transparent"
-          : "right-0 justify-end bg-gradient-to-l from-[var(--steps-bg)] to-transparent"
+          ? "left-0 justify-start bg-gradient-to-r from-[var(--steps-fade-bg)] to-transparent"
+          : "right-0 justify-end bg-gradient-to-l from-[var(--steps-fade-bg)] to-transparent"
       )}
     >
       <Button

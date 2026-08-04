@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import type { PaymentSystem } from "@/components/ui/thumbnail"
+
 import { Card } from "./card"
 
 const meta = {
@@ -21,6 +23,20 @@ export const Default: Story = {}
 
 export const WithTag: Story = {
   args: { tag: "Новая" },
+}
+
+export const WithTagColor: Story = {
+  args: { tag: "Требует внимания", tagColor: "red" },
+}
+
+export const PaymentSystems: Story = {
+  render: (args) => (
+    <div className="flex flex-col gap-3">
+      {(["mastercard", "visa", "mir", "unionpay"] as PaymentSystem[]).map((system) => (
+        <Card key={system} {...args} paymentSystem={system} />
+      ))}
+    </div>
+  ),
 }
 
 export const NoThumbnail: Story = {

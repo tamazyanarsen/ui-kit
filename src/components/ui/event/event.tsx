@@ -3,8 +3,9 @@ import { CircleCheck, Clock, FileText } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Tag } from "@/components/ui/tag"
 
-import { STATUS_BG, type EventStatus } from "./variants"
+import { SIGNATORY_STATUS_COLOR, STATUS_TAG_COLOR, type EventStatus } from "./variants"
 
 // Event — "Событие": one row of a document/status change history timeline
 // (rendered inside the existing `Modal` as a list per the spec's own
@@ -71,7 +72,7 @@ function Event({
   className,
 }: EventProps) {
   return (
-    <div data-slot="event" className={cn("flex gap-4", className)}>
+    <div data-slot="event" className={cn("flex gap-2", className)}>
       <div className="flex w-2 shrink-0 flex-col items-center">
         <span
           aria-hidden="true"
@@ -86,40 +87,44 @@ function Event({
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2 pb-6">
-        <div className="flex items-baseline justify-between gap-4">
-          {type === "tag" ? (
-            <span
-              className="rounded-md px-2 py-0.5 text-xs font-medium text-[var(--event-tag-fg)]"
-              style={{ backgroundColor: STATUS_BG[status] }}
-            >
-              {title}
-            </span>
-          ) : (
-            <span className="font-medium text-[var(--event-title-fg)]">
-              {title}
-            </span>
-          )}
-          {timestamp && (
-            <span className="shrink-0 text-sm text-[var(--event-meta-fg)]">
-              {timestamp}
-            </span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-baseline justify-between gap-2">
+            {type === "tag" ? (
+              <Tag color={STATUS_TAG_COLOR[status]} size="s">
+                {title}
+              </Tag>
+            ) : (
+              <span className="text-p1 font-medium text-[var(--event-title-fg)]">
+                {title}
+              </span>
+            )}
+            {timestamp && (
+              <span className="shrink-0 text-p2 font-medium text-[var(--event-meta-fg)]">
+                {timestamp}
+              </span>
+            )}
+          </div>
+
+          {author && (
+            <p className="text-p1 font-medium text-[var(--event-author-fg)]">
+              {author}
+            </p>
           )}
         </div>
 
-        {author && (
-          <p className="text-sm text-[var(--event-meta-fg)]">{author}</p>
-        )}
-
         {signatories && signatories.length > 0 && (
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             {signatories.map((signatory, index) => {
               const Icon = signatory.status === "success" ? CircleCheck : Clock
               return (
-                <div key={index} className="flex items-center gap-2 text-sm">
+                <div
+                  key={index}
+                  className="flex items-center gap-2 text-p1 font-medium"
+                >
                   <Icon
                     aria-hidden="true"
                     className="size-4 shrink-0"
-                    style={{ color: STATUS_BG[signatory.status] }}
+                    style={{ color: SIGNATORY_STATUS_COLOR[signatory.status] }}
                   />
                   <span className="text-[var(--event-title-fg)]">
                     {signatory.name}
@@ -137,13 +142,13 @@ function Event({
         )}
 
         {info && info.length > 0 && (
-          <div className="flex flex-col gap-1 text-sm">
+          <div className="flex flex-col gap-1 text-p1 font-medium">
             {info.map((row, index) => (
               <p key={index}>
                 <span className="text-[var(--event-meta-fg)]">
                   {row.label}
                 </span>{" "}
-                <span className="font-medium text-[var(--event-title-fg)]">
+                <span className="text-[var(--event-title-fg)]">
                   {row.value}
                 </span>
               </p>
@@ -152,7 +157,7 @@ function Event({
         )}
 
         {comment && (
-          <div className="text-sm">
+          <div className="text-p1 font-medium">
             <p className="text-[var(--event-meta-fg)]">{commentLabel}</p>
             <p className="text-[var(--event-title-fg)]">{comment}</p>
           </div>
@@ -160,28 +165,28 @@ function Event({
 
         {documents && documents.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-sm text-[var(--event-meta-fg)]">
+            <p className="text-p1 font-medium text-[var(--event-meta-fg)]">
               Приложенные документы:
             </p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {documents.map((doc, index) => (
                 <button
                   key={index}
                   type="button"
                   onClick={doc.onClick}
-                  className="flex items-center gap-2.5 rounded-lg p-1 text-left outline-none"
+                  className="flex items-center gap-4 rounded-[8px] p-1 text-left outline-none"
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--event-file-bg)]">
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--event-file-bg)]">
                     <FileText
                       aria-hidden="true"
-                      className="size-4 text-[var(--event-title-fg)]"
+                      className="size-6 text-[var(--event-title-fg)]"
                     />
                   </span>
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate text-sm font-medium text-[var(--event-title-fg)]">
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <span className="truncate text-p1 font-medium text-[var(--event-title-fg)]">
                       {doc.name}
                     </span>
-                    <span className="truncate text-xs text-[var(--event-meta-fg)]">
+                    <span className="truncate text-p3 font-medium text-[var(--event-meta-fg)]">
                       {doc.meta}
                     </span>
                   </span>
@@ -192,15 +197,17 @@ function Event({
         )}
 
         {buttonLabel && (
-          <Button
-            type="button"
-            variant="secondary-grey"
-            size="sm"
-            onClick={onButtonClick}
-            className="self-start"
-          >
-            {buttonLabel}
-          </Button>
+          <div className="pt-1">
+            <Button
+              type="button"
+              variant="secondary-grey"
+              size="sm"
+              onClick={onButtonClick}
+              className="self-start"
+            >
+              {buttonLabel}
+            </Button>
+          </div>
         )}
       </div>
     </div>

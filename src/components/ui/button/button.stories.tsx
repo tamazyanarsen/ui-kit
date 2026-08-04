@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Download } from "lucide-react"
+import { Download } from "@/icons"
 
 import { Button, type ButtonProps } from "./button"
 

@@ -42,7 +42,7 @@ export function SelectTrigger({
   const hasFloatingLabel = floating && Boolean(label)
 
   return (
-    <div className="flex w-full flex-col gap-1.5">
+    <div className="flex w-full flex-col gap-1">
       <SelectPrimitive.Trigger
         id={triggerId}
         data-slot="select-trigger"
@@ -124,10 +124,11 @@ export function SelectTrigger({
         <p
           id={captionId}
           className={cn(
-            "text-xs",
+            "text-p3 font-medium",
             // Aligns with the label/value text inside the trigger, not the
-            // box's outer edge — matches the trigger's own horizontal padding.
-            size === "sm" ? "px-3" : "px-4 md:px-5",
+            // box's outer edge — matches the trigger's own horizontal
+            // padding, which is px-4 at both sizes (see variants.ts).
+            "px-4",
             error
               ? "text-[var(--select-caption-error-fg)]"
               : "text-[var(--select-caption-fg)]"

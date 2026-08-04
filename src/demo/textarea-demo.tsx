@@ -46,14 +46,14 @@ function TextareaDemo() {
             defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore magna"
           />
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          В отличие от Input, у Textarea нет S/L токенов и label не
-          «плавает» — это статичная подпись сверху, всегда видимая. Высота
-          поля задаётся атрибутом <code>rows</code> (по умолчанию 3) и не
-          меняется между пустым и заполненным состояниями — но, в отличие от
-          более ранней версии этого компонента, всё же масштабируется
-          mobile → desktop (сверено с ui/textarea/*.svg: 98px → 112px,
-          padding <code>py-2 md:py-4</code>), как и L-размер Input.
+        <p className="mt-4 text-p3 text-muted-foreground">
+          В отличие от Input, у Textarea нет S/L токенов, но label «плавает»
+          так же: пустое поле показывает его как обычный плейсхолдер (16px),
+          а при вводе/фокусе он превращается в маленькую (12px) подпись
+          сверху — тогда же вертикальный паддинг сжимается с 16px до 8px,
+          как и в макете. Высота поля задаётся атрибутом{" "}
+          <code>rows</code> (по умолчанию 3); паддинг и радиус — 16px на
+          обоих брейкпоинтах (сверено с ui/textarea/*.svg).
         </p>
       </AccordionPanel>
     </AccordionItem>

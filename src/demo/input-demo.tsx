@@ -1,4 +1,4 @@
-import { Calendar, Check, CreditCard, Search, TriangleAlert } from "lucide-react"
+import { CalendarDays, Check, Wallet, Search, CircleAlert } from "@/icons"
 
 import { Input } from "@/components/ui/input"
 import type { MaskName } from "@/components/ui/input"
@@ -95,7 +95,7 @@ function InputDemo() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             У Input только два размера — M отсутствует. S (32px, radius 8px)
             не меняется между брейкпоинтами и не показывает floating label
             (нет места под вторую строку) — плейсхолдер просто выступает
@@ -118,7 +118,7 @@ function InputDemo() {
                 defaultValue={mask === "card" ? "1234567890123456" : undefined}
                 iconLeft={
                   mask === "card" ? (
-                    <CreditCard className="text-[#EB001B]" />
+                    <Wallet className="text-[#EB001B]" />
                   ) : undefined
                 }
               />
@@ -127,7 +127,7 @@ function InputDemo() {
               size="lg"
               label="Дата"
               mask="date"
-              iconLeft={<Calendar />}
+              iconLeft={<CalendarDays />}
             />
             <Input size="lg" label="Пароль" type="password" defaultValue="1234567890" />
           </div>
@@ -152,7 +152,7 @@ function InputDemo() {
               <Input
                 size="lg"
                 label="Label"
-                iconLeft={<TriangleAlert className="text-[var(--input-border-error)]" />}
+                iconLeft={<CircleAlert className="text-[var(--input-border-error)]" />}
               />
               <Input
                 size="lg"
@@ -163,7 +163,7 @@ function InputDemo() {
             </div>
           </div>
 
-          <p className="mt-4 text-xs text-muted-foreground">
+          <p className="mt-4 text-p3 text-muted-foreground">
             <code>mask</code> форматирует значение на каждое нажатие и
             сообщает итоговую строку обратно через <code>onChange</code>{" "}
             (<code>e.target.value</code>). <code>iconLeft</code> — статичная

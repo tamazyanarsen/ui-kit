@@ -4,10 +4,13 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { DROPDOWN_POPUP_CLASS, DROPDOWN_ACTION_ITEM_CLASS } from "@/components/ui/select/dropdown-chrome"
 
-// The "..." overflow trigger + its dropdown menu (visually styled like
-// Select's dropdown per the spec, but built on Menu since items fire actions
-// rather than set a value).
+// The "..." overflow trigger + its dropdown menu. Per the spec this is the
+// same Dropdown component as Select ("Больше информации о выпадающем списке
+// вы можете найти в разделе Select, Dropdown") — built on Menu instead of
+// Select since items fire actions rather than set a value, but sharing
+// Select's exact popup/item chrome via DROPDOWN_POPUP_CLASS below.
 interface ButtonMenuOverflowProps
   extends Omit<MenuPrimitive.Root.Props, "children"> {
   children?: React.ReactNode
@@ -40,7 +43,7 @@ function ButtonMenuOverflow({
         >
           <MenuPrimitive.Popup
             data-slot="button-menu-overflow-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className={cn(DROPDOWN_POPUP_CLASS, "min-w-56 p-2")}
           >
             {children}
           </MenuPrimitive.Popup>
@@ -65,15 +68,20 @@ function ButtonMenuOverflowItem({
   return (
     <MenuPrimitive.Item
       data-slot="button-menu-overflow-item"
-      className={cn(
-        "flex cursor-default flex-col gap-0.5 rounded-xl px-3 py-2.5 outline-none select-none data-highlighted:bg-[#F4F4F4]",
-        className
-      )}
+      className={cn(DROPDOWN_ACTION_ITEM_CLASS, className)}
       {...props}
     >
-      <span className="text-sm font-medium text-[#252628]">{text}</span>
+      {/* Round-2 audit fix: Figma's literal design-context dump for this
+          item (node 41357:46406, "Menu Point") gives the title as
+          text-[16px]/leading-[24px] (P1 Medium desktop) — the kit's own
+          typography scale confirms 14px is P1's *mobile* shrink, not the
+          desktop size this always-desktop popup renders at. The
+          description is P3 Medium (12px/16px, weight 500) — size/line-height
+          already matched Tailwind's text-xs default, but font-medium was
+          missing. */}
+      <span className="text-p1 font-medium text-[#252628]">{text}</span>
       {description && (
-        <span className="text-xs text-[#999999]">{description}</span>
+        <span className="text-p3 font-medium text-[#999999]">{description}</span>
       )}
     </MenuPrimitive.Item>
   )

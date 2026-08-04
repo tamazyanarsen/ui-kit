@@ -86,8 +86,8 @@ function InformerDemo() {
         <div className="mt-8 flex flex-col gap-2">
           <RowLabel>Использование внутри контентного блока</RowLabel>
           <div className="max-w-md rounded-2xl border border-border p-4">
-            <p className="text-sm text-muted-foreground">Субсублимит</p>
-            <div className="mt-1 mb-4 flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
+            <p className="text-p2 text-muted-foreground">Субсублимит</p>
+            <div className="mt-1 mb-4 flex items-center justify-between rounded-lg border border-border px-3 py-2 text-p2">
               Сублимит №3 от 02.07.2022
             </div>
             <Informer
@@ -100,7 +100,7 @@ function InformerDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-p3 text-muted-foreground">
           Минимальная ширина — 360px, максимальная не ограничена; высота
           зависит от контента. Каждый элемент под заголовком (дата,
           описание, кнопки, крестик) — опционален, как Show Date / Show

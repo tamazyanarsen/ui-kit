@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Circle } from "lucide-react"
+import { CircleHelp as Circle } from "@/icons"
 
 import { Filter } from "@/components/ui/filter"
 import {
@@ -26,9 +26,9 @@ function FilterTableExample() {
         <Filter label="Статус" value={status} onValueChange={setStatus} chip />
         <Filter label="Сумма" value={amount} onValueChange={setAmount} chip />
       </div>
-      <table className="mt-4 w-full text-left text-sm">
+      <table className="mt-4 w-full text-left text-p2">
         <thead>
-          <tr className="text-xs text-muted-foreground">
+          <tr className="text-p3 text-muted-foreground">
             <th className="pb-2 font-medium">№</th>
             <th className="pb-2 font-medium">Статус</th>
             <th className="pb-2 font-medium">Сумма</th>
@@ -97,7 +97,7 @@ function FilterDemo() {
           <FilterTableExample />
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
+        <p className="mt-6 text-p3 text-muted-foreground">
           Filter — Select-подобный триггер: клик открывает попап с полем
           ввода и футером «Сбросить» / «Применить». Применённое значение
           показывается вместо шеврона крестиком (X), клик по нему сбрасывает

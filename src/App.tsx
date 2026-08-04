@@ -23,6 +23,7 @@ import { RangeInputDemo } from "@/demo/range-input-demo"
 import { BannerDemo } from "@/demo/banner-demo"
 import { SelectionButtonDemo } from "@/demo/selection-button-demo"
 import { CardDemo } from "@/demo/card-demo"
+import { BankCardDemo } from "@/demo/bank-card-demo"
 import { ProgressBarDemo } from "@/demo/progress-bar-demo"
 import { StepsDemo } from "@/demo/steps-demo"
 import { TooltipDemo } from "@/demo/tooltip-demo"
@@ -54,6 +55,7 @@ import { TableDemo } from "@/demo/table-demo"
 import { TableTopDemo } from "@/demo/table-top-demo"
 import { ShimmerDemo } from "@/demo/shimmer-demo"
 import { ScrollbarDemo } from "@/demo/scrollbar-demo"
+import { MailFeedDemo } from "@/demo/mail-feed-demo"
 
 function App() {
   const [product, setProduct] = useState<"elk" | "odl-elk">(
@@ -108,6 +110,7 @@ function App() {
           <BannerDemo />
           <SelectionButtonDemo />
           <CardDemo />
+          <BankCardDemo />
           <ProgressBarDemo />
           <StepsDemo />
           <TooltipDemo />
@@ -139,6 +142,7 @@ function App() {
           <TableDemo />
           <ShimmerDemo />
           <ScrollbarDemo />
+          <MailFeedDemo />
         </Accordion>
       </main>
       <Toaster />

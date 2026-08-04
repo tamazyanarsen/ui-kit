@@ -22,3 +22,10 @@ export const TOAST_ICON_COLOR: Record<ToastType, string> = {
   error: "var(--toast-error-icon)",
   information: "var(--toast-information-icon)",
 }
+
+export const TOAST_BORDER: Record<ToastType, string> = {
+  checked: "var(--toast-checked-border)",
+  attention: "var(--toast-attention-border)",
+  error: "var(--toast-error-border)",
+  information: "var(--toast-information-border)",
+}

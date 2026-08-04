@@ -23,8 +23,17 @@ describe("Badge", () => {
   })
 
   it("renders no text for the point type", () => {
-    const { container } = render(<Badge type="point" />)
-    expect(container.querySelector('[data-slot="badge"]')).toBeEmptyDOMElement()
+    render(<Badge type="point" />)
+    expect(screen.queryByText(/\d/)).not.toBeInTheDocument()
+  })
+
+  it("renders the point type as an 8px dot inside its 16px hit box", () => {
+    const { container } = render(<Badge type="point" color="black" />)
+    const badge = container.querySelector('[data-slot="badge"]')
+    expect(badge).toHaveClass("size-4")
+    const dot = badge?.firstElementChild
+    expect(dot).toHaveClass("size-2")
+    expect(dot).toHaveStyle({ backgroundColor: "var(--badge-black-bg)" })
   })
 
   it("applies the requested color as its background", () => {

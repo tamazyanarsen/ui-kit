@@ -14,7 +14,7 @@ const STATUSES: { status: StatusType; label: string }[] = [
   { status: "attention", label: "Attention" },
   { status: "question", label: "Question" },
   { status: "search", label: "Search" },
-  { status: "check", label: "Check" },
+  { status: "clock", label: "Clock" },
   { status: "lock", label: "Lock" },
   { status: "edit", label: "Edit" },
   { status: "search-attention", label: "Search (Attention)" },
@@ -83,7 +83,7 @@ function StatusScreenDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
+        <p className="mt-6 text-p3 text-muted-foreground">
           Иллюстрация в спеке — 3D-маскот, свой для каждого статуса. Здесь,
           как и в Error Page/NPS ранее, вместо копии сложной графики —
           плоская цветная бейдж-иконка. Тип панели кнопок (Two Buttons/

@@ -57,7 +57,7 @@ function Informer({
       // sheet (ui/message/informer) — 24px padding (was 16, p-4) and a 16px
       // gap between the icon and the text column (was 12, gap-3).
       className={cn(
-        "min-w-[360px] rounded-2xl p-6",
+        "min-w-[360px] rounded-[16px] p-6",
         className
       )}
       style={{ backgroundColor: SOLID_BG[solid] }}
@@ -68,34 +68,38 @@ function Informer({
           className="size-6 shrink-0"
           style={{ color: ICON_COLOR[icon] }}
         />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <div className="flex items-start justify-between gap-3">
-            <span className="font-medium text-[var(--informer-title-fg)]">
-              {title}
-            </span>
-            {showCross && (
-              <button
-                type="button"
-                aria-label="Закрыть"
-                onClick={onClose}
-                className="shrink-0 text-[var(--informer-title-fg)] outline-none"
-              >
-                <X aria-hidden="true" className="size-4" />
-              </button>
+        <div className="flex min-w-0 flex-1 flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-start justify-between gap-3">
+                <span className="text-p1 font-medium text-[var(--informer-title-fg)]">
+                  {title}
+                </span>
+                {showCross && (
+                  <button
+                    type="button"
+                    aria-label="Закрыть"
+                    onClick={onClose}
+                    className="shrink-0 text-[var(--informer-title-fg)] outline-none"
+                  >
+                    <X aria-hidden="true" className="size-4" />
+                  </button>
+                )}
+              </div>
+              {date && (
+                <span className="text-p2 font-medium text-[var(--informer-meta-fg)]">
+                  {date}
+                </span>
+              )}
+            </div>
+            {description && (
+              <span className="text-p2 font-medium text-[var(--informer-description-fg)]">
+                {description}
+              </span>
             )}
           </div>
-          {date && (
-            <span className="text-sm text-[var(--informer-meta-fg)]">
-              {date}
-            </span>
-          )}
-          {description && (
-            <span className="text-sm text-[var(--informer-title-fg)]">
-              {description}
-            </span>
-          )}
           {(mainButtonLabel || additionalButtonLabel) && (
-            <div className="mt-1.5 flex items-center gap-2">
+            <div className="flex items-center gap-2">
               {mainButtonLabel && (
                 <Button
                   type="button"

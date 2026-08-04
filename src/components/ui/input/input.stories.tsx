@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Search } from "lucide-react"
+import { Search } from "@/icons"
 
 import { Input } from "./input"
 

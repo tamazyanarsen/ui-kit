@@ -75,27 +75,31 @@ function OtpConfirmCard({
         </button>
       )}
 
-      <div className="flex flex-col gap-2 pr-10">
-        <h2 className="text-2xl font-semibold text-[var(--otp-title-fg)]">
+      <div className="flex flex-col gap-4 pr-10 md:gap-2">
+        <h2 className="text-[22px] leading-[30px] font-medium text-[var(--otp-title-fg)] md:text-h2">
           {title}
         </h2>
-        <p className="text-sm text-[var(--otp-subtitle-fg)]">
+        <p className="text-p2 font-medium text-[var(--otp-title-fg)] md:text-p1">
           {subtitle ?? (phone ? `Код подтверждения отправлен на номер ${phone}` : null)}
         </p>
       </div>
 
-      <OtpInput
-        length={length}
-        value={code}
-        onChange={handleChange}
-        error={error}
-      />
+      <div className="flex flex-col gap-12">
+        <OtpInput
+          length={length}
+          value={code}
+          onChange={handleChange}
+          error={error}
+        />
 
-      <ResendCode seconds={resendSeconds} onResend={onResend} />
+        <div className="flex flex-col gap-6">
+          <ResendCode seconds={resendSeconds} onResend={onResend} />
 
-      <Button type="submit" variant="primary" size="lg" disabled={!complete}>
-        Подтвердить
-      </Button>
+          <Button type="submit" variant="primary" size="lg" disabled={!complete}>
+            Подтвердить
+          </Button>
+        </div>
+      </div>
     </form>
   )
 }

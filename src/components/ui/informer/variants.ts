@@ -1,8 +1,9 @@
-// Design-check #28: the anatomy sheet's icon is a thin-stroke 24×24 glyph,
-// not this kit's own bold filled 16×16 icon set — lucide-react (already a
-// project dependency, see Button's stories) supplies the outline weight
-// directly instead of a from-scratch redraw.
-import { AlertCircle, CheckCircle2, Clock, Info } from "lucide-react"
+// The anatomy sheet's icon is a thin-stroke 24×24 glyph, thinner than this
+// kit's own bold filled 16×16 icon set, but only the kit's own Figma-sourced
+// icons may be used project-wide (no lucide-react) — so this reuses
+// CircleAlert/CircleCheck/Clock/Info same as everywhere else, accepting the
+// slightly bolder weight over pulling in a non-Figma icon set.
+import { CircleAlert, CircleCheck, Clock, Info } from "@/icons"
 
 export type InformerIcon =
   | "attention-red"
@@ -13,10 +14,10 @@ export type InformerIcon =
 
 export type InformerSolid = "white" | "grey"
 
-export const ICON_COMPONENT: Record<InformerIcon, typeof AlertCircle> = {
-  "attention-red": AlertCircle,
-  "attention-yellow": AlertCircle,
-  check: CheckCircle2,
+export const ICON_COMPONENT: Record<InformerIcon, typeof CircleAlert> = {
+  "attention-red": CircleAlert,
+  "attention-yellow": CircleAlert,
+  check: CircleCheck,
   information: Info,
   clock: Clock,
 }

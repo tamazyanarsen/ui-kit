@@ -1,5 +1,5 @@
 import type * as React from "react"
-import { CircleAlert, Download, FileText, LoaderCircle, X } from "@/icons"
+import { CircleAlert, Download, FileIcon, LoaderCircle, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
@@ -42,35 +42,35 @@ export function FileListItem({
       data-slot="file-item"
       data-disabled={disabled || undefined}
       className={cn(
-        "flex w-full items-start gap-2.5 py-2 text-sm",
+        "flex w-full items-center gap-4 py-2 text-p2",
         disabled && "pointer-events-none opacity-50",
         className
       )}
       {...props}
     >
-      {/* Design-check #23: square with a capped radius across every state,
-          not a circle, with more breathing room around the glyph — was
-          rounded-full at size-6 around a size-4 icon (4px each side). */}
+      {/* Design-check #23 revisited: the live "ELK / files" component shows
+          a 48px thumbnail box (not 32px) with an always-present neutral
+          fill, not just on error. */}
       <span
         className={cn(
-          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg",
-          error && "bg-[var(--file-item-error-bg)]"
+          "flex size-12 shrink-0 items-center justify-center rounded-[8px]",
+          error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
         )}
       >
         {loading ? (
           <LoaderCircle
             aria-hidden="true"
-            className="size-4 animate-spin text-[var(--file-item-loading-fg)]"
+            className="size-6 animate-spin text-[var(--file-item-loading-fg)]"
           />
         ) : error ? (
           <CircleAlert
             aria-hidden="true"
-            className="size-4 text-[var(--file-item-error-fg)]"
+            className="size-6 text-[var(--file-item-error-fg)]"
           />
         ) : (
-          <FileText
+          <FileIcon
             aria-hidden="true"
-            className="size-4 text-[var(--file-item-icon-fg)]"
+            className="size-6 text-[var(--file-item-icon-fg)]"
           />
         )}
       </span>
@@ -79,7 +79,7 @@ export function FileListItem({
         <span
           title={typeof name === "string" ? name : undefined}
           className={cn(
-            "truncate font-medium",
+            "truncate text-p1 font-medium",
             disabled
               ? "text-[var(--file-item-fg-disabled)]"
               : "text-[var(--file-item-fg)]"
@@ -89,7 +89,7 @@ export function FileListItem({
         </span>
         <span
           className={cn(
-            "truncate text-xs",
+            "truncate text-p3 font-medium",
             error
               ? "text-[var(--file-item-error-fg)]"
               : "text-[var(--file-item-meta-fg)]"

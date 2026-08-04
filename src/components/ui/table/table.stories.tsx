@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "@/icons"
 
 import { Table, TableHeader, TableBody, TableRow, TableHeadCell, TableCell } from "./table"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"

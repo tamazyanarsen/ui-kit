@@ -89,11 +89,19 @@ function Checkbox({
       )}
     >
       {box}
-      <span className="flex flex-col gap-1 pt-0.5">
+      {/* No `gap` here — the "Checkbox With Comment" spec instance is
+          exactly labelLineHeight(24/20) + captionLineHeight(16) tall with
+          zero space between; the two lines sit flush. `pt-0.5` (2px) only
+          applies below `md` — Mobile's Option Text line-height (20px) is
+          shorter than the 24px box, needing a 2px nudge to vertically
+          center against it, while Desktop's 24px line-height already
+          matches the box exactly (get_design_context on 600:8967 vs
+          600:8960 — Desktop has no top offset, Mobile has pt-[2px]). */}
+      <span className="flex flex-col pt-0.5 md:pt-0">
         {label && (
           <span
             className={cn(
-              "text-sm font-medium text-[var(--checkbox-label-fg)]",
+              "text-p2 font-medium text-[var(--checkbox-label-fg)] md:text-p1",
               disabled && "text-[var(--checkbox-label-fg-disabled)]"
             )}
           >
@@ -104,10 +112,12 @@ function Checkbox({
           <span
             id={captionId}
             className={cn(
-              "text-xs",
-              error
-                ? "text-[var(--checkbox-caption-error-fg)]"
-                : "text-[var(--checkbox-caption-fg)]"
+              "text-p3 font-medium",
+              disabled
+                ? "text-[var(--checkbox-caption-fg-disabled)]"
+                : error
+                  ? "text-[var(--checkbox-caption-error-fg)]"
+                  : "text-[var(--checkbox-caption-fg)]"
             )}
           >
             {error ?? comment}

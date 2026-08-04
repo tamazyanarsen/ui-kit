@@ -8,18 +8,25 @@ import noCodeMascot from "@/assets/error-page/no-code-mascot.png"
 // ErrorPage — "Страница ошибок" (403/404/etc). Design-check #18/#19/#20:
 // both illustrations are real assets, extracted from the Figma export's own
 // embedded raster layers (ui/error-page/*.svg's <image> nodes) rather than
-// redrawn from scratch:
-// - `zeroMascot` stands in for every "0" digit in `code` (the spec's own
-//   403 example — "4[0]3" — replaces exactly the zero, not the whole
-//   number; this generalizes to 404 for free since it also has a zero).
-//   Codes with no zero at all (rare) just render as plain numerals — no
-//   other digit has a bespoke illustration in the source.
-// - `noCodeMascot` is a distinct illustration used when there's no error
-//   code at all (confirmed against a separate anatomy example with no
+// redrawn from scratch. The Figma component's own "Type" property only
+// enumerates three values — 403, 404, Image (generic) — and its usage
+// documentation confirms every other error (500, maintenance, etc.) uses
+// the generic illustration with no numeral shown at all, not a composed
+// digit string. So the big numeral render is intentionally restricted to
+// exactly those two codes:
+// - `zeroMascot` stands in for the "0" in "403"/"404" (the spec's own
+//   composed-digit examples), the other digit ("4"/"3") is bespoke vector
+//   art in the source too, but per above that art only exists for these
+//   two codes — there's no general digit typeface to fall back to for
+//   other numbers, so any other `code` value (including plain numeric
+//   strings like "500") falls back to `noCodeMascot` instead of attempting
+//   to render numerals.
+// - `noCodeMascot` is a distinct illustration used whenever there's no
+//   403/404 code (confirmed against a separate anatomy example with no
 //   flanking numerals), not a fallback/placeholder for the zero one.
 interface ErrorPageProps {
   code?: string
-  title: React.ReactNode
+  title?: React.ReactNode
   description?: React.ReactNode
   buttonLabel?: React.ReactNode
   onButtonClick?: () => void
@@ -34,19 +41,22 @@ function ErrorPage({
   onButtonClick,
   className,
 }: ErrorPageProps) {
+  const showCode = code === "403" || code === "404"
   return (
     <div
       data-slot="error-page"
       className={cn(
-        "flex flex-col items-center px-6 pt-10 pb-12 text-center",
+        "flex flex-col items-center rounded-[8px] bg-[var(--error-page-bg)] px-6 pt-10 pb-10 text-center",
         className
       )}
     >
-      <h1 className="text-2xl font-semibold text-[var(--error-page-title-fg)]">
-        {title}
-      </h1>
+      {title && (
+        <h1 className="text-h2 text-[var(--error-page-title-fg)]">
+          {title}
+        </h1>
+      )}
       {description && (
-        <p className="mt-2 max-w-md text-sm text-[var(--error-page-description-fg)]">
+        <p className="mt-2 max-w-md text-p1 font-medium text-[var(--error-page-description-fg)]">
           {description}
         </p>
       )}
@@ -54,13 +64,14 @@ function ErrorPage({
         <Button
           type="button"
           variant="primary"
+          size="lg"
           onClick={onButtonClick}
           className="mt-8"
         >
           {buttonLabel}
         </Button>
       )}
-      {code ? (
+      {code && showCode ? (
         <p className="mt-12 flex items-center text-[160px] leading-none font-bold tracking-tight text-[var(--error-page-code-fg)]">
           {[...code].map((char, i) =>
             char === "0" ? (

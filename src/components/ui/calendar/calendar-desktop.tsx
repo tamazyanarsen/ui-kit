@@ -35,6 +35,7 @@ interface CalendarDesktopProps {
   onSelectDay: (date: Date) => void
   onSelectMonth: (month: number) => void
   onSelectYear: (year: number) => void
+  disabledDate?: (date: Date) => boolean
 }
 
 export function CalendarDesktop({
@@ -58,6 +59,7 @@ export function CalendarDesktop({
   onSelectDay,
   onSelectMonth,
   onSelectYear,
+  disabledDate,
 }: CalendarDesktopProps) {
   const monthCardIsSelected =
     mode === "single" ? (d: Date) => isSameDay(d, value) : () => false
@@ -68,7 +70,7 @@ export function CalendarDesktop({
     // shrink well under that.
     <div
       className={cn(
-        "w-fit min-w-[280px] overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-foreground/10",
+        "w-fit min-w-[280px] overflow-hidden rounded-[16px] bg-white shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
         className
       )}
     >
@@ -81,6 +83,7 @@ export function CalendarDesktop({
           onSelectDay={onSelectDay}
           onPrev={goPrev}
           onNext={goNext}
+          disabledDate={disabledDate}
         />
       ) : view === "months" ? (
         <MonthsBody
@@ -113,6 +116,7 @@ export function CalendarDesktop({
           onPrev={goPrev}
           onNext={goNext}
           onSelectDay={onSelectDay}
+          disabledDate={disabledDate}
         />
       )}
       {footer && <CalendarFooter onReset={onReset} onApply={onApply} />}
@@ -151,7 +155,7 @@ function MonthsBody({
 
   return (
     <>
-      <NavHeader onPrev={onPrev} onNext={onNext}>
+      <NavHeader onPrev={onPrev} onNext={onNext} variant="picker">
         <HeaderLabel>{focus.year}</HeaderLabel>
       </NavHeader>
       <MonthGrid
@@ -186,7 +190,7 @@ function YearsBody({
 
   return (
     <>
-      <NavHeader onPrev={onPrev} onNext={onNext}>
+      <NavHeader onPrev={onPrev} onNext={onNext} variant="picker">
         <HeaderLabel>
           {decadeEnd - 11} — {decadeEnd}
         </HeaderLabel>
@@ -209,6 +213,7 @@ function DaysBody({
   onPrev,
   onNext,
   onSelectDay,
+  disabledDate,
 }: {
   focus: CalendarSingleMonth
   today: Date
@@ -217,6 +222,7 @@ function DaysBody({
   onPrev: () => void
   onNext: () => void
   onSelectDay: (date: Date) => void
+  disabledDate?: (date: Date) => boolean
 }) {
   return (
     <>
@@ -233,6 +239,7 @@ function DaysBody({
         today={today}
         isSelected={isSelected}
         onSelectDay={onSelectDay}
+        isDisabled={disabledDate}
       />
     </>
   )
@@ -246,6 +253,7 @@ function RangeBody({
   onSelectDay,
   onPrev,
   onNext,
+  disabledDate,
 }: {
   focus: CalendarSingleMonth
   today: Date
@@ -254,6 +262,7 @@ function RangeBody({
   onSelectDay: (date: Date) => void
   onPrev: () => void
   onNext: () => void
+  disabledDate?: (date: Date) => boolean
 }) {
   const next = addMonths(focus.year, focus.month, 1)
   const months = [focus, next]
@@ -278,6 +287,7 @@ function RangeBody({
             isRangeEnd={(d) => isSameDay(d, normEnd)}
             isRangeMiddle={(d) => isInRange(d, normStart, normEnd)}
             onSelectDay={onSelectDay}
+            isDisabled={disabledDate}
           />
         </div>
       ))}

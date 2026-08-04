@@ -26,16 +26,24 @@ function ButtonMenu({ className, children, ...props }: React.ComponentProps<"div
   })
 
   return (
-    // Design-check #5 revisited: ui/button-menu/button-menu-light's own
-    // component preview ("With Primary"/"Only Secondary") renders this as a
-    // fully-rounded floating pill with a shadow and no border — matches
-    // what was already here. Not changed; #5's "pin to the viewport bottom,
-    // square off the bottom corners" reading doesn't match that reference,
-    // so it's flagged in the summary rather than guessed at again.
+    // Figma's live "ELK / button menu" master component (node 4244:20536,
+    // v2.0.0) confirms design-check #5's original reading: this is a
+    // bottom-anchored bar, not a floating pill — top corners rounded only,
+    // border on the top/left/right only (no bottom border/radius, since
+    // that edge sits flush against the viewport/container bottom), plus a
+    // specific drop shadow (offset 0/4, blur 12, #8B99A9 @ 24%). The stale
+    // static preview asset that justified the old fully-rounded/no-border
+    // treatment predates this; trust the live component over it.
+    //
+    // Full width, not content-hugging: the "Использование в макете" mockups
+    // show the bar always spanning the full content width, buttons hugging
+    // left with the white background filling the rest — not a fixed-width
+    // island (confirmed against the mockups, not just the isolated
+    // component preview).
     <div
       data-slot="button-menu"
       className={cn(
-        "flex w-fit items-center gap-3 rounded-[32px] bg-white p-4 shadow-[0_4px_24px_rgba(0,0,0,0.06)]",
+        "flex w-full items-center gap-4 rounded-tl-[16px] rounded-tr-[16px] border-t border-r border-l border-solid border-[#EFEFEF] bg-white px-8 py-4 shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
         className
       )}
       {...props}

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CircleAlert, X } from "lucide-react"
+import { CircleAlert, X } from "@/icons"
 
 import { TopFixedMessage } from "@/components/ui/top-fixed-message"
 import { Button } from "@/components/ui/button"
@@ -171,7 +171,7 @@ function TopFixedMessageDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-p3 text-muted-foreground">
           2 типа (Blue/System, Red/Error) — цвет фона и иконки берутся из{" "}
           <code>type</code>. Иконка, кнопка и крестик закрытия — опциональны
           (<code>showIcon</code>/<code>showButton</code>/

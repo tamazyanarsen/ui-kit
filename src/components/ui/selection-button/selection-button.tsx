@@ -4,6 +4,7 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { DROPDOWN_POPUP_CLASS, DROPDOWN_ACTION_ITEM_CLASS } from "@/components/ui/select/dropdown-chrome"
 
 // SelectionButton — "Кнопка выбора": a trigger paired with a Select/Dropdown
 // -style popup list, used to hide overflow functionality that doesn't fit
@@ -95,10 +96,7 @@ function SelectionButton({
         >
           <MenuPrimitive.Popup
             data-slot="selection-button-content"
-            className={cn(
-              "min-w-56 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-lg ring-1 ring-foreground/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-              className
-            )}
+            className={cn(DROPDOWN_POPUP_CLASS, "min-w-56 p-2", className)}
           >
             {items.map((item, index) => (
               <MenuPrimitive.Item
@@ -106,13 +104,13 @@ function SelectionButton({
                 disabled={item.disabled}
                 onClick={item.onSelect}
                 data-slot="selection-button-item"
-                className="flex cursor-default flex-col gap-0.5 rounded-xl px-3 py-2.5 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-40 data-highlighted:bg-[#F4F4F4]"
+                className={DROPDOWN_ACTION_ITEM_CLASS}
               >
-                <span className="text-sm font-medium text-[#252628]">
+                <span className="text-p2 font-medium text-[#252628]">
                   {item.text}
                 </span>
                 {item.description && (
-                  <span className="text-xs text-[#999999]">
+                  <span className="text-p3 text-[#999999]">
                     {item.description}
                   </span>
                 )}

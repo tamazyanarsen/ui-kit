@@ -14,8 +14,12 @@ const inputBoxVariants = cva(
   {
     variants: {
       size: {
-        sm: "h-8 gap-2 rounded-lg px-3",
-        lg: "h-12 gap-2.5 rounded-2xl px-4 md:h-14 md:gap-3 md:px-5",
+        // Round-2 audit: sm was px-3 (12px) — get_design_context on the S
+        // Desktop symbols (215:6684 comment variant, 215:6796 empty
+        // variant) both give a literal px-[16px], same horizontal padding
+        // as lg, not a smaller one.
+        sm: "h-8 gap-2 rounded-[8px] px-4",
+        lg: "h-12 gap-2 rounded-[16px] px-4 md:h-14",
       },
       invalid: {
         true: "border-[var(--input-border-error)]",
@@ -53,8 +57,8 @@ const inputFieldVariants = cva(
   {
     variants: {
       size: {
-        sm: "text-xs",
-        lg: "text-sm",
+        sm: "text-p2",
+        lg: "text-p2 md:text-p1",
       },
       // Floating label only exists at the L size — at S (32px) there isn't
       // room for a second line, so the design falls back to a plain
@@ -77,7 +81,7 @@ const inputFieldVariants = cva(
 // small for the empty/unfloated label across every size except S (no
 // floating label there at all, see `floating` above).
 const floatingLabelVariants =
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-sm text-[var(--input-label-fg)] transition-all peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-xs group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2 text-[var(--input-label-fg)] transition-all md:text-p1 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-p3 md:peer-focus:text-p3 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3 md:peer-[&:not(:placeholder-shown)]:text-p3 group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
 
 const ICON_SIZE = {
   sm: "size-3.5",
@@ -315,7 +319,11 @@ function Input({
     : null
 
   return (
-    <div className="flex w-full flex-col gap-1.5">
+    // Round-2 audit: was gap-1.5 (6px) — every ELK/input symbol with a
+    // Comment/Error caption (215:6570, 215:6676, 215:6684, 215:6680, both
+    // sizes/breakpoints) gives a literal gap-[4px] between the box and the
+    // caption row, not 6px.
+    <div className="flex w-full flex-col gap-1">
       <div
         className={cn(
           inputBoxVariants({ size, invalid, interactive: !locked }),
@@ -347,7 +355,7 @@ function Input({
                   aria-hidden="true"
                   className={cn(
                     "invisible absolute whitespace-pre",
-                    size === "sm" ? "text-xs" : "text-sm"
+                    size === "sm" ? "text-p3" : "text-p2"
                   )}
                 >
                   {maskValue}
@@ -360,7 +368,7 @@ function Input({
                     // design-check #31 — the mask value and "₽" aren't
                     // separate flex slots conceptually, just closely-set text.
                     "-ml-1.5 shrink-0 font-medium text-[var(--input-fg)] md:-ml-2",
-                    size === "sm" ? "text-xs" : "text-sm",
+                    size === "sm" ? "text-p3" : "text-p2",
                     // The field's own text sits lower than the row's
                     // vertical center once the floating label pushes it
                     // down (inputFieldVariants' floating pt-4/pt-5) — match
@@ -415,7 +423,11 @@ function Input({
         <p
           id={captionId}
           className={cn(
-            "text-xs",
+            // Round-2 audit: was missing font-medium — get_design_context
+            // on every Comment/Error caption instance (215:6570, 215:6676)
+            // wraps the <p> in a font-['Object_Sans:Medium'] parent (P3
+            // Medium, weight 500), not the browser default 400.
+            "text-p3 font-medium",
             error
               ? "text-[var(--input-caption-error-fg)]"
               : "text-[var(--input-caption-fg)]"

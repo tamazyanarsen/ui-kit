@@ -24,6 +24,10 @@ export const SbpCard: Story = {
   args: { type: "sbp-card", last4: "1234" },
 }
 
+export const SbpCardAccount: Story = {
+  args: { type: "sbp-card-account", last4: "1234" },
+}
+
 export const IconStatuses: Story = {
   render: () => (
     <div className="flex items-center gap-3">
@@ -38,6 +42,10 @@ export const IconStatuses: Story = {
 
 export const Picture: Story = {
   args: { type: "picture" },
+}
+
+export const More: Story = {
+  args: { type: "more" },
 }
 
 export const AllPaymentSystems: Story = {

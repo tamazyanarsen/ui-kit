@@ -28,8 +28,8 @@ function Shimmer({ shape = "square", className, ...props }: ShimmerProps) {
       data-shape={shape}
       aria-hidden="true"
       className={cn(
-        "h-4 w-full shrink-0 animate-pulse bg-[linear-gradient(90deg,var(--shimmer-from)_0%,var(--shimmer-via)_50%,var(--shimmer-from)_100%)] [animation-duration:1.8s]",
-        shape === "circle" ? "rounded-full" : "rounded-lg",
+        "h-4 w-full shrink-0 animate-pulse bg-[linear-gradient(90deg,var(--shimmer-from)_0%,var(--shimmer-via)_50%)] [animation-duration:1.8s]",
+        shape === "circle" ? "rounded-full" : "rounded-[8px]",
         className
       )}
       {...props}

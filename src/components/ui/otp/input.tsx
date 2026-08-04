@@ -61,8 +61,8 @@ function OtpInput({
         aria-describedby={captionId}
         onChange={handleChange}
         className={cn(
-          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-4xl font-semibold tracking-[0.5em] indent-[0.5em] text-[var(--otp-fg)] outline-none",
-          "placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)]",
+          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none md:text-h1 md:tracking-[0.35em] md:indent-[0.35em]",
+          "placeholder:text-p2 placeholder:font-medium placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] md:placeholder:text-p1",
           invalid && "text-[var(--otp-error-fg)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className
@@ -72,7 +72,7 @@ function OtpInput({
       {error && (
         <p
           id={captionId}
-          className="mt-1.5 text-center text-xs text-[var(--otp-error-fg)]"
+          className="mt-4 text-center text-p3 text-[var(--otp-error-fg)] md:mt-2"
         >
           {error}
         </p>

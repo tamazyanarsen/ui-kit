@@ -78,7 +78,7 @@ function ProgressBarDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-p3 text-muted-foreground">
           <code>variant="step"</code> делит шкалу на <code>totalSteps</code>{" "}
           (2–10) равных сегментов: пройденные — заливка, текущий —
           диагональная штриховка (пользователь никогда не увидит шкалу

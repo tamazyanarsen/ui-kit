@@ -80,7 +80,7 @@ function AutocompleteField({
         <p
           id={captionId}
           className={cn(
-            "text-xs",
+            "text-p3",
             error ? "text-[var(--input-caption-error-fg)]" : "text-[var(--input-caption-fg)]"
           )}
         >

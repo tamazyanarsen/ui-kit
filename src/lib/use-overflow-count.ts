@@ -12,7 +12,7 @@ import * as React from "react"
 // visible row itself — items hidden behind the overflow trigger would
 // otherwise report a width of 0 the next time this recomputes, permanently
 // wrecking the count.
-export function useOverflowCount(itemCount: number, reservedWidth: number) {
+export function useOverflowCount(itemCount: number, reservedWidth: number, gap = 0) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
   const [visibleCount, setVisibleCount] = React.useState(itemCount)
@@ -22,9 +22,11 @@ export function useOverflowCount(itemCount: number, reservedWidth: number) {
       const container = containerRef.current
       if (!container || itemCount === 0) return
 
-      const fitsAll = itemRefs.current
-        .slice(0, itemCount)
-        .reduce((sum, el) => sum + (el?.offsetWidth ?? 0), 0)
+      const fitsAll =
+        itemRefs.current
+          .slice(0, itemCount)
+          .reduce((sum, el) => sum + (el?.offsetWidth ?? 0), 0) +
+        gap * (itemCount - 1)
       const available = container.clientWidth
 
       if (fitsAll <= available) {
@@ -36,6 +38,7 @@ export function useOverflowCount(itemCount: number, reservedWidth: number) {
       let count = 0
       for (let i = 0; i < itemCount; i++) {
         used += itemRefs.current[i]?.offsetWidth ?? 0
+        if (count > 0) used += gap
         if (used > available) break
         count++
       }
@@ -45,7 +48,7 @@ export function useOverflowCount(itemCount: number, reservedWidth: number) {
     recompute()
     window.addEventListener("resize", recompute)
     return () => window.removeEventListener("resize", recompute)
-  }, [itemCount, reservedWidth])
+  }, [itemCount, reservedWidth, gap])
 
   return { containerRef, itemRefs, visibleCount }
 }

@@ -39,14 +39,21 @@ interface BannerProps {
 }
 
 function BannerBullet({ className }: { className?: string }) {
+  // Figma's bullet asset is a small 4px circle centered in a 4x20 box
+  // (viewBox "0 0 4 20", <circle r="2" cx="2" cy="10" />), solid fill with
+  // no alpha — not a tall rounded bar. The literal fill color is
+  // inconsistent between size instances (desktop sample: #494C4B; mobile
+  // sample: solid white, i.e. exactly the surrounding text color) — the
+  // mobile sample is treated as authoritative for the color-adaptive
+  // intent since it has no dimming at all, so this renders solid
+  // `currentColor`, not a muted/opacity variant.
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        "mt-0.5 h-5 w-1 shrink-0 rounded-full bg-current opacity-40",
-        className
-      )}
-    />
+      className={cn("relative h-5 w-1 shrink-0", className)}
+    >
+      <span className="absolute top-1/2 left-1/2 size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
+    </span>
   )
 }
 
@@ -85,19 +92,27 @@ function BannerDescription({
   description,
   bullet,
   className,
+  itemGap = "gap-2",
 }: {
   description: React.ReactNode | React.ReactNode[]
   bullet: boolean
   className?: string
+  // Gap between the bullet and its line of text — 8px on desktop/compact,
+  // but 4px on mobile per the live Figma component (the outer `className`
+  // prop only reaches the line-stack gap, not this one).
+  itemGap?: string
 }) {
   const lines = Array.isArray(description) ? description : [description]
 
   return (
     <div
-      className={cn("flex flex-col gap-2 text-base leading-6", className)}
+      className={cn(
+        "flex flex-col gap-2 text-p1 font-medium",
+        className
+      )}
     >
       {lines.map((line, index) => (
-        <div key={index} className="flex items-start gap-2">
+        <div key={index} className={cn("flex items-start", itemGap)}>
           {bullet && <BannerBullet />}
           <p className="flex-1">{line}</p>
         </div>
@@ -120,9 +135,16 @@ function Banner({
   className,
 }: BannerProps) {
   const fg = bannerForegroundClassName(color)
+  // get_design_context on the "mobile" and "desktop small" (compact) master
+  // components: mobile's CTA is the same blue `primary` fill as desktop
+  // (bg #80E3FF); only compact's CTA is white/`secondary-white`. Size "lg"
+  // is itself responsive (h-12/px-6/text-sm below the md: breakpoint,
+  // h-14/px-8/text-base at/above it) so the same size prop already
+  // reproduces both the mobile (48/24/14) and desktop+compact (56/32/16)
+  // literal dimensions without branching on size here.
   const cta = ctaLabel && (
     <Button
-      variant={size === "desktop" ? "primary" : "secondary-white"}
+      variant={size === "compact" ? "secondary-white" : "primary"}
       size="lg"
       onClick={onCtaClick}
       className={size === "mobile" ? "w-full" : undefined}
@@ -143,7 +165,7 @@ function Banner({
         <>
           <div className="flex min-h-[380px] flex-1 flex-col justify-center gap-8 py-14 pl-14">
             <div className="flex flex-col gap-6">
-              <p className="text-[32px] leading-[44px] font-medium">
+              <p className="text-h2">
                 {title}
               </p>
               {description && (
@@ -169,9 +191,9 @@ function Banner({
           )}
           <div className="flex flex-1 items-center gap-8">
             <div className="flex flex-1 flex-col gap-2">
-              <p className="text-2xl leading-8 font-medium">{title}</p>
+              <p className="text-h3">{title}</p>
               {description && (
-                <p className="text-base leading-6">{description}</p>
+                <p className="text-p1 font-medium">{description}</p>
               )}
             </div>
             {cta}
@@ -190,10 +212,15 @@ function Banner({
             <div className="flex flex-col gap-2">
               <p className="text-lg leading-6 font-medium">{title}</p>
               {description && (
+                // Line-to-line gap stays the shared default (8px, same as
+                // desktop) — only the bullet-to-text gap (itemGap) is
+                // narrower on mobile per the literal Figma component; an
+                // earlier pass had conflated the two and shrunk both to 4px.
                 <BannerDescription
                   description={description}
                   bullet={bullet}
-                  className="gap-1 text-sm leading-5"
+                  className="text-p2"
+                  itemGap="gap-1"
                 />
               )}
             </div>

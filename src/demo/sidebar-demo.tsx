@@ -1,18 +1,18 @@
 import { useState } from "react"
 import {
   Mail,
-  CalendarCheck,
-  FileOutput,
-  CreditCard,
-  BluetoothOff,
-  Database,
-  Siren,
-  ShieldAlert,
+  CalendarDays as CalendarCheck,
+  FileText as FileOutput,
+  Wallet as CreditCard,
+  Info as BluetoothOff,
+  Copy as Database,
+  CircleAlert as Siren,
+  Lock as ShieldAlert,
   Wallet,
-  FileSignature,
-  Users,
-  PanelLeft,
-} from "lucide-react"
+  Pencil as FileSignature,
+  CircleUser as Users,
+  Menu as PanelLeft,
+} from "@/icons"
 
 import { Sidebar, SidebarItem, SidebarGroup } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
@@ -158,8 +158,8 @@ function SidebarDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
-          Свёрнутая панель — 48px, только иконки; развёрнутая — 256px,
+        <p className="mt-6 text-p3 text-muted-foreground">
+          Свёрнутая панель — 56px, только иконки; развёрнутая — 312px,
           иконка + текст. Hover — <code>#EFEFEF</code>, Active —{" "}
           <code>#F4F4F4</code> (оба значения — из текста спека). Наведение на
           иконку в свёрнутой панели или на строку с обрезающимся текстом

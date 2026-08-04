@@ -45,6 +45,23 @@ export const NoFooter: Story = {
   args: { mode: "single", footer: false },
 }
 
+function DisabledDatesCalendar() {
+  const [value, setValue] = useState<Date | null>(new Date(2024, 0, 15))
+  return (
+    <Calendar
+      mode="single"
+      value={value}
+      onChange={setValue}
+      disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6}
+    />
+  )
+}
+
+export const DisabledDates: Story = {
+  name: "With disabled days (weekends)",
+  render: () => <DisabledDatesCalendar />,
+}
+
 // Design-check #13: the sheet layout already supports every mode (see
 // CalendarMobile) — only the Single variant had a story. Adding the rest
 // (Range/Month/Year) so all four mobile variants from

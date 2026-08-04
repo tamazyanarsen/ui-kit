@@ -10,7 +10,7 @@ export function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-1.5 py-1 text-xs text-muted-foreground", className)}
+      className={cn("px-1.5 py-1 text-p3 text-muted-foreground", className)}
       {...props}
     />
   )
@@ -24,11 +24,22 @@ export function SelectItem({
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
-      // Design-check #8: was py-1/pl-1.5 (4px/6px), the kit's generic
-      // unstyled starting point — matches the Dropdown/Combobox item's own
-      // padding scale (py-2/pl-3, see ComboboxItem) instead.
+      // Round-2 audit: matches the literal "Menu Point (ELK), Type=Level 1,
+      // Style=Text" instances sampled directly off canvas 666:11 (both the
+      // standalone component and concrete usages inside real "ELK /
+      // dropdown" instances) — p-[16px] all sides (not py-2/pr-8/pl-3), no
+      // independent corner radius (pixel-sampled: item hover fills to a
+      // hard square corner, rounding only comes from the popup's own clip),
+      // 16px/500 text color var(--select-fg) (was inheriting shadcn's
+      // near-black text-popover-foreground instead of the spec's #252628 —
+      // the same class of bug this whole audit pass exists to catch), and
+      // #F8F8F8 highlighted background instead of the generic --accent
+      // token. Also swapped `focus:` for `data-highlighted:` — Base UI's
+      // own SelectItemDataAttributes only defines highlighted/selected/
+      // disabled, not a real DOM-focus hook, so `focus:` here never matched
+      // Figma's hover treatment via keyboard navigation.
       className={cn(
-        "relative flex w-full cursor-default items-center gap-1.5 rounded-md py-2 pr-8 pl-3 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full cursor-default items-center gap-1.5 py-4 pr-12 pl-4 text-p1 font-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
       {...props}
@@ -38,7 +49,7 @@ export function SelectItem({
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
         render={
-          <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center" />
+          <span className="pointer-events-none absolute right-4 flex size-4 items-center justify-center" />
         }
       >
         <CheckIcon className="pointer-events-none" />

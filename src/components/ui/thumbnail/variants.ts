@@ -1,8 +1,14 @@
 export type ThumbnailSize = "l" | "m"
 
-// "Card"-family types render a dark (or grey-when-disabled) square with a
-// payment-system mark; the icon-status types render a light tinted square
-// with a lucide glyph. "picture" is a custom illustration/fallback.
+// "Card"-family types (card/sticker/picture) render a dark square with a
+// payment-system mark or image, dimmed via opacity when disabled (confirmed
+// against Figma's own Disabled samples — it's a flat opacity-50 on the whole
+// tile, not a background-color swap). SBP types render that same dark tile
+// but as an absolutely-positioned inner layer instead of an outer fill, so
+// "sbp-card-account" can show a thin gap beneath it (its "peeking second
+// card" effect). "more" is its own light-grey tile with a dark glyph — it
+// is NOT part of the dark card family despite reusing a lucide "more" icon.
+// The icon-status types render a light tinted square with a lucide glyph.
 export type ThumbnailType =
   | "more"
   | "card"
@@ -18,13 +24,7 @@ export type ThumbnailType =
 
 export type PaymentSystem = "mir" | "mastercard" | "unionpay" | "visa"
 
-export const CARD_TYPES = new Set<ThumbnailType>([
-  "more",
-  "card",
-  "sticker",
-  "sbp-card",
-  "sbp-card-account",
-])
+export const CARD_TYPES = new Set<ThumbnailType>(["card", "sticker", "picture"])
 
 export const SBP_TYPES = new Set<ThumbnailType>(["sbp-card", "sbp-card-account"])
 

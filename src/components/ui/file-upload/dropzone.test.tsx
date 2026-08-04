@@ -7,7 +7,10 @@ import { FileUploadDropzone } from "./dropzone"
 describe("FileUploadDropzone", () => {
   it("renders the default hint text", () => {
     render(<FileUploadDropzone />)
-    expect(screen.getByText("Перетащите или загрузите файлы")).toBeInTheDocument()
+    // Split across two spans now — "загрузите файлы" renders underlined to
+    // read as a click affordance, per the live Figma component.
+    expect(screen.getByText("Перетащите или", { exact: false })).toBeInTheDocument()
+    expect(screen.getByText("загрузите файлы")).toBeInTheDocument()
   })
 
   it("renders custom children and subtitle", () => {

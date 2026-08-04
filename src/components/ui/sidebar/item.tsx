@@ -61,8 +61,8 @@ function SidebarItem({
       data-active={active || undefined}
       aria-label={!open && typeof label === "string" ? label : undefined}
       className={cn(
-        "flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-lg text-sm font-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
-        open ? (nested ? "pr-3 pl-11" : "px-3") : "justify-center px-0",
+        "flex h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1 font-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        open ? (nested ? "pr-2 pl-12" : "px-2") : "justify-center px-0",
         className
       )}
     >
@@ -120,7 +120,7 @@ function SidebarGroup({
       aria-label={typeof label === "string" ? label : undefined}
       onClick={() => requestOpenGroup(value)}
       className={cn(
-        "flex h-10 w-full shrink-0 items-center justify-center rounded-lg text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        "flex h-10 w-full shrink-0 items-center justify-center rounded-[8px] text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
         className
       )}
     >
@@ -143,7 +143,7 @@ function SidebarGroup({
             data-slot="sidebar-group-trigger"
             data-active={active || undefined}
             className={cn(
-              "flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-3 text-left text-sm font-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
+              "flex h-10 w-full cursor-pointer items-center gap-4 rounded-[8px] px-2 text-left text-p1 font-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
               className
             )}
           >
@@ -177,7 +177,7 @@ function SidebarGroup({
           data-slot="sidebar-group-panel"
           className="h-(--accordion-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
         >
-          <div className="flex flex-col gap-0.5 pt-0.5">{children}</div>
+          <div className="flex flex-col gap-4 pt-4 pb-2">{children}</div>
         </AccordionPrimitive.Panel>
       )}
     </AccordionPrimitive.Item>

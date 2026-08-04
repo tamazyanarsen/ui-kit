@@ -21,7 +21,7 @@ function ConfirmModal({ size = "l" }: { size?: "l" | "m" }) {
           </ModalDescription>
         </ModalHeader>
         <ModalBody>
-          <p className="text-sm text-[#6D6D6D]">
+          <p className="text-p2 text-[#6D6D6D]">
             Виртуальная карта •• 4482 привязана к 2 подпискам. После удаления платежи по ним
             перестанут проходить.
           </p>
@@ -66,7 +66,7 @@ function ScrollingModal() {
           <ModalTitle>Пользовательское соглашение</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div className="flex flex-col gap-4 text-sm text-[#6D6D6D]">
+          <div className="flex flex-col gap-4 text-p2 text-[#6D6D6D]">
             {Array.from({ length: 20 }, (_, i) => (
               <p key={i}>
                 Пункт соглашения {i + 1}. Раздел, поясняющий условия использования сервиса.

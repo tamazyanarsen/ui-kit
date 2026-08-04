@@ -1,3 +1,5 @@
+import { Check } from "@/icons"
+
 import { cn } from "@/lib/utils"
 
 import { getTagStyle, type TagColor, type TagSize, type TagVariant } from "./variants"
@@ -31,8 +33,8 @@ function Tag({
       data-variant={variant}
       data-size={size}
       className={cn(
-        "inline-flex w-fit items-center gap-1 rounded-md px-1.5 font-medium whitespace-nowrap",
-        size === "l" ? "h-[22px] text-xs" : "h-[18px] text-[11px]",
+        "inline-flex w-fit items-center gap-1 rounded-[4px] px-1.5 font-medium whitespace-nowrap",
+        size === "l" ? "h-[22px] text-p2" : "h-[18px] text-p3",
         style.border && "border",
         className
       )}
@@ -42,13 +44,7 @@ function Tag({
         borderColor: style.border,
       }}
     >
-      {showIcon && (
-        <span
-          aria-hidden="true"
-          className="size-1.5 shrink-0 rounded-full"
-          style={{ backgroundColor: "currentColor" }}
-        />
-      )}
+      {showIcon && <Check aria-hidden="true" className="size-4 shrink-0" strokeWidth={2.5} />}
       {children}
     </span>
   )

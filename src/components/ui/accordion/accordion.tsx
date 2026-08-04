@@ -23,7 +23,7 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "flex flex-1 items-center justify-between gap-4 rounded-md py-4 text-left text-sm font-medium outline-none transition-all hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-panel-open]>svg]:rotate-180",
+          "flex flex-1 items-center justify-between gap-4 rounded-md py-4 text-left text-p2 font-medium outline-none transition-all hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-panel-open]>svg]:rotate-180",
           className,
         )}
         {...props}
@@ -39,7 +39,7 @@ function AccordionPanel({ className, children, ...props }: AccordionPrimitive.Pa
   return (
     <AccordionPrimitive.Panel
       data-slot="accordion-panel"
-      className="h-(--accordion-panel-height) overflow-hidden text-sm transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+      className="h-(--accordion-panel-height) overflow-hidden text-p2 transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
       {...props}
     >
       <div className={cn("pt-0 pb-4", className)}>{children}</div>

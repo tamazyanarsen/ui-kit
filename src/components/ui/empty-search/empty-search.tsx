@@ -32,32 +32,32 @@ function EmptySearchResults({
     <div
       data-slot="empty-search-results"
       className={cn(
-        "flex flex-col items-center py-16 text-center",
+        "flex flex-col items-center px-10 py-16 text-center",
         className
       )}
     >
       {icon && (
         <span
           className={cn(
-            "mb-6 shrink-0 text-[var(--empty-search-icon-fg)] [&_svg]:size-full",
-            largeIcon ? "size-12" : "size-6"
+            "mb-6 flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-[var(--empty-search-icon-bg)] text-[var(--empty-search-icon-fg)]",
+            largeIcon ? "[&_svg]:size-6" : "[&_svg]:size-4"
           )}
         >
           {icon}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-[var(--empty-search-title-fg)]">
+      <h3 className="text-h4 text-[var(--empty-search-title-fg)]">
         {title}
       </h3>
       {description && (
-        <p className="mt-1 max-w-sm text-sm text-[var(--empty-search-description-fg)]">
+        <p className="mt-1 max-w-sm text-p1 font-medium text-[var(--empty-search-description-fg)]">
           {description}
         </p>
       )}
       {buttonLabel && (
         <Button
           type="button"
-          variant="primary"
+          variant="secondary-grey"
           size="sm"
           className="mt-6"
           onClick={onButtonClick}

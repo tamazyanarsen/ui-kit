@@ -16,12 +16,20 @@ type Story = StoryObj<typeof meta>
 function Controlled({
   totalPages = 20,
   initialPage = 5,
+  initialPageSize = 25,
+  pageSizeOptions,
+  showPageSize,
+  className,
 }: {
   totalPages?: number
   initialPage?: number
+  initialPageSize?: number
+  pageSizeOptions?: number[]
+  showPageSize?: boolean
+  className?: string
 }) {
   const [page, setPage] = useState(initialPage)
-  const [pageSize, setPageSize] = useState(25)
+  const [pageSize, setPageSize] = useState(initialPageSize)
   return (
     <Pagination
       page={page}
@@ -29,12 +37,24 @@ function Controlled({
       onPageChange={setPage}
       pageSize={pageSize}
       onPageSizeChange={setPageSize}
+      pageSizeOptions={pageSizeOptions}
+      showPageSize={showPageSize}
+      className={className}
     />
   )
 }
 
 export const Default: Story = {
-  render: (args) => <Controlled totalPages={args.totalPages} initialPage={args.page} />,
+  render: (args) => (
+    <Controlled
+      totalPages={args.totalPages}
+      initialPage={args.page}
+      initialPageSize={args.pageSize}
+      pageSizeOptions={args.pageSizeOptions}
+      showPageSize={args.showPageSize}
+      className={args.className}
+    />
+  ),
 }
 
 export const FewPages: Story = {

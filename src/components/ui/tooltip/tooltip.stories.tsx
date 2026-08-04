@@ -8,18 +8,19 @@ const meta = {
   component: Tooltip,
   parameters: { layout: "centered" },
   args: { content: "Подсказка с пояснением", children: <Button variant="secondary-grey">Наведите курсор</Button> },
+  argTypes: {
+    // `children` is a React.ReactElement (the trigger) — no JSON value can
+    // represent it; Storybook falls back to a raw editable tree of the
+    // element's internals, which looks like a working control but isn't
+    // (same class as Button's icon/iconPosition, already fixed there).
+    children: { control: false },
+  },
 } satisfies Meta<typeof Tooltip>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  render: (args) => (
-    <Tooltip {...args}>
-      <Button variant="secondary-grey">Наведите курсор</Button>
-    </Tooltip>
-  ),
-}
+export const Default: Story = {}
 
 export const Directions: Story = {
   render: () => (

@@ -8,6 +8,7 @@ const meta = {
   component: Item,
   parameters: { layout: "padded" },
   args: { text: "Тип операции", value: "Перевод между счетами" },
+  argTypes: { thumbnail: { control: false } },
 } satisfies Meta<typeof Item>
 
 export default meta

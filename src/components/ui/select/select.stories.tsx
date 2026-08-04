@@ -18,16 +18,18 @@ function ClearableFruitSelect({
   comment,
   defaultValue = null,
   disabled,
+  readOnly,
 }: {
   size?: "sm" | "lg"
   error?: string
   comment?: string
   defaultValue?: string | null
   disabled?: boolean
+  readOnly?: boolean
 }) {
   const [value, setValue] = useState<string | null>(defaultValue)
   return (
-    <Select items={FRUIT_OPTIONS} value={value} onValueChange={setValue} disabled={disabled}>
+    <Select items={FRUIT_OPTIONS} value={value} onValueChange={setValue} disabled={disabled} readOnly={readOnly}>
       <SelectTrigger size={size} label="Фрукт" error={error} comment={comment} onClear={() => setValue(null)}>
         <SelectValue placeholder="" />
       </SelectTrigger>
@@ -76,18 +78,5 @@ export const Disabled: Story = {
 }
 
 export const ReadOnly: Story = {
-  render: () => (
-    <Select items={FRUIT_OPTIONS} defaultValue="banana" readOnly>
-      <SelectTrigger label="Фрукт">
-        <SelectValue placeholder="" />
-      </SelectTrigger>
-      <SelectContent>
-        {FRUIT_OPTIONS.map((o) => (
-          <SelectItem key={o.value} value={o.value}>
-            {o.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  ),
+  args: { defaultValue: "banana", readOnly: true },
 }

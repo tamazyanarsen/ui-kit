@@ -19,11 +19,19 @@ function Controlled({
   min,
   max,
   step,
+  comment,
+  error,
+  scaleLabels,
+  format,
 }: {
   label?: React.ReactNode
   min?: number
   max?: number
   step?: number
+  comment?: React.ReactNode
+  error?: React.ReactNode
+  scaleLabels?: React.ReactNode[]
+  format?: Intl.NumberFormatOptions
 }) {
   const [value, setValue] = useState(50)
   return (
@@ -32,6 +40,10 @@ function Controlled({
       min={min}
       max={max}
       step={step}
+      comment={comment}
+      error={error}
+      scaleLabels={scaleLabels}
+      format={format}
       value={value}
       onValueChange={(v) => setValue(v as number)}
     />
@@ -40,7 +52,16 @@ function Controlled({
 
 export const Default: Story = {
   render: (args) => (
-    <Controlled label={args.label} min={args.min} max={args.max} step={args.step} />
+    <Controlled
+      label={args.label}
+      min={args.min}
+      max={args.max}
+      step={args.step}
+      comment={args.comment}
+      error={args.error}
+      scaleLabels={args.scaleLabels}
+      format={args.format}
+    />
   ),
 }
 

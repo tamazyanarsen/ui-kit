@@ -11,31 +11,25 @@ const meta = {
     content: "Развёрнутый текст подсказки, который поясняет назначение элемента.",
     children: <Button variant="secondary-grey">Открыть подсказку</Button>,
   },
+  argTypes: {
+    // `children` is a React.ReactElement (the trigger) — no JSON value can
+    // represent it; Storybook falls back to a raw editable tree of the
+    // element's internals ($$typeof/type/props/_owner/_store), which looks
+    // like a working control but can't meaningfully be edited (same class
+    // as Button's icon/iconPosition, already fixed there).
+    children: { control: false },
+  },
 } satisfies Meta<typeof Hint>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  render: (args) => (
-    <Hint {...args}>
-      <Button variant="secondary-grey">Открыть подсказку</Button>
-    </Hint>
-  ),
-}
+export const Default: Story = {}
 
 export const WithTitle: Story = {
-  render: (args) => (
-    <Hint {...args} title="Заголовок подсказки">
-      <Button variant="secondary-grey">Открыть подсказку</Button>
-    </Hint>
-  ),
+  args: { title: "Заголовок подсказки" },
 }
 
 export const NoCloseButton: Story = {
-  render: (args) => (
-    <Hint {...args} showCross={false}>
-      <Button variant="secondary-grey">Открыть подсказку</Button>
-    </Hint>
-  ),
+  args: { showCross: false },
 }

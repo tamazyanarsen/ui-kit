@@ -6,6 +6,10 @@ const meta = {
   title: "Template/EmptySearchResults",
   component: EmptySearchResults,
   parameters: { layout: "padded" },
+  // `icon` defaults to a real JSX element (`<CircleAlert />`) — no JSON
+  // value a control could hold would ever reproduce that, so this is a
+  // dead "Set object" control (same class as Button's old `icon` bug).
+  argTypes: { icon: { control: false } },
   args: {
     title: "Ничего не найдено",
     description: "Попробуйте изменить параметры поиска",

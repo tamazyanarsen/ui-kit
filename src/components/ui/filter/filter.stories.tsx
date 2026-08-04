@@ -8,6 +8,7 @@ const meta = {
   component: Filter,
   parameters: { layout: "padded" },
   args: { label: "Статус" },
+  argTypes: { icon: { control: false } },
 } satisfies Meta<typeof Filter>
 
 export default meta

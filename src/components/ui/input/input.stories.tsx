@@ -8,6 +8,7 @@ const meta = {
   component: Input,
   parameters: { layout: "padded" },
   args: { label: "Имя" },
+  argTypes: { iconLeft: { control: false }, trailingIcon: { control: false } },
 } satisfies Meta<typeof Input>
 
 export default meta

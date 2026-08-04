@@ -2,6 +2,7 @@ import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Calendar } from "./calendar"
+import type { CalendarProps } from "./types"
 
 const meta = {
   title: "Interaction/Calendar/Calendar",
@@ -12,25 +13,30 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function SingleDateCalendar() {
+// `mode`/`value`/`onChange` are fixed by this demo's own local state (a
+// bare `Date | null`, incompatible with range/month/year's value shapes) —
+// every other control (layout, title, footer, …) is still forwarded, so
+// the Controls panel isn't just decorative here (same pattern as
+// Checkbox's `Controlled` wrapper).
+function SingleDateCalendar(props: Omit<CalendarProps, "mode" | "value" | "onChange">) {
   const [value, setValue] = useState<Date | null>(new Date(2024, 0, 15))
-  return <Calendar mode="single" value={value} onChange={setValue} />
+  return <Calendar mode="single" value={value} onChange={setValue} {...props} />
 }
 
 export const Single: Story = {
-  render: () => <SingleDateCalendar />,
+  render: (args) => <SingleDateCalendar {...args} />,
 }
 
-function RangeCalendar() {
+function RangeCalendar(props: Omit<CalendarProps, "mode" | "rangeValue" | "onRangeChange">) {
   const [range, setRange] = useState<[Date | null, Date | null]>([
     new Date(2024, 0, 10),
     new Date(2024, 0, 20),
   ])
-  return <Calendar mode="range" rangeValue={range} onRangeChange={setRange} />
+  return <Calendar mode="range" rangeValue={range} onRangeChange={setRange} {...props} />
 }
 
 export const Range: Story = {
-  render: () => <RangeCalendar />,
+  render: (args) => <RangeCalendar {...args} />,
 }
 
 export const MonthPicker: Story = {
@@ -45,7 +51,9 @@ export const NoFooter: Story = {
   args: { mode: "single", footer: false },
 }
 
-function DisabledDatesCalendar() {
+function DisabledDatesCalendar(
+  props: Omit<CalendarProps, "mode" | "value" | "onChange" | "disabledDate">
+) {
   const [value, setValue] = useState<Date | null>(new Date(2024, 0, 15))
   return (
     <Calendar
@@ -53,13 +61,14 @@ function DisabledDatesCalendar() {
       value={value}
       onChange={setValue}
       disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6}
+      {...props}
     />
   )
 }
 
 export const DisabledDates: Story = {
   name: "With disabled days (weekends)",
-  render: () => <DisabledDatesCalendar />,
+  render: (args) => <DisabledDatesCalendar {...args} />,
 }
 
 // Design-check #13: the sheet layout already supports every mode (see
@@ -71,7 +80,9 @@ export const MobileSheet: Story = {
   parameters: { layout: "fullscreen" },
 }
 
-function MobileRangeCalendar() {
+function MobileRangeCalendar(
+  props: Omit<CalendarProps, "mode" | "layout" | "title" | "rangeValue" | "onRangeChange">
+) {
   const [range, setRange] = useState<[Date | null, Date | null]>([
     new Date(2024, 0, 10),
     new Date(2024, 0, 20),
@@ -83,13 +94,14 @@ function MobileRangeCalendar() {
       title="Выберите даты"
       rangeValue={range}
       onRangeChange={setRange}
+      {...props}
     />
   )
 }
 
 export const MobileSheetRange: Story = {
   name: "Mobile Sheet — Range",
-  render: () => <MobileRangeCalendar />,
+  render: (args) => <MobileRangeCalendar {...args} />,
   parameters: { layout: "fullscreen" },
 }
 

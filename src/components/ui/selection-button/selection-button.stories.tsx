@@ -13,6 +13,7 @@ const meta = {
       { text: "Удалить" },
     ],
   },
+  argTypes: { trigger: { control: false } },
 } satisfies Meta<typeof SelectionButton>
 
 export default meta

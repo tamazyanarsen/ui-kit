@@ -1,4 +1,5 @@
 import { useState } from "react"
+import type { ComponentProps } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Tabs } from "./tabs"
@@ -21,13 +22,13 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function Controlled() {
-  const [value, setValue] = useState("all")
-  return <Tabs items={ITEMS} value={value} onValueChange={setValue} />
+function Controlled(args: ComponentProps<typeof Tabs>) {
+  const [value, setValue] = useState(args.value ?? args.items[0]?.value)
+  return <Tabs {...args} value={value} onValueChange={setValue} />
 }
 
 export const Large: Story = {
-  render: () => <Controlled />,
+  render: (args) => <Controlled {...args} />,
 }
 
 export const Medium: Story = {

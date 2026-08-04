@@ -1,4 +1,5 @@
 import { useState } from "react"
+import type { ComponentProps } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Toggle } from "./toggle"
@@ -13,13 +14,13 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function Controlled() {
-  const [checked, setChecked] = useState(true)
-  return <Toggle label="Уведомления" checked={checked} onCheckedChange={setChecked} />
+function Controlled(args: ComponentProps<typeof Toggle>) {
+  const [checked, setChecked] = useState(args.checked ?? true)
+  return <Toggle {...args} checked={checked} onCheckedChange={setChecked} />
 }
 
 export const Default: Story = {
-  render: () => <Controlled />,
+  render: (args) => <Controlled {...args} />,
 }
 
 export const WithoutLabel: Story = {

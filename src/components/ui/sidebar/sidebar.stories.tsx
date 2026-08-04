@@ -38,8 +38,8 @@ export const Collapsed: Story = {
   args: { defaultOpen: false },
 }
 
-function ControlledSidebar() {
-  const [open, setOpen] = useState(false)
+function ControlledSidebar({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen)
   const [expanded, setExpanded] = useState<string[]>([])
   return (
     <div className="h-96">
@@ -61,5 +61,6 @@ function ControlledSidebar() {
 
 export const CollapsedGroupClickExpandsRail: Story = {
   name: "Collapsed rail: clicking a group opens + pre-expands it",
-  render: () => <ControlledSidebar />,
+  args: { defaultOpen: false },
+  render: (args) => <ControlledSidebar {...args} />,
 }

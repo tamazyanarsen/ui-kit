@@ -34,15 +34,16 @@ export const Mobile: Story = {
   parameters: { layout: "centered" },
 }
 
+// `bullet` + array `description` only render through `BannerDescription`
+// (desktop/mobile) — the `compact` layout prints `description` as a plain
+// <p>, so an array there collapses into unseparated, un-bulleted text.
+// "desktop" is the size that actually demonstrates what these two args do.
 export const WithBulletList: Story = {
   args: {
-    size: "compact",
-    description: undefined,
+    size: "desktop",
+    description: ["Первое преимущество", "Второе преимущество"],
     bullet: true,
   },
-  render: (args) => (
-    <Banner {...args} description={["Первое преимущество", "Второе преимущество"]} bullet />
-  ),
 }
 
 export const ColorVariants: Story = {

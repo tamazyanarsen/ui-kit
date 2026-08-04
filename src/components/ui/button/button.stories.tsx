@@ -10,6 +10,10 @@ const VARIANTS: NonNullable<ButtonProps["variant"]>[] = [
   "secondary-white",
   "secondary-outline",
   "destructive",
+  "secondary-logo-black",
+  "secondary-logo-border-white",
+  "secondary-logo-white",
+  "secondary-logo-grey",
 ]
 
 const meta = {

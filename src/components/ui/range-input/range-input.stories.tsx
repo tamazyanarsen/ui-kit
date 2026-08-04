@@ -1,4 +1,5 @@
 import { useState } from "react"
+import type * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { RangeInput } from "./range-input"
@@ -13,15 +14,34 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function Controlled() {
+function Controlled({
+  label,
+  min,
+  max,
+  step,
+}: {
+  label?: React.ReactNode
+  min?: number
+  max?: number
+  step?: number
+}) {
   const [value, setValue] = useState(50)
   return (
-    <RangeInput label="Сумма" min={0} max={100} step={1} value={value} onValueChange={(v) => setValue(v as number)} />
+    <RangeInput
+      label={label}
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      onValueChange={(v) => setValue(v as number)}
+    />
   )
 }
 
 export const Default: Story = {
-  render: () => <Controlled />,
+  render: (args) => (
+    <Controlled label={args.label} min={args.min} max={args.max} step={args.step} />
+  ),
 }
 
 export const WithScaleLabels: Story = {

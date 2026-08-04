@@ -13,8 +13,14 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function Controlled({ totalPages = 20 }: { totalPages?: number }) {
-  const [page, setPage] = useState(5)
+function Controlled({
+  totalPages = 20,
+  initialPage = 5,
+}: {
+  totalPages?: number
+  initialPage?: number
+}) {
+  const [page, setPage] = useState(initialPage)
   const [pageSize, setPageSize] = useState(25)
   return (
     <Pagination
@@ -28,7 +34,7 @@ function Controlled({ totalPages = 20 }: { totalPages?: number }) {
 }
 
 export const Default: Story = {
-  render: () => <Controlled />,
+  render: (args) => <Controlled totalPages={args.totalPages} initialPage={args.page} />,
 }
 
 export const FewPages: Story = {

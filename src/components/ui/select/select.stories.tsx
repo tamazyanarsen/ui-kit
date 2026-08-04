@@ -17,15 +17,17 @@ function ClearableFruitSelect({
   error,
   comment,
   defaultValue = null,
+  disabled,
 }: {
   size?: "sm" | "lg"
   error?: string
   comment?: string
   defaultValue?: string | null
+  disabled?: boolean
 }) {
   const [value, setValue] = useState<string | null>(defaultValue)
   return (
-    <Select items={FRUIT_OPTIONS} value={value} onValueChange={setValue}>
+    <Select items={FRUIT_OPTIONS} value={value} onValueChange={setValue} disabled={disabled}>
       <SelectTrigger size={size} label="Фрукт" error={error} comment={comment} onClear={() => setValue(null)}>
         <SelectValue placeholder="" />
       </SelectTrigger>
@@ -67,6 +69,10 @@ export const WithComment: Story = {
 
 export const WithError: Story = {
   args: { error: "Обязательное поле" },
+}
+
+export const Disabled: Story = {
+  args: { disabled: true, defaultValue: "banana" },
 }
 
 export const ReadOnly: Story = {

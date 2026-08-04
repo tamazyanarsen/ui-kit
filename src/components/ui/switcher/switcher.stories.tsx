@@ -1,4 +1,5 @@
 import { useState } from "react"
+import type { ComponentProps } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Switcher } from "./switcher"
@@ -19,13 +20,13 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function Controlled() {
-  const [value, setValue] = useState("all")
-  return <Switcher items={ITEMS} value={value} onValueChange={setValue} />
+function Controlled(args: ComponentProps<typeof Switcher>) {
+  const [value, setValue] = useState(args.value ?? args.items[0]?.value)
+  return <Switcher {...args} value={value} onValueChange={setValue} />
 }
 
 export const Large: Story = {
-  render: () => <Controlled />,
+  render: (args) => <Controlled {...args} />,
 }
 
 export const Medium: Story = {

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Checkbox } from "./checkbox"
+import { Checkbox, type CheckboxProps } from "./checkbox"
 
 const meta = {
   title: "Interaction/Checkbox",
@@ -13,13 +13,17 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function Controlled() {
+// Checkbox is a controlled component, so this demo owns its own `checked`
+// state to stay interactive in the canvas — but every other arg (label,
+// comment, error, indeterminate, disabled, …) is still forwarded, so the
+// Controls panel isn't just decorative for the Default story.
+function Controlled(props: Omit<CheckboxProps, "checked" | "onCheckedChange">) {
   const [checked, setChecked] = useState(false)
-  return <Checkbox label="Согласен с условиями" checked={checked} onCheckedChange={setChecked} />
+  return <Checkbox {...props} checked={checked} onCheckedChange={setChecked} />
 }
 
 export const Default: Story = {
-  render: () => <Controlled />,
+  render: (args) => <Controlled {...args} />,
 }
 
 export const WithoutLabel: Story = {

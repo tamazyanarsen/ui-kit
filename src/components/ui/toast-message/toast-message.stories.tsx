@@ -8,12 +8,14 @@ function ToastLauncher({
   type,
   title,
   description,
-  withButtons,
+  buttons = "none",
 }: {
   type: "checked" | "attention" | "error" | "information"
   title: string
   description?: string
-  withButtons?: boolean
+  // Figma's own "Type (Button)" property: Two Buttons / Black Button
+  // (primary only) / White Button (secondary only) / none.
+  buttons?: "none" | "two" | "black" | "white"
 }) {
   const toast = useToast()
   return (
@@ -23,9 +25,13 @@ function ToastLauncher({
           type,
           title,
           description,
-          data: withButtons
-            ? { primaryButtonLabel: "Повторить", secondaryButtonLabel: "Отмена" }
-            : undefined,
+          data:
+            buttons === "none"
+              ? undefined
+              : {
+                  primaryButtonLabel: buttons !== "white" ? "Повторить" : undefined,
+                  secondaryButtonLabel: buttons !== "black" ? "Отмена" : undefined,
+                },
         })
       }
     >
@@ -72,6 +78,22 @@ export const WithActionButtons: Story = {
     type: "error",
     title: "Не удалось выполнить платёж",
     description: "Проверьте соединение с интернетом",
-    withButtons: true,
+    buttons: "two",
+  },
+}
+
+export const SingleBlackButton: Story = {
+  args: {
+    type: "checked",
+    title: "Скопировано в буфер обмена",
+    buttons: "black",
+  },
+}
+
+export const SingleWhiteButton: Story = {
+  args: {
+    type: "attention",
+    title: "Проверьте введённые данные",
+    buttons: "white",
   },
 }

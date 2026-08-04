@@ -4,10 +4,10 @@ import {
   CalendarDays as CalendarCheck,
   FileText as FileOutput,
   Wallet as CreditCard,
-  Info as BluetoothOff,
+  Sbp,
   Copy as Database,
-  CircleAlert as Siren,
-  Lock as ShieldAlert,
+  Coins,
+  Alarm,
   Wallet,
   Pencil as FileSignature,
   CircleUser as Users,
@@ -72,7 +72,7 @@ function SidebarDemo() {
                   active={active === "payments-registry"}
                   onClick={() => setActive("payments-registry")}
                 />
-                <SidebarGroup value="sbp" icon={BluetoothOff} label="СБП">
+                <SidebarGroup value="sbp" icon={Sbp} label="СБП">
                   <SidebarItem
                     nested
                     label="Платежи СБП"
@@ -87,13 +87,13 @@ function SidebarDemo() {
                   />
                 </SidebarGroup>
                 <SidebarItem
-                  icon={Siren}
+                  icon={Coins}
                   label="Заявки на выборку"
                   active={active === "requests"}
                   onClick={() => setActive("requests")}
                 />
                 <SidebarItem
-                  icon={ShieldAlert}
+                  icon={Alarm}
                   label="FRAUD мониторинг: очень длинное название, которое не помещается"
                   active={active === "fraud"}
                   onClick={() => setActive("fraud")}

@@ -4,6 +4,7 @@ import { Briefcase, Check, ChevronDown, LogOut, Search, Settings } from "@/icons
 
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
+import { Dropdown } from "@/components/ui/dropdown"
 
 // Profile Menu — the header's organization switcher (spec's own "Profile
 // Menu" property table, separate from Header's). `organizations.length`
@@ -109,7 +110,7 @@ function ProfileMenu({
         >
           <MenuPrimitive.Popup
             data-slot="profile-menu-content"
-            className="w-80 origin-(--transform-origin) overflow-hidden rounded-2xl bg-[var(--header-bg)] py-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            render={<Dropdown className="w-80 overflow-hidden bg-[var(--header-bg)] py-2" />}
           >
             {isSingle ? (
               <div className="flex flex-col gap-0.5 px-4 py-2">

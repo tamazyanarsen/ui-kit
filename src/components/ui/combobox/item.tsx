@@ -3,7 +3,11 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { Check } from "@/icons"
 
 import { cn } from "@/lib/utils"
-import { ComboboxCheckbox, type ComboboxCheckboxState } from "./checkbox"
+import {
+  COMBOBOX_CHECKBOX_BASE_CLASS,
+  ComboboxCheckbox,
+  type ComboboxCheckboxState,
+} from "./checkbox"
 
 // Indent step for tree levels — the spec shows "Уровень 2/3/4" stepping in
 // evenly, only two of which (parent/child) are actually selectable here.
@@ -51,7 +55,10 @@ export function ComboboxItem({
     >
       <span
         aria-hidden="true"
-        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md border border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent transition-colors group-data-[selected]/item:border-transparent group-data-[selected]/item:bg-[var(--checkbox-checked-bg)] group-data-[selected]/item:text-[var(--checkbox-checked-fg)] group-data-disabled/item:!border-[var(--checkbox-disabled-border)] group-data-disabled/item:!bg-[var(--checkbox-disabled-bg)]"
+        className={cn(
+          COMBOBOX_CHECKBOX_BASE_CLASS,
+          "mt-0.5 border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent group-data-[selected]/item:border-transparent group-data-[selected]/item:bg-[var(--checkbox-checked-bg)] group-data-[selected]/item:text-[var(--checkbox-checked-fg)] group-data-disabled/item:!border-[var(--checkbox-disabled-border)] group-data-disabled/item:!bg-[var(--checkbox-disabled-bg)]"
+        )}
       >
         <ComboboxPrimitive.ItemIndicator>
           <Check className="size-4" strokeWidth={3} />

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
+import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 
 import { DomRfLogo } from "./dom-rf-logo"
@@ -119,7 +120,7 @@ function NavItem({ item }: { item: HeaderNavItem }) {
         <MenuPrimitive.Positioner side="bottom" align="start" sideOffset={8} className="isolate z-50">
           <MenuPrimitive.Popup
             data-slot="header-nav-item-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            render={<Dropdown className="min-w-56 overflow-hidden bg-[var(--header-bg)]" />}
           >
             {item.items.map((sub) => (
               <ButtonMenuOverflowItem key={sub.value} text={sub.label} onClick={sub.onClick} />
@@ -191,7 +192,7 @@ function NavRow({
             <MenuPrimitive.Positioner side="bottom" align="start" sideOffset={8} className="isolate z-50">
               <MenuPrimitive.Popup
                 data-slot="header-nav-overflow-content"
-                className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+                render={<Dropdown className="min-w-56 overflow-hidden bg-[var(--header-bg)]" />}
               >
                 {hiddenItems.map((item) => (
                   <ButtonMenuOverflowItem key={item.value} text={item.label} onClick={item.onClick} />
@@ -245,7 +246,7 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
         <MenuPrimitive.Positioner side="bottom" align="end" sideOffset={8} className="isolate z-50">
           <MenuPrimitive.Popup
             data-slot="header-document-menu-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            render={<Dropdown className="min-w-56 overflow-hidden bg-[var(--header-bg)]" />}
           >
             {items.map((item) => (
               <ButtonMenuOverflowItem key={item.value} text={item.label} onClick={item.onClick} />
@@ -287,7 +288,7 @@ function EmployeeUserMenu({
         <MenuPrimitive.Positioner side="bottom" align="end" sideOffset={8} className="isolate z-50">
           <MenuPrimitive.Popup
             data-slot="header-employee-menu-content"
-            className="min-w-56 origin-(--transform-origin) rounded-2xl bg-[var(--header-bg)] p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            render={<Dropdown className="min-w-56 overflow-hidden bg-[var(--header-bg)]" />}
           >
             <MenuPrimitive.Item
               onClick={onSettingsClick}

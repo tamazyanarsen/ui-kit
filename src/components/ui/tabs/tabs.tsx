@@ -5,6 +5,7 @@ import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
+import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 
 // Tabs — "Табы": underline-style tab bar. Large is a 1st-level tab, Medium
@@ -172,7 +173,7 @@ function Tabs({
             >
               <MenuPrimitive.Popup
                 data-slot="tabs-overflow-content"
-                className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+                render={<Dropdown className="min-w-48 overflow-hidden" />}
               >
                 {hiddenItems.map((item) => (
                   <ButtonMenuOverflowItem

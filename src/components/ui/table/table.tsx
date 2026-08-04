@@ -5,6 +5,7 @@ import { ChevronsUpDown, Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Dropdown } from "@/components/ui/dropdown"
 import { Tag, type TagColor } from "@/components/ui/tag"
 
 // Table — "Таблица" (ui/table). Anatomy per spec: a Title Cell row (the
@@ -130,7 +131,7 @@ function TableRowMenu({
         >
           <MenuPrimitive.Popup
             data-slot="table-row-menu-content"
-            className="min-w-48 origin-(--transform-origin) rounded-2xl bg-white p-2 shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            render={<Dropdown className="min-w-48 overflow-hidden" />}
           >
             {menu}
           </MenuPrimitive.Popup>

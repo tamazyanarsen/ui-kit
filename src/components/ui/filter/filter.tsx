@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { ComboboxFooter } from "@/components/ui/combobox"
+import { Dropdown } from "@/components/ui/dropdown"
 
 const ICON_SIZE = "size-4"
 
@@ -254,13 +255,7 @@ function Filter({
           >
             <PopoverPrimitive.Popup
               data-slot="filter-content"
-              // Round-2 audit fix: `rounded-2xl` resolves to 18px under this
-              // kit's `--radius-2xl: calc(var(--radius) * 1.8)` scale (0.625rem
-              // * 1.8), but the popup's literal Figma value (node 15693:35422,
-              // "Filer Value Input") is 16px — use the literal px value instead
-              // of the generic scale step, same reasoning Button already
-              // applies to its own radii.
-              className="w-64 overflow-hidden rounded-[16px] bg-popover text-popover-foreground shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+              render={<Dropdown className="w-64 overflow-hidden" />}
             >
               {/* Round-2 audit fix: outer padding is 16px (Figma node
                   15693:35423, "Input area" wrapper), not 12px — and the

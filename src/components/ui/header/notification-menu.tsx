@@ -4,6 +4,7 @@ import { Bell } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Dropdown } from "@/components/ui/dropdown"
 
 // Notification dropdown — the bell icon's own popup content. Deliberately
 // not built on the shared Notification component (src/components/ui/
@@ -66,7 +67,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
         >
           <MenuPrimitive.Popup
             data-slot="notification-menu-content"
-            className="flex w-[380px] flex-col overflow-hidden rounded-2xl bg-[var(--header-bg)] shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            render={<Dropdown className="flex w-[380px] flex-col overflow-hidden bg-[var(--header-bg)]" />}
           >
             <p className="border-b border-[var(--header-divider)] px-4 py-3 text-p1-medium text-[var(--header-fg)]">
               Уведомления

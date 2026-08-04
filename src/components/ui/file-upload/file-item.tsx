@@ -42,7 +42,7 @@ export function FileListItem({
       data-slot="file-item"
       data-disabled={disabled || undefined}
       className={cn(
-        "flex w-full items-center gap-4 py-2 text-p2",
+        "flex w-full items-center gap-4 py-2 text-p2-regular",
         disabled && "pointer-events-none opacity-50",
         className
       )}
@@ -79,7 +79,7 @@ export function FileListItem({
         <span
           title={typeof name === "string" ? name : undefined}
           className={cn(
-            "truncate text-p1 font-medium",
+            "truncate text-p1-medium",
             disabled
               ? "text-[var(--file-item-fg-disabled)]"
               : "text-[var(--file-item-fg)]"
@@ -89,7 +89,7 @@ export function FileListItem({
         </span>
         <span
           className={cn(
-            "truncate text-p3 font-medium",
+            "truncate text-p3-medium",
             error
               ? "text-[var(--file-item-error-fg)]"
               : "text-[var(--file-item-meta-fg)]"

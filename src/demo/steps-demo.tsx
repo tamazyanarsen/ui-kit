@@ -126,7 +126,7 @@ function StepsDemo() {
           />
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Пример выше держит состояние сам (текущий шаг), только чтобы
           показать переход живьём — в реальном коде это делает вызывающая
           сторона: <code>onClickLeft</code>/<code>onClickRight</code> и клик

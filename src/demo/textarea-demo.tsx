@@ -46,7 +46,7 @@ function TextareaDemo() {
             defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore magna"
           />
         </div>
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           В отличие от Input, у Textarea нет S/L токенов, но label «плавает»
           так же: пустое поле показывает его как обычный плейсхолдер (16px),
           а при вводе/фокусе он превращается в маленькую (12px) подпись

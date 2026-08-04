@@ -39,7 +39,7 @@ export function ComboboxItem({
       // popup's own clip) with #F8F8F8 highlighted background instead of
       // the generic --accent token.
       className={cn(
-        "group/item relative flex w-full cursor-default items-start gap-4 p-4 text-p2 outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "group/item relative flex w-full cursor-default items-start gap-4 p-4 text-p2-regular outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       style={
@@ -62,7 +62,7 @@ export function ComboboxItem({
           {children}
         </span>
         {description && (
-          <span className="truncate text-p3 font-medium text-[var(--select-caption-fg)]">
+          <span className="truncate text-p3-medium text-[var(--select-caption-fg)]">
             {description}
           </span>
         )}
@@ -99,7 +99,7 @@ export function ComboboxGroupRow({
       onClick={onToggle}
       data-slot="combobox-group-row"
       className={cn(
-        "relative flex w-full cursor-default items-start gap-4 p-4 text-left text-p2 outline-hidden select-none hover:bg-[#F8F8F8] disabled:pointer-events-none disabled:opacity-50",
+        "relative flex w-full cursor-default items-start gap-4 p-4 text-left text-p2-regular outline-hidden select-none hover:bg-[#F8F8F8] disabled:pointer-events-none disabled:opacity-50",
         className
       )}
     >
@@ -109,7 +109,7 @@ export function ComboboxGroupRow({
           {label}
         </span>
         {description && (
-          <span className="truncate text-p3 font-medium text-[var(--select-caption-fg)]">
+          <span className="truncate text-p3-medium text-[var(--select-caption-fg)]">
             {description}
           </span>
         )}

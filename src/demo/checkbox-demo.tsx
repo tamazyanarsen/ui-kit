@@ -102,7 +102,7 @@ function CheckboxDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Бокс 24×24, hover-рамка тёмная (#252628), checked+hover заливка
           светлее primary hover (#2FCEEF). `error` заменяет `comment` (не
           складывается с ним) — как у Input. `indeterminate` — состояние

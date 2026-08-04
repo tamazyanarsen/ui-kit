@@ -124,7 +124,7 @@ function ItemInformationField({
   const stacked = type === "label-top" || type === "large-value"
 
   const labelRow = (
-    <span className="flex shrink-0 items-center gap-1.5 text-p1 text-[var(--ifield-label-fg)]">
+    <span className="flex shrink-0 items-center gap-1.5 text-p1-regular text-[var(--ifield-label-fg)]">
       {label}
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
@@ -136,7 +136,7 @@ function ItemInformationField({
         className={cn(
           // text-h2 (32/44) already bakes in weight 500, so it doesn't need
           // its own font-medium alongside the text-p1 branch that does.
-          type === "large-value" ? "text-h2" : "text-p1 font-medium",
+          type === "large-value" ? "text-h2" : "text-p1-medium",
           VALUE_COLOR[valueStatus]
         )}
       >
@@ -160,7 +160,7 @@ function ItemInformationField({
           {labelRow}
           {valueRow}
           {subText && (
-            <span className={cn("text-p2 font-medium", SUBTEXT_COLOR[subTextStatus])}>
+            <span className={cn("text-p2-medium", SUBTEXT_COLOR[subTextStatus])}>
               {subText}
             </span>
           )}
@@ -171,7 +171,7 @@ function ItemInformationField({
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
             {valueRow}
             {subText && (
-              <span className={cn("text-p2 font-medium", SUBTEXT_COLOR[subTextStatus])}>
+              <span className={cn("text-p2-medium", SUBTEXT_COLOR[subTextStatus])}>
                 {subText}
               </span>
             )}

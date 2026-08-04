@@ -36,23 +36,23 @@ function ThumbnailDemo() {
           <div className="flex items-center gap-6">
             <div className="flex flex-col items-center gap-2">
               <Thumbnail type="card" paymentSystem="mir" />
-              <span className="text-p3 text-muted-foreground">Default</span>
+              <span className="text-p3-regular text-muted-foreground">Default</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Thumbnail type="card" paymentSystem="mir" disabled />
-              <span className="text-p3 text-muted-foreground">Disabled</span>
+              <span className="text-p3-regular text-muted-foreground">Disabled</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Thumbnail type="card" paymentSystem="mir" showDot />
-              <span className="text-p3 text-muted-foreground">Count Dot</span>
+              <span className="text-p3-regular text-muted-foreground">Count Dot</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Thumbnail type="card" paymentSystem="mir" count={3} />
-              <span className="text-p3 text-muted-foreground">Count</span>
+              <span className="text-p3-regular text-muted-foreground">Count</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Thumbnail type="more" />
-              <span className="text-p3 text-muted-foreground">More</span>
+              <span className="text-p3-regular text-muted-foreground">More</span>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@ function ThumbnailDemo() {
                     />
                   ))}
                 </div>
-                <span className="text-p3 text-muted-foreground">{label}</span>
+                <span className="text-p3-regular text-muted-foreground">{label}</span>
               </div>
             ))}
           </div>
@@ -86,7 +86,7 @@ function ThumbnailDemo() {
             {STATUS_TYPES.map(({ type, label }) => (
               <div key={type} className="flex flex-col items-center gap-2">
                 <Thumbnail type={type} showDot={type !== "picture"} />
-                <span className="text-p3 text-muted-foreground">{label}</span>
+                <span className="text-p3-regular text-muted-foreground">{label}</span>
               </div>
             ))}
           </div>
@@ -105,7 +105,7 @@ function ThumbnailDemo() {
           <div className="flex items-center gap-3 rounded-xl bg-[#F8F8F8] p-4">
             <Thumbnail type="card" paymentSystem="mir" />
             <div className="flex flex-col">
-              <span className="text-p2 text-[#252628]">
+              <span className="text-p2-regular text-[#252628]">
                 Привязанная карта · 4452
               </span>
               <span className="text-lg font-medium text-[#252628]">
@@ -115,7 +115,7 @@ function ThumbnailDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Thumbnail включает иконку/изображение и опционально статус — точку
           (<code>showDot</code>) или счётчик (<code>count</code>), переиспользуя{" "}
           <code>Badge</code> тем же способом, что и оверлей на Button.

@@ -57,7 +57,10 @@ function SheetNav({ label, onBack }: { label: string; onBack?: () => void }) {
           <ChevronLeft className="size-4" />
         </button>
       )}
-      <span className="text-p2 text-[var(--calendar-fg)]">{label}</span>
+      {/* Matches the desktop nav pill's "Май"/"2024" label
+          (get_design_context on 7415:58522) — Object Sans Medium (P2
+          Medium), not Regular. */}
+      <span className="text-p2-medium text-[var(--calendar-fg)]">{label}</span>
     </div>
   )
 }
@@ -68,7 +71,7 @@ function SheetNav({ label, onBack }: { label: string; onBack?: () => void }) {
 // bottom-sheet usage mock (title "Выберите даты" → nav "2024" → pill "Май").
 function MonthPillHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start px-3 pt-2 pb-4 text-p2 font-medium text-[var(--calendar-fg)]">
+    <div className="flex items-start px-3 pt-2 pb-4 text-p2-medium text-[var(--calendar-fg)]">
       <HeaderLabel>{children}</HeaderLabel>
     </div>
   )

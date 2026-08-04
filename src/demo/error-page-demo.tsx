@@ -36,7 +36,7 @@ function ErrorPageDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Иллюстрация в спеке — кастомный 3D-маскот (например, наушник в
           форме «0» в «403»). Здесь, как и с логотипом Госуслуг ранее в
           Button, вместо точной копии — плоские цифры кода: это

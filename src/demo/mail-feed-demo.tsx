@@ -40,7 +40,7 @@ function MailFeedDemo() {
             {STATES.map(({ state, label }) => (
               <div key={state} className="flex flex-col gap-1">
                 <MailFeed {...ROW_PROPS} state={state} onClick={() => {}} />
-                <span className="text-p3 text-muted-foreground">{label}</span>
+                <span className="text-p3-regular text-muted-foreground">{label}</span>
               </div>
             ))}
           </div>
@@ -58,7 +58,7 @@ function MailFeedDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Статус письма (Default/New/Used/Error) и чекбокс массового выбора —
           независимые оси: чекбокс может быть показан при любом статусе.
           Тема — одна строка с многоточием; сообщение — 1 строка + строка

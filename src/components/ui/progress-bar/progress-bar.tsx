@@ -122,11 +122,11 @@ function ProgressBar({
     <div data-slot="progress-bar" className={cn("flex flex-col gap-2", className)}>
       <div className="flex flex-col gap-1">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="text-p1 font-medium text-[var(--progress-title-fg)]">
+          <span className="text-p1-medium text-[var(--progress-title-fg)]">
             {title}
           </span>
           {label && (
-            <span className="shrink-0 text-p1 font-medium text-[var(--progress-title-fg)]">
+            <span className="shrink-0 text-p1-medium text-[var(--progress-title-fg)]">
               {label}
             </span>
           )}
@@ -140,7 +140,7 @@ function ProgressBar({
       </div>
 
       {(subtitle || description) && (
-        <div className="flex items-baseline gap-4 text-p1 font-medium">
+        <div className="flex items-baseline gap-4 text-p1-medium">
           {subtitle && (
             <span style={{ color: STATUS_FG[status] }}>{subtitle}</span>
           )}

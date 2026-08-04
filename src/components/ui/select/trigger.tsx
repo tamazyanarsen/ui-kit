@@ -124,7 +124,7 @@ export function SelectTrigger({
         <p
           id={captionId}
           className={cn(
-            "text-p3 font-medium",
+            "text-p3-medium",
             // Aligns with the label/value text inside the trigger, not the
             // box's outer edge — matches the trigger's own horizontal
             // padding, which is px-4 at both sizes (see variants.ts).

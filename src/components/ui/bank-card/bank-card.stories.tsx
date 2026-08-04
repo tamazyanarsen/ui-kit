@@ -35,7 +35,7 @@ export const AllSkins: Story = {
       {SKINS.map((skin) => (
         <div key={skin} className="flex flex-col items-start gap-2">
           <BankCard skin={skin} />
-          <span className="max-w-[332px] text-p3 text-muted-foreground">{SKIN_LABELS[skin]}</span>
+          <span className="max-w-[332px] text-p3-regular text-muted-foreground">{SKIN_LABELS[skin]}</span>
         </div>
       ))}
     </div>

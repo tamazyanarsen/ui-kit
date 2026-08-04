@@ -80,7 +80,10 @@ function AutocompleteField({
         <p
           id={captionId}
           className={cn(
-            "text-p3",
+            // Same Comment/Error caption as Input (see input.tsx) — confirmed
+            // Object Sans Medium via get_design_context on ELK/input's own
+            // Comment instance (1246:139719), not the browser default.
+            "text-p3-medium",
             error ? "text-[var(--input-caption-error-fg)]" : "text-[var(--input-caption-fg)]"
           )}
         >

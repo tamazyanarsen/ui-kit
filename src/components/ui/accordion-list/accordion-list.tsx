@@ -143,7 +143,7 @@ function AccordionListItem({
                 />
               </span>
               {subtitle && (
-                <span className="truncate text-p1 font-medium text-[var(--accordion-list-subtitle-fg)]">
+                <span className="truncate text-p1-medium text-[var(--accordion-list-subtitle-fg)]">
                   {subtitle}
                 </span>
               )}
@@ -158,7 +158,7 @@ function AccordionListItem({
               {description && (
                 <span
                   className={cn(
-                    "text-p1 font-medium",
+                    "text-p1-medium",
                     DESCRIPTION_COLOR[descriptionType]
                   )}
                 >
@@ -201,7 +201,7 @@ function AccordionListItem({
         {children && (
           <AccordionPrimitive.Panel
             data-slot="accordion-list-panel"
-            className="h-(--accordion-panel-height) overflow-hidden text-p2 transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+            className="h-(--accordion-panel-height) overflow-hidden text-p2-regular transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
             <div className={cn("pb-3", showCheckbox ? "pl-11" : "pl-4", "pr-4")}>
               {children}

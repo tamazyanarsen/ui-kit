@@ -51,7 +51,7 @@ export const AllStates: Story = {
       {STATES.map((state) => (
         <div key={state} className="flex flex-col gap-1">
           <MailFeed {...ROW_PROPS} state={state} />
-          <span className="text-p3 text-muted-foreground">{state}</span>
+          <span className="text-p3-regular text-muted-foreground">{state}</span>
         </div>
       ))}
     </div>

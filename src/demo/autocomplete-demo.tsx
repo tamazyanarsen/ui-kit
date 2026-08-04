@@ -96,7 +96,7 @@ function AutocompleteDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Своей Figma-спеки нет — собран из присланного референса (поиск
           организации по ИНН). Поле само является триггером (без отдельной
           кнопки), список появляется под ним по мере ввода. В отличие от

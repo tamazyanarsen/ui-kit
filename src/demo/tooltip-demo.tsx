@@ -36,7 +36,7 @@ function TooltipDemo() {
                 <Tooltip content="Your Text Goes Here" direction={direction}>
                   <span className="size-3 rounded-full bg-[var(--btn-secondary-black-bg)]" />
                 </Tooltip>
-                <span className="text-p3 text-muted-foreground">{direction}</span>
+                <span className="text-p3-regular text-muted-foreground">{direction}</span>
               </div>
             ))}
           </div>
@@ -58,7 +58,7 @@ function TooltipDemo() {
                 aria-label="Подробнее"
               />
             </Hint>
-            <span className="text-p2 text-muted-foreground">
+            <span className="text-p2-regular text-muted-foreground">
               Show Title + Show Cross включены
             </span>
           </div>
@@ -72,7 +72,7 @@ function TooltipDemo() {
                 aria-label="Подробнее"
               />
             </Hint>
-            <span className="text-p2 text-muted-foreground">
+            <span className="text-p2-regular text-muted-foreground">
               Без Title, без крестика (закрывается только кликом вне)
             </span>
           </div>
@@ -104,7 +104,7 @@ function TooltipDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Tooltip открывается через 400мс после наведения (без задержки на
           закрытие) и не имеет Title/крестика — только текст, максимум 256px
           шириной. Hint открывается по клику, закрывается по X или клику вне

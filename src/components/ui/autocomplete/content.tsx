@@ -77,7 +77,10 @@ function AutocompleteStatus({ className, ...props }: ComboboxPrimitive.Status.Pr
       // search-hint dropdown instance, not a uniform px-3/py-2.5) — no
       // dedicated Autocomplete frame exists, but this is literally the same
       // ComboboxPrimitive.Status/Empty pattern reused, not an extrapolation.
-      className={cn("px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden", className)}
+      // get_design_context on the dropdown's own "Empty" state text
+      // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
+      // Regular, despite the muted --select-caption-fg color.
+      className={cn("px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden", className)}
       {...props}
     />
   )
@@ -92,7 +95,10 @@ function AutocompleteEmpty({ className, ...props }: ComboboxPrimitive.Empty.Prop
       // search-hint dropdown instance, not a uniform px-3/py-2.5) — no
       // dedicated Autocomplete frame exists, but this is literally the same
       // ComboboxPrimitive.Status/Empty pattern reused, not an extrapolation.
-      className={cn("px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden", className)}
+      // get_design_context on the dropdown's own "Empty" state text
+      // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
+      // Regular, despite the muted --select-caption-fg color.
+      className={cn("px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden", className)}
       {...props}
     />
   )

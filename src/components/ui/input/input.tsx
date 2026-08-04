@@ -53,12 +53,13 @@ const inputBoxVariants = cva(
 )
 
 const inputFieldVariants = cva(
-  "peer min-w-0 flex-1 bg-transparent font-medium text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] disabled:cursor-not-allowed disabled:text-[var(--input-fg-disabled)]",
+  // Weight lives in each size variant's text-pN-medium below, not here.
+  "peer min-w-0 flex-1 bg-transparent text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] disabled:cursor-not-allowed disabled:text-[var(--input-fg-disabled)]",
   {
     variants: {
       size: {
-        sm: "text-p2",
-        lg: "text-p2 md:text-p1",
+        sm: "text-p2-medium",
+        lg: "text-p2-medium md:text-p1-medium",
       },
       // Floating label only exists at the L size — at S (32px) there isn't
       // room for a second line, so the design falls back to a plain
@@ -80,8 +81,12 @@ const inputFieldVariants = cva(
 // Design-check #3/#16/#30: was flat text-xs (12px) in both states — too
 // small for the empty/unfloated label across every size except S (no
 // floating label there at all, see `floating` above).
+// get_design_context on the floated/filled "L / Desktop, Focused, Filled"
+// symbol (215:6874): both the empty-state placeholder and the floated-up
+// small label live inside one font-['Object_Sans:Medium'] wrapper — Medium
+// at every size, not just the pre-float P1/P2 state.
 const floatingLabelVariants =
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2 text-[var(--input-label-fg)] transition-all md:text-p1 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-p3 md:peer-focus:text-p3 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3 md:peer-[&:not(:placeholder-shown)]:text-p3 group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all md:text-p1-medium peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-p3-medium md:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium md:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
 
 const ICON_SIZE = {
   sm: "size-3.5",
@@ -354,8 +359,11 @@ function Input({
                   ref={amountMeasureRef}
                   aria-hidden="true"
                   className={cn(
+                    // Must match the visible span below (font-medium) glyph
+                    // for glyph-width, not just size — an invisible measuring
+                    // twin at the wrong weight would measure the wrong width.
                     "invisible absolute whitespace-pre",
-                    size === "sm" ? "text-p3" : "text-p2"
+                    size === "sm" ? "text-p3-medium" : "text-p2-medium"
                   )}
                 >
                   {maskValue}
@@ -367,8 +375,8 @@ function Input({
                     // every slot uniformly) down to ~1 space-width, per
                     // design-check #31 — the mask value and "₽" aren't
                     // separate flex slots conceptually, just closely-set text.
-                    "-ml-1.5 shrink-0 font-medium text-[var(--input-fg)] md:-ml-2",
-                    size === "sm" ? "text-p3" : "text-p2",
+                    "-ml-1.5 shrink-0 text-[var(--input-fg)] md:-ml-2",
+                    size === "sm" ? "text-p3-medium" : "text-p2-medium",
                     // The field's own text sits lower than the row's
                     // vertical center once the floating label pushes it
                     // down (inputFieldVariants' floating pt-4/pt-5) — match
@@ -433,7 +441,7 @@ function Input({
             // on every Comment/Error caption instance (215:6570, 215:6676)
             // wraps the <p> in a font-['Object_Sans:Medium'] parent (P3
             // Medium, weight 500), not the browser default 400.
-            "text-p3 font-medium",
+            "text-p3-medium",
             error
               ? "text-[var(--input-caption-error-fg)]"
               : "text-[var(--input-caption-fg)]"

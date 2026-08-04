@@ -22,7 +22,7 @@ function AutocompleteItem({
     <ComboboxPrimitive.Item
       data-slot="autocomplete-item"
       className={cn(
-        "flex w-full cursor-default flex-col gap-0.5 rounded-lg px-3 py-2.5 text-p2 outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "flex w-full cursor-default flex-col gap-0.5 rounded-lg px-3 py-2.5 text-p2-regular outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       {...props}
@@ -35,7 +35,7 @@ function AutocompleteItem({
         // No dedicated Autocomplete frame exists though, so this is an
         // extrapolation from Select/Combobox's shared list-item component,
         // not a value confirmed against Autocomplete's own spec.
-        <span className="text-p3 font-medium text-[var(--autocomplete-subtitle-fg)]">{subtitle}</span>
+        <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)]">{subtitle}</span>
       )}
     </ComboboxPrimitive.Item>
   )

@@ -84,7 +84,7 @@ function BannerDemo() {
           />
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Один компонент на три размера (<code>size</code>: desktop / compact
           / mobile) — так же, как устроен сам узел в Figma. <code>color</code>{" "}
           управляет тем, с какого слоя pastel-градиента начинается фон

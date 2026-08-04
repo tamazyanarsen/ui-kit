@@ -56,7 +56,7 @@ function ErrorPage({
         </h1>
       )}
       {description && (
-        <p className="mt-2 max-w-md text-p1 font-medium text-[var(--error-page-description-fg)]">
+        <p className="mt-2 max-w-md text-p1-medium text-[var(--error-page-description-fg)]">
           {description}
         </p>
       )}

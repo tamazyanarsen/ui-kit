@@ -83,7 +83,7 @@ function StatusScreenDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Иллюстрация в спеке — 3D-маскот, свой для каждого статуса. Здесь,
           как и в Error Page/NPS ранее, вместо копии сложной графики —
           плоская цветная бейдж-иконка. Тип панели кнопок (Two Buttons/

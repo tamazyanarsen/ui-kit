@@ -70,7 +70,7 @@ function RadioDemo() {
           </RadioGroup>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Бокс 24×24, та же палитра, что у Checkbox. Включение одной опции в
           группе автоматически отключает остальные (RadioGroup). Нет
           состояния Partial — в отличие от Checkbox, у одиночной радиокнопки

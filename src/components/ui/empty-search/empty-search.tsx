@@ -50,7 +50,7 @@ function EmptySearchResults({
         {title}
       </h3>
       {description && (
-        <p className="mt-1 max-w-sm text-p1 font-medium text-[var(--empty-search-description-fg)]">
+        <p className="mt-1 max-w-sm text-p1-medium text-[var(--empty-search-description-fg)]">
           {description}
         </p>
       )}

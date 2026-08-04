@@ -246,7 +246,7 @@ function HeaderDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Header собирает: логотип, навигацию с overflow-в-«Ещё» (тот же
           механизм, что у Tabs/Switcher), центр уведомлений, счётчик
           сообщений, меню документов, и Profile Menu — переключатель

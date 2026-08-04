@@ -114,7 +114,7 @@ function Nps({
           <p className="text-h3 text-[var(--nps-title-fg)]">
             Спасибо за оценку
           </p>
-          <p className="text-p1 font-medium text-[var(--nps-subtitle-fg)]">
+          <p className="text-p1-medium text-[var(--nps-subtitle-fg)]">
             Окно закроется автоматически
           </p>
         </div>
@@ -132,13 +132,13 @@ function Nps({
       )}
     >
       <div className="flex w-full items-center justify-between gap-4">
-        <span className="text-p1 font-medium text-[var(--nps-subtitle-fg)]">
+        <span className="text-p1-medium text-[var(--nps-subtitle-fg)]">
           Обратная связь
         </span>
         <CloseButton onClose={onClose} />
       </div>
 
-      <p className="flex min-h-12 w-full items-center justify-center text-center text-p1 font-medium text-[var(--nps-title-fg)]">
+      <p className="flex min-h-12 w-full items-center justify-center text-center text-p1-medium text-[var(--nps-title-fg)]">
         {title}
       </p>
 
@@ -183,7 +183,7 @@ function Nps({
             stars. */}
         <p
           className={cn(
-            "text-center text-p1 font-medium text-[var(--nps-subtitle-fg)]",
+            "text-center text-p1-medium text-[var(--nps-subtitle-fg)]",
             !displayValue && "invisible"
           )}
         >
@@ -194,7 +194,7 @@ function Nps({
       {activeValue !== null && (
         <>
           {showDescription && (
-            <p className="w-full text-center text-p1 font-medium text-[var(--nps-title-fg)]">
+            <p className="w-full text-center text-p1-medium text-[var(--nps-title-fg)]">
               Что можно улучшить?
             </p>
           )}
@@ -216,7 +216,7 @@ function Nps({
                     onClick={() =>
                       setComment(activeComment ? `${activeComment} ${chip}` : chip)
                     }
-                    className="cursor-pointer rounded-full bg-[var(--nps-chip-bg)] px-4 py-1.5 text-p2 font-medium text-[var(--nps-chip-fg)] outline-none hover:bg-[var(--nps-chip-bg-hover)]"
+                    className="cursor-pointer rounded-full bg-[var(--nps-chip-bg)] px-4 py-1.5 text-p2-medium text-[var(--nps-chip-fg)] outline-none hover:bg-[var(--nps-chip-bg-hover)]"
                   >
                     {chip}
                   </button>

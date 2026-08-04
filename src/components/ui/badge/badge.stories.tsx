@@ -39,7 +39,7 @@ export const AllColors: Story = {
       {(["red", "contra-red", "dark-grey", "light-grey", "black"] as BadgeColor[]).map((color) => (
         <div key={color} className="flex flex-col items-center gap-2">
           <Badge type="counter" value={3} color={color} />
-          <span className="text-p3 text-muted-foreground">{color}</span>
+          <span className="text-p3-regular text-muted-foreground">{color}</span>
         </div>
       ))}
     </div>

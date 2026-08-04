@@ -100,7 +100,7 @@ function ItemInformationFieldDemo() {
 
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Read-only поле, не интерактивное (в отличие от Item) — Copy иконка
           копирует значение в буфер обмена и показывает Toast Message.
         </p>

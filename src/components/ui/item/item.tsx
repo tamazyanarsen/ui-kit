@@ -136,7 +136,7 @@ function RightElement({
       )
     case "text":
       return (
-        <span className="shrink-0 text-p1 font-medium text-[var(--item-right-text-fg)]">
+        <span className="shrink-0 text-p1-medium text-[var(--item-right-text-fg)]">
           {rightText}
         </span>
       )
@@ -259,7 +259,7 @@ function Item({
             {text && (
               <span
                 className={cn(
-                  "truncate text-p2 font-medium",
+                  "truncate text-p2-medium",
                   disabled
                     ? "text-[var(--item-value-fg-disabled)]"
                     : "text-[var(--item-value-fg)]"
@@ -270,7 +270,7 @@ function Item({
             )}
             <span
               className={cn(
-                "truncate text-p1 font-medium",
+                "truncate text-p1-medium",
                 disabled
                   ? "text-[var(--item-value-fg-disabled)]"
                   : "text-[var(--item-value-fg)]"
@@ -282,7 +282,7 @@ function Item({
           {comment && (
             <span
               className={cn(
-                "truncate text-p2 font-medium",
+                "truncate text-p2-medium",
                 disabled ? "text-[var(--item-value-fg-disabled)]" : COMMENT_COLOR[commentColor]
               )}
             >

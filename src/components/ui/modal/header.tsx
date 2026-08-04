@@ -50,7 +50,7 @@ function ModalDescription({
       // Mobile P1 Medium (14/20) growing to Desktop P1 Medium (16/24) —
       // Figma "Modal Top" spec (node 45321:17708 / :17732) applies the
       // desktop paragraph style here, not a fixed mobile size.
-      className={cn("text-p2 text-[#252628] md:text-p1", className)}
+      className={cn("text-p2-medium text-[#252628] md:text-p1-medium", className)}
       {...props}
     />
   )

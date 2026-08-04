@@ -32,7 +32,7 @@ function TagDemo() {
                 <Tag color={color} variant="secondary">
                   Example Text
                 </Tag>
-                <span className="text-p3 text-muted-foreground">{label}</span>
+                <span className="text-p3-regular text-muted-foreground">{label}</span>
               </div>
             ))}
           </div>
@@ -43,19 +43,19 @@ function TagDemo() {
           <div className="flex items-center gap-6">
             <div className="flex flex-col items-start gap-2">
               <Tag color="black">Example Text</Tag>
-              <span className="text-p3 text-muted-foreground">
+              <span className="text-p3-regular text-muted-foreground">
                 Black (Sign)
               </span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <Tag color="white">Example Text</Tag>
-              <span className="text-p3 text-muted-foreground">
+              <span className="text-p3-regular text-muted-foreground">
                 White (Sign)
               </span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <Tag color="grey-info">Example Text</Tag>
-              <span className="text-p3 text-muted-foreground">
+              <span className="text-p3-regular text-muted-foreground">
                 Grey (Info sign)
               </span>
             </div>
@@ -101,7 +101,7 @@ function TagDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Tag — некликабельный компонент, тултип при наведении не
           предусмотрен. Статусные цвета (Green/Orange/Red/Blue/Grey) имеют
           варианты <code>main</code> (заливка) и <code>secondary</code>{" "}

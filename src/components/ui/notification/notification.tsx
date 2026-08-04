@@ -74,7 +74,7 @@ function NotificationItem({
         <div className="flex flex-col gap-1">
           <span
             className={cn(
-              "text-p1 font-medium",
+              "text-p1-medium",
               viewed
                 ? "text-[var(--notification-meta-fg)]"
                 : "text-[var(--notification-title-fg)]"
@@ -85,7 +85,7 @@ function NotificationItem({
           {sum && (
             <p
               className={cn(
-                "text-p2 font-medium",
+                "text-p2-medium",
                 viewed
                   ? "text-[var(--notification-meta-fg)]"
                   : "text-[var(--notification-title-fg)]"
@@ -96,12 +96,12 @@ function NotificationItem({
           )}
         </div>
         {status && (
-          <p className="text-p2 font-medium text-[var(--notification-meta-fg)]">
+          <p className="text-p2-medium text-[var(--notification-meta-fg)]">
             {status}
           </p>
         )}
         {description && (
-          <p className="text-p2 font-medium text-[var(--notification-meta-fg)]">
+          <p className="text-p2-medium text-[var(--notification-meta-fg)]">
             {description}
           </p>
         )}
@@ -124,7 +124,7 @@ function NotificationItem({
               <span />
             )}
             {timestamp && (
-              <span className="shrink-0 text-p2 font-medium text-[var(--notification-timestamp-fg)]">
+              <span className="shrink-0 text-p2-medium text-[var(--notification-timestamp-fg)]">
                 {timestamp}
               </span>
             )}

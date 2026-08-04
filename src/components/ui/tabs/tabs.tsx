@@ -41,7 +41,7 @@ interface TabsProps {
 const GAP = { lg: 32, md: 24 }
 const ELLIPSIS_RESERVED = { lg: 44, md: 32 }
 const ELLIPSIS_ICON_SIZE = { lg: "size-6", md: "size-4" }
-const TEXT_SIZE = { lg: "text-p1", md: "text-p2" }
+const TEXT_SIZE = { lg: "text-p1-medium", md: "text-p2-medium" }
 
 function TabButton({
   item,
@@ -68,7 +68,8 @@ function TabButton({
     >
       <span
         className={cn(
-          "flex items-center whitespace-nowrap font-medium transition-colors",
+          // Weight lives in TEXT_SIZE's text-pN-medium below, not here.
+          "flex items-center whitespace-nowrap transition-colors",
           item.badge !== undefined ? "gap-2" : "gap-1",
           "text-[var(--tabs-fg)] group-hover:text-[var(--tabs-fg)]",
           "group-data-active:text-[var(--tabs-fg-active)]",

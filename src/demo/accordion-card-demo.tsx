@@ -26,7 +26,7 @@ function AccordionCardDemo() {
             Content
           </AccordionCard>
         </div>
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Type <code>blocked</code> — цветовой вариант (розовый фон вместо
           серого), не влияет на доступность взаимодействия — карточка
           по-прежнему открывается/закрывается по клику. При наведении

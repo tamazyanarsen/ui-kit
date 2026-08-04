@@ -31,7 +31,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       <table
         data-slot="table"
         className={cn(
-          "w-full border-separate border-spacing-0 text-p2 text-[var(--table-fg)]",
+          "w-full border-separate border-spacing-0 text-p2-regular text-[var(--table-fg)]",
           className
         )}
         {...props}
@@ -333,8 +333,10 @@ function TableCell({
       {type === "text" && (
         <span className="flex flex-col">
           <span className="font-medium text-[var(--table-fg)]">{children}</span>
+          {/* Round-2 font-weight audit: confirmed Object Sans Regular
+              against get_design_context (node 10623:48132), not a gap. */}
           {description && (
-            <span className="text-p3 text-[var(--table-description-fg)]">
+            <span className="text-p3-regular text-[var(--table-description-fg)]">
               {description}
             </span>
           )}

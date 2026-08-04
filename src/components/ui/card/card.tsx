@@ -66,7 +66,7 @@ function CardThumbnail({
         className="absolute top-[3px] left-[3px]"
       />
       {number && (
-        <span className="absolute right-[3px] bottom-[3px] text-p4 font-normal text-[var(--card-thumb-fg)]">
+        <span className="absolute right-[3px] bottom-[3px] text-p4-regular text-[var(--card-thumb-fg)]">
           {number}
         </span>
       )}
@@ -134,13 +134,13 @@ function Card({
             </Tag>
           )}
           {value && (
-            <span className="min-w-0 flex-1 truncate text-right text-p1 font-medium text-[var(--card-meta-fg)]">
+            <span className="min-w-0 flex-1 truncate text-right text-p1-medium text-[var(--card-meta-fg)]">
               {value}
             </span>
           )}
         </div>
         {subtitle && (
-          <span className="truncate text-p2 font-medium text-[var(--card-meta-fg)]">
+          <span className="truncate text-p2-medium text-[var(--card-meta-fg)]">
             {subtitle}
           </span>
         )}

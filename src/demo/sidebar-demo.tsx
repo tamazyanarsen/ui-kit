@@ -158,7 +158,7 @@ function SidebarDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Свёрнутая панель — 56px, только иконки; развёрнутая — 312px,
           иконка + текст. Hover — <code>#EFEFEF</code>, Active —{" "}
           <code>#F4F4F4</code> (оба значения — из текста спека). Наведение на

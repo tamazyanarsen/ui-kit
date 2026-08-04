@@ -145,7 +145,7 @@ function Thumbnail({
         >
           <span className="absolute right-1 bottom-1 flex flex-col items-end gap-0.5">
             <PaymentLogo system={paymentSystem} disabled={disabled} size="sm" />
-            <span className="text-p4 text-white">
+            <span className="text-p4-regular text-white">
               · {last4 ?? "0000"}
             </span>
           </span>

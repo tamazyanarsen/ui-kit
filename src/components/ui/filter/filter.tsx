@@ -220,8 +220,8 @@ function Filter({
                 // (filter-table's dark pill, P2 Medium 14/20) has no
                 // separate desktop size — the `md:text-base` bump only
                 // applies to the plain Filter label.
-                "min-w-0 truncate text-p2 font-medium",
-                !asChip && "md:text-p1",
+                "min-w-0 truncate text-p2-medium",
+                !asChip && "md:text-p1-medium",
                 disabled
                   ? "text-[var(--filter-disabled-fg)]"
                   : asChip

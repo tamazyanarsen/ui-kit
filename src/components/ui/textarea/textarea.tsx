@@ -130,7 +130,7 @@ function Textarea({
             // placeholder-as-label text going from #999 to #6D6D6D on
             // hover — same tone as --textarea-border-hover — which this
             // component previously never did.
-            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2 font-medium text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] disabled:cursor-not-allowed disabled:text-[var(--textarea-fg-disabled)] md:text-p1",
+            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] disabled:cursor-not-allowed disabled:text-[var(--textarea-fg-disabled)] md:text-p1-medium",
             className
           )}
           {...props}
@@ -145,7 +145,7 @@ function Textarea({
               // disabled, same as every other state; it never recolors.
               <label
                 htmlFor={textareaId}
-                className="hidden flex-1 truncate text-p3 font-medium text-[var(--input-label-fg)] group-focus-within/textarea:block group-has-[textarea:not(:placeholder-shown)]/textarea:block"
+                className="hidden flex-1 truncate text-p3-medium text-[var(--input-label-fg)] group-focus-within/textarea:block group-has-[textarea:not(:placeholder-shown)]/textarea:block"
               >
                 {label}
               </label>
@@ -171,7 +171,7 @@ function Textarea({
         <p
           id={captionId}
           className={cn(
-            "px-4 text-p3 font-medium",
+            "px-4 text-p3-medium",
             error
               ? "text-[var(--input-caption-error-fg)]"
               : "text-[var(--input-caption-fg)]"

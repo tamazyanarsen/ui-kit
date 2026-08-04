@@ -87,7 +87,7 @@ function Radio({
           Desktop). */}
       <span className="flex flex-col pt-0.5 md:pt-0">
         {label && (
-          <span className="text-p2 font-medium text-[var(--radio-label-fg)] md:text-p1 group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
+          <span className="text-p2-medium text-[var(--radio-label-fg)] md:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
             {label}
           </span>
         )}
@@ -95,7 +95,7 @@ function Radio({
           <span
             id={captionId}
             className={cn(
-              "text-p3 font-medium",
+              "text-p3-medium",
               error
                 ? "text-[var(--radio-caption-error-fg)]"
                 : "text-[var(--radio-caption-fg)]",

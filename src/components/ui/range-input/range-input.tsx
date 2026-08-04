@@ -158,7 +158,7 @@ function RangeInput({
           have — split into two siblings so each row's padding matches its
           own Figma counterpart independently. */}
       {scaleLabels && scaleLabels.length > 0 && (
-        <div className="flex items-center justify-between px-4 pt-2 text-p3 font-medium text-[var(--range-input-scale-fg)]">
+        <div className="flex items-center justify-between px-4 pt-2 text-p3-medium text-[var(--range-input-scale-fg)]">
           {scaleLabels.map((scaleLabel, index) => (
             <span key={index}>{scaleLabel}</span>
           ))}
@@ -167,7 +167,7 @@ function RangeInput({
       {hasCaption && (
         <p
           className={cn(
-            "px-4 text-p3 font-medium",
+            "px-4 text-p3-medium",
             error
               ? "text-[var(--range-input-caption-error-fg)]"
               : "text-[var(--range-input-caption-fg)]"

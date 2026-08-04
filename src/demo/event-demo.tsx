@@ -122,7 +122,7 @@ function EventDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Каждая секция под заголовком (author, signatories, info, comment,
           documents, кнопка) необязательна и просто не рендерится без своих
           данных — как Show Author / Show Button / Show Signatories / Show

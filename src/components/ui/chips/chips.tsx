@@ -59,7 +59,7 @@ function Chips({
       <span className="flex w-full min-w-0 items-center gap-2">
         <span
           className={cn(
-            "min-w-0 truncate text-p2 font-medium md:text-p1",
+            "min-w-0 truncate text-p2-medium md:text-p1-medium",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-fg)]"
           )}
         >

@@ -39,7 +39,7 @@ function DatePickerDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Клик или фокус на поле открывает календарь (отступ 8px, как в
           спеке). Клик по дню/месяцу/году только выделяет его — поле
           обновляется (и календарь закрывается) только по кнопке

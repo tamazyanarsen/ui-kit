@@ -57,7 +57,7 @@ function RevealField({
         className
       )}
     >
-      <span className="min-w-0 flex-1 truncate text-p1 font-medium text-white">
+      <span className="min-w-0 flex-1 truncate text-p1-medium text-white">
         {revealed ? revealedValue : maskedValue}
       </span>
       <button
@@ -75,7 +75,7 @@ function RevealField({
           <Eye aria-hidden="true" className="size-4" />
         )}
       </button>
-      {label && <span className="shrink-0 text-p3 font-medium text-[#999]">{label}</span>}
+      {label && <span className="shrink-0 text-p3-medium text-[#999]">{label}</span>}
     </div>
   )
 }
@@ -121,13 +121,17 @@ function CardFace({
       {showPaymentSystem && (
         <div className="relative flex flex-1 flex-col items-start gap-1">
           <PaymentLogo system={paymentSystem} size="lg" />
-          {showCardNumber && <span className="text-p3 text-white">· {last4}</span>}
+          {showCardNumber && (
+            // get_design_context on the "Face, Style=Mono" master (52969:11715):
+            // the masked number line is Medium (500), not the browser default.
+            <span className="text-p3-medium text-white">· {last4}</span>
+          )}
         </div>
       )}
 
       {showBalance && (
         <div className="relative flex flex-col gap-0.5 text-white">
-          <span className="text-p1 font-medium">{balance}</span>
+          <span className="text-p1-medium">{balance}</span>
           {showRequisites && (
             <button
               type="button"
@@ -135,7 +139,9 @@ function CardFace({
                 event.stopPropagation()
                 onShowRequisites()
               }}
-              className="w-fit cursor-pointer text-p3 text-white outline-none hover:underline"
+              // "Показать реквизиты" sits in the same font-['Object_Sans:Medium']
+              // "Balance" wrapper as the balance amount above it (52969:11715).
+              className="w-fit cursor-pointer text-p3-medium text-white outline-none hover:underline"
             >
               Показать реквизиты
             </button>
@@ -194,10 +200,10 @@ function CardBack({
       </div>
 
       <div className="flex flex-col gap-0.5">
-        <span className="w-full text-p4 text-white uppercase">
+        <span className="w-full text-p4-regular text-white uppercase">
           {cardholderName}
         </span>
-        <span className="text-p3 font-medium text-[#999]">до {expiry}</span>
+        <span className="text-p3-medium text-[#999]">до {expiry}</span>
       </div>
     </div>
   )

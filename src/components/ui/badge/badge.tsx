@@ -65,7 +65,7 @@ function Badge({
       data-type={type}
       data-color={color}
       className={cn(
-        "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-1 text-p3",
+        "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-1 text-p3-regular",
         className
       )}
       style={{

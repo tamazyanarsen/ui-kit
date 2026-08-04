@@ -95,7 +95,7 @@ function TableTopSummary({
       )}
       {...props}
     >
-      <div className="flex items-center gap-4 text-p2 text-[var(--table-description-fg)]">
+      <div className="flex items-center gap-4 text-p2-regular text-[var(--table-description-fg)]">
         {info}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}

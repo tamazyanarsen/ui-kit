@@ -19,7 +19,7 @@ function ButtonMenuDemo() {
       <AccordionPanel>
         <div className="space-y-8">
           <div>
-            <p className="mb-3 text-p2 font-medium text-[#252628]">
+            <p className="mb-3 text-p2-medium text-[#252628]">
               With Primary
             </p>
             <div className="flex flex-col gap-4">
@@ -68,7 +68,7 @@ function ButtonMenuDemo() {
           </div>
 
           <div>
-            <p className="mb-3 text-p2 font-medium text-[#252628]">
+            <p className="mb-3 text-p2-medium text-[#252628]">
               Only Secondary
             </p>
             <div className="flex flex-col gap-4">
@@ -107,7 +107,7 @@ function ButtonMenuDemo() {
             </div>
           </div>
         </div>
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Панель на всю ширину контейнера, кнопки прижаты слева (по мокапам
           использования в Figma) — прижимается к нижнему краю экрана/области
           контента. Primary-кнопка (если есть) всегда идёт первой/слева;

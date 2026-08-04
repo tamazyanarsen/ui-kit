@@ -94,7 +94,7 @@ function SwitcherDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Grey Solid / White Solid — переключение через{" "}
           <code>greyBackground</code>; White Solid добавляет рамку контейнера
           и активный сегмент становится светло-серым (а не белым), чтобы

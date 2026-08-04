@@ -134,7 +134,7 @@ function ItemDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Элемент всегда интерактивен — вся строка кликабельна. Information/
           Toggle/Checkbox имеют собственную изолированную область клика (не
           всплывают к строке), Navigation/Accordion/Check/Text — чисто

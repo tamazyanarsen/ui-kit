@@ -80,7 +80,7 @@ function Toggle({
         {label && (
           <span
             className={cn(
-              "text-p2 font-medium text-[var(--toggle-label-fg)] md:text-p1",
+              "text-p2-medium text-[var(--toggle-label-fg)] md:text-p1-medium",
               disabled && "text-[var(--toggle-label-fg-disabled)]"
             )}
           >
@@ -91,7 +91,7 @@ function Toggle({
           <span
             id={commentId}
             className={cn(
-              "text-p3 font-medium",
+              "text-p3-medium",
               disabled
                 ? "text-[var(--toggle-caption-fg-disabled)]"
                 : "text-[var(--toggle-caption-fg)]"
@@ -103,7 +103,7 @@ function Toggle({
         {error && (
           <span
             id={errorId}
-            className="text-p3 font-medium text-[var(--toggle-caption-error-fg)]"
+            className="text-p3-medium text-[var(--toggle-caption-error-fg)]"
           >
             {error}
           </span>

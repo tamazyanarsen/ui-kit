@@ -77,7 +77,7 @@ function NotificationDemo() {
           />
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Красная точка привязана к <code>viewed=false</code> — отдельного
           пропа для неё в спеке нет. Sum / Status / Description / Button —
           опциональны, как Show Sum / Show Status / Show Description / Show

@@ -95,7 +95,7 @@ function InputDemo() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-p3 text-muted-foreground">
+          <p className="mt-4 text-p3-regular text-muted-foreground">
             У Input только два размера — M отсутствует. S (32px, radius 8px)
             не меняется между брейкпоинтами и не показывает floating label
             (нет места под вторую строку) — плейсхолдер просто выступает
@@ -163,7 +163,7 @@ function InputDemo() {
             </div>
           </div>
 
-          <p className="mt-4 text-p3 text-muted-foreground">
+          <p className="mt-4 text-p3-regular text-muted-foreground">
             <code>mask</code> форматирует значение на каждое нажатие и
             сообщает итоговую строку обратно через <code>onChange</code>{" "}
             (<code>e.target.value</code>). <code>iconLeft</code> — статичная

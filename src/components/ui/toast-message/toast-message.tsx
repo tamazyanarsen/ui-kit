@@ -103,12 +103,12 @@ function ToastCard({
         />
 
         <div className="flex min-w-0 flex-1 flex-col gap-2 pt-0.5">
-          <span className="text-p1 font-medium text-[var(--toast-title-fg)]">
+          <span className="text-p1-medium text-[var(--toast-title-fg)]">
             {toast.title}
           </span>
 
           {toast.description && (
-            <p className="text-p2 font-medium text-[var(--toast-description-fg)]">
+            <p className="text-p2-medium text-[var(--toast-description-fg)]">
               {toast.description}
             </p>
           )}

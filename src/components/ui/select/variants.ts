@@ -17,8 +17,8 @@ export const selectTriggerVariants = cva(
         // Round-2 audit: was px-3 (12px) — the literal 32px-tall "ELK /
         // select" instance sampled off canvas 666:11 uses px-[16px], same
         // as the lg size, not a smaller horizontal inset.
-        sm: "h-8 gap-2 rounded-[8px] px-4 text-p2",
-        lg: "h-12 gap-2 rounded-[16px] px-4 text-p2 md:h-14 md:text-p1",
+        sm: "h-8 gap-2 rounded-[8px] px-4 text-p2-regular",
+        lg: "h-12 gap-2 rounded-[16px] px-4 text-p2-regular md:h-14 md:text-p1-regular",
       },
       invalid: {
         true: "border-[var(--select-border-error)] hover:border-[var(--select-border-error-hover)] focus:border-[var(--select-border-error-hover)]",
@@ -45,9 +45,9 @@ export const selectTriggerVariants = cva(
 // floated caption state — too small when there's no value yet. Matches
 // Input's own fix: text-sm while empty, shrinks to text-xs once floated.
 export const selectFloatingLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 truncate text-p2 text-[var(--select-label-fg)] transition-all md:text-p1 group-data-popup-open/trigger:top-2 group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3 md:group-data-popup-open/trigger:text-p3 group-[&:not([data-placeholder])]/trigger:top-2 group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3 md:group-[&:not([data-placeholder])]/trigger:text-p3 group-data-disabled/trigger:text-[var(--select-fg-disabled)] md:left-5 md:group-data-popup-open/trigger:top-2.5 md:group-[&:not([data-placeholder])]/trigger:top-2.5"
+  "pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 truncate text-p2-regular text-[var(--select-label-fg)] transition-all md:text-p1-regular group-data-popup-open/trigger:top-2 group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-regular md:group-data-popup-open/trigger:text-p3-regular group-[&:not([data-placeholder])]/trigger:top-2 group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-regular md:group-[&:not([data-placeholder])]/trigger:text-p3-regular group-data-disabled/trigger:text-[var(--select-fg-disabled)] md:left-5 md:group-data-popup-open/trigger:top-2.5 md:group-[&:not([data-placeholder])]/trigger:top-2.5"
 
 export const selectStaticLabelClassName =
-  "pointer-events-none absolute inset-y-0 left-3 flex items-center truncate text-p2 text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-fg-disabled)]"
+  "pointer-events-none absolute inset-y-0 left-3 flex items-center truncate text-p2-regular text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-fg-disabled)]"
 
 export const SELECT_ICON_SIZE = { sm: "size-4", lg: "size-4" } as const

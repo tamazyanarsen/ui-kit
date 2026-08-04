@@ -67,7 +67,7 @@ function Hint({
               // the *whole* text column (not just the title line), the
               // text column is narrower throughout, which changes the
               // wrap point for long body copy versus stacking icon-above.
-              "relative flex max-w-[592px] items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3 text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+              "relative flex max-w-[592px] items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
               className
             )}
           >

@@ -33,8 +33,8 @@ function Tag({
       data-variant={variant}
       data-size={size}
       className={cn(
-        "inline-flex w-fit items-center gap-1 rounded-[4px] px-1.5 font-medium whitespace-nowrap",
-        size === "l" ? "h-[22px] text-p2" : "h-[18px] text-p3",
+        "inline-flex w-fit items-center gap-1 rounded-[4px] px-1.5 whitespace-nowrap",
+        size === "l" ? "h-[22px] text-p2-medium" : "h-[18px] text-p3-medium",
         style.border && "border",
         className
       )}

@@ -49,7 +49,7 @@ function ChipsDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3 text-muted-foreground">
+        <p className="mt-6 text-p3-regular text-muted-foreground">
           Chips — некликабельный компонент для отображения значения (с
           опциональным заголовком, счётчиком или кнопкой удаления). В
           отличие от Filter, у Chips нет White/Grey вариантов фона и нет

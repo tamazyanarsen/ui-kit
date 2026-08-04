@@ -78,7 +78,7 @@ function PageButton({
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2 font-medium text-[var(--pagination-fg)] outline-none transition-colors",
+        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2-medium text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"
@@ -130,7 +130,7 @@ function SizeButton({
       data-slot="pagination-size"
       data-active={active || undefined}
       className={cn(
-        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2 font-medium text-[var(--pagination-fg)] outline-none transition-colors",
+        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2-medium text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"
@@ -207,7 +207,7 @@ function Pagination({
 
       {showPageSize && pageSize !== undefined && (
         <div className="flex items-center gap-4">
-          <span className="text-p2 font-medium whitespace-nowrap text-[var(--pagination-caption-fg)]">
+          <span className="text-p2-medium whitespace-nowrap text-[var(--pagination-caption-fg)]">
             Показать на странице
           </span>
           <div className="flex items-center gap-1">

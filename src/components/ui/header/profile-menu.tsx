@@ -81,11 +81,14 @@ function ProfileMenu({
             className="size-6 shrink-0 text-[var(--header-icon-fg)] group-hover:text-[var(--header-hover-fg)]"
           />
           <span className="flex min-w-0 flex-col">
-            <span className="min-w-0 truncate text-p1 font-medium text-[var(--header-fg)] group-hover:text-[var(--header-hover-fg)]">
+            <span className="min-w-0 truncate text-p1-medium text-[var(--header-fg)] group-hover:text-[var(--header-hover-fg)]">
               {activeOrg?.name}
             </span>
             {contactPerson && (
-              <span className="min-w-0 truncate text-p3 text-[var(--header-meta-fg)]">
+              // get_design_context on ProfileMenuElk's "ИНН ... • Оператор"
+              // subtitle (46107:44110) confirms Object Sans Medium (P3
+              // Medium), not Regular, for this secondary line.
+              <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
                 {contactPerson}
               </span>
             )}
@@ -110,10 +113,12 @@ function ProfileMenu({
           >
             {isSingle ? (
               <div className="flex flex-col gap-0.5 px-4 py-2">
-                <span className="text-p1 font-medium text-[var(--header-fg)]">
+                <span className="text-p1-medium text-[var(--header-fg)]">
                   {activeOrg?.name}
                 </span>
-                <span className="text-p3 text-[var(--header-meta-fg)]">
+                {/* get_design_context on ProfileMenuElk (46107:44110) confirms
+                    Object Sans Medium for this "ИНН ... • Оператор" line. */}
+                <span className="text-p3-medium text-[var(--header-meta-fg)]">
                   ИНН {activeOrg?.inn} · {activeOrg?.role}
                 </span>
               </div>
@@ -137,7 +142,7 @@ function ProfileMenu({
                     />
                   </div>
                 )}
-                <p className="px-4 pt-1 pb-2 text-p1 font-medium text-[var(--header-fg)]">
+                <p className="px-4 pt-1 pb-2 text-p1-medium text-[var(--header-fg)]">
                   {isSearching
                     ? "Мои организации — результаты поиска"
                     : `Мои организации (${organizations.length})`}
@@ -151,10 +156,10 @@ function ProfileMenu({
                       className="flex cursor-default items-center justify-between gap-2 rounded-xl px-2 py-2 outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
                     >
                       <span className="flex min-w-0 flex-col">
-                        <span className="min-w-0 truncate text-p1 font-medium text-[var(--header-fg)]">
+                        <span className="min-w-0 truncate text-p1-medium text-[var(--header-fg)]">
                           {org.name}
                         </span>
-                        <span className="min-w-0 truncate text-p3 text-[var(--header-meta-fg)]">
+                        <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
                           ИНН {org.inn} · {org.role}
                         </span>
                       </span>
@@ -166,8 +171,12 @@ function ProfileMenu({
                       )}
                     </MenuPrimitive.Item>
                   ))}
+                  {/* No dedicated Profile Menu "no results" frame exists in
+                      the spec; matches the Select/Dropdown empty-state text
+                      (get_design_context on 29750:54209) which is Object
+                      Sans Medium, not Regular, despite the muted color. */}
                   {filtered.length === 0 && (
-                    <p className="px-2 py-4 text-center text-p2 text-[var(--header-meta-fg)]">
+                    <p className="px-2 py-4 text-center text-p2-medium text-[var(--header-meta-fg)]">
                       Ничего не найдено
                     </p>
                   )}
@@ -180,7 +189,7 @@ function ProfileMenu({
                 <MenuPrimitive.Item
                   data-slot="profile-menu-settings-item"
                   onClick={onSettingsClick}
-                  className="flex cursor-default items-center gap-2 rounded-xl px-2 py-2 text-p1 font-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+                  className="flex cursor-default items-center gap-2 rounded-xl px-2 py-2 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
                 >
                   <Settings aria-hidden="true" className="size-6 shrink-0" />
                   Профиль и настройки
@@ -188,7 +197,7 @@ function ProfileMenu({
                 <MenuPrimitive.Item
                   data-slot="profile-menu-logout-item"
                   onClick={onLogoutClick}
-                  className="flex cursor-default items-center gap-2 rounded-xl px-2 py-2 text-p1 font-medium text-[var(--header-logout-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+                  className="flex cursor-default items-center gap-2 rounded-xl px-2 py-2 text-p1-medium text-[var(--header-logout-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
                 >
                   <LogOut aria-hidden="true" className="size-6 shrink-0" />
                   Выйти

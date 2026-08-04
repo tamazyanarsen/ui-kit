@@ -43,7 +43,7 @@ export function NavHeader({ onPrev, onNext, children, variant = "day" }: NavHead
       >
         <ChevronLeft className="size-4" />
       </button>
-      <div className="flex items-center text-p2 font-medium text-[var(--calendar-fg)]">
+      <div className="flex items-center text-p2-medium text-[var(--calendar-fg)]">
         {children}
       </div>
       <button
@@ -90,7 +90,7 @@ export function WeekdaysRow({ size = "desktop" }: { size?: "desktop" | "mobile" 
         <span
           key={d}
           className={cn(
-            "flex h-8 items-center justify-center text-p3 text-[var(--calendar-muted-fg)]",
+            "flex h-8 items-center justify-center text-p3-regular text-[var(--calendar-muted-fg)]",
             size === "mobile" ? "w-12" : "w-9"
           )}
         >
@@ -201,7 +201,7 @@ function DayButton({
         disabled={disabled}
         onClick={() => onSelectDay(cell.date)}
         className={cn(
-          "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2 font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
+          "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
           disabled
             ? "cursor-not-allowed text-[var(--calendar-disabled-fg)]"
             : selected || inRangeEdge
@@ -253,7 +253,7 @@ export function MonthGrid({
             type="button"
             onClick={() => onSelectMonth(i)}
             className={cn(
-              "flex items-center justify-center rounded-[8px] text-p2 font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
+              "flex items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
               size === "mobile" ? "h-12" : "h-9",
               selected
                 ? "bg-[var(--calendar-selected-bg)] text-[var(--calendar-selected-fg)]"
@@ -300,7 +300,7 @@ export function YearGrid({
             type="button"
             onClick={() => onSelectYear(year)}
             className={cn(
-              "flex items-center justify-center rounded-[8px] text-p2 font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
+              "flex items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
               size === "mobile" ? "h-12" : "h-9",
               selected
                 ? "bg-[var(--calendar-selected-bg)] text-[var(--calendar-selected-fg)]"
@@ -339,7 +339,7 @@ export function CalendarFooter({
         type="button"
         onClick={onReset}
         className={cn(
-          "flex flex-1 items-center justify-center text-p2 font-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50",
+          "flex flex-1 items-center justify-center text-p2-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50",
           compact ? "px-6 py-3.5" : "px-8 py-4"
         )}
       >
@@ -350,7 +350,7 @@ export function CalendarFooter({
         type="button"
         onClick={onApply}
         className={cn(
-          "flex flex-1 items-center justify-center text-p2 font-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50",
+          "flex flex-1 items-center justify-center text-p2-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50",
           compact ? "px-6 py-3.5" : "px-8 py-4"
         )}
       >

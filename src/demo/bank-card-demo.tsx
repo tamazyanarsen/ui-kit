@@ -22,7 +22,7 @@ function BankCardDemo() {
             {SKINS.map((skin) => (
               <div key={skin} className="flex flex-col items-start gap-2">
                 <BankCard skin={skin} />
-                <span className="max-w-[332px] text-p3 text-muted-foreground">
+                <span className="max-w-[332px] text-p3-regular text-muted-foreground">
                   {SKIN_LABELS[skin]}
                 </span>
               </div>
@@ -44,25 +44,25 @@ function BankCardDemo() {
           <div className="flex flex-wrap gap-6">
             <div className="flex flex-col items-start gap-2">
               <BankCard skin="mono" />
-              <span className="text-p3 text-muted-foreground">Баланс открыт</span>
+              <span className="text-p3-regular text-muted-foreground">Баланс открыт</span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <BankCard skin="mono" showRequisites={false} />
-              <span className="text-p3 text-muted-foreground">
+              <span className="text-p3-regular text-muted-foreground">
                 Скрыта ссылка «Показать реквизиты»
               </span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <BankCard skin="mono" showBalance={false} />
-              <span className="text-p3 text-muted-foreground">Баланс скрыт</span>
+              <span className="text-p3-regular text-muted-foreground">Баланс скрыт</span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <BankCard skin="mono" showCardNumber={false} />
-              <span className="text-p3 text-muted-foreground">Без номера карты</span>
+              <span className="text-p3-regular text-muted-foreground">Без номера карты</span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <BankCard skin="mono" showPaymentSystem={false} showCardNumber={false} />
-              <span className="text-p3 text-muted-foreground">Без платёжной системы</span>
+              <span className="text-p3-regular text-muted-foreground">Без платёжной системы</span>
             </div>
             <div className="flex flex-col items-start gap-2">
               <BankCard
@@ -71,7 +71,7 @@ function BankCardDemo() {
                 showCardNumber={false}
                 showRequisites={false}
               />
-              <span className="text-p3 text-muted-foreground">Без информации</span>
+              <span className="text-p3-regular text-muted-foreground">Без информации</span>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ function BankCardDemo() {
           <BankCard skin="black-classic" />
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Скины — CSS-аппроксимация (в Фигме фон каждой карты — растровый
           ассет без извлекаемых цветовых данных), в духе тех же упрощений, что
           у платёжных лого в Thumbnail/Card. Клик по лицевой стороне или по

@@ -73,7 +73,10 @@ export function ComboboxSearchInput({
       <ComboboxPrimitive.Input
         data-slot="combobox-search"
         className={cn(
-          "h-6 w-full min-w-0 border-0 bg-transparent text-p1 text-[var(--select-fg)] outline-none placeholder:text-[var(--select-label-fg)]",
+          // get_design_context on the "ELK / dropdown" search row (e.g.
+          // 29750:53185): the search text sits in a font-['Object_Sans:Medium']
+          // wrapper, Medium at 16px, not the browser default.
+          "h-6 w-full min-w-0 border-0 bg-transparent text-p1-medium text-[var(--select-fg)] outline-none placeholder:text-[var(--select-label-fg)]",
           className
         )}
         {...props}
@@ -109,7 +112,10 @@ export function ComboboxStatus({
         // Round-2 audit: matches the literal "Text Help" hint sampled off
         // canvas 666:11's own search-hint dropdown instance —
         // pt-[12px]/pb-[16px]/px-[16px] (not a uniform px-3/py-2.5).
-        "px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden",
+        // get_design_context on the dropdown's own "Empty" state text
+        // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
+        // Regular, despite the muted --select-caption-fg color.
+        "px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden",
         className
       )}
       {...props}
@@ -128,7 +134,10 @@ export function ComboboxEmpty({
         // Round-2 audit: matches the literal "Text Help" hint sampled off
         // canvas 666:11's own search-hint dropdown instance —
         // pt-[12px]/pb-[16px]/px-[16px] (not a uniform px-3/py-2.5).
-        "px-4 pt-3 pb-4 text-p2 text-[var(--select-caption-fg)] empty:hidden",
+        // get_design_context on the dropdown's own "Empty" state text
+        // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
+        // Regular, despite the muted --select-caption-fg color.
+        "px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden",
         className
       )}
       {...props}
@@ -161,7 +170,7 @@ export function ComboboxSectionLabel({
     <ComboboxPrimitive.GroupLabel
       data-slot="combobox-section-label"
       className={cn(
-        "px-3 pt-2 pb-1 text-p3 font-medium text-[var(--select-fg)]",
+        "px-3 pt-2 pb-1 text-p3-medium text-[var(--select-fg)]",
         className
       )}
       {...props}

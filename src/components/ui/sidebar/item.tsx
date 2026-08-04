@@ -61,7 +61,7 @@ function SidebarItem({
       data-active={active || undefined}
       aria-label={!open && typeof label === "string" ? label : undefined}
       className={cn(
-        "flex h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1 font-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        "flex h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
         open ? (nested ? "pr-2 pl-12" : "px-2") : "justify-center px-0",
         className
       )}
@@ -143,7 +143,7 @@ function SidebarGroup({
             data-slot="sidebar-group-trigger"
             data-active={active || undefined}
             className={cn(
-              "flex h-10 w-full cursor-pointer items-center gap-4 rounded-[8px] px-2 text-left text-p1 font-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
+              "flex h-10 w-full cursor-pointer items-center gap-4 rounded-[8px] px-2 text-left text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
               className
             )}
           >

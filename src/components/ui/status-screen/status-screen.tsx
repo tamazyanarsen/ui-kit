@@ -118,7 +118,7 @@ function StatusScreen({
         </h2>
 
         {subtitle && (
-          <p className="max-w-sm text-p1 font-medium text-[var(--status-screen-title-fg)]">
+          <p className="max-w-sm text-p1-medium text-[var(--status-screen-title-fg)]">
             {subtitle}
           </p>
         )}

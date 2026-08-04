@@ -90,7 +90,7 @@ const ELLIPSIS_RESERVED = 72
 
 function NavItem({ item }: { item: HeaderNavItem }) {
   const baseClassName = cn(
-    "flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1 font-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
+    "flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
     item.active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
   )
 
@@ -177,7 +177,7 @@ function NavRow({
             render={
               <button
                 type="button"
-                className="group flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1 font-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
+                className="group flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
               />
             }
           >
@@ -211,7 +211,7 @@ function NavRow({
             ref={(el) => {
               itemRefs.current[index] = el
             }}
-            className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-p1 font-medium whitespace-nowrap"
+            className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-p1-medium whitespace-nowrap"
           >
             {item.icon}
             {item.label}
@@ -276,7 +276,7 @@ function EmployeeUserMenu({
       >
         <span className="flex items-center gap-3">
           <CircleUser aria-hidden="true" className="size-6" />
-          <span className="text-p1 font-medium">{name}</span>
+          <span className="text-p1-medium">{name}</span>
         </span>
         <ChevronDown
           aria-hidden="true"
@@ -291,7 +291,7 @@ function EmployeeUserMenu({
           >
             <MenuPrimitive.Item
               onClick={onSettingsClick}
-              className="flex cursor-default items-center gap-2 rounded-xl px-3 py-2.5 text-p1 font-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+              className="flex cursor-default items-center gap-2 rounded-xl px-3 py-2.5 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
             >
               <Settings aria-hidden="true" className="size-6 shrink-0" />
               Профиль и настройки
@@ -430,8 +430,12 @@ function Header({
 
         {type === "sign-out" && phoneNumber && (
           <div className="flex shrink-0 flex-col items-end text-right">
-            <span className="text-p3 text-[var(--header-meta-fg)]">Звонок по России</span>
-            <span className="text-p2 font-semibold text-[var(--header-fg)]">{phoneNumber}</span>
+            {/* get_design_context on "ELK / header, Type=Sign Out" (12635:44122):
+                label is P3 Medium (12/16), phone number is P1 Medium (16/24) —
+                not font-semibold, which resolves to Object Sans Heavy(800)
+                since there's no 600 cut. */}
+            <span className="text-p3-medium text-[var(--header-meta-fg)]">Звонок по России</span>
+            <span className="text-p1-medium text-[var(--header-fg)]">{phoneNumber}</span>
           </div>
         )}
       </div>

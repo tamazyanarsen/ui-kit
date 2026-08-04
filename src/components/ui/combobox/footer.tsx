@@ -30,7 +30,7 @@ export function ComboboxFooter({
       // dropdown" footer (both the checkbox-tree and plain examples on
       // canvas 666:11), not the kit's generic --border token (#E5E5E5).
       className={cn(
-        "grid shrink-0 grid-cols-2 border-t border-[#DEDEDE] text-p2",
+        "grid shrink-0 grid-cols-2 border-t border-[#DEDEDE] text-p2-regular",
         className
       )}
     >
@@ -38,7 +38,7 @@ export function ComboboxFooter({
         type="button"
         onClick={onReset}
         disabled={resetDisabled}
-        className="flex items-center justify-center border-r border-[#DEDEDE] px-8 py-4 font-medium whitespace-nowrap text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
+        className="flex items-center justify-center border-r border-[#DEDEDE] px-8 py-4 whitespace-nowrap text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1-medium"
       >
         {resetLabel}
       </button>
@@ -46,7 +46,7 @@ export function ComboboxFooter({
         type="button"
         onClick={onApply}
         disabled={applyDisabled}
-        className="flex items-center justify-center px-8 py-4 font-medium whitespace-nowrap text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
+        className="flex items-center justify-center px-8 py-4 whitespace-nowrap text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1-medium"
       >
         {applyLabel}
       </button>

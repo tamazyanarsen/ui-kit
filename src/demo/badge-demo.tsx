@@ -38,7 +38,7 @@ function BadgeDemo() {
               <div key={color} className="flex flex-col items-center gap-3">
                 <Badge type="counter" value={0} color={color} />
                 <Badge type="counter" value={0} color={color} disabled />
-                <span className="text-center text-p3 text-muted-foreground">
+                <span className="text-center text-p3-regular text-muted-foreground">
                   {color}
                 </span>
               </div>
@@ -53,7 +53,7 @@ function BadgeDemo() {
               <div key={color} className="flex flex-col items-center gap-3">
                 <Badge type="point" color={color} />
                 <Badge type="point" color={color} disabled />
-                <span className="text-center text-p3 text-muted-foreground">
+                <span className="text-center text-p3-regular text-muted-foreground">
                   {color}
                 </span>
               </div>
@@ -95,7 +95,7 @@ function BadgeDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           <code>type="counter"</code> форматирует <code>value</code>: 1–99
           без изменений, 100 и более — «99+». <code>type="point"</code> —
           просто залитый круг без текста, того же размера. Оверлей на

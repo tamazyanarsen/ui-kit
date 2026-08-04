@@ -63,7 +63,7 @@ function RangeInputDemo() {
           />
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Однопозиционный слайдер поверх Input-подобного бокса: Label + Value
           сверху, трек снизу. В отличие от Checkbox/Radio/Toggle, error не
           красит рамку бокса (она как у Input остаётся нейтральной) — только

@@ -107,7 +107,7 @@ function BannerDescription({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 text-p1 font-medium",
+        "flex flex-col gap-2 text-p1-medium",
         className
       )}
     >
@@ -193,7 +193,7 @@ function Banner({
             <div className="flex flex-1 flex-col gap-2">
               <p className="text-h3">{title}</p>
               {description && (
-                <p className="text-p1 font-medium">{description}</p>
+                <p className="text-p1-medium">{description}</p>
               )}
             </div>
             {cta}
@@ -219,7 +219,7 @@ function Banner({
                 <BannerDescription
                   description={description}
                   bullet={bullet}
-                  className="text-p2"
+                  className="text-p2-regular"
                   itemGap="gap-1"
                 />
               )}

@@ -79,7 +79,7 @@ function OtpConfirmCard({
         <h2 className="text-[22px] leading-[30px] font-medium text-[var(--otp-title-fg)] md:text-h2">
           {title}
         </h2>
-        <p className="text-p2 font-medium text-[var(--otp-title-fg)] md:text-p1">
+        <p className="text-p2-medium text-[var(--otp-title-fg)] md:text-p1-medium">
           {subtitle ?? (phone ? `Код подтверждения отправлен на номер ${phone}` : null)}
         </p>
       </div>

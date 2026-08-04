@@ -59,7 +59,7 @@ function TopFixedMessage({
         )}
 
         <Tooltip content={text}>
-          <span className="min-w-0 truncate text-p2 font-medium text-[var(--top-fixed-message-title-fg)]">
+          <span className="min-w-0 truncate text-p2-medium text-[var(--top-fixed-message-title-fg)]">
             {text}
           </span>
         </Tooltip>

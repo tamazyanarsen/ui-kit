@@ -79,7 +79,7 @@ function StepCard({
     >
       <p
         className={cn(
-          "truncate text-p2 font-medium",
+          "truncate text-p2-medium",
           disabled
             ? "text-[var(--steps-disabled-fg)]"
             : "text-[var(--steps-title-fg)]"
@@ -89,7 +89,7 @@ function StepCard({
       </p>
       <p
         className={cn(
-          "mt-1 truncate text-p2 font-medium",
+          "mt-1 truncate text-p2-medium",
           disabled
             ? "text-[var(--steps-disabled-fg)]"
             : "text-[var(--steps-title-fg)]"
@@ -99,7 +99,7 @@ function StepCard({
       </p>
       {statusText && (
         <p
-          className="mt-2 truncate text-p2 font-medium"
+          className="mt-2 truncate text-p2-medium"
           style={{
             color: disabled
               ? "var(--steps-disabled-fg)"
@@ -120,7 +120,7 @@ function StepCard({
           <TooltipPrimitive.Positioner side="bottom" sideOffset={8}>
             <TooltipPrimitive.Popup
               data-slot="step-tooltip"
-              className="min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3 text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+              className="min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
             >
               {disabledHint}
             </TooltipPrimitive.Popup>

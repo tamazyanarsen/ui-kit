@@ -113,7 +113,7 @@ export function ComboboxTrigger({
         <p
           id={captionId}
           className={cn(
-            "text-p3 font-medium",
+            "text-p3-medium",
             // Horizontal padding matches the trigger's own px-4 at both
             // sizes (see select/variants.ts).
             "px-4",

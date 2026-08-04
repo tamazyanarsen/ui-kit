@@ -87,7 +87,7 @@ function CardDemo() {
           />
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Все текстовые блоки — в одну строку, переполнение скрывается в
           многоточие. Каждый элемент (номер карты, тег, подпись, значение,
           кнопка меню) необязателен и просто не рендерится при отсутствии

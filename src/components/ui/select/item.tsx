@@ -10,7 +10,7 @@ export function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-1.5 py-1 text-p3 text-muted-foreground", className)}
+      className={cn("px-1.5 py-1 text-p3-regular text-muted-foreground", className)}
       {...props}
     />
   )
@@ -39,7 +39,7 @@ export function SelectItem({
       // disabled, not a real DOM-focus hook, so `focus:` here never matched
       // Figma's hover treatment via keyboard navigation.
       className={cn(
-        "relative flex w-full cursor-default items-center gap-1.5 py-4 pr-12 pl-4 text-p1 font-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full cursor-default items-center gap-1.5 py-4 pr-12 pl-4 text-p1-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
       {...props}

@@ -171,7 +171,7 @@ function TopFixedMessageDemo() {
           </div>
         </div>
 
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           2 типа (Blue/System, Red/Error) — цвет фона и иконки берутся из{" "}
           <code>type</code>. Иконка, кнопка и крестик закрытия — опциональны
           (<code>showIcon</code>/<code>showButton</code>/

@@ -94,19 +94,19 @@ function Event({
                 {title}
               </Tag>
             ) : (
-              <span className="text-p1 font-medium text-[var(--event-title-fg)]">
+              <span className="text-p1-medium text-[var(--event-title-fg)]">
                 {title}
               </span>
             )}
             {timestamp && (
-              <span className="shrink-0 text-p2 font-medium text-[var(--event-meta-fg)]">
+              <span className="shrink-0 text-p2-medium text-[var(--event-meta-fg)]">
                 {timestamp}
               </span>
             )}
           </div>
 
           {author && (
-            <p className="text-p1 font-medium text-[var(--event-author-fg)]">
+            <p className="text-p1-medium text-[var(--event-author-fg)]">
               {author}
             </p>
           )}
@@ -119,7 +119,7 @@ function Event({
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-2 text-p1 font-medium"
+                  className="flex items-center gap-2 text-p1-medium"
                 >
                   <Icon
                     aria-hidden="true"
@@ -142,7 +142,7 @@ function Event({
         )}
 
         {info && info.length > 0 && (
-          <div className="flex flex-col gap-1 text-p1 font-medium">
+          <div className="flex flex-col gap-1 text-p1-medium">
             {info.map((row, index) => (
               <p key={index}>
                 <span className="text-[var(--event-meta-fg)]">
@@ -157,7 +157,7 @@ function Event({
         )}
 
         {comment && (
-          <div className="text-p1 font-medium">
+          <div className="text-p1-medium">
             <p className="text-[var(--event-meta-fg)]">{commentLabel}</p>
             <p className="text-[var(--event-title-fg)]">{comment}</p>
           </div>
@@ -165,7 +165,7 @@ function Event({
 
         {documents && documents.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-p1 font-medium text-[var(--event-meta-fg)]">
+            <p className="text-p1-medium text-[var(--event-meta-fg)]">
               Приложенные документы:
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -183,10 +183,10 @@ function Event({
                     />
                   </span>
                   <span className="flex min-w-0 flex-col gap-1">
-                    <span className="truncate text-p1 font-medium text-[var(--event-title-fg)]">
+                    <span className="truncate text-p1-medium text-[var(--event-title-fg)]">
                       {doc.name}
                     </span>
-                    <span className="truncate text-p3 font-medium text-[var(--event-meta-fg)]">
+                    <span className="truncate text-p3-medium text-[var(--event-meta-fg)]">
                       {doc.meta}
                     </span>
                   </span>

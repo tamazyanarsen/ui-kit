@@ -116,7 +116,7 @@ function SelectDemo() {
             </SelectContent>
           </Select>
         </div>
-        <p className="mt-4 text-p3 text-muted-foreground">
+        <p className="mt-4 text-p3-regular text-muted-foreground">
           Шаг 1 из 3: только Trigger (тот же паттерн размеров/floating label,
           что у Input — L и S, без M). Dropdown-контейнер (поиск/кнопка/футер/3
           device-layout) и List item — следующими шагами.

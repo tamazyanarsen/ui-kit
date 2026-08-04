@@ -45,7 +45,7 @@ interface SwitcherProps {
 
 const GAP_PX = { lg: 4, md: 4 }
 const GAP_CLASS = { lg: "gap-1", md: "gap-1" }
-const SEGMENT_PADDING = { lg: "px-8 py-3 text-p1", md: "px-6 py-2.5 text-p2" }
+const SEGMENT_PADDING = { lg: "px-8 py-3 text-p1-medium", md: "px-6 py-2.5 text-p2-medium" }
 const ELLIPSIS_RESERVED = { lg: 56, md: 40 }
 const ELLIPSIS_ICON_SIZE = { lg: "size-6", md: "size-4" }
 
@@ -82,7 +82,10 @@ function SegmentButton({
       data-slot="switcher-item"
       data-active={active || undefined}
       className={cn(
-        "flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] font-medium whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
+        // Weight lives in SEGMENT_PADDING's text-pN-medium (passed in via
+        // `className` below), not here — kept separate since size and
+        // weight ship together as one Figma-named style per size.
+        "flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
         activeBg,
         className
       )}

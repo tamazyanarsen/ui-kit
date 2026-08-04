@@ -23,6 +23,15 @@ const meta = {
   argTypes: {
     variant: { control: "select", options: VARIANTS },
     size: { control: "select", options: ["sm", "default", "lg"] },
+    // `icon` takes a component reference — Storybook's auto-inferred
+    // control for a function-typed prop is a "Set object" JSON editor,
+    // which can't represent a component and so never does anything.
+    // `iconPosition` only matters once an icon is set, which the disabled
+    // `icon` control makes impossible from the Controls panel — both were
+    // dead controls on every story that doesn't hardcode `icon` in its own
+    // args (i.e. every story except WithIcon/IconOnly, where it's fixed).
+    icon: { control: false },
+    iconPosition: { control: false },
   },
   args: { children: "Button" },
 } satisfies Meta<typeof Button>

@@ -43,7 +43,7 @@ function ButtonMenuOverflow({
         >
           <MenuPrimitive.Popup
             data-slot="button-menu-overflow-content"
-            render={<Dropdown className="min-w-56 p-2" />}
+            render={<Dropdown className="min-w-56 overflow-hidden" />}
           >
             {children}
           </MenuPrimitive.Popup>

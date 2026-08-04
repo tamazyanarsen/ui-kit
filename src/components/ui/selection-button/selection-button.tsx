@@ -96,7 +96,7 @@ function SelectionButton({
         >
           <MenuPrimitive.Popup
             data-slot="selection-button-content"
-            render={<Dropdown className={cn("min-w-56 p-2", className)} />}
+            render={<Dropdown className={cn("min-w-56 overflow-hidden", className)} />}
           >
             {items.map((item, index) => (
               <MenuPrimitive.Item

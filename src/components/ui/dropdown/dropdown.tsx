@@ -42,6 +42,15 @@ interface DropdownItemProps extends React.ComponentProps<"div"> {
 // title + optional description, highlighted on hover/focus. Select's own
 // SelectItem has a different, checkbox-driven look (see select/item.tsx)
 // and stays separate; this is specifically the plain action-row variant.
+//
+// Flush, un-rounded p-4 row with a flat #F8F8F8 hover fill — confirmed
+// against the literal "Menu Point (ELK)" markup inside the canonical
+// "ELK / dropdown" component (node 5739:16568) and the "Уровень 2" hover
+// state on the Select/Dropdown usage canvas (node 29750:55882): items are
+// edge-to-edge `p-[16px]` with no border-radius of their own, the same
+// #F8F8F8 highlighted-row color Select/Combobox's own items use — only the
+// Dropdown container itself is rounded, and clips the flush top/bottom rows
+// to follow its corners (see the `overflow-hidden` each consumer adds).
 const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
   function DropdownItem({ className, text, description, children, ...props }, ref) {
     return (
@@ -49,14 +58,14 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         ref={ref}
         data-slot="dropdown-item"
         className={cn(
-          "flex cursor-default flex-col gap-0.5 rounded-xl px-3 py-2.5 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-40 data-highlighted:bg-[#F4F4F4]",
+          "flex cursor-default flex-col gap-0.5 p-4 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-40 data-highlighted:bg-[#F8F8F8]",
           className
         )}
         {...props}
       >
-        <span className="text-p1 font-medium text-[#252628]">{text}</span>
+        <span className="text-p1-medium text-[#252628]">{text}</span>
         {description && (
-          <span className="text-p3 font-medium text-[#999999]">{description}</span>
+          <span className="text-p3-medium text-[#999999]">{description}</span>
         )}
         {children}
       </div>

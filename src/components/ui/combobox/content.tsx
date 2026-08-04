@@ -2,7 +2,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { LoaderCircle, Search, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
-import { DROPDOWN_POPUP_CLASS } from "@/components/ui/select/dropdown-chrome"
+import { Dropdown } from "@/components/ui/dropdown"
 
 // Portal + Positioner + Popup. Per spec: 8px gap to the trigger, width
 // matches the trigger, height clamps between 168 and 504px (and still
@@ -32,11 +32,14 @@ export function ComboboxContent({
       >
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
-          className={cn(
-            DROPDOWN_POPUP_CLASS,
-            "isolate flex max-h-[min(504px,var(--available-height))] min-h-42 w-full flex-col overflow-hidden",
-            className
-          )}
+          render={
+            <Dropdown
+              className={cn(
+                "isolate flex max-h-[min(504px,var(--available-height))] min-h-42 w-full flex-col overflow-hidden",
+                className
+              )}
+            />
+          }
           {...props}
         >
           {children}

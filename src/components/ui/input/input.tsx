@@ -411,7 +411,13 @@ function Input({
             htmlFor={inputId}
             className={cn(
               floatingLabelVariants,
-              iconLeft ? "left-[42px] md:left-12" : "left-4 md:left-5"
+              iconLeft ? "left-[42px] md:left-12" : "left-4 md:left-5",
+              // Without a right edge, `truncate` has nothing to clip against
+              // — an absolutely positioned label just grows to fit its text,
+              // so a long label (e.g. DatePicker's "Дата начала — Дата
+              // окончания") renders straight through the trailing icon
+              // instead of eliding before it.
+              trailingSlot ? "right-[42px] md:right-12" : "right-4 md:right-5"
             )}
           >
             {label}

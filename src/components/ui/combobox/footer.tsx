@@ -38,7 +38,7 @@ export function ComboboxFooter({
         type="button"
         onClick={onReset}
         disabled={resetDisabled}
-        className="border-r border-[#DEDEDE] px-8 py-4 font-medium text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
+        className="flex items-center justify-center border-r border-[#DEDEDE] px-8 py-4 font-medium whitespace-nowrap text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
       >
         {resetLabel}
       </button>
@@ -46,7 +46,7 @@ export function ComboboxFooter({
         type="button"
         onClick={onApply}
         disabled={applyDisabled}
-        className="px-8 py-4 font-medium text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
+        className="flex items-center justify-center px-8 py-4 font-medium whitespace-nowrap text-[var(--select-fg)] outline-none hover:bg-accent disabled:pointer-events-none disabled:text-[var(--select-fg-disabled)] md:text-p1"
       >
         {applyLabel}
       </button>

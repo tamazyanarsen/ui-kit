@@ -1,7 +1,7 @@
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
 import { cn } from "@/lib/utils"
-import { DROPDOWN_POPUP_CLASS } from "@/components/ui/select/dropdown-chrome"
+import { Dropdown } from "@/components/ui/dropdown"
 
 import { useAutocompleteAnchor } from "./root"
 
@@ -11,8 +11,8 @@ import { useAutocompleteAnchor } from "./root"
 // since the field itself is the search box here. `anchor` is set explicitly
 // to field.tsx's outer box (see root.tsx's AnchorContext comment) — without
 // it Base UI defaults to the bare `<input>`, which is narrower than the box.
-// Shares the same canonical Dropdown surface as Select/Combobox via
-// DROPDOWN_POPUP_CLASS instead of re-deriving its own shadow/radius.
+// Renders the actual shared Dropdown component (same one Select/Combobox
+// use), not just a matching className.
 
 function AutocompleteContent({
   className,
@@ -37,11 +37,14 @@ function AutocompleteContent({
       >
         <ComboboxPrimitive.Popup
           data-slot="autocomplete-content"
-          className={cn(
-            DROPDOWN_POPUP_CLASS,
-            "isolate flex max-h-[min(400px,var(--available-height))] w-full flex-col overflow-hidden p-2",
-            className
-          )}
+          render={
+            <Dropdown
+              className={cn(
+                "isolate flex max-h-[min(400px,var(--available-height))] w-full flex-col overflow-hidden p-2",
+                className
+              )}
+            />
+          }
           {...props}
         >
           {children}

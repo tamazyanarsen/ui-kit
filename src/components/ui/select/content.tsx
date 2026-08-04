@@ -3,8 +3,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { ChevronDownIcon, ChevronUpIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
-
-import { DROPDOWN_POPUP_CLASS } from "./dropdown-chrome"
+import { Dropdown } from "@/components/ui/dropdown"
 
 export function SelectContent({
   className,
@@ -38,11 +37,14 @@ export function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           data-align-trigger={alignItemWithTrigger}
-          className={cn(
-            DROPDOWN_POPUP_CLASS,
-            "relative z-50 max-h-(--available-height) w-(--anchor-width) min-w-36 overflow-x-hidden overflow-y-auto data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-            className
-          )}
+          render={
+            <Dropdown
+              className={cn(
+                "relative z-50 max-h-(--available-height) w-(--anchor-width) min-w-36 overflow-x-hidden overflow-y-auto data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+                className
+              )}
+            />
+          }
           {...props}
         >
           <SelectScrollUpButton />

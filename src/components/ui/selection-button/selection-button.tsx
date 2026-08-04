@@ -4,7 +4,7 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { DROPDOWN_POPUP_CLASS, DROPDOWN_ACTION_ITEM_CLASS } from "@/components/ui/select/dropdown-chrome"
+import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
 
 // SelectionButton — "Кнопка выбора": a trigger paired with a Select/Dropdown
 // -style popup list, used to hide overflow functionality that doesn't fit
@@ -96,7 +96,7 @@ function SelectionButton({
         >
           <MenuPrimitive.Popup
             data-slot="selection-button-content"
-            className={cn(DROPDOWN_POPUP_CLASS, "min-w-56 p-2", className)}
+            render={<Dropdown className={cn("min-w-56 p-2", className)} />}
           >
             {items.map((item, index) => (
               <MenuPrimitive.Item
@@ -104,17 +104,8 @@ function SelectionButton({
                 disabled={item.disabled}
                 onClick={item.onSelect}
                 data-slot="selection-button-item"
-                className={DROPDOWN_ACTION_ITEM_CLASS}
-              >
-                <span className="text-p2 font-medium text-[#252628]">
-                  {item.text}
-                </span>
-                {item.description && (
-                  <span className="text-p3 text-[#999999]">
-                    {item.description}
-                  </span>
-                )}
-              </MenuPrimitive.Item>
+                render={<DropdownItem text={item.text} description={item.description} />}
+              />
             ))}
           </MenuPrimitive.Popup>
         </MenuPrimitive.Positioner>

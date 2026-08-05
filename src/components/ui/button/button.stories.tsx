@@ -21,17 +21,31 @@ const meta = {
   component: Button,
   parameters: { layout: "centered" },
   argTypes: {
+    // Mirrors Figma's own "Current variant" panel for ELK / button (Size /
+    // State / Type / Style dropdowns) as closely as Storybook's mechanisms
+    // allow, so a designer can compare against Figma control-for-control:
+    // - Size/Type map 1:1 onto the real `size`/`variant` props below.
+    // - Style (Text / Icon Left / Icon Right / Icon Only) is `icon` +
+    //   `iconPosition` together — `icon` can't be a plain select on its own
+    //   (its real type is a component reference, which no control widget
+    //   can represent), so it uses `mapping` to translate a friendly
+    //   "None"/"Download" label to the actual component reference/`undefined`
+    //   behind the scenes. `iconPosition` is a real string union already,
+    //   so it's just a plain select — no mapping needed.
+    // - State (Default / Hover / Active / Disabled / Loading): `disabled`/
+    //   `isLoading` are real props and already work as checkboxes below;
+    //   Hover/Active are CSS pseudo-classes, not props, so they aren't
+    //   representable as an arg at all — use the "storybook-addon-pseudo-
+    //   states" toolbar (added in .storybook/main.ts) to force them instead,
+    //   the standard way to preview pseudo-classes without real mouse input.
     variant: { control: "select", options: VARIANTS },
     size: { control: "select", options: ["sm", "default", "lg"] },
-    // `icon` takes a component reference — Storybook's auto-inferred
-    // control for a function-typed prop is a "Set object" JSON editor,
-    // which can't represent a component and so never does anything.
-    // `iconPosition` only matters once an icon is set, which the disabled
-    // `icon` control makes impossible from the Controls panel — both were
-    // dead controls on every story that doesn't hardcode `icon` in its own
-    // args (i.e. every story except WithIcon/IconOnly, where it's fixed).
-    icon: { control: false },
-    iconPosition: { control: false },
+    icon: {
+      control: { type: "select", labels: { none: "None", download: "Download (пример)" } },
+      options: ["none", "download"],
+      mapping: { none: undefined, download: Download },
+    },
+    iconPosition: { control: "select", options: ["left", "right", "only"] },
   },
   args: { children: "Button" },
 } satisfies Meta<typeof Button>

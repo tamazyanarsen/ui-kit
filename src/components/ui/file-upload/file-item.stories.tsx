@@ -6,6 +6,12 @@ const meta = {
   title: "Interaction/FileUpload/FileListItem",
   component: FileListItem,
   parameters: { layout: "padded" },
+  // `errorText` is `React.ReactNode` but every usage is a plain string —
+  // without this, leaving it unset (every story but ErrorState/List) falls
+  // back to a generic "Set object" JSON editor.
+  argTypes: {
+    errorText: { control: "text" },
+  },
   args: { name: "Договор аренды.pdf", meta: "1.2 МБ" },
 } satisfies Meta<typeof FileListItem>
 

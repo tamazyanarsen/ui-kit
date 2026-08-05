@@ -13,7 +13,18 @@ const meta = {
       { text: "Удалить" },
     ],
   },
-  argTypes: { trigger: { control: false } },
+  // `trigger` takes a JSX element instance — map a friendly "Default
+  // (⋯)"/"Custom Button" choice to the real element/`undefined` instead
+  // of disabling the control (same technique as Button's `icon`); "Custom
+  // Button" reuses the same element the `CustomTrigger` story below sets
+  // as a fixed arg, so both stay in sync.
+  argTypes: {
+    trigger: {
+      control: { type: "select", labels: { default: "Default (⋯)", custom: "Custom Button" } },
+      options: ["default", "custom"],
+      mapping: { default: undefined, custom: <button type="button">Открыть меню</button> },
+    },
+  },
 } satisfies Meta<typeof SelectionButton>
 
 export default meta

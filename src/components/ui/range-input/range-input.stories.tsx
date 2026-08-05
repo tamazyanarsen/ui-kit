@@ -9,6 +9,15 @@ const meta = {
   component: RangeInput,
   parameters: { layout: "padded" },
   args: { label: "Сумма", min: 0, max: 100, step: 1 },
+  // comment/error are typed React.ReactNode but every story here only ever
+  // puts a plain string in them — pin text controls so a story that leaves
+  // one unset doesn't fall back to Storybook's "Set object" JSON-editor
+  // placeholder. (scaleLabels/format are left alone: plain-data
+  // array/object, fine to edit as raw JSON.)
+  argTypes: {
+    comment: { control: "text" },
+    error: { control: "text" },
+  },
 } satisfies Meta<typeof RangeInput>
 
 export default meta

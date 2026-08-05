@@ -11,6 +11,17 @@ const meta = {
   component: Tag,
   parameters: { layout: "centered" },
   args: { children: "Example Text" },
+  // `color` is `TagColor = TagStatusColor | TagSignColor`, a union of two
+  // string-literal unions re-exported from variants.ts — docgen can't
+  // flatten that nested union across the module boundary into a plain
+  // enum, so it falls back to Storybook's "Set object" JSON-editor
+  // placeholder. Pin an explicit select with the real option list instead.
+  argTypes: {
+    color: {
+      control: "select",
+      options: ["green", "orange", "red", "blue", "grey", "black", "white", "grey-info"],
+    },
+  },
 } satisfies Meta<typeof Tag>
 
 export default meta

@@ -7,6 +7,15 @@ const meta = {
   title: "Interaction/Checkbox",
   component: Checkbox,
   parameters: { layout: "centered" },
+  // `label`/`comment`/`error` are all `React.ReactNode` but every usage
+  // across this file is a plain string — without this, leaving one unset
+  // (as WithoutLabel/Default/Indeterminate/Disabled all do for one or more
+  // of them) falls back to a generic "Set object" JSON editor.
+  argTypes: {
+    label: { control: "text" },
+    comment: { control: "text" },
+    error: { control: "text" },
+  },
   args: { label: "Согласен с условиями" },
 } satisfies Meta<typeof Checkbox>
 

@@ -7,6 +7,18 @@ const meta = {
   component: Textarea,
   parameters: { layout: "padded" },
   args: { label: "Комментарий" },
+  // comment/error are typed React.ReactNode but every story here only ever
+  // puts a plain string in them — pin text controls so a story that leaves
+  // one unset doesn't fall back to Storybook's "Set object" JSON-editor
+  // placeholder. `rows` is a genuine native `number` prop (inherited via
+  // `React.ComponentProps<"textarea">`), but docgen loses the primitive type
+  // across that extends chain and falls back to the same placeholder — pin
+  // it too.
+  argTypes: {
+    comment: { control: "text" },
+    error: { control: "text" },
+    rows: { control: "number" },
+  },
 } satisfies Meta<typeof Textarea>
 
 export default meta

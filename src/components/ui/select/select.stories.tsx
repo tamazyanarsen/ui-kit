@@ -48,6 +48,20 @@ const meta = {
   title: "Interaction/Select",
   component: ClearableFruitSelect,
   parameters: { layout: "padded" },
+  // `ClearableFruitSelect` is a plain function declared locally in this
+  // file rather than imported from its own component module — Storybook's
+  // docgen (react-docgen-typescript) only reliably extracts props from
+  // component modules, so most of this wrapper's props silently got NO
+  // Controls row at all (not even a broken placeholder) except `size`,
+  // which happened to resolve. Declare the rest explicitly so every prop
+  // is actually reachable from the Controls panel.
+  argTypes: {
+    error: { control: "text" },
+    comment: { control: "text" },
+    defaultValue: { control: "text" },
+    disabled: { control: "boolean" },
+    readOnly: { control: "boolean" },
+  },
 } satisfies Meta<typeof ClearableFruitSelect>
 
 export default meta

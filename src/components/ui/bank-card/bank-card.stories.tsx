@@ -12,6 +12,21 @@ const meta = {
   title: "Content/BankCard",
   component: BankCard,
   parameters: { layout: "centered" },
+  argTypes: {
+    // `paymentSystem` is a plain string union (`PaymentSystem`, imported
+    // from thumbnail/variants) but react-docgen can't resolve an imported
+    // type alias into an enum, so it falls back to a generic "Set object"
+    // JSON editor — pin the real option list explicitly instead, same
+    // fix as Badge's `color`.
+    paymentSystem: {
+      control: "select",
+      options: ["mir", "mastercard", "unionpay", "visa"] satisfies PaymentSystem[],
+    },
+    // `balance` is `React.ReactNode` but every usage (including the
+    // component's own default) is a plain string — without this, leaving
+    // it unset falls back to the same generic "Set object" JSON editor.
+    balance: { control: "text" },
+  },
   decorators: [
     (Story) => (
       <ToastProvider>

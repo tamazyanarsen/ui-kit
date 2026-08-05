@@ -8,6 +8,24 @@ const meta = {
   title: "Interaction/Calendar/Calendar",
   component: Calendar,
   parameters: { layout: "centered" },
+  // `defaultMonth`/`value`/`rangeValue`/`monthValue`/`yearValue` are all
+  // Date-based and, per every story below, owned by that story's own local
+  // state wrapper (their prop is typed away via `Omit<CalendarProps, ...>`
+  // on the wrapper's own params) — they're never meant to be driven by the
+  // Controls panel. Worse than just an unfriendly "Set object" JSON-editor
+  // placeholder: verified live that clicking it and setting a value crashes
+  // the story outright (`TypeError: initial.getFullYear is not a function`,
+  // since the JSON editor produces a plain object, not a real Date
+  // instance, and the component calls `.getFullYear()` on it unconditionally).
+  // `control: false` removes the footgun instead of just prettying up a
+  // control that was never safe to touch.
+  argTypes: {
+    defaultMonth: { control: false },
+    value: { control: false },
+    rangeValue: { control: false },
+    monthValue: { control: false },
+    yearValue: { control: false },
+  },
 } satisfies Meta<typeof Calendar>
 
 export default meta

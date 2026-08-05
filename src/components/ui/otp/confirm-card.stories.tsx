@@ -7,6 +7,15 @@ const meta = {
   component: OtpConfirmCard,
   parameters: { layout: "centered" },
   args: { phone: "+7 900 000-00-00" },
+  // title/subtitle/error are typed React.ReactNode but every story here only
+  // ever puts a plain string in them — pin text controls so a story that
+  // leaves one unset doesn't fall back to Storybook's "Set object"
+  // JSON-editor placeholder.
+  argTypes: {
+    title: { control: "text" },
+    subtitle: { control: "text" },
+    error: { control: "text" },
+  },
 } satisfies Meta<typeof OtpConfirmCard>
 
 export default meta

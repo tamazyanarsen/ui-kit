@@ -6,6 +6,18 @@ const meta = {
   title: "Template/Feedback",
   component: Nps,
   parameters: { layout: "centered" },
+  // `title` is typed React.ReactNode but every real usage (including its own
+  // runtime default above) is a plain string — pin a text control so an
+  // unset value doesn't fall back to Storybook's "Set object" placeholder.
+  // `value`/`defaultValue` are typed `number | null` — the `| null` union
+  // confuses Storybook's type inference into the same "Set object"
+  // JSON-editor placeholder, even though every real usage is a plain 1–5
+  // rating number.
+  argTypes: {
+    title: { control: "text" },
+    value: { control: "number" },
+    defaultValue: { control: "number" },
+  },
 } satisfies Meta<typeof Nps>
 
 export default meta

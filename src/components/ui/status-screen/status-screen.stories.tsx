@@ -12,6 +12,13 @@ const meta = {
     subtitle: "Средства зачислены на счёт получателя",
     primaryLabel: "На главную",
   },
+  // `secondaryLabel` is typed React.ReactNode but every story only ever puts
+  // a plain string in it — pin a text control so a story that leaves it
+  // unset doesn't fall back to Storybook's "Set object" JSON-editor
+  // placeholder.
+  argTypes: {
+    secondaryLabel: { control: "text" },
+  },
 } satisfies Meta<typeof StatusScreen>
 
 export default meta

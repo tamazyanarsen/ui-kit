@@ -7,6 +7,12 @@ const meta = {
   component: TopFixedMessage,
   parameters: { layout: "fullscreen" },
   args: { text: "Плановые технические работы с 02:00 до 04:00 мск" },
+  // `buttonLabel` is typed React.ReactNode but every story only ever puts a
+  // plain string in it — pin a text control so a story that leaves it unset
+  // doesn't fall back to Storybook's "Set object" JSON-editor placeholder.
+  argTypes: {
+    buttonLabel: { control: "text" },
+  },
 } satisfies Meta<typeof TopFixedMessage>
 
 export default meta

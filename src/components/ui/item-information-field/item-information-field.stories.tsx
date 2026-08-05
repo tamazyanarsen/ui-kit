@@ -1,12 +1,30 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { ItemInformationField } from "./item-information-field"
+import type { FieldStatus } from "./item-information-field"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 
 const meta = {
   title: "Content/Item/InformationField",
   component: ItemInformationField,
   parameters: { layout: "padded" },
+  argTypes: {
+    // `subText`/`labelInfo`/`valueInfo` are `React.ReactNode` but every
+    // usage is a plain string — without this, leaving one unset falls
+    // back to a generic "Set object" JSON editor.
+    subText: { control: "text" },
+    labelInfo: { control: "text" },
+    valueInfo: { control: "text" },
+    // `subTextStatus` is `Exclude<FieldStatus, "information">` — react-docgen
+    // can't resolve a computed utility type into an enum the way it does
+    // the plain `FieldStatus` alias (`valueStatus` already gets a select
+    // automatically), so it falls back to the same generic "Set object"
+    // editor. Pin the real (narrower) option list explicitly instead.
+    subTextStatus: {
+      control: "select",
+      options: ["default", "success", "error", "attention"] satisfies Exclude<FieldStatus, "information">[],
+    },
+  },
   args: { label: "ИНН", value: "7710140123" },
   decorators: [
     (Story) => (

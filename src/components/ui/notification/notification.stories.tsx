@@ -6,6 +6,16 @@ const meta = {
   title: "Status/Message/Notification",
   component: NotificationPanel,
   parameters: { layout: "centered" },
+  // title/primaryButtonLabel/secondaryButtonLabel are typed React.ReactNode
+  // but every story here (and NotificationItem's own usage) only ever puts a
+  // plain string in them — pin a text control so Storybook doesn't fall back
+  // to its "Set object" JSON-editor placeholder when a story leaves one
+  // unset (same fix as tooltip/hint.tsx's `title`).
+  argTypes: {
+    title: { control: "text" },
+    primaryButtonLabel: { control: "text" },
+    secondaryButtonLabel: { control: "text" },
+  },
 } satisfies Meta<typeof NotificationPanel>
 
 export default meta

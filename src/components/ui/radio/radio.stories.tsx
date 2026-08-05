@@ -9,6 +9,15 @@ const meta = {
   component: Radio,
   parameters: { layout: "centered" },
   args: { value: "a" },
+  // label/comment/error are typed React.ReactNode but every story here only
+  // ever puts a plain string in them — pin text controls so a story that
+  // leaves one unset doesn't fall back to Storybook's "Set object"
+  // JSON-editor placeholder.
+  argTypes: {
+    label: { control: "text" },
+    comment: { control: "text" },
+    error: { control: "text" },
+  },
 } satisfies Meta<typeof Radio>
 
 export default meta

@@ -15,9 +15,24 @@ const meta = {
     // `children` is a React.ReactElement (the trigger) — no JSON value can
     // represent it; Storybook falls back to a raw editable tree of the
     // element's internals ($$typeof/type/props/_owner/_store), which looks
-    // like a working control but can't meaningfully be edited (same class
-    // as Button's icon/iconPosition, already fixed there).
-    children: { control: false },
+    // like a working control but can't meaningfully be edited. Map a
+    // friendly choice between two real trigger elements instead of
+    // disabling the control (same technique as Button's `icon`).
+    children: {
+      control: { type: "select", labels: { grey: "Button (Grey)", primary: "Button (Primary)" } },
+      options: ["grey", "primary"],
+      mapping: {
+        grey: <Button variant="secondary-grey">Открыть подсказку</Button>,
+        primary: <Button variant="primary">Открыть подсказку</Button>,
+      },
+    },
+    // `title` is typed `React.ReactNode` (broad, to allow markup in
+    // principle) but is always used as a plain string in practice (see
+    // `WithTitle` below) — with no arg set on `Default`, Storybook's
+    // auto-inferred control for the broad type falls back to a "Set
+    // object" placeholder instead of a text box. Pin it to a real text
+    // control since a string is genuinely all this prop ever holds here.
+    title: { control: "text" },
   },
 } satisfies Meta<typeof Hint>
 

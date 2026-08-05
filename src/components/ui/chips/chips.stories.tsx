@@ -6,6 +6,12 @@ const meta = {
   title: "Interaction/Chips",
   component: Chips,
   parameters: { layout: "centered" },
+  // `subtitle` is `React.ReactNode` but every usage is a plain string —
+  // without this, leaving it unset (every story but WithSubtitle) falls
+  // back to a generic "Set object" JSON editor.
+  argTypes: {
+    subtitle: { control: "text" },
+  },
   args: { children: "Значение" },
 } satisfies Meta<typeof Chips>
 

@@ -6,6 +6,14 @@ const meta = {
   title: "Content/Accordion/Card",
   component: AccordionCard,
   parameters: { layout: "padded" },
+  // `subtitle` is `React.ReactNode` (to match `title`'s type) but every
+  // usage across this file's own stories is a plain string — without this,
+  // the broad ReactNode type makes Storybook fall back to a generic
+  // "Set object" JSON-editor placeholder once a story (NoSubtitle) leaves
+  // it unset, instead of a plain text control.
+  argTypes: {
+    subtitle: { control: "text" },
+  },
   args: {
     title: "Заголовок карточки",
     subtitle: "Подзаголовок с пояснением",

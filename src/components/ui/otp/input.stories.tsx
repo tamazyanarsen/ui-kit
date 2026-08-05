@@ -6,6 +6,17 @@ const meta = {
   title: "Template/Otp/OtpInput",
   component: OtpInput,
   parameters: { layout: "padded" },
+  // `error` is typed React.ReactNode but every story here only ever puts a
+  // plain string in it — pin a text control so a story that leaves it unset
+  // doesn't fall back to Storybook's "Set object" JSON-editor placeholder.
+  // `placeholder` is a genuine native `string` prop (inherited via
+  // `React.ComponentProps<"input">`), but docgen's extraction across that
+  // `extends`/`Omit` chain loses the primitive type and falls back to the
+  // same "Set object" placeholder — pin it too.
+  argTypes: {
+    error: { control: "text" },
+    placeholder: { control: "text" },
+  },
 } satisfies Meta<typeof OtpInput>
 
 export default meta

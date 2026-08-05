@@ -6,6 +6,17 @@ const meta = {
   title: "Status/Message/Event",
   component: Event,
   parameters: { layout: "padded" },
+  // `commentLabel`/`comment`/`buttonLabel` are `React.ReactNode` but every
+  // usage is a plain string — without this, leaving one unset falls back
+  // to a generic "Set object" JSON editor. `signatories`/`info`/`documents`
+  // are left alone: arrays of plain structured data (name/label/value/meta
+  // strings), already fine to edit as raw JSON, same as other array-of-data
+  // props elsewhere in this kit.
+  argTypes: {
+    commentLabel: { control: "text" },
+    comment: { control: "text" },
+    buttonLabel: { control: "text" },
+  },
   args: {
     title: "Заявка отправлена",
     timestamp: "10:00",

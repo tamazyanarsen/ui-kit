@@ -7,6 +7,15 @@ const meta = {
   component: ProgressBar,
   parameters: { layout: "padded" },
   args: { title: "Шаг 2 из 4" },
+  // label/subtitle/description are typed React.ReactNode but every story
+  // here only ever puts a plain string in them — pin text controls so a
+  // story that leaves one unset doesn't fall back to Storybook's "Set
+  // object" JSON-editor placeholder.
+  argTypes: {
+    label: { control: "text" },
+    subtitle: { control: "text" },
+    description: { control: "text" },
+  },
 } satisfies Meta<typeof ProgressBar>
 
 export default meta

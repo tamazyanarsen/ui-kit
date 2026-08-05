@@ -8,7 +8,25 @@ const meta = {
   component: Item,
   parameters: { layout: "padded" },
   args: { text: "Тип операции", value: "Перевод между счетами" },
-  argTypes: { thumbnail: { control: false } },
+  // `thumbnail` holds a JSX element (or the sentinel `true`, which renders
+  // the component's own built-in `DefaultThumbnail`) — map a friendly
+  // "None"/"Default" choice to `undefined`/`true` instead of disabling
+  // the control (same technique as Button's `icon`).
+  argTypes: {
+    thumbnail: {
+      control: { type: "select", labels: { none: "None", default: "Default" } },
+      options: ["none", "default"],
+      mapping: { none: undefined, default: true },
+    },
+    // `text`/`comment`/`informationText`/`rightText` are all `React.ReactNode`
+    // but every usage is a plain string — without this, leaving one unset
+    // (ValueOnly for text; every story but the one that sets each of the
+    // others) falls back to a generic "Set object" JSON editor.
+    text: { control: "text" },
+    comment: { control: "text" },
+    informationText: { control: "text" },
+    rightText: { control: "text" },
+  },
 } satisfies Meta<typeof Item>
 
 export default meta

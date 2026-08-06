@@ -119,6 +119,7 @@ function TableExample() {
           <TableHeadCell
             type="subtitle-left"
             sortable
+            sortDirection={sort?.key === "name" ? sort.dir : null}
             onSortClick={() => toggleSort("name")}
           >
             Сотрудник
@@ -126,6 +127,7 @@ function TableExample() {
           <TableHeadCell
             type="subtitle-left"
             sortable
+            sortDirection={sort?.key === "date" ? sort.dir : null}
             onSortClick={() => toggleSort("date")}
           >
             Дата

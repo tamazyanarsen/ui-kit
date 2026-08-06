@@ -58,10 +58,20 @@ function TableExample() {
       <TableHeader>
         <tr>
           <TableHeadCell type="checkbox" checked={allSelected} indeterminate={someSelected} onCheckedChange={toggleAll} />
-          <TableHeadCell type="subtitle-left" sortable onSortClick={() => toggleSort("name")}>
+          <TableHeadCell
+            type="subtitle-left"
+            sortable
+            sortDirection={sort?.key === "name" ? sort.dir : null}
+            onSortClick={() => toggleSort("name")}
+          >
             Сотрудник
           </TableHeadCell>
-          <TableHeadCell type="subtitle-left" sortable onSortClick={() => toggleSort("date")}>
+          <TableHeadCell
+            type="subtitle-left"
+            sortable
+            sortDirection={sort?.key === "date" ? sort.dir : null}
+            onSortClick={() => toggleSort("date")}
+          >
             Дата
           </TableHeadCell>
           <TableHeadCell type="subtitle-left">Статус</TableHeadCell>

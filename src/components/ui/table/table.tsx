@@ -154,6 +154,10 @@ interface TableHeadCellProps
   children?: React.ReactNode
   /** "Show Sort" — renders the ⇅ toggle next to Subtitle Left/Right text. */
   sortable?: boolean
+  /** Which way this column is currently sorted. Set it (i.e. non-`null`) and
+   * the cell renders the spec's Active state: dark title text plus the
+   * matching chevron of the sort icon darkened. `null` is Default/Hover. */
+  sortDirection?: "asc" | "desc" | null
   onSortClick?: () => void
   /** "Show Icon" — an optional leading icon before Subtitle text. */
   icon?: React.ReactNode
@@ -168,6 +172,7 @@ function TableHeadCell({
   type = "subtitle-left",
   children,
   sortable = false,
+  sortDirection = null,
   onSortClick,
   icon,
   checked,
@@ -191,14 +196,26 @@ function TableHeadCell({
   // by measuring the live story (Playwright) before and after. Checkbox's
   // 14px padding (14+24+14=52px) would likewise have kept the row at 52px
   // even after fixing Button alone, so both needed correcting together.
+  //
+  // Horizontal padding is asymmetric on the two types that carry a divider
+  // (below): Figma's Checkbox cell is `pl-8 … gap-15 …` + a 1px rule flush to
+  // the right edge (8+24+15+1 = 48 wide), and Subtitle is `pl-8 … pr-7` + the
+  // same rule.
   const headCellPadding =
     type === "checkbox"
-      ? "px-2 py-3"
+      ? "py-3 pr-[15px] pl-2"
       : type === "icon"
         ? "px-2 py-4"
         : type === "button"
           ? "p-2"
-          : "px-2 py-[14px]"
+          : "py-[14px] pr-[7px] pl-2"
+
+  // Column divider — a 1px × 24px rounded rule at the cell's right edge,
+  // drawn by `ELK / table-title-cell` itself for the Checkbox and Subtitle
+  // types (Icon and Button have none). It is a pseudo-element rather than a
+  // real node so it can't disturb the cell's flex/inline layout, and it is
+  // centered vertically over the 48px cell exactly as in the spec.
+  const hasDivider = type === "checkbox" || isSubtitle
 
   return (
     <th
@@ -208,6 +225,8 @@ function TableHeadCell({
       className={cn(
         headCellPadding,
         "font-medium whitespace-nowrap",
+        hasDivider &&
+          "relative after:absolute after:top-1/2 after:right-0 after:h-6 after:w-px after:-translate-y-1/2 after:rounded-[1px] after:bg-[var(--table-divider)] after:content-['']",
         type === "checkbox" || type === "icon" || type === "button"
           ? "w-px text-center"
           : align,
@@ -247,18 +266,30 @@ function TableHeadCell({
             onClick={onSortClick}
             data-slot="table-sort"
             className={cn(
-              "group inline-flex cursor-pointer items-center gap-1 text-[var(--table-description-fg)] outline-none transition-colors hover:text-[var(--table-fg)] focus-visible:text-[var(--table-fg)]",
+              "group inline-flex cursor-pointer items-center gap-2 outline-none transition-colors hover:text-[var(--table-fg)] focus-visible:text-[var(--table-fg)]",
+              sortDirection
+                ? "text-[var(--table-fg)]"
+                : "text-[var(--table-description-fg)]",
               type === "subtitle-right" && "flex-row-reverse"
             )}
           >
             {icon && <span aria-hidden="true">{icon}</span>}
             <span>{children}</span>
-            <ChevronsUpDown aria-hidden="true" className="size-3.5 shrink-0" />
+            {/* 16px, gap 8 — `icon / sort` is a full-size glyph in the spec,
+                not the 14px one this used to render. Its own two chevrons
+                stay muted until the column is actually sorted, which is why
+                Hover only darkens the *text* (spec state Hover) while Active
+                darkens text + one chevron. */}
+            <ChevronsUpDown
+              aria-hidden="true"
+              sort={sortDirection ?? "none"}
+              className="size-4 shrink-0"
+            />
           </button>
         ) : (
           <span
             className={cn(
-              "inline-flex items-center gap-1 text-[var(--table-description-fg)]",
+              "inline-flex items-center gap-2 text-[var(--table-description-fg)]",
               type === "subtitle-right" && "flex-row-reverse"
             )}
           >
@@ -298,12 +329,33 @@ function TableCell({
   align = "left",
   ...props
 }: TableCellProps) {
+  // Like the header, each Cell type carries its own vertical padding so that
+  // every one of them lands on the spec's 52px row: Checkbox is
+  // `pl-8/pr-16 py-14` around a 24px box, Icon `px-8 py-18` around 16px, Text
+  // `px-8 py-16` around a 20px line, Tag `px-8 py-15` around the 22px tag and
+  // Button `p-10` around the 32px icon button (get_design_context on
+  // `ELK / table-cell`, nodes 10623:48142/48136/48132/48130 and 35375:57517).
+  // A `<tr>` is as tall as its tallest cell, so a single wrong type used to
+  // stretch the whole row — uniform `py-4` made checkbox rows 56px and rows
+  // with a kebab menu 64px.
+  const cellPadding =
+    type === "checkbox"
+      ? "py-[14px] pr-4 pl-2"
+      : type === "icon"
+        ? "px-2 py-[18px]"
+        : type === "tag"
+          ? "px-2 py-[15px]"
+          : type === "button"
+            ? "p-[10px]"
+            : "px-2 py-4"
+
   return (
     <td
       data-slot="table-cell"
       data-type={type}
       className={cn(
-        "px-2 py-4 whitespace-nowrap",
+        cellPadding,
+        "whitespace-nowrap",
         type === "checkbox" || type === "icon" || type === "button"
           ? "w-px text-center"
           : align === "right"

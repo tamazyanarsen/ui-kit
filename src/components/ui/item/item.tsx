@@ -153,7 +153,10 @@ function RightElement({
               disabled={disabled}
               aria-label="Информация"
               className={cn(
-                "flex size-11 shrink-0 items-center justify-center outline-none",
+                // "активная область иконки справа 16х44 px" — tall enough to
+                // hit comfortably, but only as wide as the icon so it doesn't
+                // eat 28px of the row's right edge.
+                "flex h-11 w-4 shrink-0 items-center justify-center outline-none",
                 iconColorClass
               )}
             >
@@ -238,9 +241,19 @@ function Item({
       data-slot="item"
       data-disabled={disabled || undefined}
       className={cn(
-        "flex w-full cursor-pointer items-center gap-6 px-4 py-4 text-left outline-none transition-colors",
-        subCategory && "pl-16",
-        divider && "border-b border-[var(--item-divider)]",
+        // 16 above the content, 15 below it, then the 1px divider — the row
+        // is 80px tall for a Value+Comment either way. Figma's Divider Off
+        // variant keeps the same 15px gap and a transparent 1px line rather
+        // than collapsing, so the border here is always present and only
+        // changes colour; otherwise a list's last row would be 1px shorter.
+        "flex w-full cursor-pointer items-center gap-6 border-b px-4 pt-4 pb-[15px] text-left outline-none transition-colors",
+        // Sub Category indents the *content* by 64px relative to a normal
+        // row (Figma puts `pl-[64px]` on the Box of `Сategory=True`, on top
+        // of the row's own 16px side padding from the "Боковые отступы"
+        // note) — so 80px here, and the divider/hover fill still span the
+        // full width because the padding is on the row itself.
+        subCategory && "pl-20",
+        divider ? "border-[var(--item-divider)]" : "border-transparent",
         "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
         "data-[disabled]:cursor-not-allowed",
         "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
@@ -268,9 +281,12 @@ function Item({
                 {text}
               </span>
             )}
+            {/* Value wraps up to 3 lines, Comment up to 5 — the spec's own
+                "Максимальное количество строк" note; single-line `truncate`
+                cut long titles that Figma shows wrapping. */}
             <span
               className={cn(
-                "truncate text-p1-medium",
+                "line-clamp-3 text-p1-medium",
                 disabled
                   ? "text-[var(--item-value-fg-disabled)]"
                   : "text-[var(--item-value-fg)]"
@@ -282,7 +298,7 @@ function Item({
           {comment && (
             <span
               className={cn(
-                "truncate text-p2-medium",
+                "line-clamp-5 text-p2-medium",
                 disabled ? "text-[var(--item-value-fg-disabled)]" : COMMENT_COLOR[commentColor]
               )}
             >

@@ -281,22 +281,25 @@
    spec calls for (4px vertical vs 8px horizontal) — Firefox has no
    equivalent per-axis control (`scrollbar-width` is a single keyword for
    both axes), so it falls back to its own "thin" preset for both. */
-@layer base {
-  /* Figma's "Ссылка/" family (P1–P4 Link Medium/Regular, node 1361:131490)
-     is NOT a separate size scale: `Ссылка/P1 Link Medium` reports the exact
-     same 16/24/500 metrics as `Параграф/P1 Medium` (verified on node
-     29445:37511) — the only delta is the underline, drawn `from-font` with
-     ink-skipping off. So a link is its paragraph step plus this utility,
-     e.g. `text-p1-medium text-link`, rather than seven duplicate size keys. */
-  .text-link {
-    text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-decoration-thickness: from-font;
-    text-underline-offset: from-font;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-  }
+/* Figma's "Ссылка/" family (P1–P4 Link Medium/Regular, node 1361:131490) is
+   NOT a separate size scale: `Ссылка/P1 Link Medium` reports the exact same
+   16/24/500 metrics as `Параграф/P1 Medium` (verified on node 29445:37511) —
+   the only delta is the underline, drawn `from-font` with ink-skipping off.
+   So a link is its paragraph step plus this utility, e.g.
+   `text-p1-medium text-link`, rather than seven duplicate size keys.
+   Declared with @utility (not a plain class in @layer base) so it composes
+   with variants the way the rest of the kit's classes do — `hover:text-link`
+   is what the hover-underline affordances actually want. */
+@utility text-link {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: from-font;
+  text-underline-offset: from-font;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
 
+@layer base {
   .themed-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);

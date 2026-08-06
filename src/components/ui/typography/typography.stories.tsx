@@ -67,7 +67,7 @@ function StyleRow({ style, mode }: { style: TypeStyle; mode: "desktop" | "mobile
     <div className="grid grid-cols-[1fr_auto_auto_auto] items-baseline gap-6 border-b border-[#EFEFEF] py-4 last:border-0">
       <div className="min-w-0">
         <span
-          className={style.link ? "underline" : undefined}
+          className={style.link ? "text-link" : undefined}
           style={{
             fontSize: spec.size,
             lineHeight: `${spec.lineHeight}px`,

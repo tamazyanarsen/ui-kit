@@ -122,7 +122,10 @@ export function FileUploadDropzone({
           {children ?? (
             <>
               {"Перетащите или "}
-              <span className="underline">загрузите файлы</span>
+              {/* Figma underlines this half of the label with the "Ссылка/"
+                  decoration — from-font thickness, ink-skipping off (node
+                  I16029:57763;16029:57994) — which is what `text-link` is. */}
+              <span className="text-link">загрузите файлы</span>
             </>
           )}
         </span>

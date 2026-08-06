@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Bell } from "@/icons"
+import { Scrollbar } from "@/components/ui/scrollbar"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -76,7 +77,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
                 scrolls, with a 32px bottom padding — capped lower here
                 (420px) since this kit's demo content is only two items,
                 but the scroll/padding mechanics match. */}
-            <div className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] overflow-y-auto pb-8">
+            <Scrollbar className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] pb-8">
               {items.map((item) => (
                 <MenuPrimitive.Item
                   key={item.id}
@@ -120,7 +121,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
                   </span>
                 </MenuPrimitive.Item>
               ))}
-            </div>
+            </Scrollbar>
           </MenuPrimitive.Popup>
         </MenuPrimitive.Positioner>
       </MenuPrimitive.Portal>

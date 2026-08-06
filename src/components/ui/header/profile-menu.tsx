@@ -1,6 +1,8 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Briefcase, Check, ChevronDown, LogOut, Search, Settings } from "@/icons"
+import { Divider } from "@/components/ui/divider"
+import { Scrollbar } from "@/components/ui/scrollbar"
 
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -148,7 +150,10 @@ function ProfileMenu({
                     ? "Мои организации — результаты поиска"
                     : `Мои организации (${organizations.length})`}
                 </p>
-                <div className="flex max-h-64 flex-col gap-0.5 overflow-y-auto px-2">
+                {/* Figma puts an `ELK / scrollbar` inside this list (node
+                    46107:43566 — 4px track, 2px radius, 8px inset), which is
+                    what the kit's Scrollbar renders. */}
+                <Scrollbar className="flex max-h-64 flex-col gap-0.5 px-2">
                   {filtered.map((org) => (
                     <MenuPrimitive.Item
                       key={org.id}
@@ -181,12 +186,17 @@ function ProfileMenu({
                       Ничего не найдено
                     </p>
                   )}
-                </div>
+                </Scrollbar>
               </>
             )}
 
             {showSetting && (
-              <div className="mt-2 flex flex-col gap-0.5 border-t border-[var(--header-divider)] px-2 pt-2">
+              <>
+                {/* Figma separates the settings block with an actual
+                    `ELK / divider` instance (node 46107:27187), not a border
+                    on the block itself. */}
+                <Divider className="mt-2" />
+                <div className="flex flex-col gap-0.5 px-2 pt-2">
                 <MenuPrimitive.Item
                   data-slot="profile-menu-settings-item"
                   onClick={onSettingsClick}
@@ -203,7 +213,8 @@ function ProfileMenu({
                   <LogOut aria-hidden="true" className="size-6 shrink-0" />
                   Выйти
                 </MenuPrimitive.Item>
-              </div>
+                </div>
+              </>
             )}
           </MenuPrimitive.Popup>
         </MenuPrimitive.Positioner>

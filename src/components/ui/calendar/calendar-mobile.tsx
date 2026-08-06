@@ -3,6 +3,7 @@ import { ChevronLeft, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Scrollbar } from "@/components/ui/scrollbar"
 import { MONTHS_RU_FULL, addMonths, isInRange, isSameDay } from "@/lib/calendar"
 import {
   CalendarFooter,
@@ -418,12 +419,12 @@ export function CalendarMobile({
       {/* Figma's real mobile mock stacks repeated month sections with a
           24px gap ("Calendar" wrapper, gap-[24px]) — applied uniformly to
           the month/year/decade lists here. */}
-      <div
+      <Scrollbar
         ref={sheetScrollRef}
-        className="flex flex-1 flex-col gap-6 overflow-y-auto"
+        className="flex flex-1 flex-col gap-6"
       >
         {renderSheetBody()}
-      </div>
+      </Scrollbar>
       {footer && <CalendarFooter compact onReset={onReset} onApply={onApply} />}
     </div>
   )

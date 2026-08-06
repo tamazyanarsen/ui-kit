@@ -94,7 +94,10 @@ function Sidebar({
           className={cn(
             "flex flex-1 flex-col gap-4 py-6",
             isOpen ? "px-2" : "items-center",
-            showScroll ? "overflow-y-auto" : "overflow-hidden"
+            // Figma gates an `ELK / scrollbar` on this same `showScroll`
+            // property (node 24258:178753) — 4px track, 2px radius — so the
+            // themed track comes along with the overflow.
+            showScroll ? "themed-scrollbar overflow-y-auto" : "overflow-hidden"
           )}
         >
           {children}

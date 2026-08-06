@@ -65,7 +65,11 @@ function AccordionCard({
                 : "hover:bg-[var(--accordion-card-bg-hover)]"
             )}
           >
-            <span className="flex items-center justify-between gap-6">
+            {/* `items-start`: the chevron is pinned to the top of the title
+                line (Figma puts it at y=24, i.e. exactly the card's own top
+                padding), not vertically centred on the 28px line — centring
+                dropped it 6px lower than the master. */}
+            <span className="flex items-start justify-between gap-6">
               <span className="text-h4 text-[var(--accordion-card-title-fg)]">
                 {title}
               </span>

@@ -70,7 +70,7 @@ export function CalendarDesktop({
     // shrink well under that.
     <div
       className={cn(
-        "w-fit min-w-[280px] overflow-hidden rounded-[16px] bg-white shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
+        "w-fit min-w-[280px] overflow-hidden rounded-[16px] bg-white shadow-universal",
         className
       )}
     >

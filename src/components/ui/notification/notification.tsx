@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Scrollbar } from "@/components/ui/scrollbar"
 
 // Notification — "Уведомления и новости" panel + its item row. Per the
 // spec (marked "Actual old", unlike its message/* siblings — treat as the
@@ -164,7 +165,7 @@ function NotificationPanel({
     <div
       data-slot="notification-panel"
       className={cn(
-        "flex w-[480px] flex-col overflow-hidden rounded-[16px] bg-[var(--notification-bg)] shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
+        "flex w-[480px] flex-col overflow-hidden rounded-[16px] bg-[var(--notification-bg)] shadow-universal",
         className
       )}
     >
@@ -176,9 +177,9 @@ function NotificationPanel({
         </div>
       )}
 
-      <div
+      <Scrollbar
         className={cn(
-          "themed-scrollbar flex flex-col overflow-y-auto",
+          "flex flex-col",
           showDivider && "divide-y divide-[var(--notification-divider)]",
           !showScrollBar && "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         )}
@@ -187,7 +188,7 @@ function NotificationPanel({
         {items.map((item, index) => (
           <NotificationItem key={index} {...item} />
         ))}
-      </div>
+      </Scrollbar>
 
       {(primaryButtonLabel || secondaryButtonLabel) && (
         // Design-check #41: each button fills half the row (was sized to

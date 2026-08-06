@@ -2,6 +2,7 @@ import * as React from "react"
 import { ChevronLeft, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { MONTHS_RU_FULL, addMonths, isInRange, isSameDay } from "@/lib/calendar"
 import {
   CalendarFooter,
@@ -27,17 +28,21 @@ function SheetHeader({
 }) {
   return (
     <div className="flex items-center justify-between gap-4 px-4 pt-6 pb-2">
-      <h2 className="text-lg leading-6 font-medium text-[var(--calendar-fg)]">
+      <h2 className="text-h4-mobile text-[var(--calendar-fg)]">
         {title}
       </h2>
-      <button
-        type="button"
+      {/* `ELK / button` instance in Figma (node 7415:58839) on a grey-109
+          #F4F4F4 fill — that is Button's own `secondary-grey`, not the
+          calendar's day-hover token that happens to share the hex. */}
+      <Button
+        variant="secondary-grey"
+        size="sm"
+        iconPosition="only"
+        icon={X}
         aria-label="Закрыть"
         onClick={onClose}
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--calendar-range-bg)] text-[var(--calendar-fg)] outline-none hover:bg-[var(--btn-secondary-grey-bg-hover)] focus-visible:ring-3 focus-visible:ring-ring/50"
-      >
-        <X className="size-4" />
-      </button>
+        className="shrink-0"
+      />
     </div>
   )
 }
@@ -48,14 +53,16 @@ function SheetNav({ label, onBack }: { label: string; onBack?: () => void }) {
   return (
     <div className="flex items-center gap-2 px-4 pb-2">
       {onBack && (
-        <button
-          type="button"
+        // `ELK / button` instance in Figma (node 7415:58841), white fill.
+        <Button
+          variant="secondary-white"
+          size="sm"
+          iconPosition="only"
+          icon={ChevronLeft}
           aria-label="Назад"
           onClick={onBack}
-          className="flex size-8 shrink-0 items-center justify-center rounded-full text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
+          className="shrink-0"
+        />
       )}
       {/* Matches the desktop nav pill's "Май"/"2024" label
           (get_design_context on 7415:58522) — Object Sans Medium (P2
@@ -83,7 +90,7 @@ function MonthPillHeading({ children }: { children: React.ReactNode }) {
 // font-semibold.
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="px-4 pt-[22px] pb-4 text-[22px] leading-[30px] font-medium text-[var(--calendar-fg)]">
+    <h3 className="px-4 pt-[22px] pb-4 text-h2-mobile text-[var(--calendar-fg)]">
       {children}
     </h3>
   )
@@ -402,7 +409,7 @@ export function CalendarMobile({
     // that just means no radius and no max-width cap of its own.
     <div
       className={cn(
-        "flex h-full w-full flex-col overflow-hidden bg-white shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
+        "flex h-full w-full flex-col overflow-hidden bg-white shadow-universal",
         className
       )}
     >

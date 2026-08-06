@@ -187,7 +187,7 @@ export function ComboboxList({
   return (
     <ComboboxPrimitive.List
       data-slot="combobox-list"
-      className={cn("flex-1 overflow-y-auto py-1", className)}
+      className={cn("themed-scrollbar flex-1 overflow-y-auto py-1", className)}
       {...props}
     />
   )

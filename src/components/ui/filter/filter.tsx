@@ -3,6 +3,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { ChevronDown, ChevronUp, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { filterTablePillClass } from "@/components/ui/filter-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { ComboboxFooter } from "@/components/ui/combobox"
@@ -117,13 +118,19 @@ function Filter({
   // --filter-disabled-fg already equals hex-for-hex), not
   // --filter-disabled-bg's lighter #F4F4F4.
   let triggerToneClass: string
-  if (disabled) {
-    triggerToneClass = asChip
-      ? "border-transparent bg-[var(--btn-muted-bg)]"
-      : "border-transparent bg-[var(--filter-disabled-bg)]"
-  } else if (asChip) {
-    triggerToneClass =
-      "border-transparent bg-[var(--chips-dark-bg)] hover:bg-[var(--chips-dark-bg-hover)]"
+  if (asChip) {
+    // The chip look is Figma's `ELK / filter-table` in its Checked=True
+    // state — the same pill NPS renders — so its fill/hover/disabled colours
+    // come from the shared helper instead of being restated here. Only the
+    // border stays local: filter-table has none, but this trigger keeps a
+    // transparent border-2 so switching between the chip and plain looks
+    // doesn't change the box size.
+    triggerToneClass = cn(
+      "border-transparent",
+      filterTablePillClass({ selected: true, disabled })
+    )
+  } else if (disabled) {
+    triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
   } else {
     triggerToneClass = cn(
       open ? "border-[var(--filter-active-border)]" : "border-transparent",
@@ -198,8 +205,13 @@ function Filter({
                 // look — its actual Figma source (the filter-table dark
                 // pill, node 1303:99241) is `rounded-[16px]` on a ~32px
                 // box, i.e. a capsule, not the plain Filter's `rounded-[8px]`.
+                //
+                // The chip look's fill/geometry now come from
+                // filterTablePillClass (see triggerToneClass) so this and
+                // NPS render the same pill from one definition; the plain
+                // Filter look keeps its own 8px-radius box below.
                 "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
-                asChip ? "rounded-[16px]" : "rounded-[8px]",
+                !asChip && "rounded-[8px]",
                 triggerToneClass,
                 className
               )}

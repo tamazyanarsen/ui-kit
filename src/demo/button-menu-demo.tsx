@@ -1,5 +1,6 @@
 import {
   ButtonMenu,
+  ButtonMenuBlack,
   ButtonMenuOverflow,
   ButtonMenuOverflowItem,
 } from "@/components/ui/button-menu"
@@ -18,6 +19,35 @@ function ButtonMenuDemo() {
       <AccordionTrigger>Button Menu</AccordionTrigger>
       <AccordionPanel>
         <div className="space-y-8">
+          <div>
+            <p className="mb-3 text-p2-medium text-[#252628]">
+              Black — панель выделения строк таблицы
+            </p>
+            <div className="flex flex-col gap-4">
+              <div className="space-y-1.5">
+                <RowLabel>3 кнопки + информационный бар</RowLabel>
+                <ButtonMenuBlack
+                  onClose={() => {}}
+                  info={[
+                    { label: "Выбрано", value: "10", className: "w-16" },
+                    { label: "На сумму", value: "1 847 540,00 ₽" },
+                    { label: "Списания", value: "- 3 847 540 ₽" },
+                  ]}
+                >
+                  <Button>Подписать</Button>
+                  <Button>Отправить</Button>
+                  <Button>Удалить</Button>
+                </ButtonMenuBlack>
+              </div>
+              <div className="space-y-1.5">
+                <RowLabel>Без информационного бара</RowLabel>
+                <ButtonMenuBlack onClose={() => {}}>
+                  <Button>Подписать</Button>
+                  <Button>Удалить</Button>
+                </ButtonMenuBlack>
+              </div>
+            </div>
+          </div>
           <div>
             <p className="mb-3 text-p2-medium text-[#252628]">
               With Primary

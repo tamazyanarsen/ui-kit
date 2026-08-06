@@ -1,4 +1,4 @@
-import type { SVGProps } from "react"
+import type { IconProps } from "./types"
 
 // No "image placeholder" glyph was reachable from this file's own Figma
 // pages — search_design_system only turns up "icons/Placeholder/Images" in
@@ -6,7 +6,7 @@ import type { SVGProps } from "react"
 // Pencil. Hand-drawn (built from primitives, not traced) to match the
 // weight/viewBox convention of the rest of this Figma-sourced icon set
 // rather than pulling in lucide-react.
-export function ImageIcon(props: SVGProps<SVGSVGElement>) {
+export function ImageIcon({ size: _size, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <rect x="1.5" y="2.5" width="13" height="11" rx="1.4" stroke="currentColor" strokeWidth="1.2" />

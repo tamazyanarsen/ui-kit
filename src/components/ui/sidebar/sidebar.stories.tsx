@@ -1,6 +1,10 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Briefcase as Home, Wallet as CreditCard, Settings, Wallet as Landmark } from "@/icons"
+// Icons named for the glyph they actually are — the previous aliases
+// (`Briefcase as Home`, `Wallet as Landmark`) described icons this set
+// doesn't contain, which made the story look like it used glyphs it never
+// rendered.
+import { Briefcase, Coins, Settings, Wallet } from "@/icons"
 
 import { Sidebar } from "./sidebar"
 import { SidebarItem, SidebarGroup } from "./item"
@@ -9,12 +13,12 @@ function DemoSidebar({ defaultOpen = true }: { defaultOpen?: boolean }) {
   return (
     <div className="h-96">
       <Sidebar defaultOpen={defaultOpen}>
-        <SidebarItem icon={Home} label="Главная" active />
-        <SidebarGroup value="payments" icon={Landmark} label="Платежи">
+        <SidebarItem icon={Briefcase} label="Главная" active />
+        <SidebarGroup value="payments" icon={Coins} label="Платежи">
           <SidebarItem label="СБП" nested />
           <SidebarItem label="QR-коды СБП" nested />
         </SidebarGroup>
-        <SidebarItem icon={CreditCard} label="Карты" />
+        <SidebarItem icon={Wallet} label="Карты" />
         <SidebarItem icon={Settings} label="Настройки" />
       </Sidebar>
     </div>
@@ -49,8 +53,8 @@ function ControlledSidebar({ defaultOpen = false }: { defaultOpen?: boolean }) {
         expandedGroups={expanded}
         onExpandedGroupsChange={setExpanded}
       >
-        <SidebarItem icon={Home} label="Главная" />
-        <SidebarGroup value="payments" icon={Landmark} label="Платежи">
+        <SidebarItem icon={Briefcase} label="Главная" />
+        <SidebarGroup value="payments" icon={Coins} label="Платежи">
           <SidebarItem label="СБП" nested />
           <SidebarItem label="QR-коды СБП" nested />
         </SidebarGroup>

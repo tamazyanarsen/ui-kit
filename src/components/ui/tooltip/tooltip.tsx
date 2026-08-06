@@ -14,6 +14,13 @@ interface TooltipProps {
   direction?: TooltipDirection
   children: React.ReactElement
   className?: string
+  /** Keeps the tooltip permanently closed while leaving the wrapper mounted.
+   * For anchors whose tooltip comes and goes with their content (Input only
+   * explains itself while locked, or while its value overflows): swapping
+   * between a wrapped and an unwrapped child instead would remount the
+   * anchor's whole subtree, which for a field means losing focus and caret
+   * position mid-typing. */
+  disabled?: boolean
 }
 
 function Tooltip({
@@ -21,12 +28,17 @@ function Tooltip({
   direction = "top-center",
   children,
   className,
+  disabled = false,
 }: TooltipProps) {
   const { side, align } = DIRECTION_PLACEMENT[direction]
+  // Open state is always controlled, never conditionally so: handing Root an
+  // `open` prop only while disabled would flip it between uncontrolled and
+  // controlled and Base UI warns about exactly that.
+  const [open, setOpen] = React.useState(false)
 
   return (
     <TooltipPrimitive.Provider delay={400} closeDelay={0}>
-      <TooltipPrimitive.Root>
+      <TooltipPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
         <TooltipPrimitive.Trigger render={children} />
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Positioner

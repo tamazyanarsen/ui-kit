@@ -59,6 +59,17 @@
        font-semibold (Heavy) as the instance calls for. Use these instead of
        one-off text-[Npx] leading-[Npx] combos or a mismatched default
        Tailwind step (e.g. text-lg's 18px isn't on this scale at all). */
+    /* "Заголовок/Factoid" — the landing-page / tech-works display heading
+       (node 29445:37228). The only step on the scale with a genuinely
+       different mobile size rather than a shared desktop value, so both are
+       registered: 68/68 desktop, 28/38 mobile ("Заголовок/Factoid Mobile",
+       node 29445:37274). Always Medium, like the other headings. */
+    --text-factoid: 68px;
+    --text-factoid--line-height: 68px;
+    --text-factoid--font-weight: 500;
+    --text-factoid-mobile: 28px;
+    --text-factoid-mobile--line-height: 38px;
+    --text-factoid-mobile--font-weight: 500;
     --text-h1: 44px;
     --text-h1--line-height: 56px;
     --text-h1--font-weight: 500;
@@ -71,6 +82,25 @@
     --text-h4: 20px;
     --text-h4--line-height: 28px;
     --text-h4--font-weight: 500;
+    /* Mobile heading steps ("Mobile. Заголовок/H* Medium Mobile", nodes
+       29445:37282/37289/37296/37303). These are genuinely different sizes,
+       not a scaled-down reuse of the desktop ones, and components were
+       hand-rolling them as text-lg/text-[22px] combos before this existed.
+       Pair with the desktop key at the md: breakpoint, e.g.
+       `text-h2-mobile md:text-h2`. Note H3 and H4 collapse to the same
+       18/24 on mobile — that is the spec, not a copy-paste slip. */
+    --text-h1-mobile: 28px;
+    --text-h1-mobile--line-height: 38px;
+    --text-h1-mobile--font-weight: 500;
+    --text-h2-mobile: 22px;
+    --text-h2-mobile--line-height: 30px;
+    --text-h2-mobile--font-weight: 500;
+    --text-h3-mobile: 18px;
+    --text-h3-mobile--line-height: 24px;
+    --text-h3-mobile--font-weight: 500;
+    --text-h4-mobile: 18px;
+    --text-h4-mobile--line-height: 24px;
+    --text-h4-mobile--font-weight: 500;
     --text-p1: 16px;
     --text-p1--line-height: 24px;
     --text-p2: 14px;
@@ -153,6 +183,14 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+    /* Figma ships this as one named effect style, "Universal shadow"
+       (DROP_SHADOW, #8B99A93D, offset 0/4, radius 12, spread 0) — it is the
+       single elevation used by every raised surface in the kit: Dropdown,
+       Calendar (desktop card + mobile sheet), Notification, Toast Message and
+       Button Menu's bar. It lived as a copy-pasted literal in each of those
+       files until this pass; keep new surfaces on `shadow-universal` so the
+       style stays reusable the way Figma defines it. */
+    --shadow-universal: 0 4px 12px rgba(139, 153, 169, 0.24);
 }
 
 :root {
@@ -244,6 +282,21 @@
    equivalent per-axis control (`scrollbar-width` is a single keyword for
    both axes), so it falls back to its own "thin" preset for both. */
 @layer base {
+  /* Figma's "Ссылка/" family (P1–P4 Link Medium/Regular, node 1361:131490)
+     is NOT a separate size scale: `Ссылка/P1 Link Medium` reports the exact
+     same 16/24/500 metrics as `Параграф/P1 Medium` (verified on node
+     29445:37511) — the only delta is the underline, drawn `from-font` with
+     ink-skipping off. So a link is its paragraph step plus this utility,
+     e.g. `text-p1-medium text-link`, rather than seven duplicate size keys. */
+  .text-link {
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: from-font;
+    text-underline-offset: from-font;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+  }
+
   .themed-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
@@ -383,6 +436,11 @@
   --modal-bg: #FFFFFF;
   --modal-radius: 32px;
   --modal-backdrop: #1E2321;
+  /* The single grey-134 line Figma ships as "ELK / divider" (58890:9260).
+     The per-component --*-divider tokens below all resolve to this same
+     value; new dividers should use the shared Divider component instead of
+     adding another one. */
+  --divider: #DEDEDE;
   --modal-divider: #DEDEDE;
 
   /* Calendar component tokens. Values measured directly from
@@ -825,6 +883,14 @@
   --chips-light-bg: #F4F4F4;
   --chips-light-bg-hover: #EFEFEF;
   --chips-dark-bg: #012F42;
+
+  /* "ELK / button menu (black)" (node 700:54288) — the selection bar that
+     replaces the white Button Menu while table rows are selected. Fill is
+     the same dark-blue-1412 as --btn-secondary-black-bg; the info bar pairs
+     a grey-166 label with a white value. */
+  --button-menu-black-bg: #012F42;
+  --button-menu-black-fg: #FFFFFF;
+  --button-menu-black-muted-fg: #C8C8CB;
   --chips-dark-bg-hover: #114870;
   --chips-dark-fg: #FFFFFF;
   --chips-disabled-bg: #F4F4F4;
@@ -943,9 +1009,10 @@
   --nps-close-fg: #6D6D6D;
   --nps-star-fg: #F8C000;
   --nps-star-empty-fg: #DEDEDE;
-  --nps-chip-bg: #F4F4F4;
-  --nps-chip-bg-hover: #EFEFEF;
-  --nps-chip-fg: #252628;
+  /* NPS's reply pills moved to the shared FilterTable component (Figma
+     builds them from `ELK / filter-table`, not a bespoke chip), so their
+     --nps-chip-* tokens are gone — the colours now come from the
+     --chips-light- and --chips-fg set that FilterTable and Chips share. */
 
   /* Error Page tokens (ui/error-page). The big "403"/"404" numerals are a
      flat grey in the spec (the mascot illustration itself is out of scope

@@ -1,6 +1,9 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ChevronsUpDown as ArrowRightLeft } from "@/icons"
+// Named for what it actually draws: the set has no left-right transfer
+// arrow, and aliasing the up/down chevron to `ArrowRightLeft` made the code
+// claim a glyph that isn't there. Coins reads correctly for a money transfer.
+import { Coins } from "@/icons"
 
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -40,10 +43,10 @@ function TransferWidget() {
   }
 
   return (
-    <div className="flex w-96 flex-col gap-4 rounded-3xl bg-white p-6 shadow-lg ring-1 ring-foreground/10">
+    <div className="flex w-96 flex-col gap-4 rounded-3xl bg-white p-6 shadow-universal">
       <div className="flex items-center gap-2">
-        <ArrowRightLeft aria-hidden="true" className="size-5 text-[#252628]" />
-        <h2 className="text-base font-medium text-[#252628]">Перевод между своими счетами</h2>
+        <Coins aria-hidden="true" className="size-5 text-[#252628]" />
+        <h2 className="text-p1-medium text-[#252628]">Перевод между своими счетами</h2>
       </div>
 
       <Select items={ACCOUNTS} value={from} onValueChange={setFrom}>

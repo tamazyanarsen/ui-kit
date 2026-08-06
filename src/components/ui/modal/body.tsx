@@ -1,10 +1,17 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Scrollbar } from "@/components/ui/scrollbar"
 
 // Scrollable content area. A divider only appears on the edge where content
 // is actually hidden by scrolling (top once scrolled down, bottom while not
 // yet at the end) — never on both edges when everything fits.
+//
+// The scroll region is the kit's own Scrollbar, not a bare overflow-y-auto:
+// Figma's Modal canvas places an `ELK / scrollbar` instance inside every
+// modal body (29 of them, e.g. node 0:1151 — 4px wide, 8px inset from the
+// right/top, hidden until the content actually overflows), which is exactly
+// what Scrollbar's themed 4px vertical track provides.
 function ModalBody({ className, children, ...props }: React.ComponentProps<"div">) {
   const ref = React.useRef<HTMLDivElement>(null)
   const [scrolledFromTop, setScrolledFromTop] = React.useState(false)
@@ -28,12 +35,12 @@ function ModalBody({ className, children, ...props }: React.ComponentProps<"div"
   }, [updateScrollState, children])
 
   return (
-    <div
+    <Scrollbar
       ref={ref}
       onScroll={updateScrollState}
       data-slot="modal-body"
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto border-y border-transparent px-6 py-5 md:px-8 md:py-6",
+        "min-h-0 flex-1 border-y border-transparent px-6 py-5 md:px-8 md:py-6",
         scrolledFromTop && "border-t-[var(--modal-divider)]",
         !scrolledToEnd && "border-b-[var(--modal-divider)]",
         className
@@ -41,7 +48,7 @@ function ModalBody({ className, children, ...props }: React.ComponentProps<"div"
       {...props}
     >
       {children}
-    </div>
+    </Scrollbar>
   )
 }
 

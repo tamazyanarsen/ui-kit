@@ -3,7 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import {
   CirclePlus,
   ChevronDown,
-  CircleUser,
+  Briefcase,
   LogOut,
   Mail,
   Menu,
@@ -236,7 +236,7 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
           />
         }
       >
-        <Wallet aria-hidden="true" className="size-6" />
+        <Wallet size={24} aria-hidden="true" className="size-6" />
         <ChevronDown
           aria-hidden="true"
           className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
@@ -276,7 +276,10 @@ function EmployeeUserMenu({
         }
       >
         <span className="flex items-center gap-3">
-          <CircleUser aria-hidden="true" className="size-6" />
+          {/* Figma's profile row draws `icon / company` at 24px (node
+              46138:51812) — the organisation's case, not a person avatar,
+              which is what CircleUser rendered here before. */}
+          <Briefcase size={24} aria-hidden="true" className="size-6" />
           <span className="text-p1-medium">{name}</span>
         </span>
         <ChevronDown
@@ -364,7 +367,7 @@ function Header({
             className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-meta-fg)] outline-none transition-colors hover:bg-[var(--header-menu-toggle-hover-bg)]"
           >
             {sidebarOpen ? (
-              <X aria-hidden="true" className="size-6" />
+              <X size={24} aria-hidden="true" className="size-6" />
             ) : (
               <Menu aria-hidden="true" className="size-6" />
             )}
@@ -386,7 +389,7 @@ function Header({
                   onClick={onMessagesClick}
                   className="relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
                 >
-                  <Mail aria-hidden="true" className="size-6" />
+                  <Mail size={24} aria-hidden="true" className="size-6" />
                   {messageCount > 0 && (
                     <Badge
                       type="counter"

@@ -1,18 +1,45 @@
 import * as React from "react"
-import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalDescription,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/ui/modal"
 import { OtpInput } from "./input"
 import { ResendCode } from "./resend-code"
 
-// OtpConfirmCard — the "Подтвердите контактные данные" card from the
-// anatomy diagram (title/subtitle/close + OtpInput + ResendCode + Confirm
-// button). Renders content only, like Calendar's sheet layout — wrapping
-// it in a modal/dialog (backdrop, Esc, drag-safe outside click) is a
-// page-level concern the spec's "Использование в макете" section
-// documents as integration guidance, not part of this component.
+// OtpConfirmCard — the "Подтвердите контактные данные" dialog.
+//
+// Figma composes `ELK / otp-code` as a literal `ELK / Modal` instance
+// (Modal Top/Body Small + an `ELK / button` close + `ELK / scrollbar`, with
+// `Input Code (Desktop/Mobile)` dropped into the slot), so this renders the
+// kit's real Modal rather than a look-alike card. Everything the old
+// hand-rolled shell carried turned out to be a byte-for-byte copy of
+// Modal's chrome — 592px wide (`size="m"`), 32px radius, the close button
+// on #F4F4F4/#252628 (--otp-close-* == --btn-secondary-grey-*), and the
+// title/subtitle typography that ModalTitle/ModalDescription already own.
+//
+// Note this makes the component a real dialog: portal, backdrop, focus trap
+// and Esc all come from Base UI's Dialog. That is the intended usage in this
+// system; if an inline, non-dialog OTP widget is ever needed, split it out
+// as its own component rather than making this one render both ways.
+//
+// Figma puts no title in the Modal Top bar — the Title/Text pair sits at the
+// start of the Body (the kit's documented "Modal Top: None" arrangement), so
+// there is no ModalHeader here.
 interface OtpConfirmCardProps {
+  /** Controlled open state. Omit for an uncontrolled dialog driven by
+   * `defaultOpen` and/or `trigger`. */
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  /** Element that opens the dialog, rendered through ModalTrigger. */
+  trigger?: React.ReactElement
   title?: React.ReactNode
   subtitle?: React.ReactNode
   phone?: string
@@ -24,11 +51,14 @@ interface OtpConfirmCardProps {
   resendSeconds?: number
   onResend?: () => void
   onSubmit?: (code: string) => void
-  onClose?: () => void
   className?: string
 }
 
 function OtpConfirmCard({
+  open,
+  defaultOpen,
+  onOpenChange,
+  trigger,
   title = "Подтвердите контактные данные",
   subtitle,
   phone,
@@ -40,7 +70,6 @@ function OtpConfirmCard({
   resendSeconds = 60,
   onResend,
   onSubmit,
-  onClose,
   className,
 }: OtpConfirmCardProps) {
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
@@ -54,54 +83,57 @@ function OtpConfirmCard({
   }
 
   return (
-    <form
-      className={cn(
-        "relative flex w-full flex-col gap-8 rounded-[32px] bg-white p-12 sm:max-w-[592px]",
-        className
-      )}
-      onSubmit={(event) => {
-        event.preventDefault()
-        if (complete) onSubmit?.(code)
-      }}
-    >
-      {onClose && (
-        <button
-          type="button"
-          aria-label="Закрыть"
-          onClick={onClose}
-          className="absolute top-8 right-8 flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--otp-close-bg)] text-[var(--otp-close-fg)] outline-none"
+    <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+      {trigger && <ModalTrigger render={trigger} />}
+      <ModalContent size="m" data-slot="otp-confirm-card">
+        {/* Figma's Small-modal body insets are 48px on every side (Texts and
+            Slot both start at x=48 inside the 592px card), wider than
+            ModalBody's default 32px desktop padding. */}
+        <ModalBody
+          className={cn("flex flex-col gap-8 md:px-12 md:py-12", className)}
         >
-          <X aria-hidden="true" className="size-4" />
-        </button>
-      )}
+          <div className="flex flex-col gap-4 md:gap-2">
+            <ModalTitle>{title}</ModalTitle>
+            <ModalDescription>
+              {subtitle ??
+                (phone
+                  ? `Код подтверждения отправлен на номер ${phone}`
+                  : null)}
+            </ModalDescription>
+          </div>
 
-      <div className="flex flex-col gap-4 pr-10 md:gap-2">
-        <h2 className="text-[22px] leading-[30px] font-medium text-[var(--otp-title-fg)] md:text-h2">
-          {title}
-        </h2>
-        <p className="text-p2-medium text-[var(--otp-title-fg)] md:text-p1-medium">
-          {subtitle ?? (phone ? `Код подтверждения отправлен на номер ${phone}` : null)}
-        </p>
-      </div>
+          <form
+            className="flex flex-col gap-12"
+            onSubmit={(event) => {
+              event.preventDefault()
+              if (complete) onSubmit?.(code)
+            }}
+          >
+            <OtpInput
+              length={length}
+              value={code}
+              onChange={handleChange}
+              error={error}
+            />
 
-      <div className="flex flex-col gap-12">
-        <OtpInput
-          length={length}
-          value={code}
-          onChange={handleChange}
-          error={error}
-        />
+            <div className="flex flex-col gap-6">
+              <ResendCode seconds={resendSeconds} onResend={onResend} />
 
-        <div className="flex flex-col gap-6">
-          <ResendCode seconds={resendSeconds} onResend={onResend} />
-
-          <Button type="submit" variant="primary" size="lg" disabled={!complete}>
-            Подтвердить
-          </Button>
-        </div>
-      </div>
-    </form>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                disabled={!complete}
+              >
+                Подтвердить
+              </Button>
+            </div>
+          </form>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }
 
 export { OtpConfirmCard }
+export type { OtpConfirmCardProps }

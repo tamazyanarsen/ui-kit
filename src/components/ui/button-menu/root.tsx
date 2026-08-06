@@ -43,7 +43,7 @@ function ButtonMenu({ className, children, ...props }: React.ComponentProps<"div
     <div
       data-slot="button-menu"
       className={cn(
-        "flex w-full items-center gap-4 rounded-tl-[16px] rounded-tr-[16px] border-t border-r border-l border-solid border-[#EFEFEF] bg-white px-8 py-4 shadow-[0_4px_12px_rgba(139,153,169,0.24)]",
+        "flex w-full items-center gap-4 rounded-tl-[16px] rounded-tr-[16px] border-t border-r border-l border-solid border-[#EFEFEF] bg-white px-8 py-4 shadow-universal",
         className
       )}
       {...props}

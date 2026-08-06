@@ -3,17 +3,33 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useIsDesktop } from "@/lib/use-is-desktop"
+import { Button } from "@/components/ui/button"
+import {
+  Modal,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/ui/modal"
 
 import { DIRECTION_PLACEMENT, type TooltipDirection } from "./variants"
 
 // Hint — click-triggered, dismissed via its own "X" or an outside click
 // (Popover's default behavior). Unlike Tooltip, it carries more content: an
-// optional Title plus body text. Max width 592px, height adaptive. Per the
-// spec, on mobile Hint (and Tooltip) becomes a Bottom Sheet with a
-// "Понятно" button instead — that's not a mode of this component, it's the
-// existing `Modal` (it already renders as a mobile bottom sheet / desktop
-// dialog with the same Header/Body/Footer shape), so pair Hint's content
-// with `Modal` at that breakpoint rather than duplicating it here.
+// optional Title plus body text. Max width 592px, height adaptive.
+//
+// Below `md` it is a different component entirely, not a restyled popover:
+// the spec's `Direction=Mobile` variant (node 11756:8112) is an actual
+// `ELK / Modal` instance — a bottom sheet with the title/close row, the body
+// text, and a full-width "Понятно" button pinned to the bottom panel. That
+// swap can't be expressed in CSS (both forms are portalled subtrees), so it
+// runs off a media query rather than a `md:` class.
+const MOBILE_DISMISS_LABEL = "Понятно"
+
 interface HintProps {
   title?: React.ReactNode
   content: React.ReactNode
@@ -38,6 +54,51 @@ function Hint({
   className,
 }: HintProps) {
   const { side, align } = DIRECTION_PLACEMENT[direction]
+  const isDesktop = useIsDesktop()
+
+  if (!isDesktop) {
+    return (
+      <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+        <ModalTrigger render={children} />
+        {/* size is irrelevant below `md` — the sheet is always full-width
+            there — but `m` keeps the desktop fallback at the 592px card
+            rather than the 1008px one if this ever renders wide. */}
+        <ModalContent
+          size="m"
+          showClose={showCross}
+          data-slot="hint-sheet"
+          // A Hint without a title would otherwise leave the sheet with no
+          // accessible name — the body text is the description, not the label.
+          aria-label={title ? undefined : "Подсказка"}
+        >
+          {title && (
+            <ModalHeader>
+              <ModalTitle>{title}</ModalTitle>
+            </ModalHeader>
+          )}
+          <ModalDescription
+            className={cn(
+              "px-6 pb-5 md:px-8 md:pb-6",
+              // Without a header above it the text needs the header's own top
+              // padding, or it collides with the sheet's rounded top edge.
+              !title && "pt-5 md:pt-6"
+            )}
+          >
+            {content}
+          </ModalDescription>
+          <ModalFooter>
+            <ModalClose
+              render={
+                <Button variant="secondary-grey" size="lg">
+                  {MOBILE_DISMISS_LABEL}
+                </Button>
+              }
+            />
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    )
+  }
 
   return (
     <PopoverPrimitive.Root

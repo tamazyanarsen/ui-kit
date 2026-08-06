@@ -8,8 +8,14 @@ import type * as React from "react"
 // pixel-sampled from ui/button/button.png's own Secondary Logo swatches.
 function GosuslugiLogo({
   "data-icon": dataIcon,
+  // Accepted and ignored so Button can pass `size` uniformly to whatever
+  // glyph it renders — this stand-in has a single drawing.
+  size: _size,
   ...props
-}: React.SVGProps<SVGSVGElement> & { "data-icon"?: string }) {
+}: React.SVGProps<SVGSVGElement> & {
+  "data-icon"?: string
+  size?: 16 | 24
+}) {
   return (
     <svg viewBox="0 0 16 16" fill="none" data-icon={dataIcon} {...props}>
       <path d="M3 8 L3 1 L9 3 Z" fill="#ED6F26" />

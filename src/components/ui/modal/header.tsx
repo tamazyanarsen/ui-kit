@@ -30,7 +30,7 @@ function ModalTitle({
     <DialogPrimitive.Title
       data-slot="modal-title"
       className={cn(
-        "pr-10 text-[22px] leading-[30px] font-medium text-[#252628] md:pr-0 md:text-h2",
+        "pr-10 text-h2-mobile text-[#252628] md:pr-0 md:text-h2",
         className
       )}
       {...props}

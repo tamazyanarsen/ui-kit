@@ -20,26 +20,29 @@ interface ScrollbarProps extends React.ComponentProps<"div"> {
   orientation?: "vertical" | "horizontal"
 }
 
-function Scrollbar({
-  orientation = "vertical",
-  className,
-  ...props
-}: ScrollbarProps) {
-  return (
-    <div
-      data-slot="scrollbar"
-      data-orientation={orientation}
-      className={cn(
-        "themed-scrollbar",
-        orientation === "vertical"
-          ? "overflow-y-auto overflow-x-hidden"
-          : "overflow-x-auto overflow-y-hidden",
-        className
-      )}
-      {...props}
-    />
-  )
-}
+// forwardRef because consumers need the scrolling node itself, not just its
+// styling — ModalBody, for one, reads scrollTop/scrollHeight off it to decide
+// which edge divider to show. Under React 18 a plain function component here
+// would drop the ref outright (see the same constraint on Button/Dropdown).
+const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
+  function Scrollbar({ orientation = "vertical", className, ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        data-slot="scrollbar"
+        data-orientation={orientation}
+        className={cn(
+          "themed-scrollbar",
+          orientation === "vertical"
+            ? "overflow-y-auto overflow-x-hidden"
+            : "overflow-x-auto overflow-y-hidden",
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
 
 export { Scrollbar }
 export type { ScrollbarProps }

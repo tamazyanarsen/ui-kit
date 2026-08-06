@@ -2,6 +2,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { CheckIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { Divider } from "@/components/ui/divider"
 
 export function SelectLabel({
   className,
@@ -63,9 +64,13 @@ export function SelectSeparator({
   ...props
 }: SelectPrimitive.Separator.Props) {
   return (
+    // Renders the shared Divider (Figma's "ELK / divider", grey-134
+    // #DEDEDE). This used to be `bg-border` — the generic shadcn token,
+    // oklch(0.922 0 0) ≈ #E5E5E5 — which is a different grey from every
+    // other separator in the kit.
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn("pointer-events-none -mx-1 my-1 h-px bg-border", className)}
+      render={<Divider className={cn("pointer-events-none -mx-1 my-1", className)} />}
       {...props}
     />
   )

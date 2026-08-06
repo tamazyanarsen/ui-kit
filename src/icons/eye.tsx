@@ -1,6 +1,6 @@
-import type { SVGProps } from "react"
+import type { IconProps } from "./types"
 
-export function Eye(props: SVGProps<SVGSVGElement>) {
+export function Eye({ size: _size, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

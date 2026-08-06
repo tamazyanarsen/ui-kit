@@ -4,6 +4,8 @@ import { Eye, EyeOff, Loader2, Lock, X } from "@/icons"
 import { IMaskInput } from "react-imask"
 
 import { cn } from "@/lib/utils"
+import { useIsDesktop } from "@/lib/use-is-desktop"
+import { Tooltip } from "@/components/ui/tooltip"
 
 import { getImaskProps, getMaskPlaceholder, type MaskName } from "./mask"
 
@@ -101,6 +103,9 @@ interface InputOwnProps {
   comment?: React.ReactNode
   error?: React.ReactNode
   locked?: boolean
+  // Reason a locked field can't be edited, shown in a Tooltip on hover —
+  // Figma requires the explanation on every Lock Input (canvas 666:12).
+  lockedHint?: React.ReactNode
   clearable?: boolean
   onClear?: () => void
   containerClassName?: string
@@ -121,6 +126,27 @@ type InputProps = Omit<React.ComponentProps<"input">, "size"> &
   Omit<VariantProps<typeof inputBoxVariants>, "invalid" | "interactive"> &
   InputOwnProps
 
+// Always wraps the field box in the kit's real Tooltip and simply keeps it
+// closed when there is nothing to explain — conditionally *rendering* the
+// wrapper instead would remount the box (and the <input> inside it) the
+// instant a value grew long enough to overflow, dropping focus and caret
+// mid-typing. "top-center" = arrow up / bubble below the field, matching the
+// tooltip instances anchored under the inputs on the Input canvas
+// (47463:17131).
+function FieldTooltip({
+  content,
+  children,
+}: {
+  content: React.ReactNode
+  children: React.ReactElement
+}) {
+  return (
+    <Tooltip content={content ?? ""} direction="top-center" disabled={!content}>
+      {children}
+    </Tooltip>
+  )
+}
+
 function Input({
   className,
   containerClassName,
@@ -129,6 +155,7 @@ function Input({
   comment,
   error,
   locked = false,
+  lockedHint,
   clearable = true,
   disabled,
   id,
@@ -201,6 +228,46 @@ function Input({
       setAmountWidth(amountMeasureRef.current?.offsetWidth)
     }
   }, [mask, maskValue])
+
+  // Figma's Input canvas (666:12) documents two hover-Tooltip behaviours for
+  // the field, both rendered through the kit's real `ELK / tooltip & hint`
+  // component rather than a native `title`:
+  //   * a Lock Input explains *why* it can't be edited ("При наведении
+  //     отображается Tooltip с информацией о причине невозможности
+  //     редактирования поля") — the reason comes in via `lockedHint`;
+  //   * a value too long for the box is shown in full ("Если текст в поле не
+  //     помещается по длине, его можно увидеть полностью во всплывающей
+  //     подсказке (Tooltip) при наведении курсора мыши"), explicitly marked
+  //     "только для Desktop", hence the md-breakpoint media query.
+  const [overflowValue, setOverflowValue] = React.useState<string | null>(null)
+  const isDesktop = useIsDesktop()
+
+  React.useEffect(() => {
+    const el = inputRef.current
+    if (!el) return
+    const check = () => {
+      // +1px guard: sub-pixel text metrics make scrollWidth exceed
+      // clientWidth by a fraction on values that actually fit.
+      setOverflowValue(el.scrollWidth > el.clientWidth + 1 ? el.value : null)
+    }
+    check()
+    const observer = new ResizeObserver(check)
+    observer.observe(el)
+    // The prop deps below only cover controlled/masked fields; an
+    // uncontrolled input changes its value without re-rendering, so the
+    // element's own input event is what keeps the check honest while typing.
+    el.addEventListener("input", check)
+    return () => {
+      observer.disconnect()
+      el.removeEventListener("input", check)
+    }
+  }, [value, defaultValue, maskValue])
+
+  const hoverTooltip = locked
+    ? lockedHint
+    : isDesktop && overflowValue
+      ? overflowValue
+      : null
 
   function handleMaskAccept(next: string, _maskRef: unknown, e?: InputEvent) {
     setMaskValue(next)
@@ -329,6 +396,7 @@ function Input({
     // sizes/breakpoints) gives a literal gap-[4px] between the box and the
     // caption row, not 6px.
     <div className="flex w-full flex-col gap-1">
+      <FieldTooltip content={hoverTooltip}>
       <div
         className={cn(
           inputBoxVariants({ size, invalid, interactive: !locked }),
@@ -363,7 +431,17 @@ function Input({
                     // for glyph-width, not just size — an invisible measuring
                     // twin at the wrong weight would measure the wrong width.
                     "invisible absolute whitespace-pre",
-                    size === "sm" ? "text-p3-medium" : "text-p2-medium"
+                    // Mirrors inputFieldVariants' own size branches exactly
+                    // (sm: text-p2-medium, lg: text-p2-medium md:text-p1-medium)
+                    // — this used to hardcode text-p3-medium/text-p2-medium
+                    // instead, which under-measured the lg field's actual
+                    // md:text-p1-medium desktop text. The box ended up
+                    // narrower than the real content on every keystroke,
+                    // scrolling the field and clipping the start of the
+                    // value out of view (looked like the digits were
+                    // scrambled/duplicated, but the underlying value was
+                    // correct all along).
+                    size === "sm" ? "text-p2-medium" : "text-p2-medium md:text-p1-medium"
                   )}
                 >
                   {maskValue}
@@ -376,7 +454,9 @@ function Input({
                     // design-check #31 — the mask value and "₽" aren't
                     // separate flex slots conceptually, just closely-set text.
                     "-ml-1.5 shrink-0 text-[var(--input-fg)] md:-ml-2",
-                    size === "sm" ? "text-p3-medium" : "text-p2-medium",
+                    // Same size branches as the field itself — see the
+                    // measuring span above for why this must match exactly.
+                    size === "sm" ? "text-p2-medium" : "text-p2-medium md:text-p1-medium",
                     // The field's own text sits lower than the row's
                     // vertical center once the floating label pushes it
                     // down (inputFieldVariants' floating pt-4/pt-5) — match
@@ -433,6 +513,7 @@ function Input({
         )}
         {trailingSlot}
       </div>
+      </FieldTooltip>
       {(comment || error) && (
         <p
           id={captionId}

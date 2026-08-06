@@ -2,6 +2,8 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Divider } from "@/components/ui/divider"
 import {
   WEEKDAYS_RU,
   MONTHS_RU_SHORT,
@@ -27,6 +29,12 @@ interface NavHeaderProps {
   variant?: "day" | "picker"
 }
 
+// The prev/next arrows are `ELK / button` instances in Figma (32×32, 16px
+// radius, 16px glyph, white fill) — exactly Button's `icon-sm` geometry, so
+// they render the real Button. They previously hand-rolled a look-alike that
+// borrowed `--calendar-range-bg` (#F4F4F4) for hover, but that token is the
+// *day cell's* hover (Figma grey-109, node 7415:45489); a button instance
+// takes Button's own #EFEFEF hover instead.
 export function NavHeader({ onPrev, onNext, children, variant = "day" }: NavHeaderProps) {
   return (
     <div
@@ -35,25 +43,25 @@ export function NavHeader({ onPrev, onNext, children, variant = "day" }: NavHead
         variant === "picker" ? "px-4 pb-4" : "px-3.5 pb-2"
       )}
     >
-      <button
-        type="button"
+      <Button
+        variant="secondary-white"
+        size="sm"
+        iconPosition="only"
+        icon={ChevronLeft}
         aria-label="Назад"
         onClick={onPrev}
-        className="flex size-8 items-center justify-center rounded-full text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
-      >
-        <ChevronLeft className="size-4" />
-      </button>
+      />
       <div className="flex items-center text-p2-medium text-[var(--calendar-fg)]">
         {children}
       </div>
-      <button
-        type="button"
+      <Button
+        variant="secondary-white"
+        size="sm"
+        iconPosition="only"
+        icon={ChevronRight}
         aria-label="Вперёд"
         onClick={onNext}
-        className="flex size-8 items-center justify-center rounded-full text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
-      >
-        <ChevronRight className="size-4" />
-      </button>
+      />
     </div>
   )
 }
@@ -66,16 +74,24 @@ export function HeaderLabel({
   children: React.ReactNode
 }) {
   if (!onClick) {
-    return <span className="rounded-full px-4 py-1.5">{children}</span>
+    return (
+      <span className="inline-flex h-8 items-center rounded-[16px] px-4">
+        {children}
+      </span>
+    )
   }
+  // text-p2-medium override: Button's `sm` is text-p3-medium until `md:`,
+  // but Figma's Mouth/Year pill is 14px/20 on both the desktop card and the
+  // mobile sheet, so the size is pinned rather than breakpoint-switched.
   return (
-    <button
-      type="button"
+    <Button
+      variant="secondary-white"
+      size="sm"
+      className="text-p2-medium"
       onClick={onClick}
-      className="rounded-full px-4 py-1.5 outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50"
     >
       {children}
-    </button>
+    </Button>
   )
 }
 
@@ -316,6 +332,23 @@ export function YearGrid({
   )
 }
 
+// Figma models both footer actions as `ELK / button` instances (node
+// 32:9064), so they render the real Button rather than a look-alike — that
+// is where the white/#252628/#EFEFEF-hover tokens come from. Two caveats
+// drive the overrides below:
+//   * radius — the buttons sit flush against the card's own rounded,
+//     overflow-hidden shell (same flush-row pattern as Dropdown/DropdownItem),
+//     so their hover fill must run edge-to-edge with no radius of its own;
+//   * sizing — the calendar picks its footer form from the `compact` prop,
+//     not from a breakpoint, so Button's `md:` half of the `lg` variant has
+//     to be pinned to the same value as the base or a mobile sheet viewed at
+//     ≥768px would silently grow to the desktop 56px/32px/16px form.
+// Desktop = 56px tall, 32px sides, P1 Medium 16/24 (node 7415:58522);
+// mobile = 48px tall, 24px sides, P1 Medium Mobile 14/20 (node 7415:58832).
+const FOOTER_BUTTON_CLASS = "flex-1 rounded-none"
+const FOOTER_REGULAR = "h-14 px-8 text-p1-medium md:h-14 md:px-8 md:text-p1-medium"
+const FOOTER_COMPACT = "h-12 px-6 text-p2-medium md:h-12 md:px-6 md:text-p2-medium"
+
 export function CalendarFooter({
   compact,
   onReset,
@@ -335,27 +368,23 @@ export function CalendarFooter({
         compact ? "h-12" : "h-14"
       )}
     >
-      <button
-        type="button"
+      <Button
+        variant="secondary-white"
+        size="lg"
         onClick={onReset}
-        className={cn(
-          "flex flex-1 items-center justify-center text-p2-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50",
-          compact ? "px-6 py-3.5" : "px-8 py-4"
-        )}
+        className={cn(FOOTER_BUTTON_CLASS, compact ? FOOTER_COMPACT : FOOTER_REGULAR)}
       >
         Сбросить
-      </button>
-      <div className="w-px bg-[var(--calendar-divider)]" />
-      <button
-        type="button"
+      </Button>
+      <Divider orientation="vertical" />
+      <Button
+        variant="secondary-white"
+        size="lg"
         onClick={onApply}
-        className={cn(
-          "flex flex-1 items-center justify-center text-p2-medium text-[var(--calendar-fg)] outline-none hover:bg-[var(--calendar-range-bg)] focus-visible:ring-3 focus-visible:ring-ring/50",
-          compact ? "px-6 py-3.5" : "px-8 py-4"
-        )}
+        className={cn(FOOTER_BUTTON_CLASS, compact ? FOOTER_COMPACT : FOOTER_REGULAR)}
       >
         Применить
-      </button>
+      </Button>
     </div>
   )
 }

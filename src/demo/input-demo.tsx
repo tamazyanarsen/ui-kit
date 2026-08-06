@@ -45,7 +45,19 @@ function InputDemo() {
               defaultValue="Placeholder"
             />
             <Input size="lg" label="Label" comment="Comment без значения" />
-            <Input size="lg" label="Label" locked defaultValue="Placeholder" />
+            <Input
+              size="lg"
+              label="Label"
+              locked
+              lockedHint="Поле заполняется автоматически из профиля и недоступно для редактирования"
+              defaultValue="Placeholder"
+            />
+            <Input
+              size="lg"
+              label="Длинное значение"
+              comment="Наведите — полное значение во всплывающей подсказке"
+              defaultValue="100 000 000 000 000 000"
+            />
             <Input size="lg" label="Label" error="Text about error here" />
             <Input
               size="lg"

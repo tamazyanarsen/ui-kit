@@ -1,5 +1,8 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "@/icons"
+// The thumb uses Figma's dedicated small-arrow glyphs (nodes 21461:49447/
+// 21461:49448), not the regular chevrons — see icons/arrow-right-small.tsx
+// for why they are not interchangeable.
+import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
@@ -68,7 +71,7 @@ function RangeInput({
           {label && (
             <SliderPrimitive.Label
               data-slot="range-input-label"
-              className="text-xs leading-tight font-medium text-[var(--range-input-label-fg)]"
+              className="text-p3-medium text-[var(--range-input-label-fg)]"
             >
               {label}
             </SliderPrimitive.Label>
@@ -76,7 +79,10 @@ function RangeInput({
           <SliderPrimitive.Value
             data-slot="range-input-value"
             className={cn(
-              "text-sm leading-tight font-medium text-[var(--range-input-value-fg)] md:text-base",
+              // Figma's desktop symbol (687:18395) gives Label = P3 Medium
+              // 12/16 and Value = P1 Medium 16/24. Both were `leading-tight`
+              // before, i.e. 15px and 17.5px — off the scale entirely.
+              "text-p2-medium text-[var(--range-input-value-fg)] md:text-p1-medium",
               disabled && "!text-[var(--range-input-value-fg-disabled)]"
             )}
           />
@@ -115,7 +121,13 @@ function RangeInput({
               <SliderPrimitive.Thumb
                 data-slot="range-input-thumb"
                 className={cn(
-                  "top-1/2 flex h-4 w-8 -translate-y-1/2 items-center justify-center gap-0.5 rounded-full bg-[var(--range-input-accent)] outline-none transition-colors select-none md:h-5 md:w-10",
+                  // No gap between the two arrows and a literal 12px radius,
+                  // both straight off the Box layer of the Range Line symbols
+                  // (mobile 21775:15468 — 32×16, no padding; desktop
+                  // 21461:49446 — px-4/py-2 giving 40×20). `gap-0.5` squeezed
+                  // the 16px icon boxes, and `rounded-full` resolved to 8px
+                  // on mobile / 10px on desktop instead of 12px.
+                  "top-1/2 flex h-4 w-8 -translate-y-1/2 items-center justify-center rounded-[12px] bg-[var(--range-input-accent)] outline-none transition-colors select-none md:h-5 md:w-10",
                   // Round-2 audit fix: dropped the :hover recolor to
                   // --range-input-accent-hover — pixel-sampling the whole-
                   // box Hover state screenshot (14342:39910) shows the
@@ -127,9 +139,13 @@ function RangeInput({
                   error && "!bg-[var(--range-input-accent-error)]"
                 )}
               >
-                <ChevronLeft
+                {/* size-4: Figma places each small arrow in its own 16px
+                    box (the glyph itself is 5.5×9 inside it). The old
+                    size-2.5 shrank a regular chevron to 10px, which landed
+                    both narrower and shorter than the spec. */}
+                <ArrowLeftSmall
                   className={cn(
-                    "size-2.5 text-[var(--range-input-thumb-icon-fg)]",
+                    "size-4 text-[var(--range-input-thumb-icon-fg)]",
                     // Round-2 audit fix: Disabled symbol's chevron SVGs are
                     // fill="white", but disabled previously fell through to
                     // the default dark icon color.
@@ -137,9 +153,9 @@ function RangeInput({
                     error && "text-[var(--range-input-thumb-icon-fg-error)]"
                   )}
                 />
-                <ChevronRight
+                <ArrowRightSmall
                   className={cn(
-                    "size-2.5 text-[var(--range-input-thumb-icon-fg)]",
+                    "size-4 text-[var(--range-input-thumb-icon-fg)]",
                     disabled && "text-[var(--range-input-thumb-icon-fg-disabled)]",
                     error && "text-[var(--range-input-thumb-icon-fg-error)]"
                   )}

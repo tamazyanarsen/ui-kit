@@ -210,7 +210,11 @@ function Banner({
           )}
           <div className="flex flex-col gap-4 px-4 py-6">
             <div className="flex flex-col gap-2">
-              <p className="text-lg leading-6 font-medium">{title}</p>
+              {/* Mobile counterpart of the desktop H3 title above — 18/24 per
+                  "Mobile. Заголовок/H3 Medium Mobile" (node 29445:37296),
+                  which is what the old text-lg/leading-6 pair spelled out by
+                  hand. */}
+              <p className="text-h3-mobile">{title}</p>
               {description && (
                 // Line-to-line gap stays the shared default (8px, same as
                 // desktop) — only the bullet-to-text gap (itemGap) is

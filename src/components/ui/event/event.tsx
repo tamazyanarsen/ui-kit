@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CircleCheck, Clock, FileText } from "@/icons"
+import { CircleCheck, Clock, FileIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -177,7 +177,12 @@ function Event({
                   className="flex items-center gap-4 rounded-[8px] p-1 text-left outline-none"
                 >
                   <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--event-file-bg)]">
-                    <FileText
+                    {/* Figma nests the same `ELK / files` row here as File
+                        Upload does, so the tile holds `icon / document` at
+                        24px (node I40573:14011;40513:71361;16029:61127) —
+                        not the FileText glyph this used before. */}
+                    <FileIcon
+                      size={24}
                       aria-hidden="true"
                       className="size-6 text-[var(--event-title-fg)]"
                     />

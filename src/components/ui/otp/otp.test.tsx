@@ -83,7 +83,7 @@ describe("ResendCode", () => {
 
 describe("OtpConfirmCard", () => {
   it("renders the title and phone-based subtitle", () => {
-    render(<OtpConfirmCard phone="+7 900 000-00-00" />)
+    render(<OtpConfirmCard defaultOpen phone="+7 900 000-00-00" />)
     expect(
       screen.getByText("Код подтверждения отправлен на номер +7 900 000-00-00")
     ).toBeInTheDocument()
@@ -91,7 +91,7 @@ describe("OtpConfirmCard", () => {
 
   it("keeps the confirm button disabled until the code is complete", async () => {
     const user = userEvent.setup()
-    render(<OtpConfirmCard length={4} />)
+    render(<OtpConfirmCard defaultOpen length={4} />)
 
     const confirm = screen.getByRole("button", { name: "Подтвердить" })
     expect(confirm).toBeDisabled()
@@ -104,7 +104,7 @@ describe("OtpConfirmCard", () => {
   it("submits the completed code", async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<OtpConfirmCard length={4} onSubmit={onSubmit} />)
+    render(<OtpConfirmCard defaultOpen length={4} onSubmit={onSubmit} />)
 
     await user.type(screen.getByPlaceholderText("Введите код из СМС"), "1234")
     await user.click(screen.getByRole("button", { name: "Подтвердить" }))
@@ -112,13 +112,32 @@ describe("OtpConfirmCard", () => {
     expect(onSubmit).toHaveBeenCalledWith("1234")
   })
 
-  it("calls onClose from the close button", async () => {
+  // The close button is Modal's own (Figma composes the card from
+  // ELK / Modal), so closing reports through the dialog's onOpenChange
+  // rather than a bespoke onClose prop.
+  it("closes through the modal's close button", async () => {
     const user = userEvent.setup()
-    const onClose = vi.fn()
-    render(<OtpConfirmCard onClose={onClose} />)
+    const onOpenChange = vi.fn()
+    render(<OtpConfirmCard defaultOpen onOpenChange={onOpenChange} />)
 
     await user.click(screen.getByRole("button", { name: "Закрыть" }))
 
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onOpenChange).toHaveBeenCalled()
+    expect(onOpenChange.mock.calls[0][0]).toBe(false)
+  })
+
+  it("stays closed until its trigger is clicked", async () => {
+    const user = userEvent.setup()
+    render(
+      <OtpConfirmCard trigger={<button type="button">Открыть</button>} />
+    )
+
+    expect(screen.queryByText("Подтвердите контактные данные")).toBeNull()
+
+    await user.click(screen.getByRole("button", { name: "Открыть" }))
+
+    expect(
+      screen.getByText("Подтвердите контактные данные")
+    ).toBeInTheDocument()
   })
 })

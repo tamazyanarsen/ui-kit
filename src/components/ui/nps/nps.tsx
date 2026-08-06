@@ -3,6 +3,7 @@ import { Star, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { FilterTable } from "@/components/ui/filter-table"
 import { Textarea } from "@/components/ui/textarea"
 
 import doneIllustration from "@/assets/nps/done-illustration.png"
@@ -56,7 +57,9 @@ function CloseButton({ onClose, className }: { onClose?: () => void; className?:
       onClick={onClose}
       className={cn("shrink-0 cursor-pointer text-[var(--nps-close-fg)] outline-none", className)}
     >
-      <X aria-hidden="true" className="size-6" />
+      {/* Figma's NPS card closes with `icon / close cross` at 24px
+          (node 64534:44748). */}
+      <X size={24} aria-hidden="true" className="size-6" />
     </button>
   )
 }
@@ -209,17 +212,19 @@ function Nps({
 
             {showChips && (
               <div className="flex flex-wrap gap-2">
+                {/* Figma builds these from `ELK / filter-table` in its
+                    unselected (Checked=False) look — the frame is named
+                    "Chips" on the canvas, but the instances inside are
+                    filter-table, not `ELK / chips` (node 64534:44873). */}
                 {chips.map((chip) => (
-                  <button
+                  <FilterTable
                     key={chip}
-                    type="button"
                     onClick={() =>
                       setComment(activeComment ? `${activeComment} ${chip}` : chip)
                     }
-                    className="cursor-pointer rounded-full bg-[var(--nps-chip-bg)] px-4 py-1.5 text-p2-medium text-[var(--nps-chip-fg)] outline-none hover:bg-[var(--nps-chip-bg-hover)]"
                   >
                     {chip}
-                  </button>
+                  </FilterTable>
                 ))}
               </div>
             )}

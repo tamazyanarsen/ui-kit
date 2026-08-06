@@ -20,7 +20,7 @@ interface EmptySearchResultsProps {
 }
 
 function EmptySearchResults({
-  icon = <CircleAlert aria-hidden="true" />,
+  icon,
   largeIcon = false,
   title,
   description,
@@ -28,6 +28,17 @@ function EmptySearchResults({
   onButtonClick,
   className,
 }: EmptySearchResultsProps) {
+  // Figma's Size Icon (ELK) has both forms (node 4109:25427/25428): the
+  // large one puts `icon / alert` at 24px in the 48px tile, the small one at
+  // 16px. The drawings differ, so the default icon follows `largeIcon`
+  // rather than being fixed at one size.
+  const resolvedIcon =
+    icon === undefined ? (
+      <CircleAlert size={largeIcon ? 24 : 16} aria-hidden="true" />
+    ) : (
+      icon
+    )
+
   return (
     <div
       data-slot="empty-search-results"
@@ -36,14 +47,14 @@ function EmptySearchResults({
         className
       )}
     >
-      {icon && (
+      {resolvedIcon && (
         <span
           className={cn(
             "mb-6 flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-[var(--empty-search-icon-bg)] text-[var(--empty-search-icon-fg)]",
             largeIcon ? "[&_svg]:size-6" : "[&_svg]:size-4"
           )}
         >
-          {icon}
+          {resolvedIcon}
         </span>
       )}
       <h3 className="text-h4 text-[var(--empty-search-title-fg)]">

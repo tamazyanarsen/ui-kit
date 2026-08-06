@@ -89,7 +89,7 @@ function ToastCard({
     <div
       data-slot="toast"
       role="status"
-      className="w-full min-w-[320px] animate-in rounded-[16px] border p-6 shadow-[0_4px_12px_rgba(139,153,169,0.24)] fade-in-0 slide-in-from-right-4"
+      className="w-full min-w-[320px] animate-in rounded-[16px] border p-6 shadow-universal fade-in-0 slide-in-from-right-4"
       style={{
         backgroundColor: TOAST_BG[type],
         borderColor: TOAST_BORDER[type],

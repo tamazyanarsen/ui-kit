@@ -22,7 +22,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
         ref={ref}
         data-slot="dropdown"
         className={cn(
-          "rounded-[16px] bg-popover text-popover-foreground shadow-[0_4px_12px_rgba(139,153,169,0.24)] outline-none origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "rounded-[16px] bg-popover text-popover-foreground shadow-universal outline-none origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}

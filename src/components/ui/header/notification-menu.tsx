@@ -47,7 +47,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
           />
         }
       >
-        <Bell aria-hidden="true" className="size-6" />
+        <Bell size={24} aria-hidden="true" className="size-6" />
         {unreadCount > 0 && (
           <Badge
             type="counter"

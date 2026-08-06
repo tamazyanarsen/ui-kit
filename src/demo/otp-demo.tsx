@@ -1,4 +1,5 @@
 import { OtpInput, ResendCode, OtpConfirmCard } from "@/components/ui/otp"
+import { Button } from "@/components/ui/button"
 import {
   AccordionItem,
   AccordionTrigger,
@@ -13,55 +14,40 @@ function OtpDemo() {
       <AccordionItem value="otp-card-states">
         <AccordionTrigger>OTP code — состояния карточки</AccordionTrigger>
         <AccordionPanel>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="space-y-1.5">
-              <RowLabel>Default</RowLabel>
-              <div className="rounded-3xl bg-[#F8F8F8] p-4">
-                <OtpConfirmCard
-                  phone="+7 (912) 345-67-89"
-                  onClose={() => {}}
-                />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <RowLabel>Filled</RowLabel>
-              <div className="rounded-3xl bg-[#F8F8F8] p-4">
-                <OtpConfirmCard
-                  phone="+7 (912) 345-67-89"
-                  defaultValue="882372"
-                  onClose={() => {}}
-                />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <RowLabel>Error</RowLabel>
-              <div className="rounded-3xl bg-[#F8F8F8] p-4">
-                <OtpConfirmCard
-                  phone="+7 (912) 345-67-89"
-                  defaultValue="882372"
-                  error="Неверный код, превышено количество попыток"
-                  onClose={() => {}}
-                />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <RowLabel>Send Password (resend активна)</RowLabel>
-              <div className="rounded-3xl bg-[#F8F8F8] p-4">
-                <OtpConfirmCard
-                  phone="+7 (912) 345-67-89"
-                  resendSeconds={0}
-                  onClose={() => {}}
-                />
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-4">
+            <OtpConfirmCard
+              phone="+7 (912) 345-67-89"
+              trigger={<Button variant="secondary-grey">Default</Button>}
+            />
+            <OtpConfirmCard
+              phone="+7 (912) 345-67-89"
+              defaultValue="882372"
+              trigger={<Button variant="secondary-grey">Filled</Button>}
+            />
+            <OtpConfirmCard
+              phone="+7 (912) 345-67-89"
+              defaultValue="882372"
+              error="Неверный код, превышено количество попыток"
+              trigger={<Button variant="secondary-grey">Error</Button>}
+            />
+            <OtpConfirmCard
+              phone="+7 (912) 345-67-89"
+              resendSeconds={0}
+              trigger={
+                <Button variant="secondary-grey">Send Password</Button>
+              }
+            />
           </div>
           <p className="mt-4 text-p3-regular text-muted-foreground">
-            Карточка рендерит только контент (как Calendar) — модалку/bottom
-            sheet вокруг неё оборачивает страница. Валидация запускается
-            только по клику «Подтвердить» — кнопка блокируется лишь пока код
-            не введён полностью, а не пока он не проверен; при ошибке цифры
-            становятся красными, но подчёркивание остаётся серым (в отличие
-            от Input/Textarea, где при ошибке краснеет именно рамка).
+            Компонент — это модальное окно: Figma собирает{" "}
+            <code>ELK / otp-code</code> как инстанс <code>ELK / Modal</code>,
+            поэтому карточка рендерится через настоящий <code>Modal</code>{" "}
+            (портал, затемнение, Esc, фокус-трап и крестик — его). Валидация
+            запускается только по клику «Подтвердить» — кнопка блокируется
+            лишь пока код не введён полностью, а не пока он не проверен; при
+            ошибке цифры становятся красными, но подчёркивание остаётся серым
+            (в отличие от Input/Textarea, где при ошибке краснеет именно
+            рамка).
           </p>
         </AccordionPanel>
       </AccordionItem>

@@ -14,13 +14,25 @@ const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
       "font-size": [
+        "text-factoid", "text-factoid-mobile",
         "text-h1", "text-h2", "text-h3", "text-h4",
+        "text-h1-mobile", "text-h2-mobile", "text-h3-mobile", "text-h4-mobile",
         "text-p1", "text-p2", "text-p3", "text-p4",
         "text-p1-regular", "text-p1-medium", "text-p1-heavy",
         "text-p2-regular", "text-p2-medium", "text-p2-heavy",
         "text-p3-regular", "text-p3-medium",
         "text-p4-regular",
       ],
+      // Same reasoning for the one custom @theme shadow key ("Universal
+      // shadow" in Figma): unregistered, twMerge reads the bare word as a
+      // shadow *color* rather than the shadow itself, so it would neither
+      // evict nor be evicted by a real shadow class passed through cn().
+      shadow: ["shadow-universal"],
+      // `.text-link` only sets text-decoration, but its name would otherwise
+      // be bucketed as a text *color* and silently survive next to a real
+      // one. Filed under text-decoration so it conflicts with underline/
+      // no-underline the way it actually behaves.
+      "text-decoration": ["text-link"],
     },
   },
 })

@@ -1,4 +1,4 @@
-import type { SVGProps } from "react"
+import type { IconProps } from "./types"
 
 // The Figma export is an angular/conic gradient (transparent -> opaque
 // sweeping ~360°, a "spinner tail" effect) via `data-figma-gradient-fill`
@@ -10,7 +10,7 @@ import type { SVGProps } from "react"
 // hardcoded blue so it keeps inheriting each usage site's own color
 // (input.tsx's grey, button.tsx's per-variant accent, etc. — all already
 // set via className, unchanged from before this file had real markup).
-export function Loader2(props: SVGProps<SVGSVGElement>) {
+export function Loader2({ size: _size, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path d="M12.000 0.000 A12 12 0 0 1 14.337 0.230 L13.519 4.349 A7.8 7.8 0 0 0 12.000 4.200 Z" fill="currentColor" fillOpacity={0.004} />

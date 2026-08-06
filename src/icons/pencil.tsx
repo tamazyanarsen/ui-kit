@@ -1,11 +1,11 @@
-import type { SVGProps } from "react"
+import type { IconProps } from "./types"
 
 // No "edit/pencil" glyph was reachable from this file's own Figma pages —
 // the design system's "01 Base/Edit" icon lives in an external shared
 // library that isn't fetchable by node-id from here. Hand-drawn (built from
 // primitives, not traced) to match the weight/viewBox convention of the
 // rest of this Figma-sourced icon set rather than pulling in lucide-react.
-export function Pencil(props: SVGProps<SVGSVGElement>) {
+export function Pencil({ size: _size, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

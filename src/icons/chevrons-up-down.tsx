@@ -1,10 +1,10 @@
-import type { SVGProps } from "react"
+import type { IconProps } from "./types"
 
 // The two chevrons are two-tone by design (muted grey + dark) rather than a
 // single currentColor shape — #999999 is this kit's established muted-grey
 // token (same value as --select-label-fg / --filter-subtitle-fg etc.), kept
 // literal here; only the dark chevron inherits currentColor.
-export function ChevronsUpDown(props: SVGProps<SVGSVGElement>) {
+export function ChevronsUpDown({ size: _size, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

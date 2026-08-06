@@ -49,7 +49,7 @@ function Chips({
       {subtitle && (
         <span
           className={cn(
-            "truncate text-xs leading-tight font-medium",
+            "truncate text-p3-medium",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-subtitle-fg)]"
           )}
         >

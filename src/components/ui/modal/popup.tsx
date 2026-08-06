@@ -34,11 +34,17 @@ const modalPopupVariants = cva(
 
 interface ModalContentProps
   extends DialogPrimitive.Popup.Props,
-    VariantProps<typeof modalPopupVariants> {}
+    VariantProps<typeof modalPopupVariants> {
+  /** Hides the built-in close button. The spec's own "Modal Top" variants
+   * include one without it, and Hint's mobile bottom sheet inherits that
+   * through its `showCross` prop. */
+  showClose?: boolean
+}
 
 function ModalContent({
   className,
   size,
+  showClose = true,
   children,
   ...props
 }: ModalContentProps) {
@@ -56,6 +62,7 @@ function ModalContent({
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[inherit]">
           {children}
         </div>
+        {showClose && (
         <DialogPrimitive.Close
           // Mobile: sits inside the sheet's own top padding, right of where
           // the title row would be (confirmed against the Mobile/Large
@@ -75,6 +82,7 @@ function ModalContent({
             />
           }
         />
+        )}
       </DialogPrimitive.Popup>
     </DialogPrimitive.Portal>
   )

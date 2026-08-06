@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { LoaderCircle } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 
 import { GosuslugiLogo } from "./gosuslugi-logo"
 
@@ -85,7 +86,7 @@ const ICON_ONLY_SIZE: Record<"sm" | "default" | "lg", "icon-sm" | "icon" | "icon
 }
 
 type IconComponent = React.ComponentType<
-  React.SVGProps<SVGSVGElement> & { "data-icon"?: string }
+  React.SVGProps<SVGSVGElement> & { "data-icon"?: string; size?: 16 | 24 }
 >
 
 interface ButtonOwnProps {
@@ -142,6 +143,16 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
 
   const Glyph = isLoading ? LoaderCircle : isLogoVariant ? GosuslugiLogo : Icon
 
+  // `lg` and `icon-lg` render their glyph at 24px from the md: breakpoint up
+  // (see the size variants above), and Figma draws a separate 24px artwork
+  // for most icons rather than scaling the 16px one. Pick the drawing here
+  // so callers never have to remember `size={24}` — they keep writing
+  // `<Button size="lg" icon={Mail}>`. It has to be a media query rather than
+  // a `md:` class because this selects the *path*, not the box.
+  const isDesktop = useIsDesktop()
+  const glyphSize =
+    isDesktop && (resolvedSize === "lg" || resolvedSize === "icon-lg") ? 24 : 16
+
   return (
     <ButtonPrimitive
       ref={ref}
@@ -154,6 +165,7 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
       {iconOnly ? (
         Glyph && (
           <Glyph
+            size={glyphSize}
             className={isLoading ? "!text-[var(--btn-accent)] animate-spin" : undefined}
             aria-hidden="true"
           />
@@ -161,11 +173,11 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
       ) : (
         <>
           {resolvedIconPosition === "left" && Glyph && (
-            <Glyph data-icon="inline-start" aria-hidden="true" />
+            <Glyph size={glyphSize} data-icon="inline-start" aria-hidden="true" />
           )}
           {children}
           {resolvedIconPosition === "right" && Glyph && (
-            <Glyph data-icon="inline-end" aria-hidden="true" />
+            <Glyph size={glyphSize} data-icon="inline-end" aria-hidden="true" />
           )}
         </>
       )}

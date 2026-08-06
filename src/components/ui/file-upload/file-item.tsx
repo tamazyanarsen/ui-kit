@@ -57,18 +57,24 @@ export function FileListItem({
           error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
         )}
       >
+        {/* All three fill the 48px thumbnail tile at 24px, so they take the
+            24px drawings (Figma's `icon / document` inside ELK / files'
+            tile, node 16029:61127). */}
         {loading ? (
           <LoaderCircle
+            size={24}
             aria-hidden="true"
             className="size-6 animate-spin text-[var(--file-item-loading-fg)]"
           />
         ) : error ? (
           <CircleAlert
+            size={24}
             aria-hidden="true"
             className="size-6 text-[var(--file-item-error-fg)]"
           />
         ) : (
           <FileIcon
+            size={24}
             aria-hidden="true"
             className="size-6 text-[var(--file-item-icon-fg)]"
           />

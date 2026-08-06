@@ -12,7 +12,9 @@ import { useAutocompleteAnchor } from "./root"
 // to field.tsx's outer box (see root.tsx's AnchorContext comment) — without
 // it Base UI defaults to the bare `<input>`, which is narrower than the box.
 // Renders the actual shared Dropdown component (same one Select/Combobox
-// use), not just a matching className.
+// use), not just a matching className. No `p-2` here, same as Select's and
+// Combobox's own content.tsx — the Dropdown shell itself has zero padding;
+// items go flush to its edges (see item.tsx).
 
 function AutocompleteContent({
   className,
@@ -40,7 +42,7 @@ function AutocompleteContent({
           render={
             <Dropdown
               className={cn(
-                "isolate flex max-h-[min(400px,var(--available-height))] w-full flex-col overflow-hidden p-2",
+                "isolate flex max-h-[min(400px,var(--available-height))] w-full flex-col overflow-hidden",
                 className
               )}
             />
@@ -58,7 +60,7 @@ function AutocompleteList({ className, ...props }: ComboboxPrimitive.List.Props)
   return (
     <ComboboxPrimitive.List
       data-slot="autocomplete-list"
-      className={cn("flex-1 overflow-y-auto", className)}
+      className={cn("themed-scrollbar flex-1 overflow-y-auto", className)}
       {...props}
     />
   )

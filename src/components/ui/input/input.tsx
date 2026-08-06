@@ -88,11 +88,26 @@ const inputFieldVariants = cva(
 // small label live inside one font-['Object_Sans:Medium'] wrapper — Medium
 // at every size, not just the pre-float P1/P2 state.
 const floatingLabelVariants =
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all md:text-p1-medium peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-p3-medium md:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium md:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[:disabled]/input:text-[var(--input-fg-disabled)] md:peer-focus:top-2.5 md:peer-[&:not(:placeholder-shown)]:top-2.5"
+  // Floated position is 7px from the box's inner top edge at both L forms —
+  // the 48px mobile row is `pt-[7px]` and the 56px desktop row centres a
+  // 40px (16 + 24) content block in its 54px interior, i.e. also 7px. It
+  // used to sit 3px lower on desktop.
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all md:text-p1-medium peer-focus:top-[7px] peer-focus:translate-y-0 peer-focus:text-p3-medium md:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium md:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
 
+// Trailing glyphs (clear cross, eye, lock, spinner) are 16px at every size —
+// Figma's `icon / close cross` is `size-[16px]` in the S, L-mobile and
+// L-desktop rows alike.
 const ICON_SIZE = {
   sm: "size-3.5",
   lg: "size-4",
+} as const
+
+// The *leading* icon is the exception: the L row draws it at 24px (the
+// filled "Icon Left" row of the 56px input, node 103:14052), while the
+// compact row keeps 16px (node 192:4304).
+const LEADING_ICON_SIZE = {
+  sm: "size-4",
+  lg: "size-6",
 } as const
 
 export type InputSize = "sm" | "lg"
@@ -413,7 +428,10 @@ function Input({
         {iconLeft && (
           <span
             aria-hidden="true"
-            className={cn(ICON_SIZE[size], "shrink-0 text-[var(--input-icon-fg)]")}
+            className={cn(
+              LEADING_ICON_SIZE[size],
+              "shrink-0 [&>svg]:size-full text-[var(--input-icon-fg)]"
+            )}
           >
             {iconLeft}
           </span>
@@ -499,13 +517,18 @@ function Input({
             htmlFor={inputId}
             className={cn(
               floatingLabelVariants,
-              iconLeft ? "left-[42px] md:left-12" : "left-4 md:left-5",
+              // Flush with the value text: the box pads 16px, and a leading
+              // icon adds its own width plus the 8px gap (16 + 16 + 8 = 40
+              // at S-sized glyphs, 16 + 24 + 8 = 48 once the L row's 24px
+              // one kicks in). The old `md:left-5` put the label 4px right
+              // of the value it labels.
+              iconLeft ? "left-10 md:left-12" : "left-4",
               // Without a right edge, `truncate` has nothing to clip against
               // — an absolutely positioned label just grows to fit its text,
               // so a long label (e.g. DatePicker's "Дата начала — Дата
               // окончания") renders straight through the trailing icon
               // instead of eliding before it.
-              trailingSlot ? "right-[42px] md:right-12" : "right-4 md:right-5"
+              trailingSlot ? "right-10" : "right-4"
             )}
           >
             {label}
@@ -522,7 +545,10 @@ function Input({
             // on every Comment/Error caption instance (215:6570, 215:6676)
             // wraps the <p> in a font-['Object_Sans:Medium'] parent (P3
             // Medium, weight 500), not the browser default 400.
-            "text-p3-medium",
+            // `px-4`: the spec's "Comment (ELK)" frame is indented 16px so
+            // the caption lines up with the field's own text, not with the
+            // box's outer edge.
+            "px-4 text-p3-medium",
             error
               ? "text-[var(--input-caption-error-fg)]"
               : "text-[var(--input-caption-fg)]"

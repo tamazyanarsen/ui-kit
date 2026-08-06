@@ -48,7 +48,7 @@ function ToggleDemo() {
           </div>
         </div>
         <p className="mt-4 text-p3-regular text-muted-foreground">
-          Трек 48×24, ползунок 18×18 с отступом 3px. В отличие от
+          Трек 48×24, ползунок 16×16 с отступом 4px. В отличие от
           Checkbox/Radio, у Toggle ошибка не красит сам трек — только текст;
           `comment` и `error` складываются (оба видны одновременно), а не
           заменяют друг друга.

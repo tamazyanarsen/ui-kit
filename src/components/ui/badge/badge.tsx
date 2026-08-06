@@ -65,7 +65,13 @@ function Badge({
       data-type={type}
       data-color={color}
       className={cn(
-        "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-1 text-p3-regular",
+        // `px-[2px] pt-[2px]`, not `px-1`/centered — the master's counter
+        // (`ELK / badge`, 34:17385) pads 2px on the sides and pushes its
+        // 14px-tall text box down by 2px from the top, which both keeps
+        // two-digit counters 4px narrower than a 4px padding would and drops
+        // the digits 1px below the geometric centre (they read as centred
+        // because digits have no descenders).
+        "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-[2px] pt-[2px] text-p3-regular",
         className
       )}
       style={{

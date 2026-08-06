@@ -22,8 +22,11 @@ const modalPopupVariants = cva(
     // both well past the previous 640/480 guesses.
     variants: {
       size: {
-        l: "md:[--modal-width:1008px]",
-        m: "md:[--modal-width:592px]",
+        // Horizontal padding travels with the size: the Large modal insets
+        // its top/body by 64px, the Small one by 48px (both keep the button
+        // row at 48px — see ModalFooter).
+        l: "md:[--modal-width:1008px] md:[--modal-px:64px]",
+        m: "md:[--modal-width:592px] md:[--modal-px:48px]",
       },
     },
     defaultVariants: {

@@ -40,7 +40,7 @@ function ModalBody({ className, children, ...props }: React.ComponentProps<"div"
       onScroll={updateScrollState}
       data-slot="modal-body"
       className={cn(
-        "min-h-0 flex-1 border-y border-transparent px-6 py-5 md:px-8 md:py-6",
+        "min-h-0 flex-1 border-y border-transparent px-6 py-5 md:px-(--modal-px) md:py-4",
         scrolledFromTop && "border-t-[var(--modal-divider)]",
         !scrolledToEnd && "border-b-[var(--modal-divider)]",
         className

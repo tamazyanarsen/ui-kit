@@ -16,7 +16,7 @@ function ModalHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="modal-header"
-      className={cn("flex shrink-0 flex-col gap-4 px-6 py-5 md:gap-2 md:px-8 md:py-6", className)}
+      className={cn("flex shrink-0 flex-col gap-4 px-6 py-5 md:gap-2 md:px-(--modal-px) md:pt-12 md:pb-4", className)}
       {...props}
     />
   )

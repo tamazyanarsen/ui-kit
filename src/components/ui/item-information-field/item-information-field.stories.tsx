@@ -41,6 +41,10 @@ type Story = StoryObj<typeof meta>
 
 export const LabelLeft: Story = {}
 
+export const LabelLine: Story = {
+  args: { type: "label-line" },
+}
+
 export const LabelTop: Story = {
   args: { type: "label-top" },
 }

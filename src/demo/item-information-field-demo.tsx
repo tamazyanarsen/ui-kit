@@ -15,7 +15,7 @@ function ItemInformationFieldDemo() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <RowLabel>Label Left — реальный пример из спека</RowLabel>
-            <div className="rounded-lg border border-[#DEDEDE]">
+            <div className="rounded-lg border border-[#DEDEDE] px-4">
               <ItemInformationField label="Сумма" value="19 009,51 ₽" copyable />
               <ItemInformationField label="Комиссия" value="239 ₽" copyable />
               <ItemInformationField
@@ -35,7 +35,7 @@ function ItemInformationFieldDemo() {
 
           <div className="flex flex-col gap-2">
             <RowLabel>Value Status — Default / Success / Error / Attention / Information</RowLabel>
-            <div className="rounded-lg border border-[#DEDEDE]">
+            <div className="rounded-lg border border-[#DEDEDE] px-4">
               <ItemInformationField label="Label" value="Value" subText="Sub Text" copyable />
               <ItemInformationField
                 label="Label"
@@ -73,8 +73,30 @@ function ItemInformationFieldDemo() {
           </div>
 
           <div className="flex flex-col gap-2">
+            <RowLabel>
+              Label Line — та же строка, но Label ограничен 216px, без
+              разделителя; элементы разделяет контейнер (16px)
+            </RowLabel>
+            <div className="flex flex-col gap-4 rounded-lg border border-[#DEDEDE] p-4">
+              <ItemInformationField
+                type="label-line"
+                label="Сумма"
+                value="19 009,51 ₽"
+                copyable
+              />
+              <ItemInformationField
+                type="label-line"
+                label="ФИО"
+                value="Смирнов Виктор Евгеньевич"
+                subText="Пользователь"
+                copyable
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
             <RowLabel>Label Top — компактный вариант</RowLabel>
-            <div className="max-w-72 rounded-lg border border-[#DEDEDE]">
+            <div className="max-w-72 rounded-lg border border-[#DEDEDE] p-4">
               <ItemInformationField
                 type="label-top"
                 label="Сумма"
@@ -86,7 +108,7 @@ function ItemInformationFieldDemo() {
 
           <div className="flex flex-col gap-2">
             <RowLabel>Large Value — для Factoid</RowLabel>
-            <div className="max-w-72 rounded-lg border border-[#DEDEDE]">
+            <div className="max-w-72 rounded-lg border border-[#DEDEDE] p-4">
               <ItemInformationField
                 type="large-value"
                 label="Сумма кредита"

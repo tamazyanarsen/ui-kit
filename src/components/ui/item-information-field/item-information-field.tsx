@@ -10,19 +10,25 @@ import { useToast } from "@/components/ui/toast-message"
 // the spec's own description). Distinct from ./item, which is always an
 // interactive row.
 //
-// Three layouts (the spec's own "Type" property):
-// - label-left (default): Label left, Value right, both on one line. Label
-//   and Value each get an even flex-1 share of the row by default, Label
-//   capped at 216px so a long one can't shrink Value below its own share —
-//   both left-aligned within their own half (design-check #33; a stray
-//   ml-auto used to shove Value flush to the row's right edge instead).
-// - label-top: Label stacked above Value (compact, for tight spaces).
-// - large-value: same stacking as label-top, but Value renders larger
-//   ("used for displaying a Factoid").
-// SubText (when present) always renders below Value. No dashed "line"
-// variant (design-check #32) — not a real DS variant of this component.
+// Four layouts (the spec's own "Type" property, node 23980:66146):
+// - label-left (default): Label left, Value right, both on one line. Each
+//   gets an even flex-1 share, Label capped at 384px so a long one can't
+//   shrink Value below its own share — both left-aligned within their own
+//   half (design-check #33; a stray ml-auto used to shove Value flush to
+//   the row's right edge instead). This is the only type that carries
+//   padding and a divider: `pt-16 / pb-15 / 1px rule`, because per the
+//   spec's own "Правило отступов (Label Left)" consecutive fields stack
+//   with 0px between them and the rule is what separates them.
+// - label-line: the same one-line layout, but Label is capped at 216px and
+//   there is no padding and no divider — consecutive fields are spaced 16px
+//   apart by the container ("Правило отступов (Line)").
+// - label-top: Label stacked above Value (compact, for tight spaces), 4px
+//   between the three lines, also spaced 16px by the container.
+// - large-value: same stacking, Value at H2 (32/44) "for displaying a
+//   Factoid", lines flush (0px), and a 24px copy icon.
+// SubText (when present) always renders below Value.
 
-type FieldType = "label-left" | "label-top" | "large-value"
+type FieldType = "label-left" | "label-line" | "label-top" | "large-value"
 type FieldStatus = "default" | "success" | "error" | "attention" | "information"
 
 const VALUE_COLOR: Record<FieldStatus, string> = {
@@ -55,28 +61,59 @@ interface ItemInformationFieldProps {
   className?: string
 }
 
-function InfoIcon({ content }: { content: React.ReactNode }) {
+// The 16px info glyph is not centred on its line: Figma wraps it in a box
+// that is bottom-aligned with 2px above / 6px below inside the 24px line
+// (`pt-[2px] pb-[6px]`), i.e. it sits 2px higher than the text's midpoint.
+// The large (H2/44px line) row uses `pb-[18px]` for the same effect.
+function InfoIcon({
+  content,
+  large = false,
+}: {
+  content: React.ReactNode
+  large?: boolean
+}) {
   return (
-    <Tooltip content={content}>
-      <button
-        type="button"
-        aria-label="Информация"
-        className="flex size-4 shrink-0 items-center justify-center text-[var(--ifield-icon-fg)] outline-none"
-      >
-        <Info aria-hidden="true" className="size-4" />
-      </button>
-    </Tooltip>
+    <span
+      className={cn(
+        "flex shrink-0 items-end",
+        large ? "h-11 pb-[18px]" : "h-6 pb-[6px]"
+      )}
+    >
+      <Tooltip content={content}>
+        <button
+          type="button"
+          aria-label="Информация"
+          className="flex size-4 shrink-0 items-center justify-center text-[var(--ifield-icon-fg)] outline-none"
+        >
+          <Info aria-hidden="true" className="size-4" />
+        </button>
+      </Tooltip>
+    </span>
   )
+}
+
+// Per-type top offset of the copy glyph, straight off the spec's own
+// "Copy (…, ELK)" frames: pt-18 for Label Left (whose content already sits
+// 16px down, so 2px of its own), pt-2 for Line, pt-30 for Label Top and
+// pt-33 for the large one. The glyph keeps its exact 16/24px box — the hit
+// target is grown with a transparent inset pseudo-element instead, so
+// enlarging it can't shift the alignment.
+const COPY_OFFSET: Record<FieldType, string> = {
+  "label-left": "mt-[2px]",
+  "label-line": "mt-[2px]",
+  "label-top": "mt-[30px]",
+  "large-value": "mt-[33px]",
 }
 
 function CopyButton({
   copyValue,
-  large = false,
+  type,
 }: {
   copyValue: string
-  large?: boolean
+  type: FieldType
 }) {
   const toast = useToast()
+  const large = type === "large-value"
 
   function handleCopy() {
     navigator.clipboard.writeText(copyValue)
@@ -88,18 +125,10 @@ function CopyButton({
       type="button"
       onClick={handleCopy}
       aria-label="Копировать"
-      // Design-check #34: centered on Value's first line, not the row's
-      // own top edge — the row uses items-start, which would otherwise sit
-      // this hit target's center below the text's optical center by half
-      // the (hit-target − line-height) difference. Value is text-base/24px
-      // line-height normally (size-8 hit target, diff 8px, -mt-1) or
-      // text-[32px]/44px for `large-value` (per the spec's "Copy Large"
-      // icon) — a size-11/44px hit target there exactly matches the line
-      // height, so no offset is needed. Stays pinned there even when
-      // subText adds a second line below.
       className={cn(
-        "flex shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors hover:text-[var(--ifield-copy-fg-hover)]",
-        large ? "size-11" : "-mt-1 size-8"
+        "relative flex shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors before:absolute before:-inset-2 before:content-[''] hover:text-[var(--ifield-copy-fg-hover)]",
+        large ? "size-6" : "size-4",
+        COPY_OFFSET[type]
       )}
     >
       <Copy aria-hidden="true" className={large ? "size-6" : "size-4"} />
@@ -122,67 +151,95 @@ function ItemInformationField({
   className,
 }: ItemInformationFieldProps) {
   const stacked = type === "label-top" || type === "large-value"
+  const large = type === "large-value"
 
+  // Label is P1 *Medium* like the Value — the two differ only in colour.
   const labelRow = (
-    <span className="flex shrink-0 items-center gap-1.5 text-p1-regular text-[var(--ifield-label-fg)]">
-      {label}
+    <span className="flex min-w-0 items-end gap-2 text-p1-medium text-[var(--ifield-label-fg)]">
+      <span className="truncate">{label}</span>
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
   )
 
   const valueRow = (
-    <span className="flex items-center gap-1.5">
+    <span className="flex min-w-0 items-start gap-2">
       <span
         className={cn(
           // text-h2 (32/44) already bakes in weight 500, so it doesn't need
           // its own font-medium alongside the text-p1 branch that does.
-          type === "large-value" ? "text-h2" : "text-p1-medium",
+          large ? "text-h2" : "text-p1-medium",
           VALUE_COLOR[valueStatus]
         )}
       >
         {value}
       </span>
-      {valueInfo && <InfoIcon content={valueInfo} />}
+      {valueInfo && <InfoIcon content={valueInfo} large={large} />}
+    </span>
+  )
+
+  const subTextRow = subText && (
+    <span className={cn("text-p2-medium", SUBTEXT_COLOR[subTextStatus])}>
+      {subText}
     </span>
   )
 
   return (
     <div
       data-slot="item-information-field"
+      data-type={type}
       className={cn(
-        "flex items-start gap-4 px-4 py-4",
-        divider && "border-b border-[var(--ifield-divider)]",
+        "flex items-start",
+        // Only Label Left is a padded, ruled row; the other three are bare
+        // content the container spaces out (16px) itself.
+        type === "label-left"
+          ? "gap-6 border-b pt-4 pb-[15px]"
+          : type === "label-line"
+            ? "gap-6"
+            : "gap-4",
+        type === "label-left" &&
+          (divider ? "border-[var(--ifield-divider)]" : "border-transparent"),
         className
       )}
     >
       {stacked ? (
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className={cn("flex min-w-0 flex-1 flex-col", !large && "gap-1")}>
           {labelRow}
           {valueRow}
-          {subText && (
-            <span className={cn("text-p2-medium", SUBTEXT_COLOR[subTextStatus])}>
-              {subText}
-            </span>
-          )}
+          {subTextRow}
         </div>
       ) : (
-        <div className="flex min-w-0 flex-1 items-baseline gap-6">
-          <span className="max-w-54 min-w-0 flex-1">{labelRow}</span>
-          <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-            {valueRow}
-            {subText && (
-              <span className={cn("text-p2-medium", SUBTEXT_COLOR[subTextStatus])}>
-                {subText}
-              </span>
+        <>
+          {/* Label box: an even share of the row, but never wider than
+              384px (Label Left) / 216px (Line) and never below 100px. */}
+          <span
+            className={cn(
+              "min-w-25 flex-1",
+              type === "label-left" ? "max-w-96" : "max-w-54"
+            )}
+          >
+            {labelRow}
+          </span>
+          <div className="flex min-w-0 flex-1 items-start gap-4">
+            {/* Value and Sub Text sit flush on these two types — only
+                Label Top puts 4px between its lines. */}
+            <div className="flex min-w-0 flex-1 flex-col items-start">
+              {valueRow}
+              {subTextRow}
+            </div>
+            {copyable && (
+              <CopyButton
+                copyValue={copyValue ?? (typeof value === "string" ? value : "")}
+                type={type}
+              />
             )}
           </div>
-        </div>
+        </>
       )}
 
-      {copyable && (
+      {stacked && copyable && (
         <CopyButton
           copyValue={copyValue ?? (typeof value === "string" ? value : "")}
-          large={type === "large-value"}
+          type={type}
         />
       )}
     </div>

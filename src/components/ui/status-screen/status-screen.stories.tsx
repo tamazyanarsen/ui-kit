@@ -41,6 +41,9 @@ export const TwoButtons: Story = {
 }
 
 export const AllStatuses: Story = {
+  // Zero-arg render hardcodes title-per-card and never reads
+  // subtitle/primaryLabel/secondaryLabel — every inherited control is dead.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
       {(

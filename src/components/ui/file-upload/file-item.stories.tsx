@@ -33,6 +33,9 @@ export const Disabled: Story = {
 }
 
 export const List: Story = {
+  // Zero-arg render hardcodes 3 separate FileListItem rows — every
+  // inherited control (name/meta/errorText) is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="w-96 divide-y">
       <FileListItem name="Договор.pdf" meta="1.2 МБ" />

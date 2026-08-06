@@ -12,6 +12,10 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const TextLines: Story = {
+  // Zero-arg render hardcodes shape/sizing per block — the inherited
+  // `shape` select control (docgen-resolved from the string-literal union)
+  // would sit in the panel doing nothing.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex max-w-sm flex-col gap-2">
       <Shimmer className="h-6 w-2/3" />
@@ -23,6 +27,7 @@ export const TextLines: Story = {
 }
 
 export const Shapes: Story = {
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex items-center gap-3">
       <Shimmer shape="square" className="size-12" />
@@ -34,6 +39,7 @@ export const Shapes: Story = {
 
 export const OfferCard: Story = {
   name: "Composite card skeleton",
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex max-w-sm flex-col gap-3 rounded-2xl border p-4">
       <div className="flex items-center justify-between gap-4">

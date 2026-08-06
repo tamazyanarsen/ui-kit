@@ -139,15 +139,23 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const MultiSelect: Story = {
+  // Zero-arg render — the inherited `max` control (auto-generated from
+  // DocumentsMultiSelect's own signature) is dead here.
+  parameters: { controls: { disable: true } },
   render: () => <DocumentsMultiSelect />,
 }
 
 export const MultiSelectWithLimit: Story = {
   name: "Multi-select with a 5-item cap",
+  // `max` is fixed at 5 in the render below, not read from the control.
+  parameters: { controls: { disable: true } },
   render: () => <DocumentsMultiSelect max={5} />,
 }
 
 export const TreeCascade: Story = {
   name: "Tree (parent/child checkbox cascade)",
+  // Renders a different component (TreeMultiSelect) than meta.component —
+  // the inherited `max` control has no connection to what's shown.
+  parameters: { controls: { disable: true } },
   render: () => <TreeMultiSelect />,
 }

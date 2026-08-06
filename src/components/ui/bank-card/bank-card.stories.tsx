@@ -45,6 +45,8 @@ export const Default: Story = {
 }
 
 export const AllSkins: Story = {
+  // Zero-arg render maps SKINS — the inherited `skin` control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex flex-wrap gap-6">
       {SKINS.map((skin) => (
@@ -58,6 +60,9 @@ export const AllSkins: Story = {
 }
 
 export const PaymentSystems: Story = {
+  // Zero-arg render hardcodes skin/paymentSystem per card — every
+  // inherited control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex flex-wrap gap-6">
       {(["mir", "mastercard", "visa", "unionpay"] as PaymentSystem[]).map((system) => (

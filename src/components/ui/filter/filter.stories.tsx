@@ -53,6 +53,9 @@ function ChipHarness() {
 
 export const ChipVariant: Story = {
   name: "Chip (table filter bar)",
+  // ChipHarness hardcodes label/value locally — every inherited control
+  // (background/count/icon/value/defaultValue) is dead here.
+  parameters: { controls: { disable: true } },
   render: () => <ChipHarness />,
 }
 

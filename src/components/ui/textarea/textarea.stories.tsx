@@ -15,6 +15,7 @@ const meta = {
   // across that extends chain and falls back to the same placeholder — pin
   // it too.
   argTypes: {
+    label: { control: "text" },
     comment: { control: "text" },
     error: { control: "text" },
     rows: { control: "number" },

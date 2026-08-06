@@ -73,6 +73,9 @@ export const NoConnector: Story = {
 }
 
 export const FullTimeline: Story = {
+  // Zero-arg render hardcodes 3 separate Event instances — every inherited
+  // control (title/timestamp/author/comment/buttonLabel) is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div>
       <Event

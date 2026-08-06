@@ -59,9 +59,13 @@ export const Default: Story = {
 
 export const FewPages: Story = {
   name: "7 or fewer pages (no ellipsis)",
+  // Zero-arg render hardcodes its own props — every inherited control
+  // (page/totalPages/pageSize/...) would sit in the panel doing nothing.
+  parameters: { controls: { disable: true } },
   render: () => <Controlled totalPages={5} />,
 }
 
 export const NoPageSize: Story = {
+  parameters: { controls: { disable: true } },
   render: () => <Pagination page={1} totalPages={10} showPageSize={false} />,
 }

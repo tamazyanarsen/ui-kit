@@ -84,7 +84,14 @@ function Checkbox({
     <label
       htmlFor={checkboxId}
       className={cn(
-        "inline-flex items-start gap-4",
+        // `flex`, not `inline-flex`: an inline-level wrapper makes the
+        // label an atomic inline box, so its parent's line-box height
+        // (baseline/line-height math) can shift by a couple px whenever
+        // the checkbox's inline content changes — e.g. the check icon
+        // mounting/unmounting on toggle — making the whole row visibly
+        // jump. Block-level `flex` isn't part of an inline formatting
+        // context, so it's immune. Same fix needed in Radio.
+        "flex items-start gap-4",
         disabled ? "cursor-not-allowed" : "cursor-pointer"
       )}
     >

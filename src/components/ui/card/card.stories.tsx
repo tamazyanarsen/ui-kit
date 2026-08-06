@@ -53,6 +53,10 @@ export const WithTagColor: Story = {
 }
 
 export const PaymentSystems: Story = {
+  // `paymentSystem` is fixed per mapped instance below, overriding
+  // whatever the inherited control sets — every other control still works
+  // (args is spread first), so only this one needs disabling.
+  argTypes: { paymentSystem: { control: false } },
   render: (args) => (
     <div className="flex flex-col gap-3">
       {(["mastercard", "visa", "mir", "unionpay"] as PaymentSystem[]).map((system) => (

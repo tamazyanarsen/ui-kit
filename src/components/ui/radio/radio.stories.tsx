@@ -35,6 +35,10 @@ function Group() {
 }
 
 export const Default: Story = {
+  // Zero-arg render hardcodes a 3-option RadioGroup — the inherited
+  // value/label/comment/error controls (built for a single Radio) have
+  // nothing to drive here.
+  parameters: { controls: { disable: true } },
   render: () => <Group />,
 }
 

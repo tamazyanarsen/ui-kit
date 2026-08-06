@@ -47,6 +47,9 @@ export const WithBulletList: Story = {
 }
 
 export const ColorVariants: Story = {
+  // Zero-arg render maps a hardcoded color array — the inherited `color`
+  // select control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex flex-col gap-4">
       {(["black", "pink", "green", "blue"] as BannerColor[]).map((color) => (

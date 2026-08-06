@@ -11,6 +11,7 @@ const meta = {
   // plain string in it — pin a text control so a story that leaves it unset
   // doesn't fall back to Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
+    text: { control: "text" },
     buttonLabel: { control: "text" },
   },
 } satisfies Meta<typeof TopFixedMessage>

@@ -17,6 +17,7 @@ const meta = {
   // enum, so it falls back to Storybook's "Set object" JSON-editor
   // placeholder. Pin an explicit select with the real option list instead.
   argTypes: {
+    children: { control: "text" },
     color: {
       control: "select",
       options: ["green", "orange", "red", "blue", "grey", "black", "white", "grey-info"],

@@ -34,6 +34,9 @@ export const Disabled: Story = {
 }
 
 export const AllColors: Story = {
+  // Zero-arg render maps a hardcoded color array — the inherited `color`
+  // select control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex items-center gap-4">
       {(["red", "contra-red", "dark-grey", "light-grey", "black"] as BadgeColor[]).map((color) => (

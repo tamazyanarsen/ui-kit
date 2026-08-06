@@ -31,6 +31,10 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {}
 
 export const Directions: Story = {
+  // Fixed 4-instance showcase — `direction` is hardcoded per-tooltip below,
+  // not read from args, so every meta-level control (direction, content,
+  // children...) would sit in the panel doing nothing if left enabled.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex items-center gap-6 p-16">
       {(["top-center", "down-center", "left", "right"] as const).map((direction) => (

@@ -71,6 +71,9 @@ function ToggleRow() {
 }
 
 export const Toggle: Story = {
+  // ToggleRow hardcodes its own value/rightElement — every inherited
+  // control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => <ToggleRow />,
 }
 
@@ -88,6 +91,9 @@ function CheckboxRow() {
 
 export const CheckboxRightElement: Story = {
   name: "Checkbox",
+  // CheckboxRow hardcodes its own value/rightElement — every inherited
+  // control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => <CheckboxRow />,
 }
 

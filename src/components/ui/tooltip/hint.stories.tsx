@@ -33,6 +33,9 @@ const meta = {
     // object" placeholder instead of a text box. Pin it to a real text
     // control since a string is genuinely all this prop ever holds here.
     title: { control: "text" },
+    // `content` (the hint body) is likewise always a plain string in
+    // practice — same fallback-to-JSON-editor issue without this pin.
+    content: { control: "text" },
   },
 } satisfies Meta<typeof Hint>
 

@@ -83,5 +83,8 @@ function ScrollingModal() {
 }
 
 export const ScrollingBody: Story = {
+  // ScrollingModal is a separate self-contained component that doesn't
+  // accept `size` (or any other inherited arg) — the control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => <ScrollingModal />,
 }

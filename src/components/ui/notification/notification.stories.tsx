@@ -49,12 +49,17 @@ export const EmptyPanel: Story = {
 export const UnreadItem: Story = {
   name: "NotificationItem — unread",
   args: { items: [] },
+  // Renders NotificationItem directly with its own hardcoded props, not
+  // NotificationPanel — every control inherited from meta (which describes
+  // NotificationPanel) is dead here.
+  parameters: { controls: { disable: true } },
   render: () => <NotificationItem title="Новое сообщение" viewed={false} />,
 }
 
 export const ClickableItemWithButton: Story = {
   name: "NotificationItem — clickable with action button",
   args: { items: [] },
+  parameters: { controls: { disable: true } },
   render: () => (
     <NotificationItem
       title="Требуется подпись"

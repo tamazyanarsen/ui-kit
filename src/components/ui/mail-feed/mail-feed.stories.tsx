@@ -46,6 +46,9 @@ export const ErrorState: Story = {
 }
 
 export const AllStates: Story = {
+  // Overrides meta's args-driven render with its own hardcoded ROW_PROPS
+  // per state — every inherited control is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="grid w-[492px] grid-cols-1 gap-3">
       {STATES.map((state) => (
@@ -59,6 +62,9 @@ export const AllStates: Story = {
 }
 
 export const WithCheckbox: Story = {
+  // Overrides meta's args-driven render with hardcoded ROW_PROPS — every
+  // inherited control (state/sender/subject/...) is dead here.
+  parameters: { controls: { disable: true } },
   render: function WithCheckboxStory() {
     const [checked, setChecked] = useState(false)
     return (

@@ -54,6 +54,9 @@ export const WithSubText: Story = {
 }
 
 export const StatusColors: Story = {
+  // Zero-arg render hardcodes 4 separate rows — every inherited control
+  // (label/value/subText/valueStatus/...) is dead here.
+  parameters: { controls: { disable: true } },
   render: () => (
     <div className="flex flex-col">
       <ItemInformationField label="Статус" value="Успешно" valueStatus="success" />

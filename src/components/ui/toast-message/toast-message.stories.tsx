@@ -44,6 +44,17 @@ const meta = {
   title: "Status/Message/ToastMessage",
   component: ToastLauncher,
   parameters: { layout: "centered" },
+  // `ToastLauncher` is a plain function declared locally in this file
+  // rather than imported from its own component module — Storybook's
+  // docgen (react-docgen-typescript) only reliably extracts props from
+  // component modules, so none of this wrapper's props got a Controls row
+  // at all. Declare them explicitly so they're actually reachable.
+  argTypes: {
+    type: { control: "select", options: ["checked", "attention", "error", "information"] },
+    title: { control: "text" },
+    description: { control: "text" },
+    buttons: { control: "select", options: ["none", "two", "black", "white"] },
+  },
   decorators: [
     (Story) => (
       <ToastProvider>

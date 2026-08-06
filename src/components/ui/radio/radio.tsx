@@ -78,7 +78,11 @@ function Radio({
   return (
     <label
       htmlFor={radioId}
-      className="group inline-flex cursor-pointer items-start gap-4 has-data-[disabled]:cursor-not-allowed"
+      // `flex`, not `inline-flex` — see Checkbox's identical fix/comment:
+      // an inline-level label wrapper lets its parent's line-box height
+      // shift by a couple px when the inline icon content changes on
+      // toggle, making the row visibly jump.
+      className="group flex cursor-pointer items-start gap-4 has-data-[disabled]:cursor-not-allowed"
     >
       {circle}
       {/* Same 0-gap, mobile-only pt-0.5 rule as Checkbox — see its comment

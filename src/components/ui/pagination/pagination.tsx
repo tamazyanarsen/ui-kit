@@ -78,7 +78,11 @@ function PageButton({
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2-medium text-[var(--pagination-fg)] outline-none transition-colors",
+        // pt-[9px]/pb-[7px] instead of a centred h-9: Figma's Paginator
+        // Numbers (node 8567:28146) sits the 20px line 1px below centre in
+        // its 36px box. Height still resolves to 36 (9 + 20 + 7), width to
+        // 44 (8 + 28 + 8).
+        "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"
@@ -130,7 +134,11 @@ function SizeButton({
       data-slot="pagination-size"
       data-active={active || undefined}
       className={cn(
-        "flex h-9 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 text-p2-medium text-[var(--pagination-fg)] outline-none transition-colors",
+        // pt-[9px]/pb-[7px] instead of a centred h-9: Figma's Paginator
+        // Numbers (node 8567:28146) sits the 20px line 1px below centre in
+        // its 36px box. Height still resolves to 36 (9 + 20 + 7), width to
+        // 44 (8 + 28 + 8).
+        "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"

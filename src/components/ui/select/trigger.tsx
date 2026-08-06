@@ -65,9 +65,9 @@ export function SelectTrigger({
         )}
         <span
           className={cn(
-            "flex flex-1 items-center gap-1.5 truncate text-[var(--select-fg)]",
+            "flex flex-1 items-center gap-2 truncate text-[var(--select-fg)]",
             "group-data-disabled/trigger:text-[var(--select-fg-disabled)]",
-            "*:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:truncate",
+            "*:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate",
             // The floating label already occupies the "empty" position —
             // don't let SelectValue's own placeholder text show under it.
             label &&
@@ -91,7 +91,7 @@ export function SelectTrigger({
             "hidden shrink-0 text-[var(--select-icon-fg)] group-data-readonly/trigger:block"
           )}
         />
-        <span className="flex shrink-0 items-center gap-1 group-data-readonly/trigger:hidden">
+        <span className="flex shrink-0 items-center gap-2 group-data-readonly/trigger:hidden">
           {clearable && (
             <button
               type="button"

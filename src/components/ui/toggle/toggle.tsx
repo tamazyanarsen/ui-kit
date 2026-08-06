@@ -50,7 +50,11 @@ function Toggle({
     >
       <SwitchPrimitive.Thumb
         data-slot="toggle-thumb"
-        className="absolute top-[3px] left-[3px] size-[18px] rounded-full bg-[var(--toggle-thumb-bg)] transition-transform data-[checked]:translate-x-6"
+        // 16px thumb inset 4px on every side, travelling 24px — read off the
+        // master's own SVG, where the circle has r=8 centred at (12,12)
+        // unchecked and (36,12) checked inside the 48×24 track. The previous
+        // 18px/3px pair came from eyeballing a screenshot.
+        className="absolute top-1 left-1 size-4 rounded-full bg-[var(--toggle-thumb-bg)] transition-transform data-[checked]:translate-x-6"
       />
     </SwitchPrimitive.Root>
   )

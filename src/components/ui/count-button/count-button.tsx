@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import type { ButtonProps } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import type { BadgeColor } from "@/components/ui/badge"
 
 // Count Button — "Кнопка с индикатором уведомлений": any Button (anatomy
 // and states are the same as Button's own, per ui/button-count/count
@@ -11,17 +12,28 @@ import { Badge } from "@/components/ui/badge"
 // visual system. Per spec: only one Count Button per button group.
 interface CountButtonProps extends ButtonProps {
   count: number
+  /** Badge color. Red is the master's own (`ELK / count button`); Table Top's
+   * "Ещё фильтры" instance overrides it to `black`, so it is a prop rather
+   * than a constant. */
+  countColor?: BadgeColor
 }
 
-function CountButton({ count, className, ...props }: CountButtonProps) {
+function CountButton({
+  count,
+  countColor = "red",
+  className,
+  ...props
+}: CountButtonProps) {
   return (
     <span className="relative inline-flex">
       <Button className={className} {...props} />
+      {/* The badge overhangs the button by 4px on each side (Figma's
+          `right-[-4px] top-[-4px]`), not 8. */}
       <Badge
         type="counter"
         value={count}
-        color="red"
-        className="absolute -top-2 -right-2"
+        color={countColor}
+        className="absolute -top-1 -right-1"
       />
     </span>
   )

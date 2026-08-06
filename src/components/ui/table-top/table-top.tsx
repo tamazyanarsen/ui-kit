@@ -22,12 +22,17 @@ import { cn } from "@/lib/utils"
 // component dropped in directly between `TableTopTitle` and
 // `TableTopToolbar` — no bespoke tabs wrapper needed.
 
+// The container is *not* a card: `ELK / table-top` (node 51104:13311) is a
+// transparent 16px-padded column with a single bottom rule, sitting flush
+// above the table it heads — an earlier reading of the mockup turned it into
+// a rounded white panel with 24px padding, which the symbol itself does not
+// have.
 function TableTop({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="table-top"
       className={cn(
-        "flex w-full flex-col gap-4 rounded-2xl border border-[var(--table-divider)] bg-white p-6",
+        "flex w-full flex-col gap-4 border-b border-[var(--table-divider)] p-4",
         className
       )}
       {...props}
@@ -51,10 +56,15 @@ function TableTopTitle({
   return (
     <div
       data-slot="table-top-title"
-      className={cn("flex items-center justify-between gap-4", className)}
+      className={cn("flex min-h-8 items-center justify-between gap-4", className)}
       {...props}
     >
-      <h3 className="text-h4 text-[var(--table-fg)]">{title}</h3>
+      {/* H3 Medium (24/32) per "Title-Table (ELK)" — not H4 — and it takes the
+          free space so a long title ellipsizes instead of pushing the action
+          button out of the row. */}
+      <h3 className="min-w-0 flex-1 truncate text-h3 text-[var(--table-fg)]">
+        {title}
+      </h3>
       {action}
     </div>
   )
@@ -67,7 +77,9 @@ function TableTopToolbar({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="table-top-toolbar"
-      className={cn("flex flex-wrap items-center gap-2", className)}
+      // "Group Chips (ELK)" wraps with an asymmetric gap — 8px between
+      // controls in a row, 12px between wrapped rows.
+      className={cn("flex flex-wrap items-center gap-x-2 gap-y-3", className)}
       {...props}
     />
   )
@@ -90,12 +102,12 @@ function TableTopSummary({
     <div
       data-slot="table-top-summary"
       className={cn(
-        "flex flex-wrap items-center justify-between gap-3",
+        "flex min-h-8 flex-wrap items-center justify-between gap-2",
         className
       )}
       {...props}
     >
-      <div className="flex items-center gap-4 text-p2-regular text-[var(--table-description-fg)]">
+      <div className="flex flex-wrap items-center gap-4 text-p2-medium">
         {info}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -103,5 +115,41 @@ function TableTopSummary({
   )
 }
 
-export { TableTop, TableTopTitle, TableTopToolbar, TableTopSummary }
-export type { TableTopTitleProps, TableTopSummaryProps }
+interface TableTopSummaryItemProps extends React.ComponentProps<"span"> {
+  label: React.ReactNode
+  value: React.ReactNode
+}
+
+// One "Выбрано фильтров: 0" pair from "Result-Table (ELK)". Both halves are
+// P2 Medium and differ only in color — the label is the muted grey, the value
+// the standard dark text — so this is not a `<strong>`/regular contrast.
+function TableTopSummaryItem({
+  className,
+  label,
+  value,
+  ...props
+}: TableTopSummaryItemProps) {
+  return (
+    <span
+      data-slot="table-top-summary-item"
+      className={cn("flex items-center gap-1", className)}
+      {...props}
+    >
+      <span className="text-[var(--table-description-fg)]">{label}</span>
+      <span className="text-[var(--table-fg)]">{value}</span>
+    </span>
+  )
+}
+
+export {
+  TableTop,
+  TableTopTitle,
+  TableTopToolbar,
+  TableTopSummary,
+  TableTopSummaryItem,
+}
+export type {
+  TableTopTitleProps,
+  TableTopSummaryProps,
+  TableTopSummaryItemProps,
+}

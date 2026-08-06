@@ -19,13 +19,13 @@ const ICON_SIZE = "size-4"
 // a value, popup closed; click clears without reopening) per chips-filter's
 // own "Варианты — поведение Select" row.
 //
-// `chip` opts into the *other* documented look: filter-table's anatomy
-// shows the same filter, once it has a value, rendered as a compact dark
-// pill (bg #012F42, badge, X, no chevron/icon) for a filter-bar-above-a-
-// table summary — visually distinct from chips-filter's own light-bg+X
-// state. Both are genuinely in the specs, so it's a prop rather than a
-// guess at which one is "right": default off keeps chips-filter's own
-// documented behavior, and a table-usage demo can opt in.
+// `chip` opts into the *other* documented look: the filter renders as
+// `ELK / filter-table` (node 1303:99241), the capsule used in the filter bar
+// above a table — grey #F4F4F4 with a chevron while empty (its Checked=False,
+// Select=True variant) and dark #012F42 with a close cross once it has a
+// value (Checked=True). Both looks are genuinely in the specs, so it's a prop
+// rather than a guess at which one is "right": default off keeps
+// chips-filter's own documented behavior, and Table Top opts in.
 interface FilterProps {
   label: React.ReactNode
   icon?: React.ReactNode
@@ -102,7 +102,9 @@ function Filter({
   }
 
   const hasValue = Boolean(activeValue)
-  const asChip = chip && hasValue
+  const asChip = chip
+  // Figma's `Checked` property on filter-table — the dark pill.
+  const chipChecked = chip && hasValue
 
   // Three mutually exclusive trigger looks (chip / disabled / normal) — only
   // the "normal" one varies further by open state + background, so an
@@ -119,15 +121,15 @@ function Filter({
   // --filter-disabled-bg's lighter #F4F4F4.
   let triggerToneClass: string
   if (asChip) {
-    // The chip look is Figma's `ELK / filter-table` in its Checked=True
-    // state — the same pill NPS renders — so its fill/hover/disabled colours
-    // come from the shared helper instead of being restated here. Only the
-    // border stays local: filter-table has none, but this trigger keeps a
-    // transparent border-2 so switching between the chip and plain looks
-    // doesn't change the box size.
+    // The chip look is Figma's `ELK / filter-table` — the same pill NPS
+    // renders — so its fill/hover/disabled colours come from the shared
+    // helper instead of being restated here, in whichever Checked state the
+    // filter is currently in. Only the border stays local: filter-table has
+    // none, but this trigger keeps a transparent border-2 so switching
+    // between the chip and plain looks doesn't change the box size.
     triggerToneClass = cn(
       "border-transparent",
-      filterTablePillClass({ selected: true, disabled })
+      filterTablePillClass({ selected: chipChecked, disabled })
     )
   } else if (disabled) {
     triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
@@ -154,7 +156,7 @@ function Filter({
             disabled
               ? "text-[var(--filter-disabled-fg)]"
               : asChip
-                ? "text-[var(--chips-dark-fg)]"
+                ? "text-current"
                 : "text-[var(--filter-icon-fg)]"
           )}
         >
@@ -162,16 +164,20 @@ function Filter({
         </button>
       )
     }
-    if (asChip) return null
     const Chevron = open ? ChevronUp : ChevronDown
     return (
       <Chevron
         aria-hidden="true"
         className={cn(
           ICON_SIZE,
+          "shrink-0",
           // Design-check #26: was the same dark icon color regardless of
           // disabled, out of step with the label text lightening alongside it.
-          disabled ? "text-[var(--filter-disabled-fg)]" : "text-[var(--filter-icon-fg)]"
+          disabled
+            ? "text-[var(--filter-disabled-fg)]"
+            : asChip
+              ? "text-current"
+              : "text-[var(--filter-icon-fg)]"
         )}
       />
     )
@@ -210,8 +216,10 @@ function Filter({
                 // filterTablePillClass (see triggerToneClass) so this and
                 // NPS render the same pill from one definition; the plain
                 // Filter look keeps its own 8px-radius box below.
-                "group/filter inline-flex w-fit min-w-20 max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
-                !asChip && "rounded-[8px]",
+                "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+                // filter-table hugs its label (max-w only); the plain
+                // chips-filter box keeps its own 80px floor and 8px radius.
+                asChip ? "min-w-0" : "min-w-20 rounded-[8px]",
                 triggerToneClass,
                 className
               )}
@@ -235,14 +243,19 @@ function Filter({
                 // applies to the plain Filter label.
                 "min-w-0 truncate text-p2-medium",
                 !asChip && "md:text-p1-medium",
-                disabled
-                  ? "text-[var(--filter-disabled-fg)]"
-                  : asChip
-                    ? "text-[var(--chips-dark-fg)]"
+                // In chip mode the pill class already sets the text colour
+                // for its own Checked/Disabled state — overriding it here
+                // would repaint the dark pill's white label.
+                asChip
+                  ? chipChecked
+                    ? undefined
+                    : "flex-1 text-center"
+                  : disabled
+                    ? "text-[var(--filter-disabled-fg)]"
                     : "text-[var(--filter-fg)]"
               )}
             >
-              {asChip ? activeValue : label}
+              {chipChecked ? activeValue : label}
             </span>
             {count !== undefined && (
               <Badge

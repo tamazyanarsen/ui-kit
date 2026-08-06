@@ -3,12 +3,18 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { ChevronDown, Search, Settings as Settings2, X } from "@/icons"
 
-import { TableTop, TableTopTitle, TableTopToolbar, TableTopSummary } from "./table-top"
+import {
+  TableTop,
+  TableTopTitle,
+  TableTopToolbar,
+  TableTopSummary,
+  TableTopSummaryItem,
+} from "./table-top"
 import { Tabs, type TabItem } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Filter } from "@/components/ui/filter"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { CountButton } from "@/components/ui/count-button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -59,29 +65,43 @@ function FullExample() {
 
   return (
     <TableTop>
-      <TableTopTitle title="Заголовок таблицы" action={<Button size="sm">Button</Button>} />
+      <TableTopTitle
+        title="Заголовок таблицы"
+        action={
+          <Button variant="secondary-grey" size="sm">
+            Button
+          </Button>
+        }
+      />
       <Tabs items={TABS} value={tab} onValueChange={setTab} size="md" />
       <TableTopToolbar>
-        <Input
-          size="sm"
-          iconLeft={<Search aria-hidden="true" />}
-          placeholder="Поиск по нескольким крит..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          containerClassName="w-56"
-        />
+        {/* Figma's search field is a fixed 260px column inside the filter
+            row; Input's own root is always w-full, so the width lives on a
+            wrapper. */}
+        <div className="w-[260px]">
+          <Input
+            size="sm"
+            iconLeft={<Search aria-hidden="true" />}
+            placeholder="Поиск по нескольким крит..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <Filter label="Статус" value={status} onValueChange={setStatus} chip />
         {moreOpen && <Filter label="Менеджер" value={manager} onValueChange={setManager} chip />}
-        <Button
+        {/* "Ещё фильтры" is an `ELK / count button` in the spec — the counter
+            is a corner badge on the button, dark rather than red here. */}
+        <CountButton
           variant="secondary-grey"
           size="sm"
           icon={ChevronDown}
           iconPosition="left"
+          count={appliedCount}
+          countColor="black"
           onClick={() => setMoreOpen((v) => !v)}
         >
           {moreOpen ? "Скрыть фильтры" : "Ещё фильтры"}
-          <Badge type="counter" value={appliedCount} color="light-grey" />
-        </Button>
+        </CountButton>
         {appliedCount > 0 && (
           <Button
             variant="secondary-grey"
@@ -100,12 +120,11 @@ function FullExample() {
       <TableTopSummary
         info={
           <>
-            <span>
-              Выбрано фильтров: <strong>{appliedCount}</strong>
-            </span>
-            <span>
-              Результатов: <strong>8</strong>
-            </span>
+            <TableTopSummaryItem
+              label="Выбрано фильтров:"
+              value={appliedCount}
+            />
+            <TableTopSummaryItem label="Результатов:" value={8} />
           </>
         }
         actions={
@@ -128,12 +147,8 @@ function SortSummaryExample() {
       <TableTopSummary
         info={
           <>
-            <span>
-              Выбрано фильтров: <strong>0</strong>
-            </span>
-            <span>
-              Результатов: <strong>8</strong>
-            </span>
+            <TableTopSummaryItem label="Выбрано фильтров:" value={0} />
+            <TableTopSummaryItem label="Результатов:" value={8} />
           </>
         }
         actions={

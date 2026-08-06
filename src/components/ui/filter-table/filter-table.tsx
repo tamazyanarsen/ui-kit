@@ -71,13 +71,12 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
         <span className={cn("min-w-0 flex-1 truncate", !selected && "text-center")}>
           {children}
         </span>
+        {/* The counter is the same #6D6D6D/white badge in both Checked
+            states — Figma's Counter=True variants (1303:99335 grey pill and
+            1303:99338 dark pill) carry an identical `ELK / badge`, so it does
+            not flip to the pale one on the dark pill. */}
         {count !== undefined && (
-          <Badge
-            type="counter"
-            value={count}
-            color={selected ? "light-grey" : "dark-grey"}
-            disabled={disabled}
-          />
+          <Badge type="counter" value={count} color="dark-grey" disabled={disabled} />
         )}
         {selected && <X aria-hidden="true" className="size-4 shrink-0" />}
       </button>

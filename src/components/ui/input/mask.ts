@@ -18,7 +18,7 @@ export type DigitMaskName =
   | "kpp"
   | "kbk"
 
-export type MaskName = DigitMaskName | "amount"
+export type MaskName = DigitMaskName | "amount" | "time"
 
 // '0' = one digit slot; any other character is a fixed literal (imask's
 // default pattern-char definitions).
@@ -42,6 +42,7 @@ const PLACEHOLDERS: Record<MaskName, string> = {
   ...PATTERNS,
   date: "ДД.ММ.ГГГГ",
   amount: "0 ₽",
+  time: "ЧЧ:ММ",
 }
 
 export function getMaskPlaceholder(name: MaskName): string {
@@ -57,6 +58,21 @@ export function getMaskPlaceholder(name: MaskName): string {
 // it as `mask: "num ₽"` with a nested block silently never appends the
 // suffix — confirmed by hand before settling on the external-node approach.
 export function getImaskProps(name: MaskName) {
+  // Time is a two-range mask rather than a flat "00:00" pattern: the spec
+  // ("Поле ввода времени", node 70240:21250) says the component formats what
+  // you type into ЧЧ:ММ and inserts the ":" itself, which is exactly what
+  // imask's MaskedRange blocks do — and they additionally keep the value a
+  // real time by refusing an hour past 23 or a minute past 59, where a flat
+  // digit pattern would happily accept 99:99.
+  if (name === "time") {
+    return {
+      mask: "HH:MM",
+      blocks: {
+        HH: { mask: IMask.MaskedRange, from: 0, to: 23, maxLength: 2 },
+        MM: { mask: IMask.MaskedRange, from: 0, to: 59, maxLength: 2 },
+      },
+    }
+  }
   if (name === "amount") {
     return {
       mask: IMask.MaskedNumber,

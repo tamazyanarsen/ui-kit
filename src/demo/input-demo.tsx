@@ -20,6 +20,7 @@ const DIGIT_MASKS: { mask: MaskName; label: string }[] = [
   { mask: "inn", label: "ИНН" },
   { mask: "kpp", label: "КПП" },
   { mask: "kbk", label: "Код бюджетной классификации" },
+  { mask: "time", label: "Время" },
 ]
 
 // Input only has two size tokens (no M) — L is mobile-first responsive

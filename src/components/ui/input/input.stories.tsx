@@ -47,6 +47,7 @@ const meta = {
         "kpp",
         "kbk",
         "amount",
+        "time",
       ] satisfies MaskName[],
     },
   },
@@ -97,4 +98,10 @@ export const MaskedAmount: Story = {
 
 export const MaskedDate: Story = {
   args: { label: "Дата", mask: "date" },
+}
+
+// ЧЧ:ММ — the separator is inserted for you, and the two halves are range
+// masks, so 25 or :70 can't be typed in the first place.
+export const MaskedTime: Story = {
+  args: { label: "Время", mask: "time" },
 }

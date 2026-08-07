@@ -80,7 +80,10 @@ export function FileUploadDropzone({
       // layout: the spec puts the icon inline with the title on one row,
       // not stacked above it, with the subtitle on its own row below.
       className={cn(
-        "relative flex w-full flex-col items-center gap-1 rounded-[24px] border border-dashed px-4 py-6 text-center transition-colors",
+        // `p-6` and `gap-2`: the master (16029:57969) is a uniform 24px box
+        // with 8px between the "Перетащите или загрузите файлы" row and the
+        // format hint — the 16px sides and 4px gap were tighter than the spec.
+        "relative flex w-full flex-col items-center gap-2 rounded-[24px] border border-dashed p-6 text-center transition-colors",
         containerToneClass,
         className
       )}

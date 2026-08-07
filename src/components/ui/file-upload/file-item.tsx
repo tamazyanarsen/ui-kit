@@ -42,7 +42,11 @@ export function FileListItem({
       data-slot="file-item"
       data-disabled={disabled || undefined}
       className={cn(
-        "flex w-full items-center gap-4 py-2 text-p2-regular",
+        // The row is exactly its 48px thumbnail tall and reserves 16px on
+        // the right for the trailing icons — `ELK / files` (16029:58062) is
+        // `flex gap-16 items-center pr-16` with no vertical padding of its
+        // own; spacing between rows belongs to the list that stacks them.
+        "flex w-full items-center gap-4 pr-4 text-p2-regular",
         disabled && "pointer-events-none opacity-50",
         className
       )}
@@ -105,7 +109,7 @@ export function FileListItem({
         </span>
       </span>
 
-      <span className="flex shrink-0 items-center gap-1">
+      <span className="flex shrink-0 items-center gap-4">
         {showEdit && (
           <button
             type="button"

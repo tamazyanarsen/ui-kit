@@ -53,7 +53,7 @@ function FileUploadDemo() {
       <AccordionItem value="file-item-variants">
         <AccordionTrigger>File — состояния элемента списка</AccordionTrigger>
         <AccordionPanel>
-          <div className="grid grid-cols-1 gap-x-8 divide-y sm:grid-cols-2 sm:divide-y-0">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4 divide-y sm:grid-cols-2 sm:divide-y-0">
             <div>
               <RowLabel>Исходное состояние</RowLabel>
               <FileListItem name="File.doc" meta="21.06.2025, 16:34 · 589 КБ" />

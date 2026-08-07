@@ -1,50 +1,53 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Badge } from "./badge"
+import { StatesMatrix } from "@/stories/matrix"
+
+import { Badge, type BadgeProps } from "./badge"
 import type { BadgeColor } from "./variants"
+
+const COLORS: BadgeColor[] = [
+  "red",
+  "contra-red",
+  "dark-grey",
+  "light-grey",
+  "black",
+]
 
 const meta = {
   title: "Status/Badge",
   component: Badge,
   parameters: { layout: "centered" },
   argTypes: {
-    color: {
-      control: "select",
-      options: ["red", "contra-red", "dark-grey", "light-grey", "black"] satisfies BadgeColor[],
-    },
+    type: { control: "inline-radio", options: ["counter", "point"] },
+    color: { control: "select", options: COLORS },
+    value: { control: { type: "number", min: 0, max: 999 } },
+    disabled: { control: "boolean" },
   },
-  args: { type: "counter", value: 3, color: "red" },
-} satisfies Meta<typeof Badge>
+  args: { type: "counter", color: "red", value: 3, disabled: false },
+} satisfies Meta<BadgeProps>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Counter: Story = {}
+export const Playground: Story = {}
 
-export const CounterOverflow: Story = {
-  args: { value: 143 },
-}
-
-export const Point: Story = {
-  args: { type: "point" },
-}
-
-export const Disabled: Story = {
-  args: { disabled: true },
-}
-
-export const AllColors: Story = {
-  // Zero-arg render maps a hardcoded color array — the inherited `color`
-  // select control is dead here.
-  parameters: { controls: { disable: true } },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <div className="flex items-center gap-4">
-      {(["red", "contra-red", "dark-grey", "light-grey", "black"] as BadgeColor[]).map((color) => (
-        <div key={color} className="flex flex-col items-center gap-2">
-          <Badge type="counter" value={3} color={color} />
-          <span className="text-p3-regular text-muted-foreground">{color}</span>
-        </div>
-      ))}
-    </div>
+    <StatesMatrix<BadgeProps>
+      columns={COLORS.map((color) => ({ label: color, props: { color } }))}
+      rows={[
+        { label: "Counter", props: { type: "counter", value: 3 } },
+        // Values above 99 clamp to "99+" per the spec.
+        { label: "Counter 99+", props: { type: "counter", value: 143 } },
+        { label: "Point", props: { type: "point" } },
+        {
+          label: "Disabled",
+          props: { type: "counter", value: 3, disabled: true },
+        },
+      ]}
+      render={(props) => <Badge {...props} />}
+    />
   ),
 }

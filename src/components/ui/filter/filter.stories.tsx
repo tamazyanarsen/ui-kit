@@ -1,15 +1,28 @@
-import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { CircleHelp } from "@/icons"
 
-import { Filter } from "./filter"
+import {
+  PseudoBox,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
+
+import { Filter, type FilterProps } from "./filter"
+
+type PlaygroundArgs = FilterProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Interaction/Filter",
   component: Filter,
   parameters: { layout: "padded" },
-  args: { label: "Статус" },
   argTypes: {
+    label: { control: "text" },
+    placeholder: { control: "text" },
+    background: { control: "inline-radio", options: ["white", "grey"] },
+    count: { control: { type: "number", min: 0, max: 99 } },
+    chip: { control: "boolean" },
+    disabled: { control: "boolean" },
     // `icon` takes a JSX element instance (same shape as Input's
     // iconLeft/trailingIcon) — map a friendly choice to the real element
     // instead of disabling the control (matches `src/demo/filter-demo.tsx`'s
@@ -19,55 +32,77 @@ const meta = {
       options: ["none", "circleHelp"],
       mapping: { none: undefined, circleHelp: <CircleHelp aria-hidden="true" /> },
     },
-    // `value`/`defaultValue` are `string | null` but every usage is a
-    // plain string — without this, the union falls back to a generic
-    // "Set object" JSON editor whenever a story leaves one unset.
+    // `value`/`defaultValue` are `string | null` but every usage is a plain
+    // string — without this, the union falls back to a generic "Set object"
+    // JSON editor whenever a story leaves one unset.
     value: { control: "text" },
     defaultValue: { control: "text" },
+    state: stateArgType,
   },
-} satisfies Meta<typeof Filter>
+  args: {
+    label: "Статус",
+    background: "white",
+    chip: false,
+    disabled: false,
+    state: "default" as PlaygroundState,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-export const White: Story = {
-  args: { background: "white" },
+export const Playground: Story = {
+  render: ({ state, ...args }) => (
+    <PseudoBox state={state}>
+      <Filter {...args} />
+    </PseudoBox>
+  ),
 }
 
-export const Grey: Story = {
-  args: { background: "grey" },
+/* `chip` renders `ELK / filter-table` in *both* of its Checked states: the
+   grey pill with a chevron while empty, the dark pill with a close cross
+   once a value is applied — hence a dedicated column pair. */
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<FilterProps>
+      baseProps={{ label: "Статус" }}
+      columnGroups={[
+        {
+          label: "Dropdown",
+          columns: [
+            { label: "White", props: { background: "white" } },
+            { label: "Grey", props: { background: "grey" } },
+          ],
+        },
+        {
+          label: "Chip (filter-table)",
+          columns: [{ label: "Chip", props: { chip: true } }],
+        },
+      ]}
+      rows={[
+        { label: "Default", props: {} },
+        { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Pressed", props: {}, pseudo: "active" },
+        { label: "Со счётчиком", props: { count: 3 } },
+        { label: "Выбрано", props: { defaultValue: "Оплачен" } },
+        { label: "С иконкой", props: { icon: <CircleHelp aria-hidden="true" /> } },
+        { label: "Disabled", props: { disabled: true } },
+      ]}
+      render={(props) => <Filter {...props} />}
+    />
+  ),
 }
 
-export const WithCount: Story = {
-  args: { count: 3 },
-}
-
-export const WithAppliedValue: Story = {
-  args: { defaultValue: "Оплачен" },
-}
-
-// `chip` renders `ELK / filter-table` in *both* of its Checked states: the
-// grey pill with a chevron while empty, the dark pill with a close cross
-// once a value is applied. Both are shown side by side here.
-function ChipHarness() {
-  const [empty, setEmpty] = useState<string | null>(null)
-  const [value, setValue] = useState<string | null>("Оплачен")
-  return (
-    <div className="flex items-start gap-2">
-      <Filter label="Статус" value={empty} onValueChange={setEmpty} chip />
-      <Filter label="Статус" value={value} onValueChange={setValue} chip />
+/* The popup is portalled, so it can't sit inside the matrix — every open
+   cell would overlay the next. */
+export const Opened: Story = {
+  name: "Раскрытый фильтр",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => (
+    <div className="h-96">
+      <Filter label="Статус" open />
     </div>
-  )
-}
-
-export const ChipVariant: Story = {
-  name: "Chip (table filter bar)",
-  // ChipHarness hardcodes label/value locally — every inherited control
-  // (background/count/icon/value/defaultValue) is dead here.
-  parameters: { controls: { disable: true } },
-  render: () => <ChipHarness />,
-}
-
-export const Disabled: Story = {
-  args: { disabled: true },
+  ),
 }

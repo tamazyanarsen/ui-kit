@@ -173,4 +173,9 @@ function Toaster() {
   )
 }
 
-export { ToastProvider, Toaster }
+// ToastCard is the presentational half of the component (the Toaster owns
+// mounting/timing). It's exported for the Storybook state matrix, which has
+// to render every type/button combination at once — going through
+// `toast.add()` would stack them on a timer instead. Not re-exported from
+// index.ts: consumers should still go through `useToast()`.
+export { ToastProvider, Toaster, ToastCard }

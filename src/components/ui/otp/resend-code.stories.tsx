@@ -1,21 +1,39 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import type { ComponentProps } from "react"
+
+import { StatesMatrix } from "@/stories/matrix"
 
 import { ResendCode } from "./resend-code"
 
+type ResendCodeProps = ComponentProps<typeof ResendCode>
+
 const meta = {
-  title: "Template/Otp/ResendCode",
+  title: "Template/OTP Code/Resend Code",
   component: ResendCode,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof ResendCode>
+  argTypes: { seconds: { control: { type: "number", min: 0, max: 300 } } },
+  args: { seconds: 60 },
+} satisfies Meta<ResendCodeProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<ResendCodeProps>
 
-export const Counting: Story = {
-  args: { seconds: 60 },
-}
+export const Playground: Story = {}
 
-export const ReadyToResend: Story = {
-  name: "Ready (0s left)",
-  args: { seconds: 0 },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<ResendCodeProps>
+      columns={[{ label: "Resend Code" }]}
+      rows={[
+        { label: "Отсчёт (60 с)", props: { seconds: 60 } },
+        { label: "Отсчёт (5 с)", props: { seconds: 5 } },
+        // At 0 the counter turns into an active "отправить ещё раз" link.
+        { label: "Готово (0 с)", props: { seconds: 0 } },
+        { label: "Готово · Hover", props: { seconds: 0 }, pseudo: "hover" },
+      ]}
+      render={(props) => <ResendCode {...props} />}
+    />
+  ),
 }

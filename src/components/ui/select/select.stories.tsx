@@ -1,6 +1,14 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import {
+  PseudoBox,
+  RESPONSIVE_NOTE,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
+
 import { Select, SelectValue } from "./root"
 import { SelectTrigger } from "./trigger"
 import { SelectContent } from "./content"
@@ -12,26 +20,49 @@ const FRUIT_OPTIONS = [
   { value: "cherry", label: "Cherry" },
 ]
 
-function ClearableFruitSelect({
-  size,
-  error,
-  comment,
-  defaultValue = null,
-  disabled,
-  readOnly,
-}: {
+interface DemoSelectProps {
   size?: "sm" | "lg"
+  label?: string
+  placeholder?: string
   error?: string
   comment?: string
   defaultValue?: string | null
+  clearable?: boolean
   disabled?: boolean
   readOnly?: boolean
-}) {
+  open?: boolean
+}
+
+function DemoSelect({
+  size,
+  label = "Label",
+  placeholder = "",
+  error,
+  comment,
+  defaultValue = null,
+  clearable = true,
+  disabled,
+  readOnly,
+  open,
+}: DemoSelectProps) {
   const [value, setValue] = useState<string | null>(defaultValue)
   return (
-    <Select items={FRUIT_OPTIONS} value={value} onValueChange={setValue} disabled={disabled} readOnly={readOnly}>
-      <SelectTrigger size={size} label="Фрукт" error={error} comment={comment} onClear={() => setValue(null)}>
-        <SelectValue placeholder="" />
+    <Select
+      items={FRUIT_OPTIONS}
+      value={value}
+      onValueChange={setValue}
+      disabled={disabled}
+      readOnly={readOnly}
+      defaultOpen={open}
+    >
+      <SelectTrigger
+        size={size}
+        label={label}
+        error={error}
+        comment={comment}
+        onClear={clearable ? () => setValue(null) : undefined}
+      >
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {FRUIT_OPTIONS.map((o) => (
@@ -44,53 +75,91 @@ function ClearableFruitSelect({
   )
 }
 
+type PlaygroundArgs = DemoSelectProps & { state?: PlaygroundState }
+
 const meta = {
   title: "Interaction/Select",
-  component: ClearableFruitSelect,
+  component: DemoSelect,
   parameters: { layout: "padded" },
-  // `ClearableFruitSelect` is a plain function declared locally in this
-  // file rather than imported from its own component module — Storybook's
-  // docgen (react-docgen-typescript) only reliably extracts props from
-  // component modules, so most of this wrapper's props silently got NO
-  // Controls row at all (not even a broken placeholder) except `size`,
-  // which happened to resolve. Declare the rest explicitly so every prop
-  // is actually reachable from the Controls panel.
+  // `DemoSelect` is a plain function declared locally in this file rather
+  // than imported from its own component module — Storybook's docgen
+  // (react-docgen-typescript) only reliably extracts props from component
+  // modules, so most of this wrapper's props silently get NO Controls row at
+  // all. Declare every one of them explicitly instead.
   argTypes: {
+    size: { control: "inline-radio", options: ["lg", "sm"] },
+    label: { control: "text" },
+    placeholder: { control: "text" },
     error: { control: "text" },
     comment: { control: "text" },
-    defaultValue: { control: "text" },
+    defaultValue: { control: "select", options: [null, "apple", "banana", "cherry"] },
+    clearable: { control: "boolean" },
     disabled: { control: "boolean" },
     readOnly: { control: "boolean" },
+    state: stateArgType,
   },
-} satisfies Meta<typeof ClearableFruitSelect>
+  args: {
+    size: "lg",
+    label: "Label",
+    clearable: true,
+    disabled: false,
+    readOnly: false,
+    state: "default" as PlaygroundState,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Large: Story = {
-  args: { size: "lg" },
+export const Playground: Story = {
+  render: ({ state, ...args }) => (
+    <PseudoBox state={state} className="w-80">
+      <DemoSelect {...args} />
+    </PseudoBox>
+  ),
 }
 
-export const Small: Story = {
-  args: { size: "sm" },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<DemoSelectProps>
+      stretch
+      cellClassName="min-w-72"
+      rowHeader={RESPONSIVE_NOTE}
+      columns={[
+        { label: "L (default)", props: { size: "lg" } },
+        { label: "S", props: { size: "sm" } },
+      ]}
+      rows={[
+        { label: "Default", props: {} },
+        { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Focus", props: {}, pseudo: "focus-within" },
+        { label: "Filled", props: { defaultValue: "banana" } },
+        {
+          label: "Comment",
+          props: { defaultValue: "banana", comment: "Comment" },
+        },
+        {
+          label: "Error",
+          props: { defaultValue: "banana", error: "Text about error here" },
+        },
+        { label: "Read only", props: { defaultValue: "banana", readOnly: true } },
+        { label: "Disabled", props: { defaultValue: "banana", disabled: true } },
+      ]}
+      render={(props) => <DemoSelect {...props} />}
+    />
+  ),
 }
 
-export const Preselected: Story = {
-  args: { defaultValue: "banana" },
-}
-
-export const WithComment: Story = {
-  args: { comment: "Выберите один вариант" },
-}
-
-export const WithError: Story = {
-  args: { error: "Обязательное поле" },
-}
-
-export const Disabled: Story = {
-  args: { disabled: true, defaultValue: "banana" },
-}
-
-export const ReadOnly: Story = {
-  args: { defaultValue: "banana", readOnly: true },
+/* The open list is a portalled popup, so it can't live inside the matrix
+   (every cell would overlay the next). */
+export const Opened: Story = {
+  name: "Раскрытый список",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => (
+    <div className="h-80 w-80">
+      <DemoSelect open defaultValue="banana" />
+    </div>
+  ),
 }

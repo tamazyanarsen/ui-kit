@@ -1,37 +1,53 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Chips } from "./chips"
+import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+
+import { Chips, type ChipsProps } from "./chips"
 
 const meta = {
   title: "Interaction/Chips",
   component: Chips,
   parameters: { layout: "centered" },
-  // `subtitle` is `React.ReactNode` but every usage is a plain string —
-  // without this, leaving it unset (every story but WithSubtitle) falls
-  // back to a generic "Set object" JSON editor.
   argTypes: {
+    children: { control: "text" },
     subtitle: { control: "text" },
+    count: { control: { type: "number", min: 0, max: 99 } },
+    closable: { control: "boolean" },
+    disabled: { control: "boolean" },
   },
-  args: { children: "Значение" },
-} satisfies Meta<typeof Chips>
+  args: {
+    children: "Значение",
+    subtitle: "",
+    closable: false,
+    disabled: false,
+  },
+} satisfies Meta<ChipsProps>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+export const Playground: Story = {}
 
-export const WithSubtitle: Story = {
-  args: { subtitle: "Подпись" },
-}
-
-export const WithCount: Story = {
-  args: { count: 5 },
-}
-
-export const Closable: Story = {
-  args: { closable: true, onRemove: () => alert("removed") },
-}
-
-export const Disabled: Story = {
-  args: { disabled: true, closable: true },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<ChipsProps>
+      rowHeader={RESPONSIVE_NOTE}
+      baseProps={{ children: "Значение" }}
+      columns={[
+        { label: "Текст", props: {} },
+        { label: "+ подпись", props: { subtitle: "Подпись" } },
+        { label: "+ счётчик", props: { count: 5 } },
+        { label: "+ крестик", props: { closable: true } },
+      ]}
+      rows={[
+        { label: "Default", props: {} },
+        { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Pressed", props: {}, pseudo: "active" },
+        { label: "Disabled", props: { disabled: true } },
+      ]}
+      render={(props) => <Chips {...props} onRemove={() => {}} />}
+    />
+  ),
 }

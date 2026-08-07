@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Tag } from "./tag"
+import { StatesMatrix } from "@/stories/matrix"
+
+import { Tag, type TagProps } from "./tag"
 import type { TagColor } from "./variants"
 
 const STATUS_COLORS: TagColor[] = ["green", "orange", "red", "blue", "grey"]
@@ -10,66 +12,78 @@ const meta = {
   title: "Status/Tag",
   component: Tag,
   parameters: { layout: "centered" },
-  args: { children: "Example Text" },
-  // `color` is `TagColor = TagStatusColor | TagSignColor`, a union of two
-  // string-literal unions re-exported from variants.ts — docgen can't
-  // flatten that nested union across the module boundary into a plain
-  // enum, so it falls back to Storybook's "Set object" JSON-editor
-  // placeholder. Pin an explicit select with the real option list instead.
   argTypes: {
     children: { control: "text" },
     color: {
       control: "select",
-      options: ["green", "orange", "red", "blue", "grey", "black", "white", "grey-info"],
+      options: [...STATUS_COLORS, ...SIGN_COLORS] satisfies TagColor[],
     },
+    variant: { control: "inline-radio", options: ["main", "secondary"] },
+    size: { control: "inline-radio", options: ["l", "s"] },
+    showIcon: { control: "boolean" },
   },
-} satisfies Meta<typeof Tag>
+  args: {
+    children: "Example Text",
+    color: "green",
+    variant: "main",
+    size: "l",
+    showIcon: false,
+  },
+} satisfies Meta<TagProps>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+export const Playground: Story = {}
 
-export const Small: Story = {
-  args: { size: "s" },
-}
-
-export const WithIcon: Story = {
-  args: { showIcon: true },
-}
-
-export const StatusColors: Story = {
+/* Figma splits Tag into two colour families — Status (a state change on the
+   object) and Sign (a neutral marker) — crossed with Main/Secondary style,
+   L/S size and the optional leading icon. */
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <div className="flex items-center gap-3">
-      {STATUS_COLORS.map((color) => (
-        <Tag key={color} color={color}>
-          {color}
-        </Tag>
-      ))}
-    </div>
-  ),
-}
-
-export const SecondaryVariant: Story = {
-  render: () => (
-    <div className="flex items-center gap-3">
-      {STATUS_COLORS.map((color) => (
-        <Tag key={color} color={color} variant="secondary">
-          {color}
-        </Tag>
-      ))}
-    </div>
-  ),
-}
-
-export const SignColors: Story = {
-  render: () => (
-    <div className="flex items-center gap-3">
-      {SIGN_COLORS.map((color) => (
-        <Tag key={color} color={color}>
-          {color}
-        </Tag>
-      ))}
+    <div className="flex flex-col gap-8">
+      <StatesMatrix<TagProps>
+        baseProps={{ children: "Example Text" }}
+        columnGroups={[
+          {
+            label: "Status colors",
+            columns: STATUS_COLORS.map((color) => ({
+              label: color,
+              props: { color },
+            })),
+          },
+          {
+            label: "Sign colors",
+            columns: SIGN_COLORS.map((color) => ({
+              label: color,
+              props: { color },
+            })),
+          },
+        ]}
+        rows={[
+          { label: "Main · L", props: { variant: "main", size: "l" } },
+          { label: "Main · S", props: { variant: "main", size: "s" } },
+          {
+            label: "Main · L\n+ icon",
+            props: { variant: "main", size: "l", showIcon: true },
+          },
+          {
+            label: "Secondary · L",
+            props: { variant: "secondary", size: "l" },
+          },
+          {
+            label: "Secondary · S",
+            props: { variant: "secondary", size: "s" },
+          },
+          {
+            label: "Secondary · L\n+ icon",
+            props: { variant: "secondary", size: "l", showIcon: true },
+          },
+        ]}
+        render={(props) => <Tag {...props} />}
+      />
     </div>
   ),
 }

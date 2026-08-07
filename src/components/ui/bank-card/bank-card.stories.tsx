@@ -1,31 +1,46 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import type { PaymentSystem } from "@/components/ui/thumbnail"
+import { StatesMatrix } from "@/stories/matrix"
 
-import { BankCard } from "./bank-card"
+import { BankCard, type BankCardProps } from "./bank-card"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 import { SKIN_LABELS, type BankCardSkin } from "./variants"
 
 const SKINS = Object.keys(SKIN_LABELS) as BankCardSkin[]
+const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "visa", "unionpay"]
 
 const meta = {
-  title: "Content/BankCard",
+  title: "Content/Cards",
   component: BankCard,
   parameters: { layout: "centered" },
   argTypes: {
+    skin: { control: "select", options: SKINS },
     // `paymentSystem` is a plain string union (`PaymentSystem`, imported
     // from thumbnail/variants) but react-docgen can't resolve an imported
     // type alias into an enum, so it falls back to a generic "Set object"
-    // JSON editor — pin the real option list explicitly instead, same
-    // fix as Badge's `color`.
-    paymentSystem: {
-      control: "select",
-      options: ["mir", "mastercard", "unionpay", "visa"] satisfies PaymentSystem[],
-    },
+    // JSON editor — pin the real option list explicitly instead, same fix
+    // as Badge's `color`.
+    paymentSystem: { control: "select", options: PAYMENT_SYSTEMS },
     // `balance` is `React.ReactNode` but every usage (including the
-    // component's own default) is a plain string — without this, leaving
-    // it unset falls back to the same generic "Set object" JSON editor.
+    // component's own default) is a plain string — without this, leaving it
+    // unset falls back to the same generic "Set object" JSON editor.
     balance: { control: "text" },
+    cardNumber: { control: "text" },
+    cardholderName: { control: "text" },
+    expiry: { control: "text" },
+    cvc: { control: "text" },
+    showPaymentSystem: { control: "boolean" },
+    showCardNumber: { control: "boolean" },
+    showBalance: { control: "boolean" },
+    showRequisites: { control: "boolean" },
+  },
+  args: {
+    skin: "mono",
+    showPaymentSystem: true,
+    showCardNumber: true,
+    showBalance: true,
+    showRequisites: true,
   },
   decorators: [
     (Story) => (
@@ -35,55 +50,68 @@ const meta = {
       </ToastProvider>
     ),
   ],
-} satisfies Meta<typeof BankCard>
+} satisfies Meta<BankCardProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<BankCardProps>
 
-export const Default: Story = {
-  args: { skin: "mono" },
-}
+export const Playground: Story = {}
 
-export const AllSkins: Story = {
-  // Zero-arg render maps SKINS — the inherited `skin` control is dead here.
-  parameters: { controls: { disable: true } },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <div className="flex flex-wrap gap-6">
-      {SKINS.map((skin) => (
-        <div key={skin} className="flex flex-col items-start gap-2">
-          <BankCard skin={skin} />
-          <span className="max-w-[332px] text-p3-regular text-muted-foreground">{SKIN_LABELS[skin]}</span>
-        </div>
-      ))}
+    <div className="flex flex-col gap-2">
+      {/* Skins are the master's own variant axis — SKIN_LABELS carries the
+          designer's own name for each. */}
+      <StatesMatrix<BankCardProps>
+        columnGroups={[
+          {
+            label: "Skin",
+            columns: SKINS.map((skin) => ({
+              label: SKIN_LABELS[skin],
+              props: { skin },
+            })),
+          },
+        ]}
+        rows={[{ label: "Default", props: {} }]}
+        render={(props) => <BankCard {...props} />}
+      />
+      <StatesMatrix<BankCardProps>
+        baseProps={{ skin: "black-classic" }}
+        columnGroups={[
+          {
+            label: "Платёжные системы",
+            columns: PAYMENT_SYSTEMS.map((paymentSystem) => ({
+              label: paymentSystem,
+              props: { paymentSystem },
+            })),
+          },
+        ]}
+        rows={[{ label: "Default", props: {} }]}
+        render={(props) => <BankCard {...props} />}
+      />
+      {/* Every block of the card is independently switchable. */}
+      <StatesMatrix<BankCardProps>
+        baseProps={{ skin: "mono" }}
+        columnGroups={[
+          {
+            label: "Состав карточки",
+            columns: [
+              { label: "Всё", props: {} },
+              { label: "Без реквизитов", props: { showRequisites: false } },
+              { label: "Без баланса", props: { showBalance: false } },
+              { label: "Без номера", props: { showCardNumber: false } },
+              {
+                label: "Без платёжной системы",
+                props: { showPaymentSystem: false, showCardNumber: false },
+              },
+            ],
+          },
+        ]}
+        rows={[{ label: "Default", props: {} }]}
+        render={(props) => <BankCard {...props} />}
+      />
     </div>
   ),
-}
-
-export const PaymentSystems: Story = {
-  // Zero-arg render hardcodes skin/paymentSystem per card — every
-  // inherited control is dead here.
-  parameters: { controls: { disable: true } },
-  render: () => (
-    <div className="flex flex-wrap gap-6">
-      {(["mir", "mastercard", "visa", "unionpay"] as PaymentSystem[]).map((system) => (
-        <BankCard key={system} skin="black-classic" paymentSystem={system} />
-      ))}
-    </div>
-  ),
-}
-
-export const WithoutRequisitesLink: Story = {
-  args: { skin: "mono", showRequisites: false },
-}
-
-export const WithoutBalance: Story = {
-  args: { skin: "mono", showBalance: false },
-}
-
-export const WithoutCardNumber: Story = {
-  args: { skin: "mono", showCardNumber: false },
-}
-
-export const WithoutPaymentSystem: Story = {
-  args: { skin: "mono", showPaymentSystem: false, showCardNumber: false },
 }

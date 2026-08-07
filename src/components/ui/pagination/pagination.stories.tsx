@@ -1,71 +1,72 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Pagination } from "./pagination"
+import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+
+import { Pagination, type PaginationProps } from "./pagination"
 
 const meta = {
-  title: "Template/Pagination",
+  title: "Template/Paginator",
   component: Pagination,
   parameters: { layout: "padded" },
-  args: { page: 1, totalPages: 20 },
-} satisfies Meta<typeof Pagination>
+  argTypes: {
+    page: { control: { type: "number", min: 1 } },
+    totalPages: { control: { type: "number", min: 1 } },
+    pageSize: { control: "number" },
+    pageSizeOptions: { control: "object" },
+    showPageSize: { control: "boolean" },
+  },
+  args: { page: 5, totalPages: 20, pageSize: 25, showPageSize: true },
+} satisfies Meta<PaginationProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PaginationProps>
 
-function Controlled({
-  totalPages = 20,
-  initialPage = 5,
-  initialPageSize = 25,
-  pageSizeOptions,
-  showPageSize,
-  className,
-}: {
-  totalPages?: number
-  initialPage?: number
-  initialPageSize?: number
-  pageSizeOptions?: number[]
-  showPageSize?: boolean
-  className?: string
-}) {
-  const [page, setPage] = useState(initialPage)
-  const [pageSize, setPageSize] = useState(initialPageSize)
+function Controlled({ page, pageSize, ...props }: PaginationProps) {
+  const [currentPage, setCurrentPage] = useState(page)
+  const [currentSize, setCurrentSize] = useState(pageSize)
   return (
     <Pagination
-      page={page}
-      totalPages={totalPages}
-      onPageChange={setPage}
-      pageSize={pageSize}
-      onPageSizeChange={setPageSize}
-      pageSizeOptions={pageSizeOptions}
-      showPageSize={showPageSize}
-      className={className}
+      {...props}
+      page={currentPage}
+      onPageChange={setCurrentPage}
+      pageSize={currentSize}
+      onPageSizeChange={setCurrentSize}
     />
   )
 }
 
-export const Default: Story = {
+export const Playground: Story = {
+  // Remount on every arg change so the `page`/`pageSize` controls actually
+  // move the (otherwise internally-owned) state.
   render: (args) => (
-    <Controlled
-      totalPages={args.totalPages}
-      initialPage={args.page}
-      initialPageSize={args.pageSize}
-      pageSizeOptions={args.pageSizeOptions}
-      showPageSize={args.showPageSize}
-      className={args.className}
-    />
+    <Controlled key={`${args.page}-${args.pageSize}`} {...args} />
   ),
 }
 
-export const FewPages: Story = {
-  name: "7 or fewer pages (no ellipsis)",
-  // Zero-arg render hardcodes its own props — every inherited control
-  // (page/totalPages/pageSize/...) would sit in the panel doing nothing.
-  parameters: { controls: { disable: true } },
-  render: () => <Controlled totalPages={5} />,
-}
-
-export const NoPageSize: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => <Pagination page={1} totalPages={10} showPageSize={false} />,
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<PaginationProps>
+      stretch
+      cellClassName="min-w-[560px]"
+      rowHeader={RESPONSIVE_NOTE}
+      columns={[{ label: "Paginator" }]}
+      rows={[
+        // ≤ 7 pages renders every number, no ellipsis.
+        { label: "5 страниц\n(без многоточия)", props: { page: 1, totalPages: 5 } },
+        { label: "Первая из 20", props: { page: 1, totalPages: 20 } },
+        { label: "Средняя из 20", props: { page: 10, totalPages: 20 } },
+        { label: "Последняя из 20", props: { page: 20, totalPages: 20 } },
+        {
+          label: "Без выбора размера",
+          props: { page: 1, totalPages: 10, showPageSize: false },
+        },
+        { label: "Одна страница", props: { page: 1, totalPages: 1 } },
+        { label: "Hover", props: { page: 10, totalPages: 20 }, pseudo: "hover" },
+      ]}
+      render={(props) => <Controlled {...props} />}
+    />
+  ),
 }

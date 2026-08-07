@@ -1,66 +1,99 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Banner } from "./banner"
+import { StatesMatrix } from "@/stories/matrix"
+
+import { Banner, type BannerProps } from "./banner"
 import type { BannerColor, BannerSize } from "./variants"
+
+const SIZES: BannerSize[] = ["desktop", "compact", "mobile"]
+const COLORS: BannerColor[] = ["black", "pink", "green", "blue"]
 
 const meta = {
   title: "Content/Banner",
   component: Banner,
   parameters: { layout: "padded" },
   argTypes: {
-    size: { control: "select", options: ["desktop", "compact", "mobile"] satisfies BannerSize[] },
-    color: { control: "select", options: ["black", "pink", "green", "blue"] satisfies BannerColor[] },
+    size: { control: "inline-radio", options: SIZES },
+    color: { control: "inline-radio", options: COLORS },
+    title: { control: "text" },
+    description: { control: "text" },
+    ctaLabel: { control: "text" },
+    bullet: { control: "boolean" },
+    image: { control: "boolean" },
   },
   args: {
+    size: "desktop",
+    color: "black",
     title: "Оформите вклад с доходностью 20%",
     description: "Ставка действует при открытии вклада онлайн до конца месяца.",
     ctaLabel: "Открыть вклад",
+    bullet: false,
   },
-} satisfies Meta<typeof Banner>
+} satisfies Meta<BannerProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<BannerProps>
 
-export const Desktop: Story = {
-  args: { size: "desktop" },
-}
+export const Playground: Story = {}
 
-export const Compact: Story = {
-  args: { size: "compact" },
-}
-
-export const Mobile: Story = {
-  args: { size: "mobile" },
-  parameters: { layout: "centered" },
-}
-
-// `bullet` + array `description` only render through `BannerDescription`
-// (desktop/mobile) — the `compact` layout prints `description` as a plain
-// <p>, so an array there collapses into unseparated, un-bulleted text.
-// "desktop" is the size that actually demonstrates what these two args do.
-export const WithBulletList: Story = {
-  args: {
-    size: "desktop",
-    description: ["Первое преимущество", "Второе преимущество"],
-    bullet: true,
-  },
-}
-
-export const ColorVariants: Story = {
-  // Zero-arg render maps a hardcoded color array — the inherited `color`
-  // select control is dead here.
-  parameters: { controls: { disable: true } },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <div className="flex flex-col gap-4">
-      {(["black", "pink", "green", "blue"] as BannerColor[]).map((color) => (
-        <Banner
-          key={color}
-          size="compact"
-          color={color}
-          title="Оформите вклад с доходностью 20%"
-          image={false}
-        />
-      ))}
+    <div className="flex flex-col gap-2">
+      <StatesMatrix<BannerProps>
+        stretch
+        cellClassName="min-w-[420px]"
+        baseProps={{
+          title: "Оформите вклад с доходностью 20%",
+          ctaLabel: "Открыть вклад",
+        }}
+        columnGroups={[
+          {
+            label: "Color",
+            columns: COLORS.map((color) => ({ label: color, props: { color } })),
+          },
+        ]}
+        rows={SIZES.map((size) => ({
+          label: `Size: ${size}`,
+          props: { size, image: false },
+        }))}
+        render={(props) => <Banner {...props} />}
+      />
+      <StatesMatrix<BannerProps>
+        stretch
+        cellClassName="min-w-[420px]"
+        baseProps={{
+          title: "Оформите вклад с доходностью 20%",
+          ctaLabel: "Открыть вклад",
+        }}
+        columns={[
+          { label: "С картинкой", props: { image: true } },
+          { label: "Без картинки", props: { image: false } },
+        ]}
+        rows={[
+          {
+            label: "Текстовое описание",
+            props: {
+              size: "desktop",
+              description: "Ставка действует при открытии вклада онлайн.",
+            },
+          },
+          {
+            // `bullet` + array `description` only render through
+            // `BannerDescription` (desktop/mobile) — the `compact` layout
+            // prints `description` as a plain <p>, so an array there
+            // collapses into unseparated, un-bulleted text.
+            label: "Список с маркерами\n(только desktop / mobile)",
+            props: {
+              size: "desktop",
+              description: ["Первое преимущество", "Второе преимущество"],
+              bullet: true,
+            },
+          },
+        ]}
+        render={(props) => <Banner {...props} />}
+      />
     </div>
   ),
 }

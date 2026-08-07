@@ -568,3 +568,4 @@ export {
   floatingLabelVariants,
   ICON_SIZE as INPUT_ICON_SIZE,
 }
+export type { InputProps }

@@ -1,15 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import type { ComponentProps } from "react"
+
+import { StatesMatrix } from "@/stories/matrix"
 
 import { Accordion, AccordionItem, AccordionTrigger, AccordionPanel } from "./accordion"
 
+type AccordionProps = ComponentProps<typeof Accordion>
+
+/* This is the demo page's own chrome rather than a Figma component (see the
+   pixel-pass note in accordion.tsx) — it has no spec sheet, so the second
+   story is a small behaviour grid rather than a mirror of a Figma page. */
+
 const meta = {
-  title: "Content/Accordion/Accordion",
+  title: "Pattern/Accordion (нет аналога в Figma)",
   component: Accordion,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof Accordion>
+  argTypes: {
+    multiple: { control: "boolean" },
+  },
+  args: { multiple: false },
+} satisfies Meta<AccordionProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<AccordionProps>
 
 function Rows() {
   return (
@@ -30,19 +43,38 @@ function Rows() {
   )
 }
 
-export const SingleOpen: Story = {
-  name: "Single (default)",
-  render: () => (
-    <Accordion defaultValue={["a"]}>
+export const Playground: Story = {
+  render: (args) => (
+    <Accordion {...args} defaultValue={["a"]}>
       <Rows />
     </Accordion>
   ),
 }
 
-export const MultipleOpen: Story = {
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <Accordion multiple defaultValue={["a", "b"]}>
-      <Rows />
-    </Accordion>
+    <StatesMatrix<AccordionProps>
+      stretch
+      cellClassName="min-w-[360px]"
+      columns={[
+        { label: "Single (по умолчанию)", props: { multiple: false } },
+        { label: "Multiple", props: { multiple: true } },
+      ]}
+      rows={[
+        { label: "Всё свёрнуто", props: { defaultValue: [] } },
+        { label: "Открыт первый", props: { defaultValue: ["a"] } },
+        // Two open at once is only reachable in `multiple` mode — the Single
+        // column collapses back to one.
+        { label: "Открыты два", props: { defaultValue: ["a", "b"] } },
+        { label: "Hover", props: { defaultValue: [] }, pseudo: "hover" },
+      ]}
+      render={(props) => (
+        <Accordion {...props}>
+          <Rows />
+        </Accordion>
+      )}
+    />
   ),
 }

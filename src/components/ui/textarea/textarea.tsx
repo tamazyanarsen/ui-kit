@@ -185,3 +185,4 @@ function Textarea({
 }
 
 export { Textarea, textareaBoxVariants }
+export type { TextareaProps }

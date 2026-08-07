@@ -1,56 +1,86 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Radio } from "./radio"
+import {
+  PseudoBox,
+  RESPONSIVE_NOTE,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
+
+import { Radio, type RadioProps } from "./radio"
 import { RadioGroup } from "./root"
+
+type PlaygroundArgs = RadioProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Interaction/Radio",
   component: Radio,
   parameters: { layout: "centered" },
-  args: { value: "a" },
-  // label/comment/error are typed React.ReactNode but every story here only
-  // ever puts a plain string in them — pin text controls so a story that
-  // leaves one unset doesn't fall back to Storybook's "Set object"
-  // JSON-editor placeholder.
   argTypes: {
     label: { control: "text" },
     comment: { control: "text" },
     error: { control: "text" },
+    disabled: { control: "boolean" },
+    state: stateArgType,
   },
-} satisfies Meta<typeof Radio>
+  args: {
+    value: "a",
+    label: "Согласен с условиями договора",
+    comment: "Договор комплексного банковского обслуживания",
+    disabled: false,
+    state: "default" as PlaygroundState,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-function Group() {
-  const [value, setValue] = useState("a")
+// A Radio only means anything inside a RadioGroup (it's the group that owns
+// the selected value), so the Playground wraps a single one in its own
+// group and keeps it clickable.
+function Controlled({ state, ...props }: PlaygroundArgs) {
+  const [value, setValue] = useState<unknown>(null)
   return (
-    <RadioGroup value={value} onValueChange={(v) => setValue(v as string)}>
-      <Radio value="a" label="Вариант A" />
-      <Radio value="b" label="Вариант B" />
-      <Radio value="c" label="Вариант C" comment="Дополнительное пояснение" />
+    <RadioGroup value={value} onValueChange={setValue}>
+      <PseudoBox state={state}>
+        <Radio {...props} />
+      </PseudoBox>
     </RadioGroup>
   )
 }
 
-export const Default: Story = {
-  // Zero-arg render hardcodes a 3-option RadioGroup — the inherited
-  // value/label/comment/error controls (built for a single Radio) have
-  // nothing to drive here.
-  parameters: { controls: { disable: true } },
-  render: () => <Group />,
+export const Playground: Story = {
+  render: (args) => <Controlled {...args} />,
 }
 
-export const Disabled: Story = {
-  args: { value: "a", label: "Недоступный вариант", disabled: true },
-}
+type Cell = Omit<RadioProps, "value"> & { on?: boolean }
 
-export const WithError: Story = {
-  args: {
-    value: "a",
-    label: "Вариант с ошибкой",
-    error: "Необходимо выбрать другой вариант",
-    comment: "Это пояснение будет скрыто",
-  },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<Cell>
+      rowHeader={RESPONSIVE_NOTE}
+      baseProps={{ label: "Option Text", comment: "Comment" }}
+      columns={[{ label: "Radio" }]}
+      rows={[
+        { label: "Default", props: {} },
+        { label: "Checked\nPressed", props: { on: true }, pseudo: "active" },
+        { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Checked\nHover", props: { on: true }, pseudo: "hover" },
+        { label: "Disabled", props: { disabled: true } },
+        { label: "Checked\nDisabled", props: { on: true, disabled: true } },
+        { label: "Error", props: { error: "Text about error here" } },
+      ]}
+      /* Each cell is its own single-item group so the checked/unchecked
+         rows can coexist — one shared group would allow only one. */
+      render={({ on, ...props }) => (
+        <RadioGroup value={on ? "a" : null}>
+          <Radio {...props} value="a" />
+        </RadioGroup>
+      )}
+    />
+  ),
 }

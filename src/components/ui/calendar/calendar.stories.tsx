@@ -1,6 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import { StatesMatrix } from "@/stories/matrix"
+
 import { Calendar } from "./calendar"
 import type { CalendarProps } from "./types"
 
@@ -9,128 +11,125 @@ const meta = {
   component: Calendar,
   parameters: { layout: "centered" },
   // `defaultMonth`/`value`/`rangeValue`/`monthValue`/`yearValue` are all
-  // Date-based and, per every story below, owned by that story's own local
-  // state wrapper (their prop is typed away via `Omit<CalendarProps, ...>`
-  // on the wrapper's own params) — they're never meant to be driven by the
-  // Controls panel. Worse than just an unfriendly "Set object" JSON-editor
-  // placeholder: verified live that clicking it and setting a value crashes
-  // the story outright (`TypeError: initial.getFullYear is not a function`,
-  // since the JSON editor produces a plain object, not a real Date
-  // instance, and the component calls `.getFullYear()` on it unconditionally).
-  // `control: false` removes the footgun instead of just prettying up a
-  // control that was never safe to touch.
+  // Date-based and owned by each story's own local state wrapper — they're
+  // never meant to be driven by the Controls panel. Worse than just an
+  // unfriendly "Set object" JSON-editor placeholder: verified live that
+  // setting a value crashes the story outright (`TypeError:
+  // initial.getFullYear is not a function`, since the JSON editor produces a
+  // plain object, not a real Date instance). `control: false` removes the
+  // footgun instead of just prettying up a control that was never safe.
   argTypes: {
+    mode: { control: "inline-radio", options: ["single", "range", "month", "year"] },
+    layout: { control: "inline-radio", options: ["popover", "sheet"] },
+    title: { control: "text" },
+    footer: { control: "boolean" },
     defaultMonth: { control: false },
     value: { control: false },
     rangeValue: { control: false },
     monthValue: { control: false },
     yearValue: { control: false },
   },
-} satisfies Meta<typeof Calendar>
+  args: { mode: "single", footer: true },
+} satisfies Meta<CalendarProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<CalendarProps>
 
-// `mode`/`value`/`onChange` are fixed by this demo's own local state (a
-// bare `Date | null`, incompatible with range/month/year's value shapes) —
-// every other control (layout, title, footer, …) is still forwarded, so
-// the Controls panel isn't just decorative here (same pattern as
-// Checkbox's `Controlled` wrapper).
-function SingleDateCalendar(props: Omit<CalendarProps, "mode" | "value" | "onChange">) {
-  const [value, setValue] = useState<Date | null>(new Date(2024, 0, 15))
-  return <Calendar mode="single" value={value} onChange={setValue} {...props} />
-}
-
-export const Single: Story = {
-  render: (args) => <SingleDateCalendar {...args} />,
-}
-
-function RangeCalendar(props: Omit<CalendarProps, "mode" | "rangeValue" | "onRangeChange">) {
-  const [range, setRange] = useState<[Date | null, Date | null]>([
-    new Date(2024, 0, 10),
-    new Date(2024, 0, 20),
-  ])
-  return <Calendar mode="range" rangeValue={range} onRangeChange={setRange} {...props} />
-}
-
-export const Range: Story = {
-  render: (args) => <RangeCalendar {...args} />,
-}
-
-export const MonthPicker: Story = {
-  args: { mode: "month" },
-}
-
-export const YearPicker: Story = {
-  args: { mode: "year" },
-}
-
-export const NoFooter: Story = {
-  args: { mode: "single", footer: false },
-}
-
-function DisabledDatesCalendar(
-  props: Omit<CalendarProps, "mode" | "value" | "onChange" | "disabledDate">
+// `value`/`onChange` are fixed by this demo's own local state (a bare
+// `Date | null`, incompatible with range/month/year's value shapes) — every
+// other control (layout, title, footer, …) is still forwarded, so the
+// Controls panel isn't just decorative (same pattern as Checkbox's
+// `Controlled` wrapper).
+function SingleDateCalendar(
+  props: Omit<CalendarProps, "value" | "onChange">
 ) {
   const [value, setValue] = useState<Date | null>(new Date(2024, 0, 15))
-  return (
-    <Calendar
-      mode="single"
-      value={value}
-      onChange={setValue}
-      disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6}
-      {...props}
-    />
-  )
+  return <Calendar value={value} onChange={setValue} {...props} />
 }
 
-export const DisabledDates: Story = {
-  name: "With disabled days (weekends)",
-  render: (args) => <DisabledDatesCalendar {...args} />,
-}
-
-// Design-check #13: the sheet layout already supports every mode (see
-// CalendarMobile) — only the Single variant had a story. Adding the rest
-// (Range/Month/Year) so all four mobile variants from
-// ui/calendar/calendar@2x-1.png are actually demoed in Storybook.
-export const MobileSheet: Story = {
-  args: { mode: "single", layout: "sheet", title: "Выберите дату" },
-  parameters: { layout: "fullscreen" },
-}
-
-function MobileRangeCalendar(
-  props: Omit<CalendarProps, "mode" | "layout" | "title" | "rangeValue" | "onRangeChange">
+function RangeCalendar(
+  props: Omit<CalendarProps, "rangeValue" | "onRangeChange">
 ) {
   const [range, setRange] = useState<[Date | null, Date | null]>([
     new Date(2024, 0, 10),
     new Date(2024, 0, 20),
   ])
   return (
-    <Calendar
-      mode="range"
-      layout="sheet"
-      title="Выберите даты"
-      rangeValue={range}
-      onRangeChange={setRange}
-      {...props}
-    />
+    <Calendar mode="range" rangeValue={range} onRangeChange={setRange} {...props} />
   )
 }
 
-export const MobileSheetRange: Story = {
-  name: "Mobile Sheet — Range",
-  render: (args) => <MobileRangeCalendar {...args} />,
-  parameters: { layout: "fullscreen" },
+export const Playground: Story = {
+  render: (args) =>
+    args.mode === "range" ? (
+      <RangeCalendar {...args} />
+    ) : (
+      <SingleDateCalendar {...args} />
+    ),
 }
 
-export const MobileSheetMonth: Story = {
-  name: "Mobile Sheet — Month",
-  args: { mode: "month", layout: "sheet", title: "Выберите месяц" },
-  parameters: { layout: "fullscreen" },
-}
-
-export const MobileSheetYear: Story = {
-  name: "Mobile Sheet — Year",
-  args: { mode: "year", layout: "sheet", title: "Выберите год" },
-  parameters: { layout: "fullscreen" },
+/* Figma's own axes are Mode (Single / Range / Month / Year) × Layout
+   (popup on desktop, bottom sheet on mobile). */
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <div className="flex flex-col gap-2">
+      <StatesMatrix<CalendarProps>
+        columnGroups={[
+          {
+            label: "Mode",
+            columns: [
+              { label: "Single", props: { mode: "single" } },
+              { label: "Range", props: { mode: "range" } },
+              { label: "Month", props: { mode: "month" } },
+              { label: "Year", props: { mode: "year" } },
+            ],
+          },
+        ]}
+        rows={[
+          { label: "Popover (Desktop)", props: { layout: "popover" } },
+          { label: "Без подвала", props: { layout: "popover", footer: false } },
+          {
+            // Weekends demonstrate `disabledDate`; the whole grid keeps
+            // working, only those cells go inert.
+            label: "Недоступные дни\n(выходные)",
+            props: {
+              layout: "popover",
+              disabledDate: (date: Date) => date.getDay() === 0 || date.getDay() === 6,
+            },
+          },
+        ]}
+        render={(props) =>
+          props.mode === "range" ? (
+            <RangeCalendar {...props} />
+          ) : (
+            <SingleDateCalendar {...props} />
+          )
+        }
+      />
+      <StatesMatrix<CalendarProps>
+        baseProps={{ layout: "sheet" }}
+        columnGroups={[
+          {
+            label: "Sheet (Mobile)",
+            columns: [
+              { label: "Single", props: { mode: "single", title: "Выберите дату" } },
+              { label: "Range", props: { mode: "range", title: "Выберите даты" } },
+              { label: "Month", props: { mode: "month", title: "Выберите месяц" } },
+              { label: "Year", props: { mode: "year", title: "Выберите год" } },
+            ],
+          },
+        ]}
+        rows={[{ label: "Default", props: {} }]}
+        render={(props) =>
+          props.mode === "range" ? (
+            <RangeCalendar {...props} />
+          ) : (
+            <SingleDateCalendar {...props} />
+          )
+        }
+      />
+    </div>
+  ),
 }

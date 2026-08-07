@@ -1,8 +1,9 @@
 import { useState } from "react"
-import type { ComponentProps } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Tabs } from "./tabs"
+import { StatesMatrix } from "@/stories/matrix"
+
+import { Tabs, type TabsProps } from "./tabs"
 
 const ITEMS = [
   { value: "all", label: "Все" },
@@ -16,26 +17,103 @@ const meta = {
   title: "Navigation/Tabs",
   component: Tabs,
   parameters: { layout: "padded" },
-  args: { items: ITEMS },
-} satisfies Meta<typeof Tabs>
+  argTypes: {
+    items: { control: "object" },
+    showMore: { control: "boolean" },
+  },
+  args: { items: ITEMS, showMore: false },
+} satisfies Meta<TabsProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<TabsProps>
 
-function Controlled(args: ComponentProps<typeof Tabs>) {
+function Controlled(args: TabsProps) {
   const [value, setValue] = useState(args.value ?? args.items[0]?.value)
   return <Tabs {...args} value={value} onValueChange={setValue} />
 }
 
-export const Default: Story = {
+export const Playground: Story = {
   render: (args) => <Controlled {...args} />,
 }
 
-// v1.2.0 of the master dropped the Large/Medium level property for a
-// responsive Desktop/Mobile pair — the bar is 44px with 32px gaps and 16/24
-// labels here, 40/24/14/20 on the mobile story below.
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<TabsProps>
+      stretch
+      cellClassName="min-w-[420px]"
+      // v1.2.0 of the master dropped the Large/Medium level property for a
+      // responsive Desktop/Mobile pair (44px bar / 32px gaps / 16-24 labels
+      // vs 40/24/14-20), so size is a viewport concern — see the Mobile
+      // story below.
+      rowHeader="Desktop / Mobile — это медиазапрос md:, размера как пропа больше нет (v1.2.0 мастера)."
+      columns={[{ label: "Tabs" }]}
+      rows={[
+        {
+          label: "Выбрана первая",
+          props: { items: ITEMS, value: "all" },
+        },
+        {
+          label: "Выбрана третья",
+          props: { items: ITEMS, value: "errors" },
+        },
+        {
+          label: "Hover",
+          props: { items: ITEMS, value: "all" },
+          pseudo: "hover",
+        },
+        {
+          label: "Только текст",
+          props: {
+            items: [
+              { value: "a", label: "Все" },
+              { value: "b", label: "Открытые" },
+            ],
+            value: "a",
+          },
+        },
+        {
+          label: "Со счётчиком\nи статусом",
+          props: {
+            items: [
+              { value: "a", label: "Входящие", badge: 3 },
+              { value: "b", label: "Ошибки", status: true },
+            ],
+            value: "a",
+          },
+        },
+        {
+          label: "С disabled",
+          props: {
+            items: [
+              { value: "a", label: "Все" },
+              { value: "b", label: "Закрытые", disabled: true },
+            ],
+            value: "a",
+          },
+        },
+        {
+          // Overflowing tabs collapse into a trailing "ещё" menu.
+          label: "Переполнение\n(«ещё»)",
+          props: {
+            items: Array.from({ length: 10 }, (_, i) => ({
+              value: `t${i}`,
+              label: `Вкладка ${i + 1}`,
+            })),
+            value: "t0",
+            showMore: true,
+          },
+        },
+      ]}
+      render={(props) => <Tabs {...props} />}
+    />
+  ),
+}
+
 export const Mobile: Story = {
   name: "Mobile (< 768px)",
   globals: { viewport: { value: "mobile1", isRotated: false } },
-  render: (args) => <Controlled {...args} />,
+  parameters: { controls: { disable: true } },
+  render: () => <Controlled items={ITEMS} />,
 }

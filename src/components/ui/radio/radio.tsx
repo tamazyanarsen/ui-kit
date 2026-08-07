@@ -118,3 +118,4 @@ function Radio({
 }
 
 export { Radio }
+export type { RadioProps }

@@ -2,6 +2,8 @@ import { useMemo, useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { ChevronDown } from "@/icons"
 
+import { StorySection, StoryShowcase } from "@/stories/matrix"
+
 import { Table, TableHeader, TableBody, TableRow, TableHeadCell, TableCell } from "./table"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import type { TagColor } from "@/components/ui/tag"
@@ -21,7 +23,17 @@ const ROWS: Row[] = [
   { id: "159640", name: "Петров Андрей", role: "Разработчик", date: "02.09.2022", status: "red", statusLabel: "Заблокирован" },
 ]
 
-function TableExample() {
+interface TableExampleProps {
+  sortable?: boolean
+  selectable?: boolean
+  showDescription?: boolean
+}
+
+function TableExample({
+  sortable = true,
+  selectable = true,
+  showDescription = true,
+}: TableExampleProps = {}) {
   const [selected, setSelected] = useState<Set<string>>(new Set(["159638"]))
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null)
 
@@ -57,10 +69,12 @@ function TableExample() {
     <Table>
       <TableHeader>
         <tr>
-          <TableHeadCell type="checkbox" checked={allSelected} indeterminate={someSelected} onCheckedChange={toggleAll} />
+          {selectable && (
+            <TableHeadCell type="checkbox" checked={allSelected} indeterminate={someSelected} onCheckedChange={toggleAll} />
+          )}
           <TableHeadCell
             type="subtitle-left"
-            sortable
+            sortable={sortable}
             sortDirection={sort?.key === "name" ? sort.dir : null}
             onSortClick={() => toggleSort("name")}
           >
@@ -68,7 +82,7 @@ function TableExample() {
           </TableHeadCell>
           <TableHeadCell
             type="subtitle-left"
-            sortable
+            sortable={sortable}
             sortDirection={sort?.key === "date" ? sort.dir : null}
             onSortClick={() => toggleSort("date")}
           >
@@ -90,8 +104,10 @@ function TableExample() {
       <TableBody>
         {rows.map((row) => (
           <TableRow key={row.id} selected={selected.has(row.id)}>
-            <TableCell type="checkbox" checked={selected.has(row.id)} onCheckedChange={() => toggleRow(row.id)} />
-            <TableCell type="text" description={row.role}>
+            {selectable && (
+              <TableCell type="checkbox" checked={selected.has(row.id)} onCheckedChange={() => toggleRow(row.id)} />
+            )}
+            <TableCell type="text" description={showDescription ? row.role : undefined}>
               {row.name}
             </TableCell>
             <TableCell type="text">{row.date}</TableCell>
@@ -119,9 +135,137 @@ const meta = {
   title: "Content/Table/Table",
   component: TableExample,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof TableExample>
+  argTypes: {
+    sortable: { control: "boolean" },
+    selectable: { control: "boolean" },
+    showDescription: { control: "boolean" },
+  },
+  args: { sortable: true, selectable: true, showDescription: true },
+} satisfies Meta<TableExampleProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<TableExampleProps>
 
-export const Default: Story = {}
+export const Playground: Story = {}
+
+/* Table is a composition, not a single prop-driven component — the real
+   variant axis is the cell type, so the second story enumerates every
+   head-cell and body-cell type the kit ships rather than states of a whole
+   table. */
+export const Matrix: Story = {
+  name: "Matrix (типы ячеек)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StoryShowcase>
+      <StorySection title="Типы ячеек заголовка (TableHeadCell)">
+        <Table>
+          <TableHeader>
+            <tr>
+              <TableHeadCell type="checkbox" />
+              <TableHeadCell type="subtitle-left">Subtitle Left</TableHeadCell>
+              <TableHeadCell type="subtitle-left" sortable>
+                Sortable
+              </TableHeadCell>
+              <TableHeadCell type="subtitle-left" sortable sortDirection="asc">
+                Sorted ↑
+              </TableHeadCell>
+              <TableHeadCell type="subtitle-left" sortable sortDirection="desc">
+                Sorted ↓
+              </TableHeadCell>
+              <TableHeadCell type="subtitle-right">Subtitle Right</TableHeadCell>
+              <TableHeadCell
+                type="icon"
+                icon={<ChevronDown aria-hidden="true" className="size-4" />}
+              />
+              <TableHeadCell
+                type="button"
+                menu={<ButtonMenuOverflowItem text="Настроить столбцы" />}
+              />
+            </tr>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell type="checkbox" />
+              <TableCell type="text">Text</TableCell>
+              <TableCell type="text">Text</TableCell>
+              <TableCell type="text">Text</TableCell>
+              <TableCell type="text">Text</TableCell>
+              <TableCell type="text" align="right">
+                Text
+              </TableCell>
+              <TableCell
+                type="icon"
+                icon={<ChevronDown aria-hidden="true" className="size-4" />}
+              />
+              <TableCell
+                type="button"
+                menu={<ButtonMenuOverflowItem text="Открыть карточку" />}
+              />
+            </TableRow>
+          </TableBody>
+        </Table>
+      </StorySection>
+
+      <StorySection title="Типы ячеек строки (TableCell)">
+        <Table>
+          <TableHeader>
+            <tr>
+              <TableHeadCell type="subtitle-left">checkbox</TableHeadCell>
+              <TableHeadCell type="subtitle-left">text</TableHeadCell>
+              <TableHeadCell type="subtitle-left">text + description</TableHeadCell>
+              <TableHeadCell type="subtitle-left">tag</TableHeadCell>
+              <TableHeadCell type="subtitle-left">icon</TableHeadCell>
+              <TableHeadCell type="subtitle-left">button</TableHeadCell>
+            </tr>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell type="checkbox" />
+              <TableCell type="text">Text</TableCell>
+              <TableCell type="text" description="Description">
+                Text
+              </TableCell>
+              <TableCell type="tag" tagColor="green">
+                Активен
+              </TableCell>
+              <TableCell
+                type="icon"
+                icon={<ChevronDown aria-hidden="true" className="size-4" />}
+              />
+              <TableCell
+                type="button"
+                menu={<ButtonMenuOverflowItem text="Удалить" />}
+              />
+            </TableRow>
+            {/* Selected rows tint the whole row, including its dividers. */}
+            <TableRow selected>
+              <TableCell type="checkbox" checked />
+              <TableCell type="text">Выбранная строка</TableCell>
+              <TableCell type="text" description="Description">
+                Text
+              </TableCell>
+              <TableCell type="tag" tagColor="orange">
+                На проверке
+              </TableCell>
+              <TableCell
+                type="icon"
+                icon={<ChevronDown aria-hidden="true" className="size-4" />}
+              />
+              <TableCell
+                type="button"
+                menu={<ButtonMenuOverflowItem text="Удалить" />}
+              />
+            </TableRow>
+          </TableBody>
+        </Table>
+      </StorySection>
+
+      <StorySection
+        title="Живая таблица"
+        description="Сортировка по клику на заголовок, выбор строк чекбоксами."
+      >
+        <TableExample />
+      </StorySection>
+    </StoryShowcase>
+  ),
+}

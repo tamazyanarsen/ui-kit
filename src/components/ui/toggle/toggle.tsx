@@ -118,3 +118,4 @@ function Toggle({
 }
 
 export { Toggle }
+export type { ToggleProps }

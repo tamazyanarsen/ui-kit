@@ -1,49 +1,77 @@
 import { useState } from "react"
-import type { ComponentProps } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Toggle } from "./toggle"
+import {
+  PseudoBox,
+  RESPONSIVE_NOTE,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
+
+import { Toggle, type ToggleProps } from "./toggle"
+
+type PlaygroundArgs = ToggleProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Interaction/Toggle",
   component: Toggle,
   parameters: { layout: "centered" },
-  args: { label: "Уведомления" },
-  // label/comment/error are typed React.ReactNode but every story here only
-  // ever puts a plain string in them — pin text controls so a story that
-  // leaves one unset (e.g. `WithoutLabel`'s `label: undefined`) doesn't fall
-  // back to Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
     label: { control: "text" },
     comment: { control: "text" },
     error: { control: "text" },
+    checked: { control: "boolean" },
+    disabled: { control: "boolean" },
+    state: stateArgType,
   },
-} satisfies Meta<typeof Toggle>
+  args: {
+    label: "Согласен с условиями договора",
+    comment: "Договор комплексного банковского обслуживания",
+    disabled: false,
+    state: "default" as PlaygroundState,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-function Controlled(args: ComponentProps<typeof Toggle>) {
-  const [checked, setChecked] = useState(args.checked ?? true)
-  return <Toggle {...args} checked={checked} onCheckedChange={setChecked} />
+function Controlled({ state, checked, ...props }: PlaygroundArgs) {
+  const [internal, setInternal] = useState(false)
+  return (
+    <PseudoBox state={state}>
+      <Toggle
+        {...props}
+        checked={checked ?? internal}
+        onCheckedChange={setInternal}
+      />
+    </PseudoBox>
+  )
 }
 
-export const Default: Story = {
+export const Playground: Story = {
   render: (args) => <Controlled {...args} />,
 }
 
-export const WithoutLabel: Story = {
-  args: { label: undefined, "aria-label": "Уведомления" },
-}
-
-export const WithCommentAndError: Story = {
-  args: { comment: "Дополнительное пояснение", error: "Ошибка сохранения настройки" },
-}
-
-export const Disabled: Story = {
-  args: { disabled: true },
-}
-
-export const DisabledChecked: Story = {
-  args: { disabled: true, checked: true },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<ToggleProps>
+      rowHeader={RESPONSIVE_NOTE}
+      baseProps={{ label: "Option Text", comment: "Comment" }}
+      columns={[
+        { label: "Off", props: { checked: false } },
+        { label: "On", props: { checked: true } },
+      ]}
+      rows={[
+        { label: "Default", props: {} },
+        { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Pressed", props: {}, pseudo: "active" },
+        { label: "Disabled", props: { disabled: true } },
+        { label: "Error", props: { error: "Text about error here" } },
+      ]}
+      render={(props) => <Toggle {...props} onCheckedChange={() => {}} />}
+    />
+  ),
 }

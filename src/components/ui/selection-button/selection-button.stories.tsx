@@ -1,49 +1,98 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { SelectionButton } from "./selection-button"
+import { StorySection, StoryShowcase } from "@/stories/matrix"
+
+import {
+  SelectionButton,
+  type SelectionButtonDirection,
+  type SelectionButtonProps,
+} from "./selection-button"
+
+const DIRECTIONS: SelectionButtonDirection[] = [
+  "top-left",
+  "top-right",
+  "down-left",
+  "down-right",
+]
+
+const ITEMS = [
+  { text: "Редактировать" },
+  { text: "Дублировать", description: "Создать копию" },
+  { text: "Удалить" },
+]
 
 const meta = {
-  title: "Content/ChoosingCards",
+  title: "Content/Selection Button",
   component: SelectionButton,
   parameters: { layout: "centered" },
-  args: {
-    items: [
-      { text: "Редактировать" },
-      { text: "Дублировать", description: "Создать копию" },
-      { text: "Удалить" },
-    ],
-  },
-  // `trigger` takes a JSX element instance — map a friendly "Default
-  // (⋯)"/"Custom Button" choice to the real element/`undefined` instead
-  // of disabling the control (same technique as Button's `icon`); "Custom
-  // Button" reuses the same element the `CustomTrigger` story below sets
-  // as a fixed arg, so both stay in sync.
   argTypes: {
+    size: { control: "inline-radio", options: ["lg", "sm"] },
+    direction: { control: "select", options: DIRECTIONS },
+    showDropdown: { control: "boolean" },
+    triggerLabel: { control: "text" },
+    modal: { control: "boolean" },
+    items: { control: "object" },
+    // `trigger` takes a JSX element instance — map a friendly "Default
+    // (⋯)"/"Custom Button" choice to the real element/`undefined` instead of
+    // disabling the control (same technique as Button's `icon`).
     trigger: {
-      control: { type: "select", labels: { default: "Default (⋯)", custom: "Custom Button" } },
+      control: {
+        type: "select",
+        labels: { default: "Default (⋯)", custom: "Custom Button" },
+      },
       options: ["default", "custom"],
-      mapping: { default: undefined, custom: <button type="button">Открыть меню</button> },
+      mapping: {
+        default: undefined,
+        custom: <button type="button">Открыть меню</button>,
+      },
     },
   },
-} satisfies Meta<typeof SelectionButton>
+  args: { items: ITEMS, size: "lg" },
+} satisfies Meta<SelectionButtonProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<SelectionButtonProps>
 
-export const Large: Story = {
-  args: { size: "lg" },
-}
+export const Playground: Story = {}
 
-export const Small: Story = {
-  args: { size: "sm" },
-}
+/* The menu is a portalled popup, so a real grid would have every open cell
+   overlaying the next — the variants are laid out as separate open menus
+   with room around each instead. */
+export const Examples: Story = {
+  name: "Варианты использования",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StoryShowcase>
+      <StorySection title="Размеры" description="L (по умолчанию) и S.">
+        <div className="flex gap-16">
+          <SelectionButton items={ITEMS} size="lg" />
+          <SelectionButton items={ITEMS} size="sm" />
+        </div>
+      </StorySection>
 
-export const TopLeftDirection: Story = {
-  args: { direction: "top-left" },
-}
+      <StorySection
+        title="Направление раскрытия"
+        description="8 вариантов положения меню относительно триггера."
+      >
+        <div className="grid grid-cols-4 gap-x-24 gap-y-32 py-24">
+          {DIRECTIONS.map((direction) => (
+            <div key={direction} className="flex flex-col items-center gap-2">
+              <SelectionButton items={ITEMS} direction={direction} />
+              <span className="text-p4-regular text-[#6D6D6D]">{direction}</span>
+            </div>
+          ))}
+        </div>
+      </StorySection>
 
-export const CustomTrigger: Story = {
-  args: {
-    trigger: <button type="button">Открыть меню</button>,
-  },
+      <StorySection
+        title="Свой триггер"
+        description="Любой элемент вместо кнопки «⋯»."
+      >
+        <SelectionButton
+          items={ITEMS}
+          trigger={<button type="button">Открыть меню</button>}
+        />
+      </StorySection>
+    </StoryShowcase>
+  ),
 }

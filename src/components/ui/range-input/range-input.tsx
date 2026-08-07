@@ -197,3 +197,4 @@ function RangeInput({
 }
 
 export { RangeInput }
+export type { RangeInputProps }

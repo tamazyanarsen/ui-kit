@@ -1,15 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Search } from "@/icons"
 
-import { Input } from "./input"
+import {
+  PseudoBox,
+  RESPONSIVE_NOTE,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
+
+import { Input, type InputProps } from "./input"
 import type { MaskName } from "./mask"
+
+type PlaygroundArgs = InputProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Interaction/Input",
   component: Input,
   parameters: { layout: "padded" },
-  args: { label: "Имя" },
   argTypes: {
+    size: { control: "inline-radio", options: ["lg", "sm"] },
     // `iconLeft`/`trailingIcon` take a JSX element instance, not a plain
     // value — no control widget can build a `<Search />` from scratch, so
     // (same as Button's `icon`) map a friendly "None"/"Search" choice to
@@ -30,6 +40,13 @@ const meta = {
     label: { control: "text" },
     comment: { control: "text" },
     error: { control: "text" },
+    lockedHint: { control: "text" },
+    placeholder: { control: "text" },
+    locked: { control: "boolean" },
+    clearable: { control: "boolean" },
+    loading: { control: "boolean" },
+    disabled: { control: "boolean" },
+    type: { control: "select", options: ["text", "password", "number"] },
     // `mask` is a plain string union (`MaskName`, imported from ./mask) —
     // react-docgen can't resolve an imported type alias into an enum, so
     // it falls back to the same generic "Set object" editor. Pin the real
@@ -50,58 +67,102 @@ const meta = {
         "time",
       ] satisfies MaskName[],
     },
+    state: stateArgType,
   },
-} satisfies Meta<typeof Input>
+  args: {
+    label: "Label",
+    placeholder: "Placeholder",
+    size: "lg",
+    locked: false,
+    clearable: false,
+    loading: false,
+    disabled: false,
+    state: "default" as PlaygroundState,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Large: Story = {
-  args: { size: "lg" },
+export const Playground: Story = {
+  render: ({ state, ...args }) => (
+    <PseudoBox state={state} className="w-80">
+      <Input {...args} />
+    </PseudoBox>
+  ),
 }
 
-export const Small: Story = {
-  args: { size: "sm" },
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<InputProps>
+      stretch
+      cellClassName="min-w-72"
+      rowHeader={RESPONSIVE_NOTE}
+      baseProps={{ label: "Label", placeholder: "Placeholder" }}
+      columns={[
+        { label: "L (default)", props: { size: "lg" } },
+        { label: "S", props: { size: "sm" } },
+        {
+          label: "L + иконки",
+          props: {
+            size: "lg",
+            iconLeft: <Search />,
+            clearable: true,
+            defaultValue: "Value",
+          },
+        },
+      ]}
+      rows={[
+        { label: "Default", props: {} },
+        { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Focus", props: {}, pseudo: "focus-within" },
+        { label: "Filled", props: { defaultValue: "Value" } },
+        {
+          label: "Comment",
+          props: { defaultValue: "Value", comment: "Comment" },
+        },
+        {
+          label: "Error",
+          props: { defaultValue: "Value", error: "Text about error here" },
+        },
+        { label: "Loading", props: { loading: true } },
+        {
+          label: "Locked",
+          props: { locked: true, defaultValue: "Value", lockedHint: "Поле недоступно" },
+        },
+        { label: "Disabled", props: { disabled: true, defaultValue: "Value" } },
+      ]}
+      render={(props) => <Input {...props} />}
+    />
+  ),
 }
 
-export const WithComment: Story = {
-  args: { comment: "Как указано в паспорте" },
-}
-
-export const WithError: Story = {
-  args: { error: "Обязательное поле" },
-}
-
-export const WithLeadingIcon: Story = {
-  args: { label: undefined, placeholder: "Поиск", iconLeft: <Search /> },
-}
-
-export const Password: Story = {
-  args: { label: "Пароль", type: "password" },
-}
-
-export const Loading: Story = {
-  args: { loading: true },
-}
-
-export const Locked: Story = {
-  args: { locked: true, defaultValue: "Только чтение" },
-}
-
-export const Disabled: Story = {
-  args: { disabled: true, defaultValue: "Недоступно" },
-}
-
-export const MaskedAmount: Story = {
-  args: { label: "Сумма", mask: "amount" },
-}
-
-export const MaskedDate: Story = {
-  args: { label: "Дата", mask: "date" },
-}
-
-// ЧЧ:ММ — the separator is inserted for you, and the two halves are range
-// masks, so 25 or :70 can't be typed in the first place.
-export const MaskedTime: Story = {
-  args: { label: "Время", mask: "time" },
+/* Masks are behaviour rather than a state, so they get their own canvas
+   instead of a matrix row — each of these is typeable. */
+export const Masks: Story = {
+  name: "Маски ввода",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => (
+    <div className="grid max-w-3xl grid-cols-2 gap-4">
+      {(
+        [
+          ["phone", "Телефон"],
+          ["date", "Дата"],
+          ["time", "Время (ЧЧ:ММ)"],
+          ["passport", "Паспорт РФ"],
+          ["foreign-passport", "Загранпаспорт"],
+          ["card", "Номер карты"],
+          ["account", "Счёт"],
+          ["inn", "ИНН"],
+          ["kpp", "КПП"],
+          ["kbk", "КБК"],
+          ["amount", "Сумма"],
+        ] satisfies [MaskName, string][]
+      ).map(([mask, label]) => (
+        <Input key={mask} mask={mask} label={label} />
+      ))}
+    </div>
+  ),
 }

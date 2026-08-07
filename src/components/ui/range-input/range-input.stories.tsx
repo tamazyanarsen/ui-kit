@@ -1,87 +1,85 @@
 import { useState } from "react"
-import type * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RangeInput } from "./range-input"
+import { StatesMatrix } from "@/stories/matrix"
+
+import { RangeInput, type RangeInputProps } from "./range-input"
 
 const meta = {
-  title: "Interaction/RangeInput",
+  title: "Interaction/Range Input",
   component: RangeInput,
   parameters: { layout: "padded" },
-  args: { label: "Сумма", min: 0, max: 100, step: 1 },
-  // comment/error are typed React.ReactNode but every story here only ever
-  // puts a plain string in them — pin text controls so a story that leaves
-  // one unset doesn't fall back to Storybook's "Set object" JSON-editor
-  // placeholder. (scaleLabels/format are left alone: plain-data
-  // array/object, fine to edit as raw JSON.)
+  // comment/error are typed React.ReactNode but every usage is a plain
+  // string — pin text controls so leaving one unset doesn't fall back to
+  // Storybook's "Set object" JSON-editor placeholder. (scaleLabels/format
+  // are left alone: plain-data array/object, fine to edit as raw JSON.)
   argTypes: {
+    label: { control: "text" },
     comment: { control: "text" },
     error: { control: "text" },
+    min: { control: "number" },
+    max: { control: "number" },
+    step: { control: "number" },
+    disabled: { control: "boolean" },
   },
-} satisfies Meta<typeof RangeInput>
+  args: {
+    label: "Label",
+    min: 0,
+    max: 100,
+    step: 1,
+    defaultValue: 50,
+    disabled: false,
+  },
+} satisfies Meta<RangeInputProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<RangeInputProps>
 
-function Controlled({
-  label,
-  min,
-  max,
-  step,
-  comment,
-  error,
-  scaleLabels,
-  format,
-}: {
-  label?: React.ReactNode
-  min?: number
-  max?: number
-  step?: number
-  comment?: React.ReactNode
-  error?: React.ReactNode
-  scaleLabels?: React.ReactNode[]
-  format?: Intl.NumberFormatOptions
-}) {
-  const [value, setValue] = useState(50)
+function Controlled({ defaultValue, ...props }: RangeInputProps) {
+  const [value, setValue] = useState<number>(
+    typeof defaultValue === "number" ? defaultValue : 50
+  )
   return (
     <RangeInput
-      label={label}
-      min={min}
-      max={max}
-      step={step}
-      comment={comment}
-      error={error}
-      scaleLabels={scaleLabels}
-      format={format}
+      {...props}
       value={value}
       onValueChange={(v) => setValue(v as number)}
     />
   )
 }
 
-export const Default: Story = {
-  render: (args) => (
-    <Controlled
-      label={args.label}
-      min={args.min}
-      max={args.max}
-      step={args.step}
-      comment={args.comment}
-      error={args.error}
-      scaleLabels={args.scaleLabels}
-      format={args.format}
+export const Playground: Story = {
+  render: (args) => <Controlled {...args} />,
+}
+
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<RangeInputProps>
+      stretch
+      cellClassName="min-w-[320px]"
+      baseProps={{ label: "Label", min: 0, max: 100, step: 1 }}
+      columns={[
+        { label: "Без шкалы", props: {} },
+        { label: "Со шкалой", props: { scaleLabels: ["0", "50", "100"] } },
+      ]}
+      rows={[
+        { label: "0 %", props: { defaultValue: 0 } },
+        { label: "50 %", props: { defaultValue: 50 } },
+        { label: "100 %", props: { defaultValue: 100 } },
+        { label: "Hover", props: { defaultValue: 50 }, pseudo: "hover" },
+        {
+          label: "Comment",
+          props: { defaultValue: 50, comment: "Comment" },
+        },
+        {
+          label: "Error",
+          props: { defaultValue: 50, error: "Text about error here" },
+        },
+        { label: "Disabled", props: { defaultValue: 50, disabled: true } },
+      ]}
+      render={(props) => <Controlled {...props} />}
     />
   ),
-}
-
-export const WithScaleLabels: Story = {
-  args: { defaultValue: 50, scaleLabels: ["0", "100"] },
-}
-
-export const WithError: Story = {
-  args: { defaultValue: 50, error: "Значение вне допустимого диапазона" },
-}
-
-export const Disabled: Story = {
-  args: { defaultValue: 50, disabled: true },
 }

@@ -1,13 +1,25 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Item } from "./item"
+import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+
+import { Item, type ItemProps, type RightElementType } from "./item"
+
+const RIGHT_ELEMENTS: RightElementType[] = [
+  "none",
+  "navigation",
+  "information",
+  "accordion",
+  "check",
+  "text",
+  "toggle",
+  "checkbox",
+]
 
 const meta = {
   title: "Content/Item/Item",
   component: Item,
   parameters: { layout: "padded" },
-  args: { text: "Тип операции", value: "Перевод между счетами" },
   // `thumbnail` holds a JSX element (or the sentinel `true`, which renders
   // the component's own built-in `DefaultThumbnail`) — map a friendly
   // "None"/"Default" choice to `undefined`/`true` instead of disabling
@@ -20,114 +32,110 @@ const meta = {
     },
     // `text`/`comment`/`informationText`/`rightText` are all `React.ReactNode`
     // but every usage is a plain string — without this, leaving one unset
-    // (ValueOnly for text; every story but the one that sets each of the
-    // others) falls back to a generic "Set object" JSON editor.
+    // falls back to a generic "Set object" JSON editor.
     text: { control: "text" },
+    value: { control: "text" },
     comment: { control: "text" },
     informationText: { control: "text" },
     rightText: { control: "text" },
+    commentColor: { control: "inline-radio", options: ["grey", "red", "yellow"] },
+    rightElement: { control: "select", options: RIGHT_ELEMENTS },
+    subCategory: { control: "boolean" },
+    divider: { control: "boolean" },
+    disabled: { control: "boolean" },
   },
-} satisfies Meta<typeof Item>
+  args: {
+    text: "Тип операции",
+    value: "Перевод между счетами",
+    rightElement: "none",
+    subCategory: false,
+    disabled: false,
+  },
+} satisfies Meta<ItemProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<ItemProps>
 
-export const Default: Story = {}
+export const Playground: Story = {}
 
-export const ValueOnly: Story = {
-  args: { text: undefined },
-}
-
-export const WithComment: Story = {
-  args: { comment: "Ошибка при выполнении", commentColor: "red" },
-}
-
-export const WithThumbnail: Story = {
-  args: { thumbnail: true },
-}
-
-// The spec's "Максимальное количество строк" rule: Value wraps to at most
-// 3 lines and Comment to 5, both elided after that — not the single
-// truncated line this used to render.
-export const LongText: Story = {
-  name: "Long text (line clamps)",
-  // Narrow enough that the text actually reaches the 3rd/5th line and gets
-  // elided — at full canvas width it would just wrap twice.
-  decorators: [
-    (Story) => (
-      <div className="max-w-[360px]">
-        <Story />
-      </div>
-    ),
-  ],
-  args: {
-    value:
-      "Пример подзаголовка с большим количеством символов, пример подзаголовка с большим количеством символов, пример подзаголовка с большим количеством символов",
-    comment:
-      "Пример комментария с большим количеством символов, пример комментария с большим количеством символов, пример комментария с большим количеством символов, пример комментария с большим количеством символов",
-    rightElement: "navigation",
-  },
-}
-
-export const Navigation: Story = {
-  args: { rightElement: "navigation", onClick: () => alert("navigate") },
-}
-
-export const RightText: Story = {
-  args: { rightElement: "text", rightText: "+1,5%" },
-}
-
-export const Check: Story = {
-  args: { rightElement: "check" },
-}
-
-function ToggleRow() {
-  const [checked, setChecked] = useState(true)
+function InteractiveItem(props: ItemProps) {
+  const [toggle, setToggle] = useState(true)
+  const [checkbox, setCheckbox] = useState(false)
   return (
     <Item
-      value="Push-уведомления"
-      rightElement="toggle"
-      toggleChecked={checked}
-      onToggleChange={setChecked}
+      {...props}
+      toggleChecked={toggle}
+      onToggleChange={setToggle}
+      checkboxChecked={checkbox}
+      onCheckboxChange={setCheckbox}
     />
   )
 }
 
-export const Toggle: Story = {
-  // ToggleRow hardcodes its own value/rightElement — every inherited
-  // control is dead here.
-  parameters: { controls: { disable: true } },
-  render: () => <ToggleRow />,
-}
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <div className="flex flex-col gap-2">
+      {/* Right Element is Figma's own variant axis. */}
+      <StatesMatrix<ItemProps>
+        stretch
+        cellClassName="min-w-[280px]"
+        rowHeader={RESPONSIVE_NOTE}
+        baseProps={{
+          text: "Title",
+          value: "Value",
+          informationText: "Дополнительная информация",
+          rightText: "+1,5%",
+        }}
+        columnGroups={[
+          {
+            label: "Right Element",
+            columns: RIGHT_ELEMENTS.map((rightElement) => ({
+              label: rightElement,
+              props: { rightElement },
+            })),
+          },
+        ]}
+        rows={[
+          { label: "Default", props: {} },
+          { label: "Hover", props: {}, pseudo: "hover" },
+          { label: "С миниатюрой", props: { thumbnail: true } },
+          { label: "Sub category", props: { subCategory: true } },
+          { label: "Disabled", props: { disabled: true } },
+        ]}
+        render={(props) => <InteractiveItem {...props} />}
+      />
 
-function CheckboxRow() {
-  const [checked, setChecked] = useState(false)
-  return (
-    <Item
-      value="Выбрать строку"
-      rightElement="checkbox"
-      checkboxChecked={checked}
-      onCheckboxChange={setChecked}
-    />
-  )
-}
-
-export const CheckboxRightElement: Story = {
-  name: "Checkbox",
-  // CheckboxRow hardcodes its own value/rightElement — every inherited
-  // control is dead here.
-  parameters: { controls: { disable: true } },
-  render: () => <CheckboxRow />,
-}
-
-export const InformationTooltip: Story = {
-  args: { rightElement: "information", informationText: "Дополнительная информация об операции" },
-}
-
-export const Disabled: Story = {
-  args: { disabled: true, rightElement: "navigation" },
-}
-
-export const SubCategory: Story = {
-  args: { subCategory: true },
+      {/* Comment colour and the value-only form are independent of the
+          right element. */}
+      <StatesMatrix<ItemProps>
+        stretch
+        cellClassName="min-w-[320px]"
+        baseProps={{ text: "Title", value: "Value" }}
+        columns={[
+          { label: "Comment: grey", props: { comment: "Comment", commentColor: "grey" } },
+          { label: "Comment: red", props: { comment: "Comment", commentColor: "red" } },
+          { label: "Comment: yellow", props: { comment: "Comment", commentColor: "yellow" } },
+        ]}
+        rows={[
+          { label: "С заголовком", props: {} },
+          // Value-only: the row collapses to a single line.
+          { label: "Только значение", props: { text: undefined } },
+          {
+            // The spec's "Максимальное количество строк" rule: Value wraps
+            // to at most 3 lines and Comment to 5, both elided after that.
+            label: "Длинный текст\n(3 / 5 строк)",
+            props: {
+              value:
+                "Пример подзаголовка с большим количеством символов, пример подзаголовка с большим количеством символов, пример подзаголовка с большим количеством символов",
+              comment:
+                "Пример комментария с большим количеством символов, пример комментария с большим количеством символов, пример комментария с большим количеством символов, пример комментария с большим количеством символов",
+            },
+          },
+        ]}
+        render={(props) => <Item {...props} />}
+      />
+    </div>
+  ),
 }

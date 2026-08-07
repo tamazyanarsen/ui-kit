@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import { StatesMatrix, StorySection, StoryShowcase } from "@/stories/matrix"
+
 import { Combobox } from "./root"
 import { ComboboxTrigger } from "./trigger"
 import { ComboboxContent, ComboboxList, ComboboxCollection } from "./content"
@@ -21,7 +23,23 @@ const DOCUMENTS: Doc[] = [
   { value: "doc-5", label: "Выписка ЕГРЮЛ" },
 ]
 
-function DocumentsMultiSelect({ max }: { max?: number }) {
+interface DocumentsMultiSelectProps {
+  max?: number
+  size?: "sm" | "lg"
+  label?: string
+  comment?: string
+  error?: string
+  disabled?: boolean
+}
+
+function DocumentsMultiSelect({
+  max,
+  size = "lg",
+  label = "Название",
+  comment,
+  error,
+  disabled,
+}: DocumentsMultiSelectProps) {
   const sel = useComboboxSelection<Doc>([])
   const atMax = max !== undefined && sel.draft.length >= max
 
@@ -33,9 +51,14 @@ function DocumentsMultiSelect({ max }: { max?: number }) {
       onValueChange={sel.setDraft}
       items={DOCUMENTS}
       itemToStringLabel={(d: Doc) => d.label}
+      disabled={disabled}
     >
       <ComboboxTrigger
-        label="Название"
+        size={size}
+        label={label}
+        comment={comment}
+        error={error}
+        disabled={disabled}
         placeholder={sel.committed.length === 0}
         clearable={sel.committed.length > 0}
         onClear={() => sel.setCommitted([])}
@@ -133,29 +156,84 @@ const meta = {
   title: "Interaction/Combobox",
   component: DocumentsMultiSelect,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof DocumentsMultiSelect>
+  // `DocumentsMultiSelect` is declared locally in this file rather than
+  // imported from a component module, so react-docgen-typescript doesn't
+  // extract its props — declare every control explicitly.
+  argTypes: {
+    size: { control: "inline-radio", options: ["lg", "sm"] },
+    label: { control: "text" },
+    comment: { control: "text" },
+    error: { control: "text" },
+    max: { control: { type: "number", min: 1, max: 5 } },
+    disabled: { control: "boolean" },
+  },
+  args: { size: "lg", label: "Название", disabled: false },
+} satisfies Meta<DocumentsMultiSelectProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<DocumentsMultiSelectProps>
 
-export const MultiSelect: Story = {
-  // Zero-arg render — the inherited `max` control (auto-generated from
-  // DocumentsMultiSelect's own signature) is dead here.
-  parameters: { controls: { disable: true } },
-  render: () => <DocumentsMultiSelect />,
+export const Playground: Story = {
+  render: (args) => (
+    <div className="w-96">
+      <DocumentsMultiSelect {...args} />
+    </div>
+  ),
 }
 
-export const MultiSelectWithLimit: Story = {
-  name: "Multi-select with a 5-item cap",
-  // `max` is fixed at 5 in the render below, not read from the control.
-  parameters: { controls: { disable: true } },
-  render: () => <DocumentsMultiSelect max={5} />,
-}
+/* The trigger reuses Select's own tokens, so its closed states match Select
+   cell for cell; the list is a portalled popup that can only be open once at
+   a time, so the open forms are live examples instead of matrix cells. */
+export const Matrix: Story = {
+  name: "Matrix (все состояния)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <div className="flex flex-col gap-2">
+      <StatesMatrix<DocumentsMultiSelectProps>
+        stretch
+        cellClassName="min-w-[320px]"
+        baseProps={{ label: "Label" }}
+        columns={[
+          { label: "L (default)", props: { size: "lg" } },
+          { label: "S", props: { size: "sm" } },
+        ]}
+        rows={[
+          { label: "Default", props: {} },
+          { label: "Hover", props: {}, pseudo: "hover" },
+          { label: "Focus", props: {}, pseudo: "focus-within" },
+          { label: "Comment", props: { comment: "Comment" } },
+          { label: "Error", props: { error: "Text about error here" } },
+          { label: "Disabled", props: { disabled: true } },
+        ]}
+        render={(props) => <DocumentsMultiSelect {...props} />}
+      />
 
-export const TreeCascade: Story = {
-  name: "Tree (parent/child checkbox cascade)",
-  // Renders a different component (TreeMultiSelect) than meta.component —
-  // the inherited `max` control has no connection to what's shown.
-  parameters: { controls: { disable: true } },
-  render: () => <TreeMultiSelect />,
+      <StoryShowcase className="bg-transparent p-0">
+        <StorySection
+          title="Множественный выбор"
+          description="Чекбоксы, кнопки «Сбросить» / «Выбрать» в подвале списка."
+        >
+          <div className="h-96 w-96">
+            <DocumentsMultiSelect />
+          </div>
+        </StorySection>
+        <StorySection
+          title="С ограничением количества"
+          description="После 5 выбранных остальные пункты становятся недоступными."
+        >
+          <div className="h-96 w-96">
+            <DocumentsMultiSelect max={5} />
+          </div>
+        </StorySection>
+        <StorySection
+          title="Дерево"
+          description="Родительский чекбокс каскадом переключает дочерние и показывает промежуточное состояние."
+        >
+          <div className="h-96 w-96">
+            <TreeMultiSelect />
+          </div>
+        </StorySection>
+      </StoryShowcase>
+    </div>
+  ),
 }

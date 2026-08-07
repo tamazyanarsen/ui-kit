@@ -1,4 +1,6 @@
 import { useState } from "react"
+
+import { StorySection, StoryShowcase } from "@/stories/matrix"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { ChevronDown, Search, Settings as Settings2, X } from "@/icons"
@@ -171,7 +173,7 @@ function SortSummaryExample() {
 }
 
 const meta = {
-  title: "Content/Table/TableTop",
+  title: "Content/Table/Table Top",
   component: FullExample,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof FullExample>
@@ -179,9 +181,45 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const FullAssembly: Story = {}
+/* Table Top is a slot container (title / toolbar / summary), not a
+   prop-driven component — there is nothing to expose as controls, so the
+   Playground is the full assembly and the second story shows the pieces it
+   is built from. */
+export const Playground: Story = {}
 
-export const SortSummary: Story = {
-  name: "Summary row with sort Select",
-  render: () => <SortSummaryExample />,
+export const Examples: Story = {
+  name: "Варианты использования",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StoryShowcase>
+      <StorySection
+        title="Полная сборка"
+        description="Заголовок, вкладки, поиск, фильтры и кнопки действий."
+      >
+        <div className="w-full">
+          <FullExample />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Строка итогов с сортировкой"
+        description="Label и Value отличаются только цветом — оба P2 Medium."
+      >
+        <div className="w-full">
+          <SortSummaryExample />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Только заголовок"
+        description="Table Top — прозрачный блок с одной нижней линией, не карточка."
+      >
+        <div className="w-full">
+          <TableTop>
+            <TableTopTitle title="Сотрудники" />
+          </TableTop>
+        </div>
+      </StorySection>
+    </StoryShowcase>
+  ),
 }

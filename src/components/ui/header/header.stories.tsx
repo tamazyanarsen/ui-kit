@@ -1,6 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import { StorySection, StoryShowcase } from "@/stories/matrix"
+
 import { Header } from "./header"
 import type { HeaderNavItem } from "./header"
 import type { ProfileMenuOrganization } from "./profile-menu"
@@ -77,6 +79,21 @@ const meta = {
   title: "Navigation/Header",
   component: ControlledHeader,
   parameters: { layout: "fullscreen" },
+  argTypes: {
+    type: { control: "inline-radio", options: ["client", "employee", "sign-out"] },
+    clientHeaderType: {
+      control: "inline-radio",
+      options: ["client", "client-without-account", "client-is-blocked"],
+    },
+    messageCount: { control: { type: "number", min: 0, max: 99 } },
+    contactPerson: { control: "text" },
+    employeeName: { control: "text" },
+    phoneNumber: { control: "text" },
+    showMenu: { control: "boolean" },
+    navItems: { control: "object" },
+    notificationItems: { control: "object" },
+    organizations: { control: "object" },
+  },
   args: {
     type: "client",
     navItems: NAV_ITEMS,
@@ -90,39 +107,84 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Client: Story = {}
+export const Playground: Story = {}
 
-export const ClientWithoutAnAccount: Story = {
-  args: {
-    clientHeaderType: "client-without-account",
-    navItems: NAV_ITEMS.slice(2, 6),
-    organizations: [ORGS[1]],
-  },
-}
+/* Header is a full-width bar with portalled menus, so a matrix of cells
+   would be unreadable — each type gets its own full-width canvas instead. */
+export const Examples: Story = {
+  name: "Варианты использования",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StoryShowcase className="p-0">
+      <StorySection title="Клиент" description="Тип по умолчанию.">
+        <div className="w-full">
+          <ControlledHeader
+            type="client"
+            navItems={NAV_ITEMS}
+            documentMenuItems={[{ value: "statements", label: "Выписки" }]}
+            messageCount={3}
+            notificationItems={NOTIFICATIONS}
+            contactPerson="Константинопольский К. К."
+          />
+        </div>
+      </StorySection>
 
-export const ClientIsBlocked: Story = {
-  args: {
-    clientHeaderType: "client-is-blocked",
-    organizations: [ORGS[1]],
-  },
-}
+      <StorySection
+        title="Клиент без счёта"
+        description="Урезанная навигация, одна организация."
+      >
+        <div className="w-full">
+          <ControlledHeader
+            type="client"
+            clientHeaderType="client-without-account"
+            navItems={NAV_ITEMS.slice(2, 6)}
+            organizations={[ORGS[1]]}
+            contactPerson="Константинопольский К. К."
+          />
+        </div>
+      </StorySection>
 
-export const Employee: Story = {
-  args: {
-    type: "employee",
-    showMenu: true,
-    employeeName: "Константинопольский К. К.",
-  },
-}
+      <StorySection title="Клиент заблокирован">
+        <div className="w-full">
+          <ControlledHeader
+            type="client"
+            clientHeaderType="client-is-blocked"
+            organizations={[ORGS[1]]}
+            contactPerson="Константинопольский К. К."
+          />
+        </div>
+      </StorySection>
 
-export const SignOut: Story = {
-  args: {
-    type: "sign-out",
-    phoneNumber: "8 800 700-87-83",
-  },
-}
+      <StorySection title="Сотрудник банка">
+        <div className="w-full">
+          <ControlledHeader
+            type="employee"
+            showMenu
+            employeeName="Константинопольский К. К."
+          />
+        </div>
+      </StorySection>
 
-export const NarrowOverflow: Story = {
-  name: "Narrow container — items collapse into «Ещё»",
-  decorators: [(Story) => <div className="max-w-md"><Story /></div>],
+      <StorySection title="Незалогиненный (Sign out)">
+        <div className="w-full">
+          <ControlledHeader type="sign-out" phoneNumber="8 800 700-87-83" />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Узкий контейнер"
+        description="Пункты навигации, которые не поместились, уезжают в меню «Ещё»."
+      >
+        <div className="w-full max-w-md">
+          <ControlledHeader
+            type="client"
+            navItems={NAV_ITEMS}
+            messageCount={3}
+            notificationItems={NOTIFICATIONS}
+            contactPerson="Константинопольский К. К."
+          />
+        </div>
+      </StorySection>
+    </StoryShowcase>
+  ),
 }

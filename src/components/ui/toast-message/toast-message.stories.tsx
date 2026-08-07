@@ -108,3 +108,16 @@ export const SingleWhiteButton: Story = {
     buttons: "white",
   },
 }
+
+// Size=Mobile: 328px wide, 16px padding and a 16px close cross (Desktop is
+// 480/24/24). Pinned through `globals` because `md:` is a viewport media
+// query — see the note on Button's own mobile story.
+export const MobileSize: Story = {
+  name: "Mobile size (328px)",
+  globals: { viewport: { value: "mobile1", isRotated: false } },
+  args: {
+    type: "checked",
+    title: "Платёж отправлен",
+    description: "Мы уведомим вас о статусе",
+  },
+}

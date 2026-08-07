@@ -46,6 +46,29 @@ export const WithThumbnail: Story = {
   args: { thumbnail: true },
 }
 
+// The spec's "Максимальное количество строк" rule: Value wraps to at most
+// 3 lines and Comment to 5, both elided after that — not the single
+// truncated line this used to render.
+export const LongText: Story = {
+  name: "Long text (line clamps)",
+  // Narrow enough that the text actually reaches the 3rd/5th line and gets
+  // elided — at full canvas width it would just wrap twice.
+  decorators: [
+    (Story) => (
+      <div className="max-w-[360px]">
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    value:
+      "Пример подзаголовка с большим количеством символов, пример подзаголовка с большим количеством символов, пример подзаголовка с большим количеством символов",
+    comment:
+      "Пример комментария с большим количеством символов, пример комментария с большим количеством символов, пример комментария с большим количеством символов, пример комментария с большим количеством символов",
+    rightElement: "navigation",
+  },
+}
+
 export const Navigation: Story = {
   args: { rightElement: "navigation", onClick: () => alert("navigate") },
 }

@@ -82,11 +82,16 @@ export const Sizes: Story = {
 // at the `md:` breakpoint — 40->48px and 48->56px, matching that sheet's
 // M/L Mobile vs M/L Desktop rows almost to the pixel). `md:` is a viewport
 // media query, not a container one, so this story only reads as "mobile"
-// with the canvas itself under 768px — set via Storybook's own viewport
-// toolbar (Sizes above is the same markup at desktop width).
+// with the canvas itself under 768px (Sizes above is the same markup at
+// desktop width).
+//
+// The viewport is pinned through `globals`, not the old
+// `parameters.viewport.defaultViewport` — that form stopped being honoured
+// in Storybook 9+, so this story silently rendered at the desktop width
+// (measured: 980px canvas, buttons 32/48/56 instead of 32/40/48).
 export const SizesMobile: Story = {
   name: "Sizes — Mobile (< 768px)",
-  parameters: { viewport: { defaultViewport: "mobile1" } },
+  globals: { viewport: { value: "mobile1", isRotated: false } },
   render: () => (
     <div className="flex items-center gap-3">
       <Button size="sm">Small</Button>

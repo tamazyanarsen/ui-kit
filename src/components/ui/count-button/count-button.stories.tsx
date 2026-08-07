@@ -21,3 +21,10 @@ export const CountOverflow: Story = {
 export const PrimaryVariant: Story = {
   args: { variant: "primary" },
 }
+
+// `ELK / count button`'s own master carries the red badge, but Table Top's
+// "Ещё фильтры" instance overrides it to the dark one — hence `countColor`.
+export const DarkCounter: Story = {
+  name: "Dark counter (Table Top)",
+  args: { children: "Ещё фильтры", count: 2, countColor: "black" },
+}

@@ -40,6 +40,16 @@ export const NoCloseButton: Story = {
   args: { showCross: false },
 }
 
+// Size=Mobile: a 328px card with 16px padding (Desktop is 592/min-400 with
+// 24px). The switch is a `md:` media query, so it follows the *viewport* —
+// a narrow wrapper would not trigger it. Pin the story to a phone viewport
+// so the mobile form is what actually renders.
+export const MobileSize: Story = {
+  name: "Mobile size (328px)",
+  globals: { viewport: { value: "mobile1", isRotated: false } },
+  args: { mainButtonLabel: "Подписать" },
+}
+
 export const MinimalIconAndTitle: Story = {
   args: { date: undefined, description: undefined },
 }

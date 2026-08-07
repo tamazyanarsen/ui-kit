@@ -46,9 +46,18 @@ export const WithAppliedValue: Story = {
   args: { defaultValue: "Оплачен" },
 }
 
+// `chip` renders `ELK / filter-table` in *both* of its Checked states: the
+// grey pill with a chevron while empty, the dark pill with a close cross
+// once a value is applied. Both are shown side by side here.
 function ChipHarness() {
+  const [empty, setEmpty] = useState<string | null>(null)
   const [value, setValue] = useState<string | null>("Оплачен")
-  return <Filter label="Статус" value={value} onValueChange={setValue} chip />
+  return (
+    <div className="flex items-start gap-2">
+      <Filter label="Статус" value={empty} onValueChange={setEmpty} chip />
+      <Filter label="Статус" value={value} onValueChange={setValue} chip />
+    </div>
+  )
 }
 
 export const ChipVariant: Story = {

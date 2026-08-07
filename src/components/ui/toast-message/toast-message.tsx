@@ -89,7 +89,9 @@ function ToastCard({
     <div
       data-slot="toast"
       role="status"
-      className="w-full min-w-[320px] animate-in rounded-[16px] border p-6 shadow-universal fade-in-0 slide-in-from-right-4"
+      // Size=Mobile is a 328px card with 16px padding and a 16px close
+      // cross; Size=Desktop is 480px with 24px padding and a 24px cross.
+      className="w-full min-w-[320px] animate-in rounded-[16px] border p-4 shadow-universal fade-in-0 slide-in-from-right-4 md:p-6"
       style={{
         backgroundColor: TOAST_BG[type],
         borderColor: TOAST_BORDER[type],
@@ -145,7 +147,7 @@ function ToastCard({
           onClick={onClose}
           className="shrink-0 text-[var(--toast-title-fg)] outline-none"
         >
-          <X aria-hidden="true" className="size-6" />
+          <X aria-hidden="true" className="size-4 md:size-6" />
         </button>
       </div>
     </div>

@@ -56,8 +56,11 @@ function Informer({
       // Design-check #27: padding/icon-gap read directly off the anatomy
       // sheet (ui/message/informer) — 24px padding (was 16, p-4) and a 16px
       // gap between the icon and the text column (was 12, gap-3).
+      // Size=Mobile is a 328px card with 16px padding, Size=Desktop a
+      // 592px one (min 400) with 24px — the min-width was 360 and the
+      // padding was desktop-only.
       className={cn(
-        "min-w-[360px] rounded-[16px] p-6",
+        "rounded-[16px] p-4 md:min-w-[400px] md:p-6",
         className
       )}
       style={{ backgroundColor: SOLID_BG[solid] }}

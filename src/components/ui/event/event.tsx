@@ -76,12 +76,15 @@ function Event({
       <div className="flex w-2 shrink-0 flex-col items-center">
         <span
           aria-hidden="true"
-          className="mt-1.5 size-2 shrink-0 rounded-full bg-[var(--event-connector)]"
+          // The dot sits 8px down (a 3px connector stub plus the column's own
+          // 5px gap in "Step Event (ELK)"), and the stripe below it starts
+          // another 5px lower with a 4px rounded top.
+          className="mt-2 size-2 shrink-0 rounded-full bg-[var(--event-connector)]"
         />
         {showConnector && (
           <span
             aria-hidden="true"
-            className="mt-1 w-px flex-1 bg-[var(--event-connector)]"
+            className="mt-[5px] w-px flex-1 rounded-t-[4px] bg-[var(--event-connector)]"
           />
         )}
       </div>

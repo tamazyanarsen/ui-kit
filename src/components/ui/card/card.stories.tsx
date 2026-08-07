@@ -44,6 +44,8 @@ const meta = {
     // string (see the CardThumbnail's own "last 4 digits" usage).
     thumbnailNumber: { control: "text" },
     showThumbnail: { control: "boolean" },
+    // Kebab menu on the right; an empty array hides the button entirely.
+    menuItems: { control: "object" },
   },
   args: {
     title: "Основная карта",
@@ -51,6 +53,10 @@ const meta = {
     subtitle: "**** 4482",
     value: "12 500 ₽",
     showThumbnail: true,
+    tag: "Новая",
+    tagColor: "green",
+    paymentSystem: "mir",
+    menuItems: [{ text: "Открыть карточку" }, { text: "Удалить карту" }],
   },
 } satisfies Meta<CardProps>
 

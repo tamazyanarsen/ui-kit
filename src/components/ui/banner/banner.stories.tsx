@@ -20,6 +20,10 @@ const meta = {
     ctaLabel: { control: "text" },
     bullet: { control: "boolean" },
     image: { control: "boolean" },
+    // `image` only reserves the slot; imageSrc fills it (the component draws
+    // its own placeholder when the src is empty).
+    imageSrc: { control: "text" },
+    imageAlt: { control: "text" },
   },
   args: {
     size: "desktop",
@@ -28,6 +32,8 @@ const meta = {
     description: "Ставка действует при открытии вклада онлайн до конца месяца.",
     ctaLabel: "Открыть вклад",
     bullet: false,
+    image: true,
+    imageAlt: "",
   },
 } satisfies Meta<BannerProps>
 

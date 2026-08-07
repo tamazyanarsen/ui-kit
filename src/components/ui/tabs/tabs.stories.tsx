@@ -20,20 +20,25 @@ const meta = {
   argTypes: {
     items: { control: "object" },
     showMore: { control: "boolean" },
+    defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
   },
-  args: { items: ITEMS, showMore: false },
+  args: { items: ITEMS, showMore: false, defaultValue: "all" },
 } satisfies Meta<TabsProps>
 
 export default meta
 type Story = StoryObj<TabsProps>
 
 function Controlled(args: TabsProps) {
-  const [value, setValue] = useState(args.value ?? args.items[0]?.value)
+  const [value, setValue] = useState(
+    args.value ?? args.defaultValue ?? args.items[0]?.value
+  )
   return <Tabs {...args} value={value} onValueChange={setValue} />
 }
 
 export const Playground: Story = {
-  render: (args) => <Controlled {...args} />,
+  // Remount when the pinned value changes so the `defaultValue` control
+  // actually moves the (otherwise internally-owned) selection.
+  render: (args) => <Controlled key={args.defaultValue} {...args} />,
 }
 
 export const Matrix: Story = {

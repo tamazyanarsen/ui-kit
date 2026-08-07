@@ -22,6 +22,7 @@ const meta = {
     showMore: { control: "boolean" },
     disabled: { control: "boolean" },
     items: { control: "object" },
+    defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
   },
   args: {
     items: ITEMS,
@@ -30,6 +31,7 @@ const meta = {
     greyBackground: true,
     showMore: false,
     disabled: false,
+    defaultValue: "all",
   },
 } satisfies Meta<SwitcherProps>
 
@@ -37,12 +39,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 function Controlled(args: SwitcherProps) {
-  const [value, setValue] = useState(args.value ?? args.items[0]?.value)
+  const [value, setValue] = useState(
+    args.value ?? args.defaultValue ?? args.items[0]?.value
+  )
   return <Switcher {...args} value={value} onValueChange={setValue} />
 }
 
 export const Playground: Story = {
-  render: (args) => <Controlled {...args} />,
+  // Remount when the pinned value changes so the `defaultValue` control
+  // actually moves the (otherwise internally-owned) selection.
+  render: (args) => <Controlled key={args.defaultValue} {...args} />,
 }
 
 export const Matrix: Story = {

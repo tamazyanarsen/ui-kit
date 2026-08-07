@@ -19,9 +19,7 @@ const meta = {
   parameters: { layout: "padded" },
   // `commentLabel`/`comment`/`buttonLabel` are `React.ReactNode` but every
   // usage is a plain string — without this, leaving one unset falls back to
-  // a generic "Set object" JSON editor. `signatories`/`info`/`documents` are
-  // left alone: arrays of plain structured data, already fine to edit as raw
-  // JSON, same as other array-of-data props elsewhere in this kit.
+  // a generic "Set object" JSON editor.
   argTypes: {
     type: { control: "inline-radio", options: ["text", "tag"] },
     status: { control: "select", options: STATUSES },
@@ -32,6 +30,12 @@ const meta = {
     comment: { control: "text" },
     buttonLabel: { control: "text" },
     showConnector: { control: "boolean" },
+    // Arrays of plain structured data — a JSON control is the honest editor
+    // here, and each ships with a default so every optional block of the
+    // event is visible in the Playground.
+    signatories: { control: "object" },
+    info: { control: "object" },
+    documents: { control: "object" },
   },
   args: {
     type: "text",
@@ -40,6 +44,21 @@ const meta = {
     timestamp: "10:00",
     author: "Иванов И.И.",
     showConnector: true,
+    buttonLabel: "Подробнее",
+    commentLabel: "Комментарий",
+    comment: "Комментарий согласующего к заявке",
+    signatories: [
+      { status: "success", name: "Иванов И.И.", attribute: "Первая подпись" },
+      { status: "attention", name: "Петров П.П.", attribute: "Вторая подпись" },
+    ],
+    info: [
+      { label: "Сумма:", value: "10 000 ₽" },
+      { label: "Счёт:", value: "40702810...1234" },
+    ],
+    documents: [
+      { name: "Договор.pdf", meta: "1.2 МБ" },
+      { name: "Приложение.pdf", meta: "512 КБ" },
+    ],
   },
 } satisfies Meta<EventProps>
 

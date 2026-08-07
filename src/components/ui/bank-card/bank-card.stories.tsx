@@ -27,6 +27,8 @@ const meta = {
     // unset falls back to the same generic "Set object" JSON editor.
     balance: { control: "text" },
     cardNumber: { control: "text" },
+    // Shown by the SBP/sticker skins instead of the full masked number.
+    last4: { control: "text" },
     cardholderName: { control: "text" },
     expiry: { control: "text" },
     cvc: { control: "text" },
@@ -37,6 +39,7 @@ const meta = {
   },
   args: {
     skin: "mono",
+    last4: "4482",
     showPaymentSystem: true,
     showCardNumber: true,
     showBalance: true,

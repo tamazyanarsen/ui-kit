@@ -57,7 +57,23 @@ function DownloadMenu() {
   )
 }
 
-function FullExample() {
+interface FullExampleProps {
+  title?: string
+  showTitleAction?: boolean
+  showTabs?: boolean
+  showSearch?: boolean
+  showFilters?: boolean
+  showActions?: boolean
+}
+
+function FullExample({
+  title = "Заголовок таблицы",
+  showTitleAction = true,
+  showTabs = true,
+  showSearch = true,
+  showFilters = true,
+  showActions = true,
+}: FullExampleProps = {}) {
   const [tab, setTab] = useState("all")
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState<string | null>(null)
@@ -68,18 +84,21 @@ function FullExample() {
   return (
     <TableTop>
       <TableTopTitle
-        title="Заголовок таблицы"
+        title={title}
         action={
-          <Button variant="secondary-grey" size="sm">
-            Button
-          </Button>
+          showTitleAction ? (
+            <Button variant="secondary-grey" size="sm">
+              Button
+            </Button>
+          ) : undefined
         }
       />
-      <Tabs items={TABS} value={tab} onValueChange={setTab} />
+      {showTabs && <Tabs items={TABS} value={tab} onValueChange={setTab} />}
       <TableTopToolbar>
         {/* Figma's search field is a fixed 260px column inside the filter
             row; Input's own root is always w-full, so the width lives on a
             wrapper. */}
+        {showSearch && (
         <div className="w-[260px]">
           <Input
             size="sm"
@@ -89,8 +108,15 @@ function FullExample() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Filter label="Статус" value={status} onValueChange={setStatus} chip />
-        {moreOpen && <Filter label="Менеджер" value={manager} onValueChange={setManager} chip />}
+        )}
+        {showFilters && (
+          <>
+            <Filter label="Статус" value={status} onValueChange={setStatus} chip />
+            {moreOpen && (
+              <Filter label="Менеджер" value={manager} onValueChange={setManager} chip />
+            )}
+          </>
+        )}
         {/* "Ещё фильтры" is an `ELK / count button` in the spec — the counter
             is a corner badge on the button, dark rather than red here. */}
         <CountButton
@@ -130,12 +156,14 @@ function FullExample() {
           </>
         }
         actions={
-          <>
-            <DownloadMenu />
-            <Button variant="secondary-grey" size="sm" icon={Settings2} iconPosition="left">
-              Настроить столбцы
-            </Button>
-          </>
+          showActions ? (
+            <>
+              <DownloadMenu />
+              <Button variant="secondary-grey" size="sm" icon={Settings2} iconPosition="left">
+                Настроить столбцы
+              </Button>
+            </>
+          ) : undefined
         }
       />
     </TableTop>
@@ -172,19 +200,35 @@ function SortSummaryExample() {
   )
 }
 
+/* Table Top is a slot container (title / toolbar / summary), not a
+   prop-driven component — it has no props of its own beyond `children`.
+   The Playground's controls therefore switch the *slots* on and off, which
+   is the only variant axis the component actually has. */
 const meta = {
   title: "Content/Table/Table Top",
   component: FullExample,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof FullExample>
+  argTypes: {
+    title: { control: "text" },
+    showTitleAction: { control: "boolean" },
+    showTabs: { control: "boolean" },
+    showSearch: { control: "boolean" },
+    showFilters: { control: "boolean" },
+    showActions: { control: "boolean" },
+  },
+  args: {
+    title: "Заголовок таблицы",
+    showTitleAction: true,
+    showTabs: true,
+    showSearch: true,
+    showFilters: true,
+    showActions: true,
+  },
+} satisfies Meta<FullExampleProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<FullExampleProps>
 
-/* Table Top is a slot container (title / toolbar / summary), not a
-   prop-driven component — there is nothing to expose as controls, so the
-   Playground is the full assembly and the second story shows the pieces it
-   is built from. */
 export const Playground: Story = {}
 
 export const Examples: Story = {

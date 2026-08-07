@@ -17,8 +17,10 @@ const meta = {
   parameters: { layout: "padded" },
   argTypes: {
     multiple: { control: "boolean" },
+    // Which items start open; `multiple: false` collapses it back to one.
+    defaultValue: { control: "object" },
   },
-  args: { multiple: false },
+  args: { multiple: false, defaultValue: ["a"] },
 } satisfies Meta<AccordionProps>
 
 export default meta
@@ -44,8 +46,10 @@ function Rows() {
 }
 
 export const Playground: Story = {
+  // Remount on a `defaultValue` change so the control actually re-seeds the
+  // (otherwise internally-owned) open set.
   render: (args) => (
-    <Accordion {...args} defaultValue={["a"]}>
+    <Accordion key={String(args.defaultValue)} {...args}>
       <Rows />
     </Accordion>
   ),

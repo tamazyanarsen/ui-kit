@@ -23,13 +23,23 @@ const meta = {
     layout: { control: "inline-radio", options: ["popover", "sheet"] },
     title: { control: "text" },
     footer: { control: "boolean" },
+    // A predicate, not a value — no JSON control can express one, so map a
+    // friendly choice to a real function (same technique as Button's `icon`).
+    disabledDate: {
+      control: { type: "select", labels: { none: "Нет", weekends: "Выходные" } },
+      options: ["none", "weekends"],
+      mapping: {
+        none: undefined,
+        weekends: (date: Date) => date.getDay() === 0 || date.getDay() === 6,
+      },
+    },
     defaultMonth: { control: false },
     value: { control: false },
     rangeValue: { control: false },
     monthValue: { control: false },
     yearValue: { control: false },
   },
-  args: { mode: "single", footer: true },
+  args: { mode: "single", layout: "popover", footer: true, title: "Выберите дату" },
 } satisfies Meta<CalendarProps>
 
 export default meta

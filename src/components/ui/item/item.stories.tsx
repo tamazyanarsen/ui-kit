@@ -43,6 +43,11 @@ const meta = {
     subCategory: { control: "boolean" },
     divider: { control: "boolean" },
     disabled: { control: "boolean" },
+    // Only meaningful for rightElement="toggle" / "checkbox". The Playground
+    // keeps them clickable through its own state, but setting the control
+    // pins the value (same pattern as Checkbox's `checked`).
+    toggleChecked: { control: "boolean" },
+    checkboxChecked: { control: "boolean" },
   },
   args: {
     text: "Тип операции",
@@ -50,23 +55,32 @@ const meta = {
     rightElement: "none",
     subCategory: false,
     disabled: false,
+    comment: "Comment",
+    commentColor: "grey",
+    informationText: "Дополнительная информация об операции",
+    rightText: "+1,5%",
+    divider: true,
   },
 } satisfies Meta<ItemProps>
 
 export default meta
 type Story = StoryObj<ItemProps>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: (args) => <InteractiveItem {...args} />,
+}
 
-function InteractiveItem(props: ItemProps) {
+// Keeps the toggle/checkbox right-elements clickable, while still letting
+// the `toggleChecked`/`checkboxChecked` controls pin a value when set.
+function InteractiveItem({ toggleChecked, checkboxChecked, ...props }: ItemProps) {
   const [toggle, setToggle] = useState(true)
   const [checkbox, setCheckbox] = useState(false)
   return (
     <Item
       {...props}
-      toggleChecked={toggle}
+      toggleChecked={toggleChecked ?? toggle}
       onToggleChange={setToggle}
-      checkboxChecked={checkbox}
+      checkboxChecked={checkboxChecked ?? checkbox}
       onCheckboxChange={setCheckbox}
     />
   )

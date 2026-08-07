@@ -23,6 +23,9 @@ const meta = {
     count: { control: { type: "number", min: 0, max: 99 } },
     chip: { control: "boolean" },
     disabled: { control: "boolean" },
+    // Forces the popup open — the Playground is `layout: "padded"` so it has
+    // room to render below the trigger.
+    open: { control: "boolean" },
     // `icon` takes a JSX element instance (same shape as Input's
     // iconLeft/trailingIcon) — map a friendly choice to the real element
     // instead of disabling the control (matches `src/demo/filter-demo.tsx`'s
@@ -44,6 +47,7 @@ const meta = {
     background: "white",
     chip: false,
     disabled: false,
+    open: false,
     state: "default" as PlaygroundState,
   },
 } satisfies Meta<PlaygroundArgs>

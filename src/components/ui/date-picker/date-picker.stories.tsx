@@ -30,6 +30,8 @@ const meta = {
     comment: { control: "text" },
     error: { control: "text" },
     disabled: { control: "boolean" },
+    // The popup's "Сбросить / Применить" row.
+    footer: { control: "boolean" },
     // `value`/`rangeValue`/`monthValue`/`yearValue` are owned by each
     // story's own local-state wrapper — never meant to be driven by the
     // Controls panel. Same landmine verified live on Calendar's matching
@@ -40,7 +42,13 @@ const meta = {
     monthValue: { control: false },
     yearValue: { control: false },
   },
-  args: { mode: "single", size: "lg", label: "Дата", disabled: false },
+  args: {
+    mode: "single",
+    size: "lg",
+    label: "Дата",
+    disabled: false,
+    footer: true,
+  },
 } satisfies Meta<DatePickerProps>
 
 export default meta

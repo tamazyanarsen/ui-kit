@@ -96,6 +96,7 @@ const meta = {
     clearable: { control: "boolean" },
     disabled: { control: "boolean" },
     readOnly: { control: "boolean" },
+    open: { control: "boolean" },
     state: stateArgType,
   },
   args: {
@@ -104,6 +105,7 @@ const meta = {
     clearable: true,
     disabled: false,
     readOnly: false,
+    open: false,
     state: "default" as PlaygroundState,
   },
 } satisfies Meta<PlaygroundArgs>

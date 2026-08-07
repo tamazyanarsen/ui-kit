@@ -13,7 +13,13 @@ const meta = {
   parameters: { layout: "centered" },
   // The card is a dialog (Figma composes it from ELK / Modal), so the
   // Playground opens it outright instead of relying on a trigger click.
-  args: { phone: "+7 900 000-00-00", defaultOpen: true, length: 6 },
+  args: {
+    phone: "+7 900 000-00-00",
+    defaultOpen: true,
+    length: 6,
+    resendSeconds: 60,
+    title: "Подтвердите контактные данные",
+  },
   // title/subtitle/error are typed React.ReactNode but every usage is a
   // plain string — pin text controls so leaving one unset doesn't fall back
   // to Storybook's "Set object" JSON-editor placeholder.
@@ -25,6 +31,18 @@ const meta = {
     length: { control: { type: "number", min: 4, max: 8 } },
     resendSeconds: { control: "number" },
     defaultOpen: { control: "boolean" },
+    defaultValue: { control: "text" },
+    // `trigger` takes a JSX element instance — no JSON value can build one,
+    // so map a friendly choice to a real element (same technique as
+    // Button's `icon`). "None" leaves the card opened by `defaultOpen`.
+    trigger: {
+      control: { type: "select", labels: { none: "None (открыта сразу)", button: "Кнопка" } },
+      options: ["none", "button"],
+      mapping: {
+        none: undefined,
+        button: <button type="button">Подтвердить контакты</button>,
+      },
+    },
   },
 } satisfies Meta<OtpConfirmCardProps>
 

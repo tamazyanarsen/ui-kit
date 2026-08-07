@@ -93,6 +93,12 @@ const meta = {
     navItems: { control: "object" },
     notificationItems: { control: "object" },
     organizations: { control: "object" },
+    documentMenuItems: { control: "object" },
+    showOrgSettings: { control: "boolean" },
+    sidebarOpen: { control: "boolean" },
+    // Owned by ControlledHeader's own state so the organisation switcher
+    // stays clickable — driving it from the panel would freeze it.
+    organizationId: { control: false },
   },
   args: {
     type: "client",
@@ -101,6 +107,13 @@ const meta = {
     messageCount: 3,
     notificationItems: NOTIFICATIONS,
     contactPerson: "Константинопольский К. К.",
+    organizations: ORGS,
+    clientHeaderType: "client",
+    showOrgSettings: true,
+    sidebarOpen: false,
+    employeeName: "Константинопольский К. К.",
+    phoneNumber: "8 800 700-87-83",
+    showMenu: true,
   },
 } satisfies Meta<typeof ControlledHeader>
 

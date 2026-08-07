@@ -21,6 +21,10 @@ const meta = {
     max: { control: "number" },
     step: { control: "number" },
     disabled: { control: "boolean" },
+    // Captions under the track (Figma's "Шкала"); an empty array hides them.
+    scaleLabels: { control: "object" },
+    // Intl.NumberFormat options for the value bubble, e.g. currency.
+    format: { control: "object" },
   },
   args: {
     label: "Label",
@@ -29,6 +33,8 @@ const meta = {
     step: 1,
     defaultValue: 50,
     disabled: false,
+    scaleLabels: ["0", "50", "100"],
+    comment: "Comment",
   },
 } satisfies Meta<RangeInputProps>
 

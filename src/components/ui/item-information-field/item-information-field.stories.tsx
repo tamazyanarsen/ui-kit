@@ -31,9 +31,17 @@ const meta = {
     // usage is a plain string — without this, leaving one unset falls back
     // to a generic "Set object" JSON editor.
     subText: { control: "text" },
+    // The two info glyphs are driven by *content*, not by a flag: a
+    // non-empty labelInfo/valueInfo is what renders the 16px "i" next to the
+    // label / value, and its text is the tooltip. Both ship with a default
+    // so the icon variant is visible in the Playground without having to
+    // guess that typing here turns it on — clear the field to hide it.
     labelInfo: { control: "text" },
     valueInfo: { control: "text" },
     copyable: { control: "boolean" },
+    // What lands in the clipboard when the copy glyph is pressed; falls back
+    // to `value` when unset.
+    copyValue: { control: "text" },
     divider: { control: "boolean" },
     valueStatus: { control: "select", options: STATUSES },
     // `subTextStatus` is `Exclude<FieldStatus, "information">` — react-docgen
@@ -53,7 +61,14 @@ const meta = {
     type: "label-left",
     label: "ИНН",
     value: "7710140123",
-    copyable: false,
+    subText: "Подтверждён",
+    labelInfo: "Идентификационный номер налогоплательщика",
+    valueInfo: "Значение получено из ЕГРЮЛ",
+    copyable: true,
+    copyValue: "7710140123",
+    divider: true,
+    valueStatus: "default",
+    subTextStatus: "default",
   },
   decorators: [
     (Story) => (

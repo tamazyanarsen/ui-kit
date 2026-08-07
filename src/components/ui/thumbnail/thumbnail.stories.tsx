@@ -35,6 +35,7 @@ const meta = {
     showDot: { control: "boolean" },
     disabled: { control: "boolean" },
     src: { control: "text" },
+    alt: { control: "text" },
   },
   args: {
     type: "card",

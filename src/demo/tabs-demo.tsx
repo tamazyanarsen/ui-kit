@@ -29,8 +29,7 @@ const OVERFLOW_ITEMS = Array.from({ length: 10 }, (_, i) => ({
 }))
 
 function TabsDemo() {
-  const [large, setLarge] = useState("all")
-  const [medium, setMedium] = useState("all")
+  const [basic, setBasic] = useState("all")
   const [elements, setElements] = useState("plain")
   const [overflow, setOverflow] = useState("tab-1")
 
@@ -39,20 +38,17 @@ function TabsDemo() {
       <AccordionTrigger>Tabs</AccordionTrigger>
       <AccordionPanel>
         <div className="flex flex-col gap-2">
-          <RowLabel>Large — вкладка 1-го уровня</RowLabel>
-          <Tabs items={BASIC_ITEMS} size="lg" value={large} onValueChange={setLarge} />
-        </div>
-
-        <div className="mt-8 flex flex-col gap-2">
-          <RowLabel>Medium — вкладка 2-го уровня</RowLabel>
-          <Tabs items={BASIC_ITEMS} size="md" value={medium} onValueChange={setMedium} />
+          <RowLabel>
+            Табы адаптивные: 44px с зазором 32 и текстом 16/24 на десктопе,
+            40px с зазором 24 и текстом 14/20 под 768px
+          </RowLabel>
+          <Tabs items={BASIC_ITEMS} value={basic} onValueChange={setBasic} />
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
           <RowLabel>Badge / Status / Disabled</RowLabel>
           <Tabs
             items={ELEMENT_ITEMS}
-            size="lg"
             value={elements}
             onValueChange={setElements}
           />
@@ -66,7 +62,6 @@ function TabsDemo() {
           <div className="max-w-sm rounded-lg border border-[#DEDEDE] p-4">
             <Tabs
               items={OVERFLOW_ITEMS}
-              size="lg"
               value={overflow}
               onValueChange={setOverflow}
             />

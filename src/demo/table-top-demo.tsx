@@ -101,7 +101,7 @@ function TableTopFilterSettingExample() {
           </Button>
         }
       />
-      <Tabs items={TABS} value={tab} onValueChange={setTab} size="md" />
+      <Tabs items={TABS} value={tab} onValueChange={setTab} />
       <TableTopToolbar>
         {/* Figma's search field is a fixed 260px column inside the filter
             row; Input's own root is always w-full, so the width lives on a

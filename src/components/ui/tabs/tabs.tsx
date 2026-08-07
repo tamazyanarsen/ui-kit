@@ -7,11 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 
-// Tabs — "Табы": underline-style tab bar. Large is a 1st-level tab, Medium
-// a 2nd-level one (per the spec's own "Использование" note). Value is a
-// literal item count (2–12) — that's a content constraint, not something
-// this component enforces; it just renders however many `items` it's given.
+// Tabs — "Табы": underline-style tab bar. Value is a literal item count
+// (2–12) — that's a content constraint, not something this component
+// enforces; it just renders however many `items` it's given.
+//
+// `ELK / tabs` v1.2.0 replaced the old Large/Medium *level* property with a
+// responsive Size=Desktop/Mobile pair, so the bar now switches with the
+// viewport instead of a prop: 44px tall with a 32px gap, 16/24 labels and a
+// 24px overflow glyph from `md:` up; 40px / 24px / 14/20 / 16px below it.
+// (The two old sizes happened to hold exactly these two sets of numbers.)
 //
 // Overflow ("Show More"): once the row doesn't fit, the trailing tabs move
 // behind a "..." trigger that opens a dropdown (spec: "часть табов может
@@ -34,25 +40,22 @@ interface TabsProps {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
-  size?: "lg" | "md"
   showMore?: boolean
   className?: string
 }
 
-const GAP = { lg: 32, md: 24 }
-const ELLIPSIS_RESERVED = { lg: 44, md: 32 }
-const ELLIPSIS_ICON_SIZE = { lg: "size-6", md: "size-4" }
-const TEXT_SIZE = { lg: "text-p1-medium", md: "text-p2-medium" }
+// The gap and the room reserved for the "…" trigger feed the JS overflow
+// measurement, so they can't be CSS-only like the type sizes below.
+const GAP = { desktop: 32, mobile: 24 }
+const ELLIPSIS_RESERVED = { desktop: 44, mobile: 32 }
 
 function TabButton({
   item,
-  size,
   active,
   onClick,
   innerRef,
 }: {
   item: TabItem
-  size: "lg" | "md"
   active: boolean
   onClick?: () => void
   innerRef?: (el: HTMLButtonElement | null) => void
@@ -75,7 +78,7 @@ function TabButton({
           "text-[var(--tabs-fg)] group-hover:text-[var(--tabs-fg)]",
           "group-data-active:text-[var(--tabs-fg-active)]",
           "group-disabled:text-[var(--tabs-fg-disabled)]",
-          TEXT_SIZE[size]
+          "text-p2-medium md:text-p1-medium"
         )}
       >
         {item.label}
@@ -102,10 +105,11 @@ function Tabs({
   value,
   defaultValue,
   onValueChange,
-  size = "lg",
   showMore = true,
   className,
 }: TabsProps) {
+  const isDesktop = useIsDesktop()
+  const sizeKey = isDesktop ? "desktop" : "mobile"
   const [internalValue, setInternalValue] = React.useState(
     defaultValue ?? items[0]?.value
   )
@@ -118,7 +122,7 @@ function Tabs({
 
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     items.length,
-    ELLIPSIS_RESERVED[size]
+    ELLIPSIS_RESERVED[sizeKey]
   )
 
   const effectiveVisible = showMore ? visibleCount : items.length
@@ -134,13 +138,12 @@ function Tabs({
         "relative flex items-center border-b border-[var(--tabs-border)]",
         className
       )}
-      style={{ gap: GAP[size] }}
+      style={{ gap: GAP[sizeKey] }}
     >
       {visibleItems.map((item) => (
         <TabButton
           key={item.value}
           item={item}
-          size={size}
           active={item.value === activeValue}
           onClick={() => !item.disabled && setValue(item.value)}
         />
@@ -158,7 +161,7 @@ function Tabs({
               />
             }
           >
-            <Ellipsis aria-hidden="true" className={ELLIPSIS_ICON_SIZE[size]} />
+            <Ellipsis aria-hidden="true" className="size-4 md:size-6" />
             <span
               aria-hidden="true"
               className="h-1 w-full shrink-0 rounded-t-[4px] bg-transparent transition-colors group-hover:bg-[var(--tabs-underline-hover)]"
@@ -196,13 +199,12 @@ function Tabs({
       <div
         aria-hidden="true"
         className="pointer-events-none invisible absolute top-0 left-0 flex"
-        style={{ gap: GAP[size] }}
+        style={{ gap: GAP[sizeKey] }}
       >
         {items.map((item, index) => (
           <TabButton
             key={item.value}
             item={item}
-            size={size}
             active={item.value === activeValue}
             innerRef={(el) => {
               itemRefs.current[index] = el

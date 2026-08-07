@@ -27,10 +27,15 @@ function Controlled(args: ComponentProps<typeof Tabs>) {
   return <Tabs {...args} value={value} onValueChange={setValue} />
 }
 
-export const Large: Story = {
+export const Default: Story = {
   render: (args) => <Controlled {...args} />,
 }
 
-export const Medium: Story = {
-  args: { size: "md" },
+// v1.2.0 of the master dropped the Large/Medium level property for a
+// responsive Desktop/Mobile pair — the bar is 44px with 32px gaps and 16/24
+// labels here, 40/24/14/20 on the mobile story below.
+export const Mobile: Story = {
+  name: "Mobile (< 768px)",
+  globals: { viewport: { value: "mobile1", isRotated: false } },
+  render: (args) => <Controlled {...args} />,
 }

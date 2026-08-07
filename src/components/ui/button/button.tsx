@@ -60,10 +60,18 @@ const buttonVariants = cva(
         // padding with each other/with `sm` at points where Figma's own
         // instances happen to match, so there's no md: padding override
         // needed for `sm`/`default` any more, only for `lg`.
-        sm: "h-8 gap-2 rounded-[16px] px-4 text-p3-medium md:text-p2-medium has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-4",
+        //
+        // Round-3: both sides have to move together, and the smaller value
+        // belongs on the *icon's* side. The anatomy (node 29161:73334)
+        // measures every size's Icon Left row as 16px before the icon and
+        // 20px after the text (24/32 on the 56px desktop L), mirrored for
+        // Icon Right. Previously only one side was overridden, so an
+        // icon-at-the-end button padded the icon side to 20 and left the
+        // text side at the base — i.e. the asymmetry ran backwards.
+        sm: "h-8 gap-2 rounded-[16px] px-4 text-p3-medium md:text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4",
         default:
-          "h-10 gap-2 rounded-[12px] px-6 text-p2-medium has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-4 md:h-12 md:rounded-[16px] md:text-p1-medium",
-        lg: "h-12 gap-2 rounded-[16px] px-6 text-p2-medium has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-4 md:h-14 md:px-8 md:text-p1-medium md:has-data-[icon=inline-end]:pr-8 md:has-data-[icon=inline-start]:pl-6 md:[&_svg:not([class*='size-'])]:size-6",
+          "h-10 gap-2 rounded-[12px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 md:h-12 md:rounded-[16px] md:text-p1-medium",
+        lg: "h-12 gap-2 rounded-[16px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 md:h-14 md:px-8 md:text-p1-medium md:has-data-[icon=inline-start]:pl-6 md:has-data-[icon=inline-start]:pr-8 md:has-data-[icon=inline-end]:pl-8 md:has-data-[icon=inline-end]:pr-6 md:[&_svg:not([class*='size-'])]:size-6",
         icon: "size-10 rounded-[12px] md:size-12 md:rounded-[16px]",
         "icon-sm": "size-8 rounded-[16px]",
         "icon-lg":

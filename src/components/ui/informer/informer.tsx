@@ -75,7 +75,10 @@ function Informer({
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-p1-medium text-[var(--informer-title-fg)]">
+                {/* Mobile steps the whole text block down one notch:
+                    Title 14/20 and date/description 12/16 (Size=Mobile,
+                    node 70240:35984), against 16/24 and 14/20 on desktop. */}
+                <span className="text-p2-medium text-[var(--informer-title-fg)] md:text-p1-medium">
                   {title}
                 </span>
                 {showCross && (
@@ -90,13 +93,13 @@ function Informer({
                 )}
               </div>
               {date && (
-                <span className="text-p2-medium text-[var(--informer-meta-fg)]">
+                <span className="text-p3-medium text-[var(--informer-meta-fg)] md:text-p2-medium">
                   {date}
                 </span>
               )}
             </div>
             {description && (
-              <span className="text-p2-medium text-[var(--informer-description-fg)]">
+              <span className="text-p3-medium text-[var(--informer-description-fg)] md:text-p2-medium">
                 {description}
               </span>
             )}

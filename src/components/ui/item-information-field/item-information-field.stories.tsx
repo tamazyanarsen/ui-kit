@@ -45,6 +45,22 @@ export const LabelLine: Story = {
   args: { type: "label-line" },
 }
 
+// Size=Mobile stacks every type: the label moves above the value, both step
+// down to 14/20 (the sub text to 12/16) and the large value to 22/30.
+export const MobileSizes: Story = {
+  name: "Mobile (< 768px)",
+  globals: { viewport: { value: "mobile1", isRotated: false } },
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <ItemInformationField label="ИНН" value="7710140123" subText="Проверено" copyable />
+      <ItemInformationField type="label-line" label="Счёт" value="40702 810 7 0059" copyable />
+      <ItemInformationField type="label-top" label="Дата" value="24.12.2022" />
+      <ItemInformationField type="large-value" label="Баланс" value="1 250 000 ₽" subText="на сегодня" copyable />
+    </div>
+  ),
+}
+
 export const LabelTop: Story = {
   args: { type: "label-top" },
 }

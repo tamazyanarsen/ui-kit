@@ -65,6 +65,10 @@ interface ItemInformationFieldProps {
 // that is bottom-aligned with 2px above / 6px below inside the 24px line
 // (`pt-[2px] pb-[6px]`), i.e. it sits 2px higher than the text's midpoint.
 // The large (H2/44px line) row uses `pb-[18px]` for the same effect.
+//
+// Mobile keeps the glyph on the shorter line: a 20px row with `py-[2px]`,
+// and the large one hangs from the top of its 30px line with `pt-[4px]`
+// (Size=Mobile, node 70240:38661).
 function InfoIcon({
   content,
   large = false,
@@ -75,8 +79,10 @@ function InfoIcon({
   return (
     <span
       className={cn(
-        "flex shrink-0 items-end",
-        large ? "h-11 pb-[18px]" : "h-6 pb-[6px]"
+        "flex shrink-0",
+        large
+          ? "h-[30px] items-start pt-[4px] md:h-11 md:items-end md:pt-0 md:pb-[18px]"
+          : "h-5 items-end pb-[2px] md:h-6 md:pb-[6px]"
       )}
     >
       <Tooltip content={content}>
@@ -98,11 +104,14 @@ function InfoIcon({
 // pt-33 for the large one. The glyph keeps its exact 16/24px box — the hit
 // target is grown with a transparent inset pseudo-element instead, so
 // enlarging it can't shift the alignment.
+// On mobile every type stacks, so the glyph always lands just under the
+// label line: 26px down (27 for the large one, whose 24px glyph sits on a
+// 30px value line) — the same "+2px below the value's top" rule.
 const COPY_OFFSET: Record<FieldType, string> = {
-  "label-left": "mt-[2px]",
-  "label-line": "mt-[2px]",
-  "label-top": "mt-[30px]",
-  "large-value": "mt-[33px]",
+  "label-left": "mt-[26px] md:mt-[2px]",
+  "label-line": "mt-[26px] md:mt-[2px]",
+  "label-top": "mt-[26px] md:mt-[30px]",
+  "large-value": "mt-[27px] md:mt-[33px]",
 }
 
 function CopyButton({
@@ -150,12 +159,15 @@ function ItemInformationField({
   divider = true,
   className,
 }: ItemInformationFieldProps) {
-  const stacked = type === "label-top" || type === "large-value"
   const large = type === "large-value"
+  // Only Label Left and Line put the label beside the value, and only from
+  // `md:` up — Size=Mobile stacks every type (node 70240:38661).
+  const sideBySide = type === "label-left" || type === "label-line"
 
-  // Label is P1 *Medium* like the Value — the two differ only in colour.
+  // Label is Medium like the Value — the two differ only in colour — and
+  // steps down to 14/20 on mobile along with it.
   const labelRow = (
-    <span className="flex min-w-0 items-end gap-2 text-p1-medium text-[var(--ifield-label-fg)]">
+    <span className="flex min-w-0 items-end gap-2 text-p2-medium text-[var(--ifield-label-fg)] md:text-p1-medium">
       <span className="truncate">{label}</span>
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
@@ -167,7 +179,8 @@ function ItemInformationField({
         className={cn(
           // text-h2 (32/44) already bakes in weight 500, so it doesn't need
           // its own font-medium alongside the text-p1 branch that does.
-          large ? "text-h2" : "text-p1-medium",
+          // Mobile: 22/30 for the large value, 14/20 for the rest.
+          large ? "text-h2-mobile md:text-h2" : "text-p2-medium md:text-p1-medium",
           VALUE_COLOR[valueStatus]
         )}
       >
@@ -178,7 +191,12 @@ function ItemInformationField({
   )
 
   const subTextRow = subText && (
-    <span className={cn("text-p2-medium", SUBTEXT_COLOR[subTextStatus])}>
+    <span
+      className={cn(
+        "text-p3-medium md:text-p2-medium",
+        SUBTEXT_COLOR[subTextStatus]
+      )}
+    >
       {subText}
     </span>
   )
@@ -188,55 +206,56 @@ function ItemInformationField({
       data-slot="item-information-field"
       data-type={type}
       className={cn(
-        "flex items-start",
+        "flex items-start gap-4",
         // Only Label Left is a padded, ruled row; the other three are bare
         // content the container spaces out (16px) itself.
-        type === "label-left"
-          ? "gap-6 border-b pt-4 pb-[15px]"
-          : type === "label-line"
-            ? "gap-6"
-            : "gap-4",
+        type === "label-left" && "border-b pt-4 pb-[15px]",
         type === "label-left" &&
           (divider ? "border-[var(--ifield-divider)]" : "border-transparent"),
         className
       )}
     >
-      {stacked ? (
-        <div className={cn("flex min-w-0 flex-1 flex-col", !large && "gap-1")}>
+      {/* One DOM for both breakpoints: the label is always the first child
+          of this group, stacked above the value on mobile and turned into
+          the left-hand column from `md:` up on the two side-by-side types. */}
+      <div
+        className={cn(
+          "flex min-w-0 flex-1 flex-col gap-1",
+          sideBySide && "md:flex-row md:items-start md:gap-6",
+          type === "label-top" && "md:gap-1",
+          large && "md:gap-0"
+        )}
+      >
+        {/* Label box: an even share of the row, but never wider than 384px
+            (Label Left) / 216px (Line) and never below 100px — widths that
+            only apply once it *is* a column. */}
+        <span
+          className={cn(
+            "min-w-0",
+            sideBySide && "md:min-w-25 md:flex-1",
+            type === "label-left" && "md:max-w-96",
+            type === "label-line" && "md:max-w-54"
+          )}
+        >
           {labelRow}
+        </span>
+        <div
+          className={cn(
+            // Value and Sub Text are 4px apart on mobile (2px under the
+            // large value) and flush on desktop — except Label Top, which
+            // keeps 4px there too.
+            "flex min-w-0 flex-col items-start gap-1",
+            large && "gap-0.5 md:gap-0",
+            sideBySide && "md:flex-1 md:gap-0",
+            type === "label-top" && "md:gap-1"
+          )}
+        >
           {valueRow}
           {subTextRow}
         </div>
-      ) : (
-        <>
-          {/* Label box: an even share of the row, but never wider than
-              384px (Label Left) / 216px (Line) and never below 100px. */}
-          <span
-            className={cn(
-              "min-w-25 flex-1",
-              type === "label-left" ? "max-w-96" : "max-w-54"
-            )}
-          >
-            {labelRow}
-          </span>
-          <div className="flex min-w-0 flex-1 items-start gap-4">
-            {/* Value and Sub Text sit flush on these two types — only
-                Label Top puts 4px between its lines. */}
-            <div className="flex min-w-0 flex-1 flex-col items-start">
-              {valueRow}
-              {subTextRow}
-            </div>
-            {copyable && (
-              <CopyButton
-                copyValue={copyValue ?? (typeof value === "string" ? value : "")}
-                type={type}
-              />
-            )}
-          </div>
-        </>
-      )}
+      </div>
 
-      {stacked && copyable && (
+      {copyable && (
         <CopyButton
           copyValue={copyValue ?? (typeof value === "string" ? value : "")}
           type={type}

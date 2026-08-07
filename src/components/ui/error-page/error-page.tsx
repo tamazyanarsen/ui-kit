@@ -56,7 +56,9 @@ function ErrorPage({
         </h1>
       )}
       {description && (
-        <p className="mt-2 max-w-md text-p1-medium text-[var(--error-page-description-fg)]">
+        // 592px, the width Figma gives this paragraph inside the 1008px text
+        // column — `max-w-md` (448) wrapped it a line early.
+        <p className="mt-2 max-w-[592px] text-p1-medium text-[var(--error-page-description-fg)]">
           {description}
         </p>
       )}

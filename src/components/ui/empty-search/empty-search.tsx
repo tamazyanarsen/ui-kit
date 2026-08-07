@@ -61,7 +61,10 @@ function EmptySearchResults({
         {title}
       </h3>
       {description && (
-        <p className="mt-1 max-w-sm text-p1-medium text-[var(--empty-search-description-fg)]">
+        // Full width of the block (the master's Text column is `w-full`
+        // inside the 680px card), not capped at 384px — the cap made long
+        // descriptions wrap two lines earlier than the spec.
+        <p className="mt-1 w-full text-p1-medium text-[var(--empty-search-description-fg)]">
           {description}
         </p>
       )}

@@ -118,7 +118,9 @@ function StatusScreen({
         </h2>
 
         {subtitle && (
-          <p className="max-w-sm text-p1-medium text-[var(--status-screen-title-fg)]">
+          // Figma's Title/Subtitle column is `w-full` inside the 768px
+          // screen — the 384px cap wrapped subtitles a line early.
+          <p className="w-full text-p1-medium text-[var(--status-screen-title-fg)]">
             {subtitle}
           </p>
         )}

@@ -119,7 +119,9 @@ function CardFace({
       <Watermark skin={skin} type={skinStyle.watermark} />
 
       {showPaymentSystem && (
-        <div className="relative flex flex-1 flex-col items-start gap-1">
+        // 6px between the payment-system logo and the masked number — the
+        // master's "PS and number" column is `gap-[6px]`, not 4.
+        <div className="relative flex flex-1 flex-col items-start gap-1.5">
           <PaymentLogo system={paymentSystem} size="lg" />
           {showCardNumber && (
             // get_design_context on the "Face, Style=Mono" master (52969:11715):

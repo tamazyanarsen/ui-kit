@@ -828,7 +828,12 @@
      used elsewhere (--input-border-error, #252628 body text). */
   --top-fixed-message-title-fg: #252628;
   --top-fixed-message-close-fg: #252628;
-  --top-fixed-message-blue-bg: #E3EEFF;
+  /* Was #E3EEFF, which is the *pre-rebrand* blue — the As-is/To-be table on
+     the "Переходный этап ребрендинга" page (node 70251:48106) renders this
+     surface as #E3EEFF on the left and #EDF6FC on the right, so the current
+     theme was still showing the old value. #EDF6FC is also exactly
+     --tag-blue-secondary-bg, i.e. the kit's one pale blue surface. */
+  --top-fixed-message-blue-bg: #EDF6FC;
   --top-fixed-message-blue-icon: #5B90E0;
   --top-fixed-message-red-bg: #FFE8E3;
   --top-fixed-message-red-icon: #D74B54;
@@ -1251,7 +1256,30 @@
    --btn-primary-fg flips to white here — the color-replacement map only
    covers backgrounds, but the As-is swatch in that same Button row shows
    white label text on the old green primary (the current theme's dark
-   #252628 label only works against the new pale-cyan background). */
+   #252628 label only works against the new pale-cyan background).
+
+   **Second pass (2026-08-07) — verified against the render, not just the
+   map.** The instruction page also carries a side-by-side "WebLK —
+   Сравнение основных компонентов на переходный период ребрендинга" table
+   (node 70251:48106) showing every affected component As-is next to To-be.
+   Exporting it at full resolution and diffing the two columns band by band
+   yields the complete swatch map, which is what every "(измерено)" value
+   below comes from:
+
+     #82BF00 <- #80E3FF   #82BF00 <- #2FCEEF   #699B12 <- #14B1D1
+     #252628 <- #012F42   #82BF00 <- #39C182   #DE4A2A <- #D74B54
+     #D9F0AB <- #BDF8DB   #C4E88B <- #89F2BD   #FFC9B5 <- #FFE8E3
+     #FFAB99 <- #FFBEB5   #E3EEFF <- #EDF6FC   #F3F9E6 <- #CFF7FF
+
+   Two things that map alone would have got wrong, and one bug it exposed:
+   - Progress Bar's step fill and Item's check glyph sat on the wrong step
+     of the green ramp (the component's own token moved during the rebrand,
+     so a palette-level substitution isn't enough).
+   - The whole error-red family (#D74B54) and success-green family
+     (#39C182) had no old-theme counterpart at all, so every error/success
+     accent stayed rebranded under data-product="odl-elk".
+   - --top-fixed-message-blue-bg in :root was still holding the *old*
+     #E3EEFF; fixed to #EDF6FC there, with #E3EEFF moved down here. */
 [data-product="odl-elk"] {
   --btn-primary-bg: #82BF00;
   --btn-primary-bg-hover: #72A716;
@@ -1285,24 +1313,103 @@
   --steps-active-ring: #82BF00;
   --steps-fade-arrow-bg: #252628;
 
-  --progress-step-fill: #72A716;
+  /* Measured, not derived: the As-is step bar renders #82BF00, one step up
+     from the #72A716 the palette map alone would predict — the component's
+     own token moved a step in the rebrand, so the map can't be applied
+     blindly here. Same reasoning applies everywhere below marked
+     "(измерено)". */
+  --progress-step-fill: #82BF00;
 
   --calendar-accent-fg: #699B12;
   --calendar-selected-bg: #252628;
 
   --filter-active-border: #82BF00;
 
-  --item-check-fg: #82BF00;
+  /* #14B1D1 -> #699B12 per the replacement map (was #82BF00, i.e. the wrong
+     step of the ramp — the check glyph uses the same accent as the header's
+     links, which the As-is render shows at #699B12). */
+  --item-check-fg: #699B12;
 
   --file-item-loading-fg: #72A716;
 
   --chips-dark-bg: #252628;
   --chips-dark-bg-hover: #38393B; /* approximated, see comment above */
 
+  --switcher-active-black-bg: #252628;
+  --button-menu-black-bg: #252628; /* измерено */
+
+  /* Active is measured (#CFF7FF -> #F3F9E6, the selected page-size pill in
+     the As-is paginator). Hover/Onclick aren't drawn anywhere in the
+     instruction, so they stay derived from the replacement map's green ramp
+     — which puts hover at the same lightest step as active, since the old
+     palette has nothing lighter than Green 107. Flagged as approximate. */
   --pagination-hover-bg: #F3F9E6;
-  --pagination-active-bg: #D9F0AB;
-  --pagination-onclick-bg: #C4E88B;
+  --pagination-active-bg: #F3F9E6;
+  --pagination-onclick-bg: #D9F0AB;
 
   --header-hover-fg: #699B12;
   --header-check-fg: #699B12;
+
+  /* --- Success green: #39C182 -> #82BF00 (измерено на Informer, Toast,
+     Progress Bar и Tag в таблице As-is/To-be). Every token below holds the
+     same semantic "success" swatch, so they move together. --- */
+  --accordion-list-description-success-fg: #82BF00;
+  --progress-green: #82BF00;
+  --event-status-success-bg: #82BF00;
+  --informer-icon-green: #82BF00;
+  --toast-checked-icon: #82BF00;
+  --tag-green-bg: #82BF00;
+  --item-right-text-fg: #82BF00;
+  --ifield-success-fg: #82BF00;
+  /* No As-is counterpart drawn for the pale Secondary tint — derived as the
+     lightest green of the replacement map (Green 107). Approximate. */
+  --tag-green-secondary-bg: #F3F9E6;
+
+  /* --- Error red: #D74B54 -> #DE4A2A (измерено на Progress Bar, Top Fixed
+     Message и Tag). Kit-wide error swatch, so every holder moves. --- */
+  --btn-destructive-bg: #DE4A2A;
+  --btn-destructive-bg-hover: #F05733; /* derived (+18/+13/+9, same delta as the current theme's own hover step) */
+  --btn-destructive-bg-active: #FF6E4D; /* derived, see above */
+  --input-border-error: #DE4A2A;
+  --input-caption-error-fg: #DE4A2A;
+  --otp-error-fg: #DE4A2A;
+  --select-border-error: #DE4A2A;
+  --select-caption-error-fg: #DE4A2A;
+  --checkbox-border-error: #DE4A2A;
+  --checkbox-caption-error-fg: #DE4A2A;
+  --radio-border-error: #DE4A2A;
+  --radio-caption-error-fg: #DE4A2A;
+  --toggle-caption-error-fg: #DE4A2A;
+  --range-input-accent-error: #DE4A2A;
+  --range-input-caption-error-fg: #DE4A2A;
+  --file-upload-border-error: #DE4A2A;
+  --file-item-error-fg: #DE4A2A;
+  --accordion-list-description-error-fg: #DE4A2A;
+  --progress-red: #DE4A2A;
+  --steps-status-error-fg: #DE4A2A;
+  --badge-red-bg: #DE4A2A;
+  --informer-icon-red: #DE4A2A;
+  --notification-dot: #DE4A2A;
+  --toast-error-icon: #DE4A2A;
+  --top-fixed-message-red-icon: #DE4A2A;
+  --tag-red-bg: #DE4A2A;
+  --header-logout-fg: #DE4A2A;
+  --header-unread-dot: #DE4A2A;
+  --item-comment-red-fg: #DE4A2A;
+  --ifield-error-fg: #DE4A2A;
+  --status-screen-error-fg: #DE4A2A;
+
+  /* --- Message surfaces (измерено попиксельно на карточках Toast и Top
+     Fixed Message в таблице As-is/To-be) --- */
+  --toast-checked-bg: #D9F0AB;
+  --toast-checked-border: #C4E88B;
+  --toast-error-bg: #FFC9B5;
+  --toast-error-border: #FFAB99;
+  --top-fixed-message-red-bg: #FFC9B5;
+  --top-fixed-message-blue-bg: #E3EEFF;
+  --accordion-card-blocked-bg-hover: #FFC9B5;
+  --mail-feed-error-bg: #FFC9B5;
+  /* #F0FCFF -> #F3F9E6 per the replacement map (same pale tint the paginator
+     uses). Not drawn in the instruction — derived. */
+  --mail-feed-new-bg: #F3F9E6;
 }

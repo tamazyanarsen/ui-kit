@@ -6,7 +6,7 @@ import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
 import { Pagination, type PaginationProps } from "./pagination"
 
 const meta = {
-  title: "Template/Paginator",
+  title: "Компоненты/Paginator",
   component: Pagination,
   parameters: { layout: "padded" },
   argTypes: {

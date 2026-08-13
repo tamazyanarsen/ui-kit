@@ -9,7 +9,7 @@ const STATUS_COLORS: TagColor[] = ["green", "orange", "red", "blue", "grey"]
 const SIGN_COLORS: TagColor[] = ["black", "white", "grey-info"]
 
 const meta = {
-  title: "Status/Tag",
+  title: "Компоненты/Tag",
   component: Tag,
   parameters: { layout: "centered" },
   argTypes: {

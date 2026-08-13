@@ -8,7 +8,7 @@ import { ResendCode } from "./resend-code"
 type ResendCodeProps = ComponentProps<typeof ResendCode>
 
 const meta = {
-  title: "Template/OTP Code/Resend Code",
+  title: "Компоненты/OTP Resend Code",
   component: ResendCode,
   parameters: { layout: "padded" },
   argTypes: { seconds: { control: { type: "number", min: 0, max: 300 } } },

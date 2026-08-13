@@ -11,7 +11,7 @@ const SKINS = Object.keys(SKIN_LABELS) as BankCardSkin[]
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "visa", "unionpay"]
 
 const meta = {
-  title: "Content/Cards",
+  title: "Компоненты/Cards",
   component: BankCard,
   parameters: { layout: "centered" },
   argTypes: {

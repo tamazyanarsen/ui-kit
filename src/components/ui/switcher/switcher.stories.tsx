@@ -12,7 +12,7 @@ const ITEMS = [
 ]
 
 const meta = {
-  title: "Interaction/Cell Switcher",
+  title: "Компоненты/Cell Switcher",
   component: Switcher,
   parameters: { layout: "padded" },
   argTypes: {

@@ -20,7 +20,7 @@ const STATUSES: FieldStatus[] = [
 ]
 
 const meta = {
-  title: "Content/Item/Information Field",
+  title: "Компоненты/Information Field",
   component: ItemInformationField,
   parameters: { layout: "padded" },
   argTypes: {

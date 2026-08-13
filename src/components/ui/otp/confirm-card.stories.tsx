@@ -8,7 +8,7 @@ import { OtpConfirmCard } from "./confirm-card"
 type OtpConfirmCardProps = ComponentProps<typeof OtpConfirmCard>
 
 const meta = {
-  title: "Template/OTP Code/Confirm Card",
+  title: "Компоненты/OTP Confirm Card",
   component: OtpConfirmCard,
   parameters: { layout: "centered" },
   // The card is a dialog (Figma composes it from ELK / Modal), so the

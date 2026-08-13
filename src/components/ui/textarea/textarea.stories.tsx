@@ -13,7 +13,7 @@ import { Textarea, type TextareaProps } from "./textarea"
 type PlaygroundArgs = TextareaProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Text Area",
+  title: "Компоненты/Text Area",
   component: Textarea,
   parameters: { layout: "padded" },
   // comment/error are typed React.ReactNode but every usage here is a plain

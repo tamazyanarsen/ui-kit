@@ -5,7 +5,7 @@ import { StatesMatrix } from "@/stories/matrix"
 import { TopFixedMessage, type TopFixedMessageProps } from "./top-fixed-message"
 
 const meta = {
-  title: "Status/Message/Top Fixed Message",
+  title: "Компоненты/Top Fixed Message",
   component: TopFixedMessage,
   parameters: { layout: "fullscreen" },
   // `buttonLabel` is typed React.ReactNode but every usage is a plain string

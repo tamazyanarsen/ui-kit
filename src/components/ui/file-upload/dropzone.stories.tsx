@@ -8,7 +8,7 @@ import { FileUploadDropzone } from "./dropzone"
 type DropzoneProps = ComponentProps<typeof FileUploadDropzone>
 
 const meta = {
-  title: "Interaction/File Upload/Dropzone",
+  title: "Компоненты/Dropzone",
   component: FileUploadDropzone,
   parameters: { layout: "padded" },
   argTypes: {

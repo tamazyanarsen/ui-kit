@@ -1,3 +1,4 @@
+import * as React from "react"
 import { useMemo, useState } from "react"
 import { describe, expect, it, vi } from "vitest"
 import { render, screen, waitFor } from "@testing-library/react"
@@ -7,6 +8,7 @@ import { Autocomplete } from "./root"
 import { AutocompleteField } from "./field"
 import { AutocompleteContent, AutocompleteList, AutocompleteCollection } from "./content"
 import { AutocompleteItem } from "./item"
+import { highlightMatch } from "./highlight"
 
 const FRUITS = ["Apple", "Banana", "Cherry"]
 
@@ -89,5 +91,48 @@ describe("Autocomplete", () => {
 
     expect(onValueChange).toHaveBeenLastCalledWith(null)
     expect(field).toHaveValue("")
+  })
+})
+
+// Match highlighting. Exercised through the helper rather than through
+// AutocompleteItem, which is a Base UI Combobox.Item and only renders inside
+// a combobox root.
+describe("highlightMatch", () => {
+  function renderNodes(node: React.ReactNode) {
+    return render(<div data-testid="out">{node}</div>)
+  }
+
+  it("marks every case-insensitive occurrence", () => {
+    const { container } = renderNodes(
+      highlightMatch("Яблоко и ещё яблоко", "ябло")
+    )
+    const marks = container.querySelectorAll('[data-slot="autocomplete-match"]')
+    expect(marks).toHaveLength(2)
+    expect(marks[0]).toHaveTextContent("Ябло")
+    expect(marks[1]).toHaveTextContent("ябло")
+  })
+
+  it("keeps the full text intact around the marks", () => {
+    const { getByTestId } = renderNodes(highlightMatch("ИНН 7153842331", "7153"))
+    expect(getByTestId("out")).toHaveTextContent("ИНН 7153842331")
+  })
+
+  it("returns the text untouched without a query", () => {
+    const { container } = renderNodes(highlightMatch("Яблоко", ""))
+    expect(
+      container.querySelectorAll('[data-slot="autocomplete-match"]')
+    ).toHaveLength(0)
+  })
+
+  it("survives regexp characters in the query", () => {
+    const { container } = renderNodes(highlightMatch("Яблоко (сорт)", "("))
+    expect(
+      container.querySelectorAll('[data-slot="autocomplete-match"]')
+    ).toHaveLength(1)
+  })
+
+  it("passes non-string content through", () => {
+    const node = <b>Яблоко</b>
+    expect(highlightMatch(node, "ябл")).toBe(node)
   })
 })

@@ -8,7 +8,7 @@ import { OtpInput } from "./input"
 type OtpInputProps = ComponentProps<typeof OtpInput>
 
 const meta = {
-  title: "Template/OTP Code/Input",
+  title: "Компоненты/OTP Input",
   component: OtpInput,
   parameters: { layout: "padded" },
   // `error` is typed React.ReactNode but every usage is a plain string — pin

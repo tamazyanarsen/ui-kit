@@ -18,7 +18,7 @@ const ROW_PROPS = {
 const STATES: MailFeedState[] = ["default", "new", "used", "error"]
 
 const meta = {
-  title: "Content/Mail Feed",
+  title: "Компоненты/Mail Feed",
   component: MailFeed,
   parameters: { layout: "padded" },
   argTypes: {

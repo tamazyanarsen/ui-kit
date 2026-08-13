@@ -8,7 +8,7 @@ import { FileListItem } from "./file-item"
 type FileListItemProps = ComponentProps<typeof FileListItem>
 
 const meta = {
-  title: "Interaction/File Upload/Files",
+  title: "Компоненты/Files",
   component: FileListItem,
   parameters: { layout: "padded" },
   // `errorText` is `React.ReactNode` but every usage is a plain string —

@@ -105,12 +105,16 @@ function ToastCard({
         />
 
         <div className="flex min-w-0 flex-1 flex-col gap-2 pt-0.5">
-          <span className="text-p1-medium text-[var(--toast-title-fg)]">
+          {/* Size=Mobile steps the whole text block down one notch, like
+              Informer does: Title 14/20 and Description 12/16 against
+              16/24 and 14/20 on Size=Desktop (master `ELK / toast
+              message` v2.0.0, node 774:134168). */}
+          <span className="text-p2-medium text-[var(--toast-title-fg)] md:text-p1-medium">
             {toast.title}
           </span>
 
           {toast.description && (
-            <p className="text-p2-medium text-[var(--toast-description-fg)]">
+            <p className="text-p3-medium text-[var(--toast-description-fg)] md:text-p2-medium">
               {toast.description}
             </p>
           )}

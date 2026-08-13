@@ -7,7 +7,7 @@ import { Calendar } from "./calendar"
 import type { CalendarProps } from "./types"
 
 const meta = {
-  title: "Interaction/Calendar/Calendar",
+  title: "Компоненты/Calendar",
   component: Calendar,
   parameters: { layout: "centered" },
   // `defaultMonth`/`value`/`rangeValue`/`monthValue`/`yearValue` are all

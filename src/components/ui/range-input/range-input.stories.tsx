@@ -6,7 +6,7 @@ import { StatesMatrix } from "@/stories/matrix"
 import { RangeInput, type RangeInputProps } from "./range-input"
 
 const meta = {
-  title: "Interaction/Range Input",
+  title: "Компоненты/Range Input",
   component: RangeInput,
   parameters: { layout: "padded" },
   // comment/error are typed React.ReactNode but every usage is a plain

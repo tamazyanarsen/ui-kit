@@ -71,7 +71,7 @@ function ConfirmModal({
 }
 
 const meta = {
-  title: "Template/Modal",
+  title: "Компоненты/Modal",
   component: ConfirmModal,
   parameters: { layout: "centered" },
   // `ConfirmModal` is declared locally in this file rather than imported

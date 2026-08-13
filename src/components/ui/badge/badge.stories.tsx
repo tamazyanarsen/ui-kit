@@ -14,7 +14,7 @@ const COLORS: BadgeColor[] = [
 ]
 
 const meta = {
-  title: "Status/Badge",
+  title: "Компоненты/Badge",
   component: Badge,
   parameters: { layout: "centered" },
   argTypes: {

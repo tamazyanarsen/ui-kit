@@ -5,7 +5,7 @@ import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
 import { Chips, type ChipsProps } from "./chips"
 
 const meta = {
-  title: "Interaction/Chips",
+  title: "Компоненты/Chips",
   component: Chips,
   parameters: { layout: "centered" },
   argTypes: {

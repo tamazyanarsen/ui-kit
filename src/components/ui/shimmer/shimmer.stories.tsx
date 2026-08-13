@@ -8,7 +8,7 @@ import { Shimmer } from "./shimmer"
 type ShimmerProps = ComponentProps<typeof Shimmer>
 
 const meta = {
-  title: "Pattern/Shimmer",
+  title: "Компоненты/Shimmer",
   component: Shimmer,
   parameters: { layout: "padded" },
   argTypes: {

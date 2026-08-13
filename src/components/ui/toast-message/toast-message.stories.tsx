@@ -42,7 +42,7 @@ function ToastLauncher({ type, title, description, buttons }: PlaygroundArgs) {
 }
 
 const meta = {
-  title: "Status/Message/Toast Message",
+  title: "Компоненты/Toast Message",
   component: ToastLauncher,
   parameters: { layout: "centered" },
   // `ToastLauncher` is a plain function declared locally in this file rather

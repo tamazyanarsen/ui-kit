@@ -90,8 +90,11 @@ interface HeaderProps {
 const ELLIPSIS_RESERVED = 72
 
 function NavItem({ item }: { item: HeaderNavItem }) {
+  // `self-stretch`, not a vertical padding: Figma's `Menu Point (ELK)` is
+  // the full 64px height of the row, so the whole band is the hit target
+  // even though only the 24px label is inked.
   const baseClassName = cn(
-    "flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
+    "flex shrink-0 cursor-pointer items-center gap-1 self-stretch rounded-lg px-2 text-p1-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
     item.active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
   )
 
@@ -153,7 +156,17 @@ function NavRow({
     <div
       ref={containerRef}
       data-slot="header-nav-row"
-      className="relative flex min-w-0 flex-1 items-center gap-6 border-t border-[var(--header-border)] px-4 py-3"
+      // Both header rows are a fixed 64px with 40px side padding — measured
+      // off the `ELK / header` instance (1938:121114): the bar is 1864 wide
+      // with its `Box` at x=40/w=1784 (40+1784+40), and both `Header` and
+      // `Menu Header (ELK)` are exactly 64 tall, with the 32px logo and the
+      // 32px "Платёж" button sitting at y=16 (i.e. centred). This was
+      // `px-4 py-3`, giving a 60px row inset 16px.
+      // No `flex-1` here: this row is a *column* child of the header, so
+      // flex-1's `flex-basis: 0` fights the fixed 64px height and collapses
+      // the row to its content. It only ever needed `min-w-0` (for the
+      // overflow measurement), never the grow.
+      className="relative flex h-16 min-w-0 shrink-0 items-center gap-6 border-t border-[var(--header-border)] px-10"
     >
       {showPayment && (
         <Button
@@ -178,7 +191,7 @@ function NavRow({
             render={
               <button
                 type="button"
-                className="group flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
+                className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch rounded-lg px-2 text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
               />
             }
           >
@@ -232,7 +245,9 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
           <button
             type="button"
             aria-label="Документы"
-            className="group flex shrink-0 cursor-pointer items-center gap-0.5 rounded-lg px-1.5 py-1 text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
+            // `Wallet (ELK)` — плитка 88×64 (шире соседних 56, потому что
+            // несёт иконку + шеврон).
+            className="group flex h-16 w-22 shrink-0 cursor-pointer items-center justify-center gap-0.5 text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
           />
         }
       >
@@ -271,7 +286,7 @@ function EmployeeUserMenu({
         render={
           <button
             type="button"
-            className="group flex shrink-0 cursor-pointer items-center gap-4 rounded-lg px-2 py-1 text-[var(--header-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
+            className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
           />
         }
       >
@@ -358,7 +373,7 @@ function Header({
         className
       )}
     >
-      <div className="flex min-w-0 items-center gap-3 px-4 py-2.5">
+      <div className="flex h-16 min-w-0 items-center gap-3 px-10">
         {type === "employee" && showMenu && (
           <button
             type="button"
@@ -379,7 +394,7 @@ function Header({
         <div className="min-w-0 flex-1" />
 
         {type === "client" && (
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="flex shrink-0 items-center">
             {showIconCluster && (
               <>
                 <NotificationMenu items={notificationItems} unreadCount={notificationItems.length} />
@@ -387,17 +402,19 @@ function Header({
                   type="button"
                   aria-label="Сообщения"
                   onClick={onMessagesClick}
-                  className="relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
+                  className="flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
                 >
-                  <Mail size={24} aria-hidden="true" className="size-6" />
-                  {messageCount > 0 && (
-                    <Badge
-                      type="counter"
-                      color="red"
-                      value={messageCount}
-                      className="absolute -top-1 -right-1"
-                    />
-                  )}
+                  <span className="relative flex">
+                    <Mail size={24} aria-hidden="true" className="size-6" />
+                    {messageCount > 0 && (
+                      <Badge
+                        type="counter"
+                        color="red"
+                        value={messageCount}
+                        className="absolute -top-1 -right-1"
+                      />
+                    )}
+                  </span>
                 </button>
                 {documentMenuItems.length > 0 && <DocumentMenu items={documentMenuItems} />}
               </>
@@ -418,14 +435,14 @@ function Header({
         )}
 
         {type === "employee" && (
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="flex shrink-0 items-center">
             <NotificationMenu items={notificationItems} unreadCount={notificationItems.length} />
             <EmployeeUserMenu name={employeeName} onSettingsClick={onOrgSettingsClick} />
             <button
               type="button"
               aria-label="Выйти"
               onClick={() => setLogoutOpen(true)}
-              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
+              className="flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
             >
               <LogOut aria-hidden="true" className="size-6" />
             </button>

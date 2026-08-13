@@ -42,21 +42,29 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
             aria-label="Уведомления"
             data-slot="notification-menu-trigger"
             className={cn(
-              "group relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]",
+              // Панель иконок в шапке — это смежные плитки во всю высоту
+              // строки, а не мелкие кнопки с зазорами: Figma's `Panel`
+              // ставит Notification/Letter 56×64, Wallet 88×64 и Profile
+              // 304×64 подряд с x = 0, 56, 112, 200 (зазор 0).
+              "group flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]",
               className
             )}
           />
         }
       >
-        <Bell size={24} aria-hidden="true" className="size-6" />
-        {unreadCount > 0 && (
-          <Badge
-            type="counter"
-            color="red"
-            value={unreadCount}
-            className="absolute -top-1 -right-1"
-          />
-        )}
+        {/* Бейдж крепится к самой иконке, а не к плитке: иначе он уезжает
+            в угол блока 56×64 вместо угла глифа 24×24. */}
+        <span className="relative flex">
+          <Bell size={24} aria-hidden="true" className="size-6" />
+          {unreadCount > 0 && (
+            <Badge
+              type="counter"
+              color="red"
+              value={unreadCount}
+              className="absolute -top-1 -right-1"
+            />
+          )}
+        </span>
       </MenuPrimitive.Trigger>
 
       <MenuPrimitive.Portal>

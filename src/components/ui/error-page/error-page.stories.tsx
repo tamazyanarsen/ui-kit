@@ -8,7 +8,7 @@ import { ErrorPage } from "./error-page"
 type ErrorPageProps = ComponentProps<typeof ErrorPage>
 
 const meta = {
-  title: "Template/Error Page",
+  title: "Компоненты/Error Page",
   component: ErrorPage,
   parameters: { layout: "fullscreen" },
   argTypes: {

@@ -144,17 +144,22 @@ function Event({
           </div>
         )}
 
+        {/* Each Information row is a two-column flex in the master
+            (`I-1`/`I-2`/`I-3`: `flex gap-[4px] items-start`, label
+            `shrink-0 whitespace-nowrap`, value `flex-[1_0_0]`), not one
+            inline paragraph — so a value long enough to wrap keeps its own
+            column instead of running back under the label. */}
         {info && info.length > 0 && (
           <div className="flex flex-col gap-1 text-p1-medium">
             {info.map((row, index) => (
-              <p key={index}>
-                <span className="text-[var(--event-meta-fg)]">
+              <div key={index} className="flex items-start gap-1">
+                <span className="shrink-0 whitespace-nowrap text-[var(--event-meta-fg)]">
                   {row.label}
-                </span>{" "}
-                <span className="text-[var(--event-title-fg)]">
+                </span>
+                <span className="min-w-0 flex-1 text-[var(--event-title-fg)]">
                   {row.value}
                 </span>
-              </p>
+              </div>
             ))}
           </div>
         )}
@@ -177,7 +182,12 @@ function Event({
                   key={index}
                   type="button"
                   onClick={doc.onClick}
-                  className="flex items-center gap-4 rounded-[8px] p-1 text-left outline-none"
+                  // `pr-4`, not `p-1`: the master's `ELK / files` row is
+                  // `gap-[16px] items-center pr-[16px]` with no padding on
+                  // the other three sides, so the 48px tile lines up with
+                  // the "Приложенные документы:" label above it — a uniform
+                  // 4px inset pushed it out of that column.
+                  className="flex items-center gap-4 overflow-hidden rounded-[8px] pr-4 text-left outline-none"
                 >
                   <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--event-file-bg)]">
                     {/* Figma nests the same `ELK / files` row here as File

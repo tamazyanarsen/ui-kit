@@ -153,7 +153,7 @@ function TreeMultiSelect() {
 }
 
 const meta = {
-  title: "Interaction/Combobox",
+  title: "Компоненты/Combobox",
   component: DocumentsMultiSelect,
   parameters: { layout: "padded" },
   // `DocumentsMultiSelect` is declared locally in this file rather than

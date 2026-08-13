@@ -14,7 +14,7 @@ import { Toggle, type ToggleProps } from "./toggle"
 type PlaygroundArgs = ToggleProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Toggle",
+  title: "Компоненты/Toggle",
   component: Toggle,
   parameters: { layout: "centered" },
   argTypes: {

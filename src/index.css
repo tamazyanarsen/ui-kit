@@ -320,6 +320,33 @@
   }
 }
 
+@layer base {
+  /* Sticky table header — "Шапка (закрепляется всегда при достижении верха
+     вьюпорта, открепляется вместе с достижением низа блока данных)"
+     (Проектирование таблиц ЕЛК, node 70279:7616). Applied from the `<table>`
+     rather than per cell so that `<TableHeadCell>` doesn't have to thread a
+     flag through context just to add one declaration; the offset lets a page
+     with its own fixed site header park the row below it. */
+  table[data-sticky-header] thead th {
+    position: sticky;
+    top: var(--table-header-top, 0px);
+  }
+}
+
+/* "Added" row highlight — "Для каждой строки время жизни подсветки
+   составляет 2000 ms, из которых: 1000 ms статично, 1000 ms в режиме
+   затухания" (node 70279:9969). The fill is Hover's grey, so the animation
+   only has to fade it back to the row's own white. */
+@keyframes table-row-added {
+  0%,
+  50% {
+    background-color: var(--table-row-added-bg);
+  }
+  100% {
+    background-color: var(--table-bg);
+  }
+}
+
 :root {
   /* ЕЛК (default product theme) — Button component tokens.
      Values measured directly from ui/button.svg (Figma export). */
@@ -1141,6 +1168,10 @@
   --autocomplete-title-fg: #252628;
   --autocomplete-subtitle-fg: #999999;
   --autocomplete-highlighted-bg: #F8F8F8;
+  /* Match highlight inside a result row. Not specified in Figma (see
+     autocomplete/highlight.tsx) — reuses the kit's primary accent so the
+     value is an existing DS colour rather than a new one. */
+  --autocomplete-match-bg: #80E3FF;
 
   /* Table tokens (ui/table). Values read directly from ui/table/table.svg +
      table-1.svg fills, not pixel-sampled — grepping the vector source caught
@@ -1165,6 +1196,28 @@
   --table-row-hover-bg: #EFEFEF;
   --table-row-active-bg: #E6E6E6;
   --table-row-added-bg: #EFEFEF;
+  /* Added 2026-08-13 from "Проектирование таблиц ЕЛК" (node 70279:6891).
+     --table-bg is White 101, named rather than hard-coded because pinned
+     cells paint themselves with it (a transparent sticky cell would let the
+     scrolling columns show through) and because the Added keyframes fade
+     back to it. --table-number-positive-fg is the incoming-money colour of
+     the Number cell type ("+31 922 980 133 515,05 ₽" in the spec's own
+     sample) — the kit's usual success green, same value as --progress-green
+     / --tag-green-bg. --table-summary-divider (Grey 166) is the separator
+     between "Сводка" items and is genuinely a different, lighter grey than
+     --table-divider. */
+  /* Title tokens (ui/title) — `ELK / title-page`, node 8712:15257. The
+     heading and the Information Text value are Grey 1514, the description is
+     Grey 517 (a step darker than the usual muted grey used elsewhere), and
+     the Information Text label is Grey 284. Read off the two masters
+     (7593:18875 Title Card / 8712:15258 Registry). */
+  --title-fg: #252628;
+  --title-description-fg: #6D6D6D;
+  --title-muted-fg: #999999;
+
+  --table-bg: #FFFFFF;
+  --table-number-positive-fg: #39C182;
+  --table-summary-divider: #C8C8CB;
 
   /* Shimmer tokens (ui/shimmer). Corrected 2026-08-03 against live Figma
      (node 15963:23880, "ELK / shimmer" master component, and every sized

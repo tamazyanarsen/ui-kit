@@ -72,7 +72,10 @@ function ProfileMenu({
             type="button"
             data-slot="profile-menu-trigger"
             className={cn(
-              "group flex min-w-0 cursor-pointer items-center gap-4 rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]",
+              // h-16 вместо py-1: в Figma `Profile Client (ELK)` — плитка
+              // 304×64, такая же по высоте, как остальные в `Panel`.
+              // Ширина остаётся по контенту (имя организации переменное).
+              "group flex h-16 min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]",
               className
             )}
           />

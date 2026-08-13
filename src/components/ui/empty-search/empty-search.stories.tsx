@@ -8,7 +8,7 @@ import { EmptySearchResults } from "./empty-search"
 type EmptySearchResultsProps = ComponentProps<typeof EmptySearchResults>
 
 const meta = {
-  title: "Template/Empty Search Results",
+  title: "Компоненты/Empty Search Results",
   component: EmptySearchResults,
   parameters: { layout: "padded" },
   argTypes: {

@@ -5,7 +5,7 @@ import { StatesMatrix } from "@/stories/matrix"
 import { Nps, type NpsProps } from "./nps"
 
 const meta = {
-  title: "Template/NPS",
+  title: "Компоненты/NPS",
   component: Nps,
   parameters: { layout: "centered" },
   // `title` is typed React.ReactNode but every real usage (including the

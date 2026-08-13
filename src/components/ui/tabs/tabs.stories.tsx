@@ -14,7 +14,7 @@ const ITEMS = [
 ]
 
 const meta = {
-  title: "Navigation/Tabs",
+  title: "Компоненты/Tabs",
   component: Tabs,
   parameters: { layout: "padded" },
   argTypes: {

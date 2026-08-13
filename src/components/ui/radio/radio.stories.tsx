@@ -15,7 +15,7 @@ import { RadioGroup } from "./root"
 type PlaygroundArgs = RadioProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Radio",
+  title: "Компоненты/Radio",
   component: Radio,
   parameters: { layout: "centered" },
   argTypes: {
@@ -53,6 +53,57 @@ function Controlled({ state, ...props }: PlaygroundArgs) {
 
 export const Playground: Story = {
   render: (args) => <Controlled {...args} />,
+}
+
+// Группа из нескольких радио — здесь проверяется собственно групповое
+// поведение, которого не видно на одиночном Playground: выбор одной опции
+// снимает выбор с остальных («включение одной означает отключение другой»
+// из спеки), disabled-опция не выбирается и пропускается при переходе
+// стрелками, а фокус внутри группы roving (Tab входит/выходит одним шагом).
+// Текущее значение выведено под группой, чтобы переключение было видно.
+function GroupDemo() {
+  const [value, setValue] = useState<unknown>("card")
+
+  return (
+    <div className="flex flex-col gap-8">
+      <RadioGroup
+        value={value}
+        onValueChange={setValue}
+        items={[
+          {
+            value: "card",
+            label: "Списать с карты",
+            comment: "MIR •• 4417",
+          },
+          {
+            value: "account",
+            label: "Списать со счёта",
+            comment: "40817 810 0 9991 0004312",
+          },
+          {
+            value: "sbp",
+            label: "Через СБП",
+            comment: "По номеру телефона",
+          },
+          {
+            value: "credit",
+            label: "В кредит",
+            comment: "Недоступно для этой операции",
+            disabled: true,
+          },
+        ]}
+      />
+      <p className="text-p2-medium">
+        Выбрано: <b>{String(value)}</b>
+      </p>
+    </div>
+  )
+}
+
+export const Group: Story = {
+  name: "Группа (переключение)",
+  parameters: { controls: { disable: true } },
+  render: () => <GroupDemo />,
 }
 
 type Cell = Omit<RadioProps, "value"> & { on?: boolean }

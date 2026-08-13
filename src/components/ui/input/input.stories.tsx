@@ -15,7 +15,7 @@ import type { MaskName } from "./mask"
 type PlaygroundArgs = InputProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Input",
+  title: "Компоненты/Input",
   component: Input,
   parameters: { layout: "padded" },
   argTypes: {

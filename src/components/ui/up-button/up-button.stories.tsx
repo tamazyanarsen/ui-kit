@@ -5,7 +5,7 @@ import { StatesMatrix } from "@/stories/matrix"
 import { UpButton, type UpButtonProps } from "./up-button"
 
 const meta = {
-  title: "Interaction/Button/Up Button",
+  title: "Компоненты/Up Button",
   component: UpButton,
   parameters: { layout: "padded" },
   argTypes: {

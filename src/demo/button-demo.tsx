@@ -1,14 +1,10 @@
-import { useState } from "react"
-import { ChevronRight as ArrowRight } from "@/icons"
+import { useState } from "react";
+import { ChevronRight as ArrowRight } from "@/icons";
 
-import { Button } from "@/components/ui/button"
-import {
-  AccordionItem,
-  AccordionTrigger,
-  AccordionPanel,
-} from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button";
+import { AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion";
 
-import { RowLabel } from "./shared"
+import { RowLabel } from "./shared";
 
 const VARIANTS = [
   { key: "primary", label: "Primary" },
@@ -17,16 +13,16 @@ const VARIANTS = [
   { key: "secondary-white", label: "Secondary (White)" },
   { key: "secondary-outline", label: "Secondary (Outline)" },
   { key: "destructive", label: "Destructive" },
-] as const
+] as const;
 
 const SIZES = [
   { key: "sm", label: "S" },
   { key: "default", label: "M" },
   { key: "lg", label: "L" },
-] as const
+] as const;
 
 function ButtonDemo() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   return (
     <>
@@ -40,20 +36,10 @@ function ButtonDemo() {
                 <Button variant={key} size="lg">
                   Button
                 </Button>
-                <Button
-                  variant={key}
-                  size="lg"
-                  icon={ArrowRight}
-                  iconPosition="left"
-                >
+                <Button variant={key} size="lg" icon={ArrowRight} iconPosition="left">
                   Icon Left
                 </Button>
-                <Button
-                  variant={key}
-                  size="lg"
-                  icon={ArrowRight}
-                  iconPosition="right"
-                >
+                <Button variant={key} size="lg" icon={ArrowRight} iconPosition="right">
                   Icon Right
                 </Button>
                 <Button
@@ -79,11 +65,7 @@ function ButtonDemo() {
             <Button variant="primary" size="lg" isLoading={loading}>
               Submit
             </Button>
-            <Button
-              variant="secondary-white"
-              size="sm"
-              onClick={() => setLoading((v) => !v)}
-            >
+            <Button variant="secondary-white" size="sm" onClick={() => setLoading((v) => !v)}>
               Toggle loading
             </Button>
             {VARIANTS.map(({ key, label }) => (
@@ -116,9 +98,8 @@ function ButtonDemo() {
             ))}
           </div>
           <p className="mt-4 text-p3-regular text-muted-foreground">
-            Начиная с 768px (<code>md:</code>) M и L дополнительно
-            увеличиваются в размерах (mobile-first, десктопная форма
-            подключается на md:).
+            Начиная с 768px (<code>md:</code>) M и L дополнительно увеличиваются в размерах
+            (mobile-first, десктопная форма подключается на md:).
           </p>
         </AccordionPanel>
       </AccordionItem>
@@ -141,17 +122,16 @@ function ButtonDemo() {
             </Button>
           </div>
           <p className="mt-4 text-p3-regular text-muted-foreground">
-            Фиксированный значок Госуслуг (упрощённая аппроксимация — см.
-            комментарий в <code>gosuslugi-logo.tsx</code>, тот же подход, что
-            и у платёжных логотипов в Thumbnail) — не заменяется пропом{" "}
-            <code>icon</code>. Black/Border-White/White переиспользуют цвета
-            secondary-black/-outline/-white один в один (сверено попиксельно
-            со спеком); Grey — единственный новый цвет.
+            Фиксированный значок Госуслуг (упрощённая аппроксимация — см. комментарий в{" "}
+            <code>gosuslugi-logo.tsx</code>, тот же подход, что и у платёжных логотипов в Thumbnail)
+            — не заменяется пропом <code>icon</code>. Black/Border-White/White переиспользуют цвета
+            secondary-black/-outline/-white один в один (сверено попиксельно со спеком); Grey —
+            единственный новый цвет.
           </p>
         </AccordionPanel>
       </AccordionItem>
     </>
-  )
+  );
 }
 
-export { ButtonDemo }
+export { ButtonDemo };

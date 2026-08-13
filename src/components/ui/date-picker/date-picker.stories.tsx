@@ -9,7 +9,7 @@ import type { CalendarMode } from "@/components/ui/calendar"
 import type { InputSize } from "@/components/ui/input"
 
 const meta = {
-  title: "Interaction/Calendar/Date Picker",
+  title: "Компоненты/Date Picker",
   component: DatePicker,
   parameters: { layout: "centered" },
   argTypes: {

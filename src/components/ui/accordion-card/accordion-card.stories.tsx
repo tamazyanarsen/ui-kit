@@ -8,7 +8,7 @@ import { AccordionCard } from "./accordion-card"
 type AccordionCardProps = ComponentProps<typeof AccordionCard>
 
 const meta = {
-  title: "Content/Accordion/Accordion",
+  title: "Компоненты/Accordion",
   component: AccordionCard,
   parameters: { layout: "padded" },
   // `subtitle` is `React.ReactNode` (to match `title`'s type) but every

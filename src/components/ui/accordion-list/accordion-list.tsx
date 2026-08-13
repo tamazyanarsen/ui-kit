@@ -107,7 +107,11 @@ function AccordionListItem({
             nativeButton={false}
             render={<div />}
             data-slot="accordion-list-trigger"
-            className="flex w-full cursor-pointer items-start gap-4 px-4 py-3 text-left outline-none transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
+            // Без собственных отступов: в мастере строка `content
+            // accordion` начинается прямо от края (Top-фрейм x=0..719,
+            // дети от x=0) — отступы даёт контентный блок страницы, в
+            // который компонент вкладывается.
+            className="flex w-full cursor-pointer items-start gap-4 text-left outline-none transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
           >
             {showCheckbox && (
               <span
@@ -127,7 +131,18 @@ function AccordionListItem({
             )}
 
             <span className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="flex items-center gap-3">
+              {/* The title→chevron gap is the ONE measurement that differs
+                  between the two title sizes: 12px on H3, 8px on H4 — read
+                  off each variant's own `spaceVertical` marker in the
+                  anatomy (H3 spans 92→104, H4 spans 83→91 relative to the
+                  row). Everything else (checkbox gap 16, title/subtitle 4,
+                  gap-to-buttons 16, inside-buttons 8) is shared. */}
+              <span
+                className={cn(
+                  "flex items-center",
+                  titleAs === "h4" ? "gap-2" : "gap-3"
+                )}
+              >
                 <span
                   className={cn(
                     "truncate text-[var(--accordion-list-title-fg)]",
@@ -203,7 +218,11 @@ function AccordionListItem({
             data-slot="accordion-list-panel"
             className="h-(--accordion-panel-height) overflow-hidden text-p2-regular transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
-            <div className={cn("pb-3", showCheckbox ? "pl-11" : "pl-4", "pr-4")}>
+            {/* The master puts the content Slot exactly 24px below the
+                header (header ends at 60, Slot starts at 84) and runs it
+                the full width of the row — no bottom or side inset of its
+                own, now that the trigger no longer carries padding. */}
+            <div className="pt-6">
               {children}
             </div>
           </AccordionPrimitive.Panel>
@@ -224,10 +243,12 @@ function AccordionList({
     <div
       data-slot="accordion-list"
       role="list"
-      className={cn(
-        "w-full divide-y divide-[var(--accordion-list-divider)] overflow-hidden rounded-2xl border border-[var(--accordion-list-border)]",
-        className
-      )}
+      // Просто стек строк с шагом 24px, без рамки и разделителей: в Figma
+      // инстансы `ELK / content accordion` стоят один под другим с зазором
+      // 24 (варианты 8/7: y = 0, 84, 168, 252, 336 при высоте строки 60)
+      // внутри контентного блока страницы — «Компонент располагается внутри
+      // контентного блока». Рамка + divide-y были изобретением кита.
+      className={cn("flex w-full flex-col gap-6", className)}
     >
       {children}
     </div>

@@ -15,7 +15,7 @@ interface PlaygroundArgs {
 }
 
 const meta = {
-  title: "Interaction/Button Menu",
+  title: "Компоненты/Button Menu",
   // No `component:` — ButtonMenu takes only `children`, so the Playground's
   // controls are synthetic (which buttons to put in the bar) and would not
   // typecheck against the real prop type.

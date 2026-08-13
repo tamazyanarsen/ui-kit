@@ -13,8 +13,16 @@ import { cn } from "@/lib/utils"
 // and stays constant across Empty/Filled/Lock states within a breakpoint.
 // Padding is a uniform 16px on both breakpoints (confirmed against the live
 // Figma component) — not reduced on mobile.
+//
+// Высота задана явно: мастер `ELK / text-area` (137:2610 Empty и 137:2617
+// Filled) в обоих состояниях — `h-[112px]` на Desktop и 98 на Mobile, с
+// `min-h-[56px]` и текстом `flex-[1_0_0]`, т.е. рамка НЕ меняет высоту при
+// заполнении. Раньше высота была чисто контентной (rows=3), что давало
+// 110px на десктопе — на 2px меньше мастера; мобильная при этом совпадала
+// случайно. `min-h-*`, а не `h-*`, чтобы поле по-прежнему могло вырасти
+// под большее число строк и переопределяться через className.
 const textareaBoxVariants = cva(
-  "group/textarea relative flex w-full flex-col gap-1 rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] p-4 transition-colors has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)]",
+  "group/textarea relative flex min-h-[98px] w-full flex-col gap-1 rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] p-4 transition-colors has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)] md:min-h-[112px]",
   {
     variants: {
       invalid: {

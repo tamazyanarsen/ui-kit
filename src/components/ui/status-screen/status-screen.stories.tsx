@@ -22,7 +22,7 @@ const STATUSES: StatusType[] = [
 ]
 
 const meta = {
-  title: "Template/Status Screen",
+  title: "Компоненты/Status Screen",
   component: StatusScreen,
   parameters: { layout: "padded" },
   argTypes: {

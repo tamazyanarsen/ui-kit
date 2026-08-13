@@ -23,7 +23,7 @@ const ICON_TYPES: ThumbnailType[] = [
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
 
 const meta = {
-  title: "Status/Thumbnail",
+  title: "Компоненты/Thumbnail",
   component: Thumbnail,
   parameters: { layout: "centered" },
   argTypes: {

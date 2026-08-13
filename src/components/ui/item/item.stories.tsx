@@ -17,7 +17,7 @@ const RIGHT_ELEMENTS: RightElementType[] = [
 ]
 
 const meta = {
-  title: "Content/Item/Item",
+  title: "Компоненты/Item",
   component: Item,
   parameters: { layout: "padded" },
   // `thumbnail` holds a JSX element (or the sentinel `true`, which renders

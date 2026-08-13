@@ -78,7 +78,7 @@ function DemoSelect({
 type PlaygroundArgs = DemoSelectProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Select",
+  title: "Компоненты/Select",
   component: DemoSelect,
   parameters: { layout: "padded" },
   // `DemoSelect` is a plain function declared locally in this file rather

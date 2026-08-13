@@ -3,6 +3,8 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
 import { cn } from "@/lib/utils"
 
+import { highlightMatch } from "./highlight"
+
 // A result row — Title (bold, wraps across lines for long organization
 // names per the spec, not truncated) + an optional grey subtitle line
 // (e.g. "ИНН ... КПП ..."). No checkbox: this is single-select, and picking
@@ -10,12 +12,19 @@ import { cn } from "@/lib/utils"
 
 interface AutocompleteItemOwnProps {
   subtitle?: React.ReactNode
+  /** The current search string. Every case-insensitive occurrence of it in
+   * the title and subtitle is marked — the subtitle too, because the related
+   * -parameter filters (ИНН + КПП) are searched on both halves: "Настроить
+   * поиск таким образом, чтобы он работал и по главному, и по второстепенному
+   * параметру" (Фильтрация (ЕЛК), node 70295:22880). */
+  match?: string
 }
 
 function AutocompleteItem({
   className,
   children,
   subtitle,
+  match,
   ...props
 }: ComboboxPrimitive.Item.Props & AutocompleteItemOwnProps) {
   return (
@@ -31,7 +40,9 @@ function AutocompleteItem({
       )}
       {...props}
     >
-      <span className="font-semibold text-[var(--autocomplete-title-fg)]">{children}</span>
+      <span className="font-semibold text-[var(--autocomplete-title-fg)]">
+        {highlightMatch(children, match)}
+      </span>
       {subtitle && (
         // Round-2 audit: added font-medium — every literal "Description"
         // line sampled on canvas 666:11's Menu Point (ELK) instances uses
@@ -39,7 +50,9 @@ function AutocompleteItem({
         // No dedicated Autocomplete frame exists though, so this is an
         // extrapolation from Select/Combobox's shared list-item component,
         // not a value confirmed against Autocomplete's own spec.
-        <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)]">{subtitle}</span>
+        <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)]">
+          {highlightMatch(subtitle, match)}
+        </span>
       )}
     </ComboboxPrimitive.Item>
   )

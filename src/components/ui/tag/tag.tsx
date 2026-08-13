@@ -34,7 +34,11 @@ function Tag({
       data-size={size}
       className={cn(
         "inline-flex w-fit items-center gap-1 rounded-[4px] px-1.5 whitespace-nowrap",
-        size === "l" ? "h-[22px] text-p2-medium" : "h-[18px] text-p3-medium",
+        // The S box pads 2px off the top rather than centring (master
+        // `Size=Mobile`: `pt-[2px]` on an 18px box with a 16px line), which
+        // drops the digits/caps 1px below the geometric centre — same trick
+        // Badge uses. L centres normally (`py-px` on 22/20).
+        size === "l" ? "h-[22px] text-p2-medium" : "h-[18px] pt-[2px] text-p3-medium",
         style.border && "border",
         className
       )}

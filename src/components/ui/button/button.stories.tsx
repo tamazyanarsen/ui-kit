@@ -30,7 +30,7 @@ const LOGO_VARIANTS: NonNullable<ButtonProps["variant"]>[] = [
 type PlaygroundArgs = ButtonProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Button/Button",
+  title: "Компоненты/Button",
   component: Button,
   parameters: { layout: "centered" },
   argTypes: {

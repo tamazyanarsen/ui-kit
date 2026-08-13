@@ -13,7 +13,7 @@ import { Filter, type FilterProps } from "./filter"
 type PlaygroundArgs = FilterProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Filter",
+  title: "Компоненты/Filter",
   component: Filter,
   parameters: { layout: "padded" },
   argTypes: {

@@ -16,7 +16,7 @@ const DESCRIPTION_TYPES = [
 ] as const
 
 const meta = {
-  title: "Content/Accordion/Content Accordion",
+  title: "Компоненты/Content Accordion",
   component: AccordionListItem,
   parameters: { layout: "padded" },
   argTypes: {

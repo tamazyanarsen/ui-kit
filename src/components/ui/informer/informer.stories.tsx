@@ -14,7 +14,7 @@ const ICONS: InformerIcon[] = [
 ]
 
 const meta = {
-  title: "Status/Message/Informer",
+  title: "Компоненты/Informer",
   component: Informer,
   parameters: { layout: "padded" },
   // `description`/`mainButtonLabel`/`additionalButtonLabel` are all

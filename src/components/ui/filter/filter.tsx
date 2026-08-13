@@ -88,12 +88,17 @@ function Filter({
     setOpen(false)
   }
 
-  // Reset clears the draft but — per the Сбросить/Применить pairing used
-  // everywhere else in this kit (Calendar, DatePicker) — leaves the popup
-  // open for a fresh entry.
+  // "При нажатии на кнопку «Сбросить» фильтр закрывается. Значения фильтра
+  // возвращаются в исходное состояние" (Фильтрация (ЕЛК), node 70295:22605).
+  // This kit's other Сбросить/Применить pairings (Calendar, DatePicker) keep
+  // their popup open, but the filter spec is explicit that this one closes —
+  // and it also covers the empty case the same way: "Если кнопки «Применить»
+  // и «Сбросить» были нажаты, когда внутри фильтра ничего не было выбрано —
+  // выпадающий список закрывается без применения фильтра".
   function handleReset() {
     setDraft("")
     commitValue(null)
+    setOpen(false)
   }
 
   function handleClear(event: React.SyntheticEvent) {
@@ -101,6 +106,9 @@ function Filter({
     commitValue(null)
   }
 
+  // A free-text filter holds exactly one value; the count exists so the
+  // multi-select kinds can report how many options the draft covers.
+  const selectedCount = draft.trim() ? 1 : 0
   const hasValue = Boolean(activeValue)
   const asChip = chip
   // Figma's `Checked` property on filter-table — the dark pill.
@@ -280,7 +288,7 @@ function Filter({
           >
             <PopoverPrimitive.Popup
               data-slot="filter-content"
-              render={<Dropdown className="w-64 overflow-hidden" />}
+              render={<Dropdown className="w-96 overflow-hidden" />}
             >
               {/* Round-2 audit fix: outer padding is 16px (Figma node
                   15693:35423, "Input area" wrapper), not 12px — and the
@@ -300,8 +308,15 @@ function Filter({
                   containerClassName="px-4"
                 />
               </div>
+              {/* "Если выбранно несколько значений, то пишем количество в
+                  кнопке – «Применить: 1»". Buttons are never disabled:
+                  "Кнопки в фильтрах не блокируются. Если нет выбранных
+                  значений — кнопки сброса и применения фильтра в любом
+                  случае доступны". */}
               <ComboboxFooter
-                applyLabel="Применить"
+                applyLabel={
+                  draft.trim() ? `Применить: ${selectedCount}` : "Применить"
+                }
                 onReset={handleReset}
                 onApply={handleApply}
               />

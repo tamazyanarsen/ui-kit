@@ -1,4 +1,7 @@
 import * as React from "react"
+import { ChevronLeft, ChevronRight } from "@/icons"
+
+import { useHorizontalScrollState } from "@/components/ui/table"
 
 import { cn } from "@/lib/utils"
 
@@ -141,15 +144,125 @@ function TableTopSummaryItem({
   )
 }
 
+// One end-of-strip chevron. Sits over the track rather than beside it, so
+// turning it on never reflows the pairs, and fades the content under itself
+// out to the block's white.
+function DetailsArrow({
+  direction,
+  onClick,
+}: {
+  direction: "left" | "right"
+  onClick: () => void
+}) {
+  const Icon = direction === "left" ? ChevronLeft : ChevronRight
+  return (
+    <button
+      type="button"
+      data-slot="table-top-details-arrow"
+      data-direction={direction}
+      aria-label={direction === "left" ? "Прокрутить сводку назад" : "Прокрутить сводку вперёд"}
+      onClick={onClick}
+      className={cn(
+        "absolute top-1/2 z-10 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-[4px] bg-[var(--table-bg)] text-[var(--table-fg)] outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+        direction === "left" ? "left-0" : "right-0"
+      )}
+    >
+      <Icon aria-hidden="true" className="size-4" />
+    </button>
+  )
+}
+
+// TableTopDetails — "Сводка" (node 70279:10336), the last row inside
+// `ELK / table-top` (its `Details` slot, 70279:10367). A muted "Сводка"
+// label pinned on the left and a scrolling strip of `label: value` pairs
+// separated by a 12px-wide Grey 166 rule.
+//
+// The spec calls it "Дополнительная функция, наличие определяется при
+// разработке конкретного продукта", and shows three states of the strip
+// (Начало / Середина / Конец ленты) — it scrolls horizontally on its own
+// when the pairs don't fit, independently of the table below it.
+interface TableTopDetailsProps extends React.ComponentProps<"div"> {
+  label?: React.ReactNode
+  items: { label: React.ReactNode; value: React.ReactNode }[]
+}
+
+function TableTopDetails({
+  className,
+  label = "Сводка",
+  items,
+  ...props
+}: TableTopDetailsProps) {
+  const trackRef = React.useRef<HTMLDivElement>(null)
+  const { scrolledFromStart, scrolledFromEnd } = useHorizontalScrollState(trackRef)
+
+  function scrollBy(direction: -1 | 1) {
+    const track = trackRef.current
+    if (!track) return
+    track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: "smooth" })
+  }
+
+  return (
+    <div
+      data-slot="table-top-details"
+      className={cn("flex min-h-8 items-center gap-4 text-p2-medium", className)}
+      {...props}
+    >
+      <span className="shrink-0 text-[var(--table-description-fg)]">
+        {label}
+      </span>
+      {/* The spec draws the strip in four states — "Сводка поместилась",
+          "Начало ленты", "Середина ленты", "Конец ленты" (node 70279:10340) —
+          which differ only by which chevron is showing: none when everything
+          fits, then one per side that still has content behind it. Same edge
+          rule as the pinned columns, so it reuses their scroll hook. */}
+      <div className="relative flex min-w-0 flex-1 items-center">
+        {scrolledFromStart && (
+          <DetailsArrow direction="left" onClick={() => scrollBy(-1)} />
+        )}
+        {/* rounded-[16px] + overflow on the track is Figma's own Row frame —
+            it clips the strip's ends flush with the block's radius.
+            `scrollbar-none`: the strip is driven by the chevrons, and the
+            spec draws no bar under it. */}
+        <div
+          ref={trackRef}
+          data-slot="table-top-details-track"
+          className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto rounded-[16px] px-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {items.map((item, index) => (
+            <span
+              key={index}
+              className="flex shrink-0 items-center gap-1 text-[var(--table-fg)]"
+            >
+              {index > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="h-5 w-3 border-l border-[var(--table-summary-divider)]"
+                />
+              )}
+              <span>{item.label}:</span>
+              <span>{item.value}</span>
+            </span>
+          ))}
+        </div>
+        {scrolledFromEnd && (
+          <DetailsArrow direction="right" onClick={() => scrollBy(1)} />
+        )}
+      </div>
+    </div>
+  )
+}
+
 export {
   TableTop,
   TableTopTitle,
   TableTopToolbar,
   TableTopSummary,
   TableTopSummaryItem,
+  TableTopDetails,
 }
 export type {
   TableTopTitleProps,
   TableTopSummaryProps,
   TableTopSummaryItemProps,
+  TableTopDetailsProps,
 }

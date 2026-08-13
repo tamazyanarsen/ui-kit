@@ -76,7 +76,7 @@ function ControlledHeader(
 }
 
 const meta = {
-  title: "Navigation/Header",
+  title: "Компоненты/Header",
   component: ControlledHeader,
   parameters: { layout: "fullscreen" },
   argTypes: {

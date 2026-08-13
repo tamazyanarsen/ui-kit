@@ -58,7 +58,14 @@ function UpButton({
       icon={ChevronUp}
       aria-label="Наверх"
       onClick={handleClick}
-      className={cn("fixed right-6 bottom-6 z-40 shadow-[0_4px_16px_rgba(0,0,0,0.16)]", className)}
+      // The master (`ELK / up button`, node 34:15225) carries the kit's named
+      // "Universal shadow" effect — 0/4/12 of #8B99A93D — not a bespoke
+      // black one. Figma exports it as a `drop-shadow` filter, whose CSS blur
+      // is half the Figma radius, which is why the raw export reads 6px.
+      className={cn(
+        "fixed right-6 bottom-6 z-40 shadow-[var(--shadow-universal)]",
+        className
+      )}
     />
   )
 }

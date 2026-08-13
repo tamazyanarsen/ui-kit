@@ -17,7 +17,7 @@ const BASE_STEPS: Step[] = [
 ]
 
 const meta = {
-  title: "Navigation/Steps",
+  title: "Компоненты/Steps",
   component: Steps,
   parameters: { layout: "padded" },
   argTypes: {

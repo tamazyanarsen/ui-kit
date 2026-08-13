@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 type ScrollbarProps = ComponentProps<typeof Scrollbar>
 
 const meta = {
-  title: "Pattern/Scrollbar",
+  title: "Компоненты/Scrollbar",
   component: Scrollbar,
   parameters: { layout: "padded" },
   argTypes: {

@@ -8,3 +8,4 @@ export {
   AutocompleteEmpty,
 } from "./content"
 export { AutocompleteItem } from "./item"
+export { highlightMatch } from "./highlight"

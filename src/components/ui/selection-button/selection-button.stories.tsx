@@ -22,7 +22,7 @@ const ITEMS = [
 ]
 
 const meta = {
-  title: "Content/Selection Button",
+  title: "Компоненты/Selection Button",
   component: SelectionButton,
   parameters: { layout: "centered" },
   argTypes: {

@@ -74,24 +74,12 @@ function Informer({
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              <div className="flex items-start justify-between gap-3">
-                {/* Mobile steps the whole text block down one notch:
-                    Title 14/20 and date/description 12/16 (Size=Mobile,
-                    node 70240:35984), against 16/24 and 14/20 on desktop. */}
-                <span className="text-p2-medium text-[var(--informer-title-fg)] md:text-p1-medium">
-                  {title}
-                </span>
-                {showCross && (
-                  <button
-                    type="button"
-                    aria-label="Закрыть"
-                    onClick={onClose}
-                    className="shrink-0 text-[var(--informer-title-fg)] outline-none"
-                  >
-                    <X aria-hidden="true" className="size-4" />
-                  </button>
-                )}
-              </div>
+              {/* Mobile steps the whole text block down one notch:
+                  Title 14/20 and date/description 12/16 (Size=Mobile,
+                  node 70240:35984), against 16/24 and 14/20 on desktop. */}
+              <span className="text-p2-medium text-[var(--informer-title-fg)] md:text-p1-medium">
+                {title}
+              </span>
               {date && (
                 <span className="text-p3-medium text-[var(--informer-meta-fg)] md:text-p2-medium">
                   {date}
@@ -129,6 +117,24 @@ function Informer({
             </div>
           )}
         </div>
+        {/* The cross is a sibling of the whole text Box in the master
+            (v2.0.5, node 70240:35984) — one 16px-gap row of
+            [icon 24][Box][cross] — not a child of the title line. Its
+            `py-1` wrapper is what centres the 16px glyph against the 24px
+            status icon; nested in the title row it sat 4px high, and the
+            gap was 12px instead of 16. */}
+        {showCross && (
+          <span className="flex shrink-0 items-center py-1">
+            <button
+              type="button"
+              aria-label="Закрыть"
+              onClick={onClose}
+              className="flex text-[var(--informer-title-fg)] outline-none"
+            >
+              <X aria-hidden="true" className="size-4" />
+            </button>
+          </span>
+        )}
       </div>
     </div>
   )

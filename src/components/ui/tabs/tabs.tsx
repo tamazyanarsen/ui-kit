@@ -157,7 +157,11 @@ function Tabs({
                 type="button"
                 aria-label="Ещё"
                 data-slot="tabs-overflow-trigger"
-                className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 text-[var(--tabs-fg)] outline-none"
+                // The mobile glyph is 16px against a 20px label line, so
+                // Figma pads it 2px and widens the gap to 18px to keep the
+                // trigger the full 40px — otherwise its underline floats
+                // above the bar's bottom border.
+                className="group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none md:gap-4 md:pt-0"
               />
             }
           >

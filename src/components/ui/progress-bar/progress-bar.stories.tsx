@@ -14,7 +14,7 @@ const STATUSES: ProgressBarStatus[] = [
 ]
 
 const meta = {
-  title: "Content/Progress Bar",
+  title: "Компоненты/Progress Bar",
   component: ProgressBar,
   parameters: { layout: "padded" },
   // label/subtitle/description are typed React.ReactNode but every usage is

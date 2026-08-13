@@ -17,7 +17,20 @@ const preview: Preview = {
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
       test: 'todo'
-    }
+    },
+
+    // Плоский алфавитный список вместо прежних разделов (Content /
+    // Interaction / Navigation / Pattern / Status / Template / Sandbox):
+    // все истории лежат в одной группе «Компоненты», группировка осталась
+    // только у Preview. Без явного storySort Storybook раскладывает истории
+    // в порядке импорта файлов (т.е. по пути на диске), а не по заголовку,
+    // поэтому алфавит нужно задать явно.
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: ['Preview', 'Компоненты'],
+      },
+    },
   },
 
   globalTypes: {

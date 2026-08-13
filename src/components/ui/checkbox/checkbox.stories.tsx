@@ -23,7 +23,7 @@ import { Checkbox, type CheckboxProps } from "./checkbox"
 type PlaygroundArgs = CheckboxProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Checkbox",
+  title: "Компоненты/Checkbox",
   component: Checkbox,
   parameters: { layout: "centered" },
   argTypes: {

@@ -105,7 +105,7 @@ function OperationsDashboard() {
 }
 
 const meta = {
-  title: "Sandbox/История операций",
+  title: "Компоненты/История операций",
   parameters: { layout: "centered" },
 } satisfies Meta<typeof OperationsDashboard>
 

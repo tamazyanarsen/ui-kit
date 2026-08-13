@@ -54,10 +54,14 @@ export function FileListItem({
     >
       {/* Design-check #23 revisited: the live "ELK / files" component shows
           a 48px thumbnail box (not 32px) with an always-present neutral
-          fill, not just on error. */}
+          fill, not just on error.
+          Размер зависит от брейкпоинта: в анатомии File Upload строка
+          `ELK / files` — 48px с миниатюрой 48 в `L / Desktop` и 40px с
+          миниатюрой 40 в `M / Mobile` (маркеры spaceVertical: x=48/h=48
+          против x=40/h=40). Было зафиксировано на 48 для обоих. */}
       <span
         className={cn(
-          "flex size-12 shrink-0 items-center justify-center rounded-[8px]",
+          "flex size-10 shrink-0 items-center justify-center rounded-[8px] md:size-12",
           error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
         )}
       >

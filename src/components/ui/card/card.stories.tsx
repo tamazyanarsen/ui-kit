@@ -9,7 +9,7 @@ import { Card, type CardProps } from "./card"
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
 
 const meta = {
-  title: "Content/Card",
+  title: "Компоненты/Card",
   component: Card,
   parameters: { layout: "padded" },
   argTypes: {

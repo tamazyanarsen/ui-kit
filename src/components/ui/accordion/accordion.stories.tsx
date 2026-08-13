@@ -12,7 +12,7 @@ type AccordionProps = ComponentProps<typeof Accordion>
    story is a small behaviour grid rather than a mirror of a Figma page. */
 
 const meta = {
-  title: "Pattern/Accordion (нет аналога в Figma)",
+  title: "Компоненты/Accordion (нет аналога в Figma)",
   component: Accordion,
   parameters: { layout: "padded" },
   argTypes: {

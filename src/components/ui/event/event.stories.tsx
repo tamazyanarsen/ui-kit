@@ -14,7 +14,7 @@ const STATUSES: EventStatus[] = [
 ]
 
 const meta = {
-  title: "Status/Message/Event",
+  title: "Компоненты/Event",
   component: Event,
   parameters: { layout: "padded" },
   // `commentLabel`/`comment`/`buttonLabel` are `React.ReactNode` but every

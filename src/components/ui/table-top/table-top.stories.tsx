@@ -11,6 +11,7 @@ import {
   TableTopToolbar,
   TableTopSummary,
   TableTopSummaryItem,
+  TableTopDetails,
 } from "./table-top"
 import { Tabs, type TabItem } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -64,6 +65,7 @@ interface FullExampleProps {
   showSearch?: boolean
   showFilters?: boolean
   showActions?: boolean
+  showDetails?: boolean
 }
 
 function FullExample({
@@ -73,6 +75,7 @@ function FullExample({
   showSearch = true,
   showFilters = true,
   showActions = true,
+  showDetails = true,
 }: FullExampleProps = {}) {
   const [tab, setTab] = useState("all")
   const [search, setSearch] = useState("")
@@ -166,6 +169,18 @@ function FullExample({
           ) : undefined
         }
       />
+      {/* "Сводка" — the Details slot at the bottom of `ELK / table-top`
+          (node 70279:10367). Optional: "Дополнительная функция, наличие
+          определяется при разработке конкретного продукта". */}
+      {showDetails && (
+        <TableTopDetails
+          items={[
+            { label: "Кешбэк", value: "17 шт" },
+            { label: "Поступления", value: "15 шт" },
+            { label: "Сумма операций", value: "40 500 000,00 ₽" },
+          ]}
+        />
+      )}
     </TableTop>
   )
 }
@@ -205,7 +220,7 @@ function SortSummaryExample() {
    The Playground's controls therefore switch the *slots* on and off, which
    is the only variant axis the component actually has. */
 const meta = {
-  title: "Content/Table/Table Top",
+  title: "Компоненты/Table Top",
   component: FullExample,
   parameters: { layout: "padded" },
   argTypes: {
@@ -215,6 +230,7 @@ const meta = {
     showSearch: { control: "boolean" },
     showFilters: { control: "boolean" },
     showActions: { control: "boolean" },
+    showDetails: { control: "boolean" },
   },
   args: {
     title: "Заголовок таблицы",
@@ -223,6 +239,7 @@ const meta = {
     showSearch: true,
     showFilters: true,
     showActions: true,
+    showDetails: true,
   },
 } satisfies Meta<FullExampleProps>
 
@@ -251,6 +268,25 @@ export const Examples: Story = {
       >
         <div className="w-full">
           <SortSummaryExample />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Сводка (Details)"
+        description="Лента «label: value» с разделителями Grey 166; при переполнении прокручивается по горизонтали независимо от таблицы."
+      >
+        <div className="w-full">
+          <TableTop>
+            <TableTopDetails
+              items={[
+                { label: "Кешбэк", value: "17 шт" },
+                { label: "Поступления", value: "15 шт" },
+                { label: "Сумма операций", value: "40 500 000,00 ₽" },
+                { label: "Сумма параметра №1", value: "1 500 000,00 ₽" },
+                { label: "Сумма параметра №2", value: "500 000,00 ₽" },
+              ]}
+            />
+          </TableTop>
         </div>
       </StorySection>
 

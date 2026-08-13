@@ -14,6 +14,11 @@ const ICON_SIZE = "size-6"
 // Shows the label as a tooltip whenever the sidebar is collapsed (there's no
 // visible label to read) or the label text itself overflows even while open
 // — per the spec's "длинного элемента меню, который не помещается" mockup.
+//
+// Checks BOTH axes: labels are `line-clamp-2`, so a label too long to fit
+// overflows vertically (scrollHeight), not horizontally — a width-only test
+// would silently stop showing the tooltip for exactly the case the spec
+// mocks up.
 function useTruncated<T extends HTMLElement>() {
   const ref = React.useRef<T>(null)
   const [truncated, setTruncated] = React.useState(false)
@@ -21,11 +26,17 @@ function useTruncated<T extends HTMLElement>() {
   React.useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    setTruncated(el.scrollWidth > el.clientWidth)
+    setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight)
   })
 
   return { ref, truncated }
 }
+
+// Figma's sidebar labels are `min-h-[24px] max-h-[48px]` with an ellipsis,
+// i.e. one line that may grow to two before truncating — so the row is a
+// 40px *minimum*, not a fixed height (`Sidebar Item (ELK)`, node
+// 40433:14471, whose own trigger is `p-[8px]` with `items-start`).
+const LABEL_CLASS = "min-w-0 line-clamp-2"
 
 interface SidebarItemProps {
   icon?: IconComponent
@@ -61,8 +72,11 @@ function SidebarItem({
       data-active={active || undefined}
       aria-label={!open && typeof label === "string" ? label : undefined}
       className={cn(
-        "flex h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
-        open ? (nested ? "pr-2 pl-12" : "px-2") : "justify-center px-0",
+        "flex min-h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        // Nested rows are `pl-[48px] pr-[8px] py-[8px]` in the master; 48
+        // is exactly px-2 + a 24px icon + the 16px gap, so their labels
+        // line up under the parent's.
+        open ? (nested ? "py-2 pr-2 pl-12" : "p-2") : "h-10 justify-center px-0",
         className
       )}
     >
@@ -73,7 +87,7 @@ function SidebarItem({
         />
       )}
       {open && (
-        <span ref={labelRef} className="min-w-0 truncate">
+        <span ref={labelRef} className={LABEL_CLASS}>
           {label}
         </span>
       )}
@@ -143,7 +157,11 @@ function SidebarGroup({
             data-slot="sidebar-group-trigger"
             data-active={active || undefined}
             className={cn(
-              "flex h-10 w-full cursor-pointer items-center gap-4 rounded-[8px] px-2 text-left text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
+              // `items-start` + `min-h-10`, matching the master's own
+              // `p-[8px] items-start` trigger: a two-line label grows the
+              // row downward and keeps the icon and chevron pinned to the
+              // first line rather than re-centring them.
+              "flex min-h-10 w-full cursor-pointer items-start gap-4 rounded-[8px] p-2 text-left text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
               className
             )}
           >
@@ -153,11 +171,15 @@ function SidebarGroup({
                 className={cn(ICON_SIZE, "shrink-0 text-[var(--nav-sidebar-icon-fg)]")}
               />
             )}
-            <span className="min-w-0 flex-1 truncate">{label}</span>
+            <span className={cn(LABEL_CLASS, "flex-1")}>{label}</span>
+            {/* The master wraps the chevron in an "Arrow Box" with
+                `pt-[4px]`, which centres it on the first 24px line — with
+                a single-line label that lands in the same place as
+                centring, but it stays put when the label wraps. */}
             <ChevronDown
               aria-hidden="true"
               data-slot="sidebar-group-chevron"
-              className="size-4 shrink-0 text-[var(--nav-sidebar-icon-fg)] transition-transform duration-200"
+              className="mt-1 size-4 shrink-0 text-[var(--nav-sidebar-icon-fg)] transition-transform duration-200"
             />
           </AccordionPrimitive.Trigger>
         ) : (

@@ -9,6 +9,7 @@ import {
   AutocompleteContent,
   AutocompleteList,
   AutocompleteCollection,
+  AutocompleteEmpty,
   AutocompleteStatus,
 } from "./content"
 import { AutocompleteItem } from "./item"
@@ -53,12 +54,22 @@ function OrganizationSearch({
   const [query, setQuery] = useState("")
   const [selected, setSelected] = useState<string | null>(null)
 
+  // Rules from "Правило поведение поля ввода с ИНН" (Input canvas, node
+  // 70240:21241): the list only appears from the third character ("При вводе
+  // третьего символа в поле ввода, отображается список"), and it is sorted by
+  // company name А→Я ("Сортировка в выпадающем списке идет по названию
+  // компании, в алфавитном порядке от А до Я"). Both live here rather than in
+  // the component because Autocomplete is deliberately server-driven — it
+  // renders whatever `items` it is handed.
+  const MIN_CHARS = 3
   const results = useMemo(() => {
-    if (!query.trim()) return []
     const q = query.trim().toLowerCase()
+    if (q.length < MIN_CHARS) return []
     return ORGS.filter(
       (org) => org.name.toLowerCase().includes(q) || org.inn.includes(q)
-    ).map((org) => org.inn)
+    )
+      .sort((a, b) => a.name.localeCompare(b.name, "ru"))
+      .map((org) => org.inn)
   }, [query])
 
   return (
@@ -82,14 +93,24 @@ function OrganizationSearch({
       />
       <AutocompleteContent>
         <AutocompleteStatus>
-          {query.trim() === "" ? "Начните вводить ИНН или название" : undefined}
+          {query.trim().length < MIN_CHARS
+            ? "Начните вводить ИНН или название"
+            : undefined}
         </AutocompleteStatus>
+        {/* "В случает есть значения в списке нет, отображается сообщение
+            «Организация не найдена — введите ИНН вручную»" — the wording is
+            fixed by the spec. */}
+        {query.trim().length >= MIN_CHARS && results.length === 0 && (
+          <AutocompleteEmpty>
+            Организация не найдена — введите ИНН вручную
+          </AutocompleteEmpty>
+        )}
         <AutocompleteList>
           <AutocompleteCollection>
             {(inn: string) => {
               const org = ORGS.find((o) => o.inn === inn)!
               return (
-                <AutocompleteItem
+                <AutocompleteItem match={query}
                   key={inn}
                   value={inn}
                   subtitle={`ИНН ${org.inn} КПП ${org.kpp}`}
@@ -106,7 +127,7 @@ function OrganizationSearch({
 }
 
 const meta = {
-  title: "Interaction/Autocomplete",
+  title: "Компоненты/Autocomplete",
   component: OrganizationSearch,
   parameters: { layout: "padded" },
   // `OrganizationSearch` is declared locally in this file rather than

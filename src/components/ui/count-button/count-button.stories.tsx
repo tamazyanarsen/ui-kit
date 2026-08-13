@@ -12,7 +12,7 @@ import { CountButton, type CountButtonProps } from "./count-button"
 type PlaygroundArgs = CountButtonProps & { state?: PlaygroundState }
 
 const meta = {
-  title: "Interaction/Button/Count Button",
+  title: "Компоненты/Count Button",
   component: CountButton,
   parameters: { layout: "centered" },
   argTypes: {

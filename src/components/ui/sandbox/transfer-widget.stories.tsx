@@ -102,7 +102,7 @@ function TransferWidget() {
 }
 
 const meta = {
-  title: "Sandbox/Перевод между счетами",
+  title: "Компоненты/Перевод между счетами",
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (

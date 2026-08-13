@@ -41,7 +41,7 @@ function DemoSidebar({
 }
 
 const meta = {
-  title: "Navigation/Sidebar",
+  title: "Компоненты/Sidebar",
   component: DemoSidebar,
   parameters: { layout: "padded" },
   // `DemoSidebar` is declared locally in this file rather than imported from

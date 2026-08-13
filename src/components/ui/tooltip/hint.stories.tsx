@@ -18,7 +18,7 @@ const DIRECTIONS: TooltipDirection[] = [
 ]
 
 const meta = {
-  title: "Content/Tooltip & Hint/Hint",
+  title: "Компоненты/Hint",
   component: Hint,
   parameters: { layout: "centered" },
   argTypes: {

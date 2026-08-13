@@ -25,7 +25,7 @@ const ITEMS = [
 ]
 
 const meta = {
-  title: "Status/Message/Notification",
+  title: "Компоненты/Notification",
   component: NotificationPanel,
   parameters: { layout: "centered" },
   // title/primaryButtonLabel/secondaryButtonLabel are typed React.ReactNode

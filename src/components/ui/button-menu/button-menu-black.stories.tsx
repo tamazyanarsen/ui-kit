@@ -44,6 +44,7 @@ interface PlaygroundArgs {
   overflow: boolean
   infoFields: 0 | 1 | 2 | 3
   showClose: boolean
+  pinned: boolean
 }
 
 /* Возвращает массив, а НЕ компонент-обёртку: ButtonMenuBlack приводит кнопки
@@ -80,12 +81,19 @@ const meta = {
       options: [0, 1, 2, 3],
     },
     showClose: { name: "Крестик", control: "boolean" },
+    pinned: {
+      name: "Закреплена снизу",
+      description:
+        "«Button Menu всегда закрепляется в нижней части контентной области» — поэтому включено по умолчанию",
+      control: "boolean",
+    },
   },
   args: {
     buttons: 2,
     overflow: false,
     infoFields: 1,
     showClose: true,
+    pinned: true,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -93,9 +101,20 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ buttons, overflow, infoFields, showClose }) => (
-    <div className="w-[720px]">
+  render: ({ buttons, overflow, infoFields, showClose, pinned }) => (
+    // Прокручиваемый контейнер: закрепление прижимает панель к низу именно
+    // прокручиваемой области, на статичном холсте его не увидеть.
+    <div className="flex h-72 w-[720px] flex-col overflow-y-auto rounded-2xl border border-[var(--divider)]">
+      <div className="flex flex-col gap-4 p-6">
+        {Array.from({ length: 10 }, (_, index) => (
+          <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+            Выделенная строка {index + 1}
+          </p>
+        ))}
+      </div>
       <ButtonMenuBlack
+        pinned={pinned}
+        className="mt-auto"
         info={INFO_ITEMS.slice(0, infoFields)}
         onClose={showClose ? () => {} : undefined}
       >
@@ -117,6 +136,28 @@ export const Examples: Story = {
   render: () => (
     <StoryShowcase>
       <StorySection
+        title="Закреплена снизу (по умолчанию)"
+        description="Панель подменяет собой белую, пока выделены строки таблицы, и стоит там же — у нижнего края контентной области."
+      >
+        <div className="flex h-72 w-[720px] flex-col overflow-y-auto rounded-2xl border border-[var(--divider)]">
+          <div className="flex flex-col gap-4 p-6">
+            {Array.from({ length: 10 }, (_, index) => (
+              <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+                Выделенная строка {index + 1}
+              </p>
+            ))}
+          </div>
+          <ButtonMenuBlack
+            className="mt-auto"
+            info={[{ label: "Выбрано", value: "3 документа", className: "w-16" }]}
+            onClose={() => {}}
+          >
+            {blackButtons(2)}
+          </ButtonMenuBlack>
+        </div>
+      </StorySection>
+
+      <StorySection
         title="Свойство Button — от None до Four"
         description="Кнопки на тёмной панели всегда белые: брендового акцента здесь нет."
       >
@@ -127,7 +168,11 @@ export const Examples: Story = {
               <span className="text-p3-regular text-[#999999]">
                 Button = {FIGMA_BUTTON_NAMES[count]}
               </span>
+              {/* Витрина: панели стоят стопкой образцами, поэтому
+                  закрепление выключено — иначе все прилипли бы к низу разом.
+                  Закрепление показано отдельной секцией ниже. */}
               <ButtonMenuBlack
+                pinned={false}
                 info={[{ label: "Выбрано", value: "3 документа", className: "w-16" }]}
                 onClose={() => {}}
               >
@@ -145,6 +190,7 @@ export const Examples: Story = {
         <div className="flex w-[720px] flex-col gap-4">
           {([3, 2, 1, 0] as const).map((fields) => (
             <ButtonMenuBlack
+              pinned={false}
               key={fields}
               info={INFO_ITEMS.slice(0, fields)}
               onClose={() => {}}

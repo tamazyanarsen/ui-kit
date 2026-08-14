@@ -18,6 +18,19 @@ import { ButtonMenuOverflow } from "./overflow"
 // bottom edge, same as ButtonMenu), actions hugging left with an 8px gap,
 // and the info bar + close cross pinned right with a 32px gap.
 
+// Закрепление у нижней края — поведение по умолчанию, а не опция «на
+// всякий случай»: в макете так и написано — «Панель всегда закреплена в
+// нижней части экрана» (Button Menu) и «Button Menu всегда закрепляется в
+// нижней части контентной области и занимает всю ширину» (Black).
+//
+// Именно `sticky`, а не `fixed`: панель остаётся в потоке и упирается в
+// низ своего контейнера, поэтому не наезжает на контент — макет отдельно
+// оговаривает «Панель не должна перекрывать кнопку „Показать ещё“».
+// `fixed` вырвал бы её из потока и как раз перекрыл бы. Из этого же
+// следует, что закрепление работает относительно прокручиваемого
+// контейнера: панель прижимается к низу контентной области, а не окна.
+const PINNED_CLASS = "sticky bottom-0 z-30"
+
 interface ButtonMenuBlackInfoItem {
   label: React.ReactNode
   value: React.ReactNode
@@ -34,12 +47,19 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
   /** Dismisses the bar. Figma draws this as a bare 24px `icon / close
    * cross`, not an `ELK / button` instance, so it stays a plain button. */
   onClose?: () => void
+  /**
+   * Прижимать панель к низу контейнера. По умолчанию включено — она
+   * подменяет собой закреплённую белую панель, пока выделены строки
+   * таблицы, и стоит там же.
+   */
+  pinned?: boolean
 }
 
 function ButtonMenuBlack({
   className,
   info,
   onClose,
+  pinned = true,
   children,
   ...props
 }: ButtonMenuBlackProps) {
@@ -75,8 +95,10 @@ function ButtonMenuBlack({
   return (
     <div
       data-slot="button-menu-black"
+      data-pinned={pinned || undefined}
       className={cn(
         "flex max-h-[72px] min-h-[72px] w-full items-center justify-between rounded-tl-[16px] rounded-tr-[16px] bg-[var(--button-menu-black-bg)] px-6 py-4",
+        pinned && PINNED_CLASS,
         className
       )}
       {...props}

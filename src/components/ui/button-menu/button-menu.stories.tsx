@@ -57,6 +57,7 @@ interface PlaygroundArgs {
   type: MenuType
   buttons: ButtonCount
   overflow: boolean
+  pinned: boolean
 }
 
 const meta = {
@@ -84,6 +85,12 @@ const meta = {
       control: "inline-radio",
       options: BUTTON_COUNTS,
     },
+    pinned: {
+      name: "Закреплена снизу",
+      description:
+        "«Панель всегда закреплена в нижней части экрана» — поэтому включено по умолчанию",
+      control: "boolean",
+    },
     overflow: {
       name: "Меню «ещё»",
       description:
@@ -95,6 +102,7 @@ const meta = {
     type: "With Primary",
     buttons: 3,
     overflow: true,
+    pinned: true,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -102,15 +110,48 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ type, buttons, overflow }) => (
-    <div className="w-[640px]">
-      <ButtonMenu>
+  render: ({ type, buttons, overflow, pinned }) => (
+    // Прокручиваемый контейнер — иначе закрепление негде показать: sticky
+    // прижимает панель к низу именно прокручиваемой области.
+    <div className="flex h-72 w-[640px] flex-col overflow-y-auto rounded-2xl border border-[var(--divider)]">
+      <div className="flex flex-col gap-4 p-6">
+        {Array.from({ length: 10 }, (_, index) => (
+          <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+            Строка таблицы {index + 1}
+          </p>
+        ))}
+      </div>
+      <ButtonMenu pinned={pinned} className="mt-auto">
         {menuButtons(type, buttons)}
         {overflow && <Overflow />}
       </ButtonMenu>
     </div>
   ),
 }
+
+/* Наглядная проверка закрепления: панель должна упираться в низ
+   прокручиваемой области и не наезжать на контент — макет отдельно
+   оговаривает «Панель не должна перекрывать кнопку „Показать ещё“». */
+function PinnedDemo({ pinned }: { pinned: boolean }) {
+  return (
+    <div className="flex h-80 w-[640px] flex-col overflow-y-auto rounded-2xl border border-[var(--divider)]">
+      <div className="flex flex-col gap-4 p-6">
+        {Array.from({ length: 12 }, (_, index) => (
+          <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+            Строка таблицы {index + 1}
+          </p>
+        ))}
+        <Button variant="secondary-grey" className="w-fit">
+          Показать ещё
+        </Button>
+      </div>
+      <ButtonMenu pinned={pinned} className="mt-auto">
+        {menuButtons("With Primary", 2)}
+      </ButtonMenu>
+    </div>
+  )
+}
+
 
 /* ButtonMenu is a composition (a bar plus whatever buttons the page puts in
    it), so there is no prop grid to enumerate — Figma's page shows the same
@@ -120,6 +161,20 @@ export const Examples: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StoryShowcase>
+      <StorySection
+        title="Закреплена снизу (по умолчанию)"
+        description="Панель упирается в низ прокручиваемой области и не перекрывает контент — прокрутите список внутри рамки."
+      >
+        <PinnedDemo pinned />
+      </StorySection>
+
+      <StorySection
+        title="Без закрепления"
+        description="Панель едет вместе с контентом — для случаев, когда она стоит обычным блоком в потоке."
+      >
+        <PinnedDemo pinned={false} />
+      </StorySection>
+
       {TYPES.map((type) => (
         <StorySection
           key={type}
@@ -136,7 +191,7 @@ export const Examples: Story = {
         >
           <div className="flex w-[640px] flex-col gap-4">
             {BUTTON_COUNTS.map((count) => (
-              <ButtonMenu key={count}>
+              <ButtonMenu key={count} pinned={false}>
                 {menuButtons(type, count)}
               </ButtonMenu>
             ))}

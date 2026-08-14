@@ -27,6 +27,7 @@ function ButtonMenuDemo() {
               <div className="space-y-1.5">
                 <RowLabel>3 кнопки + информационный бар</RowLabel>
                 <ButtonMenuBlack
+                  pinned={false}
                   onClose={() => {}}
                   info={[
                     { label: "Выбрано", value: "10", className: "w-16" },
@@ -41,7 +42,7 @@ function ButtonMenuDemo() {
               </div>
               <div className="space-y-1.5">
                 <RowLabel>Без информационного бара</RowLabel>
-                <ButtonMenuBlack onClose={() => {}}>
+                <ButtonMenuBlack pinned={false} onClose={() => {}}>
                   <Button>Подписать</Button>
                   <Button>Удалить</Button>
                 </ButtonMenuBlack>
@@ -55,13 +56,17 @@ function ButtonMenuDemo() {
             <div className="flex flex-col gap-4">
               <div className="space-y-1.5">
                 <RowLabel>1 кнопка</RowLabel>
-                <ButtonMenu>
+                {/* Витрина, а не реальное размещение: панели стоят стопкой как
+                образцы, поэтому закрепление здесь выключено — иначе все они
+                прилипли бы к низу прокрутки разом. Реальное закрепление
+                показано в истории Storybook и в демо таблицы. */}
+              <ButtonMenu pinned={false}>
                   <Button size="lg">Экспорт</Button>
                 </ButtonMenu>
               </div>
               <div className="space-y-1.5">
                 <RowLabel>2 кнопки</RowLabel>
-                <ButtonMenu>
+                <ButtonMenu pinned={false}>
                   <Button size="lg">Экспорт</Button>
                   <Button size="lg" variant="secondary-grey">
                     Печать
@@ -70,7 +75,7 @@ function ButtonMenuDemo() {
               </div>
               <div className="space-y-1.5">
                 <RowLabel>3 кнопки + Overflow</RowLabel>
-                <ButtonMenu>
+                <ButtonMenu pinned={false}>
                   <Button size="lg">Экспорт</Button>
                   <Button size="lg" variant="secondary-grey">
                     Печать
@@ -104,7 +109,7 @@ function ButtonMenuDemo() {
             <div className="flex flex-col gap-4">
               <div className="space-y-1.5">
                 <RowLabel>1 кнопка</RowLabel>
-                <ButtonMenu>
+                <ButtonMenu pinned={false}>
                   <Button size="lg" variant="secondary-grey">
                     Печать
                   </Button>
@@ -112,7 +117,7 @@ function ButtonMenuDemo() {
               </div>
               <div className="space-y-1.5">
                 <RowLabel>3 кнопки + Overflow</RowLabel>
-                <ButtonMenu>
+                <ButtonMenu pinned={false}>
                   <Button size="lg" variant="secondary-grey">
                     Печать
                   </Button>

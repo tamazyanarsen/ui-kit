@@ -347,39 +347,135 @@
   }
 }
 
+/* ── Палитра ──────────────────────────────────────────────────────────────
+   Имена переменных ровно как в Figma: `Base/Blue 223` -> `--blue-223`,
+   `Second/Grey colors/Grey 1514` -> `--grey-1514`. Это нижний слой: на него
+   ссылается вся семантика ниже (`--btn-primary-bg: var(--blue-223)`), а
+   компоненты по-прежнему используют семантические имена.
+
+   Почему два слоя, а не одно переименование: тема «Старые цвета»
+   перекрашивает primary в зелёный, и переменная с именем `blue-223`
+   зелёной стать не может, не начав врать. В Figma ровно та же развязка —
+   переменная палитры и ссылающаяся на неё заливка компонента.
+
+   Цветам, которых в наборе Figma нет, имя выведено по правилу «число =
+   контраст к белому × 100» (оно сошлось на 36 из 40 известных цветов), а
+   семейство — по ближайшему тону; такие помечены `выведено`. Палитра
+   старого бренда живёт под префиксом `odl-`: её имён из Figma у нас нет,
+   и без префикса она конфликтует с новой (два разных «Red 182»).
+
+   Перегенерировать: python scripts/build-palette.py --css */
+:root {
+  /* blue */
+  --blue-104:           #F0FCFF; /* выведено */
+  --blue-114:           #CFF7FF; /* Second/Blue colors/Blue 114 */
+  --blue-121:           #B6F3FF; /* Second/Blue colors/Blue 121 */
+  --blue-223:           #80E3FF; /* Base/Blue 223 */
+  --blue-187:           #2FCEEF; /* Second/Blue colors/Blue 187 */
+  --blue-254:           #14B1D1; /* Second/Blue colors/Blue 254 */
+  /* dark-blue */
+  --dark-blue-109:      #EDF6FC; /* Second/Dark blue colors/Dark blue 109 */
+  --dark-blue-322:      #5B90E0; /* выведено */
+  --dark-blue-389:      #2487CA; /* Status/Dark blue 389 */
+  --dark-blue-596:      #1368A1; /* Second/Dark blue colors/Dark blue 596 */
+  --dark-blue-701:      #0D4CD3; /* выведено */
+  --dark-blue-961:      #114870; /* Second/Dark blue colors/Dark blue 961 */
+  --dark-blue-1412:     #012F42; /* Second/Dark blue colors/Dark blue 1412 */
+  /* grey */
+  --grey-106:           #F8F8F8; /* Second/Grey colors/Grey 106 */
+  --grey-109:           #F4F4F4; /* Second/Grey colors/Grey 109 */
+  --grey-114:           #EFEFEF; /* Second/Grey colors/Grey 114 */
+  --grey-124:           #E6E6E6; /* Second/Grey colors/Grey 124 */
+  --grey-134:           #DEDEDE; /* Second/Grey colors/Grey 134 */
+  --grey-166:           #C8C8CB; /* Second/Grey colors/Grey 166 */
+  --grey-284:           #999999; /* Second/Grey colors/Grey 284 */
+  --grey-493:           #6E7170; /* выведено */
+  --grey-517:           #6D6D6D; /* Second/Grey colors/Grey 517 */
+  --grey-645:           #5C5F5E; /* выведено */
+  --grey-868:           #494C4B; /* Second/Grey colors/Grey 868 */
+  --grey-1514:          #252628; /* Second/Grey colors/Grey 1514 */
+  --grey-1593:          #1E2321; /* выведено */
+  /* lavender */
+  --lavender-116:       #EBECFF; /* Second/Lavender colors/Lavender 116 */
+  --lavender-135:       #D9DBFF; /* Second/Lavender colors/Lavender 135 */
+  /* mint */
+  --mint-107:           #E5FCF1; /* Second/Mint colors/Mint 107 */
+  --mint-110:           #E7F8F0; /* выведено */
+  --mint-119:           #BDF8DB; /* Second/Mint colors/Mint 119 */
+  --mint-135:           #89F2BD; /* Second/Mint colors/Mint 135 */
+  --mint-230:           #39C182; /* Status/Mint 230 */
+  --mint-396:           #1F9254; /* выведено */
+  /* red */
+  --red-110:            #FFF0F0; /* Second/Red colors/Red 110 */
+  --red-117:            #FFE8E3; /* Second/Red colors/Red 117 */
+  --red-147:            #FFBEB5; /* Second/Red colors/Red 147 */
+  --red-182:            #FF737D; /* Second/Red colors/Red 182 */
+  --red-344:            #F0535E; /* Second/Red colors/Red 344 */
+  --red-418:            #D74B54; /* Status/Red 418 */
+  /* red-117-alt */
+  --red-117-alt:        #FAE9EA; /* выведено */
+  /* white */
+  --white-101:          #FFFFFF; /* Second/Grey colors/White 101 */
+  /* yellow */
+  --yellow-104:         #FFFAE0; /* Second/Yellow colors/Yellow 104 */
+  --yellow-114:         #FDF0C1; /* Second/Yellow colors/Yellow 114 */
+  --yellow-134:         #FADC89; /* Second/Yellow colors/Yellow 134 */
+  --yellow-167:         #F8C000; /* выведено */
+  --yellow-214:         #EEA20F; /* Status/Yellow 214 */
+  --yellow-400:         #B76E00; /* выведено */
+  /* odl-dark-blue */
+  --odl-dark-blue-117:  #E3EEFF; /* выведено */
+  /* odl-green */
+  --odl-green-107:      #F3F9E6; /* выведено */
+  --odl-green-123:      #D9F0AB; /* выведено */
+  --odl-green-137:      #C4E88B; /* выведено */
+  --odl-green-223:      #82BF00; /* выведено */
+  --odl-green-289:      #72A716; /* выведено */
+  --odl-green-333:      #699B12; /* выведено */
+  /* odl-grey */
+  --odl-grey-873:       #4A4B4D; /* выведено */
+  --odl-grey-1156:      #38393B; /* выведено */
+  /* odl-red */
+  --odl-red-147:        #FFC9B5; /* выведено */
+  --odl-red-182:        #FFAB99; /* выведено */
+  --odl-red-410:        #DE4A2A; /* выведено */
+  --odl-red-488:        #CB4022; /* выведено */
+  --odl-red-603:        #B92F10; /* выведено */
+}
+
 :root {
   /* ЕЛК (default product theme) — Button component tokens.
      Values measured directly from ui/button.svg (Figma export). */
-  --btn-primary-bg: #80E3FF;
-  --btn-primary-bg-hover: #2FCEEF;
-  --btn-primary-bg-active: #14B1D1;
-  --btn-primary-fg: #252628;
+  --btn-primary-bg: var(--blue-223);
+  --btn-primary-bg-hover: var(--blue-187);
+  --btn-primary-bg-active: var(--blue-254);
+  --btn-primary-fg: var(--grey-1514);
 
-  --btn-secondary-black-bg: #012F42;
-  --btn-secondary-black-bg-hover: #114870;
-  --btn-secondary-black-bg-active: #1368A1;
-  --btn-secondary-black-fg: #FFFFFF;
+  --btn-secondary-black-bg: var(--dark-blue-1412);
+  --btn-secondary-black-bg-hover: var(--dark-blue-961);
+  --btn-secondary-black-bg-active: var(--dark-blue-596);
+  --btn-secondary-black-fg: var(--white-101);
 
-  --btn-secondary-grey-bg: #F4F4F4;
-  --btn-secondary-grey-bg-hover: #EFEFEF;
-  --btn-secondary-grey-bg-active: #E6E6E6;
-  --btn-secondary-grey-fg: #252628;
+  --btn-secondary-grey-bg: var(--grey-109);
+  --btn-secondary-grey-bg-hover: var(--grey-114);
+  --btn-secondary-grey-bg-active: var(--grey-124);
+  --btn-secondary-grey-fg: var(--grey-1514);
 
-  --btn-secondary-white-bg: #FFFFFF;
-  --btn-secondary-white-bg-hover: #EFEFEF;
-  --btn-secondary-white-bg-active: #E6E6E6;
-  --btn-secondary-white-fg: #252628;
+  --btn-secondary-white-bg: var(--white-101);
+  --btn-secondary-white-bg-hover: var(--grey-114);
+  --btn-secondary-white-bg-active: var(--grey-124);
+  --btn-secondary-white-fg: var(--grey-1514);
 
-  --btn-secondary-outline-bg: #FFFFFF;
-  --btn-secondary-outline-bg-hover: #EFEFEF;
-  --btn-secondary-outline-bg-active: #E6E6E6;
-  --btn-secondary-outline-fg: #252628;
-  --btn-secondary-outline-border: #0D4CD3;
+  --btn-secondary-outline-bg: var(--white-101);
+  --btn-secondary-outline-bg-hover: var(--grey-114);
+  --btn-secondary-outline-bg-active: var(--grey-124);
+  --btn-secondary-outline-fg: var(--grey-1514);
+  --btn-secondary-outline-border: var(--dark-blue-701);
 
-  --btn-destructive-bg: #D74B54;
-  --btn-destructive-bg-hover: #F0535E;
-  --btn-destructive-bg-active: #FF737D;
-  --btn-destructive-fg: #FFFFFF;
+  --btn-destructive-bg: var(--red-418);
+  --btn-destructive-bg-hover: var(--red-344);
+  --btn-destructive-bg-active: var(--red-182);
+  --btn-destructive-fg: var(--white-101);
 
   /* Secondary Logo (Grey) — the one "Secondary Logo" Type from
      ui/button/button.png that doesn't reuse an existing secondary-*
@@ -387,15 +483,15 @@
      -white exactly, pixel-confirmed). Base pixel-sampled from the spec's
      own swatch (#494C4B); hover/active follow the same lighten-on-
      interaction progression already used by secondary-black. */
-  --btn-secondary-logo-grey-bg: #494C4B;
-  --btn-secondary-logo-grey-bg-hover: #5C5F5E;
-  --btn-secondary-logo-grey-bg-active: #6E7170;
-  --btn-secondary-logo-grey-fg: #FFFFFF;
+  --btn-secondary-logo-grey-bg: var(--grey-868);
+  --btn-secondary-logo-grey-bg-hover: var(--grey-645);
+  --btn-secondary-logo-grey-bg-active: var(--grey-493);
+  --btn-secondary-logo-grey-fg: var(--white-101);
 
   /* Shared muted treatment for disabled + loading (identical across all variants in the spec) */
-  --btn-muted-bg: #EFEFEF;
-  --btn-muted-fg: #C8C8CB;
-  --btn-muted-border: #C8C8CB;
+  --btn-muted-bg: var(--grey-114);
+  --btn-muted-fg: var(--grey-166);
+  --btn-muted-border: var(--grey-166);
 
   /* Loader ("icon / loader", нода 26561:26028).
      Дизайн-чек №8: лоудер НЕ зависит ни от типа кнопки, ни от статусных
@@ -406,23 +502,23 @@
      --btn-accent, из-за чего в матрице было шесть разных лоудеров.
      Второй цвет — warning: единственный дополнительный вариант, который
      дизайнер разрешил завести в Core Component. */
-  --loader-fg: #80E3FF;
-  --loader-warning-fg: #EEA20F;
+  --loader-fg: var(--blue-223);
+  --loader-warning-fg: var(--yellow-214);
 
   /* Input component tokens. Values measured directly from ui/input.svg
      (Figma export) and confirmed against the L/Desktop reference render. */
-  --input-bg: #FFFFFF;
-  --input-bg-disabled: #EFEFEF;
-  --input-border: #C8C8CB;
-  --input-border-hover: #999999;
-  --input-border-disabled: #C8C8CB;
-  --input-border-error: #D74B54;
-  --input-border-error-hover: #F0535E;
+  --input-bg: var(--white-101);
+  --input-bg-disabled: var(--grey-114);
+  --input-border: var(--grey-166);
+  --input-border-hover: var(--grey-284);
+  --input-border-disabled: var(--grey-166);
+  --input-border-error: var(--red-418);
+  --input-border-error-hover: var(--red-344);
 
-  --input-fg: #252628;
-  --input-fg-disabled: #C8C8CB;
-  --input-label-fg: #999999;
-  --input-icon-fg: #252628;
+  --input-fg: var(--grey-1514);
+  --input-fg-disabled: var(--grey-166);
+  --input-label-fg: var(--grey-284);
+  --input-icon-fg: var(--grey-1514);
 
   /* Round-2 audit fix: was #6D6D6D. get_design_context on the live ELK/input
      Comment/Error symbols (215:6570, 215:6676, and the S/Mobile variants
@@ -432,8 +528,8 @@
      token (not re-verified against their own Figma nodes this pass, but
      both are documented elsewhere as matching Input's box treatment
      exactly, so the correction should carry over correctly). */
-  --input-caption-fg: #999999;
-  --input-caption-error-fg: #D74B54;
+  --input-caption-fg: var(--grey-284);
+  --input-caption-error-fg: var(--red-418);
 
   /* Textarea reuses the Input palette above almost entirely (verified
      against ui/textarea/*.svg — bg, bg-disabled, border, border-disabled,
@@ -441,7 +537,7 @@
      non-error hover/focus border color actually differs from Input's
      (#6D6D6D, not --input-border-hover's #999999), so it gets its own
      token rather than a whole parallel --textarea-* namespace. */
-  --textarea-border-hover: #6D6D6D;
+  --textarea-border-hover: var(--grey-517);
 
   /* Round-2 audit: get_design_context + pixel-sampled screenshots of the
      live ELK/text-area Disabled/Filled and Disabled+Locked symbols
@@ -454,37 +550,37 @@
      Since --input-fg-disabled is shared with Input (unverified this pass),
      Textarea gets its own disabled tokens rather than changing the shared
      one. */
-  --textarea-fg-disabled: #6D6D6D;
-  --textarea-icon-fg-disabled: #999999;
+  --textarea-fg-disabled: var(--grey-517);
+  --textarea-icon-fg-disabled: var(--grey-284);
 
   /* OTP code tokens. Values measured directly from ui/otp code/*.svg
      (exact vector rects/paths, not pixel-sampled PNGs). The confirm/resend
      buttons need no tokens of their own — they map 1:1 onto existing
      Button variants (primary/secondary-black, muted-disabled) and colors
      matched exactly, so the card just reuses `Button`. */
-  --otp-fg: #252628;
-  --otp-placeholder-fg: #999999;
-  --otp-underline: #999999;
-  --otp-error-fg: #D74B54;
-  --otp-close-bg: #F4F4F4;
-  --otp-close-fg: #252628;
-  --otp-title-fg: #252628;
-  --otp-subtitle-fg: #6D6D6D;
+  --otp-fg: var(--grey-1514);
+  --otp-placeholder-fg: var(--grey-284);
+  --otp-underline: var(--grey-284);
+  --otp-error-fg: var(--red-418);
+  --otp-close-bg: var(--grey-109);
+  --otp-close-fg: var(--grey-1514);
+  --otp-title-fg: var(--grey-1514);
+  --otp-subtitle-fg: var(--grey-517);
 
   /* Modal tokens. Values measured directly from ui/modal/modal-1.svg
      (exact vector rects). Footer buttons and the close icon button need no
      tokens of their own — they map 1:1 onto existing Button variants
      (primary/secondary-grey) and sizes, so Modal just reuses `Button`. */
-  --modal-bg: #FFFFFF;
+  --modal-bg: var(--white-101);
   --modal-radius: 32px;
-  --modal-backdrop: #1E2321;
+  --modal-backdrop: var(--grey-1593);
   /* The single grey-134 line Figma ships as "ELK / divider" (58890:9260).
      The per-component --*-divider tokens below all resolve to this same
      value; new dividers should use the shared Divider component instead of
      adding another one. */
-  --divider: #DEDEDE;
-  --modal-divider: #DEDEDE;
-  --modal-title-fg: #252628;
+  --divider: var(--grey-134);
+  --modal-divider: var(--grey-134);
+  --modal-title-fg: var(--grey-1514);
 
   /* Строка выпадающего списка ("menu item") — общая для Select, Combobox,
      Autocomplete и Dropdown. Раньше все четыре держали эти значения
@@ -492,36 +588,36 @@
      чего строка расходилась между компонентами и не реагировала на смену
      темы. Дизайн-чек №21 требует ровно обратного — одной централизованной
      строки меню, поэтому цвета вынесены сюда. */
-  --menu-item-bg-highlighted: #F8F8F8;
-  --menu-item-fg: #252628;
-  --menu-item-description-fg: #999999;
-  --menu-item-divider: #DEDEDE;
+  --menu-item-bg-highlighted: var(--grey-106);
+  --menu-item-fg: var(--grey-1514);
+  --menu-item-description-fg: var(--grey-284);
+  --menu-item-divider: var(--grey-134);
 
   /* Calendar component tokens. Values measured directly from
      ui/calendar1.svg + ui/calendar2.svg (Figma export). */
-  --calendar-fg: #252628;
-  --calendar-muted-fg: #999999;
-  --calendar-disabled-fg: #C8C8CB;
-  --calendar-accent-fg: #14B1D1;
-  --calendar-selected-bg: #012F42;
-  --calendar-selected-fg: #FFFFFF;
-  --calendar-range-bg: #F4F4F4;
-  --calendar-divider: #DEDEDE;
+  --calendar-fg: var(--grey-1514);
+  --calendar-muted-fg: var(--grey-284);
+  --calendar-disabled-fg: var(--grey-166);
+  --calendar-accent-fg: var(--blue-254);
+  --calendar-selected-bg: var(--dark-blue-1412);
+  --calendar-selected-fg: var(--white-101);
+  --calendar-range-bg: var(--grey-109);
+  --calendar-divider: var(--grey-134);
 
   /* Select trigger tokens. Same palette as Input (identical box treatment
      in the Figma spec) — kept in its own namespace so it can diverge later. */
-  --select-bg: #FFFFFF;
-  --select-bg-disabled: #EFEFEF;
-  --select-border: #C8C8CB;
-  --select-border-hover: #999999;
-  --select-border-disabled: #C8C8CB;
-  --select-border-error: #D74B54;
-  --select-border-error-hover: #F0535E;
+  --select-bg: var(--white-101);
+  --select-bg-disabled: var(--grey-114);
+  --select-border: var(--grey-166);
+  --select-border-hover: var(--grey-284);
+  --select-border-disabled: var(--grey-166);
+  --select-border-error: var(--red-418);
+  --select-border-error-hover: var(--red-344);
 
-  --select-fg: #252628;
-  --select-fg-disabled: #C8C8CB;
-  --select-label-fg: #999999;
-  --select-icon-fg: #252628;
+  --select-fg: var(--grey-1514);
+  --select-fg-disabled: var(--grey-166);
+  --select-label-fg: var(--grey-284);
+  --select-icon-fg: var(--grey-1514);
 
   /* Round-2 audit fix: was #6D6D6D (copied from Input's own caption grey,
      see the Tabs comment further down which cites that old value as a
@@ -531,8 +627,8 @@
      darker grey. Tabs/Empty Search hardcode their own #6D6D6D/#999999
      literals rather than referencing this var, so this correction is
      scoped to Select/Combobox/Autocomplete only. */
-  --select-caption-fg: #999999;
-  --select-caption-error-fg: #D74B54;
+  --select-caption-fg: var(--grey-284);
+  --select-caption-error-fg: var(--red-418);
 
   /* Checkbox + multi-select Combobox tokens. Checked fill sampled directly
      from the "Список" multi-select spec screenshot — it's the same cyan as
@@ -541,21 +637,21 @@
      measured from ui/checkbox/checkbox-1.svg — hover border and the
      checked-hover fill are notably NOT the same as Combobox's static item
      checkbox, which has no hover state of its own. */
-  --checkbox-bg: #FFFFFF;
-  --checkbox-border: #C8C8CB;
-  --checkbox-border-hover: #252628;
-  --checkbox-border-error: #D74B54;
-  --checkbox-checked-bg: #80E3FF;
-  --checkbox-checked-bg-hover: #2FCEEF;
-  --checkbox-checked-fg: #252628;
-  --checkbox-disabled-bg: #EFEFEF;
-  --checkbox-disabled-border: #C8C8CB;
-  --checkbox-disabled-fg: #C8C8CB;
-  --checkbox-label-fg: #252628;
-  --checkbox-label-fg-disabled: #999999;
-  --checkbox-caption-fg: #999999;
-  --checkbox-caption-fg-disabled: #C8C8CB;
-  --checkbox-caption-error-fg: #D74B54;
+  --checkbox-bg: var(--white-101);
+  --checkbox-border: var(--grey-166);
+  --checkbox-border-hover: var(--grey-1514);
+  --checkbox-border-error: var(--red-418);
+  --checkbox-checked-bg: var(--blue-223);
+  --checkbox-checked-bg-hover: var(--blue-187);
+  --checkbox-checked-fg: var(--grey-1514);
+  --checkbox-disabled-bg: var(--grey-114);
+  --checkbox-disabled-border: var(--grey-166);
+  --checkbox-disabled-fg: var(--grey-166);
+  --checkbox-label-fg: var(--grey-1514);
+  --checkbox-label-fg-disabled: var(--grey-284);
+  --checkbox-caption-fg: var(--grey-284);
+  --checkbox-caption-fg-disabled: var(--grey-166);
+  --checkbox-caption-error-fg: var(--red-418);
 
   /* Radio tokens. Same 24×24 box size, gap, and label/caption palette as
      Checkbox (measured from ui/radio/radio-1.svg) — pixel-sampled directly
@@ -565,43 +661,43 @@
      (bg = the accent color, border transparent) with a contrasting dot on
      top — not a colored ring like Checkbox's box, confirmed by zooming into
      the raster (a first pass wrongly assumed a ring here). */
-  --radio-bg: #FFFFFF;
-  --radio-border: #C8C8CB;
-  --radio-border-hover: #252628;
-  --radio-checked-bg: #80E3FF;
-  --radio-checked-bg-hover: #2FCEEF;
-  --radio-checked-dot: #252628;
-  --radio-disabled-bg: #EFEFEF;
-  --radio-disabled-border: #C8C8CB;
-  --radio-disabled-dot: #C8C8CB;
-  --radio-label-fg: #252628;
-  --radio-label-fg-disabled: #999999;
-  --radio-caption-fg: #999999;
-  --radio-caption-fg-disabled: #C8C8CB;
+  --radio-bg: var(--white-101);
+  --radio-border: var(--grey-166);
+  --radio-border-hover: var(--grey-1514);
+  --radio-checked-bg: var(--blue-223);
+  --radio-checked-bg-hover: var(--blue-187);
+  --radio-checked-dot: var(--grey-1514);
+  --radio-disabled-bg: var(--grey-114);
+  --radio-disabled-border: var(--grey-166);
+  --radio-disabled-dot: var(--grey-166);
+  --radio-label-fg: var(--grey-1514);
+  --radio-label-fg-disabled: var(--grey-284);
+  --radio-caption-fg: var(--grey-284);
+  --radio-caption-fg-disabled: var(--grey-166);
   /* Round-2 audit addition: Radio's own Error=True anatomy variant
      (600:8785 Desktop / 600:8790 Mobile) was previously unimplemented — a
      prior pass wrongly assumed no error state existed for Radio. Both
      values are literal matches for Checkbox's --checkbox-border-error /
      --checkbox-caption-error-fg (same Red 418 swatch, #D74B54). */
-  --radio-border-error: #D74B54;
-  --radio-caption-error-fg: #D74B54;
+  --radio-border-error: var(--red-418);
+  --radio-caption-error-fg: var(--red-418);
 
   /* Toggle tokens, measured from ui/toggle/toggle-1.svg. Unlike
      Checkbox/Radio, the track itself never gets an error color — only the
      caption text turns red, and it can stack a comment + a separate error
      line simultaneously (see ToggleField). */
-  --toggle-track-bg: #999999;
-  --toggle-track-bg-hover: #C8C8CB;
-  --toggle-track-checked-bg: #80E3FF;
-  --toggle-track-checked-bg-hover: #2FCEEF;
-  --toggle-track-bg-disabled: #EFEFEF;
-  --toggle-track-checked-bg-disabled: #B6F3FF;
-  --toggle-thumb-bg: #FFFFFF;
-  --toggle-label-fg: #252628;
-  --toggle-label-fg-disabled: #999999;
-  --toggle-caption-fg: #999999;
-  --toggle-caption-fg-disabled: #C8C8CB;
-  --toggle-caption-error-fg: #D74B54;
+  --toggle-track-bg: var(--grey-284);
+  --toggle-track-bg-hover: var(--grey-166);
+  --toggle-track-checked-bg: var(--blue-223);
+  --toggle-track-checked-bg-hover: var(--blue-187);
+  --toggle-track-bg-disabled: var(--grey-114);
+  --toggle-track-checked-bg-disabled: var(--blue-121);
+  --toggle-thumb-bg: var(--white-101);
+  --toggle-label-fg: var(--grey-1514);
+  --toggle-label-fg-disabled: var(--grey-284);
+  --toggle-caption-fg: var(--grey-284);
+  --toggle-caption-fg-disabled: var(--grey-166);
+  --toggle-caption-error-fg: var(--red-418);
 
   /* Range Input tokens, measured from ui/range input/range Input.svg,
      cross-checked against the raster (thumb/indicator are filled paths, not
@@ -610,26 +706,26 @@
      bordered-box field like Input, not a standalone control. Unlike
      Checkbox/Radio's colored-border error, error here keeps the box border
      neutral and only recolors the track/thumb accent + caption text. */
-  --range-input-bg: #FFFFFF;
-  --range-input-bg-disabled: #EFEFEF;
-  --range-input-border: #C8C8CB;
-  --range-input-border-hover: #999999;
-  --range-input-border-disabled: #C8C8CB;
-  --range-input-label-fg: #999999;
-  --range-input-value-fg: #252628;
+  --range-input-bg: var(--white-101);
+  --range-input-bg-disabled: var(--grey-114);
+  --range-input-border: var(--grey-166);
+  --range-input-border-hover: var(--grey-284);
+  --range-input-border-disabled: var(--grey-166);
+  --range-input-label-fg: var(--grey-284);
+  --range-input-value-fg: var(--grey-1514);
   /* Round-2 audit fix: was #C8C8CB. Pixel-sampled the live Disabled/Filled
      symbol screenshot (14342:39960) — the Value text renders as solid
      #6D6D6D (grey-517), not the lighter grey used for borders. */
-  --range-input-value-fg-disabled: #6D6D6D;
+  --range-input-value-fg-disabled: var(--grey-517);
   /* Round-2 audit fix: was #EFEFEF. Pixel-sampled the unfilled portion of
      the track across Default/Hover/Disabled/Error screenshots (all at the
      same coordinates, right of the thumb) — consistently #C8C8CB
      (grey-166), never the lighter #EFEFEF. */
-  --range-input-track-bg: #C8C8CB;
+  --range-input-track-bg: var(--grey-166);
   /* Thumb pill color — pixel-sampled #80E3FF (base/blue-223) in every
      enabled state screenshot (Default/Hover/Focused all identical); this is
      a static color, not something that recolors on the thumb's own :hover. */
-  --range-input-accent: #80E3FF;
+  --range-input-accent: var(--blue-223);
   /* Round-2 audit fix: this was previously applied as a Thumb :hover
      recolor, which pixel-sampling disproves — the Default/Hover/Focused
      screenshots all show the *indicator* (filled track, left of the thumb)
@@ -637,44 +733,44 @@
      changes with the whole-box Hover/Focused state. Renamed from
      --range-input-accent-hover to reflect that it's the indicator's
      permanent fill, not a hover interaction. */
-  --range-input-indicator-bg: #2FCEEF;
-  --range-input-accent-disabled: #C8C8CB;
-  --range-input-accent-error: #D74B54;
-  --range-input-thumb-icon-fg: #252628;
-  --range-input-thumb-icon-fg-error: #FFFFFF;
+  --range-input-indicator-bg: var(--blue-187);
+  --range-input-accent-disabled: var(--grey-166);
+  --range-input-accent-error: var(--red-418);
+  --range-input-thumb-icon-fg: var(--grey-1514);
+  --range-input-thumb-icon-fg-error: var(--white-101);
   /* Round-2 audit addition: the Disabled symbol's chevron icon SVGs
      (fill="white") show the thumb icon turning white on a grey disabled
      thumb, same treatment as the error state — the component previously
      left the icon at --range-input-thumb-icon-fg (dark) when disabled,
      unreadable against the grey pill. */
-  --range-input-thumb-icon-fg-disabled: #FFFFFF;
-  --range-input-scale-fg: #999999;
-  --range-input-caption-fg: #999999;
-  --range-input-caption-error-fg: #D74B54;
+  --range-input-thumb-icon-fg-disabled: var(--white-101);
+  --range-input-scale-fg: var(--grey-284);
+  --range-input-caption-fg: var(--grey-284);
+  --range-input-caption-error-fg: var(--red-418);
 
   /* File Upload + File (list item) tokens. Values follow the same
      border/bg palette as Select/Input; "Grey 100" drag-over fill and the
      error/loading accents are called out explicitly in the spec text. */
-  --file-upload-bg: #FFFFFF;
-  --file-upload-bg-hover: #F8F8F8;
-  --file-upload-bg-disabled: #FFFFFF;
-  --file-upload-border: #999999;
-  --file-upload-border-hover: #999999;
-  --file-upload-border-disabled: #C8C8CB;
-  --file-upload-border-error: #D74B54;
-  --file-upload-fg: #252628;
-  --file-upload-fg-disabled: #C8C8CB;
-  --file-upload-subtitle-fg: #999999;
-  --file-upload-subtitle-fg-disabled: #C8C8CB;
+  --file-upload-bg: var(--white-101);
+  --file-upload-bg-hover: var(--grey-106);
+  --file-upload-bg-disabled: var(--white-101);
+  --file-upload-border: var(--grey-284);
+  --file-upload-border-hover: var(--grey-284);
+  --file-upload-border-disabled: var(--grey-166);
+  --file-upload-border-error: var(--red-418);
+  --file-upload-fg: var(--grey-1514);
+  --file-upload-fg-disabled: var(--grey-166);
+  --file-upload-subtitle-fg: var(--grey-284);
+  --file-upload-subtitle-fg-disabled: var(--grey-166);
 
-  --file-item-fg: #252628;
-  --file-item-meta-fg: #999999;
-  --file-item-icon-fg: #252628;
-  --file-item-icon-bg: #F8F8F8;
-  --file-item-fg-disabled: #C8C8CB;
-  --file-item-loading-fg: #2FCEEF;
-  --file-item-error-fg: #D74B54;
-  --file-item-error-bg: #FFF0F0;
+  --file-item-fg: var(--grey-1514);
+  --file-item-meta-fg: var(--grey-284);
+  --file-item-icon-fg: var(--grey-1514);
+  --file-item-icon-bg: var(--grey-106);
+  --file-item-fg-disabled: var(--grey-166);
+  --file-item-loading-fg: var(--blue-187);
+  --file-item-error-fg: var(--red-418);
+  --file-item-error-bg: var(--red-110);
 
   /* Accordion (card) tokens. Colors sampled from the Default/Blocked ×
      Close/Open/Hover states grid PNG (1998px render) — hover only ever
@@ -685,14 +781,14 @@
      padding on top of the header's 24px bottom padding — the earlier
      "no divider" conclusion from a vector re-check didn't hold up against
      this literal data, so --accordion-card-divider is now real. */
-  --accordion-card-bg: #F4F4F4;
-  --accordion-card-bg-hover: #EFEFEF;
-  --accordion-card-blocked-bg: #FFF0F0;
-  --accordion-card-blocked-bg-hover: #FFE8E3;
-  --accordion-card-title-fg: #252628;
-  --accordion-card-subtitle-fg: #6D6D6D;
-  --accordion-card-icon-fg: #252628;
-  --accordion-card-divider: #DEDEDE;
+  --accordion-card-bg: var(--grey-109);
+  --accordion-card-bg-hover: var(--grey-114);
+  --accordion-card-blocked-bg: var(--red-110);
+  --accordion-card-blocked-bg-hover: var(--red-117);
+  --accordion-card-title-fg: var(--grey-1514);
+  --accordion-card-subtitle-fg: var(--grey-517);
+  --accordion-card-icon-fg: var(--grey-1514);
+  --accordion-card-divider: var(--grey-134);
 
   /* Accordion (content list) tokens. Base palette (border/title/subtitle)
      follows the same neutral scale as the rest of the kit. Round-2 audit:
@@ -702,16 +798,16 @@
      distinct from the card Accordion's subtitle grey-517 (#6D6D6D).
      Error/#D74B54 already matched the prior best-effort guess; the other
      three did not. */
-  --accordion-list-border: #DEDEDE;
-  --accordion-list-divider: #DEDEDE;
-  --accordion-list-title-fg: #252628;
-  --accordion-list-subtitle-fg: #999999;
-  --accordion-list-icon-fg: #252628;
-  --accordion-list-description-default-fg: #252628;
-  --accordion-list-description-success-fg: #39C182;
-  --accordion-list-description-attention-fg: #EEA20F;
-  --accordion-list-description-error-fg: #D74B54;
-  --accordion-list-description-information-fg: #999999;
+  --accordion-list-border: var(--grey-134);
+  --accordion-list-divider: var(--grey-134);
+  --accordion-list-title-fg: var(--grey-1514);
+  --accordion-list-subtitle-fg: var(--grey-284);
+  --accordion-list-icon-fg: var(--grey-1514);
+  --accordion-list-description-default-fg: var(--grey-1514);
+  --accordion-list-description-success-fg: var(--mint-230);
+  --accordion-list-description-attention-fg: var(--yellow-214);
+  --accordion-list-description-error-fg: var(--red-418);
+  --accordion-list-description-information-fg: var(--grey-284);
 
   /* Card tokens (bank-card list row). Values pixel-sampled directly from
      ui/card/card@2x.png + card@2x-1.png (Figma export) — row bg/hover
@@ -721,12 +817,12 @@
      The mini card's own dark tile (--card-thumb-bg) matches the real "IB /
      card account" mock in Figma; its network mark reuses Thumbnail's own
      PaymentLogo rather than a bespoke logo/color pair. */
-  --card-bg: #F8F8F8;
-  --card-bg-hover: #EFEFEF;
-  --card-title-fg: #252628;
-  --card-meta-fg: #999999;
-  --card-thumb-bg: #252628;
-  --card-thumb-fg: #FFFFFF;
+  --card-bg: var(--grey-106);
+  --card-bg-hover: var(--grey-114);
+  --card-title-fg: var(--grey-1514);
+  --card-meta-fg: var(--grey-284);
+  --card-thumb-bg: var(--grey-1514);
+  --card-thumb-fg: var(--white-101);
 
   /* Progress Bar tokens. Values pixel-sampled directly from
      ui/progress-bar/progress bar@2x.png + @2x-1.png (Figma export). The
@@ -736,14 +832,14 @@
      (#D74B54) is an exact match for --input-border-error. Amber is new —
      brighter than accordion-list's own (unconfirmed, per its own comment)
      attention approximation, so kept separate rather than reusing it. */
-  --progress-track-bg: #E6E6E6;
-  --progress-step-fill: #2FCEEF;
-  --progress-step-hatch: #C8C8CB;
-  --progress-title-fg: #252628;
-  --progress-meta-fg: #999999;
-  --progress-green: #39C182;
-  --progress-amber: #EEA20F;
-  --progress-red: #D74B54;
+  --progress-track-bg: var(--grey-124);
+  --progress-step-fill: var(--blue-187);
+  --progress-step-hatch: var(--grey-166);
+  --progress-title-fg: var(--grey-1514);
+  --progress-meta-fg: var(--grey-284);
+  --progress-green: var(--mint-230);
+  --progress-amber: var(--yellow-214);
+  --progress-red: var(--red-418);
 
   /* Steps tokens. Values pixel-sampled directly from ui/steps/steps@2x.png
      + @2x-1.png (Figma export). Active ring (#80E3FF) is an exact match for
@@ -752,19 +848,19 @@
      --input-border-error (#D74B54, within anti-aliasing tolerance), and the
      hover tooltip (#6D6D6D) matches the kit's common muted-description
      grey — all reused rather than duplicated. */
-  --steps-bg: #FFFFFF;
-  --steps-title-fg: #252628;
-  --steps-status-fg: #999999;
-  --steps-status-error-fg: #D74B54;
-  --steps-active-ring: #80E3FF;
-  --steps-disabled-fg: #999999;
-  --steps-fade-arrow-bg: #012F42;
+  --steps-bg: var(--white-101);
+  --steps-title-fg: var(--grey-1514);
+  --steps-status-fg: var(--grey-284);
+  --steps-status-error-fg: var(--red-418);
+  --steps-active-ring: var(--blue-223);
+  --steps-disabled-fg: var(--grey-284);
+  --steps-fade-arrow-bg: var(--dark-blue-1412);
   /* Round-2 audit: the fade-out mask over the scrollable row is its own
      grey (#F8F8F8, "grey-106" in Figma), literally distinct from the white
      card background (--steps-bg) it was previously reusing. */
-  --steps-fade-bg: #F8F8F8;
-  --steps-tooltip-bg: #6D6D6D;
-  --steps-tooltip-fg: #FFFFFF;
+  --steps-fade-bg: var(--grey-106);
+  --steps-tooltip-bg: var(--grey-517);
+  --steps-tooltip-fg: var(--white-101);
 
   /* Tooltip & Hint tokens. Values pixel-sampled directly from
      ui/tooltip/tooltip & hint@2x.png + @2x-1.png (Figma export). Bubble bg
@@ -773,8 +869,8 @@
      component. The mobile "Bottom Sheet" variant isn't a mode of this
      component — it's the existing `Modal`, which already renders as a
      bottom sheet on mobile / centered dialog on desktop. */
-  --tooltip-bg: #6D6D6D;
-  --tooltip-fg: #FFFFFF;
+  --tooltip-bg: var(--grey-517);
+  --tooltip-fg: var(--white-101);
 
   /* Badge tokens ("Счётчик"). Values pixel-sampled directly from
      ui/badge/badge@2x.png + @2x-1.png (Figma export). Red (#D74B54) is an
@@ -783,19 +879,19 @@
      Disabled collapses every color to the same muted grey except
      light-grey, which just goes one shade lighter (per the spec's own
      Disabled column — light-grey was already the palest option). */
-  --badge-red-bg: #D74B54;
-  --badge-red-fg: #FFFFFF;
-  --badge-contra-red-border: #FFFFFF;
-  --badge-dark-grey-bg: #6D6D6D;
-  --badge-dark-grey-fg: #FFFFFF;
-  --badge-light-grey-bg: #F8F8F8;
-  --badge-light-grey-fg: #999999;
-  --badge-black-bg: #252628;
-  --badge-black-fg: #FFFFFF;
-  --badge-disabled-bg: #999999;
-  --badge-disabled-fg: #FFFFFF;
-  --badge-disabled-light-grey-bg: #E6E6E6;
-  --badge-disabled-light-grey-fg: #C8C8CB;
+  --badge-red-bg: var(--red-418);
+  --badge-red-fg: var(--white-101);
+  --badge-contra-red-border: var(--white-101);
+  --badge-dark-grey-bg: var(--grey-517);
+  --badge-dark-grey-fg: var(--white-101);
+  --badge-light-grey-bg: var(--grey-106);
+  --badge-light-grey-fg: var(--grey-284);
+  --badge-black-bg: var(--grey-1514);
+  --badge-black-fg: var(--white-101);
+  --badge-disabled-bg: var(--grey-284);
+  --badge-disabled-fg: var(--white-101);
+  --badge-disabled-light-grey-bg: var(--grey-124);
+  --badge-disabled-light-grey-fg: var(--grey-166);
 
   /* Event tokens ("История изменений" timeline row). Values pixel-sampled
      directly from ui/message/event/event@2x.png. Grey (#999999), amber
@@ -807,13 +903,13 @@
      grey-106 (#F8F8F8, live Figma get_design_context on node 40513:71577 /
      40554:24336's "ELK / thumbnail") — was mistakenly set to grey-109
      (#F4F4F4, the ELK/button pill's own bg) in round 1. */
-  --event-title-fg: #252628;
-  --event-meta-fg: #999999;
-  --event-author-fg: #6D6D6D;
-  --event-connector: #DEDEDE;
-  --event-status-success-bg: #39C182;
-  --event-status-attention-bg: #EEA20F;
-  --event-file-bg: #F8F8F8;
+  --event-title-fg: var(--grey-1514);
+  --event-meta-fg: var(--grey-284);
+  --event-author-fg: var(--grey-517);
+  --event-connector: var(--grey-134);
+  --event-status-success-bg: var(--mint-230);
+  --event-status-attention-bg: var(--yellow-214);
+  --event-file-bg: var(--grey-106);
 
   /* Informer tokens ("Уведомление внутри контентного блока"). Values
      pixel-sampled directly from ui/message/informer/informer@2x.png +
@@ -821,15 +917,15 @@
      tokens already established elsewhere (--input-border-error,
      --progress-amber, --progress-green) — reused rather than duplicated.
      Grey solid bg (#F8F8F8) matches Card's own bg exactly. */
-  --informer-bg-white: #FFFFFF;
-  --informer-bg-grey: #F8F8F8;
-  --informer-title-fg: #252628;
-  --informer-meta-fg: #999999;
-  --informer-description-fg: #494C4B;
-  --informer-icon-red: #D74B54;
-  --informer-icon-yellow: #EEA20F;
-  --informer-icon-green: #39C182;
-  --informer-icon-grey: #999999;
+  --informer-bg-white: var(--white-101);
+  --informer-bg-grey: var(--grey-106);
+  --informer-title-fg: var(--grey-1514);
+  --informer-meta-fg: var(--grey-284);
+  --informer-description-fg: var(--grey-868);
+  --informer-icon-red: var(--red-418);
+  --informer-icon-yellow: var(--yellow-214);
+  --informer-icon-green: var(--mint-230);
+  --informer-icon-grey: var(--grey-284);
 
   /* Notification tokens ("Уведомления и новости" panel). Values
      pixel-sampled directly from ui/message/notification/notification@2x.png
@@ -838,18 +934,18 @@
      lower-confidence/likely-to-change. Unread dot (#D74B54) matches
      --input-border-error exactly. Hover/pressed steps reuse the kit's
      usual Grey 106 / Grey 114 escalation (same as Card's bg/bg-hover). */
-  --notification-bg: #FFFFFF;
-  --notification-bg-hover: #F8F8F8;
-  --notification-bg-pressed: #EFEFEF;
-  --notification-title-fg: #252628;
-  --notification-meta-fg: #6D6D6D;
-  --notification-dot: #D74B54;
-  --notification-divider: #DEDEDE;
+  --notification-bg: var(--white-101);
+  --notification-bg-hover: var(--grey-106);
+  --notification-bg-pressed: var(--grey-114);
+  --notification-title-fg: var(--grey-1514);
+  --notification-meta-fg: var(--grey-517);
+  --notification-dot: var(--red-418);
+  --notification-divider: var(--grey-134);
   /* Timestamp ("11.08.2025, 16:30") is a lighter grey than status/
      description — base/grey-284 (#999999), confirmed via live
      get_design_context on node 32216:16404/16492 — distinct from
      --notification-meta-fg (#6D6D6D) used elsewhere in the item. */
-  --notification-timestamp-fg: #999999;
+  --notification-timestamp-fg: var(--grey-284);
 
   /* Toast Message tokens ("Всплывающее уведомление"). Values pixel-sampled
      directly from ui/message/toast message/toast message@2x.png. Icon
@@ -857,37 +953,37 @@
      (--progress-green/--progress-amber/--input-border-error/muted grey) —
      reused rather than duplicated; only the four pastel backgrounds are
      new (this is the only message/* component with colored surfaces). */
-  --toast-title-fg: #252628;
-  --toast-description-fg: #6D6D6D;
-  --toast-checked-bg: #BDF8DB;
-  --toast-checked-icon: #39C182;
-  --toast-checked-border: #89F2BD;
-  --toast-attention-bg: #FDF0C1;
-  --toast-attention-icon: #EEA20F;
-  --toast-attention-border: #FADC89;
-  --toast-error-bg: #FFE8E3;
-  --toast-error-icon: #D74B54;
-  --toast-error-border: #FFBEB5;
-  --toast-information-bg: #EFEFEF;
-  --toast-information-icon: #999999;
-  --toast-information-border: #DEDEDE;
+  --toast-title-fg: var(--grey-1514);
+  --toast-description-fg: var(--grey-517);
+  --toast-checked-bg: var(--mint-119);
+  --toast-checked-icon: var(--mint-230);
+  --toast-checked-border: var(--mint-135);
+  --toast-attention-bg: var(--yellow-114);
+  --toast-attention-icon: var(--yellow-214);
+  --toast-attention-border: var(--yellow-134);
+  --toast-error-bg: var(--red-117);
+  --toast-error-icon: var(--red-418);
+  --toast-error-border: var(--red-147);
+  --toast-information-bg: var(--grey-114);
+  --toast-information-icon: var(--grey-284);
+  --toast-information-border: var(--grey-134);
 
   /* Top Fixed Message tokens ("Закреплённое сообщение"). Exact hex values
      read from ui/message/top foxed message/top fixed message.svg fills
      (pixel-sampling the PNG was noisy from anti-aliasing on the thin icon
      ring). --top-fixed-message-*-icon and title/close colors match tokens
      used elsewhere (--input-border-error, #252628 body text). */
-  --top-fixed-message-title-fg: #252628;
-  --top-fixed-message-close-fg: #252628;
+  --top-fixed-message-title-fg: var(--grey-1514);
+  --top-fixed-message-close-fg: var(--grey-1514);
   /* Was #E3EEFF, which is the *pre-rebrand* blue — the As-is/To-be table on
      the "Переходный этап ребрендинга" page (node 70251:48106) renders this
      surface as #E3EEFF on the left and #EDF6FC on the right, so the current
      theme was still showing the old value. #EDF6FC is also exactly
      --tag-blue-secondary-bg, i.e. the kit's one pale blue surface. */
-  --top-fixed-message-blue-bg: #EDF6FC;
-  --top-fixed-message-blue-icon: #5B90E0;
-  --top-fixed-message-red-bg: #FFE8E3;
-  --top-fixed-message-red-icon: #D74B54;
+  --top-fixed-message-blue-bg: var(--dark-blue-109);
+  --top-fixed-message-blue-icon: var(--dark-blue-322);
+  --top-fixed-message-red-bg: var(--red-117);
+  --top-fixed-message-red-icon: var(--red-418);
 
   /* Tag tokens ("Теги"). Main status colors (green/orange/red/blue) are
      exact matches for existing tokens (--informer-icon-green/yellow/red).
@@ -895,29 +991,29 @@
      directly off the Figma "ELK / tag" instances (Style=*, Desktop) — not
      computed/estimated. Sign colors (black/white/grey-info) read directly
      from the labelled swatches in the "Варианты – признаки" section. */
-  --tag-green-bg: #39C182;
-  --tag-green-fg: #FFFFFF;
-  --tag-green-secondary-bg: #E5FCF1;
-  --tag-orange-bg: #EEA20F;
-  --tag-orange-fg: #FFFFFF;
-  --tag-orange-secondary-bg: #FFFAE0;
-  --tag-red-bg: #D74B54;
-  --tag-red-fg: #FFFFFF;
-  --tag-red-secondary-bg: #FFF0F0;
-  --tag-blue-bg: #2487CA;
-  --tag-blue-fg: #FFFFFF;
-  --tag-blue-secondary-bg: #EDF6FC;
-  --tag-grey-bg: #999999;
-  --tag-grey-fg: #FFFFFF;
-  --tag-grey-secondary-bg: #F8F8F8;
-  --tag-grey-secondary-fg: #252628;
-  --tag-black-bg: #252628;
-  --tag-black-fg: #FFFFFF;
-  --tag-white-bg: #FFFFFF;
-  --tag-white-fg: #252628;
-  --tag-white-border: #DEDEDE;
-  --tag-grey-info-bg: #DEDEDE;
-  --tag-grey-info-fg: #252628;
+  --tag-green-bg: var(--mint-230);
+  --tag-green-fg: var(--white-101);
+  --tag-green-secondary-bg: var(--mint-107);
+  --tag-orange-bg: var(--yellow-214);
+  --tag-orange-fg: var(--white-101);
+  --tag-orange-secondary-bg: var(--yellow-104);
+  --tag-red-bg: var(--red-418);
+  --tag-red-fg: var(--white-101);
+  --tag-red-secondary-bg: var(--red-110);
+  --tag-blue-bg: var(--dark-blue-389);
+  --tag-blue-fg: var(--white-101);
+  --tag-blue-secondary-bg: var(--dark-blue-109);
+  --tag-grey-bg: var(--grey-284);
+  --tag-grey-fg: var(--white-101);
+  --tag-grey-secondary-bg: var(--grey-106);
+  --tag-grey-secondary-fg: var(--grey-1514);
+  --tag-black-bg: var(--grey-1514);
+  --tag-black-fg: var(--white-101);
+  --tag-white-bg: var(--white-101);
+  --tag-white-fg: var(--grey-1514);
+  --tag-white-border: var(--grey-134);
+  --tag-grey-info-bg: var(--grey-134);
+  --tag-grey-info-fg: var(--grey-1514);
 
   /* Chips / Filter tokens ("Chips, Filter" + "Table Filter" specs). Every
      value here is an exact match for a token already established by
@@ -937,37 +1033,37 @@
      grey than #EFEFEF), a Filter-exclusive token distinct from Chips'
      hover, which stays #EFEFEF (confirmed correct against the "Chips"
      type's own states). */
-  --chips-fg: #252628;
-  --chips-subtitle-fg: #999999;
-  --chips-light-bg: #F4F4F4;
-  --chips-light-bg-hover: #EFEFEF;
-  --chips-dark-bg: #012F42;
+  --chips-fg: var(--grey-1514);
+  --chips-subtitle-fg: var(--grey-284);
+  --chips-light-bg: var(--grey-109);
+  --chips-light-bg-hover: var(--grey-114);
+  --chips-dark-bg: var(--dark-blue-1412);
 
   /* "ELK / button menu (black)" (node 700:54288) — the selection bar that
      replaces the white Button Menu while table rows are selected. Fill is
      the same dark-blue-1412 as --btn-secondary-black-bg; the info bar pairs
      a grey-166 label with a white value. */
-  --button-menu-black-bg: #012F42;
-  --button-menu-black-fg: #FFFFFF;
-  --button-menu-black-muted-fg: #C8C8CB;
+  --button-menu-black-bg: var(--dark-blue-1412);
+  --button-menu-black-fg: var(--white-101);
+  --button-menu-black-muted-fg: var(--grey-166);
   /* Светлая панель Button Menu: белая заливка в рамке grey-114. Граница
      держалась литералом в root.tsx и не переключалась вместе с темой. */
-  --button-menu-bg: #FFFFFF;
-  --button-menu-border: #EFEFEF;
-  --chips-dark-bg-hover: #114870;
-  --chips-dark-fg: #FFFFFF;
-  --chips-disabled-bg: #F4F4F4;
-  --chips-disabled-fg: #C8C8CB;
+  --button-menu-bg: var(--white-101);
+  --button-menu-border: var(--grey-114);
+  --chips-dark-bg-hover: var(--dark-blue-961);
+  --chips-dark-fg: var(--white-101);
+  --chips-disabled-bg: var(--grey-109);
+  --chips-disabled-fg: var(--grey-166);
 
-  --filter-fg: #252628;
-  --filter-icon-fg: #252628;
-  --filter-white-bg: #FFFFFF;
-  --filter-white-bg-hover: #F8F8F8;
-  --filter-grey-bg: #F4F4F4;
-  --filter-grey-bg-hover: #F8F8F8;
-  --filter-active-border: #80E3FF;
-  --filter-disabled-bg: #F4F4F4;
-  --filter-disabled-fg: #C8C8CB;
+  --filter-fg: var(--grey-1514);
+  --filter-icon-fg: var(--grey-1514);
+  --filter-white-bg: var(--white-101);
+  --filter-white-bg-hover: var(--grey-106);
+  --filter-grey-bg: var(--grey-109);
+  --filter-grey-bg-hover: var(--grey-106);
+  --filter-active-border: var(--blue-223);
+  --filter-disabled-bg: var(--grey-109);
+  --filter-disabled-fg: var(--grey-166);
 
   /* Sidebar tokens ("Боковая панель для сотрудников", ui/sidebar). Item
      Hover/Active values are given as exact hex in the spec's own text
@@ -977,13 +1073,13 @@
      convention rather than cross-referenced. Named --nav-sidebar-* (not
      --sidebar-*) to avoid the unrelated shadcn --sidebar-* boilerplate
      tokens already sitting in :root from the initial scaffold. */
-  --nav-sidebar-bg: #FFFFFF;
-  --nav-sidebar-border: #DEDEDE;
-  --nav-sidebar-fg: #252628;
-  --nav-sidebar-icon-fg: #252628;
-  --nav-sidebar-label-fg: #999999;
-  --nav-sidebar-item-hover-bg: #EFEFEF;
-  --nav-sidebar-item-active-bg: #F4F4F4;
+  --nav-sidebar-bg: var(--white-101);
+  --nav-sidebar-border: var(--grey-134);
+  --nav-sidebar-fg: var(--grey-1514);
+  --nav-sidebar-icon-fg: var(--grey-1514);
+  --nav-sidebar-label-fg: var(--grey-284);
+  --nav-sidebar-item-hover-bg: var(--grey-114);
+  --nav-sidebar-item-active-bg: var(--grey-109);
 
   /* Header tokens (ui/header, "Шапка"). Accent/hover-blue reuses the same
      hex as --btn-primary-bg-active/--calendar-accent-fg (#14B1D1) under its
@@ -1000,18 +1096,18 @@
      (Default/Hover/Active all export fill="#999999", confirmed from the
      exported SVGs directly) with a lighter #F8F8F8 hover fill, unlike
      every other header icon which is the dark #252628 --header-icon-fg. */
-  --header-bg: #FFFFFF;
-  --header-border: #DEDEDE;
-  --header-fg: #252628;
-  --header-meta-fg: #999999;
-  --header-icon-fg: #252628;
-  --header-hover-fg: #14B1D1;
-  --header-item-hover-bg: #EFEFEF;
-  --header-menu-toggle-hover-bg: #F8F8F8;
-  --header-divider: #DEDEDE;
-  --header-check-fg: #14B1D1;
-  --header-logout-fg: #D74B54;
-  --header-unread-dot: #D74B54;
+  --header-bg: var(--white-101);
+  --header-border: var(--grey-134);
+  --header-fg: var(--grey-1514);
+  --header-meta-fg: var(--grey-284);
+  --header-icon-fg: var(--grey-1514);
+  --header-hover-fg: var(--blue-254);
+  --header-item-hover-bg: var(--grey-114);
+  --header-menu-toggle-hover-bg: var(--grey-106);
+  --header-divider: var(--grey-134);
+  --header-check-fg: var(--blue-254);
+  --header-logout-fg: var(--red-418);
+  --header-unread-dot: var(--red-418);
 
   /* Header Menu tokens (ui/header-menu) — «Раскрытое меню навигации» и
      «Раскрытое меню создания» из MENU DOCS (нода 70303:52281).
@@ -1030,11 +1126,11 @@
      Затемнение под раскрытым меню — тот же `--modal-backdrop`/70, что и у
      модалки: пиксельная проба скриншота (70303:58312) даёт (98,101,100)
      поверх белой страницы, что в точности #1E2321 при 70 %. */
-  --header-menu-group-bg: #F8F8F8;
-  --header-menu-group-fg: #494C4B;
-  --header-menu-star-fg: #C8C8CB;
-  --header-menu-tile-bg: #F4F4F4;
-  --header-menu-tile-icon-bg: #FFFFFF;
+  --header-menu-group-bg: var(--grey-106);
+  --header-menu-group-fg: var(--grey-868);
+  --header-menu-star-fg: var(--grey-166);
+  --header-menu-tile-bg: var(--grey-109);
+  --header-menu-tile-icon-bg: var(--white-101);
 
   /* Баннер в меню ЕЛК — три заливки по свойству «Цвет» плюс размытое
      пятно-градиент 320px поверх (в макете это SVG: круг r=160 с линейным
@@ -1043,12 +1139,12 @@
        Голубой    Blue 121 #B6F3FF    → градиент Blue 114 #CFF7FF
        Сиреневый  Lavender 135 #D9DBFF → Lavender 116 #EBECFF
        Зелёный    Mint 135 #89F2BD    → Mint 119 #BDF8DB */
-  --menu-banner-blue-bg: #B6F3FF;
-  --menu-banner-blue-glow: #CFF7FF;
-  --menu-banner-lilac-bg: #D9DBFF;
-  --menu-banner-lilac-glow: #EBECFF;
-  --menu-banner-green-bg: #89F2BD;
-  --menu-banner-green-glow: #BDF8DB;
+  --menu-banner-blue-bg: var(--blue-121);
+  --menu-banner-blue-glow: var(--blue-114);
+  --menu-banner-lilac-bg: var(--lavender-135);
+  --menu-banner-lilac-glow: var(--lavender-116);
+  --menu-banner-green-bg: var(--mint-135);
+  --menu-banner-green-glow: var(--mint-119);
 
   /* Tabs tokens (ui/tabs). Text/underline colors pixel-confirmed via
      histogram against ui/tabs/tabs@2x-1.png's own "Elements" state table —
@@ -1058,12 +1154,12 @@
      symbol (both Large and Medium) carries a full-width #DEDEDE bottom
      border on the row itself, separate from the per-tab active underline
      bar — this was missing from the implementation entirely. */
-  --tabs-fg: #6D6D6D;
-  --tabs-fg-active: #252628;
-  --tabs-fg-disabled: #C8C8CB;
-  --tabs-underline-hover: #6D6D6D;
-  --tabs-underline-active: #252628;
-  --tabs-border: #DEDEDE;
+  --tabs-fg: var(--grey-517);
+  --tabs-fg-active: var(--grey-1514);
+  --tabs-fg-disabled: var(--grey-166);
+  --tabs-underline-hover: var(--grey-517);
+  --tabs-underline-active: var(--grey-1514);
+  --tabs-border: var(--grey-134);
 
   /* Switcher tokens ("Cell Switcher", ui/switcher). Grey Solid/White Solid
      surface pair and Hover values are all histogram-confirmed exact
@@ -1078,25 +1174,25 @@
      navy as --btn-secondary-black-bg), not the #252628 near-black
      previously here — confirmed directly from get_design_context, not by
      eyeballing a screenshot. */
-  --switcher-fg: #252628;
-  --switcher-fg-inactive: #6D6D6D;
-  --switcher-border: #C8C8CB;
-  --switcher-grey-bg: #F8F8F8;
-  --switcher-white-bg: #FFFFFF;
-  --switcher-active-bg: #FFFFFF;
-  --switcher-active-bg-on-white: #F4F4F4;
-  --switcher-active-black-bg: #012F42;
-  --switcher-active-black-fg: #FFFFFF;
-  --switcher-hover-bg: #EFEFEF;
-  --switcher-disabled-fg: #C8C8CB;
+  --switcher-fg: var(--grey-1514);
+  --switcher-fg-inactive: var(--grey-517);
+  --switcher-border: var(--grey-166);
+  --switcher-grey-bg: var(--grey-106);
+  --switcher-white-bg: var(--white-101);
+  --switcher-active-bg: var(--white-101);
+  --switcher-active-bg-on-white: var(--grey-109);
+  --switcher-active-black-bg: var(--dark-blue-1412);
+  --switcher-active-black-fg: var(--white-101);
+  --switcher-hover-bg: var(--grey-114);
+  --switcher-disabled-fg: var(--grey-166);
 
   /* Empty Search Results tokens (ui/empty-search). Reusing the kit's usual
      dark/grey text pair (--select-fg/--select-caption-fg) under this
      component's own namespace rather than cross-referencing. */
-  --empty-search-icon-bg: #F8F8F8;
-  --empty-search-icon-fg: #252628;
-  --empty-search-title-fg: #252628;
-  --empty-search-description-fg: #999999;
+  --empty-search-icon-bg: var(--grey-106);
+  --empty-search-icon-fg: var(--grey-1514);
+  --empty-search-title-fg: var(--grey-1514);
+  --empty-search-description-fg: var(--grey-284);
 
   /* NPS tokens ("Обратная связь", ui/nps). Star fill is a genuinely new
      color (a warm gold, not reused elsewhere in this kit); everything else
@@ -1104,13 +1200,13 @@
      its own distinct grey (#6D6D6D) in the spec's exported SVG — it's
      visibly darker than --nps-subtitle-fg (#999999) used for the "Обратная
      связь"/rating-label text next to it, not a reuse of that token. */
-  --nps-title-fg: #252628;
-  --nps-subtitle-fg: #999999;
-  --nps-close-fg: #6D6D6D;
-  --nps-card-bg: #FFFFFF;
-  --nps-card-border: #EFEFEF;
-  --nps-star-fg: #F8C000;
-  --nps-star-empty-fg: #DEDEDE;
+  --nps-title-fg: var(--grey-1514);
+  --nps-subtitle-fg: var(--grey-284);
+  --nps-close-fg: var(--grey-517);
+  --nps-card-bg: var(--white-101);
+  --nps-card-border: var(--grey-114);
+  --nps-star-fg: var(--yellow-167);
+  --nps-star-empty-fg: var(--grey-134);
   /* NPS's reply pills moved to the shared FilterTable component (Figma
      builds them from `ELK / filter-table`, not a bespoke chip), so their
      --nps-chip-* tokens are gone — the colours now come from the
@@ -1119,10 +1215,10 @@
   /* Error Page tokens (ui/error-page). The big "403"/"404" numerals are a
      flat grey in the spec (the mascot illustration itself is out of scope
      — see error-page.tsx's own comment), reusing the kit's disabled-grey. */
-  --error-page-bg: #F8F8F8;
-  --error-page-title-fg: #252628;
-  --error-page-description-fg: #252628;
-  --error-page-code-fg: #C8C8CB;
+  --error-page-bg: var(--grey-106);
+  --error-page-title-fg: var(--grey-1514);
+  --error-page-description-fg: var(--grey-1514);
+  --error-page-code-fg: var(--grey-166);
 
   /* Pagination tokens (ui/pagination). Text/disabled colors reuse the kit's
      usual dark/muted pair. The three page-pill backgrounds are a genuinely
@@ -1136,13 +1232,13 @@
      #C8C8CB pair). Border reuses the kit's #DEDEDE divider grey (Figma
      "Second/Grey colors/Grey 134", pixel-sampled at rgb(222,222,222)),
      matching the 1px line at the table/paginator boundary. */
-  --pagination-fg: #252628;
-  --pagination-caption-fg: #999999;
-  --pagination-disabled-fg: #999999;
-  --pagination-border: #DEDEDE;
-  --pagination-hover-bg: #F0FCFF;
-  --pagination-active-bg: #CFF7FF;
-  --pagination-onclick-bg: #B6F3FF;
+  --pagination-fg: var(--grey-1514);
+  --pagination-caption-fg: var(--grey-284);
+  --pagination-disabled-fg: var(--grey-284);
+  --pagination-border: var(--grey-134);
+  --pagination-hover-bg: var(--blue-104);
+  --pagination-active-bg: var(--blue-114);
+  --pagination-onclick-bg: var(--blue-121);
 
   /* Item tokens (ui/item). Hover bg (#EFEFEF, "Grey 114") and the Check
      icon's cyan (#80E3FF) are exact matches for --btn-secondary-grey-bg-
@@ -1157,30 +1253,30 @@
      GosuslugiLogo precedent) for the spec's generic image/avatar slot.
      The secondary "Text" line (above Value) is the same dark grey as
      Value itself per the spec — no separate muted color. */
-  --item-value-fg: #252628;
-  --item-value-fg-disabled: #C8C8CB;
+  --item-value-fg: var(--grey-1514);
+  --item-value-fg-disabled: var(--grey-166);
   /* Round-2 audit: was #252628 — the literal "icon / arrow next chevron"
      asset on the master "ELK / item" component (canvas 11159:9039) has
      fill="#999999", not near-black; the disabled variant's own asset is
      fill="#C8C8CB" (handled per-instance in item.tsx, not via this token). */
-  --item-icon-fg: #999999;
-  --item-divider: #DEDEDE;
-  --item-hover-bg: #EFEFEF;
+  --item-icon-fg: var(--grey-284);
+  --item-divider: var(--grey-134);
+  --item-hover-bg: var(--grey-114);
   /* Round-2 audit: was #80E3FF (the kit's pale-cyan surface color) — the
      literal "icon / check" asset in the item's own Right Element component
      uses stroke="#14B1D1", the kit's usual accent-blue (same value as
      --header-check-fg / --nav-sidebar hover), not the pale surface tone. */
-  --item-check-fg: #14B1D1;
-  --item-right-text-fg: #39C182;
+  --item-check-fg: var(--blue-254);
+  --item-right-text-fg: var(--mint-230);
   /* Round-2 audit: bg was #F4F4F4, fg was #999999 — both read directly off
      the literal thumbnail markup on the master "ELK / item" component:
      bg-[#f8f8f8] container, and the "icon / more" dots asset itself is
      fill="#252628" (near-black), not a muted grey. */
-  --item-thumbnail-bg: #F8F8F8;
-  --item-thumbnail-fg: #252628;
-  --item-comment-grey-fg: #999999;
-  --item-comment-red-fg: #D74B54;
-  --item-comment-yellow-fg: #B76E00;
+  --item-thumbnail-bg: var(--grey-106);
+  --item-thumbnail-fg: var(--grey-1514);
+  --item-comment-grey-fg: var(--grey-284);
+  --item-comment-red-fg: var(--red-418);
+  --item-comment-yellow-fg: var(--yellow-400);
 
   /* Item.Information Field tokens (ui/item.information-field). Sampled
      directly from the Value/Sub Text status swatches rather than assumed
@@ -1191,17 +1287,17 @@
      Information status reuses the kit's common neutral grey (#999999).
      Copy icon Default/Hover (#999999 / #6D6D6D, "Grey 284"/"Grey 517" per
      spec) are also exact matches for existing greys elsewhere in the kit. */
-  --ifield-label-fg: #999999;
-  --ifield-value-fg: #252628;
-  --ifield-subtext-fg: #999999;
-  --ifield-icon-fg: #999999;
-  --ifield-divider: #DEDEDE;
-  --ifield-success-fg: #39C182;
-  --ifield-error-fg: #D74B54;
-  --ifield-attention-fg: #EEA20F;
-  --ifield-information-fg: #999999;
-  --ifield-copy-fg: #999999;
-  --ifield-copy-fg-hover: #6D6D6D;
+  --ifield-label-fg: var(--grey-284);
+  --ifield-value-fg: var(--grey-1514);
+  --ifield-subtext-fg: var(--grey-284);
+  --ifield-icon-fg: var(--grey-284);
+  --ifield-divider: var(--grey-134);
+  --ifield-success-fg: var(--mint-230);
+  --ifield-error-fg: var(--red-418);
+  --ifield-attention-fg: var(--yellow-214);
+  --ifield-information-fg: var(--grey-284);
+  --ifield-copy-fg: var(--grey-284);
+  --ifield-copy-fg-hover: var(--grey-517);
 
   /* Status Screen tokens (ui/status-screen). The spec's illustration is a
      bespoke 3D mascot per status (a whole printer/device scene, not just an
@@ -1211,16 +1307,16 @@
      green/red secondary bg + accordion-list's success/error/attention text)
      rather than new colors, since a plain status badge doesn't need its
      own palette. */
-  --status-screen-title-fg: #252628;
-  --status-screen-subtitle-fg: #6D6D6D;
-  --status-screen-success-bg: #E7F8F0;
-  --status-screen-success-fg: #1F9254;
-  --status-screen-error-bg: #FAE9EA;
-  --status-screen-error-fg: #D74B54;
-  --status-screen-attention-bg: #FDF0C1;
-  --status-screen-attention-fg: #B76E00;
-  --status-screen-neutral-bg: #F4F4F4;
-  --status-screen-neutral-fg: #6D6D6D;
+  --status-screen-title-fg: var(--grey-1514);
+  --status-screen-subtitle-fg: var(--grey-517);
+  --status-screen-success-bg: var(--mint-110);
+  --status-screen-success-fg: var(--mint-396);
+  --status-screen-error-bg: var(--red-117-alt);
+  --status-screen-error-fg: var(--red-418);
+  --status-screen-attention-bg: var(--yellow-114);
+  --status-screen-attention-fg: var(--yellow-400);
+  --status-screen-neutral-bg: var(--grey-109);
+  --status-screen-neutral-fg: var(--grey-517);
 
   /* Autocomplete tokens. No dedicated Figma spec file for this one (built
      from a pasted reference screenshot of an ИНН/organization search field,
@@ -1232,13 +1328,13 @@
      its hover/highlighted state, so this is an extrapolation from that
      shared list-item component, not a value confirmed against a dedicated
      Autocomplete frame (none exists). */
-  --autocomplete-title-fg: #252628;
-  --autocomplete-subtitle-fg: #999999;
-  --autocomplete-highlighted-bg: #F8F8F8;
+  --autocomplete-title-fg: var(--grey-1514);
+  --autocomplete-subtitle-fg: var(--grey-284);
+  --autocomplete-highlighted-bg: var(--grey-106);
   /* Match highlight inside a result row. Not specified in Figma (see
      autocomplete/highlight.tsx) — reuses the kit's primary accent so the
      value is an existing DS colour rather than a new one. */
-  --autocomplete-match-bg: #80E3FF;
+  --autocomplete-match-bg: var(--blue-223);
 
   /* Table tokens (ui/table). Values read directly from ui/table/table.svg +
      table-1.svg fills, not pixel-sampled — grepping the vector source caught
@@ -1257,12 +1353,12 @@
      in the spec beyond Default(muted)/Hover+Active(dark) text color, so it
      reuses --table-description-fg/--table-fg contextually rather than
      getting its own pair. */
-  --table-fg: #252628;
-  --table-description-fg: #999999;
-  --table-divider: #DEDEDE;
-  --table-row-hover-bg: #EFEFEF;
-  --table-row-active-bg: #E6E6E6;
-  --table-row-added-bg: #EFEFEF;
+  --table-fg: var(--grey-1514);
+  --table-description-fg: var(--grey-284);
+  --table-divider: var(--grey-134);
+  --table-row-hover-bg: var(--grey-114);
+  --table-row-active-bg: var(--grey-124);
+  --table-row-added-bg: var(--grey-114);
   /* Added 2026-08-13 from "Проектирование таблиц ЕЛК" (node 70279:6891).
      --table-bg is White 101, named rather than hard-coded because pinned
      cells paint themselves with it (a transparent sticky cell would let the
@@ -1278,13 +1374,13 @@
      Grey 517 (a step darker than the usual muted grey used elsewhere), and
      the Information Text label is Grey 284. Read off the two masters
      (7593:18875 Title Card / 8712:15258 Registry). */
-  --title-fg: #252628;
-  --title-description-fg: #6D6D6D;
-  --title-muted-fg: #999999;
+  --title-fg: var(--grey-1514);
+  --title-description-fg: var(--grey-517);
+  --title-muted-fg: var(--grey-284);
 
-  --table-bg: #FFFFFF;
-  --table-number-positive-fg: #39C182;
-  --table-summary-divider: #C8C8CB;
+  --table-bg: var(--white-101);
+  --table-number-positive-fg: var(--mint-230);
+  --table-summary-divider: var(--grey-166);
 
   /* Shimmer tokens (ui/shimmer). Corrected 2026-08-03 against live Figma
      (node 15963:23880, "ELK / shimmer" master component, and every sized
@@ -1306,8 +1402,8 @@
      scale utility, which is 10px and doesn't match); circle uses
      `rounded-full`, visually identical to the master's literal 100px on an
      80px box since border-radius caps at half the shorter side either way. */
-  --shimmer-from: #DEDEDE;
-  --shimmer-via: #EFEFEF;
+  --shimmer-from: var(--grey-134);
+  --shimmer-via: var(--grey-114);
 
   /* Scrollbar tokens (ui/scrollbar). Track/thumb fills read directly from
      the live "ELK / scrollbar" master component (node 12608:12982, v1.0.1,
@@ -1334,19 +1430,19 @@
      kit actually ships (ELK is) and borrowing its color would just trade
      one unfounded guess for a borrowed one. If a hover affordance is
      wanted here, it needs a real decision/spec update, not a code guess. */
-  --scrollbar-track-bg: #F4F4F4;
-  --scrollbar-thumb-bg: #C8C8CB;
+  --scrollbar-track-bg: var(--grey-109);
+  --scrollbar-thumb-bg: var(--grey-166);
 
   /* Mail feed tokens (ui/mail-feed) — one row per state, per the spec's
      own "Property 1" swatches (Default/New/Used/Error). New's tint
      (#F0FCFF) is an exact reuse of --pagination-hover-bg's own cyan tint
      under its own name, not a new color. */
-  --mail-feed-default-bg: #FFFFFF;
-  --mail-feed-new-bg: #F0FCFF;
-  --mail-feed-used-bg: #F8F8F8;
-  --mail-feed-error-bg: #FFE8E3;
-  --mail-feed-fg: #252628;
-  --mail-feed-meta-fg: #999999;
+  --mail-feed-default-bg: var(--white-101);
+  --mail-feed-new-bg: var(--blue-104);
+  --mail-feed-used-bg: var(--grey-106);
+  --mail-feed-error-bg: var(--red-117);
+  --mail-feed-fg: var(--grey-1514);
+  --mail-feed-meta-fg: var(--grey-284);
 }
 
 /* Старый_ЕЛК theme ("как было") — add data-product="odl-elk" to <html> to render every
@@ -1401,93 +1497,93 @@
    - --top-fixed-message-blue-bg in :root was still holding the *old*
      #E3EEFF; fixed to #EDF6FC there, with #E3EEFF moved down here. */
 [data-product="odl-elk"] {
-  --btn-primary-bg: #82BF00;
-  --btn-primary-bg-hover: #72A716;
-  --btn-primary-bg-active: #699B12;
-  --btn-primary-fg: #FFFFFF;
+  --btn-primary-bg: var(--odl-green-223);
+  --btn-primary-bg-hover: var(--odl-green-289);
+  --btn-primary-bg-active: var(--odl-green-333);
+  --btn-primary-fg: var(--white-101);
 
-  --btn-secondary-black-bg: #252628;
-  --btn-secondary-black-bg-hover: #38393B; /* approximated, see comment above */
-  --btn-secondary-black-bg-active: #4A4B4D; /* approximated, see comment above */
+  --btn-secondary-black-bg: var(--grey-1514);
+  --btn-secondary-black-bg-hover: var(--odl-grey-1156); /* approximated, see comment above */
+  --btn-secondary-black-bg-active: var(--odl-grey-873); /* approximated, see comment above */
 
   /* Лоудер брендовый, поэтому в старой теме он зелёный. Warning не менялся
      при ребрендинге (подтверждено диффом As-is/To-be), развилки не требует. */
-  --loader-fg: #82BF00;
+  --loader-fg: var(--odl-green-223);
 
-  --checkbox-checked-bg: #82BF00;
-  --checkbox-checked-bg-hover: #72A716;
+  --checkbox-checked-bg: var(--odl-green-223);
+  --checkbox-checked-bg-hover: var(--odl-green-289);
 
-  --radio-checked-bg: #82BF00;
-  --radio-checked-bg-hover: #72A716;
+  --radio-checked-bg: var(--odl-green-223);
+  --radio-checked-bg-hover: var(--odl-green-289);
 
-  --toggle-track-checked-bg: #82BF00;
-  --toggle-track-checked-bg-hover: #72A716;
-  --toggle-track-checked-bg-disabled: #C4E88B;
+  --toggle-track-checked-bg: var(--odl-green-223);
+  --toggle-track-checked-bg-hover: var(--odl-green-289);
+  --toggle-track-checked-bg-disabled: var(--odl-green-137);
 
-  --range-input-accent: #82BF00;
+  --range-input-accent: var(--odl-green-223);
   /* Renamed from --range-input-accent-hover alongside the root token (see
      round-2 audit comment there) — same #72A716 value, just no longer tied
      to a thumb :hover interaction. */
-  --range-input-indicator-bg: #72A716;
+  --range-input-indicator-bg: var(--odl-green-289);
   /* Design-check #45: thumb arrows are white in the old-brand theme (the
      new theme's dark #252628 icon only reads against the pale cyan thumb —
      against the old theme's green it needs the light variant instead). */
-  --range-input-thumb-icon-fg: #FFFFFF;
+  --range-input-thumb-icon-fg: var(--white-101);
 
-  --steps-active-ring: #82BF00;
-  --steps-fade-arrow-bg: #252628;
+  --steps-active-ring: var(--odl-green-223);
+  --steps-fade-arrow-bg: var(--grey-1514);
 
   /* Measured, not derived: the As-is step bar renders #82BF00, one step up
      from the #72A716 the palette map alone would predict — the component's
      own token moved a step in the rebrand, so the map can't be applied
      blindly here. Same reasoning applies everywhere below marked
      "(измерено)". */
-  --progress-step-fill: #82BF00;
+  --progress-step-fill: var(--odl-green-223);
 
-  --calendar-accent-fg: #699B12;
-  --calendar-selected-bg: #252628;
+  --calendar-accent-fg: var(--odl-green-333);
+  --calendar-selected-bg: var(--grey-1514);
 
-  --filter-active-border: #82BF00;
+  --filter-active-border: var(--odl-green-223);
 
   /* #14B1D1 -> #699B12 per the replacement map (was #82BF00, i.e. the wrong
      step of the ramp — the check glyph uses the same accent as the header's
      links, which the As-is render shows at #699B12). */
-  --item-check-fg: #699B12;
+  --item-check-fg: var(--odl-green-333);
 
-  --file-item-loading-fg: #72A716;
+  --file-item-loading-fg: var(--odl-green-289);
 
-  --chips-dark-bg: #252628;
-  --chips-dark-bg-hover: #38393B; /* approximated, see comment above */
+  --chips-dark-bg: var(--grey-1514);
+  --chips-dark-bg-hover: var(--odl-grey-1156); /* approximated, see comment above */
 
-  --switcher-active-black-bg: #252628;
-  --button-menu-black-bg: #252628; /* измерено */
+  --switcher-active-black-bg: var(--grey-1514);
+  --button-menu-black-bg: var(--grey-1514); /* измерено */
 
   /* Active is measured (#CFF7FF -> #F3F9E6, the selected page-size pill in
      the As-is paginator). Hover/Onclick aren't drawn anywhere in the
      instruction, so they stay derived from the replacement map's green ramp
      — which puts hover at the same lightest step as active, since the old
      palette has nothing lighter than Green 107. Flagged as approximate. */
-  --pagination-hover-bg: #F3F9E6;
-  --pagination-active-bg: #F3F9E6;
-  --pagination-onclick-bg: #D9F0AB;
+  --pagination-hover-bg: var(--odl-green-107);
+  --pagination-active-bg: var(--odl-green-107);
+  --pagination-onclick-bg: var(--odl-green-123);
 
-  --header-hover-fg: #699B12;
-  --header-check-fg: #699B12;
+  --header-hover-fg: var(--odl-green-333);
+  --header-check-fg: var(--odl-green-333);
 
   /* --- Success green: #39C182 -> #82BF00 (измерено на Informer, Toast,
      Progress Bar и Tag в таблице As-is/To-be). Every token below holds the
      same semantic "success" swatch, so they move together. --- */
-  --accordion-list-description-success-fg: #82BF00;
-  --progress-green: #82BF00;
-  --event-status-success-bg: #82BF00;
-  --informer-icon-green: #82BF00;
-  --toast-checked-icon: #82BF00;
-  --tag-green-bg: #82BF00;
-  --item-right-text-fg: #82BF00;
-  --ifield-success-fg: #82BF00;
+  --accordion-list-description-success-fg: var(--odl-green-223);
+  --progress-green: var(--odl-green-223);
+  --event-status-success-bg: var(--odl-green-223);
+  --informer-icon-green: var(--odl-green-223);
+  --toast-checked-icon: var(--odl-green-223);
+  --tag-green-bg: var(--odl-green-223);
+  --item-right-text-fg: var(--odl-green-223);
+  --ifield-success-fg: var(--odl-green-223);
   /* No As-is counterpart drawn for the pale Secondary tint — derived as the
      lightest green of the replacement map (Green 107). Approximate. */
-  --tag-green-secondary-bg: #F3F9E6;
+  --tag-green-secondary-bg: var(--odl-green-107);
 
   /* --- Error red: #D74B54 -> #DE4A2A (измерено на Progress Bar, Top Fixed
      Message и Tag). Kit-wide error swatch, so every holder moves.
@@ -1515,53 +1611,53 @@
      тёмные ступени, Red 211 и Red 603. То есть старый бренд на hover/active
      ТЕМНЕЛ. Значения взяты из палитры, а не выведены, но на живом рендере
      не сверялись — старой темы кнопки в этом файле Figma нет. --- */
-  --btn-destructive-bg: #DE4A2A;
-  --btn-destructive-bg-hover: #CB4022; /* Red 211 */
-  --btn-destructive-bg-active: #B92F10; /* Red 603 */
-  --input-border-error: #DE4A2A;
-  --input-border-error-hover: #CB4022;
-  --input-caption-error-fg: #DE4A2A;
-  --otp-error-fg: #DE4A2A;
-  --select-border-error: #DE4A2A;
-  --select-border-error-hover: #CB4022;
-  --select-caption-error-fg: #DE4A2A;
-  --checkbox-border-error: #DE4A2A;
-  --checkbox-caption-error-fg: #DE4A2A;
-  --radio-border-error: #DE4A2A;
-  --radio-caption-error-fg: #DE4A2A;
-  --toggle-caption-error-fg: #DE4A2A;
-  --range-input-accent-error: #DE4A2A;
-  --range-input-caption-error-fg: #DE4A2A;
-  --file-upload-border-error: #DE4A2A;
-  --file-item-error-fg: #DE4A2A;
-  --accordion-list-description-error-fg: #DE4A2A;
-  --progress-red: #DE4A2A;
-  --steps-status-error-fg: #DE4A2A;
-  --badge-red-bg: #DE4A2A;
-  --informer-icon-red: #DE4A2A;
-  --notification-dot: #DE4A2A;
-  --toast-error-icon: #DE4A2A;
-  --top-fixed-message-red-icon: #DE4A2A;
-  --tag-red-bg: #DE4A2A;
-  --header-logout-fg: #DE4A2A;
-  --header-unread-dot: #DE4A2A;
-  --item-comment-red-fg: #DE4A2A;
-  --ifield-error-fg: #DE4A2A;
-  --status-screen-error-fg: #DE4A2A;
+  --btn-destructive-bg: var(--odl-red-410);
+  --btn-destructive-bg-hover: var(--odl-red-488); /* Red 211 */
+  --btn-destructive-bg-active: var(--odl-red-603); /* Red 603 */
+  --input-border-error: var(--odl-red-410);
+  --input-border-error-hover: var(--odl-red-488);
+  --input-caption-error-fg: var(--odl-red-410);
+  --otp-error-fg: var(--odl-red-410);
+  --select-border-error: var(--odl-red-410);
+  --select-border-error-hover: var(--odl-red-488);
+  --select-caption-error-fg: var(--odl-red-410);
+  --checkbox-border-error: var(--odl-red-410);
+  --checkbox-caption-error-fg: var(--odl-red-410);
+  --radio-border-error: var(--odl-red-410);
+  --radio-caption-error-fg: var(--odl-red-410);
+  --toggle-caption-error-fg: var(--odl-red-410);
+  --range-input-accent-error: var(--odl-red-410);
+  --range-input-caption-error-fg: var(--odl-red-410);
+  --file-upload-border-error: var(--odl-red-410);
+  --file-item-error-fg: var(--odl-red-410);
+  --accordion-list-description-error-fg: var(--odl-red-410);
+  --progress-red: var(--odl-red-410);
+  --steps-status-error-fg: var(--odl-red-410);
+  --badge-red-bg: var(--odl-red-410);
+  --informer-icon-red: var(--odl-red-410);
+  --notification-dot: var(--odl-red-410);
+  --toast-error-icon: var(--odl-red-410);
+  --top-fixed-message-red-icon: var(--odl-red-410);
+  --tag-red-bg: var(--odl-red-410);
+  --header-logout-fg: var(--odl-red-410);
+  --header-unread-dot: var(--odl-red-410);
+  --item-comment-red-fg: var(--odl-red-410);
+  --ifield-error-fg: var(--odl-red-410);
+  --status-screen-error-fg: var(--odl-red-410);
 
   /* --- Message surfaces (измерено попиксельно на карточках Toast и Top
      Fixed Message в таблице As-is/To-be) --- */
-  --toast-checked-bg: #D9F0AB;
-  --toast-checked-border: #C4E88B;
-  --toast-error-bg: #FFC9B5;
-  --toast-error-border: #FFAB99;
-  --top-fixed-message-red-bg: #FFC9B5;
-  --top-fixed-message-blue-bg: #E3EEFF;
-  --accordion-card-blocked-bg-hover: #FFC9B5;
-  --mail-feed-error-bg: #FFC9B5;
+  --toast-checked-bg: var(--odl-green-123);
+  --toast-checked-border: var(--odl-green-137);
+  --toast-error-bg: var(--odl-red-147);
+  --toast-error-border: var(--odl-red-182);
+  --top-fixed-message-red-bg: var(--odl-red-147);
+  --top-fixed-message-blue-bg: var(--odl-dark-blue-117);
+  --accordion-card-blocked-bg-hover: var(--odl-red-147);
+  --mail-feed-error-bg: var(--odl-red-147);
   /* #F0FCFF -> #F3F9E6 per the replacement map (same pale tint the paginator
      uses). Not drawn in the instruction — derived. */
-  --mail-feed-new-bg: #F3F9E6;
+  --mail-feed-new-bg: var(--odl-green-107);
 
   /* --- Дизайн-чек №6: держатели статусных цветов, у которых развилки не было
      вовсе, поэтому в старой теме они оставались ребрендированными. Найдены
@@ -1570,22 +1666,22 @@
   /* Самый светлый красный тинт, #FFF0F0 (Red 110) -> #FFE8E3 (Red 117) — на
      ступень ниже по рампе «Было», см. разбор выше. Именно это замечание
      дизайнер и поймал на Blocked-состоянии аккордеона. */
-  --accordion-card-blocked-bg: #FFE8E3;
-  --file-item-error-bg: #FFE8E3;
-  --tag-red-secondary-bg: #FFE8E3;
+  --accordion-card-blocked-bg: var(--red-117);
+  --file-item-error-bg: var(--red-117);
+  --tag-red-secondary-bg: var(--red-117);
   /* #FAE9EA — разовое значение Status Screen, которого нет ни в одной палитре
      Figma (см. story «.Colors»). Отправлен на ту же светлую ступень, что и
      остальные пастельные красные. Выведено, не измерено. */
-  --status-screen-error-bg: #FFE8E3;
+  --status-screen-error-bg: var(--red-117);
 
   /* Зелёный success: тот же #39C182 -> #82BF00, что и у соседей выше — этот
      держатель просто пропустили. */
-  --table-number-positive-fg: #82BF00;
+  --table-number-positive-fg: var(--odl-green-223);
   /* Тёмно-зелёный #1F9254 и пастельный #E7F8F0 в карте замен не размечены:
      отправлены на тёмную и самую светлую ступени зелёной рампы «Было»
      (Green 333 / Green 107). Выведено, не измерено. */
-  --status-screen-success-fg: #699B12;
-  --status-screen-success-bg: #F3F9E6;
+  --status-screen-success-fg: var(--odl-green-333);
+  --status-screen-success-bg: var(--odl-green-107);
 }
 
 /* Тестовая монохромная палитра ("Тест — монохром") — data-product="test-mono".
@@ -1604,448 +1700,80 @@
    (границы остаются светлее текста и т.д.), а вся палитра становится
    одноцветной. Исходный hex указан в комментарии рядом с каждым токеном.
    Перегенерировать: scripts/gen-mono-theme.py */
+
+/* Тестовая монохромная палитра («Тест — монохром») — data-product="test-mono".
+   Лакмус на захардкоженные цвета: перекрашена вся палитра, поэтому элемент,
+   оставшийся серым или синим, держит цвет литералом мимо токенов.
+
+   Переопределяется именно палитра — семантика ссылается на неё через var()
+   и меняется сама. Значения механические: каждый исходный цвет переведён в
+   HSL, светлота линейно отображена в диапазон 0.12–0.95, тон и насыщенность
+   зафиксированы (H 280°, S 55%). Линейный ремап, а не обрезка по краям:
+   обрезка схлопывала белый, #F8F8F8 и #FFF0F0 в один оттенок и прятала
+   разницу между поверхностями.
+
+   Перегенерировать: python scripts/gen-mono-theme.py --write */
 [data-product="test-mono"] {
-  --btn-primary-bg: #C38EDE; /* #80E3FF */
-  --btn-primary-bg-hover: #9E46C9; /* #2FCEEF */
-  --btn-primary-bg-active: #8131A8; /* #14B1D1 */
-  --btn-primary-fg: #2B1038; /* #252628 */
-  --btn-secondary-black-bg: #250E31; /* #012F42 */
-  --btn-secondary-black-bg-hover: #481B5F; /* #114870 */
-  --btn-secondary-black-bg-active: #652684; /* #1368A1 */
-  --btn-secondary-black-fg: #F5EBF9; /* #FFFFFF */
-  --btn-secondary-grey-bg: #ECDBF5; /* #F4F4F4 */
-  --btn-secondary-grey-bg-hover: #E8D4F2; /* #EFEFEF */
-  --btn-secondary-grey-bg-active: #E1C6EF; /* #E6E6E6 */
-  --btn-secondary-grey-fg: #2B1038; /* #252628 */
-  --btn-secondary-white-bg: #F5EBF9; /* #FFFFFF */
-  --btn-secondary-white-bg-hover: #E8D4F2; /* #EFEFEF */
-  --btn-secondary-white-bg-active: #E1C6EF; /* #E6E6E6 */
-  --btn-secondary-white-fg: #2B1038; /* #252628 */
-  --btn-secondary-outline-bg: #F5EBF9; /* #FFFFFF */
-  --btn-secondary-outline-bg-hover: #E8D4F2; /* #EFEFEF */
-  --btn-secondary-outline-bg-active: #E1C6EF; /* #E6E6E6 */
-  --btn-secondary-outline-fg: #2B1038; /* #252628 */
-  --btn-secondary-outline-border: #7E30A5; /* #0D4CD3 */
-  --btn-destructive-bg: #9F49CA; /* #D74B54 */
-  --btn-destructive-bg-hover: #AC61D1; /* #F0535E */
-  --btn-destructive-bg-active: #BE84DB; /* #FF737D */
-  --btn-destructive-fg: #F5EBF9; /* #FFFFFF */
-  --btn-secondary-logo-grey-bg: #53206D; /* #494C4B */
-  --btn-secondary-logo-grey-bg-hover: #692889; /* #5C5F5E */
-  --btn-secondary-logo-grey-bg-active: #7D30A4; /* #6E7170 */
-  --btn-secondary-logo-grey-fg: #F5EBF9; /* #FFFFFF */
-  --btn-muted-bg: #E8D4F2; /* #EFEFEF */
-  --btn-muted-fg: #CB9CE2; /* #C8C8CB */
-  --btn-muted-border: #CB9CE2; /* #C8C8CB */
-  --loader-fg: #C38EDE; /* #80E3FF */
-  --loader-warning-fg: #8E36BA; /* #EEA20F */
-  --input-bg: #F5EBF9; /* #FFFFFF */
-  --input-bg-disabled: #E8D4F2; /* #EFEFEF */
-  --input-border: #CB9CE2; /* #C8C8CB */
-  --input-border-hover: #A555CE; /* #999999 */
-  --input-border-disabled: #CB9CE2; /* #C8C8CB */
-  --input-border-error: #9F49CA; /* #D74B54 */
-  --input-border-error-hover: #AC61D1; /* #F0535E */
-  --input-fg: #2B1038; /* #252628 */
-  --input-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --input-label-fg: #A555CE; /* #999999 */
-  --input-icon-fg: #2B1038; /* #252628 */
-  --input-caption-fg: #A555CE; /* #999999 */
-  --input-caption-error-fg: #9F49CA; /* #D74B54 */
-  --textarea-border-hover: #7A2FA0; /* #6D6D6D */
-  --textarea-fg-disabled: #7A2FA0; /* #6D6D6D */
-  --textarea-icon-fg-disabled: #A555CE; /* #999999 */
-  --otp-fg: #2B1038; /* #252628 */
-  --otp-placeholder-fg: #A555CE; /* #999999 */
-  --otp-underline: #A555CE; /* #999999 */
-  --otp-error-fg: #9F49CA; /* #D74B54 */
-  --otp-close-bg: #ECDBF5; /* #F4F4F4 */
-  --otp-close-fg: #2B1038; /* #252628 */
-  --otp-title-fg: #2B1038; /* #252628 */
-  --otp-subtitle-fg: #7A2FA0; /* #6D6D6D */
-  --modal-bg: #F5EBF9; /* #FFFFFF */
-  --modal-backdrop: #240E2F; /* #1E2321 */
-  --divider: #DBBBEB; /* #DEDEDE */
-  --modal-divider: #DBBBEB; /* #DEDEDE */
-  --modal-title-fg: #2B1038; /* #252628 */
-  --menu-item-bg-highlighted: #EFE1F6; /* #F8F8F8 */
-  --menu-item-fg: #2B1038; /* #252628 */
-  --menu-item-description-fg: #A555CE; /* #999999 */
-  --menu-item-divider: #DBBBEB; /* #DEDEDE */
-  --calendar-fg: #2B1038; /* #252628 */
-  --calendar-muted-fg: #A555CE; /* #999999 */
-  --calendar-disabled-fg: #CB9CE2; /* #C8C8CB */
-  --calendar-accent-fg: #8131A8; /* #14B1D1 */
-  --calendar-selected-bg: #250E31; /* #012F42 */
-  --calendar-selected-fg: #F5EBF9; /* #FFFFFF */
-  --calendar-range-bg: #ECDBF5; /* #F4F4F4 */
-  --calendar-divider: #DBBBEB; /* #DEDEDE */
-  --select-bg: #F5EBF9; /* #FFFFFF */
-  --select-bg-disabled: #E8D4F2; /* #EFEFEF */
-  --select-border: #CB9CE2; /* #C8C8CB */
-  --select-border-hover: #A555CE; /* #999999 */
-  --select-border-disabled: #CB9CE2; /* #C8C8CB */
-  --select-border-error: #9F49CA; /* #D74B54 */
-  --select-border-error-hover: #AC61D1; /* #F0535E */
-  --select-fg: #2B1038; /* #252628 */
-  --select-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --select-label-fg: #A555CE; /* #999999 */
-  --select-icon-fg: #2B1038; /* #252628 */
-  --select-caption-fg: #A555CE; /* #999999 */
-  --select-caption-error-fg: #9F49CA; /* #D74B54 */
-  --checkbox-bg: #F5EBF9; /* #FFFFFF */
-  --checkbox-border: #CB9CE2; /* #C8C8CB */
-  --checkbox-border-hover: #2B1038; /* #252628 */
-  --checkbox-border-error: #9F49CA; /* #D74B54 */
-  --checkbox-checked-bg: #C38EDE; /* #80E3FF */
-  --checkbox-checked-bg-hover: #9E46C9; /* #2FCEEF */
-  --checkbox-checked-fg: #2B1038; /* #252628 */
-  --checkbox-disabled-bg: #E8D4F2; /* #EFEFEF */
-  --checkbox-disabled-border: #CB9CE2; /* #C8C8CB */
-  --checkbox-disabled-fg: #CB9CE2; /* #C8C8CB */
-  --checkbox-label-fg: #2B1038; /* #252628 */
-  --checkbox-label-fg-disabled: #A555CE; /* #999999 */
-  --checkbox-caption-fg: #A555CE; /* #999999 */
-  --checkbox-caption-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --checkbox-caption-error-fg: #9F49CA; /* #D74B54 */
-  --radio-bg: #F5EBF9; /* #FFFFFF */
-  --radio-border: #CB9CE2; /* #C8C8CB */
-  --radio-border-hover: #2B1038; /* #252628 */
-  --radio-checked-bg: #C38EDE; /* #80E3FF */
-  --radio-checked-bg-hover: #9E46C9; /* #2FCEEF */
-  --radio-checked-dot: #2B1038; /* #252628 */
-  --radio-disabled-bg: #E8D4F2; /* #EFEFEF */
-  --radio-disabled-border: #CB9CE2; /* #C8C8CB */
-  --radio-disabled-dot: #CB9CE2; /* #C8C8CB */
-  --radio-label-fg: #2B1038; /* #252628 */
-  --radio-label-fg-disabled: #A555CE; /* #999999 */
-  --radio-caption-fg: #A555CE; /* #999999 */
-  --radio-caption-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --radio-border-error: #9F49CA; /* #D74B54 */
-  --radio-caption-error-fg: #9F49CA; /* #D74B54 */
-  --toggle-track-bg: #A555CE; /* #999999 */
-  --toggle-track-bg-hover: #CB9CE2; /* #C8C8CB */
-  --toggle-track-checked-bg: #C38EDE; /* #80E3FF */
-  --toggle-track-checked-bg-hover: #9E46C9; /* #2FCEEF */
-  --toggle-track-bg-disabled: #E8D4F2; /* #EFEFEF */
-  --toggle-track-checked-bg-disabled: #D8B5EA; /* #B6F3FF */
-  --toggle-thumb-bg: #F5EBF9; /* #FFFFFF */
-  --toggle-label-fg: #2B1038; /* #252628 */
-  --toggle-label-fg-disabled: #A555CE; /* #999999 */
-  --toggle-caption-fg: #A555CE; /* #999999 */
-  --toggle-caption-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --toggle-caption-error-fg: #9F49CA; /* #D74B54 */
-  --range-input-bg: #F5EBF9; /* #FFFFFF */
-  --range-input-bg-disabled: #E8D4F2; /* #EFEFEF */
-  --range-input-border: #CB9CE2; /* #C8C8CB */
-  --range-input-border-hover: #A555CE; /* #999999 */
-  --range-input-border-disabled: #CB9CE2; /* #C8C8CB */
-  --range-input-label-fg: #A555CE; /* #999999 */
-  --range-input-value-fg: #2B1038; /* #252628 */
-  --range-input-value-fg-disabled: #7A2FA0; /* #6D6D6D */
-  --range-input-track-bg: #CB9CE2; /* #C8C8CB */
-  --range-input-accent: #C38EDE; /* #80E3FF */
-  --range-input-indicator-bg: #9E46C9; /* #2FCEEF */
-  --range-input-accent-disabled: #CB9CE2; /* #C8C8CB */
-  --range-input-accent-error: #9F49CA; /* #D74B54 */
-  --range-input-thumb-icon-fg: #2B1038; /* #252628 */
-  --range-input-thumb-icon-fg-error: #F5EBF9; /* #FFFFFF */
-  --range-input-thumb-icon-fg-disabled: #F5EBF9; /* #FFFFFF */
-  --range-input-scale-fg: #A555CE; /* #999999 */
-  --range-input-caption-fg: #A555CE; /* #999999 */
-  --range-input-caption-error-fg: #9F49CA; /* #D74B54 */
-  --file-upload-bg: #F5EBF9; /* #FFFFFF */
-  --file-upload-bg-hover: #EFE1F6; /* #F8F8F8 */
-  --file-upload-bg-disabled: #F5EBF9; /* #FFFFFF */
-  --file-upload-border: #A555CE; /* #999999 */
-  --file-upload-border-hover: #A555CE; /* #999999 */
-  --file-upload-border-disabled: #CB9CE2; /* #C8C8CB */
-  --file-upload-border-error: #9F49CA; /* #D74B54 */
-  --file-upload-fg: #2B1038; /* #252628 */
-  --file-upload-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --file-upload-subtitle-fg: #A555CE; /* #999999 */
-  --file-upload-subtitle-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --file-item-fg: #2B1038; /* #252628 */
-  --file-item-meta-fg: #A555CE; /* #999999 */
-  --file-item-icon-fg: #2B1038; /* #252628 */
-  --file-item-icon-bg: #EFE1F6; /* #F8F8F8 */
-  --file-item-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --file-item-loading-fg: #9E46C9; /* #2FCEEF */
-  --file-item-error-fg: #9F49CA; /* #D74B54 */
-  --file-item-error-bg: #EFE0F6; /* #FFF0F0 */
-  --accordion-card-bg: #ECDBF5; /* #F4F4F4 */
-  --accordion-card-bg-hover: #E8D4F2; /* #EFEFEF */
-  --accordion-card-blocked-bg: #EFE0F6; /* #FFF0F0 */
-  --accordion-card-blocked-bg-hover: #EAD7F3; /* #FFE8E3 */
-  --accordion-card-title-fg: #2B1038; /* #252628 */
-  --accordion-card-subtitle-fg: #7A2FA0; /* #6D6D6D */
-  --accordion-card-icon-fg: #2B1038; /* #252628 */
-  --accordion-card-divider: #DBBBEB; /* #DEDEDE */
-  --accordion-list-border: #DBBBEB; /* #DEDEDE */
-  --accordion-list-divider: #DBBBEB; /* #DEDEDE */
-  --accordion-list-title-fg: #2B1038; /* #252628 */
-  --accordion-list-subtitle-fg: #A555CE; /* #999999 */
-  --accordion-list-icon-fg: #2B1038; /* #252628 */
-  --accordion-list-description-default-fg: #2B1038; /* #252628 */
-  --accordion-list-description-success-fg: #8C35B8; /* #39C182 */
-  --accordion-list-description-attention-fg: #8E36BA; /* #EEA20F */
-  --accordion-list-description-error-fg: #9F49CA; /* #D74B54 */
-  --accordion-list-description-information-fg: #A555CE; /* #999999 */
-  --card-bg: #EFE1F6; /* #F8F8F8 */
-  --card-bg-hover: #E8D4F2; /* #EFEFEF */
-  --card-title-fg: #2B1038; /* #252628 */
-  --card-meta-fg: #A555CE; /* #999999 */
-  --card-thumb-bg: #2B1038; /* #252628 */
-  --card-thumb-fg: #F5EBF9; /* #FFFFFF */
-  --progress-track-bg: #E1C6EF; /* #E6E6E6 */
-  --progress-step-fill: #9E46C9; /* #2FCEEF */
-  --progress-step-hatch: #CB9CE2; /* #C8C8CB */
-  --progress-title-fg: #2B1038; /* #252628 */
-  --progress-meta-fg: #A555CE; /* #999999 */
-  --progress-green: #8C35B8; /* #39C182 */
-  --progress-amber: #8E36BA; /* #EEA20F */
-  --progress-red: #9F49CA; /* #D74B54 */
-  --steps-bg: #F5EBF9; /* #FFFFFF */
-  --steps-title-fg: #2B1038; /* #252628 */
-  --steps-status-fg: #A555CE; /* #999999 */
-  --steps-status-error-fg: #9F49CA; /* #D74B54 */
-  --steps-active-ring: #C38EDE; /* #80E3FF */
-  --steps-disabled-fg: #A555CE; /* #999999 */
-  --steps-fade-arrow-bg: #250E31; /* #012F42 */
-  --steps-fade-bg: #EFE1F6; /* #F8F8F8 */
-  --steps-tooltip-bg: #7A2FA0; /* #6D6D6D */
-  --steps-tooltip-fg: #F5EBF9; /* #FFFFFF */
-  --tooltip-bg: #7A2FA0; /* #6D6D6D */
-  --tooltip-fg: #F5EBF9; /* #FFFFFF */
-  --badge-red-bg: #9F49CA; /* #D74B54 */
-  --badge-red-fg: #F5EBF9; /* #FFFFFF */
-  --badge-contra-red-border: #F5EBF9; /* #FFFFFF */
-  --badge-dark-grey-bg: #7A2FA0; /* #6D6D6D */
-  --badge-dark-grey-fg: #F5EBF9; /* #FFFFFF */
-  --badge-light-grey-bg: #EFE1F6; /* #F8F8F8 */
-  --badge-light-grey-fg: #A555CE; /* #999999 */
-  --badge-black-bg: #2B1038; /* #252628 */
-  --badge-black-fg: #F5EBF9; /* #FFFFFF */
-  --badge-disabled-bg: #A555CE; /* #999999 */
-  --badge-disabled-fg: #F5EBF9; /* #FFFFFF */
-  --badge-disabled-light-grey-bg: #E1C6EF; /* #E6E6E6 */
-  --badge-disabled-light-grey-fg: #CB9CE2; /* #C8C8CB */
-  --event-title-fg: #2B1038; /* #252628 */
-  --event-meta-fg: #A555CE; /* #999999 */
-  --event-author-fg: #7A2FA0; /* #6D6D6D */
-  --event-connector: #DBBBEB; /* #DEDEDE */
-  --event-status-success-bg: #8C35B8; /* #39C182 */
-  --event-status-attention-bg: #8E36BA; /* #EEA20F */
-  --event-file-bg: #EFE1F6; /* #F8F8F8 */
-  --informer-bg-white: #F5EBF9; /* #FFFFFF */
-  --informer-bg-grey: #EFE1F6; /* #F8F8F8 */
-  --informer-title-fg: #2B1038; /* #252628 */
-  --informer-meta-fg: #A555CE; /* #999999 */
-  --informer-description-fg: #53206D; /* #494C4B */
-  --informer-icon-red: #9F49CA; /* #D74B54 */
-  --informer-icon-yellow: #8E36BA; /* #EEA20F */
-  --informer-icon-green: #8C35B8; /* #39C182 */
-  --informer-icon-grey: #A555CE; /* #999999 */
-  --notification-bg: #F5EBF9; /* #FFFFFF */
-  --notification-bg-hover: #EFE1F6; /* #F8F8F8 */
-  --notification-bg-pressed: #E8D4F2; /* #EFEFEF */
-  --notification-title-fg: #2B1038; /* #252628 */
-  --notification-meta-fg: #7A2FA0; /* #6D6D6D */
-  --notification-dot: #9F49CA; /* #D74B54 */
-  --notification-divider: #DBBBEB; /* #DEDEDE */
-  --notification-timestamp-fg: #A555CE; /* #999999 */
-  --toast-title-fg: #2B1038; /* #252628 */
-  --toast-description-fg: #7A2FA0; /* #6D6D6D */
-  --toast-checked-bg: #D8B5EA; /* #BDF8DB */
-  --toast-checked-icon: #8C35B8; /* #39C182 */
-  --toast-checked-border: #C28BDD; /* #89F2BD */
-  --toast-attention-bg: #DCBCEC; /* #FDF0C1 */
-  --toast-attention-icon: #8E36BA; /* #EEA20F */
-  --toast-attention-border: #C591DF; /* #FADC89 */
-  --toast-error-bg: #EAD7F3; /* #FFE8E3 */
-  --toast-error-icon: #9F49CA; /* #D74B54 */
-  --toast-error-border: #D8B5E9; /* #FFBEB5 */
-  --toast-information-bg: #E8D4F2; /* #EFEFEF */
-  --toast-information-icon: #A555CE; /* #999999 */
-  --toast-information-border: #DBBBEB; /* #DEDEDE */
-  --top-fixed-message-title-fg: #2B1038; /* #252628 */
-  --top-fixed-message-close-fg: #2B1038; /* #252628 */
-  --top-fixed-message-blue-bg: #ECDCF5; /* #EDF6FC */
-  --top-fixed-message-blue-icon: #A95BD0; /* #5B90E0 */
-  --top-fixed-message-red-bg: #EAD7F3; /* #FFE8E3 */
-  --top-fixed-message-red-icon: #9F49CA; /* #D74B54 */
-  --tag-green-bg: #8C35B8; /* #39C182 */
-  --tag-green-fg: #F5EBF9; /* #FFFFFF */
-  --tag-green-secondary-bg: #E9D6F3; /* #E5FCF1 */
-  --tag-orange-bg: #8E36BA; /* #EEA20F */
-  --tag-orange-fg: #F5EBF9; /* #FFFFFF */
-  --tag-orange-secondary-bg: #E9D4F3; /* #FFFAE0 */
-  --tag-red-bg: #9F49CA; /* #D74B54 */
-  --tag-red-fg: #F5EBF9; /* #FFFFFF */
-  --tag-red-secondary-bg: #EFE0F6; /* #FFF0F0 */
-  --tag-blue-bg: #8633AF; /* #2487CA */
-  --tag-blue-fg: #F5EBF9; /* #FFFFFF */
-  --tag-blue-secondary-bg: #ECDCF5; /* #EDF6FC */
-  --tag-grey-bg: #A555CE; /* #999999 */
-  --tag-grey-fg: #F5EBF9; /* #FFFFFF */
-  --tag-grey-secondary-bg: #EFE1F6; /* #F8F8F8 */
-  --tag-grey-secondary-fg: #2B1038; /* #252628 */
-  --tag-black-bg: #2B1038; /* #252628 */
-  --tag-black-fg: #F5EBF9; /* #FFFFFF */
-  --tag-white-bg: #F5EBF9; /* #FFFFFF */
-  --tag-white-fg: #2B1038; /* #252628 */
-  --tag-white-border: #DBBBEB; /* #DEDEDE */
-  --tag-grey-info-bg: #DBBBEB; /* #DEDEDE */
-  --tag-grey-info-fg: #2B1038; /* #252628 */
-  --chips-fg: #2B1038; /* #252628 */
-  --chips-subtitle-fg: #A555CE; /* #999999 */
-  --chips-light-bg: #ECDBF5; /* #F4F4F4 */
-  --chips-light-bg-hover: #E8D4F2; /* #EFEFEF */
-  --chips-dark-bg: #250E31; /* #012F42 */
-  --button-menu-black-bg: #250E31; /* #012F42 */
-  --button-menu-black-fg: #F5EBF9; /* #FFFFFF */
-  --button-menu-black-muted-fg: #CB9CE2; /* #C8C8CB */
-  --button-menu-bg: #F5EBF9; /* #FFFFFF */
-  --button-menu-border: #E8D4F2; /* #EFEFEF */
-  --chips-dark-bg-hover: #481B5F; /* #114870 */
-  --chips-dark-fg: #F5EBF9; /* #FFFFFF */
-  --chips-disabled-bg: #ECDBF5; /* #F4F4F4 */
-  --chips-disabled-fg: #CB9CE2; /* #C8C8CB */
-  --filter-fg: #2B1038; /* #252628 */
-  --filter-icon-fg: #2B1038; /* #252628 */
-  --filter-white-bg: #F5EBF9; /* #FFFFFF */
-  --filter-white-bg-hover: #EFE1F6; /* #F8F8F8 */
-  --filter-grey-bg: #ECDBF5; /* #F4F4F4 */
-  --filter-grey-bg-hover: #EFE1F6; /* #F8F8F8 */
-  --filter-active-border: #C38EDE; /* #80E3FF */
-  --filter-disabled-bg: #ECDBF5; /* #F4F4F4 */
-  --filter-disabled-fg: #CB9CE2; /* #C8C8CB */
-  --nav-sidebar-bg: #F5EBF9; /* #FFFFFF */
-  --nav-sidebar-border: #DBBBEB; /* #DEDEDE */
-  --nav-sidebar-fg: #2B1038; /* #252628 */
-  --nav-sidebar-icon-fg: #2B1038; /* #252628 */
-  --nav-sidebar-label-fg: #A555CE; /* #999999 */
-  --nav-sidebar-item-hover-bg: #E8D4F2; /* #EFEFEF */
-  --nav-sidebar-item-active-bg: #ECDBF5; /* #F4F4F4 */
-  --header-bg: #F5EBF9; /* #FFFFFF */
-  --header-border: #DBBBEB; /* #DEDEDE */
-  --header-fg: #2B1038; /* #252628 */
-  --header-meta-fg: #A555CE; /* #999999 */
-  --header-icon-fg: #2B1038; /* #252628 */
-  --header-hover-fg: #8131A8; /* #14B1D1 */
-  --header-item-hover-bg: #E8D4F2; /* #EFEFEF */
-  --header-menu-toggle-hover-bg: #EFE1F6; /* #F8F8F8 */
-  --header-divider: #DBBBEB; /* #DEDEDE */
-  --header-check-fg: #8131A8; /* #14B1D1 */
-  --header-logout-fg: #9F49CA; /* #D74B54 */
-  --header-unread-dot: #9F49CA; /* #D74B54 */
-  --header-menu-group-bg: #EFE1F6; /* #F8F8F8 */
-  --header-menu-group-fg: #53206D; /* #494C4B */
-  --header-menu-star-fg: #CB9CE2; /* #C8C8CB */
-  --header-menu-tile-bg: #ECDBF5; /* #F4F4F4 */
-  --header-menu-tile-icon-bg: #F5EBF9; /* #FFFFFF */
-  --menu-banner-blue-bg: #D8B5EA; /* #B6F3FF */
-  --menu-banner-blue-glow: #E2C8EF; /* #CFF7FF */
-  --menu-banner-lilac-bg: #E6CFF1; /* #D9DBFF */
-  --menu-banner-lilac-glow: #ECDBF5; /* #E9EAFF */
-  --menu-banner-green-bg: #C28BDD; /* #89F2BD */
-  --menu-banner-green-glow: #D8B5EA; /* #BDF8DB */
-  --tabs-fg: #7A2FA0; /* #6D6D6D */
-  --tabs-fg-active: #2B1038; /* #252628 */
-  --tabs-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --tabs-underline-hover: #7A2FA0; /* #6D6D6D */
-  --tabs-underline-active: #2B1038; /* #252628 */
-  --tabs-border: #DBBBEB; /* #DEDEDE */
-  --switcher-fg: #2B1038; /* #252628 */
-  --switcher-fg-inactive: #7A2FA0; /* #6D6D6D */
-  --switcher-border: #CB9CE2; /* #C8C8CB */
-  --switcher-grey-bg: #EFE1F6; /* #F8F8F8 */
-  --switcher-white-bg: #F5EBF9; /* #FFFFFF */
-  --switcher-active-bg: #F5EBF9; /* #FFFFFF */
-  --switcher-active-bg-on-white: #ECDBF5; /* #F4F4F4 */
-  --switcher-active-black-bg: #250E31; /* #012F42 */
-  --switcher-active-black-fg: #F5EBF9; /* #FFFFFF */
-  --switcher-hover-bg: #E8D4F2; /* #EFEFEF */
-  --switcher-disabled-fg: #CB9CE2; /* #C8C8CB */
-  --empty-search-icon-bg: #EFE1F6; /* #F8F8F8 */
-  --empty-search-icon-fg: #2B1038; /* #252628 */
-  --empty-search-title-fg: #2B1038; /* #252628 */
-  --empty-search-description-fg: #A555CE; /* #999999 */
-  --nps-title-fg: #2B1038; /* #252628 */
-  --nps-subtitle-fg: #A555CE; /* #999999 */
-  --nps-close-fg: #7A2FA0; /* #6D6D6D */
-  --nps-card-bg: #F5EBF9; /* #FFFFFF */
-  --nps-card-border: #E8D4F2; /* #EFEFEF */
-  --nps-star-fg: #8B35B6; /* #F8C000 */
-  --nps-star-empty-fg: #DBBBEB; /* #DEDEDE */
-  --error-page-bg: #EFE1F6; /* #F8F8F8 */
-  --error-page-title-fg: #2B1038; /* #252628 */
-  --error-page-description-fg: #2B1038; /* #252628 */
-  --error-page-code-fg: #CB9CE2; /* #C8C8CB */
-  --pagination-fg: #2B1038; /* #252628 */
-  --pagination-caption-fg: #A555CE; /* #999999 */
-  --pagination-disabled-fg: #A555CE; /* #999999 */
-  --pagination-border: #DBBBEB; /* #DEDEDE */
-  --pagination-hover-bg: #EFE0F6; /* #F0FCFF */
-  --pagination-active-bg: #E2C8EF; /* #CFF7FF */
-  --pagination-onclick-bg: #D8B5EA; /* #B6F3FF */
-  --item-value-fg: #2B1038; /* #252628 */
-  --item-value-fg-disabled: #CB9CE2; /* #C8C8CB */
-  --item-icon-fg: #A555CE; /* #999999 */
-  --item-divider: #DBBBEB; /* #DEDEDE */
-  --item-hover-bg: #E8D4F2; /* #EFEFEF */
-  --item-check-fg: #8131A8; /* #14B1D1 */
-  --item-right-text-fg: #8C35B8; /* #39C182 */
-  --item-thumbnail-bg: #EFE1F6; /* #F8F8F8 */
-  --item-thumbnail-fg: #2B1038; /* #252628 */
-  --item-comment-grey-fg: #A555CE; /* #999999 */
-  --item-comment-red-fg: #9F49CA; /* #D74B54 */
-  --item-comment-yellow-fg: #672786; /* #B76E00 */
-  --ifield-label-fg: #A555CE; /* #999999 */
-  --ifield-value-fg: #2B1038; /* #252628 */
-  --ifield-subtext-fg: #A555CE; /* #999999 */
-  --ifield-icon-fg: #A555CE; /* #999999 */
-  --ifield-divider: #DBBBEB; /* #DEDEDE */
-  --ifield-success-fg: #8C35B8; /* #39C182 */
-  --ifield-error-fg: #9F49CA; /* #D74B54 */
-  --ifield-attention-fg: #8E36BA; /* #EEA20F */
-  --ifield-information-fg: #A555CE; /* #999999 */
-  --ifield-copy-fg: #A555CE; /* #999999 */
-  --ifield-copy-fg-hover: #7A2FA0; /* #6D6D6D */
-  --status-screen-title-fg: #2B1038; /* #252628 */
-  --status-screen-subtitle-fg: #7A2FA0; /* #6D6D6D */
-  --status-screen-success-bg: #E9D4F3; /* #E7F8F0 */
-  --status-screen-success-fg: #632682; /* #1F9254 */
-  --status-screen-error-bg: #EAD7F3; /* #FAE9EA */
-  --status-screen-error-fg: #9F49CA; /* #D74B54 */
-  --status-screen-attention-bg: #DCBCEC; /* #FDF0C1 */
-  --status-screen-attention-fg: #672786; /* #B76E00 */
-  --status-screen-neutral-bg: #ECDBF5; /* #F4F4F4 */
-  --status-screen-neutral-fg: #7A2FA0; /* #6D6D6D */
-  --autocomplete-title-fg: #2B1038; /* #252628 */
-  --autocomplete-subtitle-fg: #A555CE; /* #999999 */
-  --autocomplete-highlighted-bg: #EFE1F6; /* #F8F8F8 */
-  --autocomplete-match-bg: #C38EDE; /* #80E3FF */
-  --table-fg: #2B1038; /* #252628 */
-  --table-description-fg: #A555CE; /* #999999 */
-  --table-divider: #DBBBEB; /* #DEDEDE */
-  --table-row-hover-bg: #E8D4F2; /* #EFEFEF */
-  --table-row-active-bg: #E1C6EF; /* #E6E6E6 */
-  --table-row-added-bg: #E8D4F2; /* #EFEFEF */
-  --title-fg: #2B1038; /* #252628 */
-  --title-description-fg: #7A2FA0; /* #6D6D6D */
-  --title-muted-fg: #A555CE; /* #999999 */
-  --table-bg: #F5EBF9; /* #FFFFFF */
-  --table-number-positive-fg: #8C35B8; /* #39C182 */
-  --table-summary-divider: #CB9CE2; /* #C8C8CB */
-  --shimmer-from: #DBBBEB; /* #DEDEDE */
-  --shimmer-via: #E8D4F2; /* #EFEFEF */
-  --scrollbar-track-bg: #ECDBF5; /* #F4F4F4 */
-  --scrollbar-thumb-bg: #CB9CE2; /* #C8C8CB */
-  --mail-feed-default-bg: #F5EBF9; /* #FFFFFF */
-  --mail-feed-new-bg: #EFE0F6; /* #F0FCFF */
-  --mail-feed-used-bg: #EFE1F6; /* #F8F8F8 */
-  --mail-feed-error-bg: #EAD7F3; /* #FFE8E3 */
-  --mail-feed-fg: #2B1038; /* #252628 */
-  --mail-feed-meta-fg: #A555CE; /* #999999 */
+  --blue-104:           #EFE0F6; /* #F0FCFF */
+  --blue-114:           #E2C8EF; /* #CFF7FF */
+  --blue-121:           #D8B5EA; /* #B6F3FF */
+  --blue-223:           #C38EDE; /* #80E3FF */
+  --blue-187:           #9E46C9; /* #2FCEEF */
+  --blue-254:           #8131A8; /* #14B1D1 */
+  --dark-blue-109:      #ECDCF5; /* #EDF6FC */
+  --dark-blue-322:      #A95BD0; /* #5B90E0 */
+  --dark-blue-389:      #8633AF; /* #2487CA */
+  --dark-blue-596:      #652684; /* #1368A1 */
+  --dark-blue-701:      #7E30A5; /* #0D4CD3 */
+  --dark-blue-961:      #481B5F; /* #114870 */
+  --dark-blue-1412:     #250E31; /* #012F42 */
+  --grey-106:           #EFE1F6; /* #F8F8F8 */
+  --grey-109:           #ECDBF5; /* #F4F4F4 */
+  --grey-114:           #E8D4F2; /* #EFEFEF */
+  --grey-124:           #E1C6EF; /* #E6E6E6 */
+  --grey-134:           #DBBBEB; /* #DEDEDE */
+  --grey-166:           #CB9CE2; /* #C8C8CB */
+  --grey-284:           #A555CE; /* #999999 */
+  --grey-493:           #7D30A4; /* #6E7170 */
+  --grey-517:           #7A2FA0; /* #6D6D6D */
+  --grey-645:           #692889; /* #5C5F5E */
+  --grey-868:           #53206D; /* #494C4B */
+  --grey-1514:          #2B1038; /* #252628 */
+  --grey-1593:          #240E2F; /* #1E2321 */
+  --lavender-116:       #EDDCF5; /* #EBECFF */
+  --lavender-135:       #E6CFF1; /* #D9DBFF */
+  --mint-107:           #E9D6F3; /* #E5FCF1 */
+  --mint-110:           #E9D4F3; /* #E7F8F0 */
+  --mint-119:           #D8B5EA; /* #BDF8DB */
+  --mint-135:           #C28BDD; /* #89F2BD */
+  --mint-230:           #8C35B8; /* #39C182 */
+  --mint-396:           #632682; /* #1F9254 */
+  --red-110:            #EFE0F6; /* #FFF0F0 */
+  --red-117:            #EAD7F3; /* #FFE8E3 */
+  --red-147:            #D8B5E9; /* #FFBEB5 */
+  --red-182:            #BE84DB; /* #FF737D */
+  --red-344:            #AC61D1; /* #F0535E */
+  --red-418:            #9F49CA; /* #D74B54 */
+  --red-117-alt:        #EAD7F3; /* #FAE9EA */
+  --white-101:          #F5EBF9; /* #FFFFFF */
+  --yellow-104:         #E9D4F3; /* #FFFAE0 */
+  --yellow-114:         #DCBCEC; /* #FDF0C1 */
+  --yellow-134:         #C591DF; /* #FADC89 */
+  --yellow-167:         #8B35B6; /* #F8C000 */
+  --yellow-214:         #8E36BA; /* #EEA20F */
+  --yellow-400:         #672786; /* #B76E00 */
+  --odl-dark-blue-117:  #EAD7F3; /* #E3EEFF */
+  --odl-green-107:      #E9D4F3; /* #F3F9E6 */
+  --odl-green-123:      #CEA2E4; /* #D9F0AB */
+  --odl-green-137:      #BF85DC; /* #C4E88B */
+  --odl-green-223:      #6B298C; /* #82BF00 */
+  --odl-green-289:      #6A288B; /* #72A716 */
+  --odl-green-333:      #61257F; /* #699B12 */
+  --odl-grey-873:       #55206F; /* #4A4B4D */
+  --odl-grey-1156:      #401854; /* #38393B */
+  --odl-red-147:        #D8B5E9; /* #FFC9B5 */
+  --odl-red-182:        #CDA0E3; /* #FFAB99 */
+  --odl-red-410:        #9438C2; /* #DE4A2A */
+  --odl-red-488:        #8533AE; /* #CB4022 */
+  --odl-red-603:        #712B94; /* #B92F10 */
 }

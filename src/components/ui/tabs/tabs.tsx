@@ -4,6 +4,7 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
@@ -32,6 +33,11 @@ interface TabItem {
   label: React.ReactNode
   badge?: number
   status?: boolean
+  /**
+   * `Type=Icon` компонент-сета `Tabs (ELK)` — иконка перед подписью.
+   * Имя из набора кита либо готовый узел.
+   */
+  icon?: IconName | React.ReactNode
   disabled?: boolean
 }
 
@@ -81,6 +87,11 @@ function TabButton({
           "text-p2-medium md:text-p1-medium"
         )}
       >
+        {typeof item.icon === "string" ? (
+          <Icon name={item.icon} aria-hidden="true" className="size-4 shrink-0" />
+        ) : (
+          item.icon
+        )}
         {item.label}
         {item.badge !== undefined && (
           <Badge type="counter" value={item.badge} color="black" disabled={!active} />

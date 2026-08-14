@@ -4,6 +4,7 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
@@ -28,6 +29,13 @@ interface SwitcherItem {
   value: string
   label: React.ReactNode
   badge?: number
+  /**
+   * `Type=Text Status` компонент-сета `Content Switcher (ELK)` — точка
+   * статуса после подписи.
+   */
+  status?: boolean
+  /** `Type=Icon` того же сета — иконка перед подписью. */
+  icon?: IconName | React.ReactNode
   disabled?: boolean
 }
 
@@ -91,10 +99,16 @@ function SegmentButton({
         className
       )}
     >
+      {typeof item.icon === "string" ? (
+        <Icon name={item.icon} aria-hidden="true" className="size-4 shrink-0" />
+      ) : (
+        item.icon
+      )}
       {item.label}
       {item.badge !== undefined && (
         <Badge type="counter" value={item.badge} color="light-grey" disabled={item.disabled} />
       )}
+      {item.status && <Badge type="point" color="red" disabled={item.disabled} />}
     </button>
   )
 }

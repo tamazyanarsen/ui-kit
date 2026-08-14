@@ -30,11 +30,8 @@ type ItemCount = (typeof ITEM_COUNTS)[number]
 const ITEMS = ITEM_POOL.slice(0, 3)
 
 /* `Type` — свойство компонент-сета `Content Switcher (ELK)`: Icon,
-   Text Badge, Text Status. У `SwitcherItem` есть только `badge`, поэтому в
-   контроле два поддерживаемых значения; Icon и Text Status — пробел
-   компонента, а не истории, и глухие пункты списка вводили бы в
-   заблуждение. */
-const SWITCHER_TYPES = ["Text", "Text Badge"] as const
+   Text Badge, Text Status. */
+const SWITCHER_TYPES = ["Text", "Text Badge", "Text Status", "Icon"] as const
 type SwitcherType = (typeof SWITCHER_TYPES)[number]
 
 type PlaygroundArgs = SwitcherProps & {
@@ -62,8 +59,7 @@ const meta = {
       name: "Type",
       control: "inline-radio",
       options: SWITCHER_TYPES,
-      description:
-        "Оформление вкладки. Icon и Text Status из макета компонентом пока не поддержаны",
+      description: "Оформление вкладки: текст, со счётчиком, со статусом или с иконкой",
     },
     defaultValue: {
       control: "select",
@@ -101,6 +97,8 @@ export const Playground: Story = {
     const items = ITEM_POOL.slice(0, itemsCount).map((item) => ({
       ...item,
       badge: figmaType === "Text Badge" ? (item.badge ?? 3) : undefined,
+      status: figmaType === "Text Status" ? true : undefined,
+      icon: figmaType === "Icon" ? "file-text" : undefined,
     }))
     // Выбранное значение могло «выпасть» из укороченного списка.
     const defaultValue = items.some((i) => i.value === args.defaultValue)

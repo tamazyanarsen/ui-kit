@@ -10,9 +10,22 @@ import { cn } from "@/lib/utils"
 
 type FileItemState = "default" | "loading" | "disabled" | "error"
 
+/**
+ * `Size` компонент-сета `ELK / files` (нода 16029:58062): L и S, каждый со
+ * своей парой Desktop/Mobile. Раньше был только L, хотя в макете это
+ * основная ось компонента.
+ *
+ * Разница снята с `Size=S / Desktop` (нода 16029:58723): вместо плитки с
+ * иконкой 48px — голая иконка документа 16px, имя P3 Medium (12/16) вместо
+ * P1 Medium, подпись P4 Regular (10/12) вместо P3 Medium, высота строки 28
+ * вместо 48.
+ */
+type FileItemSize = "l" | "s"
+
 interface FileListItemProps extends Omit<React.ComponentProps<"div">, "id"> {
   name: string
   meta?: React.ReactNode
+  size?: FileItemSize
   state?: FileItemState
   errorText?: React.ReactNode
   showEdit?: boolean
@@ -25,6 +38,7 @@ export function FileListItem({
   className,
   name,
   meta,
+  size = "l",
   state = "default",
   errorText = "Text about error here",
   showEdit = true,
@@ -36,10 +50,21 @@ export function FileListItem({
   const disabled = state === "disabled"
   const error = state === "error"
   const loading = state === "loading"
+  const small = size === "s"
+  // В S иконка стоит сама по себе, без плитки, и в трёх состояниях
+  // отличается только цветом.
+  const glyphSize = small ? 16 : 24
+  const Glyph = loading ? LoaderCircle : error ? CircleAlert : FileIcon
+  const glyphColor = loading
+    ? "text-[var(--file-item-loading-fg)]"
+    : error
+      ? "text-[var(--file-item-error-fg)]"
+      : "text-[var(--file-item-icon-fg)]"
 
   return (
     <div
       data-slot="file-item"
+      data-size={size}
       data-disabled={disabled || undefined}
       className={cn(
         // The row is exactly its 48px thumbnail tall and reserves 16px on
@@ -59,41 +84,41 @@ export function FileListItem({
           `ELK / files` — 48px с миниатюрой 48 в `L / Desktop` и 40px с
           миниатюрой 40 в `M / Mobile` (маркеры spaceVertical: x=48/h=48
           против x=40/h=40). Было зафиксировано на 48 для обоих. */}
+      {small ? (
+        <Glyph
+          size={16}
+          aria-hidden="true"
+          className={cn("size-4 shrink-0", loading && "animate-spin", glyphColor)}
+        />
+      ) : (
+        <span
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-[8px] md:size-12",
+            error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
+          )}
+        >
+          {/* All three fill the 48px thumbnail tile at 24px, so they take the
+              24px drawings (Figma's `icon / document` inside ELK / files'
+              tile, node 16029:61127). */}
+          <Glyph
+            size={glyphSize}
+            aria-hidden="true"
+            className={cn("size-6", loading && "animate-spin", glyphColor)}
+          />
+        </span>
+      )}
+
       <span
         className={cn(
-          "flex size-10 shrink-0 items-center justify-center rounded-[8px] md:size-12",
-          error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
+          "flex min-w-0 flex-1 flex-col",
+          small && "h-7 justify-center"
         )}
       >
-        {/* All three fill the 48px thumbnail tile at 24px, so they take the
-            24px drawings (Figma's `icon / document` inside ELK / files'
-            tile, node 16029:61127). */}
-        {loading ? (
-          <LoaderCircle
-            size={24}
-            aria-hidden="true"
-            className="size-6 animate-spin text-[var(--file-item-loading-fg)]"
-          />
-        ) : error ? (
-          <CircleAlert
-            size={24}
-            aria-hidden="true"
-            className="size-6 text-[var(--file-item-error-fg)]"
-          />
-        ) : (
-          <FileIcon
-            size={24}
-            aria-hidden="true"
-            className="size-6 text-[var(--file-item-icon-fg)]"
-          />
-        )}
-      </span>
-
-      <span className="flex min-w-0 flex-1 flex-col">
         <span
           title={typeof name === "string" ? name : undefined}
           className={cn(
-            "truncate text-p1-medium",
+            "truncate",
+            small ? "text-p3-medium" : "text-p1-medium",
             disabled
               ? "text-[var(--file-item-fg-disabled)]"
               : "text-[var(--file-item-fg)]"
@@ -103,7 +128,8 @@ export function FileListItem({
         </span>
         <span
           className={cn(
-            "truncate text-p3-medium",
+            "truncate",
+            small ? "text-p4-regular" : "text-p3-medium",
             error
               ? "text-[var(--file-item-error-fg)]"
               : "text-[var(--file-item-meta-fg)]"

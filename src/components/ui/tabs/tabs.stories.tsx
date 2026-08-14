@@ -19,13 +19,10 @@ const ITEMS = [
 const TAB_COUNTS = [1, 2, 3, 4, 5] as const
 type TabCount = (typeof TAB_COUNTS)[number]
 
-/* `Type` — свойство компонент-сета `Tabs (ELK)` (Badge, Status, Icon).
-   Раньше оно жило только в пуле: счётчик и статус появлялись сами собой
-   на четвёртой и пятой вкладке, а выбрать оформление было нельзя. Icon в
-   контролах нет намеренно — у `TabItem` нет поля под иконку, то есть это
-   пробел компонента, а не истории, и глухой пункт списка вводил бы в
-   заблуждение. */
-const TAB_TYPES = ["Text", "Badge", "Status"] as const
+/* `Type` — свойство компонент-сета `Tabs (ELK)`: Badge, Status, Icon.
+   Раньше оно жило только в пуле — счётчик и статус появлялись сами собой на
+   четвёртой и пятой вкладке, а выбрать оформление было нельзя. */
+const TAB_TYPES = ["Text", "Badge", "Status", "Icon"] as const
 type TabType = (typeof TAB_TYPES)[number]
 
 function decorate(items: typeof ITEMS, type: TabType) {
@@ -33,6 +30,7 @@ function decorate(items: typeof ITEMS, type: TabType) {
     ...item,
     badge: type === "Badge" ? (item.badge ?? 3) : undefined,
     status: type === "Status" ? true : undefined,
+    icon: type === "Icon" ? "file-text" : undefined,
   }))
 }
 

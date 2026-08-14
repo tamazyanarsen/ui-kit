@@ -19,7 +19,24 @@ const ITEMS = [
 const TAB_COUNTS = [1, 2, 3, 4, 5] as const
 type TabCount = (typeof TAB_COUNTS)[number]
 
-type PlaygroundArgs = TabsProps & { itemsCount?: TabCount }
+/* `Type` — свойство компонент-сета `Tabs (ELK)` (Badge, Status, Icon).
+   Раньше оно жило только в пуле: счётчик и статус появлялись сами собой
+   на четвёртой и пятой вкладке, а выбрать оформление было нельзя. Icon в
+   контролах нет намеренно — у `TabItem` нет поля под иконку, то есть это
+   пробел компонента, а не истории, и глухой пункт списка вводил бы в
+   заблуждение. */
+const TAB_TYPES = ["Text", "Badge", "Status"] as const
+type TabType = (typeof TAB_TYPES)[number]
+
+function decorate(items: typeof ITEMS, type: TabType) {
+  return items.map((item) => ({
+    ...item,
+    badge: type === "Badge" ? (item.badge ?? 3) : undefined,
+    status: type === "Status" ? true : undefined,
+  }))
+}
+
+type PlaygroundArgs = TabsProps & { itemsCount?: TabCount; figmaType?: TabType }
 
 const meta = {
   title: "Компоненты/Tabs",
@@ -32,10 +49,22 @@ const meta = {
       options: TAB_COUNTS,
     },
     items: { table: { disable: true } },
+    figmaType: {
+      name: "Type",
+      control: "inline-radio",
+      options: TAB_TYPES,
+      description: "Оформление вкладки: только текст, со счётчиком или со статусом",
+    },
     showMore: { control: "boolean" },
     defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
   },
-  args: { items: ITEMS, itemsCount: 5, showMore: false, defaultValue: "all" },
+  args: {
+    items: ITEMS,
+    itemsCount: 5,
+    figmaType: "Text",
+    showMore: false,
+    defaultValue: "all",
+  },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -52,8 +81,8 @@ export const Playground: Story = {
   // Remount when the pinned value or the tab count changes so the
   // `defaultValue` control actually moves the (otherwise internally-owned)
   // selection.
-  render: ({ itemsCount = 5, ...args }) => {
-    const items = ITEMS.slice(0, itemsCount)
+  render: ({ itemsCount = 5, figmaType = "Text", ...args }) => {
+    const items = decorate(ITEMS.slice(0, itemsCount), figmaType)
     const defaultValue = items.some((i) => i.value === args.defaultValue)
       ? args.defaultValue
       : items[0]?.value

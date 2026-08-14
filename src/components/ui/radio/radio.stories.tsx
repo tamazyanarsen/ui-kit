@@ -12,7 +12,11 @@ import {
 import { Radio, type RadioProps } from "./radio"
 import { RadioGroup } from "./root"
 
-type PlaygroundArgs = RadioProps & { state?: PlaygroundState }
+// `Checked` — отдельное свойство компонент-сета `ELK / radio` (наряду с
+// Size / State / Error), поэтому в контролах оно должно быть, как и у
+// Checkbox. У самого Radio такого пропа нет: выбранность живёт в группе,
+// поэтому контрол управляет значением обёртки.
+type PlaygroundArgs = RadioProps & { state?: PlaygroundState; checked?: boolean }
 
 const meta = {
   title: "Компоненты/Radio",
@@ -22,6 +26,7 @@ const meta = {
     label: { control: "text" },
     comment: { control: "text" },
     error: { control: "text" },
+    checked: { control: "boolean", name: "Checked" },
     disabled: { control: "boolean" },
     state: stateArgType,
   },
@@ -29,6 +34,7 @@ const meta = {
     value: "a",
     label: "Согласен с условиями договора",
     comment: "Договор комплексного банковского обслуживания",
+    checked: false,
     disabled: false,
     state: "default" as PlaygroundState,
   },
@@ -40,8 +46,15 @@ type Story = StoryObj<PlaygroundArgs>
 // A Radio only means anything inside a RadioGroup (it's the group that owns
 // the selected value), so the Playground wraps a single one in its own
 // group and keeps it clickable.
-function Controlled({ state, ...props }: PlaygroundArgs) {
+function Controlled({ state, checked, ...props }: PlaygroundArgs) {
   const [value, setValue] = useState<unknown>(null)
+  // Контрол побеждает, когда выставлен, но клик по радио продолжает
+  // работать — иначе контрол выглядел бы мёртвым.
+  const [lastChecked, setLastChecked] = useState(checked)
+  if (checked !== lastChecked) {
+    setLastChecked(checked)
+    setValue(checked ? props.value : null)
+  }
   return (
     <RadioGroup value={value} onValueChange={setValue}>
       <PseudoBox state={state}>

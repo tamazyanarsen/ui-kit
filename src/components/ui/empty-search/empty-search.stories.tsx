@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, iconArgType } from "@/stories/matrix"
 
 import { EmptySearchResults } from "./empty-search"
 
@@ -12,18 +12,10 @@ const meta = {
   component: EmptySearchResults,
   parameters: { layout: "padded" },
   argTypes: {
-    // `icon` defaults to a real JSX element (`<CircleAlert />`) — no JSON
-    // value a control could hold would ever reproduce that, so map a
-    // friendly "Default"/"None" choice to the real element/`null` instead of
-    // disabling the control (same technique as Button's `icon`).
-    icon: {
-      control: {
-        type: "select",
-        labels: { default: "Default (Circle Alert)", none: "None" },
-      },
-      options: ["default", "none"],
-      mapping: { default: undefined, none: null },
-    },
+    // `icon` — готовый JSX-узел, значением из контрола его не набрать.
+    // Иконка выбирается из набора: `null` — вообще без неё, остальные
+    // значения приходят из общего реестра (см. iconArgType).
+    icon: iconArgType("Иконка в плитке; «без иконки» — плитка не рисуется"),
     // `description`/`buttonLabel` are `React.ReactNode` but every usage is a
     // plain string — without this, leaving one unset falls back to a generic
     // "Set object" JSON editor.

@@ -1,8 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+import {
+  PseudoBox,
+  RESPONSIVE_NOTE,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import { Chips, type ChipsProps } from "./chips"
+
+// `State` — свойство компонент-сета `ELK / chips, filter` (Default, Hover,
+// Active, Active (Hover), Disabled). Hover и нажатие нельзя выставить
+// пропом, поэтому, как и у остальных интерактивных компонентов кита, их
+// даёт `state` через PseudoBox; Active — это `selected`, Disabled —
+// `disabled`, так что вместе они закрывают весь набор.
+type PlaygroundArgs = ChipsProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Компоненты/Chips",
@@ -16,20 +29,29 @@ const meta = {
     // Дизайн-чек №19: состояние «выбрана» (State=Active в макете).
     selected: { name: "Выбрана", control: "boolean" },
     disabled: { control: "boolean" },
+    state: stateArgType,
   },
   args: {
     children: "Значение",
     subtitle: "",
+    count: 5,
     closable: false,
     selected: false,
     disabled: false,
+    state: "default" as PlaygroundState,
   },
-} satisfies Meta<ChipsProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ state, ...args }) => (
+    <PseudoBox state={state}>
+      <Chips {...args} />
+    </PseudoBox>
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

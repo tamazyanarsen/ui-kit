@@ -28,6 +28,20 @@ const TABS: TabItem[] = [
   { value: "closed", label: "Закрытые" },
 ]
 
+/* `Number of Chips` — свойство `Group Chips (ELK)` (1…12+). Раньше в
+   истории было жёстко два фильтра, и проверить, как панель ведёт себя при
+   переполнении, было негде. */
+const CHIP_LABELS = [
+  "Статус",
+  "Менеджер",
+  "Валюта",
+  "Тип операции",
+  "Организация",
+  "Период",
+  "Счёт",
+  "Контрагент",
+]
+
 const SORT_OPTIONS = [
   { value: "desc", label: "По убыванию" },
   { value: "asc", label: "По возрастанию" },
@@ -64,6 +78,7 @@ interface FullExampleProps {
   showTabs?: boolean
   showSearch?: boolean
   showFilters?: boolean
+  chipsCount?: number
   showActions?: boolean
   showDetails?: boolean
 }
@@ -74,15 +89,19 @@ function FullExample({
   showTabs = true,
   showSearch = true,
   showFilters = true,
+  chipsCount = 2,
   showActions = true,
   showDetails = true,
 }: FullExampleProps = {}) {
   const [tab, setTab] = useState("all")
   const [search, setSearch] = useState("")
-  const [status, setStatus] = useState<string | null>(null)
   const [moreOpen, setMoreOpen] = useState(false)
-  const [manager, setManager] = useState<string | null>(null)
-  const appliedCount = [status, manager].filter(Boolean).length
+  const [values, setValues] = useState<Record<string, string | null>>({})
+  // Первый чип виден всегда, остальные раскрываются кнопкой «Ещё фильтры» —
+  // так же, как в макете.
+  const chips = CHIP_LABELS.slice(0, chipsCount)
+  const visibleChips = moreOpen ? chips : chips.slice(0, 1)
+  const appliedCount = Object.values(values).filter(Boolean).length
 
   return (
     <TableTop>
@@ -112,14 +131,18 @@ function FullExample({
           />
         </div>
         )}
-        {showFilters && (
-          <>
-            <Filter label="Статус" value={status} onValueChange={setStatus} chip />
-            {moreOpen && (
-              <Filter label="Менеджер" value={manager} onValueChange={setManager} chip />
-            )}
-          </>
-        )}
+        {showFilters &&
+          visibleChips.map((label) => (
+            <Filter
+              key={label}
+              label={label}
+              value={values[label] ?? null}
+              onValueChange={(next) =>
+                setValues((prev) => ({ ...prev, [label]: next }))
+              }
+              chip
+            />
+          ))}
         {/* "Ещё фильтры" is an `ELK / count button` in the spec — the counter
             is a corner badge on the button, dark rather than red here. */}
         <CountButton
@@ -139,10 +162,7 @@ function FullExample({
             size="sm"
             icon={X}
             iconPosition="left"
-            onClick={() => {
-              setStatus(null)
-              setManager(null)
-            }}
+            onClick={() => setValues({})}
           >
             Сбросить фильтры
           </Button>
@@ -229,6 +249,11 @@ const meta = {
     showTabs: { control: "boolean" },
     showSearch: { control: "boolean" },
     showFilters: { control: "boolean" },
+    chipsCount: {
+      name: "Number of Chips",
+      control: { type: "range", min: 1, max: CHIP_LABELS.length, step: 1 },
+      description: "Сколько фильтров-чипов в панели; лишние скрыты под «Ещё фильтры»",
+    },
     showActions: { control: "boolean" },
     showDetails: { control: "boolean" },
   },
@@ -238,6 +263,7 @@ const meta = {
     showTabs: true,
     showSearch: true,
     showFilters: true,
+    chipsCount: 2,
     showActions: true,
     showDetails: true,
   },

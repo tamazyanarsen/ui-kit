@@ -10,10 +10,19 @@ import { ModalBody } from "./body"
 import { ModalFooter } from "./footer"
 import { Button } from "@/components/ui/button"
 
+/* Свойства компонент-сета `ELK / modal`: Size, Type (Large / Small / With
+   Image), Column (One / Two / One Title), Show Title, Show Buttons. Size и
+   Show Buttons контролами уже были; заголовок, картинка и колонки — нет,
+   хотя это отдельные варианты макета. Модалка собирается из частей
+   (ModalHeader / ModalBody / ModalFooter), поэтому у неё нет одного пропа
+   на каждый: контролы синтетические и переключают состав. */
 interface ConfirmModalProps {
   size?: "l" | "m"
   title?: string
   description?: string
+  showTitle?: boolean
+  showImage?: boolean
+  columns?: 1 | 2
   showClose?: boolean
   showFooter?: boolean
   triggerLabel?: string
@@ -24,6 +33,9 @@ function ConfirmModal({
   size = "l",
   title = "Удалить карту?",
   description = "Это действие нельзя отменить — карта будет удалена из вашего профиля.",
+  showTitle = true,
+  showImage = false,
+  columns = 1,
   showClose = true,
   showFooter = true,
   triggerLabel = "Открыть модалку",
@@ -36,11 +48,22 @@ function ConfirmModal({
         {triggerLabel}
       </ModalTrigger>
       <ModalContent size={size} showClose={showClose}>
-        <ModalHeader>
-          <ModalTitle>{title}</ModalTitle>
-          {description && <ModalDescription>{description}</ModalDescription>}
-        </ModalHeader>
-        <ModalBody>
+        {/* `Show Title=False` — вариант «Modal Top: None»: шапки нет вовсе,
+            и тело начинается сразу с содержимого. */}
+        {showTitle && (
+          <ModalHeader>
+            <ModalTitle>{title}</ModalTitle>
+            {description && <ModalDescription>{description}</ModalDescription>}
+          </ModalHeader>
+        )}
+        <ModalBody className={columns === 2 ? "md:grid md:grid-cols-2 md:gap-6" : undefined}>
+          {/* `Type=With Image` — иллюстрация над текстом. */}
+          {showImage && (
+            <div
+              aria-hidden="true"
+              className="mb-4 h-40 rounded-2xl bg-[var(--card-bg)] md:col-span-2"
+            />
+          )}
           {longBody ? (
             <div className="flex flex-col gap-4 text-p2-regular text-[#6D6D6D]">
               {Array.from({ length: 20 }, (_, i) => (
@@ -82,8 +105,11 @@ const meta = {
     title: { control: "text" },
     description: { control: "text" },
     triggerLabel: { control: "text" },
+    showTitle: { control: "boolean", name: "Show Title" },
+    showImage: { control: "boolean", name: "Type: With Image" },
+    columns: { control: "inline-radio", options: [1, 2], name: "Column" },
     showClose: { control: "boolean" },
-    showFooter: { control: "boolean" },
+    showFooter: { control: "boolean", name: "Show Buttons" },
     longBody: { control: "boolean" },
   },
   args: {
@@ -91,6 +117,9 @@ const meta = {
     title: "Удалить карту?",
     description:
       "Это действие нельзя отменить — карта будет удалена из вашего профиля.",
+    showTitle: true,
+    showImage: false,
+    columns: 1,
     showClose: true,
     showFooter: true,
     longBody: false,

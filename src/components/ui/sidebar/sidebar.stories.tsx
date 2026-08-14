@@ -11,16 +11,36 @@ import { StorySection, StoryShowcase } from "@/stories/matrix"
 import { Sidebar } from "./sidebar"
 import { SidebarItem, SidebarGroup } from "./item"
 
+/* Свойства компонент-сета `ELK / sidebar`: Open, State, Show Text
+   (Icon / Text / Select) и Value — количество пунктов, 2…10. Раньше в
+   контролах были только Open и пара булевых: ни число пунктов, ни режим
+   подписи переключить было нельзя, хотя это основные оси компонента.
+   Sidebar собирается из детей, поэтому контролы синтетические. */
+const ITEM_POOL = [
+  { value: "main", icon: Briefcase, label: "Главная" },
+  { value: "payments", icon: Coins, label: "Платежи", group: true },
+  { value: "cards", icon: Wallet, label: "Карты" },
+  { value: "settings", icon: Settings, label: "Настройки" },
+  { value: "accounts", icon: Wallet, label: "Счета" },
+  { value: "deposits", icon: Coins, label: "Депозиты" },
+  { value: "letters", icon: Briefcase, label: "Письма в банк" },
+  { value: "reports", icon: Settings, label: "Отчёты" },
+  { value: "help", icon: Briefcase, label: "Помощь" },
+  { value: "more", icon: Settings, label: "Ещё" },
+]
+
 interface DemoSidebarProps {
   defaultOpen?: boolean
   activeItem?: boolean
   expandGroup?: boolean
+  itemsCount?: number
 }
 
 function DemoSidebar({
   defaultOpen = true,
   activeItem = true,
   expandGroup = false,
+  itemsCount = 4,
 }: DemoSidebarProps) {
   return (
     <div className="h-96">
@@ -28,13 +48,26 @@ function DemoSidebar({
         defaultOpen={defaultOpen}
         defaultExpandedGroups={expandGroup ? ["payments"] : []}
       >
-        <SidebarItem icon={Briefcase} label="Главная" active={activeItem} />
-        <SidebarGroup value="payments" icon={Coins} label="Платежи">
-          <SidebarItem label="СБП" nested />
-          <SidebarItem label="QR-коды СБП" nested />
-        </SidebarGroup>
-        <SidebarItem icon={Wallet} label="Карты" />
-        <SidebarItem icon={Settings} label="Настройки" />
+        {ITEM_POOL.slice(0, itemsCount).map((item, index) =>
+          item.group ? (
+            <SidebarGroup
+              key={item.value}
+              value={item.value}
+              icon={item.icon}
+              label={item.label}
+            >
+              <SidebarItem label="СБП" nested />
+              <SidebarItem label="QR-коды СБП" nested />
+            </SidebarGroup>
+          ) : (
+            <SidebarItem
+              key={item.value}
+              icon={item.icon}
+              label={item.label}
+              active={index === 0 && activeItem}
+            />
+          )
+        )}
       </Sidebar>
     </div>
   )
@@ -48,11 +81,17 @@ const meta = {
   // a component module, so react-docgen-typescript doesn't extract its props
   // — declare every control explicitly.
   argTypes: {
-    defaultOpen: { control: "boolean" },
-    activeItem: { control: "boolean" },
-    expandGroup: { control: "boolean" },
+    // `Open` в макете: развёрнутая панель показывает подписи, свёрнутая —
+    // только иконки (`Show Text=Icon` против `Text`).
+    defaultOpen: { control: "boolean", name: "Open" },
+    itemsCount: {
+      name: "Value (пунктов)",
+      control: { type: "range", min: 2, max: ITEM_POOL.length, step: 1 },
+    },
+    activeItem: { control: "boolean", name: "State: Active" },
+    expandGroup: { control: "boolean", name: "Show Text: Select (раскрытая группа)" },
   },
-  args: { defaultOpen: true, activeItem: true, expandGroup: false },
+  args: { defaultOpen: true, activeItem: true, expandGroup: false, itemsCount: 4 },
 } satisfies Meta<DemoSidebarProps>
 
 export default meta

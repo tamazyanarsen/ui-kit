@@ -1,8 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import { UpButton, type UpButtonProps } from "./up-button"
+
+// У `ELK / up button` ровно одно свойство — `State` (Default, Hover,
+// Active), и других вариантов у компонента нет. Без него в Playground не
+// было вообще ни одного контрола, повторяющего Figma.
+type PlaygroundArgs = UpButtonProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Компоненты/Up Button",
@@ -16,19 +26,22 @@ const meta = {
     // plain {} that silently falls back to `window` (same non-representable
     // class as Button's icon/iconPosition, already fixed there).
     scrollContainer: { control: false },
+    state: stateArgType,
   },
   // threshold=-1 keeps it visible immediately in the story canvas — real
   // usage only shows it once the page has scrolled past the threshold.
-  args: { threshold: -1, hidden: false },
-} satisfies Meta<UpButtonProps>
+  args: { threshold: -1, hidden: false, state: "default" as PlaygroundState },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<UpButtonProps>
+type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: (args) => (
+  render: ({ state, ...args }) => (
     <div className="relative h-40 w-full">
-      <UpButton {...args} className="absolute right-6 bottom-6" />
+      <PseudoBox state={state} className="absolute right-6 bottom-6">
+        <UpButton {...args} />
+      </PseudoBox>
     </div>
   ),
 }

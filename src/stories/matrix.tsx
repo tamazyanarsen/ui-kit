@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Icon, ICON_NAMES } from "@/components/ui/icon"
 
 /* Storybook-only helpers — this directory is deliberately outside
    `src/components/ui`, so it is picked up by neither `src/index.ts` (the
@@ -271,4 +272,26 @@ export const stateArgType = {
   control: { type: "inline-radio" as const },
   options: PLAYGROUND_STATES,
   table: { category: "Storybook" },
+}
+
+/**
+ * argTypes для пропа, который принимает готовую иконку (JSX-узел).
+ *
+ * В Figma такой проп — instance swap, то есть обычный выбор из набора. В
+ * коде это React-узел, который контролом не набрать, поэтому раньше в
+ * историях висели заглушки на два пункта («None» / «Search»): весь
+ * остальной набор был недоступен. С появлением компонента `Icon` список
+ * можно собрать целиком — `mapping` превращает имя в узел.
+ */
+export function iconArgType(description = "Иконка из набора кита") {
+  const NONE = "без иконки"
+  return {
+    description,
+    control: { type: "select" as const },
+    options: [NONE, ...ICON_NAMES],
+    mapping: Object.fromEntries([
+      [NONE, undefined],
+      ...ICON_NAMES.map((name) => [name, <Icon key={name} name={name} />]),
+    ]),
+  }
 }

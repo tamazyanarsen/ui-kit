@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { CircleHelp } from "@/icons"
 
 import {
   PseudoBox,
   StatesMatrix,
+  iconArgType,
   stateArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+
+import { Icon } from "@/components/ui/icon"
 
 import { Filter, type FilterProps } from "./filter"
 
@@ -26,15 +28,10 @@ const meta = {
     // Forces the popup open — the Playground is `layout: "padded"` so it has
     // room to render below the trigger.
     open: { control: "boolean" },
-    // `icon` takes a JSX element instance (same shape as Input's
-    // iconLeft/trailingIcon) — map a friendly choice to the real element
-    // instead of disabling the control (matches `src/demo/filter-demo.tsx`'s
-    // own `<CircleHelp />` usage as the representative icon).
-    icon: {
-      control: { type: "select", labels: { none: "None", circleHelp: "Circle Help" } },
-      options: ["none", "circleHelp"],
-      mapping: { none: undefined, circleHelp: <CircleHelp aria-hidden="true" /> },
-    },
+    // `icon` принимает JSX-узел — в Figma это instance swap, поэтому
+    // контрол даёт выбрать любую иконку набора, а не два заготовленных
+    // варианта, как было раньше.
+    icon: iconArgType("Иконка слева от значения"),
     // `value`/`defaultValue` are `string | null` but every usage is a plain
     // string — without this, the union falls back to a generic "Set object"
     // JSON editor whenever a story leaves one unset.
@@ -101,7 +98,7 @@ export const Matrix: Story = {
           props: { defaultValue: "Оплачен" },
           pseudo: "hover",
         },
-        { label: "С иконкой", props: { icon: <CircleHelp aria-hidden="true" /> } },
+        { label: "С иконкой", props: { icon: <Icon name="circle-help" aria-hidden="true" /> } },
         { label: "Disabled", props: { disabled: true } },
       ]}
       render={(props) => <Filter {...props} />}

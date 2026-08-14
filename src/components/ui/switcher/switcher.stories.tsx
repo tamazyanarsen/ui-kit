@@ -29,7 +29,18 @@ type ItemCount = (typeof ITEM_COUNTS)[number]
 
 const ITEMS = ITEM_POOL.slice(0, 3)
 
-type PlaygroundArgs = SwitcherProps & { itemsCount?: ItemCount }
+/* `Type` — свойство компонент-сета `Content Switcher (ELK)`: Icon,
+   Text Badge, Text Status. У `SwitcherItem` есть только `badge`, поэтому в
+   контроле два поддерживаемых значения; Icon и Text Status — пробел
+   компонента, а не истории, и глухие пункты списка вводили бы в
+   заблуждение. */
+const SWITCHER_TYPES = ["Text", "Text Badge"] as const
+type SwitcherType = (typeof SWITCHER_TYPES)[number]
+
+type PlaygroundArgs = SwitcherProps & {
+  itemsCount?: ItemCount
+  figmaType?: SwitcherType
+}
 
 const meta = {
   title: "Компоненты/Cell Switcher",
@@ -47,6 +58,13 @@ const meta = {
       options: ITEM_COUNTS,
     },
     items: { table: { disable: true } },
+    figmaType: {
+      name: "Type",
+      control: "inline-radio",
+      options: SWITCHER_TYPES,
+      description:
+        "Оформление вкладки. Icon и Text Status из макета компонентом пока не поддержаны",
+    },
     defaultValue: {
       control: "select",
       options: ITEM_POOL.map((i) => i.value),
@@ -55,6 +73,7 @@ const meta = {
   args: {
     items: ITEMS,
     itemsCount: 3,
+    figmaType: "Text",
     size: "lg",
     activeVariant: "surface",
     greyBackground: true,
@@ -78,8 +97,11 @@ export const Playground: Story = {
   // Remount when the pinned value or the tab count changes so the
   // `defaultValue` control actually moves the (otherwise internally-owned)
   // selection.
-  render: ({ itemsCount = 3, ...args }) => {
-    const items = ITEM_POOL.slice(0, itemsCount)
+  render: ({ itemsCount = 3, figmaType = "Text", ...args }) => {
+    const items = ITEM_POOL.slice(0, itemsCount).map((item) => ({
+      ...item,
+      badge: figmaType === "Text Badge" ? (item.badge ?? 3) : undefined,
+    }))
     // Выбранное значение могло «выпасть» из укороченного списка.
     const defaultValue = items.some((i) => i.value === args.defaultValue)
       ? args.defaultValue

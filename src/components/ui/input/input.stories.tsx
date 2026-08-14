@@ -4,6 +4,7 @@ import { Search } from "@/icons"
 import {
   PseudoBox,
   RESPONSIVE_NOTE,
+  iconArgType,
   StatesMatrix,
   stateArgType,
   type PlaygroundState,
@@ -20,20 +21,11 @@ const meta = {
   parameters: { layout: "padded" },
   argTypes: {
     size: { control: "inline-radio", options: ["lg", "sm"] },
-    // `iconLeft`/`trailingIcon` take a JSX element instance, not a plain
-    // value — no control widget can build a `<Search />` from scratch, so
-    // (same as Button's `icon`) map a friendly "None"/"Search" choice to
-    // the real element behind the scenes instead of disabling the control.
-    iconLeft: {
-      control: { type: "select", labels: { none: "None", search: "Search" } },
-      options: ["none", "search"],
-      mapping: { none: undefined, search: <Search /> },
-    },
-    trailingIcon: {
-      control: { type: "select", labels: { none: "None", search: "Search" } },
-      options: ["none", "search"],
-      mapping: { none: undefined, search: <Search /> },
-    },
+    // `iconLeft`/`trailingIcon` — готовые JSX-узлы, значением из контрола
+    // их не набрать. В Figma это instance swap, поэтому контрол даёт весь
+    // набор кита, а не пару заготовленных вариантов (см. iconArgType).
+    iconLeft: iconArgType("Иконка слева от значения"),
+    trailingIcon: iconArgType("Иконка справа, перед крестиком очистки"),
     // `label`/`comment`/`error` are `React.ReactNode` but every usage is a
     // plain string — without this, leaving one unset falls back to a
     // generic "Set object" JSON editor.

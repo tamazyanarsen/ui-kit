@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { StatesMatrix } from "@/stories/matrix"
 
 import { Steps, type Step, type StepsProps } from "./steps"
+import type { StepState, StepStatus } from "./variants"
 
 const BASE_STEPS: Step[] = [
   { title: "Шаг 1", description: "Заполнение заявки", status: "filled" },
@@ -22,7 +23,18 @@ const BASE_STEPS: Step[] = [
 const STEP_COUNTS = [1, 2, 3, 4] as const
 type StepCount = (typeof STEP_COUNTS)[number]
 
-type PlaygroundArgs = StepsProps & { stepsCount?: StepCount }
+/* `State` и `Type` — свойства `Steps (ELK)` / `Steps Status (ELK)`:
+   Disabled / Default / Active и None / Error / Filled. В пуле они и раньше
+   были расставлены по шагам, но выбрать состояние конкретного шага было
+   нельзя — контролы задают его текущему (второму) шагу. */
+const STEP_STATES = ["default", "active", "disabled"] as const
+const STEP_STATUSES = ["none", "filled", "error"] as const
+
+type PlaygroundArgs = StepsProps & {
+  stepsCount?: StepCount
+  currentState?: (typeof STEP_STATES)[number]
+  currentStatus?: (typeof STEP_STATUSES)[number]
+}
 
 const meta = {
   title: "Компоненты/Steps",
@@ -35,12 +47,24 @@ const meta = {
       options: STEP_COUNTS,
     },
     steps: { table: { disable: true } },
+    currentState: {
+      name: "State (2-го шага)",
+      control: "inline-radio",
+      options: STEP_STATES,
+    },
+    currentStatus: {
+      name: "Type (2-го шага)",
+      control: "inline-radio",
+      options: STEP_STATUSES,
+    },
     showLeftFade: { control: "boolean" },
     showRightFade: { control: "boolean" },
   },
   args: {
     steps: BASE_STEPS,
     stepsCount: 4,
+    currentState: "active",
+    currentStatus: "none",
     showLeftFade: false,
     showRightFade: false,
   },
@@ -50,9 +74,20 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ stepsCount = 4, ...args }) => (
-    <Steps {...args} steps={BASE_STEPS.slice(0, stepsCount)} />
-  ),
+  render: ({ stepsCount = 4, currentState, currentStatus, ...args }) => {
+    const steps = BASE_STEPS.slice(0, stepsCount).map((step, index) =>
+      index === 1
+        ? {
+            ...step,
+            state: (currentState ?? step.state) as StepState | undefined,
+            status: (currentStatus === "none"
+              ? undefined
+              : (currentStatus ?? step.status)) as StepStatus | undefined,
+          }
+        : step
+    )
+    return <Steps {...args} steps={steps} />
+  },
 }
 
 /* A single step's own State (default / active / disabled) × Status (none /

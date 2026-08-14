@@ -14,11 +14,16 @@ import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
 interface ButtonMenuOverflowProps
   extends Omit<MenuPrimitive.Root.Props, "children"> {
   children?: React.ReactNode
+  /** Панель, на которой стоит триггер. `dark` — чёрная ButtonMenuBlack: там
+   *  все действия белые и 32px, включая «ещё» (дизайн-чек №12). Обычно
+   *  проставляется самой панелью, руками передавать не нужно. */
+  tone?: "light" | "dark"
 }
 
 function ButtonMenuOverflow({
   children,
   modal = false,
+  tone = "light",
   ...props
 }: ButtonMenuOverflowProps) {
   return (
@@ -26,8 +31,8 @@ function ButtonMenuOverflow({
       <MenuPrimitive.Trigger
         render={
           <Button
-            variant="secondary-grey"
-            size="lg"
+            variant={tone === "dark" ? "secondary-white" : "secondary-grey"}
+            size={tone === "dark" ? "sm" : "lg"}
             icon={Ellipsis}
             iconPosition="only"
             aria-label="Ещё"
@@ -76,3 +81,4 @@ function ButtonMenuOverflowItem({
 }
 
 export { ButtonMenuOverflow, ButtonMenuOverflowItem }
+export type { ButtonMenuOverflowProps }

@@ -5,8 +5,10 @@ import { SelectionButton } from "@/components/ui/selection-button"
 import type { SelectionButtonItem } from "@/components/ui/selection-button"
 import { Tag } from "@/components/ui/tag"
 import type { TagColor } from "@/components/ui/tag"
-import { PaymentLogo } from "@/components/ui/thumbnail"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
+// Дизайн-чек №15: пиктограмма карты больше не собирается здесь локально —
+// это отдельный компонент со своей историей, подключённый как зависимость.
+import { CardPictogram } from "@/components/ui/card-pictogram"
 
 // Card — the "ELK / card" bank-card row (Figma node 42383:43897). Every text
 // block (title, subtitle, value) is single-line-only per the spec
@@ -41,37 +43,6 @@ interface CardProps {
   menuItems?: SelectionButtonItem[]
   onClick?: () => void
   className?: string
-}
-
-// Mini bank-card mockup ("IB / card account" in Figma) — 48×34, white
-// hairline border, the network mark pinned top-left and the card's last 4
-// digits bottom-right. The brand mark itself reuses Thumbnail's own
-// `PaymentLogo` (same simplified-approximation policy, just its `sm` size)
-// rather than a second, duplicated logo implementation.
-function CardThumbnail({
-  number,
-  paymentSystem,
-}: {
-  number?: React.ReactNode
-  paymentSystem: PaymentSystem
-}) {
-  return (
-    <div
-      aria-hidden="true"
-      className="relative h-[34px] w-12 shrink-0 overflow-hidden rounded-[4px] border border-white bg-[var(--card-thumb-bg)]"
-    >
-      <PaymentLogo
-        system={paymentSystem}
-        size="sm"
-        className="absolute top-[3px] left-[3px]"
-      />
-      {number && (
-        <span className="absolute right-[3px] bottom-[3px] text-p4-regular text-[var(--card-thumb-fg)]">
-          {number}
-        </span>
-      )}
-    </div>
-  )
 }
 
 function Card({
@@ -113,7 +84,7 @@ function Card({
       )}
     >
       {showThumbnail && (
-        <CardThumbnail number={thumbnailNumber} paymentSystem={paymentSystem} />
+        <CardPictogram number={thumbnailNumber} paymentSystem={paymentSystem} />
       )}
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">

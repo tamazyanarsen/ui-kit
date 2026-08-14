@@ -4,18 +4,31 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
 // Chips — "Чипсы": a plain, non-interactive pill for a value with an
-// optional caption above it. Always the same grey surface — per its own
-// column in ui/chips/chips, filter@2x-1.png's state matrix, Default/Hover/
-// Active never gain a border or swap to the White/Grey choice Filter has;
-// only the disabled column changes it. Padding is shared with Filter's own
-// anatomy from the same doc: 16px horizontal always, 6px vertical without a
+// optional caption above it. Padding is shared with Filter's own anatomy
+// from the same doc: 16px horizontal always, 6px vertical without a
 // subtitle / 8px with one.
+//
+// Chips и Filter — один компонент-сет в Figma («ELK / chips, filter», нода
+// 54887:29179) со свойством `Type`. Белый/серый выбор и брендовая обводка
+// принадлежат типам `Filter (White)` / `Filter (Grey)` — см. компонент
+// Filter. У `Type=Chips` их нет: проверено по всем пяти состояниям сета,
+// Default — grey-109 #F4F4F4, а Hover, Active и Active (Hover) — все три
+// grey-114 #EFEFEF без рамки (ноды 54887:29212/29215/29218/29221).
 interface ChipsProps {
   children: React.ReactNode
   subtitle?: React.ReactNode
   count?: number
   closable?: boolean
   onRemove?: () => void
+  /**
+   * Состояние `State=Active` — «чипса выбрана».
+   *
+   * Дизайн-чек №19: раньше его нельзя было ни включить, ни увидеть в
+   * матрице. Визуально совпадает с hover (в макете это одна и та же
+   * заливка grey-114), но это отдельное состояние: оно держится без
+   * курсора.
+   */
+  selected?: boolean
   disabled?: boolean
   className?: string
 }
@@ -26,12 +39,14 @@ function Chips({
   count,
   closable = false,
   onRemove,
+  selected = false,
   disabled = false,
   className,
 }: ChipsProps) {
   return (
     <span
       data-slot="chips"
+      data-selected={selected || undefined}
       data-disabled={disabled || undefined}
       className={cn(
         // Design-check #14: rounded-2xl (18px on this kit's custom radius
@@ -42,7 +57,9 @@ function Chips({
         subtitle ? "px-4 py-2" : "px-4 py-1.5",
         disabled
           ? "bg-[var(--chips-disabled-bg)]"
-          : "bg-[var(--chips-light-bg)] hover:bg-[var(--chips-light-bg-hover)]",
+          : selected
+            ? "bg-[var(--chips-light-bg-hover)]"
+            : "bg-[var(--chips-light-bg)] hover:bg-[var(--chips-light-bg-hover)]",
         className
       )}
     >

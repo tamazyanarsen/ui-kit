@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionPanel,
-} from "@/components/ui/accordion"
+} from "@/demo/scaffold"
 
 import { RowLabel } from "./shared"
 
@@ -94,7 +94,7 @@ function ItemDemo() {
                 rightElement="information"
                 informationText="Курс обновляется каждые 15 минут"
               />
-              <Item value="Развернуть детали" comment="Accordion / Select" rightElement="accordion" />
+              <Item value="Развернуть детали" comment="Select" rightElement="select" />
               <Item value="Операция выполнена" comment="Check" rightElement="check" />
               <Item
                 value="Изменение за месяц"

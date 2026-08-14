@@ -37,7 +37,7 @@ type RightElementType =
   | "none"
   | "navigation"
   | "information"
-  | "accordion"
+  | "select"
   | "check"
   | "text"
   | "toggle"
@@ -119,7 +119,7 @@ function RightElement({
           className={cn("size-4 shrink-0", iconColorClass)}
         />
       )
-    case "accordion":
+    case "select":
       return (
         <ChevronDown
           aria-hidden="true"

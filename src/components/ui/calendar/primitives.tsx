@@ -345,9 +345,22 @@ export function YearGrid({
 //     ≥768px would silently grow to the desktop 56px/32px/16px form.
 // Desktop = 56px tall, 32px sides, P1 Medium 16/24 (node 7415:58522);
 // mobile = 48px tall, 24px sides, P1 Medium Mobile 14/20 (node 7415:58832).
-const FOOTER_BUTTON_CLASS = "flex-1 rounded-none"
-const FOOTER_REGULAR = "h-14 px-8 text-p1-medium md:h-14 md:px-8 md:text-p1-medium"
-const FOOTER_COMPACT = "h-12 px-6 text-p2-medium md:h-12 md:px-6 md:text-p2-medium"
+// Дизайн-чек №25 («лишнее свободное место в выпадающем календаре»): карточка
+// раздувалась до 305px при спецификации в 280 (символ `Size=Desktop,
+// Type=Week`, нода 7415:58522 — min/max-width 280). Виноват был подвал:
+// кнопки шли без `min-w-0`, поэтому их min-content — подпись плюс px-8 с
+// каждой стороны — работал как распорка (144 + 1 + 158 = 303) и через
+// `w-fit` карточки задавал ей ширину. Сетке дней нужно ровно 252 + 28 = 280.
+//
+// Горизонтальные паддинги при этом ничего не рисуют: кнопки — половинки на
+// `flex-1` с центрированной подписью, и при любой ширине карточки ≥ подписи
+// результат один в один. В макете они есть (`px-[32px]`), но там же кнопка
+// стоит `flex-[1_0_0] min-w-px`, то есть тоже не влияет на ширину родителя.
+// Поэтому оставляем `min-w-0` и минимальный паддинг — визуально совпадает с
+// макетом, а карточка приходит к своим 280px.
+const FOOTER_BUTTON_CLASS = "min-w-0 flex-1 rounded-none"
+const FOOTER_REGULAR = "h-14 px-2 text-p1-medium md:h-14 md:px-2 md:text-p1-medium"
+const FOOTER_COMPACT = "h-12 px-2 text-p2-medium md:h-12 md:px-2 md:text-p2-medium"
 
 export function CalendarFooter({
   compact,

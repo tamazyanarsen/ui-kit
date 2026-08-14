@@ -29,6 +29,12 @@ storybook-static
 # Playwright MCP debug output
 .playwright-mcp/
 
+# Рабочие скриншоты в корне (сверка с макетами и т.п.).
+# Только корень — картинки-ассеты внутри src/ игнорировать не надо.
+/*.png
+/*.jpg
+/*.jpeg
+
 # Env files
 .env
 .env.*

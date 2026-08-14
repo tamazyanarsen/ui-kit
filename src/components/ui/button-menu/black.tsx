@@ -4,6 +4,8 @@ import { X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+import { ButtonMenuOverflow } from "./overflow"
+
 // ButtonMenuBlack — "ELK / button menu (black)" (node 700:54288, v1.0.0).
 // Figma documents this as its own component, not a variant of the white
 // ButtonMenu: while the user has table rows selected, this bar *replaces*
@@ -42,10 +44,14 @@ function ButtonMenuBlack({
   ...props
 }: ButtonMenuBlackProps) {
   // Same reasoning as ButtonMenu's own sizing pass: the spec draws every
-  // action at a uniform 32px pill (px-16/py-6, radius 16 — Button's `sm`),
-  // and on this bar they are always the white variant against the dark
-  // fill. Size is forced; variant only fills in when the caller left it
-  // unset, so an intentional override still wins.
+  // action at a uniform 32px pill (px-16/py-6, radius 16 — Button's `sm`).
+  //
+  // Дизайн-чек №12: вариант тоже форсится, а не подставляется по умолчанию —
+  // «для button menu black используются только белые кнопки». Раньше здесь
+  // стоял `variant ?? "secondary-white"`, и вызывающий код мог поставить
+  // брендовую кнопку на тёмную панель (что и попало в дизайн-чек: «Подписать»
+  // была голубой). Брендового акцента на этой панели не существует: она сама
+  // и есть акцент.
   const sizedChildren = React.Children.map(children, (child) => {
     if (React.isValidElement(child) && child.type === Button) {
       const element = child as React.ReactElement<{
@@ -54,7 +60,13 @@ function ButtonMenuBlack({
       }>
       return React.cloneElement(element, {
         size: "sm",
-        variant: element.props.variant ?? "secondary-white",
+        variant: "secondary-white",
+      })
+    }
+    // Меню «ещё» — такая же кнопка панели, значит тоже белая и 32px.
+    if (React.isValidElement(child) && child.type === ButtonMenuOverflow) {
+      return React.cloneElement(child as React.ReactElement<{ tone?: "light" | "dark" }>, {
+        tone: "dark",
       })
     }
     return child

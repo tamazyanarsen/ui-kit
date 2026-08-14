@@ -54,8 +54,6 @@ function Harness() {
           applyLabel={`Выбрать: ${sel.draft.length}`}
           onReset={sel.reset}
           onApply={sel.apply}
-          resetDisabled={!sel.canReset}
-          applyDisabled={!sel.canApply}
         />
       </ComboboxContent>
     </Combobox>
@@ -108,7 +106,14 @@ describe("Combobox", () => {
 
     await user.click(screen.getByRole("button", { name: "Сбросить" }))
 
-    expect(screen.getByRole("button", { name: "Выбрать: 0" })).toBeDisabled()
+    // Счётчик обнулился — черновик действительно сброшен.
+    const apply = screen.getByRole("button", { name: "Выбрать: 0" })
+    expect(apply).toBeInTheDocument()
+    // Дизайн-чек №22: обе кнопки подвала остаются активными и на пустом
+    // выборе. Раньше здесь проверялось обратное (`toBeDisabled`) — это и
+    // было зафиксированное неверное поведение.
+    expect(apply).toBeEnabled()
+    expect(screen.getByRole("button", { name: "Сбросить" })).toBeEnabled()
   })
 
   it("clears a committed selection from the trigger's clear button", async () => {

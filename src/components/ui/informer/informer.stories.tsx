@@ -13,6 +13,13 @@ const ICONS: InformerIcon[] = [
   "clock",
 ]
 
+/* Переключатели видимости кнопок живут в истории, а не в компоненте: сами
+   пропсы — это подписи, а не флаги (дизайн-чек №27). */
+type PlaygroundArgs = InformerProps & {
+  showMainButton?: boolean
+  showAdditionalButton?: boolean
+}
+
 const meta = {
   title: "Компоненты/Informer",
   component: Informer,
@@ -26,7 +33,11 @@ const meta = {
     title: { control: "text" },
     date: { control: "text" },
     description: { control: "text" },
+    // Дизайн-чек №27: кнопки включаются булевыми переключателями, а не тем,
+    // что у них стёрли подпись.
+    showMainButton: { name: "Основная кнопка", control: "boolean" },
     mainButtonLabel: { control: "text" },
+    showAdditionalButton: { name: "Дополнительная кнопка", control: "boolean" },
     additionalButtonLabel: { control: "text" },
     showCross: { control: "boolean" },
   },
@@ -37,13 +48,31 @@ const meta = {
     date: "24.12.2022",
     description: "Документ ожидает вашей подписи для продолжения работы",
     showCross: true,
+    showMainButton: true,
+    mainButtonLabel: "Подписать",
+    showAdditionalButton: true,
+    additionalButtonLabel: "Отложить",
   },
-} satisfies Meta<InformerProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<InformerProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({
+    showMainButton,
+    mainButtonLabel,
+    showAdditionalButton,
+    additionalButtonLabel,
+    ...args
+  }) => (
+    <Informer
+      {...args}
+      mainButtonLabel={showMainButton ? mainButtonLabel : undefined}
+      additionalButtonLabel={showAdditionalButton ? additionalButtonLabel : undefined}
+    />
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

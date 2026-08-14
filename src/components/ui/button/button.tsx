@@ -1,8 +1,8 @@
 import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import { LoaderCircle } from "@/icons"
 
+import { Loader } from "@/components/ui/loader"
 import { cn } from "@/lib/utils"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 
@@ -17,30 +17,30 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "[--btn-accent:var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] enabled:hover:bg-[var(--btn-primary-bg-hover)] enabled:active:bg-[var(--btn-primary-bg-active)]",
+          "bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] enabled:hover:bg-[var(--btn-primary-bg-hover)] enabled:active:bg-[var(--btn-primary-bg-active)]",
         "secondary-black":
-          "[--btn-accent:var(--btn-secondary-black-bg)] bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)]",
+          "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-grey":
-          "[--btn-accent:var(--btn-secondary-grey-fg)] bg-[var(--btn-secondary-grey-bg)] text-[var(--btn-secondary-grey-fg)] enabled:hover:bg-[var(--btn-secondary-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-grey-bg-active)]",
+          "bg-[var(--btn-secondary-grey-bg)] text-[var(--btn-secondary-grey-fg)] enabled:hover:bg-[var(--btn-secondary-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-grey-bg-active)]",
         "secondary-white":
-          "[--btn-accent:var(--btn-secondary-white-fg)] bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)]",
+          "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-outline":
-          "[--btn-accent:var(--btn-secondary-outline-border)] border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)]",
+          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)]",
         destructive:
-          "[--btn-accent:var(--btn-destructive-bg)] bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)]",
+          "bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)]",
         // "Secondary Logo" Types (ui/button/button.png) — always paired
         // with the fixed Госуслуги glyph (see GosuslugiLogo below), never a
         // swappable icon. Black/Border-White/White pixel-match their plain
         // secondary-* counterparts exactly, so they reuse the same tokens;
         // only Grey introduces a genuinely new color.
         "secondary-logo-black":
-          "[--btn-accent:var(--btn-secondary-black-bg)] bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)]",
+          "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-logo-border-white":
-          "[--btn-accent:var(--btn-secondary-outline-border)] border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)]",
+          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)]",
         "secondary-logo-white":
-          "[--btn-accent:var(--btn-secondary-white-fg)] bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)]",
+          "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-logo-grey":
-          "[--btn-accent:var(--btn-secondary-logo-grey-bg)] bg-[var(--btn-secondary-logo-grey-bg)] text-[var(--btn-secondary-logo-grey-fg)] enabled:hover:bg-[var(--btn-secondary-logo-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-logo-grey-bg-active)]",
+          "bg-[var(--btn-secondary-logo-grey-bg)] text-[var(--btn-secondary-logo-grey-fg)] enabled:hover:bg-[var(--btn-secondary-logo-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-logo-grey-bg-active)]",
       },
       size: {
         // Mobile-first: unprefixed classes are the mobile form, `md:` switches
@@ -138,8 +138,11 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
     typeof variant === "string" && variant.startsWith("secondary-logo")
 
   const resolvedIconPosition =
-    iconPosition ?? (Icon || isLoading || isLogoVariant ? "left" : undefined)
-  const iconOnly = isLoading || resolvedIconPosition === "only"
+    iconPosition ?? (Icon || isLogoVariant ? "left" : undefined)
+  // Дизайн-чек №10: раньше `isLoading` тоже попадал сюда, и кнопка на время
+  // загрузки схлопывалась в квадратную icon-кнопку. Теперь загрузка не влияет
+  // на геометрию — только на содержимое (см. ниже).
+  const iconOnly = resolvedIconPosition === "only"
 
   if (import.meta.env.DEV && iconOnly && !isLoading && !props["aria-label"]) {
     console.warn(
@@ -149,7 +152,7 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
 
   const resolvedSize = iconOnly ? ICON_ONLY_SIZE[size ?? "default"] : size
 
-  const Glyph = isLoading ? LoaderCircle : isLogoVariant ? GosuslugiLogo : Icon
+  const Glyph = isLogoVariant ? GosuslugiLogo : Icon
 
   // `lg` and `icon-lg` render their glyph at 24px from the md: breakpoint up
   // (see the size variants above), and Figma draws a separate 24px artwork
@@ -161,33 +164,62 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
   const glyphSize =
     isDesktop && (resolvedSize === "lg" || resolvedSize === "icon-lg") ? 24 : 16
 
+  const content = iconOnly ? (
+    Glyph && <Glyph size={glyphSize} aria-hidden="true" />
+  ) : (
+    <>
+      {resolvedIconPosition === "left" && Glyph && (
+        <Glyph size={glyphSize} data-icon="inline-start" aria-hidden="true" />
+      )}
+      {children}
+      {resolvedIconPosition === "right" && Glyph && (
+        <Glyph size={glyphSize} data-icon="inline-end" aria-hidden="true" />
+      )}
+    </>
+  )
+
   return (
     <ButtonPrimitive
       ref={ref}
       data-slot="button"
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
-      className={cn(buttonVariants({ variant, size: resolvedSize, className }))}
+      className={cn(
+        buttonVariants({ variant, size: resolvedSize, className }),
+        isLoading && "relative"
+      )}
       {...props}
     >
-      {iconOnly ? (
-        Glyph && (
-          <Glyph
-            size={glyphSize}
-            className={isLoading ? "!text-[var(--btn-accent)] animate-spin" : undefined}
-            aria-hidden="true"
-          />
-        )
-      ) : (
+      {isLoading ? (
+        // Дизайн-чек №10: «кнопка в состоянии лоудинг не должна менять свою
+        // ширину и должна сохранять размер, исходя из содержащегося внутри
+        // текста и иконки при наличии». Поэтому обычное содержимое остаётся в
+        // потоке и продолжает задавать ширину, просто становится невидимым, а
+        // спиннер кладётся поверх по центру.
+        //
+        // Всё остальное в этом состоянии взято из макета один в один:
+        // заливка grey-114 (--btn-muted-bg), высота и паддинги те же, что у
+        // обычной кнопки, спиннер 24px на размере L (нода 9339:29870).
+        // Расходится только ширина: символы Loading в Figma уже обычных
+        // (L/Desktop/Text — 118px в Default против 88px в Loading, ноды
+        // 32:9065 и 9339:29870). Это ограничение документации, а не правило:
+        // дизайнер отдельно оговорил, что «на продукте при переходе кнопки в
+        // состояние загрузки она не должна менять свой размер», и просил
+        // прописать это в корне компонента.
         <>
-          {resolvedIconPosition === "left" && Glyph && (
-            <Glyph size={glyphSize} data-icon="inline-start" aria-hidden="true" />
-          )}
-          {children}
-          {resolvedIconPosition === "right" && Glyph && (
-            <Glyph size={glyphSize} data-icon="inline-end" aria-hidden="true" />
-          )}
+          <span
+            aria-hidden="true"
+            className="invisible inline-flex items-center gap-2"
+          >
+            {content}
+          </span>
+          <Loader
+            size={glyphSize === 24 ? "md" : "sm"}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          />
         </>
+      ) : (
+        content
       )}
     </ButtonPrimitive>
   )

@@ -65,7 +65,7 @@ export function ComboboxSearchInput({
     // text-sm), and the row's own bottom border is the spec's literal
     // grey-134 #DEDEDE, not the kit's generic --border token (#E5E5E5,
     // close but not an exact match).
-    <div className="flex shrink-0 items-center gap-2 border-b border-[#DEDEDE] p-4">
+    <div className="flex shrink-0 items-center gap-2 border-b border-[var(--menu-item-divider)] p-4">
       <Search
         aria-hidden="true"
         className="size-6 shrink-0 text-[var(--select-icon-fg)]"

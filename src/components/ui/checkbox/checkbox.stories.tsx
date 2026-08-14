@@ -74,6 +74,71 @@ export const Playground: Story = {
   render: (args) => <Controlled {...args} />,
 }
 
+/* Дизайн-чек №18: третья история — «Interactive».
+
+   «Сейчас проблема в том, что, например, для компонента Это чекбокс, нельзя
+   проверить зависимости. К примеру, нет списка с вложенными чекбоксами, в
+   котором можно было бы включить частично элементы из списка и увидеть, что
+   верхний уровень чекбокса превращается в смешанный, как раз таки со значком
+   минуса. Такую проверку произвести нельзя».
+
+   Матрица показывает состояния по отдельности, Playground — один экземпляр.
+   Ни там, ни там нельзя проверить связь «дети → родитель». Здесь можно:
+   родитель считается из детей и сам ими управляет. */
+const CHILDREN = [
+  "Паспорт РФ",
+  "СНИЛС",
+  "ИНН",
+  "Выписка ЕГРЮЛ",
+]
+
+function NestedCheckboxes() {
+  const [checked, setChecked] = useState<boolean[]>([false, true, false, false])
+
+  const checkedCount = checked.filter(Boolean).length
+  const allChecked = checkedCount === checked.length
+  // Родитель «смешанный», пока выбрана часть детей — тот самый минус.
+  const indeterminate = checkedCount > 0 && !allChecked
+
+  return (
+    <div className="flex w-100 flex-col gap-4">
+      <Checkbox
+        label="Все документы"
+        comment={
+          checkedCount === 0
+            ? "Ничего не выбрано"
+            : `Выбрано: ${checkedCount} из ${checked.length}`
+        }
+        checked={allChecked || indeterminate}
+        indeterminate={indeterminate}
+        // Клик по родителю: пока выбрано не всё — выбираем всё, и только из
+        // состояния «выбрано всё» снимаем. Поэтому смотрим на `allChecked`,
+        // а не на `next`: из смешанного состояния Base UI присылает `false`,
+        // и по нему родитель бы очищал список вместо того, чтобы дозаполнить.
+        onCheckedChange={() => setChecked(checked.map(() => !allChecked))}
+      />
+      <div className="flex flex-col gap-4 pl-10">
+        {CHILDREN.map((label, index) => (
+          <Checkbox
+            key={label}
+            label={label}
+            checked={checked[index]}
+            onCheckedChange={(next) =>
+              setChecked(checked.map((v, i) => (i === index ? next : v)))
+            }
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export const Interactive: Story = {
+  name: "Interactive",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => <NestedCheckboxes />,
+}
+
 /* Cell shape: `on` is the row's checked-ness and `partial` the column's
    representation of it, so the Default/Hover/Disabled rows stay empty in
    both columns exactly as the spec sheet draws them (passing

@@ -30,7 +30,7 @@ function ModalTitle({
     <DialogPrimitive.Title
       data-slot="modal-title"
       className={cn(
-        "pr-10 text-h2-mobile text-[#252628] md:pr-0 md:text-h2",
+        "pr-10 text-h2-mobile text-[var(--modal-title-fg)] md:pr-0 md:text-h2",
         className
       )}
       {...props}
@@ -50,7 +50,7 @@ function ModalDescription({
       // Mobile P1 Medium (14/20) growing to Desktop P1 Medium (16/24) —
       // Figma "Modal Top" spec (node 45321:17708 / :17732) applies the
       // desktop paragraph style here, not a fixed mobile size.
-      className={cn("text-p2-medium text-[#252628] md:text-p1-medium", className)}
+      className={cn("text-p2-medium text-[var(--modal-title-fg)] md:text-p1-medium", className)}
       {...props}
     />
   )

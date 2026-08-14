@@ -22,7 +22,25 @@ const ITEMS = [
     viewed: true,
     timestamp: "Вчера",
   },
+  {
+    title: "Требуется подпись",
+    description: "Документ ожидает вашей подписи",
+    timestamp: "Вчера",
+  },
 ]
+
+/* Дизайн-чек №17: количество уведомлений выбирается списком, а не правкой
+   JSON-массива. Ноль — отдельный проверяемый случай (пустая панель). */
+const ITEM_COUNTS = [0, 1, 2, 3] as const
+type ItemCount = (typeof ITEM_COUNTS)[number]
+
+/* Переключатели видимости кнопок живут в истории, а не в компоненте: сами
+   пропсы — это подписи, а не флаги (дизайн-чек №27). */
+type PlaygroundArgs = NotificationPanelProps & {
+  showPrimaryButton?: boolean
+  showSecondaryButton?: boolean
+  itemsCount?: ItemCount
+}
 
 const meta = {
   title: "Компоненты/Notification",
@@ -34,24 +52,53 @@ const meta = {
   // is left unset (same fix as tooltip/hint.tsx's `title`).
   argTypes: {
     title: { control: "text" },
+    // Дизайн-чек №27: кнопки включаются булевыми переключателями.
+    showPrimaryButton: { name: "Основная кнопка", control: "boolean" },
     primaryButtonLabel: { control: "text" },
+    showSecondaryButton: { name: "Дополнительная кнопка", control: "boolean" },
     secondaryButtonLabel: { control: "text" },
     showDivider: { control: "boolean" },
     showScrollBar: { control: "boolean" },
     maxHeight: { control: "number" },
-    items: { control: "object" },
+    // Дизайн-чек №17: количество уведомлений — списком. Ноль нужен, чтобы
+    // проверить пустую панель.
+    itemsCount: {
+      name: "Количество уведомлений",
+      control: "select",
+      options: ITEM_COUNTS,
+    },
+    items: { table: { disable: true } },
   },
   args: {
     items: ITEMS,
+    itemsCount: ITEMS.length as ItemCount,
+    showPrimaryButton: true,
     primaryButtonLabel: "Прочитать все",
+    showSecondaryButton: true,
     secondaryButtonLabel: "Настройки",
   },
-} satisfies Meta<NotificationPanelProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<NotificationPanelProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({
+    showPrimaryButton,
+    primaryButtonLabel,
+    showSecondaryButton,
+    secondaryButtonLabel,
+    itemsCount,
+    ...args
+  }) => (
+    <NotificationPanel
+      {...args}
+      items={ITEMS.slice(0, itemsCount ?? ITEMS.length)}
+      primaryButtonLabel={showPrimaryButton ? primaryButtonLabel : undefined}
+      secondaryButtonLabel={showSecondaryButton ? secondaryButtonLabel : undefined}
+    />
+  ),
+}
 
 /* The panel is a container; the real variant grid belongs to the row
    (NotificationItem), so the matrix covers the row and the panel's own

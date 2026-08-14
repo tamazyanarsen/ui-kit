@@ -29,13 +29,23 @@ const meta = {
     // "Set object" JSON editor.
     title: { control: "text" },
     description: { control: "text" },
+    // Дизайн-чек №27: кнопка включается булевым свойством, а её вид —
+    // отдельным списком, а не «включается текстовой строчкой».
+    showButton: { control: "boolean" },
     buttonLabel: { control: "text" },
+    buttonVariant: { control: "inline-radio", options: ["primary", "secondary-grey"] },
     largeIcon: { control: "boolean" },
   },
   args: {
     title: "Ничего не найдено",
     description: "Попробуйте изменить параметры поиска",
     largeIcon: false,
+    // По умолчанию кнопка включена: иначе её вариант и подпись не видно, а
+    // Playground должен показывать все необязательные блоки (см. правило
+    // «Playground покрывает все свойства»).
+    showButton: true,
+    buttonLabel: "Сбросить фильтры",
+    buttonVariant: "secondary-grey",
   },
 } satisfies Meta<EmptySearchResultsProps>
 
@@ -65,10 +75,21 @@ export const Matrix: Story = {
           props: { description: "Попробуйте изменить параметры поиска" },
         },
         {
-          label: "С кнопкой",
+          label: "С серой кнопкой",
           props: {
             description: "Попробуйте изменить параметры поиска",
+            showButton: true,
             buttonLabel: "Сбросить фильтры",
+            buttonVariant: "secondary-grey",
+          },
+        },
+        {
+          label: "С брендовой кнопкой",
+          props: {
+            description: "Попробуйте изменить параметры поиска",
+            showButton: true,
+            buttonLabel: "Вернуться на главную",
+            buttonVariant: "primary",
           },
         },
       ]}

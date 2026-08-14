@@ -108,6 +108,50 @@ export const Group: Story = {
 
 type Cell = Omit<RadioProps, "value"> & { on?: boolean }
 
+/* Дизайн-чек №18: третья история — «Interactive». Матрица показывает
+   состояния по отдельности, а связь внутри группы (выбор одного снимает
+   остальные, и от выбора зависит соседний блок) проверить было негде. */
+const DELIVERY = [
+  { value: "office", label: "В отделении", comment: "Сегодня после 14:00" },
+  { value: "courier", label: "Курьером", comment: "1–2 рабочих дня" },
+  { value: "post", label: "Почтой России", comment: "От 5 рабочих дней" },
+]
+
+function DependentRadioGroup() {
+  const [value, setValue] = useState<string | null>("office")
+
+  return (
+    <div className="flex w-100 flex-col gap-6">
+      <RadioGroup value={value} onValueChange={(next) => setValue(next as string)}>
+        <div className="flex flex-col gap-4">
+          {DELIVERY.map((item) => (
+            <Radio
+              key={item.value}
+              value={item.value}
+              label={item.label}
+              comment={item.comment}
+            />
+          ))}
+        </div>
+      </RadioGroup>
+
+      {/* Зависимый блок: содержимое меняется вместе с выбором. */}
+      <div className="rounded-md bg-[var(--card-bg)] p-4 text-p2-medium text-[#252628]">
+        {value === "office" && "Выберите отделение на карте"}
+        {value === "courier" && "Укажите адрес и удобное время"}
+        {value === "post" && "Укажите почтовый индекс"}
+        {value === null && "Способ доставки не выбран"}
+      </div>
+    </div>
+  )
+}
+
+export const Interactive: Story = {
+  name: "Interactive",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => <DependentRadioGroup />,
+}
+
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },

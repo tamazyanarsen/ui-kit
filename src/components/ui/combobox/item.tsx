@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { Check } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 import {
   COMBOBOX_CHECKBOX_BASE_CLASS,
   ComboboxCheckbox,
@@ -42,8 +43,8 @@ export function ComboboxItem({
       // Menu Point: hard square corner, rounding only comes from the
       // popup's own clip) with #F8F8F8 highlighted background instead of
       // the generic --accent token.
-      className={cn(
-        "group/item relative flex w-full cursor-default items-start gap-4 p-4 text-p2-regular outline-hidden select-none data-highlighted:bg-[#F8F8F8] data-disabled:pointer-events-none data-disabled:opacity-50",
+      className={menuItemRowClass(
+        "group/item data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       style={
@@ -53,27 +54,27 @@ export function ComboboxItem({
       }
       {...props}
     >
-      <span
-        aria-hidden="true"
-        className={cn(
-          COMBOBOX_CHECKBOX_BASE_CLASS,
-          "mt-0.5 border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent group-data-[selected]/item:border-transparent group-data-[selected]/item:bg-[var(--checkbox-checked-bg)] group-data-[selected]/item:text-[var(--checkbox-checked-fg)] group-data-disabled/item:!border-[var(--checkbox-disabled-border)] group-data-disabled/item:!bg-[var(--checkbox-disabled-bg)]"
-        )}
-      >
-        <ComboboxPrimitive.ItemIndicator>
-          <Check className="size-4" strokeWidth={3} />
-        </ComboboxPrimitive.ItemIndicator>
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="truncate font-medium text-[var(--select-fg)]">
-          {children}
-        </span>
-        {description && (
-          <span className="truncate text-p3-medium text-[var(--select-caption-fg)]">
-            {description}
+      <MenuItemContent
+        description={description}
+        leading={
+          <span
+            aria-hidden="true"
+            className={cn(
+              COMBOBOX_CHECKBOX_BASE_CLASS,
+              // Дизайн-чек №21: `mt-0.5` больше не нужен. Чекбокс 24px и
+              // первая строка основного текста (P1 Medium 16/24) теперь
+              // одной высоты, поэтому `items-start` совмещает их сам.
+              "border-[var(--checkbox-border)] bg-[var(--checkbox-bg)] text-transparent group-data-[selected]/item:border-transparent group-data-[selected]/item:bg-[var(--checkbox-checked-bg)] group-data-[selected]/item:text-[var(--checkbox-checked-fg)] group-data-disabled/item:!border-[var(--checkbox-disabled-border)] group-data-disabled/item:!bg-[var(--checkbox-disabled-bg)]"
+            )}
+          >
+            <ComboboxPrimitive.ItemIndicator>
+              <Check className="size-4" strokeWidth={3} />
+            </ComboboxPrimitive.ItemIndicator>
           </span>
-        )}
-      </span>
+        }
+      >
+        {children}
+      </MenuItemContent>
     </ComboboxPrimitive.Item>
   )
 }
@@ -105,22 +106,17 @@ export function ComboboxGroupRow({
       disabled={disabled}
       onClick={onToggle}
       data-slot="combobox-group-row"
-      className={cn(
-        "relative flex w-full cursor-default items-start gap-4 p-4 text-left text-p2-regular outline-hidden select-none hover:bg-[#F8F8F8] disabled:pointer-events-none disabled:opacity-50",
+      className={menuItemRowClass(
+        "hover:bg-[var(--menu-item-bg-highlighted)] disabled:pointer-events-none disabled:opacity-50",
         className
       )}
     >
-      <ComboboxCheckbox state={state} disabled={disabled} className="mt-0.5" />
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="truncate font-medium text-[var(--select-fg)]">
-          {label}
-        </span>
-        {description && (
-          <span className="truncate text-p3-medium text-[var(--select-caption-fg)]">
-            {description}
-          </span>
-        )}
-      </span>
+      <MenuItemContent
+        description={description}
+        leading={<ComboboxCheckbox state={state} disabled={disabled} />}
+      >
+        {label}
+      </MenuItemContent>
     </button>
   )
 }

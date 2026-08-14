@@ -43,7 +43,7 @@ export function ComboboxFooter({
       // dropdown" footer (both the checkbox-tree and plain examples on
       // canvas 666:11), not the kit's generic --border token (#E5E5E5).
       className={cn(
-        "flex shrink-0 border-t border-[#DEDEDE]",
+        "flex shrink-0 border-t border-[var(--menu-item-divider)]",
         className
       )}
     >

@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
+import type { CreateMenuItem, HeaderMenuGroup } from "@/components/ui/header-menu"
+
 import { Header } from "./header"
 import type { HeaderNavItem } from "./header"
 import type { ProfileMenuOrganization } from "./profile-menu"
@@ -25,16 +27,31 @@ const ORG_MANY: ProfileMenuOrganization[] = [
   { id: "7", name: "ООО «Прогресс»", inn: "7701234578", role: "Бухгалтер" },
 ]
 
+const MENU_GROUPS: HeaderMenuGroup[] = [
+  {
+    value: "payments",
+    title: "Платежи и операции",
+    links: [{ value: "payments", label: "Платежи" }],
+  },
+]
+
+const CREATE_ITEMS: CreateMenuItem[] = [
+  { value: "payment", label: "Платёж по реквизитам" },
+]
+
 describe("Header", () => {
-  it("renders the payment button and nav items for the plain Client state", () => {
+  // Дизайн-чек №30: в макете (`Menu Header (ELK)`) в нижнем ряду две
+  // кнопки — «Меню» и «Создать», — а не одна «Платёж».
+  it("renders the Меню/Создать buttons and nav items for the plain Client state", () => {
     render(<Header type="client" navItems={NAV_ITEMS} organizations={ORG_ONE} />)
-    expect(screen.getByRole("button", { name: /Платёж/ })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Меню" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Создать" })).toBeInTheDocument()
     // The always-rendered off-screen measurement copy (see useOverflowCount)
     // duplicates every nav item, so this legitimately renders twice.
     expect(screen.getAllByText("Рублёвые операции").length).toBeGreaterThan(0)
   })
 
-  it("hides the payment button for Client Without An Account", () => {
+  it("hides the Создать button for Client Without An Account", () => {
     render(
       <Header
         type="client"
@@ -43,7 +60,8 @@ describe("Header", () => {
         organizations={ORG_ONE}
       />
     )
-    expect(screen.queryByRole("button", { name: /Платёж/ })).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Меню" })).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Создать" })).not.toBeInTheDocument()
   })
 
   it("renders only the logo and org switcher for Client is Blocked", () => {
@@ -55,9 +73,57 @@ describe("Header", () => {
         organizations={ORG_ONE}
       />
     )
-    expect(screen.queryByRole("button", { name: /Платёж/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Меню" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Создать" })).not.toBeInTheDocument()
     expect(screen.queryByText("Рублёвые операции")).not.toBeInTheDocument()
     expect(screen.getByText("ООО «Северострой»")).toBeInTheDocument()
+  })
+
+  // Дизайн-чек №30: раскрывается ровно одна панель за раз, и раскрывают её
+  // только кнопки «Меню»/«Создать» — у пункта навигации своего выпадающего
+  // списка в макете нет.
+  it("opens the navigation panel from Меню and swaps it for the create panel", async () => {
+    const user = userEvent.setup()
+    render(
+      <Header
+        type="client"
+        navItems={NAV_ITEMS}
+        organizations={ORG_ONE}
+        menuGroups={MENU_GROUPS}
+        createItems={CREATE_ITEMS}
+      />
+    )
+
+    await user.click(screen.getByRole("button", { name: "Меню" }))
+    expect(screen.getByText("Платежи и операции")).toBeInTheDocument()
+
+    await user.click(screen.getByRole("button", { name: "Создать" }))
+    expect(screen.queryByText("Платежи и операции")).not.toBeInTheDocument()
+    expect(screen.getByText("Платёж по реквизитам")).toBeInTheDocument()
+
+    await user.click(screen.getByRole("button", { name: "Создать" }))
+    expect(screen.queryByText("Платёж по реквизитам")).not.toBeInTheDocument()
+  })
+
+  // Вариант `Size=None` (нода 70303:49022): пункты нижнего ряда — избранные
+  // разделы, и пока их нет, на их месте стоит подсказка.
+  it("shows the empty-favourites hint instead of nav items", () => {
+    render(
+      <Header
+        type="client"
+        navItems={[]}
+        organizations={ORG_ONE}
+        onFavouriteToggle={() => {}}
+      />
+    )
+    expect(
+      screen.getByText(/Избранное — наведите курсор на элемент в меню/)
+    ).toBeInTheDocument()
+  })
+
+  it("omits the hint when favourites are not wired up", () => {
+    render(<Header type="client" navItems={[]} organizations={ORG_ONE} />)
+    expect(screen.queryByText(/Избранное — наведите курсор/)).not.toBeInTheDocument()
   })
 
   it("renders the hamburger and a standalone logout button for Employee", () => {

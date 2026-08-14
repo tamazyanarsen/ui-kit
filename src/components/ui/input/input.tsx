@@ -60,7 +60,13 @@ const inputFieldVariants = cva(
   {
     variants: {
       size: {
-        sm: "text-p2-medium",
+        // Обновление мобильного макета Input (канвас 666:12, компонент-сет
+        // «ELK / input» v1.2.0): у размера S текст на мобиле — 12/16
+        // (Mobile. Параграф/P2 Medium Mobile, нода 70303:80530), а на
+        // десктопе остаётся 14/20 (Desktop. Параграф/P2 Medium, нода
+        // 70303:80528). Раньше оба брейкпоинта держали 14/20, из-за чего
+        // мобильный S был крупнее макета.
+        sm: "text-p3-medium md:text-p2-medium",
         lg: "text-p2-medium md:text-p1-medium",
       },
       // Floating label only exists at the L size — at S (32px) there isn't
@@ -459,7 +465,9 @@ function Input({
                     // value out of view (looked like the digits were
                     // scrambled/duplicated, but the underlying value was
                     // correct all along).
-                    size === "sm" ? "text-p2-medium" : "text-p2-medium md:text-p1-medium"
+                    size === "sm"
+                      ? "text-p3-medium md:text-p2-medium"
+                      : "text-p2-medium md:text-p1-medium"
                   )}
                 >
                   {maskValue}
@@ -474,7 +482,9 @@ function Input({
                     "-ml-1.5 shrink-0 text-[var(--input-fg)] md:-ml-2",
                     // Same size branches as the field itself — see the
                     // measuring span above for why this must match exactly.
-                    size === "sm" ? "text-p2-medium" : "text-p2-medium md:text-p1-medium",
+                    size === "sm"
+                      ? "text-p3-medium md:text-p2-medium"
+                      : "text-p2-medium md:text-p1-medium",
                     // The field's own text sits lower than the row's
                     // vertical center once the floating label pushes it
                     // down (inputFieldVariants' floating pt-4/pt-5) — match

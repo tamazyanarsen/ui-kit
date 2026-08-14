@@ -16,22 +16,44 @@ const BASE_STEPS: Step[] = [
   },
 ]
 
+/* Дизайн-чек №17: количество шагов — списком, а не правкой JSON-массива.
+   Пул устроен так, что с ростом числа подключаются и разные состояния шага
+   (заполнен → активный → обычный → заблокированный). */
+const STEP_COUNTS = [1, 2, 3, 4] as const
+type StepCount = (typeof STEP_COUNTS)[number]
+
+type PlaygroundArgs = StepsProps & { stepsCount?: StepCount }
+
 const meta = {
   title: "Компоненты/Steps",
   component: Steps,
   parameters: { layout: "padded" },
   argTypes: {
-    steps: { control: "object" },
+    stepsCount: {
+      name: "Количество шагов",
+      control: "select",
+      options: STEP_COUNTS,
+    },
+    steps: { table: { disable: true } },
     showLeftFade: { control: "boolean" },
     showRightFade: { control: "boolean" },
   },
-  args: { steps: BASE_STEPS, showLeftFade: false, showRightFade: false },
-} satisfies Meta<StepsProps>
+  args: {
+    steps: BASE_STEPS,
+    stepsCount: 4,
+    showLeftFade: false,
+    showRightFade: false,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<StepsProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ stepsCount = 4, ...args }) => (
+    <Steps {...args} steps={BASE_STEPS.slice(0, stepsCount)} />
+  ),
+}
 
 /* A single step's own State (default / active / disabled) × Status (none /
    filled / error) is the real grid — the Steps container is just the strip

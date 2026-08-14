@@ -7,37 +7,37 @@ import type { ProfileMenuOrganization } from "@/components/ui/header"
 import { TopFixedMessage } from "@/components/ui/top-fixed-message"
 import { useToast } from "@/components/ui/toast-message"
 import {
+  CREATE_ITEMS,
+  MENU_BANNERS,
+  MENU_FAVOURITES,
+  MENU_GROUPS,
+} from "@/stories/menu-fixtures"
+import {
   AccordionItem,
   AccordionTrigger,
   AccordionPanel,
-} from "@/components/ui/accordion"
+} from "@/demo/scaffold"
 
 import { RowLabel } from "./shared"
 
-function subItems(prefix: string) {
-  return [
-    { value: `${prefix}-1`, label: "Пример пункта 1" },
-    { value: `${prefix}-2`, label: "Пример пункта 2" },
-  ]
-}
-
+// Дизайн-чек №30: у пункта навигации в макете нет собственного выпадающего
+// списка — раскрывается только кнопка «Меню» (в панель `HeaderMenu`),
+// поэтому пункты здесь плоские.
 const FULL_NAV: HeaderNavItem[] = [
-  { value: "cash", label: "Рублёвые операции", items: subItems("cash") },
-  { value: "accounts", label: "Счета и карты", items: subItems("accounts") },
-  { value: "deposits", label: "Депозиты и НСО", items: subItems("deposits") },
-  { value: "sbp", label: "СБП", items: subItems("sbp") },
-  { value: "project", label: "Проектное финансирование", items: subItems("project") },
-  { value: "credits", label: "Кредиты", items: subItems("credits") },
-  { value: "payroll", label: "Зарплатный проект", items: subItems("payroll") },
-  { value: "letters", label: "Аккредитивы" },
+  { value: "payments", label: "Платежи", active: true },
+  { value: "accounts", label: "Счета" },
+  { value: "statements", label: "Операции и выписки" },
+  { value: "business-cards", label: "Бизнес-карты" },
+  { value: "deposits", label: "Депозиты" },
   { value: "certificates", label: "Справки" },
-  { value: "escrow", label: "Эскроу" },
+  { value: "letters", label: "Письма в банк" },
+  { value: "help", label: "Помощь" },
 ]
 
 const NO_ACCOUNT_NAV: HeaderNavItem[] = [
-  { value: "deposits", label: "Депозиты и НСО", items: subItems("deposits") },
-  { value: "sbp", label: "СБП", items: subItems("sbp") },
-  { value: "project", label: "Проектное финансирование", items: subItems("project") },
+  { value: "deposits", label: "Депозиты" },
+  { value: "sbp", label: "СБП" },
+  { value: "project", label: "Проектное финансирование" },
   { value: "payroll", label: "Зарплатный проект" },
   { value: "certificates", label: "Справки" },
 ]
@@ -142,6 +142,8 @@ function ClientHeaderExample({
 function HeaderDemo() {
   const [narrowOrgId, setNarrowOrgId] = useState(ORGS_FEW[1].id)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [favourites, setFavourites] = useState(MENU_FAVOURITES)
+  const { add } = useToast()
 
   return (
     <AccordionItem value="header">
@@ -149,11 +151,30 @@ function HeaderDemo() {
       <AccordionPanel>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <RowLabel>Client</RowLabel>
-            <div className="overflow-hidden rounded-2xl border border-[var(--header-border)]">
+            <RowLabel>
+              Client — кнопка «Меню» раскрывает панель разделов, «Создать» —
+              плитки новых документов
+            </RowLabel>
+            {/* Без overflow-hidden: раскрытая панель уходит ниже шапки и
+                внутри клиппинга её попросту не было бы видно. */}
+            <div className="rounded-2xl border border-[var(--header-border)]">
               <Header
                 type="client"
                 navItems={FULL_NAV}
+                menuGroups={MENU_GROUPS}
+                menuBanners={MENU_BANNERS}
+                createItems={CREATE_ITEMS}
+                favourites={favourites}
+                onFavouriteToggle={(value) =>
+                  setFavourites((prev) =>
+                    prev.includes(value)
+                      ? prev.filter((item) => item !== value)
+                      : [...prev, value]
+                  )
+                }
+                onCustomiseFavourites={() =>
+                  add({ type: "information", title: "Настройка избранного" })
+                }
                 documentMenuItems={DOCUMENT_ITEMS}
                 messageCount={3}
                 notificationItems={NOTIFICATIONS}
@@ -172,7 +193,7 @@ function HeaderDemo() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <RowLabel>Client Without An Account — нет кнопки «Платёж»</RowLabel>
+            <RowLabel>Client Without An Account — нет кнопки «Создать»</RowLabel>
             <div className="overflow-hidden rounded-2xl border border-[var(--header-border)]">
               <Header
                 type="client"
@@ -247,13 +268,15 @@ function HeaderDemo() {
         </div>
 
         <p className="mt-6 text-p3-regular text-muted-foreground">
-          Header собирает: логотип, навигацию с overflow-в-«Ещё» (тот же
-          механизм, что у Tabs/Switcher), центр уведомлений, счётчик
-          сообщений, меню документов, и Profile Menu — переключатель
-          организаций с живым поиском при 7+ организациях. «Выйти» (из
-          Profile Menu или отдельная иконка у Employee) открывает
-          подтверждение через общий компонент Modal; переключение
-          организации показывает тост через общий ToastProvider.
+          Header собирает: логотип, две кнопки нижнего ряда («Меню» и
+          «Создать», каждая раскрывает свою панель из ui/header-menu),
+          навигацию с overflow-в-«Ещё» (тот же механизм, что у
+          Tabs/Switcher), центр уведомлений, счётчик сообщений, меню
+          документов, и Profile Menu — переключатель организаций с живым
+          поиском при 7+ организациях. «Выйти» (из Profile Menu или
+          отдельная иконка у Employee) открывает подтверждение через общий
+          компонент Modal; переключение организации показывает тост через
+          общий ToastProvider.
         </p>
       </AccordionPanel>
     </AccordionItem>

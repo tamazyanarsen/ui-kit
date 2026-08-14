@@ -142,8 +142,18 @@ function Filter({
   } else if (disabled) {
     triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
   } else {
+    // Дизайн-чек №19/№20: брендовая обводка — это состояние «фильтр выбран»,
+    // а не «поповер открыт». В макете `State=Active` у обоих типов —
+    // Filter (White), нода 54887:29390, и Filter (Grey), нода 54887:29400 —
+    // это пилюля с выставленным значением: заливка своя (white-101 у белого,
+    // grey-109 у серого), сверху `border-2` цвета Base/Blue 223. Раньше
+    // обводка держалась только пока открыт список и пропадала сразу после
+    // выбора — то есть «выбранную чипсу с брендовой обводкой» увидеть было
+    // нельзя, о чём дизайн-чек и говорит.
     triggerToneClass = cn(
-      open ? "border-[var(--filter-active-border)]" : "border-transparent",
+      open || hasValue
+        ? "border-[var(--filter-active-border)]"
+        : "border-transparent",
       background === "grey"
         ? "bg-[var(--filter-grey-bg)] hover:bg-[var(--filter-grey-bg-hover)]"
         : "bg-[var(--filter-white-bg)] hover:bg-[var(--filter-white-bg-hover)]"

@@ -14,7 +14,17 @@ interface EmptySearchResultsProps {
   largeIcon?: boolean
   title: React.ReactNode
   description?: React.ReactNode
+  /**
+   * Показывать ли кнопку. Дизайн-чек №27: раньше кнопка появлялась и
+   * пропадала по факту заполнения `buttonLabel`, то есть «включалась
+   * текстовой строчкой» — в Storybook её нельзя было выключить иначе, чем
+   * стерев подпись. Теперь это отдельное булево свойство; по умолчанию —
+   * как раньше, чтобы не ломать существующие вызовы.
+   */
+  showButton?: boolean
   buttonLabel?: React.ReactNode
+  /** «Нам здесь может понадобиться либо брендовая кнопка, либо серая». */
+  buttonVariant?: "primary" | "secondary-grey"
   onButtonClick?: () => void
   className?: string
 }
@@ -24,10 +34,13 @@ function EmptySearchResults({
   largeIcon = false,
   title,
   description,
+  showButton,
   buttonLabel,
+  buttonVariant = "secondary-grey",
   onButtonClick,
   className,
 }: EmptySearchResultsProps) {
+  const isButtonVisible = showButton ?? buttonLabel != null
   // Figma's Size Icon (ELK) has both forms (node 4109:25427/25428): the
   // large one puts `icon / alert` at 24px in the 48px tile, the small one at
   // 16px. The drawings differ, so the default icon follows `largeIcon`
@@ -68,10 +81,10 @@ function EmptySearchResults({
           {description}
         </p>
       )}
-      {buttonLabel && (
+      {isButtonVisible && (
         <Button
           type="button"
-          variant="secondary-grey"
+          variant={buttonVariant}
           size="sm"
           className="mt-6"
           onClick={onButtonClick}

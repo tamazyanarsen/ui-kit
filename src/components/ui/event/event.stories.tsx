@@ -13,6 +13,43 @@ const STATUSES: EventStatus[] = [
   "information",
 ]
 
+/* Дизайн-чек №17: три списка события (подписанты, реквизиты, документы)
+   раньше правились JSON-редактором. Теперь у каждого — счётчик, а сами
+   массивы собираются из пулов ниже. Ноль означает «блок выключен», что и
+   есть настоящая проверяемая вариация компонента. */
+const SIGNATORY_POOL: NonNullable<EventProps["signatories"]> = [
+  { status: "success", name: "Иванов И.И.", attribute: "Первая подпись" },
+  { status: "attention", name: "Петров П.П.", attribute: "Вторая подпись" },
+  { status: "success", name: "Сидоров С.С.", attribute: "Единственная подпись" },
+]
+
+const INFO_POOL: NonNullable<EventProps["info"]> = [
+  { label: "Сумма:", value: "10 000 ₽" },
+  { label: "Счёт:", value: "40702810...1234" },
+  { label: "Период:", value: "Сокращённый" },
+]
+
+const DOCUMENT_POOL: NonNullable<EventProps["documents"]> = [
+  { name: "Договор.pdf", meta: "1.2 МБ" },
+  { name: "Приложение.pdf", meta: "512 КБ" },
+  { name: "Акт.pdf", meta: "128 КБ" },
+]
+
+const LIST_COUNTS = [0, 1, 2, 3] as const
+type ListCount = (typeof LIST_COUNTS)[number]
+
+const listCountArg = (name: string) =>
+  ({ name, control: "select", options: LIST_COUNTS }) as const
+
+/* Переключатель видимости кнопки живёт в истории, а не в компоненте: сам
+   проп — это подпись, а не флаг (дизайн-чек №27). */
+type PlaygroundArgs = EventProps & {
+  showButton?: boolean
+  signatoriesCount?: ListCount
+  infoCount?: ListCount
+  documentsCount?: ListCount
+}
+
 const meta = {
   title: "Компоненты/Event",
   component: Event,
@@ -28,14 +65,16 @@ const meta = {
     author: { control: "text" },
     commentLabel: { control: "text" },
     comment: { control: "text" },
+    // Дизайн-чек №27: кнопка включается булевым переключателем.
+    showButton: { name: "Кнопка", control: "boolean" },
     buttonLabel: { control: "text" },
     showConnector: { control: "boolean" },
-    // Arrays of plain structured data — a JSON control is the honest editor
-    // here, and each ships with a default so every optional block of the
-    // event is visible in the Playground.
-    signatories: { control: "object" },
-    info: { control: "object" },
-    documents: { control: "object" },
+    signatoriesCount: listCountArg("Подписантов"),
+    infoCount: listCountArg("Строк реквизитов"),
+    documentsCount: listCountArg("Документов"),
+    signatories: { table: { disable: true } },
+    info: { table: { disable: true } },
+    documents: { table: { disable: true } },
   },
   args: {
     type: "text",
@@ -44,28 +83,37 @@ const meta = {
     timestamp: "10:00",
     author: "Иванов И.И.",
     showConnector: true,
+    showButton: true,
     buttonLabel: "Подробнее",
     commentLabel: "Комментарий",
     comment: "Комментарий согласующего к заявке",
-    signatories: [
-      { status: "success", name: "Иванов И.И.", attribute: "Первая подпись" },
-      { status: "attention", name: "Петров П.П.", attribute: "Вторая подпись" },
-    ],
-    info: [
-      { label: "Сумма:", value: "10 000 ₽" },
-      { label: "Счёт:", value: "40702810...1234" },
-    ],
-    documents: [
-      { name: "Договор.pdf", meta: "1.2 МБ" },
-      { name: "Приложение.pdf", meta: "512 КБ" },
-    ],
+    signatoriesCount: 2,
+    infoCount: 2,
+    documentsCount: 2,
   },
-} satisfies Meta<EventProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<EventProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({
+    showButton,
+    buttonLabel,
+    signatoriesCount = 2,
+    infoCount = 2,
+    documentsCount = 2,
+    ...args
+  }) => (
+    <Event
+      {...args}
+      buttonLabel={showButton ? buttonLabel : undefined}
+      signatories={SIGNATORY_POOL.slice(0, signatoriesCount)}
+      info={INFO_POOL.slice(0, infoCount)}
+      documents={DOCUMENT_POOL.slice(0, documentsCount)}
+    />
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

@@ -5,16 +5,48 @@ import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
 
 import { Item, type ItemProps, type RightElementType } from "./item"
 
+/* Дизайн-чек №33: «набор атрибутов компонента Item не соответствует
+   таковому в Figma… необходимо привести атрибуты в Storybook в соответствие
+   с тем, как это оформлено в Figma, чтобы можно было проверять компоненты».
+
+   Компонент-сет «ELK / item» (нода 31845:82730) объявляет ровно пять
+   свойств, и все они теперь есть в контролах под своими именами:
+
+     State        = Default | Disabled            → `disabled`
+     Type         = Value | Thumbneil             → `thumbnail`
+     Сonclusion   = False | True                  → строка `text` над Value
+     Sub Сategory = False | True                  → `subCategory`
+     Text Color   = Grey | Red | Yellow           → `commentColor`
+
+   Плюс два булевых слота самого мастера — `showComment` и
+   `showRightElement` — и вложенный сет «Right Element (Desktop, ELK)»
+   (нода 31845:85324) со своими семью значениями.
+
+   Заодно исправлено имя: наш `accordion` — это Figma-шный `Select`
+   (нода 31845:85333 рисует ровно `icon / arrow down chevron`), так что
+   значение переименовано, чтобы список совпадал с макетом. `none` —
+   единственное добавленное сверх Figma значение: в макете правый элемент
+   выключается отдельным булевым слотом, а у нас это его же список. */
 const RIGHT_ELEMENTS: RightElementType[] = [
   "none",
-  "navigation",
-  "information",
-  "accordion",
   "check",
   "text",
-  "toggle",
+  "navigation",
+  "information",
+  "select",
   "checkbox",
+  "toggle",
 ]
+
+const FIGMA_TYPES = ["Value", "Thumbneil"] as const
+type FigmaType = (typeof FIGMA_TYPES)[number]
+
+type PlaygroundArgs = ItemProps & {
+  figmaType?: FigmaType
+  conclusion?: boolean
+  showComment?: boolean
+  showRightElement?: boolean
+}
 
 const meta = {
   title: "Компоненты/Item",
@@ -25,11 +57,23 @@ const meta = {
   // "None"/"Default" choice to `undefined`/`true` instead of disabling
   // the control (same technique as Button's `icon`).
   argTypes: {
-    thumbnail: {
-      control: { type: "select", labels: { none: "None", default: "Default" } },
-      options: ["none", "default"],
-      mapping: { none: undefined, default: true },
+    // Type в Figma — это наличие тумбнейла: Value (без) / Thumbneil (с).
+    figmaType: {
+      name: "Type",
+      description: "Свойство Type компонента ELK / item",
+      control: "inline-radio",
+      options: FIGMA_TYPES,
     },
+    thumbnail: { table: { disable: true } },
+    // Сonclusion=True добавляет строку Text над Value (P2 Medium над P1
+    // Medium) — сверено на нодах 31845:82731 (True) и 31845:85106 (False).
+    conclusion: {
+      name: "Сonclusion",
+      description: "Строка Text над значением",
+      control: "boolean",
+    },
+    showComment: { name: "Comment", control: "boolean" },
+    showRightElement: { name: "Right Element", control: "boolean" },
     // `text`/`comment`/`informationText`/`rightText` are all `React.ReactNode`
     // but every usage is a plain string — without this, leaving one unset
     // falls back to a generic "Set object" JSON editor.
@@ -38,11 +82,19 @@ const meta = {
     comment: { control: "text" },
     informationText: { control: "text" },
     rightText: { control: "text" },
-    commentColor: { control: "inline-radio", options: ["grey", "red", "yellow"] },
-    rightElement: { control: "select", options: RIGHT_ELEMENTS },
-    subCategory: { control: "boolean" },
+    commentColor: {
+      name: "Text Color",
+      control: "inline-radio",
+      options: ["grey", "red", "yellow"],
+    },
+    rightElement: {
+      name: "Right Element / Type",
+      control: "select",
+      options: RIGHT_ELEMENTS,
+    },
+    subCategory: { name: "Sub Сategory", control: "boolean" },
     divider: { control: "boolean" },
-    disabled: { control: "boolean" },
+    disabled: { name: "State: Disabled", control: "boolean" },
     // Only meaningful for rightElement="toggle" / "checkbox". The Playground
     // keeps them clickable through its own state, but setting the control
     // pins the value (same pattern as Checkbox's `checked`).
@@ -50,24 +102,45 @@ const meta = {
     checkboxChecked: { control: "boolean" },
   },
   args: {
+    figmaType: "Value",
+    conclusion: true,
     text: "Тип операции",
     value: "Перевод между счетами",
-    rightElement: "none",
+    rightElement: "navigation",
+    showRightElement: true,
     subCategory: false,
     disabled: false,
+    showComment: true,
     comment: "Comment",
     commentColor: "grey",
     informationText: "Дополнительная информация об операции",
     rightText: "+1,5%",
     divider: true,
   },
-} satisfies Meta<ItemProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<ItemProps>
+type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: (args) => <InteractiveItem {...args} />,
+  render: ({
+    figmaType,
+    conclusion,
+    showComment,
+    showRightElement,
+    text,
+    comment,
+    rightElement,
+    ...args
+  }) => (
+    <InteractiveItem
+      {...args}
+      thumbnail={figmaType === "Thumbneil" ? true : undefined}
+      text={conclusion ? text : undefined}
+      comment={showComment ? comment : undefined}
+      rightElement={showRightElement ? rightElement : "none"}
+    />
+  ),
 }
 
 // Keeps the toggle/checkbox right-elements clickable, while still letting

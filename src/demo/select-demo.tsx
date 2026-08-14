@@ -11,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionPanel,
-} from "@/components/ui/accordion"
+} from "@/demo/scaffold"
 
 const FRUIT_OPTIONS = [
   { value: "apple", label: "Apple" },

@@ -92,8 +92,16 @@ function Event({
       <div className="flex min-w-0 flex-1 flex-col gap-2 pb-6">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline justify-between gap-2">
+            {/* Дизайн-чек №29: тег здесь desktop-размера (22px), а не
+                mobile-огрызок. Event уже собирался «матрёшкой» — это тот же
+                общий компонент Tag, — но стоял `size="s"`, то есть
+                18px-мобильная форма, и на фоне остального desktop-контента
+                тег выглядел мельче исходного компонента. В мастере
+                `Head Event (ELK)`, вариант `Type=Status` (нода 40503:42354)
+                инстанс `ELK / tag` замеряется как min/max-h 22px с текстом
+                P2 Medium 14/20 — это ровно Tag `size="l"`. */}
             {type === "tag" ? (
-              <Tag color={STATUS_TAG_COLOR[status]} size="s">
+              <Tag color={STATUS_TAG_COLOR[status]} size="l">
                 {title}
               </Tag>
             ) : (

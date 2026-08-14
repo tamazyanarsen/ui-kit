@@ -5,22 +5,53 @@ import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
 
 import { Pagination, type PaginationProps } from "./pagination"
 
+/* Дизайн-чек №17: набор вариантов «записей на странице» — готовые пресеты,
+   а не JSON-массив в контролах. */
+const PAGE_SIZE_PRESETS = {
+  "25 / 50 / 100": [25, 50, 100],
+  "10 / 25 / 50": [10, 25, 50],
+  "50 / 100": [50, 100],
+} satisfies Record<string, number[]>
+
+type PageSizePreset = keyof typeof PAGE_SIZE_PRESETS
+
+type PlaygroundArgs = PaginationProps & { pageSizePreset?: PageSizePreset }
+
 const meta = {
   title: "Компоненты/Paginator",
   component: Pagination,
   parameters: { layout: "padded" },
   argTypes: {
+    // Дизайн-чек №36: набор свойств приведён к компонент-сету «ELK /
+    // paginator» — появились `Size` (L/M) и переключатель блока страниц,
+    // которого не хватало, чтобы проверить случай «всё уместилось на одной
+    // странице».
+    size: { name: "Size", control: "inline-radio", options: ["L", "M"] },
     page: { control: { type: "number", min: 1 } },
     totalPages: { control: { type: "number", min: 1 } },
     pageSize: { control: "number" },
-    pageSizeOptions: { control: "object" },
-    showPageSize: { control: "boolean" },
+    pageSizePreset: {
+      name: "Варианты записей на странице",
+      control: "select",
+      options: Object.keys(PAGE_SIZE_PRESETS),
+    },
+    pageSizeOptions: { table: { disable: true } },
+    showPages: { name: "Блок страниц", control: "boolean" },
+    showPageSize: { name: "Выбор числа записей", control: "boolean" },
   },
-  args: { page: 5, totalPages: 20, pageSize: 25, showPageSize: true },
-} satisfies Meta<PaginationProps>
+  args: {
+    size: "L",
+    pageSizePreset: "25 / 50 / 100",
+    page: 5,
+    totalPages: 20,
+    pageSize: 25,
+    showPages: true,
+    showPageSize: true,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<PaginationProps>
+type Story = StoryObj<PlaygroundArgs>
 
 function Controlled({ page, pageSize, ...props }: PaginationProps) {
   const [currentPage, setCurrentPage] = useState(page)
@@ -39,8 +70,12 @@ function Controlled({ page, pageSize, ...props }: PaginationProps) {
 export const Playground: Story = {
   // Remount on every arg change so the `page`/`pageSize` controls actually
   // move the (otherwise internally-owned) state.
-  render: (args) => (
-    <Controlled key={`${args.page}-${args.pageSize}`} {...args} />
+  render: ({ pageSizePreset, ...args }) => (
+    <Controlled
+      key={`${args.page}-${args.pageSize}-${pageSizePreset}`}
+      {...args}
+      pageSizeOptions={PAGE_SIZE_PRESETS[pageSizePreset ?? "25 / 50 / 100"]}
+    />
   ),
 }
 
@@ -52,6 +87,10 @@ export const Matrix: Story = {
       stretch
       cellClassName="min-w-[560px]"
       rowHeader={RESPONSIVE_NOTE}
+      // Без `pageSize` правая часть («Показать на странице» + 25/50/100) не
+      // рендерится вовсе, и половина строк матрицы — включая «Без выбора
+      // размера» и «Пустой результат» — выглядела одинаково пустой.
+      baseProps={{ pageSize: 25 }}
       columns={[{ label: "Paginator" }]}
       rows={[
         // ≤ 7 pages renders every number, no ellipsis.
@@ -63,7 +102,19 @@ export const Matrix: Story = {
           label: "Без выбора размера",
           props: { page: 1, totalPages: 10, showPageSize: false },
         },
+        // «Если все записи отображаются на одной странице, в правой части
+        // пагинатора должен оставаться только один активный элемент —
+        // текущая страница» (нода 30021:39016).
         { label: "Одна страница", props: { page: 1, totalPages: 1 } },
+        // «В случае, если система возвращает пустое значение, пагинатор
+        // также отображается, но отображается только правая часть (с
+        // выбором числа записей на странице)» — там же.
+        {
+          label: "Пустой результат\n(страницы отключены)",
+          props: { page: 1, totalPages: 1, showPages: false },
+        },
+        // Size=M: «выбор числа записей перемещается вниз на левую сторону».
+        { label: "Size = M", props: { page: 5, totalPages: 20, size: "M" } },
         { label: "Hover", props: { page: 10, totalPages: 20 }, pseudo: "hover" },
       ]}
       render={(props) => <Controlled {...props} />}

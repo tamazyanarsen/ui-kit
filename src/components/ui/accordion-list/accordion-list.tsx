@@ -130,56 +130,71 @@ function AccordionListItem({
               </span>
             )}
 
+            {/* Колонка Title.Subtitle из мастера: `flex-1 flex-col gap-4`,
+                внутри — строка Title (Text + Status) и под ней Subtitle
+                (нода I42675:20084;50449:7206). Status («Подписано») живёт
+                именно здесь, на строке заголовка, а не в группе кнопок —
+                отсюда и претензия дизайн-чека №24, что он «располагается
+                выше чем середина по кнопкам». */}
             <span className="flex min-w-0 flex-1 flex-col gap-1">
-              {/* The title→chevron gap is the ONE measurement that differs
-                  between the two title sizes: 12px on H3, 8px on H4 — read
-                  off each variant's own `spaceVertical` marker in the
-                  anatomy (H3 spans 92→104, H4 spans 83→91 relative to the
-                  row). Everything else (checkbox gap 16, title/subtitle 4,
-                  gap-to-buttons 16, inside-buttons 8) is shared. */}
-              <span
-                className={cn(
-                  "flex items-center",
-                  titleAs === "h4" ? "gap-2" : "gap-3"
-                )}
-              >
+              <span className="flex w-full items-start gap-3">
+                {/* Дизайн-чек №23: заголовок больше не обрезается в
+                    многоточие. «Длинный текст становится многострочным, а
+                    иконка шеврона ставится не по концу контейнера текста, а
+                    ставится с небольшим пробелом от последнего символа в
+                    конце строки, то есть располагается inline». Поэтому
+                    шеврон — inline-элемент внутри самого текста, а не
+                    отдельная flex-колонка: так он едет за последним словом
+                    при переносе. В мастере он лежит во вложенном фрейме
+                    `Text` (flex gap-12, items-end), что для одной строки
+                    даёт тот же результат, а многострочный случай в
+                    документации просто не нарисован.
+
+                    Зазор до шеврона — единственная метрика, различающаяся
+                    между размерами заголовка: 12px на H3 и 8px на H4
+                    (Text-фрейм H3 — gap-[12px]; в H4 заголовок шириной 43
+                    заканчивается на 43, а Box начинается на 51). */}
                 <span
                   className={cn(
-                    "truncate text-[var(--accordion-list-title-fg)]",
+                    "min-w-0 flex-1 text-[var(--accordion-list-title-fg)]",
                     TITLE_SIZE[titleAs]
                   )}
                 >
                   {title}
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    data-slot="accordion-list-chevron"
+                    className={cn(
+                      "inline-block size-4 shrink-0 align-middle text-[var(--accordion-list-icon-fg)] transition-transform duration-200",
+                      titleAs === "h4" ? "ml-2" : "ml-3"
+                    )}
+                  />
                 </span>
-                <ChevronDownIcon
-                  aria-hidden="true"
-                  data-slot="accordion-list-chevron"
-                  className="size-4 shrink-0 text-[var(--accordion-list-icon-fg)] transition-transform duration-200"
-                />
+
+                {description && (
+                  <span
+                    className={cn(
+                      // `py` из мастера (Status — `flex items-start py-[4px]`)
+                      // центрирует 24px-строку в 32px-строке заголовка H3;
+                      // на H4 строка заголовка 28px, поэтому 2px.
+                      "shrink-0 text-right text-p1-medium",
+                      titleAs === "h4" ? "py-0.5" : "py-1",
+                      DESCRIPTION_COLOR[descriptionType]
+                    )}
+                  >
+                    {description}
+                  </span>
+                )}
               </span>
               {subtitle && (
-                <span className="truncate text-p1-medium text-[var(--accordion-list-subtitle-fg)]">
+                // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
+                <span className="text-p1-medium text-[var(--accordion-list-subtitle-fg)]">
                   {subtitle}
                 </span>
               )}
             </span>
 
-            {/* Description sits on the Title row in Figma (Text+Status share
-                the "Top" row's own 16px gap), while Button/kebab form their
-                own tight 8px-gap group — a single flat gap here would force
-                both distances to the same value, which pixel-measurement
-                against the rendered spec component didn't support. */}
             <span className="flex shrink-0 items-start gap-4">
-              {description && (
-                <span
-                  className={cn(
-                    "text-p1-medium",
-                    DESCRIPTION_COLOR[descriptionType]
-                  )}
-                >
-                  {description}
-                </span>
-              )}
               {(showButton || showMore) && (
                 <span className="flex items-start gap-2">
                   {showButton && (

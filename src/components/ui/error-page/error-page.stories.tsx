@@ -7,6 +7,13 @@ import { ErrorPage } from "./error-page"
 
 type ErrorPageProps = ComponentProps<typeof ErrorPage>
 
+/* Дизайн-чек №27: «здесь и далее использовать текстовую строчку в простом
+   состоянии для выключения кнопки некорректно» — кнопка включается булевым
+   переключателем, а не тем, что подпись стёрли. Сам проп остаётся текстовым
+   (это подпись, а не флаг), поэтому переключатель живёт в истории и просто
+   гасит подпись при выключении. */
+type PlaygroundArgs = ErrorPageProps & { showButton?: boolean }
+
 const meta = {
   title: "Компоненты/Error Page",
   component: ErrorPage,
@@ -15,20 +22,26 @@ const meta = {
     code: { control: "text" },
     title: { control: "text" },
     description: { control: "text" },
+    showButton: { name: "Кнопка", control: "boolean" },
     buttonLabel: { control: "text" },
   },
   args: {
     code: "404",
     title: "Страница не найдена",
     description: "Возможно, она была перемещена или удалена",
+    showButton: true,
     buttonLabel: "На главную",
   },
-} satisfies Meta<ErrorPageProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<ErrorPageProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ showButton, buttonLabel, ...args }) => (
+    <ErrorPage {...args} buttonLabel={showButton ? buttonLabel : undefined} />
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

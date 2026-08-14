@@ -30,7 +30,16 @@ function ModalBody({ className, children, ...props }: React.ComponentProps<"div"
     const el = ref.current
     if (!el) return
     const observer = new ResizeObserver(updateScrollState)
+    // Дизайн-чек №34. Само правило («разделитель виден только там, где есть
+    // невидимый контент») уже было реализовано и проверено во всех трёх
+    // состояниях — сверху, посередине и в конце прокрутки. Дыра была в
+    // моменте пересчёта: наблюдали только за самим контейнером, поэтому
+    // изменение высоты СОДЕРЖИМОГО при неизменном контейнере (подгрузилась
+    // картинка, раскрылся вложенный аккордеон, доехали веб-шрифты) не
+    // пересчитывало состояние, и разделитель мог залипнуть от предыдущего
+    // замера. Теперь наблюдаем и за детьми.
     observer.observe(el)
+    for (const child of el.children) observer.observe(child)
     return () => observer.disconnect()
   }, [updateScrollState, children])
 

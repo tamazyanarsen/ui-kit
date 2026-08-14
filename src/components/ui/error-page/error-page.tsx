@@ -2,8 +2,8 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import zeroMascot from "@/assets/error-page/zero-mascot.png"
-import noCodeMascot from "@/assets/error-page/no-code-mascot.png"
+
+import { ErrorPageIllustration } from "./illustration"
 
 // ErrorPage — "Страница ошибок" (403/404/etc). Design-check #18/#19/#20:
 // both illustrations are real assets, extracted from the Figma export's own
@@ -73,30 +73,15 @@ function ErrorPage({
           {buttonLabel}
         </Button>
       )}
-      {code && showCode ? (
-        <p className="mt-12 flex items-center text-[160px] leading-none font-bold tracking-tight text-[var(--error-page-code-fg)]">
-          {[...code].map((char, i) =>
-            char === "0" ? (
-              <img
-                key={i}
-                src={zeroMascot}
-                alt=""
-                aria-hidden="true"
-                className="h-[0.85em] w-auto"
-              />
-            ) : (
-              <span key={i}>{char}</span>
-            )
-          )}
-        </p>
-      ) : (
-        <img
-          src={noCodeMascot}
-          alt=""
-          aria-hidden="true"
-          className="mt-12 h-40 w-auto"
-        />
-      )}
+      {/* Дизайн-чек №28: иллюстрация целиком вынесена в `Image Error (ELK)`
+          и собрана по мастеру — см. illustration.tsx. Раньше цифры
+          рисовались текстом (не тем шрифтом), а «ноль» вставлялся отдельной
+          мелкой картинкой. Отступ 48px — `gap-[48px]` блока Box в мастере
+          (нода 39222:9051). */}
+      <ErrorPageIllustration
+        type={showCode ? (code as "403" | "404") : "image"}
+        className="mt-12"
+      />
     </div>
   )
 }

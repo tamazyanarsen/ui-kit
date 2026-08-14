@@ -35,7 +35,9 @@ const SECTIONS: TypeSection[] = [
   {
     name: "Параграф",
     styles: [
-      { name: "P1.1 Medium", sample: "Наборный текст первого порядка", weight: 500, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 16, lineHeight: 24, spacing: 8 } },
+      /* Дизайн-чек №3: стиль P1.1 в продукте не используется — удалён и из
+         Desktop, и из Mobile. (Он есть на канвасе Figma, но его метрики
+         совпадают с P1 Medium, отдельного текст-стиля за ним нет.) */
       { name: "P1 Heavy", sample: "Наборный текст первого порядка", weight: 800, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 14, lineHeight: 20, spacing: 8 } },
       { name: "P1 Medium", sample: "Наборный текст первого порядка", weight: 500, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 14, lineHeight: 20, spacing: 8 } },
       { name: "P1 Regular", sample: "Наборный текст первого порядка", weight: 400, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 14, lineHeight: 20, spacing: 8 } },
@@ -56,10 +58,18 @@ const SECTIONS: TypeSection[] = [
       { name: "P2 Link Regular", sample: "Ссылка второго порядка", weight: 400, link: true, desktop: { size: 14, lineHeight: 20, spacing: 8 }, mobile: { size: 12, lineHeight: 16, spacing: 8 } },
       { name: "P3 Link Medium", sample: "Ссылка третьего порядка", weight: 500, link: true, desktop: { size: 12, lineHeight: 16, spacing: 8 }, mobile: { size: 12, lineHeight: 16, spacing: 8 } },
       { name: "P3 Link Regular", sample: "Ссылка третьего порядка", weight: 400, link: true, desktop: { size: 12, lineHeight: 16, spacing: 8 }, mobile: { size: 12, lineHeight: 16, spacing: 8 } },
-      { name: "P4 Link", sample: "Ссылка четвёртого порядка", weight: 400, link: true, desktop: { size: 10, lineHeight: 12, spacing: 8 }, mobile: { size: 10, lineHeight: 12, spacing: 8 } },
+      { name: "P4 Link Regular", sample: "Ссылка четвёртого порядка", weight: 400, link: true, desktop: { size: 10, lineHeight: 12, spacing: 8 }, mobile: { size: 10, lineHeight: 12, spacing: 8 } },
     ],
   },
 ]
+
+/* Дизайн-чек №2: в Figma стили именованы с указанием платформы —
+   `Desktop. Заголовок/H1 Medium` против `Mobile. Заголовок/H1 Medium Mobile`
+   (проверено на нодах 29445:37264 и 29445:37404). Подпись под образцом
+   повторяет это имя, иначе мобильную колонку не отличить от десктопной. */
+function styleLabel(name: string, mode: "desktop" | "mobile") {
+  return mode === "mobile" ? `${name} Mobile` : name
+}
 
 function StyleRow({ style, mode }: { style: TypeStyle; mode: "desktop" | "mobile" }) {
   const spec = style[mode]
@@ -77,7 +87,7 @@ function StyleRow({ style, mode }: { style: TypeStyle; mode: "desktop" | "mobile
         >
           {style.sample}
         </span>
-        <div className="mt-1 text-xs text-[#999999]">{style.name}</div>
+        <div className="mt-1 text-xs text-[#999999]">{styleLabel(style.name, mode)}</div>
       </div>
       <div className="w-14 text-right text-xs text-[#6D6D6D] tabular-nums">{spec.size}px</div>
       <div className="w-14 text-right text-xs text-[#6D6D6D] tabular-nums">{spec.lineHeight}px</div>
@@ -89,6 +99,10 @@ function StyleRow({ style, mode }: { style: TypeStyle; mode: "desktop" | "mobile
 function TypeTable({ mode }: { mode: "desktop" | "mobile" }) {
   return (
     <div className="flex flex-1 flex-col gap-8">
+      {/* Дизайн-чек №1: на канвасе Figma колонки подписаны отдельным рядом
+          «Desktop» / «Mobile» (нода 29445:37212) — без него непонятно, какая
+          из двух таблиц какая. */}
+      <h2 className="text-h4 text-[#252628]">{mode === "desktop" ? "Desktop" : "Mobile"}</h2>
       {SECTIONS.map((section) => (
         <section key={section.name}>
           <h2 className="mb-1 text-sm font-medium text-[#72A716]">{section.name}</h2>

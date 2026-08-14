@@ -79,8 +79,6 @@ function DocumentsMultiSelect({
           applyLabel={max !== undefined ? `Выбрать: ${sel.draft.length}/${max}` : `Выбрать: ${sel.draft.length}`}
           onReset={sel.reset}
           onApply={sel.apply}
-          resetDisabled={!sel.canReset}
-          applyDisabled={!sel.canApply}
         />
       </ComboboxContent>
     </Combobox>
@@ -144,8 +142,6 @@ function TreeMultiSelect() {
           applyLabel={`Выбрать: ${sel.draft.length}`}
           onReset={sel.reset}
           onApply={sel.apply}
-          resetDisabled={!sel.canReset}
-          applyDisabled={!sel.canApply}
         />
       </ComboboxContent>
     </Combobox>

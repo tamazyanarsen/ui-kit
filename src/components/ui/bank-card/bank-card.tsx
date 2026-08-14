@@ -6,7 +6,6 @@ import { PaymentLogo } from "@/components/ui/thumbnail"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 import { useToast } from "@/components/ui/toast-message"
 
-import { Watermark } from "./watermarks"
 import { SKIN_STYLES, type BankCardSkin } from "./variants"
 
 // BankCard — "ELK / cards": the full bank-card visual (not to be confused
@@ -15,10 +14,13 @@ import { SKIN_STYLES, type BankCardSkin } from "./variants"
 // карты или CVC/CVV-код. Одновременно оба значения в полях не могут быть
 // открытыми"); revealing either value simultaneously copies it and shows a
 // toast (спецификация: "Одновременно с раскрытием должно происходить
-// копирование"). Every skin's real artwork is a pre-rendered image in
-// Figma with no extractable color data — these are CSS-gradient
-// approximations sampled from a screenshot of the variant grid, same
-// "simplified, not a literal asset" policy as PaymentLogo's brand marks.
+// копирование").
+//
+// Дизайн-чек №16: артворк каждой карты — настоящий векторный ассет из
+// Figma (см. ./variants.ts). Прежний комментарий здесь утверждал, что
+// «извлекаемых данных о цвете нет, поэтому это CSS-приближения по
+// скриншоту» — это и было причиной «принципиальных различий» с макетом:
+// ассеты у Figma есть, слоем `Card Image` внутри каждого символа.
 interface BankCardProps {
   skin?: BankCardSkin
   paymentSystem?: PaymentSystem
@@ -114,9 +116,20 @@ function CardFace({
         "relative flex h-[208px] w-[332px] flex-col gap-4 overflow-hidden rounded-[16px] border border-white p-4 shadow-[0px_23px_12px_-15px_rgba(0,0,0,0.15)]",
         className
       )}
-      style={{ background: skinStyle.background, ...style }}
+      style={style}
     >
-      <Watermark skin={skin} type={skinStyle.watermark} />
+      {/* Дизайн-чек №16: артворк карты — векторный ассет из макета (слой
+          `Card Image`, например нода 52969:11716 внутри Face/Mono), а не
+          CSS-градиент «на глаз». Он же приносит водяной знак — здание
+          ДОМ.РФ, стикер или облако, — поэтому отдельного слоя больше нет.
+          В макете картинка лежит от −1px и на 1px больше карты с обеих
+          сторон, перекрывая белую рамку. */}
+      <img
+        src={skinStyle.art}
+        alt=""
+        aria-hidden="true"
+        className="absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)] max-w-none"
+      />
 
       {showPaymentSystem && (
         // 6px between the payment-system logo and the masked number — the

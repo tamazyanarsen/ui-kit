@@ -15,16 +15,30 @@ describe("ErrorPage", () => {
     expect(screen.getByText("Попробуйте позже")).toBeInTheDocument()
   })
 
-  it("renders the error code when given, with each '0' as the mascot illustration", () => {
+  // Дизайн-чек №28: цифры больше не текст — это векторные ассеты из макета
+  // (`Image Error (ELK)`), поэтому проверяем разметку иллюстрации, а не
+  // наличие символов «4». Раньше здесь ожидался `getAllByText("4")`, что и
+  // фиксировало неверную отрисовку шрифтом.
+  it("renders the 404 illustration with two vector digits", () => {
     const { container } = render(<ErrorPage title="Заголовок" code="404" />)
-    expect(screen.getAllByText("4")).toHaveLength(2)
-    expect(screen.queryByText("0")).not.toBeInTheDocument()
-    expect(container.querySelectorAll("img")).toHaveLength(1)
+    const illustration = container.querySelector('[data-slot="error-page-illustration"]')
+    expect(illustration).toHaveAttribute("data-type", "404")
+    expect(illustration?.querySelectorAll("svg")).toHaveLength(2)
+    expect(screen.queryByText("4")).not.toBeInTheDocument()
+  })
+
+  it("renders the 403 illustration with a four and a three", () => {
+    const { container } = render(<ErrorPage title="Заголовок" code="403" />)
+    const illustration = container.querySelector('[data-slot="error-page-illustration"]')
+    expect(illustration).toHaveAttribute("data-type", "403")
+    expect(illustration?.querySelectorAll("svg")).toHaveLength(2)
   })
 
   it("renders the standalone mascot illustration when no code is given", () => {
     const { container } = render(<ErrorPage title="Заголовок" />)
-    expect(screen.queryByText("4")).not.toBeInTheDocument()
+    const illustration = container.querySelector('[data-slot="error-page-illustration"]')
+    expect(illustration).toHaveAttribute("data-type", "image")
+    expect(illustration?.querySelectorAll("svg")).toHaveLength(0)
     expect(container.querySelectorAll("img")).toHaveLength(1)
   })
 

@@ -37,6 +37,31 @@ interface PaginationProps {
   pageSizeOptions?: number[]
   onPageSizeChange?: (size: number) => void
   showPageSize?: boolean
+  /**
+   * Показывать ли блок переключения страниц.
+   *
+   * Дизайн-чек №36: «должна быть возможность полного отключения страниц для
+   * тех ситуаций, когда всё уместилось на одной странице. Сейчас это
+   * проверить нельзя». Раньше симметричный `showPageSize` был, а этого не
+   * было — блок страниц отключить было нечем.
+   *
+   * Документация компонента (нода 30021:39016) описывает два случая:
+   * «если все записи отображаются на одной странице, в правой части
+   * пагинатора должен оставаться только один активный элемент — текущая
+   * страница» (это `totalPages = 1`, стрелки прячутся сами) и «в случае,
+   * если система возвращает пустое значение, пагинатор также отображается,
+   * но отображается только правая часть (с выбором числа записей на
+   * странице)» — вот для второго случая и нужен `showPages={false}`.
+   */
+  showPages?: boolean
+  /**
+   * Свойство `Size` компонент-сета «ELK / paginator» (нода 4244:20536 →
+   * 48825:4128): `L` — всё в одну строку, `M` — «используется когда между
+   * переключением страниц и выбором числа записей на странице остаётся
+   * менее 16 пикселей по горизонтали: выбор числа записей перемещается вниз
+   * на левую сторону» (нода 50689:23757).
+   */
+  size?: "L" | "M"
   className?: string
 }
 
@@ -157,6 +182,8 @@ function Pagination({
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   onPageSizeChange,
   showPageSize = true,
+  showPages = true,
+  size = "L",
   className,
 }: PaginationProps) {
   const pages = totalPages > 0 ? getPageList(page, totalPages) : [1]
@@ -170,11 +197,17 @@ function Pagination({
   return (
     <div
       data-slot="pagination"
+      data-size={size}
       className={cn(
-        "flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-[var(--pagination-border)] bg-white px-4 py-1",
+        "flex border-t border-[var(--pagination-border)] bg-white px-4 py-1",
+        // Size=M: выбор числа записей уходит на вторую строку и влево.
+        size === "M"
+          ? "flex-col items-start gap-y-2"
+          : "flex-wrap items-center justify-between gap-x-6 gap-y-2",
         className
       )}
     >
+      {showPages && (
       <div className="flex items-center gap-1">
         {showNav && (
           <NavButton
@@ -212,6 +245,7 @@ function Pagination({
           />
         )}
       </div>
+      )}
 
       {showPageSize && pageSize !== undefined && (
         <div className="flex items-center gap-4">

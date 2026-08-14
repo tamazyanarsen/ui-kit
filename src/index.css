@@ -397,6 +397,18 @@
   --btn-muted-fg: #C8C8CB;
   --btn-muted-border: #C8C8CB;
 
+  /* Loader ("icon / loader", нода 26561:26028).
+     Дизайн-чек №8: лоудер НЕ зависит ни от типа кнопки, ни от статусных
+     цветов — он всегда брендовый. Проверено пиксельно: Figma отдаёт спиннер
+     растром, и в состоянии Loading у кнопки Primary он замеряется как
+     #80E3FF (Base/Blue 223) с альфа-градиентом по кольцу — тот же цвет, что
+     и заливка брендовой кнопки. Раньше кнопка красила спиннер в свой
+     --btn-accent, из-за чего в матрице было шесть разных лоудеров.
+     Второй цвет — warning: единственный дополнительный вариант, который
+     дизайнер разрешил завести в Core Component. */
+  --loader-fg: #80E3FF;
+  --loader-warning-fg: #EEA20F;
+
   /* Input component tokens. Values measured directly from ui/input.svg
      (Figma export) and confirmed against the L/Desktop reference render. */
   --input-bg: #FFFFFF;
@@ -472,6 +484,18 @@
      adding another one. */
   --divider: #DEDEDE;
   --modal-divider: #DEDEDE;
+  --modal-title-fg: #252628;
+
+  /* Строка выпадающего списка ("menu item") — общая для Select, Combobox,
+     Autocomplete и Dropdown. Раньше все четыре держали эти значения
+     литералами (`data-highlighted:bg-[#F8F8F8]`, `text-[#252628]`), из-за
+     чего строка расходилась между компонентами и не реагировала на смену
+     темы. Дизайн-чек №21 требует ровно обратного — одной централизованной
+     строки меню, поэтому цвета вынесены сюда. */
+  --menu-item-bg-highlighted: #F8F8F8;
+  --menu-item-fg: #252628;
+  --menu-item-description-fg: #999999;
+  --menu-item-divider: #DEDEDE;
 
   /* Calendar component tokens. Values measured directly from
      ui/calendar1.svg + ui/calendar2.svg (Figma export). */
@@ -926,6 +950,10 @@
   --button-menu-black-bg: #012F42;
   --button-menu-black-fg: #FFFFFF;
   --button-menu-black-muted-fg: #C8C8CB;
+  /* Светлая панель Button Menu: белая заливка в рамке grey-114. Граница
+     держалась литералом в root.tsx и не переключалась вместе с темой. */
+  --button-menu-bg: #FFFFFF;
+  --button-menu-border: #EFEFEF;
   --chips-dark-bg-hover: #114870;
   --chips-dark-fg: #FFFFFF;
   --chips-disabled-bg: #F4F4F4;
@@ -985,6 +1013,43 @@
   --header-logout-fg: #D74B54;
   --header-unread-dot: #D74B54;
 
+  /* Header Menu tokens (ui/header-menu) — «Раскрытое меню навигации» и
+     «Раскрытое меню создания» из MENU DOCS (нода 70303:52281).
+     Панель — белая (--header-bg), поэтому отдельного токена фона у неё нет;
+     ниже только то, чего в шапке ещё не было:
+       group-bg      #F8F8F8 Grey 106 — карточка «Группа страниц»
+       group-fg      #494C4B Grey 868 — заголовок группы
+       star-fg       #C8C8CB Grey 166 — звезда «в избранное». Цвет один и
+                                     тот же в обоих состояниях: в макете
+                                     (и в раскрытом меню, и в «Настройке
+                                     избранного») отличается только
+                                     заливка контура, брендового варианта
+                                     у звезды нет
+       tile-bg       #F4F4F4 Grey 109 — плитка «New Document Card»
+       tile-icon-bg  #FFFFFF          — 48×48 подложка иконки в плитке
+     Затемнение под раскрытым меню — тот же `--modal-backdrop`/70, что и у
+     модалки: пиксельная проба скриншота (70303:58312) даёт (98,101,100)
+     поверх белой страницы, что в точности #1E2321 при 70 %. */
+  --header-menu-group-bg: #F8F8F8;
+  --header-menu-group-fg: #494C4B;
+  --header-menu-star-fg: #C8C8CB;
+  --header-menu-tile-bg: #F4F4F4;
+  --header-menu-tile-icon-bg: #FFFFFF;
+
+  /* Баннер в меню ЕЛК — три заливки по свойству «Цвет» плюс размытое
+     пятно-градиент 320px поверх (в макете это SVG: круг r=160 с линейным
+     градиентом «оттенок → белый» и blur 64). Имена и значения взяты
+     get_variable_defs на самих баннерах (ноды 70303:58472/58473/58474):
+       Голубой    Blue 121 #B6F3FF    → градиент Blue 114 #CFF7FF
+       Сиреневый  Lavender 135 #D9DBFF → Lavender 116 #EBECFF
+       Зелёный    Mint 135 #89F2BD    → Mint 119 #BDF8DB */
+  --menu-banner-blue-bg: #B6F3FF;
+  --menu-banner-blue-glow: #CFF7FF;
+  --menu-banner-lilac-bg: #D9DBFF;
+  --menu-banner-lilac-glow: #EBECFF;
+  --menu-banner-green-bg: #89F2BD;
+  --menu-banner-green-glow: #BDF8DB;
+
   /* Tabs tokens (ui/tabs). Text/underline colors pixel-confirmed via
      histogram against ui/tabs/tabs@2x-1.png's own "Elements" state table —
      all three exactly match existing tokens (--select-caption-fg/-fg/
@@ -1042,6 +1107,8 @@
   --nps-title-fg: #252628;
   --nps-subtitle-fg: #999999;
   --nps-close-fg: #6D6D6D;
+  --nps-card-bg: #FFFFFF;
+  --nps-card-border: #EFEFEF;
   --nps-star-fg: #F8C000;
   --nps-star-empty-fg: #DEDEDE;
   /* NPS's reply pills moved to the shared FilterTable component (Figma
@@ -1343,6 +1410,10 @@
   --btn-secondary-black-bg-hover: #38393B; /* approximated, see comment above */
   --btn-secondary-black-bg-active: #4A4B4D; /* approximated, see comment above */
 
+  /* Лоудер брендовый, поэтому в старой теме он зелёный. Warning не менялся
+     при ребрендинге (подтверждено диффом As-is/To-be), развилки не требует. */
+  --loader-fg: #82BF00;
+
   --checkbox-checked-bg: #82BF00;
   --checkbox-checked-bg-hover: #72A716;
 
@@ -1419,14 +1490,40 @@
   --tag-green-secondary-bg: #F3F9E6;
 
   /* --- Error red: #D74B54 -> #DE4A2A (измерено на Progress Bar, Top Fixed
-     Message и Tag). Kit-wide error swatch, so every holder moves. --- */
+     Message и Tag). Kit-wide error swatch, so every holder moves.
+
+     Дизайн-чек №6: «У нас цвет красного статуса алый, для голубой новой
+     палитры цвет красного статуса скорее красно-розовый» — то есть развилка
+     по красному нужна во ВСЕХ компонентах, а не только там, где она уже была.
+     Недостающие держатели дописаны ниже; источник значений — таблица
+     «Было: Red colors / Стало: Red colors» на канвасе ребрендинга
+     (нода 70251:44107):
+
+       Было:  Red 603 #B92F10, Red 211 #CB4022, Red 241 #DE4A2A,
+              Red 182 #FFAB99, Red 147 #FFC9B5, Red 117 #FFE8E3, Red 109 #FFF2F0
+       Стало: Red 418 #D74B54, Red 344 #F0535E, Red 262 #FF737D,
+              Red 158 #FFBEB5, Red 117 #FFE8E3, Red 110 #FFF0F0
+
+     Светлые тинты сопоставляются по позиции в рампе — это подтверждают два
+     уже измеренных пикселями перехода (#FFAB99 <- #FFBEB5 и #FFC9B5 <-
+     #FFE8E3), поэтому следующая ступень даёт #FFE8E3 <- #FFF0F0.
+
+     Hover/active деструктивной кнопки раньше были выдуманы (#F05733/#FF6E4D,
+     «derived»): в новой теме кнопка на взаимодействии светлеет, и та же
+     логика была перенесена на старую. Но в палитре «Было» светлее #DE4A2A
+     нет ничего, кроме пастельных тинтов — зато ровно над ним стоят две
+     тёмные ступени, Red 211 и Red 603. То есть старый бренд на hover/active
+     ТЕМНЕЛ. Значения взяты из палитры, а не выведены, но на живом рендере
+     не сверялись — старой темы кнопки в этом файле Figma нет. --- */
   --btn-destructive-bg: #DE4A2A;
-  --btn-destructive-bg-hover: #F05733; /* derived (+18/+13/+9, same delta as the current theme's own hover step) */
-  --btn-destructive-bg-active: #FF6E4D; /* derived, see above */
+  --btn-destructive-bg-hover: #CB4022; /* Red 211 */
+  --btn-destructive-bg-active: #B92F10; /* Red 603 */
   --input-border-error: #DE4A2A;
+  --input-border-error-hover: #CB4022;
   --input-caption-error-fg: #DE4A2A;
   --otp-error-fg: #DE4A2A;
   --select-border-error: #DE4A2A;
+  --select-border-error-hover: #CB4022;
   --select-caption-error-fg: #DE4A2A;
   --checkbox-border-error: #DE4A2A;
   --checkbox-caption-error-fg: #DE4A2A;
@@ -1465,4 +1562,490 @@
   /* #F0FCFF -> #F3F9E6 per the replacement map (same pale tint the paginator
      uses). Not drawn in the instruction — derived. */
   --mail-feed-new-bg: #F3F9E6;
+
+  /* --- Дизайн-чек №6: держатели статусных цветов, у которых развилки не было
+     вовсе, поэтому в старой теме они оставались ребрендированными. Найдены
+     сплошной сверкой :root против этого блока по семействам цветов. --- */
+
+  /* Самый светлый красный тинт, #FFF0F0 (Red 110) -> #FFE8E3 (Red 117) — на
+     ступень ниже по рампе «Было», см. разбор выше. Именно это замечание
+     дизайнер и поймал на Blocked-состоянии аккордеона. */
+  --accordion-card-blocked-bg: #FFE8E3;
+  --file-item-error-bg: #FFE8E3;
+  --tag-red-secondary-bg: #FFE8E3;
+  /* #FAE9EA — разовое значение Status Screen, которого нет ни в одной палитре
+     Figma (см. story «.Colors»). Отправлен на ту же светлую ступень, что и
+     остальные пастельные красные. Выведено, не измерено. */
+  --status-screen-error-bg: #FFE8E3;
+
+  /* Зелёный success: тот же #39C182 -> #82BF00, что и у соседей выше — этот
+     держатель просто пропустили. */
+  --table-number-positive-fg: #82BF00;
+  /* Тёмно-зелёный #1F9254 и пастельный #E7F8F0 в карте замен не размечены:
+     отправлены на тёмную и самую светлую ступени зелёной рампы «Было»
+     (Green 333 / Green 107). Выведено, не измерено. */
+  --status-screen-success-fg: #699B12;
+  --status-screen-success-bg: #F3F9E6;
+}
+
+/* Тестовая монохромная палитра ("Тест — монохром") — data-product="test-mono".
+   Дизайн-чек №5: нужна третья палитра в одном цвете, чтобы «смотреть факт
+   переключения продуктов ЕЛК на целевые компоненты» — то есть проверить, что
+   компонент действительно перекрашивается токенами, а не держит цвет
+   захардкоженным литералом.
+
+   Поэтому здесь переопределён КАЖДЫЙ цветовой токен :root, включая те, что не
+   зависят ни от бренда, ни от статуса. Любой элемент, оставшийся серым/синим
+   при включённой теме, — это найденный захардкоженный цвет.
+
+   Значения сгенерированы механически: каждый исходный hex переведён в HSL,
+   светлота линейно отображена в диапазон 0.12–0.95, а тон и насыщенность
+   зафиксированы (H 280°, S 55%). Так сохраняется исходный порядок по светлоте
+   (границы остаются светлее текста и т.д.), а вся палитра становится
+   одноцветной. Исходный hex указан в комментарии рядом с каждым токеном.
+   Перегенерировать: scripts/gen-mono-theme.py */
+[data-product="test-mono"] {
+  --btn-primary-bg: #C38EDE; /* #80E3FF */
+  --btn-primary-bg-hover: #9E46C9; /* #2FCEEF */
+  --btn-primary-bg-active: #8131A8; /* #14B1D1 */
+  --btn-primary-fg: #2B1038; /* #252628 */
+  --btn-secondary-black-bg: #250E31; /* #012F42 */
+  --btn-secondary-black-bg-hover: #481B5F; /* #114870 */
+  --btn-secondary-black-bg-active: #652684; /* #1368A1 */
+  --btn-secondary-black-fg: #F5EBF9; /* #FFFFFF */
+  --btn-secondary-grey-bg: #ECDBF5; /* #F4F4F4 */
+  --btn-secondary-grey-bg-hover: #E8D4F2; /* #EFEFEF */
+  --btn-secondary-grey-bg-active: #E1C6EF; /* #E6E6E6 */
+  --btn-secondary-grey-fg: #2B1038; /* #252628 */
+  --btn-secondary-white-bg: #F5EBF9; /* #FFFFFF */
+  --btn-secondary-white-bg-hover: #E8D4F2; /* #EFEFEF */
+  --btn-secondary-white-bg-active: #E1C6EF; /* #E6E6E6 */
+  --btn-secondary-white-fg: #2B1038; /* #252628 */
+  --btn-secondary-outline-bg: #F5EBF9; /* #FFFFFF */
+  --btn-secondary-outline-bg-hover: #E8D4F2; /* #EFEFEF */
+  --btn-secondary-outline-bg-active: #E1C6EF; /* #E6E6E6 */
+  --btn-secondary-outline-fg: #2B1038; /* #252628 */
+  --btn-secondary-outline-border: #7E30A5; /* #0D4CD3 */
+  --btn-destructive-bg: #9F49CA; /* #D74B54 */
+  --btn-destructive-bg-hover: #AC61D1; /* #F0535E */
+  --btn-destructive-bg-active: #BE84DB; /* #FF737D */
+  --btn-destructive-fg: #F5EBF9; /* #FFFFFF */
+  --btn-secondary-logo-grey-bg: #53206D; /* #494C4B */
+  --btn-secondary-logo-grey-bg-hover: #692889; /* #5C5F5E */
+  --btn-secondary-logo-grey-bg-active: #7D30A4; /* #6E7170 */
+  --btn-secondary-logo-grey-fg: #F5EBF9; /* #FFFFFF */
+  --btn-muted-bg: #E8D4F2; /* #EFEFEF */
+  --btn-muted-fg: #CB9CE2; /* #C8C8CB */
+  --btn-muted-border: #CB9CE2; /* #C8C8CB */
+  --loader-fg: #C38EDE; /* #80E3FF */
+  --loader-warning-fg: #8E36BA; /* #EEA20F */
+  --input-bg: #F5EBF9; /* #FFFFFF */
+  --input-bg-disabled: #E8D4F2; /* #EFEFEF */
+  --input-border: #CB9CE2; /* #C8C8CB */
+  --input-border-hover: #A555CE; /* #999999 */
+  --input-border-disabled: #CB9CE2; /* #C8C8CB */
+  --input-border-error: #9F49CA; /* #D74B54 */
+  --input-border-error-hover: #AC61D1; /* #F0535E */
+  --input-fg: #2B1038; /* #252628 */
+  --input-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --input-label-fg: #A555CE; /* #999999 */
+  --input-icon-fg: #2B1038; /* #252628 */
+  --input-caption-fg: #A555CE; /* #999999 */
+  --input-caption-error-fg: #9F49CA; /* #D74B54 */
+  --textarea-border-hover: #7A2FA0; /* #6D6D6D */
+  --textarea-fg-disabled: #7A2FA0; /* #6D6D6D */
+  --textarea-icon-fg-disabled: #A555CE; /* #999999 */
+  --otp-fg: #2B1038; /* #252628 */
+  --otp-placeholder-fg: #A555CE; /* #999999 */
+  --otp-underline: #A555CE; /* #999999 */
+  --otp-error-fg: #9F49CA; /* #D74B54 */
+  --otp-close-bg: #ECDBF5; /* #F4F4F4 */
+  --otp-close-fg: #2B1038; /* #252628 */
+  --otp-title-fg: #2B1038; /* #252628 */
+  --otp-subtitle-fg: #7A2FA0; /* #6D6D6D */
+  --modal-bg: #F5EBF9; /* #FFFFFF */
+  --modal-backdrop: #240E2F; /* #1E2321 */
+  --divider: #DBBBEB; /* #DEDEDE */
+  --modal-divider: #DBBBEB; /* #DEDEDE */
+  --modal-title-fg: #2B1038; /* #252628 */
+  --menu-item-bg-highlighted: #EFE1F6; /* #F8F8F8 */
+  --menu-item-fg: #2B1038; /* #252628 */
+  --menu-item-description-fg: #A555CE; /* #999999 */
+  --menu-item-divider: #DBBBEB; /* #DEDEDE */
+  --calendar-fg: #2B1038; /* #252628 */
+  --calendar-muted-fg: #A555CE; /* #999999 */
+  --calendar-disabled-fg: #CB9CE2; /* #C8C8CB */
+  --calendar-accent-fg: #8131A8; /* #14B1D1 */
+  --calendar-selected-bg: #250E31; /* #012F42 */
+  --calendar-selected-fg: #F5EBF9; /* #FFFFFF */
+  --calendar-range-bg: #ECDBF5; /* #F4F4F4 */
+  --calendar-divider: #DBBBEB; /* #DEDEDE */
+  --select-bg: #F5EBF9; /* #FFFFFF */
+  --select-bg-disabled: #E8D4F2; /* #EFEFEF */
+  --select-border: #CB9CE2; /* #C8C8CB */
+  --select-border-hover: #A555CE; /* #999999 */
+  --select-border-disabled: #CB9CE2; /* #C8C8CB */
+  --select-border-error: #9F49CA; /* #D74B54 */
+  --select-border-error-hover: #AC61D1; /* #F0535E */
+  --select-fg: #2B1038; /* #252628 */
+  --select-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --select-label-fg: #A555CE; /* #999999 */
+  --select-icon-fg: #2B1038; /* #252628 */
+  --select-caption-fg: #A555CE; /* #999999 */
+  --select-caption-error-fg: #9F49CA; /* #D74B54 */
+  --checkbox-bg: #F5EBF9; /* #FFFFFF */
+  --checkbox-border: #CB9CE2; /* #C8C8CB */
+  --checkbox-border-hover: #2B1038; /* #252628 */
+  --checkbox-border-error: #9F49CA; /* #D74B54 */
+  --checkbox-checked-bg: #C38EDE; /* #80E3FF */
+  --checkbox-checked-bg-hover: #9E46C9; /* #2FCEEF */
+  --checkbox-checked-fg: #2B1038; /* #252628 */
+  --checkbox-disabled-bg: #E8D4F2; /* #EFEFEF */
+  --checkbox-disabled-border: #CB9CE2; /* #C8C8CB */
+  --checkbox-disabled-fg: #CB9CE2; /* #C8C8CB */
+  --checkbox-label-fg: #2B1038; /* #252628 */
+  --checkbox-label-fg-disabled: #A555CE; /* #999999 */
+  --checkbox-caption-fg: #A555CE; /* #999999 */
+  --checkbox-caption-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --checkbox-caption-error-fg: #9F49CA; /* #D74B54 */
+  --radio-bg: #F5EBF9; /* #FFFFFF */
+  --radio-border: #CB9CE2; /* #C8C8CB */
+  --radio-border-hover: #2B1038; /* #252628 */
+  --radio-checked-bg: #C38EDE; /* #80E3FF */
+  --radio-checked-bg-hover: #9E46C9; /* #2FCEEF */
+  --radio-checked-dot: #2B1038; /* #252628 */
+  --radio-disabled-bg: #E8D4F2; /* #EFEFEF */
+  --radio-disabled-border: #CB9CE2; /* #C8C8CB */
+  --radio-disabled-dot: #CB9CE2; /* #C8C8CB */
+  --radio-label-fg: #2B1038; /* #252628 */
+  --radio-label-fg-disabled: #A555CE; /* #999999 */
+  --radio-caption-fg: #A555CE; /* #999999 */
+  --radio-caption-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --radio-border-error: #9F49CA; /* #D74B54 */
+  --radio-caption-error-fg: #9F49CA; /* #D74B54 */
+  --toggle-track-bg: #A555CE; /* #999999 */
+  --toggle-track-bg-hover: #CB9CE2; /* #C8C8CB */
+  --toggle-track-checked-bg: #C38EDE; /* #80E3FF */
+  --toggle-track-checked-bg-hover: #9E46C9; /* #2FCEEF */
+  --toggle-track-bg-disabled: #E8D4F2; /* #EFEFEF */
+  --toggle-track-checked-bg-disabled: #D8B5EA; /* #B6F3FF */
+  --toggle-thumb-bg: #F5EBF9; /* #FFFFFF */
+  --toggle-label-fg: #2B1038; /* #252628 */
+  --toggle-label-fg-disabled: #A555CE; /* #999999 */
+  --toggle-caption-fg: #A555CE; /* #999999 */
+  --toggle-caption-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --toggle-caption-error-fg: #9F49CA; /* #D74B54 */
+  --range-input-bg: #F5EBF9; /* #FFFFFF */
+  --range-input-bg-disabled: #E8D4F2; /* #EFEFEF */
+  --range-input-border: #CB9CE2; /* #C8C8CB */
+  --range-input-border-hover: #A555CE; /* #999999 */
+  --range-input-border-disabled: #CB9CE2; /* #C8C8CB */
+  --range-input-label-fg: #A555CE; /* #999999 */
+  --range-input-value-fg: #2B1038; /* #252628 */
+  --range-input-value-fg-disabled: #7A2FA0; /* #6D6D6D */
+  --range-input-track-bg: #CB9CE2; /* #C8C8CB */
+  --range-input-accent: #C38EDE; /* #80E3FF */
+  --range-input-indicator-bg: #9E46C9; /* #2FCEEF */
+  --range-input-accent-disabled: #CB9CE2; /* #C8C8CB */
+  --range-input-accent-error: #9F49CA; /* #D74B54 */
+  --range-input-thumb-icon-fg: #2B1038; /* #252628 */
+  --range-input-thumb-icon-fg-error: #F5EBF9; /* #FFFFFF */
+  --range-input-thumb-icon-fg-disabled: #F5EBF9; /* #FFFFFF */
+  --range-input-scale-fg: #A555CE; /* #999999 */
+  --range-input-caption-fg: #A555CE; /* #999999 */
+  --range-input-caption-error-fg: #9F49CA; /* #D74B54 */
+  --file-upload-bg: #F5EBF9; /* #FFFFFF */
+  --file-upload-bg-hover: #EFE1F6; /* #F8F8F8 */
+  --file-upload-bg-disabled: #F5EBF9; /* #FFFFFF */
+  --file-upload-border: #A555CE; /* #999999 */
+  --file-upload-border-hover: #A555CE; /* #999999 */
+  --file-upload-border-disabled: #CB9CE2; /* #C8C8CB */
+  --file-upload-border-error: #9F49CA; /* #D74B54 */
+  --file-upload-fg: #2B1038; /* #252628 */
+  --file-upload-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --file-upload-subtitle-fg: #A555CE; /* #999999 */
+  --file-upload-subtitle-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --file-item-fg: #2B1038; /* #252628 */
+  --file-item-meta-fg: #A555CE; /* #999999 */
+  --file-item-icon-fg: #2B1038; /* #252628 */
+  --file-item-icon-bg: #EFE1F6; /* #F8F8F8 */
+  --file-item-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --file-item-loading-fg: #9E46C9; /* #2FCEEF */
+  --file-item-error-fg: #9F49CA; /* #D74B54 */
+  --file-item-error-bg: #EFE0F6; /* #FFF0F0 */
+  --accordion-card-bg: #ECDBF5; /* #F4F4F4 */
+  --accordion-card-bg-hover: #E8D4F2; /* #EFEFEF */
+  --accordion-card-blocked-bg: #EFE0F6; /* #FFF0F0 */
+  --accordion-card-blocked-bg-hover: #EAD7F3; /* #FFE8E3 */
+  --accordion-card-title-fg: #2B1038; /* #252628 */
+  --accordion-card-subtitle-fg: #7A2FA0; /* #6D6D6D */
+  --accordion-card-icon-fg: #2B1038; /* #252628 */
+  --accordion-card-divider: #DBBBEB; /* #DEDEDE */
+  --accordion-list-border: #DBBBEB; /* #DEDEDE */
+  --accordion-list-divider: #DBBBEB; /* #DEDEDE */
+  --accordion-list-title-fg: #2B1038; /* #252628 */
+  --accordion-list-subtitle-fg: #A555CE; /* #999999 */
+  --accordion-list-icon-fg: #2B1038; /* #252628 */
+  --accordion-list-description-default-fg: #2B1038; /* #252628 */
+  --accordion-list-description-success-fg: #8C35B8; /* #39C182 */
+  --accordion-list-description-attention-fg: #8E36BA; /* #EEA20F */
+  --accordion-list-description-error-fg: #9F49CA; /* #D74B54 */
+  --accordion-list-description-information-fg: #A555CE; /* #999999 */
+  --card-bg: #EFE1F6; /* #F8F8F8 */
+  --card-bg-hover: #E8D4F2; /* #EFEFEF */
+  --card-title-fg: #2B1038; /* #252628 */
+  --card-meta-fg: #A555CE; /* #999999 */
+  --card-thumb-bg: #2B1038; /* #252628 */
+  --card-thumb-fg: #F5EBF9; /* #FFFFFF */
+  --progress-track-bg: #E1C6EF; /* #E6E6E6 */
+  --progress-step-fill: #9E46C9; /* #2FCEEF */
+  --progress-step-hatch: #CB9CE2; /* #C8C8CB */
+  --progress-title-fg: #2B1038; /* #252628 */
+  --progress-meta-fg: #A555CE; /* #999999 */
+  --progress-green: #8C35B8; /* #39C182 */
+  --progress-amber: #8E36BA; /* #EEA20F */
+  --progress-red: #9F49CA; /* #D74B54 */
+  --steps-bg: #F5EBF9; /* #FFFFFF */
+  --steps-title-fg: #2B1038; /* #252628 */
+  --steps-status-fg: #A555CE; /* #999999 */
+  --steps-status-error-fg: #9F49CA; /* #D74B54 */
+  --steps-active-ring: #C38EDE; /* #80E3FF */
+  --steps-disabled-fg: #A555CE; /* #999999 */
+  --steps-fade-arrow-bg: #250E31; /* #012F42 */
+  --steps-fade-bg: #EFE1F6; /* #F8F8F8 */
+  --steps-tooltip-bg: #7A2FA0; /* #6D6D6D */
+  --steps-tooltip-fg: #F5EBF9; /* #FFFFFF */
+  --tooltip-bg: #7A2FA0; /* #6D6D6D */
+  --tooltip-fg: #F5EBF9; /* #FFFFFF */
+  --badge-red-bg: #9F49CA; /* #D74B54 */
+  --badge-red-fg: #F5EBF9; /* #FFFFFF */
+  --badge-contra-red-border: #F5EBF9; /* #FFFFFF */
+  --badge-dark-grey-bg: #7A2FA0; /* #6D6D6D */
+  --badge-dark-grey-fg: #F5EBF9; /* #FFFFFF */
+  --badge-light-grey-bg: #EFE1F6; /* #F8F8F8 */
+  --badge-light-grey-fg: #A555CE; /* #999999 */
+  --badge-black-bg: #2B1038; /* #252628 */
+  --badge-black-fg: #F5EBF9; /* #FFFFFF */
+  --badge-disabled-bg: #A555CE; /* #999999 */
+  --badge-disabled-fg: #F5EBF9; /* #FFFFFF */
+  --badge-disabled-light-grey-bg: #E1C6EF; /* #E6E6E6 */
+  --badge-disabled-light-grey-fg: #CB9CE2; /* #C8C8CB */
+  --event-title-fg: #2B1038; /* #252628 */
+  --event-meta-fg: #A555CE; /* #999999 */
+  --event-author-fg: #7A2FA0; /* #6D6D6D */
+  --event-connector: #DBBBEB; /* #DEDEDE */
+  --event-status-success-bg: #8C35B8; /* #39C182 */
+  --event-status-attention-bg: #8E36BA; /* #EEA20F */
+  --event-file-bg: #EFE1F6; /* #F8F8F8 */
+  --informer-bg-white: #F5EBF9; /* #FFFFFF */
+  --informer-bg-grey: #EFE1F6; /* #F8F8F8 */
+  --informer-title-fg: #2B1038; /* #252628 */
+  --informer-meta-fg: #A555CE; /* #999999 */
+  --informer-description-fg: #53206D; /* #494C4B */
+  --informer-icon-red: #9F49CA; /* #D74B54 */
+  --informer-icon-yellow: #8E36BA; /* #EEA20F */
+  --informer-icon-green: #8C35B8; /* #39C182 */
+  --informer-icon-grey: #A555CE; /* #999999 */
+  --notification-bg: #F5EBF9; /* #FFFFFF */
+  --notification-bg-hover: #EFE1F6; /* #F8F8F8 */
+  --notification-bg-pressed: #E8D4F2; /* #EFEFEF */
+  --notification-title-fg: #2B1038; /* #252628 */
+  --notification-meta-fg: #7A2FA0; /* #6D6D6D */
+  --notification-dot: #9F49CA; /* #D74B54 */
+  --notification-divider: #DBBBEB; /* #DEDEDE */
+  --notification-timestamp-fg: #A555CE; /* #999999 */
+  --toast-title-fg: #2B1038; /* #252628 */
+  --toast-description-fg: #7A2FA0; /* #6D6D6D */
+  --toast-checked-bg: #D8B5EA; /* #BDF8DB */
+  --toast-checked-icon: #8C35B8; /* #39C182 */
+  --toast-checked-border: #C28BDD; /* #89F2BD */
+  --toast-attention-bg: #DCBCEC; /* #FDF0C1 */
+  --toast-attention-icon: #8E36BA; /* #EEA20F */
+  --toast-attention-border: #C591DF; /* #FADC89 */
+  --toast-error-bg: #EAD7F3; /* #FFE8E3 */
+  --toast-error-icon: #9F49CA; /* #D74B54 */
+  --toast-error-border: #D8B5E9; /* #FFBEB5 */
+  --toast-information-bg: #E8D4F2; /* #EFEFEF */
+  --toast-information-icon: #A555CE; /* #999999 */
+  --toast-information-border: #DBBBEB; /* #DEDEDE */
+  --top-fixed-message-title-fg: #2B1038; /* #252628 */
+  --top-fixed-message-close-fg: #2B1038; /* #252628 */
+  --top-fixed-message-blue-bg: #ECDCF5; /* #EDF6FC */
+  --top-fixed-message-blue-icon: #A95BD0; /* #5B90E0 */
+  --top-fixed-message-red-bg: #EAD7F3; /* #FFE8E3 */
+  --top-fixed-message-red-icon: #9F49CA; /* #D74B54 */
+  --tag-green-bg: #8C35B8; /* #39C182 */
+  --tag-green-fg: #F5EBF9; /* #FFFFFF */
+  --tag-green-secondary-bg: #E9D6F3; /* #E5FCF1 */
+  --tag-orange-bg: #8E36BA; /* #EEA20F */
+  --tag-orange-fg: #F5EBF9; /* #FFFFFF */
+  --tag-orange-secondary-bg: #E9D4F3; /* #FFFAE0 */
+  --tag-red-bg: #9F49CA; /* #D74B54 */
+  --tag-red-fg: #F5EBF9; /* #FFFFFF */
+  --tag-red-secondary-bg: #EFE0F6; /* #FFF0F0 */
+  --tag-blue-bg: #8633AF; /* #2487CA */
+  --tag-blue-fg: #F5EBF9; /* #FFFFFF */
+  --tag-blue-secondary-bg: #ECDCF5; /* #EDF6FC */
+  --tag-grey-bg: #A555CE; /* #999999 */
+  --tag-grey-fg: #F5EBF9; /* #FFFFFF */
+  --tag-grey-secondary-bg: #EFE1F6; /* #F8F8F8 */
+  --tag-grey-secondary-fg: #2B1038; /* #252628 */
+  --tag-black-bg: #2B1038; /* #252628 */
+  --tag-black-fg: #F5EBF9; /* #FFFFFF */
+  --tag-white-bg: #F5EBF9; /* #FFFFFF */
+  --tag-white-fg: #2B1038; /* #252628 */
+  --tag-white-border: #DBBBEB; /* #DEDEDE */
+  --tag-grey-info-bg: #DBBBEB; /* #DEDEDE */
+  --tag-grey-info-fg: #2B1038; /* #252628 */
+  --chips-fg: #2B1038; /* #252628 */
+  --chips-subtitle-fg: #A555CE; /* #999999 */
+  --chips-light-bg: #ECDBF5; /* #F4F4F4 */
+  --chips-light-bg-hover: #E8D4F2; /* #EFEFEF */
+  --chips-dark-bg: #250E31; /* #012F42 */
+  --button-menu-black-bg: #250E31; /* #012F42 */
+  --button-menu-black-fg: #F5EBF9; /* #FFFFFF */
+  --button-menu-black-muted-fg: #CB9CE2; /* #C8C8CB */
+  --button-menu-bg: #F5EBF9; /* #FFFFFF */
+  --button-menu-border: #E8D4F2; /* #EFEFEF */
+  --chips-dark-bg-hover: #481B5F; /* #114870 */
+  --chips-dark-fg: #F5EBF9; /* #FFFFFF */
+  --chips-disabled-bg: #ECDBF5; /* #F4F4F4 */
+  --chips-disabled-fg: #CB9CE2; /* #C8C8CB */
+  --filter-fg: #2B1038; /* #252628 */
+  --filter-icon-fg: #2B1038; /* #252628 */
+  --filter-white-bg: #F5EBF9; /* #FFFFFF */
+  --filter-white-bg-hover: #EFE1F6; /* #F8F8F8 */
+  --filter-grey-bg: #ECDBF5; /* #F4F4F4 */
+  --filter-grey-bg-hover: #EFE1F6; /* #F8F8F8 */
+  --filter-active-border: #C38EDE; /* #80E3FF */
+  --filter-disabled-bg: #ECDBF5; /* #F4F4F4 */
+  --filter-disabled-fg: #CB9CE2; /* #C8C8CB */
+  --nav-sidebar-bg: #F5EBF9; /* #FFFFFF */
+  --nav-sidebar-border: #DBBBEB; /* #DEDEDE */
+  --nav-sidebar-fg: #2B1038; /* #252628 */
+  --nav-sidebar-icon-fg: #2B1038; /* #252628 */
+  --nav-sidebar-label-fg: #A555CE; /* #999999 */
+  --nav-sidebar-item-hover-bg: #E8D4F2; /* #EFEFEF */
+  --nav-sidebar-item-active-bg: #ECDBF5; /* #F4F4F4 */
+  --header-bg: #F5EBF9; /* #FFFFFF */
+  --header-border: #DBBBEB; /* #DEDEDE */
+  --header-fg: #2B1038; /* #252628 */
+  --header-meta-fg: #A555CE; /* #999999 */
+  --header-icon-fg: #2B1038; /* #252628 */
+  --header-hover-fg: #8131A8; /* #14B1D1 */
+  --header-item-hover-bg: #E8D4F2; /* #EFEFEF */
+  --header-menu-toggle-hover-bg: #EFE1F6; /* #F8F8F8 */
+  --header-divider: #DBBBEB; /* #DEDEDE */
+  --header-check-fg: #8131A8; /* #14B1D1 */
+  --header-logout-fg: #9F49CA; /* #D74B54 */
+  --header-unread-dot: #9F49CA; /* #D74B54 */
+  --header-menu-group-bg: #EFE1F6; /* #F8F8F8 */
+  --header-menu-group-fg: #53206D; /* #494C4B */
+  --header-menu-star-fg: #CB9CE2; /* #C8C8CB */
+  --header-menu-tile-bg: #ECDBF5; /* #F4F4F4 */
+  --header-menu-tile-icon-bg: #F5EBF9; /* #FFFFFF */
+  --menu-banner-blue-bg: #D8B5EA; /* #B6F3FF */
+  --menu-banner-blue-glow: #E2C8EF; /* #CFF7FF */
+  --menu-banner-lilac-bg: #E6CFF1; /* #D9DBFF */
+  --menu-banner-lilac-glow: #ECDBF5; /* #E9EAFF */
+  --menu-banner-green-bg: #C28BDD; /* #89F2BD */
+  --menu-banner-green-glow: #D8B5EA; /* #BDF8DB */
+  --tabs-fg: #7A2FA0; /* #6D6D6D */
+  --tabs-fg-active: #2B1038; /* #252628 */
+  --tabs-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --tabs-underline-hover: #7A2FA0; /* #6D6D6D */
+  --tabs-underline-active: #2B1038; /* #252628 */
+  --tabs-border: #DBBBEB; /* #DEDEDE */
+  --switcher-fg: #2B1038; /* #252628 */
+  --switcher-fg-inactive: #7A2FA0; /* #6D6D6D */
+  --switcher-border: #CB9CE2; /* #C8C8CB */
+  --switcher-grey-bg: #EFE1F6; /* #F8F8F8 */
+  --switcher-white-bg: #F5EBF9; /* #FFFFFF */
+  --switcher-active-bg: #F5EBF9; /* #FFFFFF */
+  --switcher-active-bg-on-white: #ECDBF5; /* #F4F4F4 */
+  --switcher-active-black-bg: #250E31; /* #012F42 */
+  --switcher-active-black-fg: #F5EBF9; /* #FFFFFF */
+  --switcher-hover-bg: #E8D4F2; /* #EFEFEF */
+  --switcher-disabled-fg: #CB9CE2; /* #C8C8CB */
+  --empty-search-icon-bg: #EFE1F6; /* #F8F8F8 */
+  --empty-search-icon-fg: #2B1038; /* #252628 */
+  --empty-search-title-fg: #2B1038; /* #252628 */
+  --empty-search-description-fg: #A555CE; /* #999999 */
+  --nps-title-fg: #2B1038; /* #252628 */
+  --nps-subtitle-fg: #A555CE; /* #999999 */
+  --nps-close-fg: #7A2FA0; /* #6D6D6D */
+  --nps-card-bg: #F5EBF9; /* #FFFFFF */
+  --nps-card-border: #E8D4F2; /* #EFEFEF */
+  --nps-star-fg: #8B35B6; /* #F8C000 */
+  --nps-star-empty-fg: #DBBBEB; /* #DEDEDE */
+  --error-page-bg: #EFE1F6; /* #F8F8F8 */
+  --error-page-title-fg: #2B1038; /* #252628 */
+  --error-page-description-fg: #2B1038; /* #252628 */
+  --error-page-code-fg: #CB9CE2; /* #C8C8CB */
+  --pagination-fg: #2B1038; /* #252628 */
+  --pagination-caption-fg: #A555CE; /* #999999 */
+  --pagination-disabled-fg: #A555CE; /* #999999 */
+  --pagination-border: #DBBBEB; /* #DEDEDE */
+  --pagination-hover-bg: #EFE0F6; /* #F0FCFF */
+  --pagination-active-bg: #E2C8EF; /* #CFF7FF */
+  --pagination-onclick-bg: #D8B5EA; /* #B6F3FF */
+  --item-value-fg: #2B1038; /* #252628 */
+  --item-value-fg-disabled: #CB9CE2; /* #C8C8CB */
+  --item-icon-fg: #A555CE; /* #999999 */
+  --item-divider: #DBBBEB; /* #DEDEDE */
+  --item-hover-bg: #E8D4F2; /* #EFEFEF */
+  --item-check-fg: #8131A8; /* #14B1D1 */
+  --item-right-text-fg: #8C35B8; /* #39C182 */
+  --item-thumbnail-bg: #EFE1F6; /* #F8F8F8 */
+  --item-thumbnail-fg: #2B1038; /* #252628 */
+  --item-comment-grey-fg: #A555CE; /* #999999 */
+  --item-comment-red-fg: #9F49CA; /* #D74B54 */
+  --item-comment-yellow-fg: #672786; /* #B76E00 */
+  --ifield-label-fg: #A555CE; /* #999999 */
+  --ifield-value-fg: #2B1038; /* #252628 */
+  --ifield-subtext-fg: #A555CE; /* #999999 */
+  --ifield-icon-fg: #A555CE; /* #999999 */
+  --ifield-divider: #DBBBEB; /* #DEDEDE */
+  --ifield-success-fg: #8C35B8; /* #39C182 */
+  --ifield-error-fg: #9F49CA; /* #D74B54 */
+  --ifield-attention-fg: #8E36BA; /* #EEA20F */
+  --ifield-information-fg: #A555CE; /* #999999 */
+  --ifield-copy-fg: #A555CE; /* #999999 */
+  --ifield-copy-fg-hover: #7A2FA0; /* #6D6D6D */
+  --status-screen-title-fg: #2B1038; /* #252628 */
+  --status-screen-subtitle-fg: #7A2FA0; /* #6D6D6D */
+  --status-screen-success-bg: #E9D4F3; /* #E7F8F0 */
+  --status-screen-success-fg: #632682; /* #1F9254 */
+  --status-screen-error-bg: #EAD7F3; /* #FAE9EA */
+  --status-screen-error-fg: #9F49CA; /* #D74B54 */
+  --status-screen-attention-bg: #DCBCEC; /* #FDF0C1 */
+  --status-screen-attention-fg: #672786; /* #B76E00 */
+  --status-screen-neutral-bg: #ECDBF5; /* #F4F4F4 */
+  --status-screen-neutral-fg: #7A2FA0; /* #6D6D6D */
+  --autocomplete-title-fg: #2B1038; /* #252628 */
+  --autocomplete-subtitle-fg: #A555CE; /* #999999 */
+  --autocomplete-highlighted-bg: #EFE1F6; /* #F8F8F8 */
+  --autocomplete-match-bg: #C38EDE; /* #80E3FF */
+  --table-fg: #2B1038; /* #252628 */
+  --table-description-fg: #A555CE; /* #999999 */
+  --table-divider: #DBBBEB; /* #DEDEDE */
+  --table-row-hover-bg: #E8D4F2; /* #EFEFEF */
+  --table-row-active-bg: #E1C6EF; /* #E6E6E6 */
+  --table-row-added-bg: #E8D4F2; /* #EFEFEF */
+  --title-fg: #2B1038; /* #252628 */
+  --title-description-fg: #7A2FA0; /* #6D6D6D */
+  --title-muted-fg: #A555CE; /* #999999 */
+  --table-bg: #F5EBF9; /* #FFFFFF */
+  --table-number-positive-fg: #8C35B8; /* #39C182 */
+  --table-summary-divider: #CB9CE2; /* #C8C8CB */
+  --shimmer-from: #DBBBEB; /* #DEDEDE */
+  --shimmer-via: #E8D4F2; /* #EFEFEF */
+  --scrollbar-track-bg: #ECDBF5; /* #F4F4F4 */
+  --scrollbar-thumb-bg: #CB9CE2; /* #C8C8CB */
+  --mail-feed-default-bg: #F5EBF9; /* #FFFFFF */
+  --mail-feed-new-bg: #EFE0F6; /* #F0FCFF */
+  --mail-feed-used-bg: #EFE1F6; /* #F8F8F8 */
+  --mail-feed-error-bg: #EAD7F3; /* #FFE8E3 */
+  --mail-feed-fg: #2B1038; /* #252628 */
+  --mail-feed-meta-fg: #A555CE; /* #999999 */
 }

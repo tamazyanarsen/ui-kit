@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Accordion } from "@/components/ui/accordion"
+import { Accordion } from "@/demo/scaffold"
 import { Button } from "@/components/ui/button"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 

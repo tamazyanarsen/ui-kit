@@ -102,7 +102,7 @@ function Nps({
 
   const displayValue = hoverValue ?? activeValue
   const cardClassName = cn(
-    "w-[360px] rounded-[16px] border border-[#EFEFEF] bg-white shadow-[0px_8px_12px_rgba(0,0,0,0.06)]",
+    "w-[360px] rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-[0px_8px_12px_rgba(0,0,0,0.06)]",
     className
   )
 
@@ -183,14 +183,20 @@ function Nps({
             placeholder when empty) instead of conditionally mounting — the
             conditional version collapsed to 0 height between hovers, so the
             card kept growing/shrinking as the cursor moved across the
-            stars. */}
+            stars.
+
+            Дизайн-чек №35: подпись читает `activeValue`, а не `displayValue`
+            — «надпись должна появляться только по факту выбора конкретной
+            оценки». Раньше она бежала за курсором по звёздам ещё до выбора.
+            Звёзды по наведению подсвечиваться продолжают: это обычная
+            обратная связь на ховер, и к ней замечаний не было. */}
         <p
           className={cn(
             "text-center text-p1-medium text-[var(--nps-subtitle-fg)]",
-            !displayValue && "invisible"
+            !activeValue && "invisible"
           )}
         >
-          {displayValue ? RATING_LABELS[displayValue] : " "}
+          {activeValue ? RATING_LABELS[activeValue] : " "}
         </p>
       </div>
 

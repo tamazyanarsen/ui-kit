@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronRight as ArrowRight } from "@/icons";
 
 import { Button } from "@/components/ui/button";
-import { AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion";
+import { AccordionItem, AccordionTrigger, AccordionPanel } from "@/demo/scaffold";
 
 import { RowLabel } from "./shared";
 

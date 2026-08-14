@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionPanel,
-} from "@/components/ui/accordion"
+} from "@/demo/scaffold"
 
 import { RowLabel } from "./shared"
 

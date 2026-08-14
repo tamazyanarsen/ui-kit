@@ -8,7 +8,13 @@ import { FileUploadDropzone } from "./dropzone"
 type DropzoneProps = ComponentProps<typeof FileUploadDropzone>
 
 const meta = {
-  title: "Компоненты/Dropzone",
+  // Дизайн-чек №26: компонент назывался «Dropzone», в Figma он —
+  // «ELK / file-upload» на канвасе «File Upload» (677:14056). Имя в
+  // Storybook должно совпадать с Figma, иначе продуктовый разработчик не
+  // найдёт компонент по имени из макета. Код-имя `FileUploadDropzone`
+  // оставлено: рядом живёт `ELK / files` (список загруженных файлов),
+  // и «FileUpload» без уточнения путало бы их между собой.
+  title: "Компоненты/File Upload",
   component: FileUploadDropzone,
   parameters: { layout: "padded" },
   argTypes: {

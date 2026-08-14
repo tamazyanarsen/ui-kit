@@ -13,20 +13,33 @@ const ITEMS = [
   { value: "inbox", label: "Входящие", badge: 3 },
 ]
 
+/* Дизайн-чек №17: количество вкладок переключается списком, а не правкой
+   JSON-массива в контролах. Пул подобран так, чтобы по мере роста включались
+   и вспомогательные признаки вкладки (disabled, статус, счётчик). */
+const TAB_COUNTS = [1, 2, 3, 4, 5] as const
+type TabCount = (typeof TAB_COUNTS)[number]
+
+type PlaygroundArgs = TabsProps & { itemsCount?: TabCount }
+
 const meta = {
   title: "Компоненты/Tabs",
   component: Tabs,
   parameters: { layout: "padded" },
   argTypes: {
-    items: { control: "object" },
+    itemsCount: {
+      name: "Количество вкладок",
+      control: "select",
+      options: TAB_COUNTS,
+    },
+    items: { table: { disable: true } },
     showMore: { control: "boolean" },
     defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
   },
-  args: { items: ITEMS, showMore: false, defaultValue: "all" },
-} satisfies Meta<TabsProps>
+  args: { items: ITEMS, itemsCount: 5, showMore: false, defaultValue: "all" },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<TabsProps>
+type Story = StoryObj<PlaygroundArgs>
 
 function Controlled(args: TabsProps) {
   const [value, setValue] = useState(
@@ -36,9 +49,23 @@ function Controlled(args: TabsProps) {
 }
 
 export const Playground: Story = {
-  // Remount when the pinned value changes so the `defaultValue` control
-  // actually moves the (otherwise internally-owned) selection.
-  render: (args) => <Controlled key={args.defaultValue} {...args} />,
+  // Remount when the pinned value or the tab count changes so the
+  // `defaultValue` control actually moves the (otherwise internally-owned)
+  // selection.
+  render: ({ itemsCount = 5, ...args }) => {
+    const items = ITEMS.slice(0, itemsCount)
+    const defaultValue = items.some((i) => i.value === args.defaultValue)
+      ? args.defaultValue
+      : items[0]?.value
+    return (
+      <Controlled
+        key={`${defaultValue}-${itemsCount}`}
+        {...args}
+        items={items}
+        defaultValue={defaultValue}
+      />
+    )
+  },
 }
 
 export const Matrix: Story = {

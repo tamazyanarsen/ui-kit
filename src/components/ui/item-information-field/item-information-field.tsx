@@ -61,14 +61,23 @@ interface ItemInformationFieldProps {
   className?: string
 }
 
-// The 16px info glyph is not centred on its line: Figma wraps it in a box
-// that is bottom-aligned with 2px above / 6px below inside the 24px line
-// (`pt-[2px] pb-[6px]`), i.e. it sits 2px higher than the text's midpoint.
-// The large (H2/44px line) row uses `pb-[18px]` for the same effect.
+// Дизайн-чек №31: иконка информации рендерится ВНУТРИ текстового потока, а
+// не отдельной flex-колонкой рядом с ним. «Текст не должен уходить в
+// многоточие после одной строки… вместо этого иконка информации должна
+// ставиться после последнего символа в последней строке с пробелом 8
+// пикселей от неё. Соответственно, иконка должна располагаться inline».
 //
-// Mobile keeps the glyph on the shorter line: a 20px row with `py-[2px]`,
-// and the large one hangs from the top of its 30px line with `pt-[4px]`
-// (Size=Mobile, node 70240:38661).
+// В мастере иконка лежит в строке `Label` (`flex gap-[8px] items-end`,
+// нода 70251:48887) — те самые 8px и выравнивание по низу строки. Для
+// однострочного случая inline-элемент по baseline даёт тот же результат
+// (Figma держит глиф в боксе с 2px сверху и 6px снизу внутри 24px-строки,
+// а baseline 16px-текста как раз проходит в 16px от верха строки — отсюда
+// поправка в 2px). Разница только в многострочном случае, который в
+// документации не нарисован: flex-колонка прижала бы иконку к правому краю
+// текстового блока, а inline честно едет за последним символом.
+//
+// Крупная строка (H2, 44px) в макете имеет `pb-[18px]`, то есть глиф стоит
+// на 4px выше baseline — отсюда отрицательный сдвиг.
 function InfoIcon({
   content,
   large = false,
@@ -79,10 +88,8 @@ function InfoIcon({
   return (
     <span
       className={cn(
-        "flex shrink-0",
-        large
-          ? "h-[30px] items-start pt-[4px] md:h-11 md:items-end md:pt-0 md:pb-[18px]"
-          : "h-5 items-end pb-[2px] md:h-6 md:pb-[6px]"
+        "relative ml-2 inline-flex shrink-0 align-baseline",
+        large ? "top-[-4px]" : "top-[2px]"
       )}
     >
       <Tooltip content={content}>
@@ -166,26 +173,31 @@ function ItemInformationField({
 
   // Label is Medium like the Value — the two differ only in colour — and
   // steps down to 14/20 on mobile along with it.
+  // `break-words` — это `[word-break:break-word]` мастера: и Label, и Value
+  // там переносятся, а не обрезаются (ноды 70251:48888 и 70251:48898).
+  // Заодно это чинит вторую половину дизайн-чека №31 — длинное значение
+  // (например ИНН из семидесяти цифр одной строкой) больше не уезжает в
+  // правый край и не перекрывает иконку копирования: сплошной «слово» без
+  // пробелов теперь переносится.
   const labelRow = (
-    <span className="flex min-w-0 items-end gap-2 text-p2-medium text-[var(--ifield-label-fg)] md:text-p1-medium">
-      <span className="truncate">{label}</span>
+    <span className="block min-w-0 break-words text-p2-medium text-[var(--ifield-label-fg)] md:text-p1-medium">
+      {label}
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
   )
 
   const valueRow = (
-    <span className="flex min-w-0 items-start gap-2">
-      <span
-        className={cn(
-          // text-h2 (32/44) already bakes in weight 500, so it doesn't need
-          // its own font-medium alongside the text-p1 branch that does.
-          // Mobile: 22/30 for the large value, 14/20 for the rest.
-          large ? "text-h2-mobile md:text-h2" : "text-p2-medium md:text-p1-medium",
-          VALUE_COLOR[valueStatus]
-        )}
-      >
-        {value}
-      </span>
+    <span
+      className={cn(
+        // text-h2 (32/44) already bakes in weight 500, so it doesn't need
+        // its own font-medium alongside the text-p1 branch that does.
+        // Mobile: 22/30 for the large value, 14/20 for the rest.
+        "block min-w-0 break-words",
+        large ? "text-h2-mobile md:text-h2" : "text-p2-medium md:text-p1-medium",
+        VALUE_COLOR[valueStatus]
+      )}
+    >
+      {value}
       {valueInfo && <InfoIcon content={valueInfo} large={large} />}
     </span>
   )

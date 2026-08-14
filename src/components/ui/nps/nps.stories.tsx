@@ -4,6 +4,20 @@ import { StatesMatrix } from "@/stories/matrix"
 
 import { Nps, type NpsProps } from "./nps"
 
+/* Дизайн-чек №17: количество реплик-подсказок выбирается списком, а не
+   правкой JSON-массива в контролах. */
+const CHIP_POOL = [
+  "Долго грузится",
+  "Непонятный интерфейс",
+  "Не хватает функций",
+  "Всё устраивает",
+]
+
+const CHIP_COUNTS = [0, 1, 2, 3, 4] as const
+type ChipCount = (typeof CHIP_COUNTS)[number]
+
+type PlaygroundArgs = NpsProps & { chipsCount?: ChipCount }
+
 const meta = {
   title: "Компоненты/NPS",
   component: Nps,
@@ -19,18 +33,32 @@ const meta = {
     value: { control: "number" },
     defaultValue: { control: "number" },
     comment: { control: "text" },
-    chips: { control: "object" },
+    chipsCount: {
+      name: "Количество реплик",
+      control: "select",
+      options: CHIP_COUNTS,
+    },
+    chips: { table: { disable: true } },
     showDescription: { control: "boolean" },
     showChips: { control: "boolean" },
     submitted: { control: "boolean" },
   },
-  args: { showDescription: true, showChips: true, submitted: false },
-} satisfies Meta<NpsProps>
+  args: {
+    showDescription: true,
+    showChips: true,
+    submitted: false,
+    chipsCount: 4,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<NpsProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ chipsCount = 4, ...args }) => (
+    <Nps {...args} chips={CHIP_POOL.slice(0, chipsCount)} />
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

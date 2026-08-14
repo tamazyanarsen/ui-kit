@@ -43,7 +43,15 @@ interface DropdownItemProps extends React.ComponentProps<"div"> {
 // SelectItem has a different, checkbox-driven look (see select/item.tsx)
 // and stays separate; this is specifically the plain action-row variant.
 //
-// Flush, un-rounded p-4 row with a flat #F8F8F8 hover fill — confirmed
+// Дизайн-чек №21: типографика и цвета здесь те же, что у общей строки меню
+// (`@/components/ui/menu-item`) — P1 Medium на основной текст, P3 Medium на
+// описание, `--menu-item-*` на цвета. Своей вёрстки строка не держит только
+// потому, что у неё нет ведущего элемента: это колонка из двух строк, а не
+// ряд «контрол + текст». Новые строки с чекбоксом или иконкой собирайте на
+// `MenuItemContent`, как это делает Combobox.
+//
+// Flush, un-rounded p-4 row with a flat --menu-item-bg-highlighted (#F8F8F8)
+// hover fill — confirmed
 // against the literal "Menu Point (ELK)" markup inside the canonical
 // "ELK / dropdown" component (node 5739:16568) and the "Уровень 2" hover
 // state on the Select/Dropdown usage canvas (node 29750:55882): items are
@@ -58,14 +66,14 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         ref={ref}
         data-slot="dropdown-item"
         className={cn(
-          "flex cursor-default flex-col gap-0.5 p-4 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-40 data-highlighted:bg-[#F8F8F8]",
+          "flex cursor-default flex-col gap-0.5 p-4 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-40 data-highlighted:bg-[var(--menu-item-bg-highlighted)]",
           className
         )}
         {...props}
       >
-        <span className="text-p1-medium text-[#252628]">{text}</span>
+        <span className="text-p1-medium text-[var(--menu-item-fg)]">{text}</span>
         {description && (
-          <span className="text-p3-medium text-[#999999]">{description}</span>
+          <span className="text-p3-medium text-[var(--menu-item-description-fg)]">{description}</span>
         )}
         {children}
       </div>

@@ -19,7 +19,14 @@ const ITEMS = [
   { text: "Редактировать" },
   { text: "Дублировать", description: "Создать копию" },
   { text: "Удалить" },
+  { text: "Архивировать" },
 ]
+
+/* Дизайн-чек №17: количество пунктов меню — списком, а не правкой JSON. */
+const ITEM_COUNTS = [1, 2, 3, 4] as const
+type ItemCount = (typeof ITEM_COUNTS)[number]
+
+type PlaygroundArgs = SelectionButtonProps & { itemsCount?: ItemCount }
 
 const meta = {
   title: "Компоненты/Selection Button",
@@ -31,7 +38,12 @@ const meta = {
     showDropdown: { control: "boolean" },
     triggerLabel: { control: "text" },
     modal: { control: "boolean" },
-    items: { control: "object" },
+    itemsCount: {
+      name: "Количество пунктов",
+      control: "select",
+      options: ITEM_COUNTS,
+    },
+    items: { table: { disable: true } },
     // `trigger` takes a JSX element instance — map a friendly "Default
     // (⋯)"/"Custom Button" choice to the real element/`undefined` instead of
     // disabling the control (same technique as Button's `icon`).
@@ -47,13 +59,17 @@ const meta = {
       },
     },
   },
-  args: { items: ITEMS, size: "lg" },
-} satisfies Meta<SelectionButtonProps>
+  args: { items: ITEMS, itemsCount: 3, size: "lg" },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<SelectionButtonProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ itemsCount = 3, ...args }) => (
+    <SelectionButton {...args} items={ITEMS.slice(0, itemsCount)} />
+  ),
+}
 
 /* The menu is a portalled popup, so a real grid would have every open cell
    overlaying the next — the variants are laid out as separate open menus

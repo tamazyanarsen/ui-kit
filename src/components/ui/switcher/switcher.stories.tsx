@@ -5,11 +5,31 @@ import { StatesMatrix } from "@/stories/matrix"
 
 import { Switcher, type SwitcherProps } from "./switcher"
 
-const ITEMS = [
+/* Дизайн-чек №17: «подобными свойствами нельзя управлять с помощью
+   стандартных переключений… невозможно проверить вариации компонента без
+   знания кода. Нужно заменить на человекопонятный элемент, например
+   выпадающий список, в котором можно будет переключать количество вкладок
+   в данном свитчере».
+
+   Раньше `items` был JSON-редактором («items: [ 0: {…} 2 keys … ]») — чтобы
+   увидеть свитчер с двумя или пятью вкладками, надо было руками править
+   массив. Теперь количество выбирается списком, а сам `items` из контролов
+   убран: он собирается из этого пула. Пул на пять — верхняя граница, при
+   которой вкладки ещё помещаются в строку. */
+const ITEM_POOL = [
   { value: "all", label: "Все" },
   { value: "active", label: "Активные" },
   { value: "done", label: "Завершённые", badge: 3 },
+  { value: "draft", label: "Черновики" },
+  { value: "archive", label: "Архив" },
 ]
+
+const ITEM_COUNTS = [1, 2, 3, 4, 5] as const
+type ItemCount = (typeof ITEM_COUNTS)[number]
+
+const ITEMS = ITEM_POOL.slice(0, 3)
+
+type PlaygroundArgs = SwitcherProps & { itemsCount?: ItemCount }
 
 const meta = {
   title: "Компоненты/Cell Switcher",
@@ -21,11 +41,20 @@ const meta = {
     greyBackground: { control: "boolean" },
     showMore: { control: "boolean" },
     disabled: { control: "boolean" },
-    items: { control: "object" },
-    defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
+    itemsCount: {
+      name: "Количество вкладок",
+      control: "select",
+      options: ITEM_COUNTS,
+    },
+    items: { table: { disable: true } },
+    defaultValue: {
+      control: "select",
+      options: ITEM_POOL.map((i) => i.value),
+    },
   },
   args: {
     items: ITEMS,
+    itemsCount: 3,
     size: "lg",
     activeVariant: "surface",
     greyBackground: true,
@@ -33,10 +62,10 @@ const meta = {
     disabled: false,
     defaultValue: "all",
   },
-} satisfies Meta<SwitcherProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
 function Controlled(args: SwitcherProps) {
   const [value, setValue] = useState(
@@ -46,9 +75,24 @@ function Controlled(args: SwitcherProps) {
 }
 
 export const Playground: Story = {
-  // Remount when the pinned value changes so the `defaultValue` control
-  // actually moves the (otherwise internally-owned) selection.
-  render: (args) => <Controlled key={args.defaultValue} {...args} />,
+  // Remount when the pinned value or the tab count changes so the
+  // `defaultValue` control actually moves the (otherwise internally-owned)
+  // selection.
+  render: ({ itemsCount = 3, ...args }) => {
+    const items = ITEM_POOL.slice(0, itemsCount)
+    // Выбранное значение могло «выпасть» из укороченного списка.
+    const defaultValue = items.some((i) => i.value === args.defaultValue)
+      ? args.defaultValue
+      : items[0]?.value
+    return (
+      <Controlled
+        key={`${defaultValue}-${itemsCount}`}
+        {...args}
+        items={items}
+        defaultValue={defaultValue}
+      />
+    )
+  },
 }
 
 export const Matrix: Story = {
@@ -85,6 +129,11 @@ export const Matrix: Story = {
         { label: "Medium", props: { size: "md" } },
         { label: "Hover", props: { size: "lg" }, pseudo: "hover" },
         { label: "Disabled", props: { size: "lg", disabled: true } },
+        // Дизайн-чек №17: количество вкладок — тоже вариация компонента, а
+        // не деталь данных, поэтому крайние случаи показаны в матрице.
+        { label: "1 вкладка", props: { items: ITEM_POOL.slice(0, 1) } },
+        { label: "2 вкладки", props: { items: ITEM_POOL.slice(0, 2) } },
+        { label: "5 вкладок", props: { items: ITEM_POOL } },
       ]}
       render={(props) => <Switcher {...props} />}
     />

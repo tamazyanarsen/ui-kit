@@ -1,3 +1,15 @@
+import blackClassicArt from "./backgrounds/black-classic.svg"
+import darkGreenArt from "./backgrounds/dark-green.svg"
+import digitalCardArt from "./backgrounds/digital-card.svg"
+import greyArt from "./backgrounds/grey.svg"
+import metalArt from "./backgrounds/metal.svg"
+import monoArt from "./backgrounds/mono.svg"
+import multiArt from "./backgrounds/multi.svg"
+import stickerArt from "./backgrounds/sticker.svg"
+import ultraGreyArt from "./backgrounds/ultra-grey.svg"
+import violetArt from "./backgrounds/violet.svg"
+
+
 export type BankCardSkin =
   | "mono"
   | "multi"
@@ -12,62 +24,38 @@ export type BankCardSkin =
 
 export type BankCardSide = "face" | "back"
 
+/**
+ * Дизайн-чек №16: «дизайн карты не соответствует макету Figma. Есть
+ * принципиальные различия, которые необходимо устранить, полностью
+ * унаследовав дизайн из Figma».
+ *
+ * Различия брались не из воздуха: раньше каждая карта рисовалась
+ * CSS-градиентом «на глаз по скриншоту сетки вариантов» — отсюда и
+ * «принципиальные различия». Настоящий артворк у Figma есть и отдаётся
+ * векторным ассетом (слой `Card Image` внутри каждого символа, например
+ * `Size=Desktop, Type=Face, Style=Mono` — нода 52969:11715), причём файлы
+ * уже лежали в `./backgrounds`, но компонент их не использовал.
+ *
+ * Теперь используются они. Заодно ушли водяные знаки: здание ДОМ.РФ,
+ * стикер и облако нарисованы внутри самого артворка, отдельным слоем их
+ * подкладывать больше не нужно.
+ */
 interface SkinStyle {
-  background: string
-  // "mark" skins swap the ДОМ.РФ building watermark for a different glyph
-  // (Sticker → NFC sticker icon, Digital Card → cloud) — see BankCard's own
-  // Watermark component for the actual glyphs.
-  watermark: "building" | "sticker" | "cloud"
+  /** Векторный артворк карты из Figma (332×208, слой `Card Image`). */
+  art: string
 }
 
-// Every skin's actual artwork in Figma is a pre-rendered image asset (no
-// inline gradient/color data available via the design-context API) — these
-// are CSS approximations sampled from a screenshot of the full 10-skin
-// variant grid, in the same "simplified, not a literal asset trace" spirit
-// as PaymentLogo's brand marks. Two skins ("mono", "ultra-grey") are a hard
-// diagonal split rather than a smooth blend — reproduced with a
-// same-position double color-stop.
 export const SKIN_STYLES: Record<BankCardSkin, SkinStyle> = {
-  mono: {
-    background: "linear-gradient(115deg, #252628 46%, #3FA535 46%)",
-    watermark: "building",
-  },
-  multi: {
-    background: "#3A3B3D",
-    watermark: "building",
-  },
-  "black-classic": {
-    background: "#1C1C1E",
-    watermark: "building",
-  },
-  metal: {
-    background: "linear-gradient(135deg, #E4E5E7 0%, #A6A8AC 100%)",
-    watermark: "building",
-  },
-  "ultra-grey": {
-    background: "linear-gradient(115deg, #48586A 46%, #A9C3CF 46%)",
-    watermark: "building",
-  },
-  sticker: {
-    background: "#1C1C1E",
-    watermark: "sticker",
-  },
-  "dark-green": {
-    background: "linear-gradient(135deg, #1F3D2E 0%, #6E8F79 100%)",
-    watermark: "building",
-  },
-  grey: {
-    background: "linear-gradient(135deg, #C7C2B8 0%, #8D8477 100%)",
-    watermark: "building",
-  },
-  violet: {
-    background: "linear-gradient(135deg, #241F3A 0%, #8A84A0 100%)",
-    watermark: "building",
-  },
-  "digital-card": {
-    background: "#16211D",
-    watermark: "cloud",
-  },
+  mono: { art: monoArt },
+  multi: { art: multiArt },
+  "black-classic": { art: blackClassicArt },
+  metal: { art: metalArt },
+  "ultra-grey": { art: ultraGreyArt },
+  sticker: { art: stickerArt },
+  "dark-green": { art: darkGreenArt },
+  grey: { art: greyArt },
+  violet: { art: violetArt },
+  "digital-card": { art: digitalCardArt },
 }
 
 export const SKIN_LABELS: Record<BankCardSkin, string> = {

@@ -5,14 +5,37 @@ import { StatesMatrix } from "@/stories/matrix"
 
 import { RangeInput, type RangeInputProps } from "./range-input"
 
+/* Дизайн-чек №17: вместо JSON-редакторов — понятные списки готовых
+   вариантов. Оба свойства здесь не «сколько элементов», а «какой пресет»,
+   поэтому и выбор пресетами, а не счётчиком. */
+const SCALE_PRESETS = {
+  "Без шкалы": [],
+  "0 — 50 — 100": ["0", "50", "100"],
+  "0 — 25 — 50 — 75 — 100": ["0", "25", "50", "75", "100"],
+  "Min / Max": ["Min", "Max"],
+} satisfies Record<string, string[]>
+
+const FORMAT_PRESETS = {
+  "Без форматирования": undefined,
+  "Рубли": { style: "currency", currency: "RUB", maximumFractionDigits: 0 },
+  "Проценты": { style: "unit", unit: "percent" },
+} satisfies Record<string, Intl.NumberFormatOptions | undefined>
+
+type ScalePreset = keyof typeof SCALE_PRESETS
+type FormatPreset = keyof typeof FORMAT_PRESETS
+
+type PlaygroundArgs = RangeInputProps & {
+  scalePreset?: ScalePreset
+  formatPreset?: FormatPreset
+}
+
 const meta = {
   title: "Компоненты/Range Input",
   component: RangeInput,
   parameters: { layout: "padded" },
   // comment/error are typed React.ReactNode but every usage is a plain
   // string — pin text controls so leaving one unset doesn't fall back to
-  // Storybook's "Set object" JSON-editor placeholder. (scaleLabels/format
-  // are left alone: plain-data array/object, fine to edit as raw JSON.)
+  // Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
     label: { control: "text" },
     comment: { control: "text" },
@@ -21,10 +44,20 @@ const meta = {
     max: { control: "number" },
     step: { control: "number" },
     disabled: { control: "boolean" },
-    // Captions under the track (Figma's "Шкала"); an empty array hides them.
-    scaleLabels: { control: "object" },
+    // Captions under the track (Figma's "Шкала"); «Без шкалы» их прячет.
+    scalePreset: {
+      name: "Шкала",
+      control: "select",
+      options: Object.keys(SCALE_PRESETS),
+    },
     // Intl.NumberFormat options for the value bubble, e.g. currency.
-    format: { control: "object" },
+    formatPreset: {
+      name: "Формат значения",
+      control: "select",
+      options: Object.keys(FORMAT_PRESETS),
+    },
+    scaleLabels: { table: { disable: true } },
+    format: { table: { disable: true } },
   },
   args: {
     label: "Label",
@@ -33,13 +66,14 @@ const meta = {
     step: 1,
     defaultValue: 50,
     disabled: false,
-    scaleLabels: ["0", "50", "100"],
+    scalePreset: "0 — 50 — 100",
+    formatPreset: "Без форматирования",
     comment: "Comment",
   },
-} satisfies Meta<RangeInputProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<RangeInputProps>
+type Story = StoryObj<PlaygroundArgs>
 
 function Controlled({ defaultValue, ...props }: RangeInputProps) {
   const [value, setValue] = useState<number>(
@@ -55,7 +89,13 @@ function Controlled({ defaultValue, ...props }: RangeInputProps) {
 }
 
 export const Playground: Story = {
-  render: (args) => <Controlled {...args} />,
+  render: ({ scalePreset, formatPreset, ...args }) => (
+    <Controlled
+      {...args}
+      scaleLabels={SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]}
+      format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
+    />
+  ),
 }
 
 export const Matrix: Story = {

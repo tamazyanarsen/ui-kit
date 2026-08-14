@@ -90,7 +90,17 @@ export const Matrix: Story = {
         { label: "Hover", props: {}, pseudo: "hover" },
         { label: "Pressed", props: {}, pseudo: "active" },
         { label: "Со счётчиком", props: { count: 3 } },
-        { label: "Выбрано", props: { defaultValue: "Оплачен" } },
+        // Дизайн-чек №19/№20: `State=Active` — выбранное значение плюс
+        // брендовая обводка `border-2` (ноды 54887:29390 / 54887:29400).
+        {
+          label: "Выбрано (Active,\nбрендовая обводка)",
+          props: { defaultValue: "Оплачен" },
+        },
+        {
+          label: "Выбрано + Hover",
+          props: { defaultValue: "Оплачен" },
+          pseudo: "hover",
+        },
         { label: "С иконкой", props: { icon: <CircleHelp aria-hidden="true" /> } },
         { label: "Disabled", props: { disabled: true } },
       ]}

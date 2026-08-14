@@ -1,6 +1,7 @@
-import { Check } from "@/icons"
+import type * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Icon, type IconName } from "@/components/ui/icon"
 
 import { getTagStyle, type TagColor, type TagSize, type TagVariant } from "./variants"
 
@@ -11,7 +12,16 @@ interface TagProps {
   color?: TagColor
   variant?: TagVariant
   size?: TagSize
-  showIcon?: boolean
+  /**
+   * Ведущая иконка. Имя из набора кита (`"check"`, `"clock"`, …) либо
+   * готовый узел, если нужен глиф не из набора.
+   *
+   * Раньше здесь стоял булев `showIcon`, который всегда рисовал галочку:
+   * тег «В обработке» или «Отклонён» получал ту же `check`, что и
+   * «Исполнено». В Figma иконка внутри тега — instance swap, то есть
+   * выбирается, а не включается.
+   */
+  icon?: IconName | React.ReactNode
   className?: string
   children: React.ReactNode
 }
@@ -20,7 +30,7 @@ function Tag({
   color = "green",
   variant = "main",
   size = "l",
-  showIcon = false,
+  icon,
   className,
   children,
 }: TagProps) {
@@ -48,7 +58,11 @@ function Tag({
         borderColor: style.border,
       }}
     >
-      {showIcon && <Check aria-hidden="true" className="size-4 shrink-0" strokeWidth={2.5} />}
+      {typeof icon === "string" ? (
+        <Icon name={icon} aria-hidden="true" className="size-4 shrink-0" />
+      ) : (
+        icon
+      )}
       {children}
     </span>
   )

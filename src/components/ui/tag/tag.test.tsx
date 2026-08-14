@@ -28,9 +28,16 @@ describe("Tag", () => {
     expect(tag).toHaveStyle({ backgroundColor: "var(--tag-green-secondary-bg)" })
   })
 
-  it("renders a leading check icon when showIcon is set", () => {
-    const { container } = render(<Tag showIcon>Активен</Tag>)
-    expect(container.querySelector("svg")).toBeInTheDocument()
+  it("renders the icon named by the `icon` prop", () => {
+    const { container } = render(<Tag icon="clock">В обработке</Tag>)
+    expect(container.querySelector("svg")).toHaveAttribute("data-icon-name", "clock")
+  })
+
+  it("accepts a ready-made node as the icon", () => {
+    const { container } = render(
+      <Tag icon={<svg data-testid="custom" />}>Активен</Tag>
+    )
+    expect(container.querySelector('[data-testid="custom"]')).toBeInTheDocument()
   })
 
   it("omits the icon by default", () => {

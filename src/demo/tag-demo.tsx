@@ -75,16 +75,19 @@ function TagDemo() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <RowLabel>Show Icon: True</RowLabel>
+          <RowLabel>Иконка — выбирается из набора, а не одна фиксированная</RowLabel>
           <div className="flex items-center gap-3">
-            <Tag color="green" variant="main" showIcon>
-              Example Text
+            <Tag color="green" variant="main" icon="circle-check">
+              Исполнено
             </Tag>
-            <Tag color="red" variant="secondary" showIcon>
-              Example Text
+            <Tag color="orange" variant="main" icon="clock">
+              В обработке
             </Tag>
-            <Tag color="black" showIcon>
-              Example Text
+            <Tag color="red" variant="secondary" icon="circle-x">
+              Отклонён
+            </Tag>
+            <Tag color="black" icon="info">
+              Системный
             </Tag>
           </div>
         </div>

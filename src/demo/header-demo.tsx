@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { Header } from "@/components/ui/header"
-import type { HeaderNavItem, HeaderDocumentMenuItem } from "@/components/ui/header"
+import type { HeaderDocumentMenuItem } from "@/components/ui/header"
 import type { NotificationMenuItem } from "@/components/ui/header"
 import type { ProfileMenuOrganization } from "@/components/ui/header"
 import { TopFixedMessage } from "@/components/ui/top-fixed-message"
@@ -21,25 +21,14 @@ import {
 import { RowLabel } from "./shared"
 
 // Дизайн-чек №30: у пункта навигации в макете нет собственного выпадающего
-// списка — раскрывается только кнопка «Меню» (в панель `HeaderMenu`),
-// поэтому пункты здесь плоские.
-const FULL_NAV: HeaderNavItem[] = [
-  { value: "payments", label: "Платежи", active: true },
-  { value: "accounts", label: "Счета" },
-  { value: "statements", label: "Операции и выписки" },
-  { value: "business-cards", label: "Бизнес-карты" },
-  { value: "deposits", label: "Депозиты" },
-  { value: "certificates", label: "Справки" },
-  { value: "letters", label: "Письма в банк" },
-  { value: "help", label: "Помощь" },
-]
-
-const NO_ACCOUNT_NAV: HeaderNavItem[] = [
-  { value: "deposits", label: "Депозиты" },
-  { value: "sbp", label: "СБП" },
-  { value: "project", label: "Проектное финансирование" },
-  { value: "payroll", label: "Зарплатный проект" },
-  { value: "certificates", label: "Справки" },
+// списка — раскрывается только кнопка «Меню» (в панель `HeaderMenu`). Сами
+// пункты нижнего ряда не задаются: это избранное, поэтому Header считает их
+// из `favourites` + `menuGroups`.
+const NO_ACCOUNT_FAVOURITES = [
+  "placement",
+  "deposits",
+  "letters",
+  "help",
 ]
 
 const DOCUMENT_ITEMS: HeaderDocumentMenuItem[] = [
@@ -115,7 +104,9 @@ function ClientHeaderExample({
       <div className="overflow-hidden rounded-2xl border border-[var(--header-border)]">
         <Header
           type="client"
-          navItems={FULL_NAV}
+          menuGroups={MENU_GROUPS}
+          favourites={MENU_FAVOURITES}
+          activeSection="payments"
           documentMenuItems={DOCUMENT_ITEMS}
           messageCount={3}
           notificationItems={NOTIFICATIONS}
@@ -160,21 +151,18 @@ function HeaderDemo() {
             <div className="rounded-2xl border border-[var(--header-border)]">
               <Header
                 type="client"
-                navItems={FULL_NAV}
                 menuGroups={MENU_GROUPS}
                 menuBanners={MENU_BANNERS}
                 createItems={CREATE_ITEMS}
                 favourites={favourites}
-                onFavouriteToggle={(value) =>
-                  setFavourites((prev) =>
-                    prev.includes(value)
-                      ? prev.filter((item) => item !== value)
-                      : [...prev, value]
-                  )
-                }
-                onCustomiseFavourites={() =>
-                  add({ type: "information", title: "Настройка избранного" })
-                }
+                activeSection="payments"
+                onFavouritesChange={(next) => {
+                  setFavourites(next)
+                  add({
+                    type: "checked",
+                    title: `В избранном разделов: ${next.length}`,
+                  })
+                }}
                 documentMenuItems={DOCUMENT_ITEMS}
                 messageCount={3}
                 notificationItems={NOTIFICATIONS}
@@ -198,7 +186,8 @@ function HeaderDemo() {
               <Header
                 type="client"
                 clientHeaderType="client-without-account"
-                navItems={NO_ACCOUNT_NAV}
+                menuGroups={MENU_GROUPS}
+                favourites={NO_ACCOUNT_FAVOURITES}
                 documentMenuItems={DOCUMENT_ITEMS}
                 messageCount={3}
                 notificationItems={NOTIFICATIONS}
@@ -243,13 +232,14 @@ function HeaderDemo() {
 
           <div className="flex flex-col gap-2">
             <RowLabel>
-              «Ещё» — пункты уходят в дропдаун по одному, по мере сужения
-              контейнера (без привязки к брейкпоинтам)
+              «Ещё» — избранные разделы уходят в дропдаун по одному, по мере
+              сужения контейнера (без привязки к брейкпоинтам)
             </RowLabel>
             <div className="max-w-md overflow-hidden rounded-2xl border border-[var(--header-border)]">
               <Header
                 type="client"
-                navItems={FULL_NAV}
+                menuGroups={MENU_GROUPS}
+                favourites={MENU_FAVOURITES}
                 documentMenuItems={DOCUMENT_ITEMS}
                 messageCount={3}
                 notificationItems={NOTIFICATIONS}
@@ -270,13 +260,16 @@ function HeaderDemo() {
         <p className="mt-6 text-p3-regular text-muted-foreground">
           Header собирает: логотип, две кнопки нижнего ряда («Меню» и
           «Создать», каждая раскрывает свою панель из ui/header-menu),
-          навигацию с overflow-в-«Ещё» (тот же механизм, что у
+          избранные разделы с overflow-в-«Ещё» (тот же механизм, что у
           Tabs/Switcher), центр уведомлений, счётчик сообщений, меню
           документов, и Profile Menu — переключатель организаций с живым
-          поиском при 7+ организациях. «Выйти» (из Profile Menu или
-          отдельная иконка у Employee) открывает подтверждение через общий
-          компонент Modal; переключение организации показывает тост через
-          общий ToastProvider.
+          поиском при 7+ организациях. Нижний ряд — это и есть избранное:
+          звезда в раскрытом меню меняет его сразу, кнопка «Настроить
+          избранное» открывает модалку с порядком и полным списком
+          разделов. «Выйти» (из Profile Menu или отдельная иконка у
+          Employee) открывает подтверждение через общий компонент Modal;
+          переключение организации показывает тост через общий
+          ToastProvider.
         </p>
       </AccordionPanel>
     </AccordionItem>

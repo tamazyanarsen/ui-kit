@@ -47,6 +47,8 @@ interface HeaderMenuProps {
   /** Значения ссылок, помеченных звездой. */
   favourites?: string[]
   onFavouriteToggle?: (value: string) => void
+  /** Значение текущего раздела — подсвечивается брендовым цветом. */
+  activeLink?: string
   /** Звёзды «в избранное» показываются только там, где избранное включено. */
   showFavourites?: boolean
   /** Максимальная высота панели: за ней включается собственный скролл. */
@@ -84,11 +86,13 @@ function PageLink({
   link,
   favourite,
   showStar,
+  active,
   onFavouriteToggle,
 }: {
   link: HeaderMenuLink
   favourite: boolean
   showStar: boolean
+  active: boolean
   onFavouriteToggle?: (value: string) => void
 }) {
   return (
@@ -98,8 +102,12 @@ function PageLink({
     <div data-slot="header-menu-link" className="group/link flex w-full items-start">
       <button
         type="button"
+        data-active={active || undefined}
         onClick={link.onClick}
-        className="min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
+        className={cn(
+          "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium outline-none transition-colors hover:text-[var(--header-hover-fg)]",
+          active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
+        )}
       >
         {link.label}
       </button>
@@ -131,11 +139,13 @@ function PageGroup({
   group,
   favourites,
   showFavourites,
+  activeLink,
   onFavouriteToggle,
 }: {
   group: HeaderMenuGroup
   favourites: string[]
   showFavourites: boolean
+  activeLink?: string
   onFavouriteToggle?: (value: string) => void
 }) {
   return (
@@ -160,6 +170,7 @@ function PageGroup({
             link={link}
             favourite={favourites.includes(link.value)}
             showStar={showFavourites}
+            active={link.value === activeLink}
             onFavouriteToggle={onFavouriteToggle}
           />
         ))}
@@ -209,6 +220,7 @@ function HeaderMenu({
   banners = [],
   favourites = [],
   onFavouriteToggle,
+  activeLink,
   showFavourites = true,
   maxHeight,
   className,
@@ -256,6 +268,7 @@ function HeaderMenu({
               group={group}
               favourites={favourites}
               showFavourites={showFavourites}
+              activeLink={activeLink}
               onFavouriteToggle={onFavouriteToggle}
             />
           ))}

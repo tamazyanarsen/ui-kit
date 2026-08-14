@@ -141,12 +141,20 @@ export const MENU_BANNERS: MenuBannerProps[] = [
   },
 ]
 
+/**
+ * Стартовое избранное — набор «Основная группа клиентов» из комментария
+ * «Начально закреплённые наборы» (MENU DOCS, нода 70303:58468), в том же
+ * порядке. Он же заполняет нижний ряд шапки на всех макетах.
+ */
 export const MENU_FAVOURITES = [
   "payments",
-  "statements",
   "accounts",
+  "statements",
+  "business-cards",
   "deposits",
   "certificates",
+  "letters",
+  "help",
 ]
 
 export const CREATE_ITEMS: CreateMenuItem[] = [

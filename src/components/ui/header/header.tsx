@@ -21,7 +21,10 @@ import { Divider } from "@/components/ui/divider"
 import { Dropdown } from "@/components/ui/dropdown"
 import {
   CreateMenu,
+  FavouritesSettings,
   HeaderMenu,
+  resolveFavouriteLinks,
+  toggleFavourite,
   type CreateMenuItem,
   type HeaderMenuGroup,
   type MenuBannerProps,
@@ -67,10 +70,17 @@ import {
 //     раскрываются только «Меню», «Создать» и «Ещё». Поэтому у
 //     `HeaderNavItem` больше нет поля `items` — вместо разнородных
 //     дропдаунов есть одна панель `HeaderMenu` (см. ui/header-menu),
-//     которая раскрывается по кнопке «Меню». Сами пункты нижнего ряда —
-//     это избранные разделы: их отмечают звёздами в раскрытом меню, а
-//     когда избранное пустое, вместо них стоит подсказка (вариант
-//     `Size=None`, нода 70303:49022).
+//     которая раскрывается по кнопке «Меню».
+//
+// Избранное — один список, а не два. Пункты нижнего ряда и звёзды в
+// раскрытом меню — это одно и то же состояние: как только передан
+// `menuGroups`, ряд СЧИТАЕТСЯ из `favourites` (в порядке избранного), а не
+// берётся из `navItems`. Так задокументировано в MENU DOCS: вариант
+// `Size=None` подсказывает «нажмите ☆ справа, чтобы добавить его сюда»,
+// комментарий «Начально закреплённые наборы» перечисляет три стартовых
+// набора избранного, а «Настройка избранного» делит все разделы на
+// «Добавлено» и «Остальные разделы». `navItems` остаётся только для
+// шапки без раскрытого меню.
 //
 // Nav overflow reuses the exact "Ещё" mechanism already built for Tabs/
 // Switcher (useOverflowCount): per the spec's own "Взаимодействие с
@@ -98,13 +108,28 @@ interface HeaderDocumentMenuItem {
 interface HeaderProps {
   type?: HeaderType
   clientHeaderType?: ClientHeaderType
+  /**
+   * Пункты нижнего ряда напрямую — только для шапки без раскрытого меню.
+   * Если передан `menuGroups`, ряд считается из `favourites`, а этот проп
+   * игнорируется (см. комментарий об избранном выше).
+   */
   navItems?: HeaderNavItem[]
   /** Группы разделов в панели, которая раскрывается по кнопке «Меню». */
   menuGroups?: HeaderMenuGroup[]
   menuBanners?: MenuBannerProps[]
+  /**
+   * Избранные разделы — значения ссылок из `menuGroups`, в том порядке, в
+   * котором они стоят в нижнем ряду.
+   */
   favourites?: string[]
-  onFavouriteToggle?: (value: string) => void
-  onCustomiseFavourites?: () => void
+  /**
+   * Вызывается и при щелчке по звезде в раскрытом меню, и при сохранении
+   * «Настройки избранного». Пока он не передан, звёзды и кнопка
+   * «Настроить избранное» не показываются: менять состояние было бы некуда.
+   */
+  onFavouritesChange?: (favourites: string[]) => void
+  /** Значение текущего раздела — подсвечивается в ряду и в меню. */
+  activeSection?: string
   /** Плитки в панели, которая раскрывается по кнопке «Создать». */
   createItems?: CreateMenuItem[]
   documentMenuItems?: HeaderDocumentMenuItem[]
@@ -128,7 +153,7 @@ interface HeaderProps {
 
 const ELLIPSIS_RESERVED = 72
 
-function NavItem({ item }: { item: HeaderNavItem }) {
+function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
   // `self-stretch`, not a vertical padding: Figma's `Menu Point Header (ELK)`
   // is the full 64px height of the row, so the whole band is the hit target
   // even though only the 24px label is inked.
@@ -136,11 +161,11 @@ function NavItem({ item }: { item: HeaderNavItem }) {
     <button
       type="button"
       data-slot="header-nav-item"
-      data-active={item.active || undefined}
+      data-active={active || undefined}
       onClick={item.onClick}
       className={cn(
         "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
-        item.active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
+        active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
       )}
     >
       {item.icon}
@@ -172,6 +197,7 @@ function EmptyFavouritesHint() {
 
 function NavRow({
   items,
+  activeSection,
   menuOpen,
   onMenuOpenChange,
   createOpen,
@@ -180,6 +206,7 @@ function NavRow({
   favouritesEnabled,
 }: {
   items: HeaderNavItem[]
+  activeSection?: string
   menuOpen: boolean
   onMenuOpenChange: (open: boolean) => void
   createOpen: boolean
@@ -245,7 +272,11 @@ function NavRow({
           {items.length === 0 && favouritesEnabled && <EmptyFavouritesHint />}
 
           {visibleItems.map((item) => (
-            <NavItem key={item.value} item={item} />
+            <NavItem
+              key={item.value}
+              item={item}
+              active={item.active ?? item.value === activeSection}
+            />
           ))}
 
           {hiddenItems.length > 0 && (
@@ -254,7 +285,10 @@ function NavRow({
                 render={
                   <button
                     type="button"
-                    className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
+                    // Раскрытое «Ещё» — брендового цвета вместе с шевроном
+                    // (макет «Свёрнутое меню — избранные разделы уходят в
+                    // „Ещё“», нода 70303:58398).
+                    className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
                   />
                 }
               >
@@ -281,10 +315,15 @@ function NavRow({
 
           {/* Off-screen measurement copy — see Switcher/Tabs' own comment on
               why this needs to exist as an always-rendered duplicate row. */}
-          <div aria-hidden="true" className="pointer-events-none invisible absolute top-0 left-0 flex gap-8">
+          <div
+            aria-hidden="true"
+            data-slot="header-nav-measure"
+            className="pointer-events-none invisible absolute top-0 left-0 flex gap-8"
+          >
             {items.map((item, index) => (
               <div
                 key={item.value}
+                data-value={item.value}
                 ref={(el) => {
                   itemRefs.current[index] = el
                 }}
@@ -444,8 +483,8 @@ function Header({
   menuGroups = [],
   menuBanners = [],
   favourites = [],
-  onFavouriteToggle,
-  onCustomiseFavourites,
+  onFavouritesChange,
+  activeSection,
   createItems = [],
   documentMenuItems = [],
   messageCount = 0,
@@ -466,6 +505,7 @@ function Header({
   className,
 }: HeaderProps) {
   const [logoutOpen, setLogoutOpen] = React.useState(false)
+  const [favouritesSettingsOpen, setFavouritesSettingsOpen] = React.useState(false)
   // Раскрыта всегда не больше одной панели: в макете кнопка второй панели
   // в этот момент стоит в обычном состоянии, а не в состоянии «закрыть».
   const [openPanel, setOpenPanel] = React.useState<"menu" | "create" | null>(null)
@@ -474,6 +514,19 @@ function Header({
   const showNavRow = type === "client" && !isBlocked
   const showCreate = type === "client" && clientHeaderType === "client"
   const showIconCluster = type === "client" && !isBlocked
+  const favouritesEnabled = Boolean(onFavouritesChange)
+
+  // Нижний ряд — это избранное, когда есть из чего его считать. Раньше
+  // `navItems` и `favourites` были двумя независимыми списками, поэтому
+  // звезда в раскрытом меню ничего не меняла в шапке.
+  const resolvedNavItems: HeaderNavItem[] = React.useMemo(() => {
+    if (menuGroups.length === 0) return navItems
+    return resolveFavouriteLinks(menuGroups, favourites).map((link) => ({
+      value: link.value,
+      label: link.label,
+      onClick: link.onClick,
+    }))
+  }, [menuGroups, favourites, navItems])
 
   React.useEffect(() => {
     if (!showNavRow) setOpenPanel(null)
@@ -578,13 +631,14 @@ function Header({
 
       {showNavRow && (
         <NavRow
-          items={navItems}
+          items={resolvedNavItems}
+          activeSection={activeSection}
           menuOpen={openPanel === "menu"}
           onMenuOpenChange={(open) => setOpenPanel(open ? "menu" : null)}
           createOpen={openPanel === "create"}
           onCreateOpenChange={(open) => setOpenPanel(open ? "create" : null)}
           showCreate={showCreate}
-          favouritesEnabled={Boolean(onFavouriteToggle)}
+          favouritesEnabled={favouritesEnabled}
         />
       )}
 
@@ -592,12 +646,12 @@ function Header({
         <MenuOverlay
           onClose={() => setOpenPanel(null)}
           footer={
-            onCustomiseFavourites && (
+            favouritesEnabled && (
               <Button
                 variant="secondary-white"
                 size="sm"
                 icon={Settings}
-                onClick={onCustomiseFavourites}
+                onClick={() => setFavouritesSettingsOpen(true)}
               >
                 Настроить избранное
               </Button>
@@ -608,8 +662,15 @@ function Header({
             groups={menuGroups}
             banners={menuBanners}
             favourites={favourites}
-            onFavouriteToggle={onFavouriteToggle}
-            showFavourites={Boolean(onFavouriteToggle)}
+            activeLink={activeSection}
+            // Звезда работает сразу, без «Сохранить»: подсказка пустого
+            // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
+            // его сюда». Новый раздел встаёт в конец ряда.
+            onFavouriteToggle={
+              onFavouritesChange &&
+              ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
+            }
+            showFavourites={favouritesEnabled}
             // Панель ниже кнопки «Настроить избранное» не уезжает: 128px
             // шапки + 32px отступа + 32px кнопки + 32px снизу = 14rem.
             maxHeight="calc(100vh - 14rem)"
@@ -621,6 +682,16 @@ function Header({
         <MenuOverlay onClose={() => setOpenPanel(null)}>
           <CreateMenu items={createItems} />
         </MenuOverlay>
+      )}
+
+      {onFavouritesChange && (
+        <FavouritesSettings
+          open={favouritesSettingsOpen}
+          onOpenChange={setFavouritesSettingsOpen}
+          groups={menuGroups}
+          favourites={favourites}
+          onSave={onFavouritesChange}
+        />
       )}
 
       <LogoutModal

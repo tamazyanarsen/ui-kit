@@ -79,6 +79,11 @@ const meta = {
       control: { type: "range", min: 0, max: 900, step: 20 },
       description: "Максимальная высота панели; 0 — без ограничения и без скролла",
     },
+    activeLink: {
+      control: "select",
+      options: [undefined, ...MENU_FAVOURITES],
+      description: "Текущий раздел — подсвечивается брендовым цветом",
+    },
   },
   args: {
     groupCount: MENU_GROUPS.length,
@@ -86,6 +91,7 @@ const meta = {
     columns: 4,
     showFavourites: true,
     maxHeight: 0,
+    activeLink: "payments",
   },
 } satisfies Meta<PlaygroundArgs>
 

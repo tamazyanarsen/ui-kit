@@ -10,25 +10,9 @@ import {
 } from "@/stories/menu-fixtures"
 
 import { Header } from "./header"
-import type { HeaderNavItem, HeaderProps } from "./header"
+import type { HeaderProps } from "./header"
 import type { ProfileMenuOrganization } from "./profile-menu"
 import type { NotificationMenuItem } from "./notification-menu"
-
-// В макете (`Menu Header (ELK)`, нода 70303:48974) пункты навигации —
-// плоские, без собственных выпадающих списков: раскрывается только кнопка
-// «Меню». Поэтому здесь их ровно столько же и в том же порядке.
-const NAV_ITEMS: HeaderNavItem[] = [
-  { value: "payments", label: "Платежи", active: true },
-  { value: "accounts", label: "Счета" },
-  { value: "statements", label: "Операции и выписки" },
-  { value: "business-cards", label: "Бизнес-карты" },
-  { value: "deposits", label: "Депозиты" },
-  { value: "certificates", label: "Справки" },
-  { value: "letters", label: "Письма в банк" },
-  { value: "help", label: "Помощь" },
-  { value: "payroll", label: "Зарплатный проект" },
-  { value: "sbp-qr", label: "QR-коды СБП" },
-]
 
 const ORGS: ProfileMenuOrganization[] = [
   {
@@ -72,11 +56,14 @@ const DOCUMENT_MENU_ITEMS = [
   { value: "contracts", label: "Договоры" },
 ]
 
-/* Дизайн-чек №17 («здесь и далее везде»): вместо четырёх JSON-редакторов
+/* Дизайн-чек №17 («здесь и далее везде»): вместо JSON-редакторов
    (navItems / notificationItems / organizations / documentMenuItems) —
-   счётчики и переключатели, которые режут те же демо-наборы. Заодно
-   организация и «избранное» живут в состоянии обёртки, иначе переключатель
-   организаций и звёзды в раскрытом меню были бы неинтерактивны. */
+   счётчики и переключатели, которые режут те же демо-наборы.
+
+   Избранное и организация живут в состоянии обёртки: без этого звёзды в
+   раскрытом меню, «Настройка избранного» и переключатель организаций были
+   бы неинтерактивны. Пункты нижнего ряда сюда не передаются вовсе — они
+   считаются из избранного самим Header. */
 type PlaygroundArgs = Omit<
   HeaderProps,
   | "navItems"
@@ -87,57 +74,46 @@ type PlaygroundArgs = Omit<
   | "menuBanners"
   | "createItems"
   | "favourites"
-  | "onFavouriteToggle"
+  | "onFavouritesChange"
   | "organizationId"
   | "onOrganizationChange"
   | "className"
 > & {
-  navItemCount: number
   notificationCount: number
   organizationCount: number
   documentMenuItemCount: number
   menuGroupCount: number
   menuBannerCount: number
   createItemCount: number
+  favouriteCount: number
   withFavourites: boolean
 }
 
 function HeaderDemo({
-  navItemCount = NAV_ITEMS.length,
   notificationCount = NOTIFICATIONS.length,
   organizationCount = 3,
   documentMenuItemCount = 1,
   menuGroupCount = MENU_GROUPS.length,
   menuBannerCount = MENU_BANNERS.length,
   createItemCount = CREATE_ITEMS.length,
+  favouriteCount = MENU_FAVOURITES.length,
   withFavourites = true,
   ...props
 }: Partial<PlaygroundArgs>) {
   const orgs = ORGS.slice(0, Math.max(1, organizationCount))
   const [organizationId, setOrganizationId] = useState(orgs[0].id)
-  const [favourites, setFavourites] = useState(MENU_FAVOURITES)
+  const [favourites, setFavourites] = useState(MENU_FAVOURITES.slice(0, favouriteCount))
 
   return (
     <Header
       {...props}
-      navItems={NAV_ITEMS.slice(0, navItemCount)}
-      notificationItems={NOTIFICATIONS.slice(0, notificationCount)}
-      documentMenuItems={DOCUMENT_MENU_ITEMS.slice(0, documentMenuItemCount)}
       menuGroups={MENU_GROUPS.slice(0, menuGroupCount)}
       menuBanners={MENU_BANNERS.slice(0, menuBannerCount)}
       createItems={CREATE_ITEMS.slice(0, createItemCount)}
       favourites={favourites}
-      onFavouriteToggle={
-        withFavourites
-          ? (value) =>
-              setFavourites((prev) =>
-                prev.includes(value)
-                  ? prev.filter((item) => item !== value)
-                  : [...prev, value]
-              )
-          : undefined
-      }
-      onCustomiseFavourites={withFavourites ? () => {} : undefined}
+      onFavouritesChange={withFavourites ? setFavourites : undefined}
+      notificationItems={NOTIFICATIONS.slice(0, notificationCount)}
+      documentMenuItems={DOCUMENT_MENU_ITEMS.slice(0, documentMenuItemCount)}
       organizations={orgs}
       organizationId={orgs.some((org) => org.id === organizationId) ? organizationId : orgs[0].id}
       onOrganizationChange={setOrganizationId}
@@ -155,6 +131,11 @@ const meta = {
       control: "inline-radio",
       options: ["client", "client-without-account", "client-is-blocked"],
     },
+    activeSection: {
+      control: "select",
+      options: [undefined, ...MENU_FAVOURITES],
+      description: "Текущий раздел — подсвечивается в ряду и в раскрытом меню",
+    },
     messageCount: { control: { type: "number", min: 0, max: 99 } },
     contactPerson: { control: "text" },
     employeeName: { control: "text" },
@@ -162,9 +143,14 @@ const meta = {
     showMenu: { control: "boolean" },
     showOrgSettings: { control: "boolean" },
     sidebarOpen: { control: "boolean" },
-    navItemCount: {
-      control: { type: "range", min: 0, max: NAV_ITEMS.length, step: 1 },
-      description: "Сколько пунктов навигации; лишние уезжают в «Ещё»",
+    favouriteCount: {
+      control: { type: "range", min: 0, max: MENU_FAVOURITES.length, step: 1 },
+      description:
+        "Сколько разделов в избранном. Именно избранное и есть пункты нижнего ряда; 0 — подсказка вместо них",
+    },
+    withFavourites: {
+      control: "boolean",
+      description: "Звёзды в меню и кнопка «Настроить избранное»",
     },
     notificationCount: {
       control: { type: "range", min: 0, max: NOTIFICATIONS.length, step: 1 },
@@ -172,7 +158,7 @@ const meta = {
     },
     organizationCount: {
       control: { type: "range", min: 1, max: ORGS.length, step: 1 },
-      description: "1 — карточка без переключателя, 7+ — со поиском",
+      description: "1 — карточка без переключателя, 7+ — с поиском",
     },
     documentMenuItemCount: {
       control: { type: "range", min: 0, max: DOCUMENT_MENU_ITEMS.length, step: 1 },
@@ -190,22 +176,19 @@ const meta = {
       control: { type: "range", min: 0, max: CREATE_ITEMS.length, step: 1 },
       description: "Плиток в панели, которая раскрывается по «Создать»",
     },
-    withFavourites: {
-      control: "boolean",
-      description: "Звёзды «в избранное» и кнопка «Настроить избранное»",
-    },
   },
   args: {
     type: "client",
     clientHeaderType: "client",
-    navItemCount: 8,
+    activeSection: "payments",
+    favouriteCount: MENU_FAVOURITES.length,
+    withFavourites: true,
     notificationCount: NOTIFICATIONS.length,
     organizationCount: 3,
     documentMenuItemCount: 1,
     menuGroupCount: MENU_GROUPS.length,
     menuBannerCount: MENU_BANNERS.length,
     createItemCount: CREATE_ITEMS.length,
-    withFavourites: true,
     messageCount: 3,
     contactPerson: "Константинопольский К. К.",
     showOrgSettings: true,
@@ -230,22 +213,40 @@ export const Examples: Story = {
     <StoryShowcase className="p-0">
       <StorySection
         title="Клиент"
-        description="Тип по умолчанию: две полосы по 64px, кнопки «Меню» и «Создать», плоские пункты навигации."
+        description="Тип по умолчанию: две полосы по 64px, кнопки «Меню» и «Создать», в нижнем ряду — избранные разделы."
       >
         <div className="w-full">
-          <HeaderDemo type="client" navItemCount={8} />
+          <HeaderDemo type="client" activeSection="payments" />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Избранное меняется звездой в меню"
+        description="Раскройте «Меню» и щёлкните звезду у любого раздела — пункт появится или исчезнет в нижнем ряду сразу же. Кнопка «Настроить избранное» открывает модалку с порядком."
+      >
+        <div className="w-full">
+          <HeaderDemo type="client" favouriteCount={3} activeSection="payments" />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Пустое избранное"
+        description="Вместо пунктов — подсказка со звездой (вариант Size=None)."
+      >
+        <div className="w-full">
+          <HeaderDemo type="client" favouriteCount={0} />
         </div>
       </StorySection>
 
       <StorySection
         title="Клиент без счёта"
-        description="Урезанная навигация, одна организация, без кнопки «Создать»."
+        description="Урезанное избранное, одна организация, без кнопки «Создать»."
       >
         <div className="w-full">
           <HeaderDemo
             type="client"
             clientHeaderType="client-without-account"
-            navItemCount={4}
+            favouriteCount={4}
             organizationCount={1}
             documentMenuItemCount={0}
           />
@@ -275,17 +276,8 @@ export const Examples: Story = {
       </StorySection>
 
       <StorySection
-        title="Пустое избранное"
-        description="Пункты нижнего ряда — это избранные разделы. Пока их нет, вместо них стоит подсказка (вариант Size=None)."
-      >
-        <div className="w-full">
-          <HeaderDemo type="client" navItemCount={0} />
-        </div>
-      </StorySection>
-
-      <StorySection
         title="Узкий контейнер"
-        description="Пункты навигации, которые не поместились, уезжают в меню «Ещё» — единственный пункт с шевроном."
+        description="Избранное, которое не поместилось, уезжает в меню «Ещё» — единственный пункт с шевроном, брендовый в раскрытом состоянии."
       >
         <div className="w-full max-w-md">
           <HeaderDemo type="client" organizationCount={1} documentMenuItemCount={0} />

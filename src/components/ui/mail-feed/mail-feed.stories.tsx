@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { useState } from "react"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+} from "@/stories/matrix"
 
 import { MailFeed, type MailFeedProps, type MailFeedState } from "./mail-feed"
 
@@ -17,12 +20,21 @@ const ROW_PROPS = {
 
 const STATES: MailFeedState[] = ["default", "new", "used", "error"]
 
+/* У `ELK / mail` два разных свойства: `Property 1` — это наш `state`
+   (Default/New/Used/Error), а `Hover` — отдельное булево, которое пропом не
+   выставить. Поэтому Hover эмулируется псевдосостоянием. */
+type PlaygroundArgs = MailFeedProps & { hover?: boolean }
+
 const meta = {
   title: "Компоненты/Mail Feed",
   component: MailFeed,
   parameters: { layout: "padded" },
   argTypes: {
     state: { control: "inline-radio", options: STATES },
+    // У `ELK / mail` два разных свойства: `Property 1` — это наш `state`
+    // (Default/New/Used/Error), а `Hover` — отдельное булево. Пропом его не
+    // выставить, поэтому эмулируем псевдосостоянием.
+    hover: { control: "boolean", name: "Hover" },
     id: { control: "text" },
     sender: { control: "text" },
     date: { control: "text" },
@@ -33,10 +45,10 @@ const meta = {
     checked: { control: "boolean" },
   },
   args: { ...ROW_PROPS, state: "default", showCheckbox: false },
-} satisfies Meta<MailFeedProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<MailFeedProps>
+type Story = StoryObj<PlaygroundArgs>
 
 function Controlled(props: MailFeedProps) {
   const [checked, setChecked] = useState(false)
@@ -50,9 +62,11 @@ function Controlled(props: MailFeedProps) {
 }
 
 export const Playground: Story = {
-  render: (args) => (
+  render: ({ hover, ...args }) => (
     <div className="w-[492px]">
-      <Controlled {...args} />
+      <PseudoBox state={hover ? "hover" : "default"} className="w-full">
+        <Controlled {...args} />
+      </PseudoBox>
     </div>
   ),
 }

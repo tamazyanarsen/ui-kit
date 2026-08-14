@@ -1,18 +1,28 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import { DatePicker } from "./date-picker"
 import type { DatePickerProps } from "./date-picker"
 import type { CalendarMode } from "@/components/ui/calendar"
 import type { InputSize } from "@/components/ui/input"
 
+/* Ось `State` есть в макете (`ELK / select`, на котором стоит поле: State = Default | Hover | Disabled | Active), а hover пропом не
+   выставить — его даёт общий контрол `state`. */
+type PlaygroundArgs = DatePickerProps & { state?: PlaygroundState }
+
 const meta = {
   title: "Компоненты/Date Picker",
   component: DatePicker,
   parameters: { layout: "centered" },
   argTypes: {
+    state: stateArgType,
     // `mode`/`size` are plain string unions imported from other modules
     // (`CalendarMode`, `InputSize`) — react-docgen can't resolve an imported
     // type alias into an enum here, so both fall back to a generic
@@ -43,16 +53,17 @@ const meta = {
     yearValue: { control: false },
   },
   args: {
+    state: "default" as PlaygroundState,
     mode: "single",
     size: "lg",
     label: "Дата",
     disabled: false,
     footer: true,
   },
-} satisfies Meta<DatePickerProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<DatePickerProps>
+type Story = StoryObj<PlaygroundArgs>
 
 // `value`/`onChange` are fixed by this demo's own local state — every other
 // control (label, comment, error, disabled, size, …) is still forwarded.
@@ -82,9 +93,11 @@ function Demo(props: DatePickerProps) {
 }
 
 export const Playground: Story = {
-  render: (args) => (
+  render: ({ state, ...args }) => (
     <div className="w-80">
-      <Demo {...args} />
+      <PseudoBox state={state} className="w-full">
+        <Demo {...args} />
+      </PseudoBox>
     </div>
   ),
 }

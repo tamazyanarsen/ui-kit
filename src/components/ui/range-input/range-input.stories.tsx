@@ -1,7 +1,12 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import { RangeInput, type RangeInputProps } from "./range-input"
 
@@ -24,9 +29,14 @@ const FORMAT_PRESETS = {
 type ScalePreset = keyof typeof SCALE_PRESETS
 type FormatPreset = keyof typeof FORMAT_PRESETS
 
+/* `State` — ось компонент-сета `ELK / range input` (Default, Hover,
+   Focused, Disabled, Error). Disabled и Error задаются пропами, а hover и
+   фокус пропом не выставить — их даёт общий контрол `state`, как у
+   остальных полей ввода кита. */
 type PlaygroundArgs = RangeInputProps & {
   scalePreset?: ScalePreset
   formatPreset?: FormatPreset
+  state?: PlaygroundState
 }
 
 const meta = {
@@ -44,6 +54,7 @@ const meta = {
     max: { control: "number" },
     step: { control: "number" },
     disabled: { control: "boolean" },
+    state: stateArgType,
     // Captions under the track (Figma's "Шкала"); «Без шкалы» их прячет.
     scalePreset: {
       name: "Шкала",
@@ -69,6 +80,7 @@ const meta = {
     scalePreset: "0 — 50 — 100",
     formatPreset: "Без форматирования",
     comment: "Comment",
+    state: "default" as PlaygroundState,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -89,12 +101,14 @@ function Controlled({ defaultValue, ...props }: RangeInputProps) {
 }
 
 export const Playground: Story = {
-  render: ({ scalePreset, formatPreset, ...args }) => (
-    <Controlled
-      {...args}
-      scaleLabels={SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]}
-      format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
-    />
+  render: ({ scalePreset, formatPreset, state, ...args }) => (
+    <PseudoBox state={state} className="w-full">
+      <Controlled
+        {...args}
+        scaleLabels={SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]}
+        format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
+      />
+    </PseudoBox>
   ),
 }
 

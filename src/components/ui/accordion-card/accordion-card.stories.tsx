@@ -1,11 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  stateArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import { AccordionCard } from "./accordion-card"
 
 type AccordionCardProps = ComponentProps<typeof AccordionCard>
+
+/* Ось `State` есть в макете (`ELK / accordion`: State = Default | Hover), а hover пропом не
+   выставить — его даёт общий контрол `state`. */
+type PlaygroundArgs = AccordionCardProps & { state?: PlaygroundState }
 
 const meta = {
   title: "Компоненты/Accordion",
@@ -16,6 +25,7 @@ const meta = {
   // Storybook fall back to a generic "Set object" JSON-editor placeholder
   // once it's left unset, instead of a plain text control.
   argTypes: {
+    state: stateArgType,
     title: { control: "text" },
     subtitle: { control: "text" },
     children: { control: "text" },
@@ -23,18 +33,25 @@ const meta = {
     blocked: { control: "boolean" },
   },
   args: {
+    state: "default" as PlaygroundState,
     title: "Заголовок карточки",
     subtitle: "Подзаголовок с пояснением",
     children: "Раскрытое содержимое карточки.",
     defaultOpen: false,
     blocked: false,
   },
-} satisfies Meta<AccordionCardProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<AccordionCardProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ state, ...args }) => (
+    <PseudoBox state={state} className="w-full">
+      <AccordionCard {...args} />
+    </PseudoBox>
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

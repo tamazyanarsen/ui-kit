@@ -145,8 +145,15 @@ function Tabs({
     <div
       ref={containerRef}
       data-slot="tabs"
+      // ⚠️ Разделитель — ВНУТРЕННЯЯ тень, а не `border-bottom`. Разделитель
+      // 1px и линия активного таба 4px лежат в макете на одном месте: в
+      // Figma stroke фрейма не занимает layout, а `border` при
+      // `box-sizing: border-box` добавляет свой пиксель сверху. Замер до
+      // правки: обёртка 45 при табе 44 — то есть весь ряд разъезжался с
+      // соседними блоками на пиксель, и всё, что центрируется, вставало на
+      // полпикселя выше. Та же грабля, что с линией под шапкой таблицы.
       className={cn(
-        "relative flex items-center border-b border-[var(--tabs-border)]",
+        "relative flex items-center shadow-[inset_0_-1px_0_0_var(--tabs-border)]",
         className
       )}
       style={{ gap: GAP[sizeKey] }}

@@ -46,6 +46,50 @@ describe("TableColumnSettings", () => {
       { ...COLUMNS[1], visible: false },
       COLUMNS[2],
     ])
+    // ⚠️ РОВНО один раз. Строка и галочка переключают одно и то же, и без
+    // остановки всплытия клик по самой галочке срабатывал бы дважды —
+    // сначала её `onCheckedChange`, затем `onClick` строки, — а столбец
+    // возвращался бы в исходное состояние. Со стороны: «чекбокс не работает».
+    expect(onColumnsChange).toHaveBeenCalledTimes(1)
+  })
+
+  // Переключает вся строка, а не только галочка: мишень 24×24 посреди строки
+  // 280×56 — промах по площади в двадцать с лишним раз.
+  it("toggles from anywhere in the row, not just the checkbox", async () => {
+    const user = userEvent.setup()
+    const onColumnsChange = vi.fn()
+    render(
+      <TableColumnSettings
+        columns={COLUMNS}
+        onColumnsChange={onColumnsChange}
+      />
+    )
+
+    await user.click(screen.getByRole("button", { name: "Настроить столбцы" }))
+    await user.click(screen.getByText("Номер платежа"))
+
+    expect(onColumnsChange).toHaveBeenCalledTimes(1)
+    expect(onColumnsChange).toHaveBeenCalledWith([
+      COLUMNS[0],
+      { ...COLUMNS[1], visible: false },
+      COLUMNS[2],
+    ])
+  })
+
+  it("keeps a locked row inert", async () => {
+    const user = userEvent.setup()
+    const onColumnsChange = vi.fn()
+    render(
+      <TableColumnSettings
+        columns={COLUMNS}
+        onColumnsChange={onColumnsChange}
+      />
+    )
+
+    await user.click(screen.getByRole("button", { name: "Настроить столбцы" }))
+    await user.click(screen.getByText("Статус"))
+
+    expect(onColumnsChange).not.toHaveBeenCalled()
   })
 
   // "Скрытие столбцов не сбрасывает их положение" — a locked column is

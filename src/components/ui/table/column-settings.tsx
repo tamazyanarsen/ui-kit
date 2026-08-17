@@ -152,15 +152,45 @@ function TableColumnSettings({
                     move(dragId, column.id)
                     setDragId(null)
                   }}
-                  className="flex items-center gap-4 bg-[var(--table-bg)] p-4 data-[dragging]:opacity-50"
+                  // Переключает ВСЯ строка, а не только галочка: строка и
+                  // галочка выражают одно действие, и мишень в 24×24 посреди
+                  // строки 280×56 — это промах по площади в двадцать с лишним
+                  // раз. Роль не `checkbox`: настоящий чекбокс уже стоит
+                  // внутри, и вторая такая роль в дереве доступности лишняя —
+                  // строка здесь просто увеличенная площадь нажатия.
+                  onClick={
+                    hideable && !column.locked
+                      ? () => toggle(column.id)
+                      : undefined
+                  }
+                  className={cn(
+                    "flex items-center gap-4 bg-[var(--table-bg)] p-4 data-[dragging]:opacity-50",
+                    hideable && !column.locked && "cursor-pointer"
+                  )}
                 >
                   {hideable && (
-                    <Checkbox
-                      checked={column.locked ? true : column.visible}
-                      disabled={column.locked}
-                      onCheckedChange={() => toggle(column.id)}
-                      aria-label={`Показывать столбец «${String(column.label)}»`}
-                    />
+                    // ⚠️ Клик по галочке НЕ доходит до строки. Переключатель у
+                    // них общий, и без остановки клик по самой галочке
+                    // срабатывал бы дважды — сначала `onCheckedChange`, затем
+                    // `onClick` строки, — а выбор возвращался бы в исходное
+                    // состояние. Со стороны это читается как «чекбокс не
+                    // работает». Само `onCheckedChange` при этом отрабатывает:
+                    // чекбокс ниже по дереву и успевает до остановки.
+                    <span
+                      onClick={
+                        column.locked
+                          ? undefined
+                          : (event) => event.stopPropagation()
+                      }
+                      className="flex shrink-0"
+                    >
+                      <Checkbox
+                        checked={column.locked ? true : column.visible}
+                        disabled={column.locked}
+                        onCheckedChange={() => toggle(column.id)}
+                        aria-label={`Показывать столбец «${String(column.label)}»`}
+                      />
+                    </span>
                   )}
                   <span
                     className={cn(

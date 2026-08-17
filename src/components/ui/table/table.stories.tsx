@@ -40,20 +40,30 @@ interface Row {
   account: string
   payer: string
   amount: string
+  /** Знак живёт при значении, а не в заголовке столбца. */
+  unit: string
   amountNote?: string
   positive?: boolean
 }
 
 const ROWS: Row[] = [
-  { id: "1", level: 0, code: "1", title: "Подготовка территории строительства", status: "green", statusLabel: "Исполнен", number: "159638", account: "40702 810 7 00590062573", payer: "ИП Филлимонов Павел Алексеевич", amount: "10 000 000,00 ₽", amountNote: "Списание" },
-  { id: "1.1", level: 1, parent: "1", code: "1.1", title: "Договор о развитии застроенной территории", status: "orange", statusLabel: "Готов к подписанию", number: "159639", account: "40702 810 7 00590062573", payer: "ООО «ВИЛКА-СТРОЙ»", amount: "2 000 000,00 ₽", amountNote: "Списание" },
-  { id: "1.1.1", level: 2, parent: "1.1", code: "1.1.1", title: "Работы и услуги сторонних организаций", status: "grey", statusLabel: "Черновик", number: "159640", account: "40702 810 7 00590062573", payer: "ООО «РИС И КУРИЦА»", amount: "+31 922 980,05 ₽", amountNote: "Поступление", positive: true },
-  { id: "1.1.1.1", level: 3, parent: "1.1.1", code: "1.1.1.1", title: "Водоснабжение, энергоснабжение и водоотведение", status: "red", statusLabel: "Замечания банка", number: "154438", account: "40702 810 7 00590062573", payer: "ИП Филлимонов Павел Алексеевич", amount: "500 000,00 ₽" },
-  { id: "2", level: 0, code: "2", title: "Основные объекты строительства", status: "orange", statusLabel: "На согласовании", number: "40038", account: "40702 810 7 00590062573", payer: "ООО «ИВАНОВО-СТРОЙ»", amount: "6 000 000,00 ₽", amountNote: "Списание" },
-  { id: "3", level: 0, code: "3", title: "Объекты подсобного и обслуживающего назначения", status: "green", statusLabel: "Исполнен", number: "40039", account: "40702 810 7 00590062573", payer: "ИП Воропаев Сергей Владимирович", amount: "99 999,99 ₽" },
+  { id: "1", level: 0, code: "1", title: "Подготовка территории строительства", status: "green", statusLabel: "Исполнен", number: "159638", account: "40702 810 7 00590062573", payer: "ИП Филлимонов Павел Алексеевич", amount: "10 000 000,00", unit: "₽", amountNote: "Списание" },
+  { id: "1.1", level: 1, parent: "1", code: "1.1", title: "Договор о развитии застроенной территории", status: "orange", statusLabel: "Готов к подписанию", number: "159639", account: "40702 810 7 00590062573", payer: "ООО «ВИЛКА-СТРОЙ»", amount: "2 000 000,00", unit: "₽", amountNote: "Списание" },
+  { id: "1.1.1", level: 2, parent: "1.1", code: "1.1.1", title: "Работы и услуги сторонних организаций", status: "grey", statusLabel: "Черновик", number: "159640", account: "40702 810 7 00590062573", payer: "ООО «РИС И КУРИЦА»", amount: "+31 922 980,05", unit: "₽", amountNote: "Поступление", positive: true },
+  { id: "1.1.1.1", level: 3, parent: "1.1.1", code: "1.1.1.1", title: "Водоснабжение, энергоснабжение и водоотведение", status: "red", statusLabel: "Замечания банка", number: "154438", account: "40702 810 7 00590062573", payer: "ИП Филлимонов Павел Алексеевич", amount: "500 000,00", unit: "$" },
+  { id: "2", level: 0, code: "2", title: "Основные объекты строительства", status: "orange", statusLabel: "На согласовании", number: "40038", account: "40702 810 7 00590062573", payer: "ООО «ИВАНОВО-СТРОЙ»", amount: "6 000 000,00", unit: "₽", amountNote: "Списание" },
+  { id: "3", level: 0, code: "3", title: "Объекты подсобного и обслуживающего назначения", status: "green", statusLabel: "Исполнен", number: "40039", account: "40702 810 7 00590062573", payer: "ИП Воропаев Сергей Владимирович", amount: "99 999,99", unit: "₽" },
 ]
 
+/** Все знаки, встречающиеся в колонке суммы. Ячейка своей колонки не видит,
+ * поэтому список собирается здесь: слот знака резервирует ширину по самому
+ * широкому глифу, и разряды стоят друг под другом даже там, где рядом «₽» и
+ * «$». Считать в `ch` нельзя — эти два знака одной длины, но разной ширины. */
+const AMOUNT_UNITS = ["₽", "$"]
+
 const INITIAL_COLUMNS: TableColumn[] = [
+  // ⚠️ Заголовок остаётся чистым — «Сумма», а не «Сумма, ₽»: единица
+  // принадлежит значению, а не колонке.
   { id: "status", label: "Статус", visible: true, locked: true },
   { id: "number", label: "Номер платежа", visible: true },
   { id: "account", label: "Со счёта", visible: true },
@@ -235,10 +245,11 @@ function TableExample({
               // hierarchy column — the spec forbids both once rows nest.
               sortable={sortable && !nested}
               sortDirection={sort}
+              // ⚠️ Круг замкнут на двух направлениях: нажатием сортировку не
+              // сбросить. Иначе строки остались бы переставленными, а
+              // действующий критерий ушёл бы из виду.
               onSortClick={() =>
-                setSort((prev) =>
-                  prev === "asc" ? "desc" : prev === "desc" ? null : "asc"
-                )
+                setSort((prev) => (prev === "asc" ? "desc" : "asc"))
               }
               resizable={resizable && !nested}
               defaultWidth={200}
@@ -331,6 +342,8 @@ function TableExample({
                   type="number"
                   description={showDescription ? row.amountNote : undefined}
                   tone={row.positive ? "positive" : "default"}
+                  unit={row.unit}
+                  unitVariants={AMOUNT_UNITS}
                 >
                   {row.amount}
                 </TableCell>

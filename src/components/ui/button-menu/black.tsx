@@ -2,6 +2,7 @@ import * as React from "react"
 import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
 import { Button } from "@/components/ui/button"
 
 import { ButtonMenuOverflow } from "./overflow"
@@ -92,8 +93,16 @@ function ButtonMenuBlack({
     return child
   })
 
+  // Пока панель закреплена, она публикует занятую высоту в
+  // `--viewport-inset-bottom`: горизонтальная полоса прокрутки таблицы липнет
+  // к низу СВОБОДНОЙ части вьюпорта, а не к кромке экрана, — иначе она
+  // уходила бы под панель ровно тогда, когда таблицей активно пользуются.
+  const ref = React.useRef<HTMLDivElement>(null)
+  useViewportInsetBottom(ref, pinned)
+
   return (
     <div
+      ref={ref}
       data-slot="button-menu-black"
       data-pinned={pinned || undefined}
       className={cn(

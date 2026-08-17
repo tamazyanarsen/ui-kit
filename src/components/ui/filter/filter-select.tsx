@@ -146,9 +146,24 @@ function FilterSelect({
   return (
     <FilterShell
       label={label}
-      // One value shows its own label; anything more collapses to a count,
-      // and "all selected" is deliberately just another multiple selection.
-      valueLabel={singleLabel ?? `Несколько (${appliedCount})`}
+      // Выбранный чип НАЗЫВАЕТ выбранное: одно значение подписывается им
+      // самим («Действующий»), несколько сворачиваются в «Подпись: N»
+      // («Статус: 3») — по продуктовому шаблону. «Всё выбрано» намеренно
+      // остаётся обычным множественным выбором.
+      //
+      // ⚠️ Число здесь — обычный текст подписи, а НЕ плашка `Badge`: вариант
+      // сета с `Counter` существует, но в продукте не используется, и по
+      // шаблону фон вокруг цифры тот же, что и у чипа. Плашка остаётся за
+      // явным пропом `count` у `Filter`, по умолчанию выключена.
+      //
+      // Нечисловая подпись (иконка, разметка) в строку не склеивается —
+      // тогда остаётся прежний нейтральный формат.
+      valueLabel={
+        singleLabel ??
+        (typeof label === "string"
+          ? `${label}: ${appliedCount}`
+          : `Несколько (${appliedCount})`)
+      }
       active={active}
       onClear={() => commit([])}
       chip={chip}

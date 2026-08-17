@@ -270,7 +270,11 @@ describe("TableRow Line Fill", () => {
     ).toContain("has-[[data-popup-open]]:bg-[var(--table-row-hover-bg)]")
   })
 
-  it("drops the menu-open and hover fills once the row is selected", () => {
+  // ⚠️ Ховер ПЕРЕБИВАЕТ выбор и делает выбранную строку светлее: покой Grey
+  // 124 → наведение Grey 114 → нажатие снова Grey 124. Клиент должен видеть
+  // реакцию строки и понимать, что провалиться можно и при включённом
+  // чекбоксе. Раньше выбор гасил ховер — это был неверный порядок.
+  it("keeps the hover and menu-open fills on a selected row", () => {
     const { container } = render(
       <table>
         <tbody>
@@ -282,8 +286,9 @@ describe("TableRow Line Fill", () => {
     )
     const row = container.querySelector('[data-slot="table-row"]')!
     expect(row).toHaveClass("bg-[var(--table-row-active-bg)]")
-    expect(row.className).not.toContain("has-[[data-popup-open]]")
-    expect(row.className).not.toContain("hover:bg-")
+    expect(row.className).toContain("has-[[data-popup-open]]")
+    expect(row).toHaveClass("hover:bg-[var(--table-row-hover-bg)]")
+    expect(row).toHaveClass("active:bg-[var(--table-row-active-bg)]")
   })
 })
 
@@ -517,7 +522,7 @@ describe("TableCell number type", () => {
         <TableBody>
           <TableRow>
             <TableCell type="number" tone="positive" description="Поступление">
-              +31 922 980,05 ₽
+              +31 922 980,05
             </TableCell>
           </TableRow>
         </TableBody>
@@ -526,8 +531,85 @@ describe("TableCell number type", () => {
 
     const cell = container.querySelector('[data-slot="table-cell"]')!
     expect(cell).toHaveClass("text-right")
-    const value = screen.getByText("+31 922 980,05 ₽")
-    expect(value).toHaveClass("tabular-nums")
+    // Значение разбито на узлы: каждая цифра стоит в коробке 1ch, потому что
+    // в Object Sans табличных цифр НЕТ вовсе и `tabular-nums` ничего не даёт.
+    // Правило в классах при этом оставлено на будущее.
+    const value = container.querySelector(".tabular-nums.font-medium")!
     expect(value).toHaveClass("text-[var(--table-number-positive-fg)]")
+    expect(value.textContent).toBe("+31 922 980,05")
+    const digits = value.querySelectorAll(".w-\\[1ch\\]")
+    expect(digits).toHaveLength(10)
+    // Разряды, запятая и знак ширину не меняют — их не трогаем.
+    expect([...digits].map((node) => node.textContent).join("")).toBe(
+      "3192298005"
+    )
+  })
+
+  // Знак живёт В ЯЧЕЙКЕ через неразрывный пробел после числа, а не в
+  // заголовке столбца: в одной колонке значения бывают в разных единицах.
+  it("puts the unit after the value with a non-breaking space", () => {
+    const { container } = render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell type="number" unit="₽">
+              1 250,00
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    )
+
+    const unit = container.querySelector('[data-slot="table-cell-unit"]')!
+    expect(unit.textContent).toBe(" ₽")
+    // Один знак на колонку — просто текст в потоке, без коробки: любая
+    // коробка со своим `display` вставила бы в выделение перенос строки.
+    expect(unit.className).toBe("")
+  })
+
+  // Разные знаки в одной колонке — тогда все варианты лежат в ОДНОЙ клетке
+  // грида, и она получает ширину самого широкого глифа: «запятая под
+  // запятой» держится и там, где рядом «₽» и «$».
+  it("reserves the widest unit when a column mixes signs", () => {
+    const { container } = render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell type="number" unit="$" unitVariants={["₽", "$"]}>
+              500 000,00
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    )
+
+    const unit = container.querySelector('[data-slot="table-cell-unit"]')!
+    expect(unit).toHaveClass("inline-grid")
+    const items = unit.querySelectorAll("span")
+    expect(items).toHaveLength(2)
+    // Двойник держит ширину, но не читается ни глазом, ни скринридером.
+    const ghost = [...items].find((node) => node.textContent === " ₽")!
+    expect(ghost).toHaveClass("invisible")
+    expect(ghost).toHaveAttribute("aria-hidden", "true")
+    const visible = [...items].find((node) => node.textContent === " $")!
+    expect(visible.className).not.toContain("invisible")
+  })
+
+  // Пустая ячейка знака не получает: «₽» в одиночестве читается как
+  // значение, которого нет, а выравнивать в пустой строке нечего.
+  it("skips the unit on an empty value", () => {
+    const { container } = render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell type="number" unit="₽" />
+          </TableRow>
+        </TableBody>
+      </Table>
+    )
+
+    expect(
+      container.querySelector('[data-slot="table-cell-unit"]')
+    ).toBeNull()
   })
 })

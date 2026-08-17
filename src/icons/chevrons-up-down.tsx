@@ -7,13 +7,18 @@ interface ChevronsUpDownProps extends IconProps {
   sort?: "none" | "asc" | "desc"
 }
 
-// The two chevrons are two-tone by design (muted grey + dark) rather than a
-// single currentColor shape — #999999 is this kit's established muted-grey
-// token (same value as --select-label-fg / --filter-subtitle-fg etc.), kept
-// literal here; the highlighted chevron inherits currentColor instead, so it
-// picks up whatever the surrounding control's active text color is.
+// Индикатор сортировки — ОДНА и та же двойная стрелка во всех трёх
+// состояниях: направление показывает не подмена иконки, а цвет половинок.
+// Активная чернеет (Grey 1514) вместе с подписью столбца, вторая остаётся
+// Grey 284. Прежний заход, подменявший иконку одиночным шевроном, был
+// неверным прочтением сета.
+//
+// Поэтому фигуры две, а не одна `currentColor`: активная наследует
+// `currentColor` (то есть цвет заголовка), приглушённая берёт свой токен.
+// Раньше здесь стоял литерал #999999 — сырое значение мимо токена, которое
+// не переключалось вместе с темой и вылезало в индикативной проверке.
 export function ChevronsUpDown({ size: _size, sort = "none", ...props }: ChevronsUpDownProps) {
-  const muted = "#999999"
+  const muted = "var(--table-description-fg)"
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

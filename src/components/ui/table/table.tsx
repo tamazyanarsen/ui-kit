@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
-import { ChevronDown, ChevronUp, ChevronsUpDown, Ellipsis } from "@/icons"
+import { ChevronUp, ChevronsUpDown, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,7 @@ import {
   useTableScrollState,
   type TablePin,
 } from "./pin"
+import { TableScrollbar } from "./scrollbar"
 
 // Table — "Проектирование таблиц ЕЛК" (node 70279:6891). Anatomy per spec: a
 // Title Cell row (the header, `<thead>`) and a Cell grid of data rows
@@ -136,27 +137,34 @@ function Table({
 
   return (
     <TableScrollContext.Provider value={scrollState}>
-      <div
-        ref={innerRef}
-        data-slot="table-container"
-        // `themed-scrollbar` is the kit's Scrollbar styling — the spec puts
-        // the horizontal bar "в нижней части таблицы, без отступов", which is
-        // exactly where the viewport's own bar lands.
-        className={cn(
-          "themed-scrollbar w-full overflow-x-auto",
-          containerClassName
-        )}
-      >
-        <table
-          data-slot="table"
-          data-sticky-header={stickyHeader || undefined}
+      {/* Обёртка нужна полосе прокрутки: она стоит РЯДОМ с прокручиваемым
+          узлом, а не внутри него (внутри она ехала бы вместе с колонками), и
+          показывается по наведению на всю зону таблицы — отсюда `group`. */}
+      <div data-slot="table-root" className="group/table relative">
+        <div
+          ref={innerRef}
+          data-slot="table-container"
+          // `themed-scrollbar` оставлен ради ВЕРТИКАЛЬНОЙ полосы (её растит
+          // липкая шапка с ограниченной высотой контейнера); горизонтальная
+          // нативная погашена в index.css — вместо неё своя, см.
+          // `scrollbar.tsx`.
           className={cn(
-            "w-full border-separate border-spacing-0 bg-[var(--table-bg)] text-p2-regular text-[var(--table-fg)]",
-            fixed && "table-fixed",
-            className
+            "themed-scrollbar w-full overflow-x-auto",
+            containerClassName
           )}
-          {...props}
-        />
+        >
+          <table
+            data-slot="table"
+            data-sticky-header={stickyHeader || undefined}
+            className={cn(
+              "w-full border-separate border-spacing-0 bg-[var(--table-bg)] text-p2-regular text-[var(--table-fg)]",
+              fixed && "table-fixed",
+              className
+            )}
+            {...props}
+          />
+        </div>
+        <TableScrollbar scrollRef={innerRef} />
       </div>
     </TableScrollContext.Provider>
   )
@@ -199,13 +207,22 @@ function TableRow({
         // table's: pinned cells paint themselves with `bg-inherit`, so a
         // transparent row would let the scrolling columns show through them.
         "bg-[var(--table-bg)] transition-colors",
+        // Выбранная чекбоксом строка — Grey 124. Состояния `Selected` в сете
+        // «line fill» нет: цвет снят с макетов режима множественного выбора.
         selected
           ? "bg-[var(--table-row-active-bg)]"
           : added
             ? "animate-[table-row-added_2000ms_linear_forwards]"
             : undefined,
+        // ⚠️ Ховер ПЕРЕБИВАЕТ выбор и делает выбранную строку СВЕТЛЕЕ:
+        // покой 124 → наведение 114 → нажатие снова 124. Клиент должен
+        // видеть реакцию строки и понимать, что провалиться можно и при
+        // включённом чекбоксе, — поэтому `selected` тут больше не гасит
+        // ховер. Работает это только благодаря порядку каскада: Tailwind
+        // печатает вариантные утилиты после безвариантных, так что
+        // `hover:` бьёт голый `bg-*` при равной специфичности, а `active:`
+        // бьёт `hover:` и возвращает строку в 124.
         clickable &&
-          !selected &&
           "cursor-pointer hover:bg-[var(--table-row-hover-bg)] active:bg-[var(--table-row-active-bg)]",
         // "Hover, работа с кнопкой действий (изменения от 19.12.2025):
         // Строка также меняет цвет — для понимания пользователя, к какой
@@ -214,7 +231,7 @@ function TableRow({
         // menu, so it keys off the trigger's own open state rather than
         // `:hover`. Independent of `clickable`: this is about attributing the
         // open menu, not about navigating.
-        !selected && "has-[[data-popup-open]]:bg-[var(--table-row-hover-bg)]",
+        "has-[[data-popup-open]]:bg-[var(--table-row-hover-bg)]",
         className
       )}
       {...props}
@@ -222,9 +239,17 @@ function TableRow({
   )
 }
 
-// Shared geometry for the sticky/pinned cells. `edge` cells carry the kit's
-// Universal shadow, and only while the scroll position actually hides
-// content behind them.
+// Shared geometry for the sticky/pinned cells. The `edge` cell of a block
+// carries the divider line that marks the block off, and only while the
+// scroll position actually hides content behind it.
+//
+// ⚠️ Here used to sit the kit's Universal shadow — the primitive Figma
+// actually draws (`Left Shadow` 3805:19990 / `Right Shadow` 3805:19991,
+// drop-shadow #8B99A93D 0/4/12). It is gone on purpose: the product is
+// dropping shadow elements, and the pinned block is now marked off by a 1px
+// Grey 134 line on its inner side — left block along its right edge, right
+// block along its left. The same change is queued for the kit itself, so a
+// later pass finding "Figma says shadow" should NOT put it back.
 function usePinPresentation<T extends HTMLTableCellElement>(
   pin: TablePin | undefined,
   header: boolean
@@ -232,56 +257,51 @@ function usePinPresentation<T extends HTMLTableCellElement>(
   const { ref, offset, edge } = usePinnedCell<T>(pin)
   const { scrolledFromStart, scrolledFromEnd } = useTableScrollState()
 
-  // «Блок реально перекрывает прокручиваемый контент». Отдельно от `shadow`,
-  // потому что тень рисует только крайняя ячейка блока (`edge`), а вот
-  // собственная непрозрачная заливка нужна всем ячейкам блока — и только
-  // пока он что-то перекрывает.
+  // «Блок реально перекрывает прокручиваемый контент». Отдельно от линии,
+  // потому что её рисует только крайняя ячейка блока (`edge`), а вот
+  // собственная непрозрачная заливка нужна всем ячейкам блока.
   const covers =
     (pin === "left" && scrolledFromStart) ||
     (pin === "right" && scrolledFromEnd)
 
-  const shadow = edge && covers
-
   const style: React.CSSProperties | undefined = pin
-    ? {
-        ...(pin === "left" ? { left: offset } : { right: offset }),
-        // Figma draws ONE shadow rectangle for the whole pinned block (nodes
-        // 70279:8312/8313), but in a real `<table>` the shadow can only live
-        // on the cells. Left unclipped, each cell's shadow spills over its
-        // vertical neighbour and paints a seam at every row boundary —
-        // visible as a 1px band every 68px when scanning the render. Clipping
-        // to the cell's own box on three sides, and letting it out only on
-        // the side that faces the scrolling content, collapses the per-cell
-        // shadows back into the single continuous edge the spec draws.
-        ...(edge
-          ? {
-              clipPath:
-                pin === "left"
-                  ? "inset(0 -24px 0 0)"
-                  : "inset(0 0 0 -24px)",
-            }
-          : null),
-      }
+    ? pin === "left"
+      ? { left: offset }
+      : { right: offset }
     : undefined
 
   // Header cells sit above body cells, and a pinned header cell above the
   // rest of the header — otherwise the scrolling columns slide over the
   // corner where the two stickies meet.
   // Note: no background here on purpose — a pinned cell must be opaque, but
-  // *which* opaque fill differs (the header and the right action block keep
-  // white, a left-pinned body cell takes the row's own Line Fill), so each
-  // call site appends its own after this class string.
+  // *which* opaque fill differs (the header keeps white, a body cell takes
+  // the row's own Line Fill), so each call site appends its own after this
+  // class string.
   const className = pin
-    ? cn(
-        "sticky",
-        header ? "z-30" : "z-10",
-        shadow && "shadow-[var(--shadow-universal)]"
-      )
+    ? cn("relative sticky", header ? "z-30" : "z-10")
     : header
-      ? "z-20"
-      : undefined
+      ? "relative z-20"
+      : "relative"
 
-  return { ref, style, className, covers }
+  // A real element rather than `::after`: `<th>` already spends both of its
+  // pseudo-elements on the header's bottom rule and the column divider.
+  // Absolutely positioned so it can't take a pixel off the block's width the
+  // way a `border` would — that pixel is exactly what would let the header
+  // drift out of alignment with the body.
+  const divider =
+    pin && edge ? (
+      <span
+        aria-hidden="true"
+        data-slot="table-pin-divider"
+        className={cn(
+          "pointer-events-none absolute inset-y-0 z-[1] w-px bg-[var(--table-pin-divider)] transition-opacity duration-150 ease-out",
+          pin === "left" ? "right-0" : "left-0",
+          covers ? "opacity-100" : "opacity-0"
+        )}
+      />
+    ) : null
+
+  return { ref, style, className, covers, divider }
 }
 
 type TableHeadCellType =
@@ -299,15 +319,40 @@ interface TableHeadCellProps
   children?: React.ReactNode
   /** "Show Sort" — renders the ⇅ toggle next to Subtitle Left/Right text. */
   sortable?: boolean
-  /** Which way this column is currently sorted. Set it (i.e. non-`null`) and
+  /**
+   * Which way this column is currently sorted. Set it (i.e. non-`null`) and
    * the cell renders the spec's Active state: dark title text plus the
-   * matching chevron of the sort icon darkened. `null` is Default/Hover. */
+   * matching chevron of the sort icon darkened. `null` is Default/Hover.
+   *
+   * ⚠️ Отдельного состояния `Active` у ячейки шапки нет намеренно, хотя в
+   * ките оно есть третьим значением `State`: активность — это и есть
+   * `sortDirection !== null`. «Active без отмеченной сортировки» не бывает, и
+   * невозможную комбинацию лучше не давать выразить; к тому же у типов
+   * Checkbox / Icon / Button подписи нет, а состояние меняет только её цвет.
+   */
   sortDirection?: "asc" | "desc" | null
+  /**
+   * ⚠️ **Круг сортировки замкнут на двух направлениях**: «нет → по
+   * возрастанию → по убыванию → по возрастанию → …». Нажатием сортировку не
+   * сбросить — иначе строки остались бы переставленными, а действующий
+   * критерий пропал бы из виду. Состояние живёт у вызывающей стороны, так что
+   * это правило нужно соблюсти в обработчике (см. `table-demo.tsx`).
+   */
   onSortClick?: () => void
   /** "Show Icon" — an optional leading icon before Subtitle text. */
   icon?: React.ReactNode
   checked?: boolean
   indeterminate?: boolean
+  /**
+   * ⚠️ Круг чекбокса «выбрать всё»: **пусто → всё, частично → ВСЁ, всё →
+   * пусто**. То есть добрать до полного выбора можно из любого состояния, а
+   * сбросить — только из полного.
+   *
+   * Это правка к документации кита («повторное нажатие сбрасывает сразу все
+   * выбранные значения»): по букве доки из частичного состояния выбор
+   * обнулялся бы, и набранную вручную выборку можно было бы потерять одним
+   * кликом. Выбор живёт у вызывающей стороны, поэтому круг соблюдает она.
+   */
   onCheckedChange?: (checked: boolean) => void
   menu?: React.ReactNode
   /**
@@ -424,6 +469,19 @@ function TableHeadCell({
   // disturb the cell's flex/inline layout.
   const hasDivider = type === "checkbox" || isSubtitle || type === "filler"
 
+  // ⚠️ Асимметрия из кита, и это НЕ промах: справа 7, потому что оставшийся
+  // пиксель забирает разделитель колонок — визуально поля одинаковые по 8.
+  // Действует только там, где разделитель действительно есть и где ячейку не
+  // прижимает закреп (у закрепа свои поля: слева 8, справа 0).
+  const headPaddingX =
+    type === "button"
+      ? undefined // `p-2` ниже задаёт горизонталь сам
+      : pin
+        ? cellPaddingXClass(pin, false)
+        : hasDivider
+          ? "pl-2 pr-[7px]"
+          : "px-2"
+
   const startResize = (event: React.PointerEvent<HTMLSpanElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -459,7 +517,7 @@ function TableHeadCell({
       style={{ ...style, ...pinned.style, width: resolvedWidth }}
       className={cn(
         headCellPadding,
-        cellPaddingXClass(pin, type === "button"),
+        headPaddingX,
         "font-medium",
         // The header's bottom rule is drawn per cell (`border-b` on
         // `ELK / table-title-cell`) so it stays put under sticky cells — but
@@ -595,15 +653,18 @@ function TableHeadCell({
 
       {canResize && (
         // Sits on the column border itself, half in each neighbour, so the
-        // cursor flips as soon as it touches the line.
+        // cursor flips as soon as it touches the line. 9px of grab zone: the
+        // line is 1px and a zone narrower than this is genuinely hard to hit.
         <span
           role="separator"
           aria-orientation="vertical"
           data-slot="table-resize-handle"
           onPointerDown={startResize}
-          className="absolute inset-y-0 -right-1 z-10 w-2 cursor-col-resize touch-none select-none"
+          className="absolute inset-y-0 -right-[4.5px] z-10 w-[9px] cursor-col-resize touch-none select-none"
         />
       )}
+
+      {pinned.divider}
     </th>
   )
 }
@@ -613,6 +674,20 @@ function TableHeadCell({
 // area as a full-height band around the 16px glyph ("Кликабельная область
 // ограничена белой зоной"), which a pseudo-element gives without changing
 // the cell's own flex layout.
+//
+// Сквозное правило проекта: **свёрнуто — шеврон вниз, развёрнуто — вверх**,
+// вправо он не смотрит никогда, даже если так нарисовано в ките
+// (документация таблиц описывала свёрнутую строку данных как «шеврон
+// вправо» — расхождение закрыто в пользу «вниз/вверх», внутри одной таблицы
+// двух логик быть не может).
+//
+// Техника тоже часть правила, иначе компоненты кита разъедутся:
+//  • иконка ОДНА и переворачивается, а не подменяется на вторую — подмена не
+//    даёт плавного переворота, а он здесь читается как одно событие;
+//  • крутится ИКОНКА, а не кнопка: коробка кнопки шире глифа, и поворот
+//    кнопки увёл бы шеврон в сторону;
+//  • состояние берётся из `aria-expanded` — второго источника правды не
+//    заводим.
 function TableCollapseToggle({
   expanded,
   onExpandedChange,
@@ -622,7 +697,6 @@ function TableCollapseToggle({
   onExpandedChange?: (expanded: boolean) => void
   label: string
 }) {
-  const Icon = expanded ? ChevronUp : ChevronDown
   return (
     <button
       type="button"
@@ -636,9 +710,12 @@ function TableCollapseToggle({
       // The glyph is already at full contrast, so a colour change would be
       // no focus indicator at all — it gets the kit's ring like every other
       // control in the table.
-      className="relative flex shrink-0 cursor-pointer rounded-[4px] text-[var(--table-fg)] outline-none before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="group/collapse relative flex shrink-0 cursor-pointer rounded-[4px] text-[var(--table-fg)] outline-none before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] focus-visible:ring-3 focus-visible:ring-ring/50"
     >
-      <Icon aria-hidden="true" className="size-4" />
+      <ChevronUp
+        aria-hidden="true"
+        className="size-4 transition-transform duration-150 ease-out group-aria-[expanded=false]/collapse:rotate-180"
+      />
     </button>
   )
 }
@@ -697,6 +774,44 @@ type TableCellType =
   | "tag"
   | "button"
 
+/**
+ * Ставит каждую цифру в коробку одинаковой ширины — синтез табличных цифр.
+ *
+ * ⚠️ Нужен потому, что **в Object Sans табличных цифр нет вовсе**: фичи
+ * `tnum` в шрифте не существует (проверено по всем поставляемым начертаниям
+ * в `src/assets/Object Sans/`), а ширины цифр разные. Браузер синтезировать
+ * их не умеет, поэтому `font-variant-numeric: tabular-nums` в этом шрифте —
+ * пустая строка, и «запятая под запятой» из него не получается. Второе
+ * шрифтовое семейство запрещено правилом проекта, значит одинаковую ширину
+ * даёт сама ячейка: цифра встаёт в коробку `1ch` (`ch` — это как раз ширина
+ * нуля, самой широкой цифры).
+ *
+ * Правило `tabular-nums` в CSS при этом оставлено: появится фича в шрифте —
+ * заработает без правок здесь.
+ *
+ * Разряды, запятая и минус ширину не меняют — они одинаковы во всех строках
+ * колонки, и трогать их не нужно. Не строка — возвращается как есть:
+ * разбирать чужие узлы компонент не должен.
+ */
+function withTabularDigits(node: React.ReactNode): React.ReactNode {
+  if (typeof node !== "string" && typeof node !== "number") return node
+  const text = String(node)
+  if (!/\d/.test(text)) return node
+  return Array.from(text).map((char, index) =>
+    char >= "0" && char <= "9" ? (
+      <span key={index} className="inline-block w-[1ch] text-center">
+        {char}
+      </span>
+    ) : (
+      char
+    )
+  )
+}
+
+/** Неразрывный пробел — настоящим символом, а не отступом: так знак не
+ * отрывается от числа переносом и копируется вместе с ним («1 200,00 ₽»). */
+const NBSP = "\u00A0"
+
 interface TableCellProps
   extends Omit<React.ComponentProps<"td">, "children" | "onSelect"> {
   type?: TableCellType
@@ -733,6 +848,27 @@ interface TableCellProps
   /** Colours a Number cell's value: incoming money is the kit's success
    * green ("+31 922 980 133 515,05 ₽" in the spec's own sample). */
   tone?: "default" | "positive"
+  /**
+   * Знак после значения: `₽`, `$`, `%`, `шт.` Стоит **в ячейке через
+   * неразрывный пробел после числа**, а не в заголовке столбца: в одной
+   * колонке значения бывают в разных единицах, и заголовок «Сумма, ₽» это
+   * выразить не может. Заголовок остаётся чистым — «Сумма».
+   *
+   * Пустая строка — «у этого значения знака нет», но место под него
+   * сохраняется (см. `unitVariants`), и разряды не разъезжаются.
+   */
+  unit?: string
+  /**
+   * Все знаки, встречающиеся в КОЛОНКЕ. Когда их больше одного, слот знака
+   * резервирует ширину по самому широкому: невидимые двойники лежат в той же
+   * клетке грида, что и видимый, и растягивают её по фактической ширине
+   * глифов. Иначе строка с «шт.» сдвинула бы своё число влево относительно
+   * строки с «₽» и «запятая под запятой» сломалась бы.
+   *
+   * ⚠️ Считать ширину в `ch` здесь нельзя: «₽» и «$» одной длины, но разной
+   * ширины. Заполняет вызывающая сторона — ячейка своей колонки не видит.
+   */
+  unitVariants?: string[]
   pin?: TablePin
 }
 
@@ -756,6 +892,8 @@ function TableCell({
   expanded = true,
   onExpandedChange,
   tone = "default",
+  unit,
+  unitVariants,
   pin,
   style,
   ...props
@@ -784,6 +922,53 @@ function TableCell({
 
   const isRight = align === "right" || type === "number"
 
+  // Слот знака. Знака нет вовсе (`unit === undefined`) — нет и слота, а
+  // пустая ячейка знака не получает никогда: «₽» в одиночестве читается как
+  // значение, которого нет, и выравнивать в пустой строке нечего.
+  const unitList = React.useMemo(
+    () =>
+      unit === undefined
+        ? []
+        : Array.from(new Set([unit, ...(unitVariants ?? [])])).filter(Boolean),
+    [unit, unitVariants]
+  )
+  const hasValue = children !== undefined && children !== null && children !== ""
+
+  let unitSlot: React.ReactNode = null
+  if (unit !== undefined && unitList.length > 0 && hasValue) {
+    unitSlot =
+      unitList.length === 1 ? (
+        // Один знак на колонку (обычный случай) — просто текст в потоке.
+        // Резервировать нечего, а коробка со своим `display` вставила бы в
+        // выделение перенос строки: значение копировалось бы как
+        // «1 250 000,00\n ₽».
+        <span data-slot="table-cell-unit">{NBSP + unit}</span>
+      ) : (
+        // Разные знаки в одной колонке — вот тут коробка нужна: видимый
+        // вариант и невидимые двойники лежат в ОДНОЙ клетке грида, и она
+        // получает ширину самого широкого глифа. Двойники держат ширину, но
+        // не читаются ни глазом, ни скринридером (`invisible` = `visibility:
+        // hidden` убирает узел и из дерева доступности).
+        <span
+          data-slot="table-cell-unit"
+          className="inline-grid grid-cols-1 grid-rows-1 justify-items-start align-baseline"
+        >
+          {unitList.map((variant) => (
+            <span
+              key={variant}
+              className={cn(
+                "col-start-1 row-start-1 whitespace-pre",
+                variant !== unit && "invisible"
+              )}
+              aria-hidden={variant === unit ? undefined : true}
+            >
+              {NBSP + variant}
+            </span>
+          ))}
+        </span>
+      )
+  }
+
   return (
     <td
       ref={pinned.ref}
@@ -809,26 +994,19 @@ function TableCell({
             ? "text-right"
             : "text-left",
         pinned.className,
-        // A left-pinned cell is part of the row and takes its Line Fill, so
-        // it inherits. The right-pinned action block keeps its own white
-        // fill over a hovered/selected row — the spec draws it as a separate
-        // floating block, not part of the fill (pixel-checked against node
-        // 70279:9634, where the grey stops at the block's shadow).
+        // ⚠️ Заливка строки идёт ВО ВСЮ ширину, включая правый закреп с
+        // действиями: закреплённая ячейка — часть строки и наследует её Line
+        // Fill. Непрозрачность закрепу при этом нужна всегда, иначе на
+        // прокрутке сквозь него просвечивают подвижные ячейки, — её и даёт
+        // `inherit` от непрозрачной строки.
         //
-        // Но «отдельный плавающий блок» он только пока действительно
-        // перекрывает прокручиваемый контент. В спеке это одно и то же
-        // состояние, что и тень: «Если [прокрутка] в крайнем правом
-        // положении — не отображается правая подложка». Доскроллили вправо
-        // до конца — подложки нет, ячейка снова обычная часть строки и
-        // обязана брать её заливку. Раньше белый фон стоял безусловно, и
-        // последний столбец с selection button выпадал из выделения строки.
-        pin === "right"
-          ? pinned.covers
-            ? "bg-[var(--table-bg)]"
-            : "bg-inherit"
-          : pin
-            ? "bg-inherit"
-            : undefined,
+        // Заход в обратную сторону (правый закреп держит белый, как нарисован
+        // на макете множественного выбора) откачен: у кнопки `Secondary
+        // (White)` ховер и нажатие — Grey 114 / Grey 124, то есть РОВНО цвета
+        // заливки строки, и кнопка исчезала ровно в момент наведения на неё.
+        // Читаемость на залитой строке даёт сама кнопка — она остаётся белой
+        // (правило в index.css), а не подложка под ней.
+        pin ? "bg-inherit" : undefined,
         className
       )}
       {...props}
@@ -913,15 +1091,19 @@ function TableCell({
                   // "Ячейка для финансовых показателей использует
                   // моноширинный шрифт для всех символов, обеспечивая
                   // выравнивание чисел по разрядам («запятая под запятой»)".
-                  // The kit ships only Object Sans, so the alignment comes
-                  // from its tabular figures rather than a second typeface.
+                  // Второе шрифтовое семейство запрещено правилом проекта, а
+                  // `tabular-nums` в Object Sans ничего не даёт — фичи `tnum`
+                  // в шрифте нет вовсе, и браузер табличные цифры не
+                  // синтезирует. Выравнивание даёт `withTabularDigits`;
+                  // правило оставлено на будущее, см. его JSDoc.
                   type === "number" && "tabular-nums",
                   tone === "positive"
                     ? "text-[var(--table-number-positive-fg)]"
                     : "text-[var(--table-fg)]"
                 )}
               >
-                {children}
+                {type === "number" ? withTabularDigits(children) : children}
+                {unitSlot}
               </span>
               {/* Round-2 font-weight audit: confirmed Object Sans Regular
                   against get_design_context (node 10623:48132), not a gap. */}
@@ -986,6 +1168,8 @@ function TableCell({
         ) : (
           menu && <TableRowMenu menu={menu} />
         ))}
+
+      {pinned.divider}
     </td>
   )
 }

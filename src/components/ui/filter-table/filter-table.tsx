@@ -31,10 +31,14 @@ function filterTablePillClass({
   return cn(
     "inline-flex max-w-64 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p2-medium whitespace-nowrap transition-colors",
     disabled
-      ? "bg-[var(--btn-muted-bg)] text-[var(--btn-muted-fg)]"
+      ? // «Disabled гасит ВСЁ» — сквозное правило проекта. В ките у
+        // выключенного чипа гаснет подпись (#C8C8CB), а шеврон остаётся
+        // #252628; воспроизводить это не надо, глифы наследуют `currentColor`
+        // и гаснут вместе с подписью.
+        "bg-[var(--btn-muted-bg)] text-[var(--btn-muted-fg)]"
       : selected
-        ? "bg-[var(--chips-dark-bg)] text-[var(--chips-dark-fg)] hover:bg-[var(--chips-dark-bg-hover)]"
-        : "bg-[var(--chips-light-bg)] text-[var(--chips-fg)] hover:bg-[var(--chips-light-bg-hover)]"
+        ? "bg-[var(--chips-dark-bg)] text-[var(--chips-dark-fg)] hover:bg-[var(--chips-dark-bg-hover)] active:bg-[var(--chips-dark-bg-active)]"
+        : "bg-[var(--chips-light-bg)] text-[var(--chips-fg)] hover:bg-[var(--chips-light-bg-hover)] active:bg-[var(--chips-light-bg-active)]"
   )
 }
 
@@ -43,13 +47,35 @@ interface FilterTableProps
   /** Figma's `Checked` property: false = grey suggestion, true = dark
    * selected filter. */
   selected?: boolean
-  /** Figma's `Counter` property. */
+  /** Figma's `Counter` property — число в плашке `Badge` рядом с подписью. */
   count?: number
+  /**
+   * Показывать плашку-счётчик.
+   *
+   * ⚠️ **По умолчанию выключено, и это отступление от кита.** Вариант сета с
+   * `Counter` существует, но в продукте плашка не используется: выбранный чип
+   * **называет выбранное** — одно значение подписывается им самим
+   * («Действующий»), несколько сворачиваются в «Подпись: N» («Статус: 3»)
+   * обычным текстом подписи. По превью кажется, что вокруг цифры плашка, но
+   * пипеткой по шаблону фон там тот же `#012F42`, что и у чипа.
+   *
+   * Механика самой подписи живёт у вызывающей стороны (`children`) — чип
+   * рисует то, что ему дали.
+   */
+  showCounter?: boolean
 }
 
 const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
   function FilterTable(
-    { selected = false, count, disabled, className, children, ...props },
+    {
+      selected = false,
+      count,
+      showCounter = false,
+      disabled,
+      className,
+      children,
+      ...props
+    },
     ref
   ) {
     return (
@@ -75,7 +101,7 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
             states — Figma's Counter=True variants (1303:99335 grey pill and
             1303:99338 dark pill) carry an identical `ELK / badge`, so it does
             not flip to the pale one on the dark pill. */}
-        {count !== undefined && (
+        {showCounter && count !== undefined && (
           <Badge type="counter" value={count} color="dark-grey" disabled={disabled} />
         )}
         {selected && <X aria-hidden="true" className="size-4 shrink-0" />}

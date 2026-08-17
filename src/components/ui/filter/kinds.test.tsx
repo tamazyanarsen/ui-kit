@@ -39,7 +39,10 @@ describe("FilterSelect — вид «Множественный выбор»", ()
   })
 
   // "Показываем как множественное значение, соответствующее текущему максимуму"
-  it("shows one value by name and several as a count", async () => {
+  // Выбранный чип называет выбранное: одно значение — им самим, несколько —
+  // «Подпись: N» по продуктовому шаблону. Число при этом обычный текст
+  // подписи, а не плашка Badge.
+  it("shows one value by name and several as «Подпись: N»", async () => {
     const { rerender } = render(
       <FilterSelect label="Статус" options={OPTIONS} value={["a"]} chip />
     )
@@ -48,7 +51,9 @@ describe("FilterSelect — вид «Множественный выбор»", ()
     rerender(
       <FilterSelect label="Статус" options={OPTIONS} value={["a", "b"]} chip />
     )
-    expect(screen.getByText("Несколько (2)")).toBeInTheDocument()
+    const chip = screen.getByText("Статус: 2")
+    expect(chip).toBeInTheDocument()
+    expect(chip.closest("[data-slot]")?.querySelector("[data-slot='badge']")).toBeNull()
   })
 
   // "Поиск срабатывает по всем уровням вложенности списка — как выбираемым,

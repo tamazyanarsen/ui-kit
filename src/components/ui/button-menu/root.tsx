@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
 import { Button } from "@/components/ui/button"
 
 // Закрепление у нижней края — поведение по умолчанию, а не опция «на
@@ -46,6 +47,11 @@ function ButtonMenu({ pinned = true, className, children, ...props }: ButtonMenu
     }
     return child
   })
+
+  // Та же публикация занятой высоты, что и у чёрной панели: всё, что липнет
+  // к низу вьюпорта (полоса прокрутки таблицы), обязано вставать над ней.
+  const ref = React.useRef<HTMLDivElement>(null)
+  useViewportInsetBottom(ref, pinned)
 
   return (
     // Figma's live "ELK / button menu" master component (node 4244:20536,

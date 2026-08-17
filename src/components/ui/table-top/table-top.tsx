@@ -124,8 +124,14 @@ interface TableTopSummaryItemProps extends React.ComponentProps<"span"> {
 }
 
 // One "Выбрано фильтров: 0" pair from "Result-Table (ELK)". Both halves are
-// P2 Medium and differ only in color — the label is the muted grey, the value
-// the standard dark text — so this is not a `<strong>`/regular contrast.
+// P2 Medium — это не контраст «жирное/обычное».
+//
+// ⚠️ Отступление от кита, согласованное: **значение тоже Grey 284**, а не
+// тёмное. В сете подпись Grey 284, а число Grey 1514, и в сет правка на дату
+// передачи ещё не доехала — но по продуктовому шаблону пара читается как один
+// служебный текст, а тёмное число выдавало его за содержимое таблицы. Если
+// следующий проход увидит в Figma тёмное число — это ожидаемо, возвращать не
+// нужно.
 function TableTopSummaryItem({
   className,
   label,
@@ -135,11 +141,14 @@ function TableTopSummaryItem({
   return (
     <span
       data-slot="table-top-summary-item"
-      className={cn("flex items-center gap-1", className)}
+      className={cn(
+        "flex items-center gap-1 text-[var(--table-description-fg)]",
+        className
+      )}
       {...props}
     >
-      <span className="text-[var(--table-description-fg)]">{label}</span>
-      <span className="text-[var(--table-fg)]">{value}</span>
+      <span>{label}</span>
+      <span>{value}</span>
     </span>
   )
 }

@@ -1308,8 +1308,10 @@
      голубой палитры уже разработано своё изображение, взять его. Зелёное не
      удалять». Поэтому картинка — токен, а не жёстко зашитый путь: палитра
      переопределяет его вместе с остальными цветами, и зелёная версия
-     остаётся жить в «Старом ЕЛК». */
-  --nps-done-image: url("./assets/nps/done-illustration.png");
+     остаётся жить в «Старом ЕЛК».
+     Голубая версия — растр из мастера (символ `State=Done`, канвас
+     Feedback), как и зелёная: иллюстрация объёмная, не перерисовывается. */
+  --nps-done-image: url("./assets/nps/done-illustration-blue.png");
   /* NPS's reply pills moved to the shared FilterTable component (Figma
      builds them from `ELK / filter-table`, not a bespoke chip), so their
      --nps-chip-* tokens are gone — the colours now come from the

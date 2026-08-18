@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Item, type ItemProps, type RightElementType } from "./item"
 
@@ -46,6 +47,7 @@ type PlaygroundArgs = ItemProps & {
   conclusion?: boolean
   showComment?: boolean
   showRightElement?: boolean
+  viewport?: Viewport
 }
 
 const meta = {
@@ -100,6 +102,8 @@ const meta = {
     // pins the value (same pattern as Checkbox's `checked`).
     toggleChecked: { control: "boolean" },
     checkboxChecked: { control: "boolean" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile — контрол, а не вьюпорт.
+    viewport: viewportArgType,
   },
   args: {
     figmaType: "Value",
@@ -116,6 +120,7 @@ const meta = {
     informationText: "Дополнительная информация об операции",
     rightText: "+1,5%",
     divider: true,
+    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -131,15 +136,18 @@ export const Playground: Story = {
     text,
     comment,
     rightElement,
+    viewport,
     ...args
   }) => (
-    <InteractiveItem
-      {...args}
-      thumbnail={figmaType === "Thumbneil" ? true : undefined}
-      text={conclusion ? text : undefined}
-      comment={showComment ? comment : undefined}
-      rightElement={showRightElement ? rightElement : "none"}
-    />
+    <ViewportScope viewport={viewport}>
+      <InteractiveItem
+        {...args}
+        thumbnail={figmaType === "Thumbneil" ? true : undefined}
+        text={conclusion ? text : undefined}
+        comment={showComment ? comment : undefined}
+        rightElement={showRightElement ? rightElement : "none"}
+      />
+    </ViewportScope>
   ),
 }
 
@@ -168,7 +176,7 @@ export const Matrix: Story = {
       <StatesMatrix<ItemProps>
         stretch
         cellClassName="min-w-[280px]"
-        rowHeader={RESPONSIVE_NOTE}
+        responsive
         baseProps={{
           text: "Title",
           value: "Value",

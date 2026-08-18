@@ -46,7 +46,7 @@ function OtpInput({
 
   return (
     <div
-      className={cn("mx-auto w-full md:w-[368px]", containerClassName)}
+      className={cn("mx-auto w-full desktop:w-[368px]", containerClassName)}
     >
       <input
         id={inputId}
@@ -61,8 +61,8 @@ function OtpInput({
         aria-describedby={captionId}
         onChange={handleChange}
         className={cn(
-          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none md:text-h1 md:tracking-[0.35em] md:indent-[0.35em]",
-          "placeholder:text-p2-medium placeholder: placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] md:placeholder:text-p1-medium",
+          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em]",
+          "placeholder:text-p2-medium placeholder: placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",
           invalid && "text-[var(--otp-error-fg)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className
@@ -72,7 +72,7 @@ function OtpInput({
       {error && (
         <p
           id={captionId}
-          className="mt-4 text-center text-p3-regular text-[var(--otp-error-fg)] md:mt-2"
+          className="mt-4 text-center text-p3-regular text-[var(--otp-error-fg)] desktop:mt-2"
         >
           {error}
         </p>

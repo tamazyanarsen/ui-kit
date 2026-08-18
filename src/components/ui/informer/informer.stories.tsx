@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Informer, type InformerProps } from "./informer"
 import type { InformerIcon } from "./variants"
@@ -18,6 +19,7 @@ const ICONS: InformerIcon[] = [
 type PlaygroundArgs = InformerProps & {
   showMainButton?: boolean
   showAdditionalButton?: boolean
+  viewport?: Viewport
 }
 
 const meta = {
@@ -40,6 +42,9 @@ const meta = {
     showAdditionalButton: { name: "Дополнительная кнопка", control: "boolean" },
     additionalButtonLabel: { control: "text" },
     showCross: { control: "boolean" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     icon: "attention-red",
@@ -52,6 +57,7 @@ const meta = {
     mainButtonLabel: "Подписать",
     showAdditionalButton: true,
     additionalButtonLabel: "Отложить",
+    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -64,13 +70,16 @@ export const Playground: Story = {
     mainButtonLabel,
     showAdditionalButton,
     additionalButtonLabel,
+    viewport,
     ...args
   }) => (
+    <ViewportScope viewport={viewport}>
     <Informer
       {...args}
       mainButtonLabel={showMainButton ? mainButtonLabel : undefined}
       additionalButtonLabel={showAdditionalButton ? additionalButtonLabel : undefined}
     />
+    </ViewportScope>
   ),
 }
 
@@ -80,7 +89,7 @@ export const Matrix: Story = {
   render: () => (
     <StatesMatrix<InformerProps>
       stretch
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{
         title: "Title",
         date: "24.12.2022",
@@ -111,20 +120,4 @@ export const Matrix: Story = {
       render={(props) => <Informer {...props} onClose={() => {}} />}
     />
   ),
-}
-
-// Size=Mobile: a 328px card with 16px padding (Desktop is 592/min-400 with
-// 24px). The switch is a `md:` media query, so it follows the *viewport* —
-// a narrow wrapper would not trigger it. Pin the story to a phone viewport
-// so the mobile form is what actually renders.
-export const MobileSize: Story = {
-  name: "Mobile (328px)",
-  globals: { viewport: { value: "mobile1", isRotated: false } },
-  parameters: { controls: { disable: true } },
-  args: {
-    title: "Требуется подпись",
-    date: "24.12.2022",
-    description: "Документ ожидает вашей подписи",
-    mainButtonLabel: "Подписать",
-  },
 }

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ToastCard, ToastProvider, Toaster } from "./toast-message"
 import { useToast } from "./use-toast"
@@ -26,18 +27,29 @@ interface PlaygroundArgs {
   title: string
   description?: string
   buttons: ToastButtons
+  viewport?: Viewport
 }
 
-function ToastLauncher({ type, title, description, buttons }: PlaygroundArgs) {
+function ToastLauncher({
+  type,
+  title,
+  description,
+  buttons,
+  viewport,
+}: PlaygroundArgs) {
   const toast = useToast()
   return (
-    <Button
-      onClick={() =>
-        toast.add({ type, title, description, data: buttonData(buttons) })
-      }
-    >
-      Показать тост
-    </Button>
+    // Тост уезжает в портал `Toaster`, поэтому скоуп ставится не здесь, а
+    // на самом слое тостов — см. `ToastProvider` в декораторе ниже.
+    <ViewportScope viewport={viewport}>
+      <Button
+        onClick={() =>
+          toast.add({ type, title, description, data: buttonData(buttons) })
+        }
+      >
+        Показать тост
+      </Button>
+    </ViewportScope>
   )
 }
 
@@ -55,18 +67,26 @@ const meta = {
     title: { control: "text" },
     description: { control: "text" },
     buttons: { control: "select", options: ["none", "two", "black", "white"] },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     type: "checked",
     title: "Скопировано в буфер обмена",
     description: "",
     buttons: "none",
+    viewport: "auto" as Viewport,
   },
   decorators: [
-    (Story) => (
+    (Story, context) => (
       <ToastProvider>
         <Story />
-        <Toaster />
+        {/* Toaster рисует всплывающий слой, поэтому форму ему задаём
+            отдельно: до него скоуп из истории не доходит. */}
+        <ViewportScope viewport={context.args.viewport}>
+          <Toaster />
+        </ViewportScope>
       </ToastProvider>
     ),
   ],
@@ -93,7 +113,7 @@ export const Matrix: Story = {
     <StatesMatrix<Cell>
       stretch
       cellClassName="min-w-[360px]"
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       columns={TYPES.map((type) => ({ label: type, props: { type } }))}
       rows={[
         { label: "Заголовок", props: { buttons: "none" } },
@@ -128,19 +148,4 @@ export const Matrix: Story = {
       )}
     />
   ),
-}
-
-// Size=Mobile: 328px wide, 16px padding and a 16px close cross (Desktop is
-// 480/24/24). Pinned through `globals` because `md:` is a viewport media
-// query — see the note on Button's own mobile story.
-export const MobileSize: Story = {
-  name: "Mobile (328px)",
-  globals: { viewport: { value: "mobile1", isRotated: false } },
-  parameters: { controls: { disable: true } },
-  args: {
-    type: "checked",
-    title: "Платёж отправлен",
-    description: "Мы уведомим вас о статусе",
-    buttons: "none",
-  },
 }

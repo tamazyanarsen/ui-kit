@@ -51,17 +51,24 @@ function RangeInput({
           className={cn(
             // Fixed box height (55px desktop / 47px mobile, measured from the
             // rect in ui/range input/range Input.svg) — practically identical
-            // to Input's own L convention (h-12/md:h-14). An earlier version
+            // to Input's own L convention (h-12/desktop:h-14). An earlier version
             // let padding + oversized Value text drive an auto height, which
             // ballooned the box to ~86px; don't repeat that.
-            // Round-2 audit fix: horizontal/top padding was md:px-5 md:pt-2.5
+            // Round-2 audit fix: horizontal/top padding was desktop:px-5 desktop:pt-2.5
             // (20px/10px) on desktop — get_design_context on both the
             // Desktop and Mobile Default symbols (687:18395, 14378:41564)
-            // shows px-[16px] on both breakpoints, and py-[8px] on desktop
-            // specifically (mobile is asymmetric pt-7/pb-5, already
-            // approximated by the shared pt-2 here), so padding doesn't
-            // change across breakpoints at all — only the box height does.
-            "relative flex h-12 w-full flex-col gap-1 rounded-[16px] border px-4 pt-2 transition-colors md:h-14",
+            // shows px-[16px] on both breakpoints.
+            //
+            // Дизайн-чек №3 №19: «Наезд полосы на текст… в узком
+            // представлении активизируется вариант mobile, и он собран не
+            // pixel-perfect». Причин было две, обе в вертикали мобильной
+            // коробки: (1) `pt-2` без нижнего отступа — Value доходил ровно
+            // до нижней границы, по которой идёт полоса; в мастере отступы
+            // асимметричные, pt-[7px]/pb-[5px] (7 + 16 + 20 + 5 = 48).
+            // (2) `gap-1` между Label и Value — в обоих мастерах блок
+            // Label/Value идёт без зазора, а 4px лишней высоты и выдавливали
+            // текст на полосу. Десктоп: py-[8px] (8 + 16 + 24 + 8 = 56).
+            "relative flex h-12 w-full flex-col justify-center rounded-[16px] border px-4 pt-[7px] pb-[5px] transition-colors desktop:h-14 desktop:py-2",
             "border-[var(--range-input-border)] bg-[var(--range-input-bg)]",
             "not-has-[[data-disabled]]:hover:border-[var(--range-input-border-hover)]",
             "not-has-[[data-disabled]]:has-[:focus-visible]:border-[var(--range-input-border-hover)]",
@@ -82,7 +89,7 @@ function RangeInput({
               // Figma's desktop symbol (687:18395) gives Label = P3 Medium
               // 12/16 and Value = P1 Medium 16/24. Both were `leading-tight`
               // before, i.e. 15px and 17.5px — off the scale entirely.
-              "text-p2-medium text-[var(--range-input-value-fg)] md:text-p1-medium",
+              "text-p2-medium text-[var(--range-input-value-fg)] desktop:text-p1-medium",
               disabled && "!text-[var(--range-input-value-fg-disabled)]"
             )}
           />
@@ -93,7 +100,7 @@ function RangeInput({
               own height to center the track line on the border. */}
           <SliderPrimitive.Control
             data-slot="range-input-control"
-            className="absolute inset-x-4 bottom-0 flex h-4 translate-y-1/2 items-center md:h-5"
+            className="absolute inset-x-4 bottom-0 flex h-4 translate-y-1/2 items-center desktop:h-5"
           >
             <SliderPrimitive.Track
               data-slot="range-input-track"
@@ -127,7 +134,7 @@ function RangeInput({
                   // 21461:49446 — px-4/py-2 giving 40×20). `gap-0.5` squeezed
                   // the 16px icon boxes, and `rounded-full` resolved to 8px
                   // on mobile / 10px on desktop instead of 12px.
-                  "top-1/2 flex h-4 w-8 -translate-y-1/2 items-center justify-center rounded-[12px] bg-[var(--range-input-accent)] outline-none transition-colors select-none md:h-5 md:w-10",
+                  "top-1/2 flex h-4 w-8 -translate-y-1/2 items-center justify-center rounded-[12px] bg-[var(--range-input-accent)] outline-none transition-colors select-none desktop:h-5 desktop:w-10",
                   // Round-2 audit fix: dropped the :hover recolor to
                   // --range-input-accent-hover — pixel-sampling the whole-
                   // box Hover state screenshot (14342:39910) shows the

@@ -80,11 +80,11 @@ function Toggle({
           the reverse direction from Checkbox/Radio but the same underlying
           cause: the mobile Option Text line-height (20px) is shorter than
           the fixed 24px track and needs the nudge to stay centered. */}
-      <span className="flex flex-col pt-0.5 md:pt-0">
+      <span className="flex flex-col pt-0.5 desktop:pt-0">
         {label && (
           <span
             className={cn(
-              "text-p2-medium text-[var(--toggle-label-fg)] md:text-p1-medium",
+              "text-p2-medium text-[var(--toggle-label-fg)] desktop:text-p1-medium",
               disabled && "text-[var(--toggle-label-fg-disabled)]"
             )}
           >

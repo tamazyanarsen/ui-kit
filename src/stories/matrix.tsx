@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 import { Icon, ICON_NAMES } from "@/components/ui/icon"
 
 /* Storybook-only helpers — this directory is deliberately outside
@@ -18,6 +19,9 @@ import { Icon, ICON_NAMES } from "@/components/ui/icon"
 export interface MatrixColumn<P> {
   label?: React.ReactNode
   props?: Partial<P>
+  /** Как и у строки — псевдосостояние клетки. В Figma ось State ложится то
+   *  в строки, то в колонки; обе стороны должны уметь её выразить. */
+  pseudo?: PseudoState | PseudoState[]
 }
 
 /** A band spanning several columns, e.g. Figma's "Large (Desktop)". */
@@ -58,17 +62,39 @@ export interface StatesMatrixProps<P> {
   rowHeader?: React.ReactNode
   /** Stretch cells to the full column width instead of hugging content. */
   stretch?: boolean
+  /**
+   * У компонента разные формы на десктопе и на мобайле.
+   *
+   * Дизайн-чек №3, замечания 8/18: «Нужно выводить в матрице рядом десктоп
+   * и мобайл (касается всех компонентов)… не создавать истории mobile
+   * отдельными матрицами, это не наглядно». Матрица рисуется дважды — по
+   * разу в каждой форме, — а форму задаёт `<ViewportScope>`, а не ширина
+   * окна, поэтому обе видны одновременно.
+   */
+  responsive?: boolean
   className?: string
   cellClassName?: string
 }
 
-function pseudoClass(pseudo: MatrixRow<unknown>["pseudo"]) {
-  if (!pseudo) return undefined
-  const list = Array.isArray(pseudo) ? pseudo : [pseudo]
+function pseudoClass(...pseudos: (MatrixRow<unknown>["pseudo"] | undefined)[]) {
+  const list = pseudos.flatMap((pseudo) =>
+    !pseudo ? [] : Array.isArray(pseudo) ? pseudo : [pseudo]
+  )
+  if (list.length === 0) return undefined
   return list.map((state) => `pseudo-${state}-all`).join(" ")
 }
 
-export function StatesMatrix<P>({
+export function StatesMatrix<P>(props: StatesMatrixProps<P>) {
+  if (!props.responsive) return <SingleMatrix {...props} />
+
+  return (
+    <ViewportMatrix>
+      {() => <SingleMatrix {...props} responsive={false} />}
+    </ViewportMatrix>
+  )
+}
+
+function SingleMatrix<P>({
   columns,
   columnGroups,
   rows,
@@ -156,7 +182,7 @@ export function StatesMatrix<P>({
                       className={cn(
                         "flex items-center",
                         stretch ? "w-full" : "w-fit",
-                        pseudoClass(row.pseudo)
+                        pseudoClass(row.pseudo, column.pseudo)
                       )}
                     >
                       {render({
@@ -221,11 +247,54 @@ export function StorySection({
   )
 }
 
-/* Note appended under a matrix whose Desktop/Mobile split is a `md:` media
-   query rather than a prop — those can only be seen by switching the
-   Storybook viewport, never side by side in one canvas. */
-export const RESPONSIVE_NOTE =
-  "Desktop / Mobile различаются медиазапросом md: (768px), а не пропом — переключите viewport в тулбаре, чтобы увидеть мобильную форму."
+/* Дизайн-чек №3, замечания 8/18/19. Раньше здесь лежала подпись
+   RESPONSIVE_NOTE («переключите viewport в тулбаре»): Desktop/Mobile
+   различались медиазапросом, поэтому в матрицу помещалась только одна из
+   двух форм. Теперь форму задаёт `<ViewportScope>` (src/lib/viewport.tsx),
+   так что обе колонки рисуются рядом, а в Playground режим выбирается
+   контролом в панели истории. */
+
+/** Колонки Desktop / Mobile для матрицы — раскладываются в один ряд. */
+export const VIEWPORT_COLUMNS: { label: string; viewport: Viewport }[] = [
+  { label: "Desktop", viewport: "desktop" },
+  { label: "Mobile", viewport: "mobile" },
+]
+
+/**
+ * Оборачивает `render` матрицы в колонки Desktop/Mobile.
+ *
+ * `columnGroups` матрицы задаёт варианты компонента, а виджет ниже
+ * дублирует всю матрицу для каждой формы — так десктоп и мобайл стоят
+ * рядом и сравниваются глазами, а не переключением вьюпорта.
+ */
+export function ViewportMatrix({
+  children,
+  className,
+}: {
+  children: (viewport: Viewport) => React.ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn("flex flex-col items-start gap-8", className)}>
+      {VIEWPORT_COLUMNS.map(({ label, viewport }) => (
+        <section key={viewport} className="flex max-w-full flex-col gap-3">
+          <h3 className="text-p2-medium text-[#252628]">{label}</h3>
+          <ViewportScope viewport={viewport}>{children(viewport)}</ViewportScope>
+        </section>
+      ))}
+    </div>
+  )
+}
+
+/** argTypes-запись для контрола Desktop/Mobile в панели истории. */
+export const viewportArgType = {
+  name: "viewport",
+  description:
+    "Форма компонента: Desktop / Mobile. «auto» — по ширине окна (медиазапрос 768px), остальные значения форсируют форму независимо от вьюпорта",
+  control: { type: "inline-radio" as const },
+  options: ["auto", "desktop", "mobile"] satisfies Viewport[],
+  table: { category: "Storybook" },
+}
 
 /* Figma's property panels expose State (Default / Hover / Pressed / Focus) as
    a variant dropdown. In code those are CSS pseudo-classes, so a Playground
@@ -250,17 +319,22 @@ const PLAYGROUND_STATE_CLASS: Record<PlaygroundState, string | undefined> = {
 
 export function PseudoBox({
   state = "default",
+  viewport,
   className,
   children,
 }: {
   state?: PlaygroundState
+  /** Форма Desktop/Mobile — контрол `viewport` из панели истории. */
+  viewport?: Viewport
   className?: string
   children: React.ReactNode
 }) {
   return (
-    <div className={cn("w-fit", PLAYGROUND_STATE_CLASS[state], className)}>
-      {children}
-    </div>
+    <ViewportScope viewport={viewport}>
+      <div className={cn("w-fit", PLAYGROUND_STATE_CLASS[state], className)}>
+        {children}
+      </div>
+    </ViewportScope>
   )
 }
 

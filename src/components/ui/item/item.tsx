@@ -78,7 +78,7 @@ function DefaultThumbnail() {
       aria-hidden="true"
       className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
     >
-      <Ellipsis className="size-6" />
+      <Ellipsis size={24} className="size-6" />
     </span>
   )
 }

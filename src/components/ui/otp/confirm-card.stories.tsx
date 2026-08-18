@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { OtpConfirmCard } from "./confirm-card"
 
 type OtpConfirmCardProps = ComponentProps<typeof OtpConfirmCard>
+
+type PlaygroundArgs = OtpConfirmCardProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/OTP Confirm Card",
@@ -19,6 +22,7 @@ const meta = {
     length: 6,
     resendSeconds: 60,
     title: "Подтвердите контактные данные",
+    viewport: "auto" as Viewport,
   },
   // title/subtitle/error are typed React.ReactNode but every usage is a
   // plain string — pin text controls so leaving one unset doesn't fall back
@@ -43,11 +47,25 @@ const meta = {
         button: <button type="button">Подтвердить контакты</button>,
       },
     },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
-} satisfies Meta<OtpConfirmCardProps>
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<OtpConfirmCardProps>
+type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {}
 

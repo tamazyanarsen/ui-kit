@@ -1,10 +1,13 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Calendar } from "./calendar"
 import type { CalendarProps } from "./types"
+
+type PlaygroundArgs = CalendarProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Calendar",
@@ -38,12 +41,26 @@ const meta = {
     rangeValue: { control: false },
     monthValue: { control: false },
     yearValue: { control: false },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
-  args: { mode: "single", layout: "popover", footer: true, title: "Выберите дату" },
-} satisfies Meta<CalendarProps>
+  args: { mode: "single", layout: "popover", footer: true, title: "Выберите дату", viewport: "auto" as Viewport },
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<CalendarProps>
+type Story = StoryObj<PlaygroundArgs>
 
 // `value`/`onChange` are fixed by this demo's own local state (a bare
 // `Date | null`, incompatible with range/month/year's value shapes) — every
@@ -86,6 +103,7 @@ export const Matrix: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <StatesMatrix<CalendarProps>
+        responsive
         columnGroups={[
           {
             label: "Mode",

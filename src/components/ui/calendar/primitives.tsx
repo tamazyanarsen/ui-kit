@@ -80,7 +80,7 @@ export function HeaderLabel({
       </span>
     )
   }
-  // text-p2-medium override: Button's `sm` is text-p3-medium until `md:`,
+  // text-p2-medium override: Button's `sm` is text-p3-medium until `desktop:`,
   // but Figma's Mouth/Year pill is 14px/20 on both the desktop card and the
   // mobile sheet, so the size is pinned rather than breakpoint-switched.
   return (
@@ -340,7 +340,7 @@ export function YearGrid({
 //     overflow-hidden shell (same flush-row pattern as Dropdown/DropdownItem),
 //     so their hover fill must run edge-to-edge with no radius of its own;
 //   * sizing — the calendar picks its footer form from the `compact` prop,
-//     not from a breakpoint, so Button's `md:` half of the `lg` variant has
+//     not from a breakpoint, so Button's `desktop:` half of the `lg` variant has
 //     to be pinned to the same value as the base or a mobile sheet viewed at
 //     ≥768px would silently grow to the desktop 56px/32px/16px form.
 // Desktop = 56px tall, 32px sides, P1 Medium 16/24 (node 7415:58522);
@@ -359,8 +359,8 @@ export function YearGrid({
 // Поэтому оставляем `min-w-0` и минимальный паддинг — визуально совпадает с
 // макетом, а карточка приходит к своим 280px.
 const FOOTER_BUTTON_CLASS = "min-w-0 flex-1 rounded-none"
-const FOOTER_REGULAR = "h-14 px-2 text-p1-medium md:h-14 md:px-2 md:text-p1-medium"
-const FOOTER_COMPACT = "h-12 px-2 text-p2-medium md:h-12 md:px-2 md:text-p2-medium"
+const FOOTER_REGULAR = "h-14 px-2 text-p1-medium desktop:h-14 desktop:px-2 desktop:text-p1-medium"
+const FOOTER_COMPACT = "h-12 px-2 text-p2-medium desktop:h-12 desktop:px-2 desktop:text-p2-medium"
 
 export function CalendarFooter({
   compact,
@@ -369,7 +369,7 @@ export function CalendarFooter({
 }: {
   /** Mobile sheet uses the M-size button footer (48px); desktop popover
    * uses L (56px) — the two layouts are chosen explicitly by the caller via
-   * `layout`, not by a CSS breakpoint, so this is a prop, not a `md:` class. */
+   * `layout`, not by a CSS breakpoint, so this is a prop, not a `desktop:` class. */
   compact?: boolean
   onReset?: () => void
   onApply?: () => void

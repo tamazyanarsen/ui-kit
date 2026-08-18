@@ -1,14 +1,56 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ICON_NAMES } from "@/components/ui/icon"
 
 import { Tag, type TagProps } from "./tag"
-import type { TagColor } from "./variants"
+import type { TagColor, TagVariant } from "./variants"
 
-const STATUS_COLORS: TagColor[] = ["green", "orange", "red", "blue", "grey"]
-const SIGN_COLORS: TagColor[] = ["black", "white", "grey-info"]
+/* Дизайн-чек №3 №1: «У тега много лишних вариантов и нет разбивки
+   desktop/mobile. Нужно варианты унаследовать из фигмы, лишнее убрать».
+
+   Компонент-сет `ELK / tag` (737:411) держит ровно два варьирующих
+   свойства — Size (Desktop / Mobile) и Style (13 значений) — плюс булев
+   Show Icon. Раньше матрица перемножала цвет × Main/Secondary × L/S ×
+   «+ icon» и давала 48 клеток вместо 26, причём L/S были теми же
+   Desktop/Mobile под другими именами.
+
+   Здесь Style разложен ровно в порядке мастера, а Size даёт две матрицы
+   рядом (`responsive`). */
+const FIGMA_STYLES: {
+  label: string
+  color: TagColor
+  variant?: TagVariant
+}[] = [
+  { label: "Green\n(Сompleted)", color: "green", variant: "main" },
+  { label: "Green Text\n(Сompleted)", color: "green", variant: "secondary" },
+  { label: "Orange\n(Process)", color: "orange", variant: "main" },
+  { label: "Orange Text\n(Process)", color: "orange", variant: "secondary" },
+  { label: "Red\n(Rejected)", color: "red", variant: "main" },
+  { label: "Red Text\n(Rejected)", color: "red", variant: "secondary" },
+  { label: "Blue\n(System)", color: "blue", variant: "main" },
+  { label: "Blue Text\n(System)", color: "blue", variant: "secondary" },
+  { label: "Grey\n(Draft)", color: "grey", variant: "main" },
+  { label: "Grey Text\n(Draft)", color: "grey", variant: "secondary" },
+  { label: "Grey\n(Info Sign)", color: "grey-info" },
+  { label: "White\n(Sign)", color: "white" },
+  { label: "Black\n(Sign)", color: "black" },
+]
+
+const COLORS: TagColor[] = [
+  "green",
+  "orange",
+  "red",
+  "blue",
+  "grey",
+  "grey-info",
+  "white",
+  "black",
+]
+
+type PlaygroundArgs = TagProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Tag",
@@ -16,100 +58,65 @@ const meta = {
   parameters: { layout: "centered" },
   argTypes: {
     children: { control: "text" },
-    color: {
-      control: "select",
-      options: [...STATUS_COLORS, ...SIGN_COLORS] satisfies TagColor[],
-    },
+    color: { control: "select", options: COLORS },
+    // Пара `color` + `variant` — это свойство Style мастера: пять статусных
+    // цветов в сплошном и контурном («Text») исполнении плюс три «признака»
+    // (Grey Info / White / Black), у которых контурного варианта нет.
     variant: { control: "inline-radio", options: ["main", "secondary"] },
-    size: { control: "inline-radio", options: ["l", "s"] },
-    // Иконка выбирается, а не включается: в Figma это instance swap.
-    // «Без иконки» — отдельный пункт, потому что чаще всего тег без неё.
+    // Show Icon в Figma — булев переключатель с фиксированной галочкой
+    // `icon / mark`. Здесь это выбор глифа: дизайн-чек №2 требовал, чтобы
+    // «В обработке» и «Отклонён» не получали ту же галочку, что «Исполнено».
     icon: {
       control: "select",
       options: ["без иконки", ...ICON_NAMES],
       mapping: { "без иконки": undefined },
-      description: "Ведущая иконка из набора кита",
+      description: "Ведущая иконка из набора кита (свойство Show Icon)",
     },
+    // Size=Desktop/Mobile — контрол, а не ширина окна (дизайн-чек №3 №19).
+    viewport: viewportArgType,
   },
   args: {
     children: "Example Text",
     color: "green",
     variant: "main",
-    size: "l",
     icon: "check",
+    viewport: "auto" as Viewport,
   },
-} satisfies Meta<TagProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ viewport, ...args }) => (
+    <ViewportScope viewport={viewport}>
+      <Tag {...args} />
+    </ViewportScope>
+  ),
+}
 
-/* Figma splits Tag into two colour families — Status (a state change on the
-   object) and Sign (a neutral marker) — crossed with Main/Secondary style,
-   L/S size and the optional leading icon. */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <div className="flex flex-col gap-8">
-      <StatesMatrix<TagProps>
-        baseProps={{ children: "Example Text" }}
-        columnGroups={[
-          {
-            label: "Status colors",
-            columns: STATUS_COLORS.map((color) => ({
-              label: color,
-              props: { color },
-            })),
-          },
-          {
-            label: "Sign colors",
-            columns: SIGN_COLORS.map((color) => ({
-              label: color,
-              props: { color },
-            })),
-          },
-        ]}
-        rows={[
-          { label: "Main · L", props: { variant: "main", size: "l" } },
-          { label: "Main · S", props: { variant: "main", size: "s" } },
-          {
-            label: "Main · L\n+ icon",
-            props: { variant: "main", size: "l", icon: "check" },
-          },
-          {
-            label: "Secondary · L",
-            props: { variant: "secondary", size: "l" },
-          },
-          {
-            label: "Secondary · S",
-            props: { variant: "secondary", size: "s" },
-          },
-          {
-            label: "Secondary · L\n+ icon",
-            props: { variant: "secondary", size: "l", icon: "check" },
-          },
-        ]}
-        render={(props) => <Tag {...props} />}
-      />
-
-      {/* Иконка подбирается под смысл статуса — ради этого её и сделали
-          выбираемой: раньше «В обработке» и «Отклонён» получали ту же
-          галочку, что и «Исполнено». */}
-      <StatesMatrix<TagProps>
-        rowHeader="Иконка — любая из набора кита, а не одна фиксированная галочка."
-        columns={[{ label: "Tag" }]}
-        rows={[
-          { label: "Исполнено", props: { color: "green", icon: "circle-check", children: "Исполнено" } },
-          { label: "В обработке", props: { color: "orange", icon: "clock", children: "В обработке" } },
-          { label: "Отклонён", props: { color: "red", icon: "circle-x", children: "Отклонён" } },
-          { label: "Системный", props: { color: "blue", icon: "info", children: "Системный" } },
-          { label: "Черновик", props: { color: "grey", icon: "pencil", children: "Черновик" } },
-          { label: "Без иконки", props: { color: "green", children: "Исполнено" } },
-        ]}
-        render={(props) => <Tag {...props} />}
-      />
-    </div>
+    <StatesMatrix<TagProps>
+      responsive
+      baseProps={{ children: "Example Text" }}
+      columnGroups={[
+        {
+          label: "Show Icon = False",
+          columns: [{ label: "Tag", props: {} }],
+        },
+        {
+          label: "Show Icon = True",
+          columns: [{ label: "Tag", props: { icon: "check" } }],
+        },
+      ]}
+      rows={FIGMA_STYLES.map(({ label, color, variant }) => ({
+        label,
+        props: { color, variant },
+      }))}
+      render={(props) => <Tag {...props} />}
+    />
   ),
 }

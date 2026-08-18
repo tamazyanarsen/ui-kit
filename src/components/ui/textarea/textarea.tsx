@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils"
 // случайно. `min-h-*`, а не `h-*`, чтобы поле по-прежнему могло вырасти
 // под большее число строк и переопределяться через className.
 const textareaBoxVariants = cva(
-  "group/textarea relative flex min-h-[98px] w-full flex-col gap-1 rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] p-4 transition-colors has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)] md:min-h-[112px]",
+  // `transition-all`, а не `transition-colors`: вместе с подписью едет и
+  // вертикальный отступ коробки (16px → 8px), иначе текст прыгал бы под
+  // плавно уезжающей подписью (дизайн-чек №3 №2).
+  "group/textarea relative flex min-h-[98px] w-full flex-col rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] p-4 transition-all has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)] desktop:min-h-[112px]",
   {
     variants: {
       invalid: {
@@ -87,17 +90,16 @@ function Textarea({
 
   // Floating label, matching Input: empty + unfocused shows the label as the
   // field's own placeholder (large, grey); once there's a value or focus, a
-  // small 12px caption takes its place above the text instead. Unlike
-  // Input's single-line box (which absolutely-positions the label over the
-  // value and needs a manual pt-* compensation), the label here is a normal
-  // flex child — hidden/shown via `group-has-*` — so the textarea gets
-  // pushed down by ordinary layout instead of a positioning hack. (Can't use
-  // `peer-*` here: the label isn't a *direct* sibling of the textarea, it's
-  // nested one level down in the label/lock row, and the sibling combinator
-  // `peer-*` relies on doesn't reach into a sibling's descendants — same
-  // class of bug as Radio's group-disabled fix.) The box's own vertical
-  // padding shrinks from 16px to 8px in that same state, matching the live
-  // Figma component's Empty-vs-Filled padding exactly.
+  // small 12px caption takes its place above the text instead. The box's own
+  // vertical padding shrinks from 16px to 8px in that same state, matching
+  // the live Figma component's Empty-vs-Filled padding exactly.
+  //
+  // Дизайн-чек №3 №2: «Нет анимации текстов как у input. Нужно добавить».
+  // Раньше подпись просто переключалась `hidden` → `block`: рывок вместо
+  // перехода. Теперь она, как у Input, позиционируется абсолютно и едет
+  // между двумя точками (`transition-all`), а место под текст освобождает
+  // не раскладка, а верхний отступ самой textarea. Родной placeholder при
+  // этом делается прозрачным — иначе он дублировал бы подпись.
   const hasFloatingLabel = Boolean(label)
   const resolvedPlaceholder = hasFloatingLabel
     ? typeof label === "string"
@@ -138,37 +140,50 @@ function Textarea({
             // placeholder-as-label text going from #999 to #6D6D6D on
             // hover — same tone as --textarea-border-hover — which this
             // component previously never did.
-            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] disabled:cursor-not-allowed disabled:text-[var(--textarea-fg-disabled)] md:text-p1-medium",
+            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] disabled:cursor-not-allowed disabled:text-[var(--textarea-fg-disabled)] desktop:text-p1-medium",
+            // Плавающая подпись перекрывает первую строку, поэтому в
+            // «поднятом» состоянии текст уходит вниз ровно на её высоту
+            // (16px строка + 4px зазор): 8px внутреннего отступа коробки
+            // + 20px = 28px, как в мастере Filled.
+            hasFloatingLabel &&
+              "placeholder:text-transparent focus:pt-5 [&:not(:placeholder-shown)]:pt-5",
             className
           )}
           {...props}
         />
-        {(label || locked) && (
-          <div className="order-1 flex items-start gap-2">
-            {label && (
-              // Round-2 audit fix: dropped the group-has-disabled color
-              // override — get_design_context on the Disabled/Filled and
-              // Disabled+Locked symbols (137:2616, 11282:15677) both show
-              // the small 12px label staying --input-label-fg (#999) when
-              // disabled, same as every other state; it never recolors.
-              <label
-                htmlFor={textareaId}
-                className="hidden flex-1 truncate text-p3-medium text-[var(--input-label-fg)] group-focus-within/textarea:block group-has-[textarea:not(:placeholder-shown)]/textarea:block"
-              >
-                {label}
-              </label>
+        {label && (
+          // Round-2 audit fix: dropped the group-has-disabled color
+          // override — get_design_context on the Disabled/Filled and
+          // Disabled+Locked symbols (137:2616, 11282:15677) both show
+          // the small 12px label staying --input-label-fg (#999) when
+          // disabled, same as every other state; it never recolors.
+          //
+          // Покоящееся положение совпадает с первой строкой текста (тот же
+          // кегль и та же координата), поэтому переход читается как рост
+          // самой подписи, а не как подмена одного элемента другим.
+          <label
+            htmlFor={textareaId}
+            className={cn(
+              "pointer-events-none absolute top-4 left-4 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium",
+              // Место под замок справа, чтобы длинная подпись под него не
+              // подлезала.
+              locked ? "right-10" : "right-4",
+              "group-focus-within/textarea:top-2 group-focus-within/textarea:text-p3-medium desktop:group-focus-within/textarea:text-p3-medium",
+              "group-has-[textarea:not(:placeholder-shown)]/textarea:top-2 group-has-[textarea:not(:placeholder-shown)]/textarea:text-p3-medium desktop:group-has-[textarea:not(:placeholder-shown)]/textarea:text-p3-medium"
             )}
-            {locked && (
-              <Lock
-                aria-hidden="true"
-                // Round-2 audit fix: disabled color was --input-fg-disabled
-                // (#C8C8CB) — the Disabled+Locked lock icon SVG
-                // (11282:15677) is fill="#999999", matching --input-label-fg
-                // exactly rather than the lighter Input grey.
-                className="ml-auto size-4 shrink-0 text-[var(--input-icon-fg)] group-has-[:disabled]/textarea:text-[var(--textarea-icon-fg-disabled)]"
-              />
-            )}
-          </div>
+          >
+            {label}
+          </label>
+        )}
+        {locked && (
+          <Lock
+            aria-hidden="true"
+            // Round-2 audit fix: disabled color was --input-fg-disabled
+            // (#C8C8CB) — the Disabled+Locked lock icon SVG
+            // (11282:15677) is fill="#999999", matching --input-label-fg
+            // exactly rather than the lighter Input grey.
+            className="absolute top-4 right-4 order-1 size-4 shrink-0 text-[var(--input-icon-fg)] group-has-[:disabled]/textarea:text-[var(--textarea-icon-fg-disabled)]"
+          />
         )}
       </div>
       {(comment || error) && (

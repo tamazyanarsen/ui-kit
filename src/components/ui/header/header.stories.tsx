@@ -122,7 +122,10 @@ function HeaderDemo({
 }
 
 const meta = {
-  title: "Компоненты/Header",
+  // Дизайн-чек №3 №11: «соединить компоненты в папку меню». Туда входят
+  // Настройка избранного, Раскрытое меню навигации, Раскрытое меню
+  // создания и Header — все четыре части одного навигационного узла.
+  title: "Компоненты/Меню/Header",
   component: HeaderDemo,
   parameters: { layout: "fullscreen" },
   argTypes: {

@@ -81,7 +81,7 @@ export function ComboboxTrigger({
             // not on the trigger box: padding there would recenter the
             // icons/clear button too and shift them down on focus.
             hasFloatingLabel &&
-              "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 md:group-data-popup-open/trigger:pt-5 md:group-[&:not([data-placeholder])]/trigger:pt-5"
+              "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
           )}
         >
           {children}

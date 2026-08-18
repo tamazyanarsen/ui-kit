@@ -1,6 +1,33 @@
 import type { IconProps } from "./types"
 
-export function Info({ size: _size, ...props }: IconProps) {
+// 24px — отдельный рисунок `icon / information` (нода 38295:12204 внутри
+// тоста типа Information): кольцо в 2px и более крупная «i». Раньше на
+// 24px растягивался 16px-глиф, отчего он выглядел жирнее макета
+// (дизайн-чек №3 №5).
+export function Info({ size = 16, ...props }: IconProps) {
+  if (size === 24) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12Z"
+          fill="currentColor"
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M10.25 11.25C10.25 10.6977 10.6977 10.25 11.25 10.25H12C12.5523 10.25 13 10.6977 13 11.25V15.5315C13.4313 15.6425 13.75 16.034 13.75 16.5C13.75 17.0523 13.3023 17.5 12.75 17.5H12C11.4477 17.5 11 17.0523 11 16.5V12.2185C10.5687 12.1075 10.25 11.716 10.25 11.25Z"
+          fill="currentColor"
+        />
+        <path
+          d="M11.8125 9C12.4338 9 12.9375 8.49632 12.9375 7.875C12.9375 7.25368 12.4338 6.75 11.8125 6.75C11.1912 6.75 10.6875 7.25368 10.6875 7.875C10.6875 8.49632 11.1912 9 11.8125 9Z"
+          fill="currentColor"
+        />
+      </svg>
+    )
+  }
+
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

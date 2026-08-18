@@ -74,15 +74,27 @@ function ProfileMenu({
             className={cn(
               // h-16 вместо py-1: в Figma `Profile Client (ELK)` — плитка
               // 304×64, такая же по высоте, как остальные в `Panel`.
-              // Ширина остаётся по контенту (имя организации переменное).
-              "group flex h-16 min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]",
+              //
+              // Дизайн-чек №3 №12: «нет макс ширины… элемент должен иметь
+              // макс ширину, она уже есть в ките, унаследовать». Ширина
+              // раньше шла по контенту, и длинное название организации
+              // распирало плитку до края шапки. В мастере она ограничена
+              // теми же 304px, а название обрезается многоточием — что
+              // `truncate` на подписях уже умеет, ему не хватало только
+              // предела у самой плитки.
+              "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]",
               className
             )}
           />
         }
       >
         <span className="flex min-w-0 items-center gap-3">
+          {/* Дизайн-чек №3 №12: «Некорректная иконка». В шапке кейс идёт
+              24px-начертанием (`icon / company` — контурный кейс с двумя
+              полосами); без `size={24}` сюда подставлялся 16px-рисунок с
+              центральной защёлкой, растянутый до 24. */}
           <Briefcase
+            size={24}
             aria-hidden="true"
             className="size-6 shrink-0 text-[var(--header-icon-fg)] group-hover:text-[var(--header-hover-fg)]"
           />
@@ -205,7 +217,7 @@ function ProfileMenu({
                   onClick={onSettingsClick}
                   className="flex cursor-default items-center gap-2 rounded-xl px-2 py-2 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
                 >
-                  <Settings aria-hidden="true" className="size-6 shrink-0" />
+                  <Settings size={24} aria-hidden="true" className="size-6 shrink-0" />
                   Профиль и настройки
                 </MenuPrimitive.Item>
                 <MenuPrimitive.Item
@@ -213,7 +225,7 @@ function ProfileMenu({
                   onClick={onLogoutClick}
                   className="flex cursor-default items-center gap-2 rounded-xl px-2 py-2 text-p1-medium text-[var(--header-logout-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
                 >
-                  <LogOut aria-hidden="true" className="size-6 shrink-0" />
+                  <LogOut size={24} aria-hidden="true" className="size-6 shrink-0" />
                   Выйти
                 </MenuPrimitive.Item>
                 </div>

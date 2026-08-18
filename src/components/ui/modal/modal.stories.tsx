@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Modal, ModalTrigger, ModalClose } from "./root"
 import { ModalContent } from "./popup"
@@ -27,6 +28,7 @@ interface ConfirmModalProps {
   showFooter?: boolean
   triggerLabel?: string
   longBody?: boolean
+  viewport?: Viewport
 }
 
 function ConfirmModal({
@@ -40,9 +42,14 @@ function ConfirmModal({
   showFooter = true,
   triggerLabel = "Открыть модалку",
   longBody = false,
+  viewport,
 }: ConfirmModalProps) {
   const [open, setOpen] = useState(false)
   return (
+    // Скоуп охватывает и триггер, и портал: `ModalContent` дублирует
+    // `data-viewport` на самом попапе, потому что портал уносит его из
+    // этого поддерева (дизайн-чек №3 №19).
+    <ViewportScope viewport={viewport}>
     <Modal open={open} onOpenChange={setOpen}>
       <ModalTrigger render={<Button variant="secondary-grey" />}>
         {triggerLabel}
@@ -56,12 +63,12 @@ function ConfirmModal({
             {description && <ModalDescription>{description}</ModalDescription>}
           </ModalHeader>
         )}
-        <ModalBody className={columns === 2 ? "md:grid md:grid-cols-2 md:gap-6" : undefined}>
+        <ModalBody className={columns === 2 ? "desktop:grid desktop:grid-cols-2 desktop:gap-6" : undefined}>
           {/* `Type=With Image` — иллюстрация над текстом. */}
           {showImage && (
             <div
               aria-hidden="true"
-              className="mb-4 h-40 rounded-2xl bg-[var(--card-bg)] md:col-span-2"
+              className="mb-4 h-40 rounded-2xl bg-[var(--card-bg)] desktop:col-span-2"
             />
           )}
           {longBody ? (
@@ -90,6 +97,7 @@ function ConfirmModal({
         )}
       </ModalContent>
     </Modal>
+    </ViewportScope>
   )
 }
 
@@ -111,6 +119,9 @@ const meta = {
     showClose: { control: "boolean" },
     showFooter: { control: "boolean", name: "Show Buttons" },
     longBody: { control: "boolean" },
+    // Мобильная форма (Bottom Sheet) выбирается контролом, а не пиннингом
+    // вьюпорта — дизайн-чек №3 №19.
+    viewport: viewportArgType,
   },
   args: {
     size: "l",
@@ -123,6 +134,7 @@ const meta = {
     showClose: true,
     showFooter: true,
     longBody: false,
+    viewport: "auto",
   },
 } satisfies Meta<ConfirmModalProps>
 
@@ -167,11 +179,4 @@ export const Examples: Story = {
       </StorySection>
     </StoryShowcase>
   ),
-}
-
-export const Mobile: Story = {
-  name: "Mobile (< 768px — Bottom Sheet)",
-  globals: { viewport: { value: "mobile1", isRotated: false } },
-  parameters: { controls: { disable: true } },
-  render: () => <ConfirmModal triggerLabel="Открыть" />,
 }

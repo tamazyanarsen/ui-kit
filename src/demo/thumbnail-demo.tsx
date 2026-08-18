@@ -51,7 +51,7 @@ function ThumbnailDemo() {
               <span className="text-p3-regular text-muted-foreground">Count</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <Thumbnail type="more" />
+              <Thumbnail type="icon" />
               <span className="text-p3-regular text-muted-foreground">More</span>
             </div>
           </div>

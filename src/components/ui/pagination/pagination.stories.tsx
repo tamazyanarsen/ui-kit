@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Pagination, type PaginationProps } from "./pagination"
 
@@ -15,7 +16,10 @@ const PAGE_SIZE_PRESETS = {
 
 type PageSizePreset = keyof typeof PAGE_SIZE_PRESETS
 
-type PlaygroundArgs = PaginationProps & { pageSizePreset?: PageSizePreset }
+type PlaygroundArgs = PaginationProps & {
+  pageSizePreset?: PageSizePreset
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Paginator",
@@ -38,6 +42,9 @@ const meta = {
     pageSizeOptions: { table: { disable: true } },
     showPages: { name: "Блок страниц", control: "boolean" },
     showPageSize: { name: "Выбор числа записей", control: "boolean" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     size: "L",
@@ -47,6 +54,7 @@ const meta = {
     pageSize: 25,
     showPages: true,
     showPageSize: true,
+    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -70,12 +78,14 @@ function Controlled({ page, pageSize, ...props }: PaginationProps) {
 export const Playground: Story = {
   // Remount on every arg change so the `page`/`pageSize` controls actually
   // move the (otherwise internally-owned) state.
-  render: ({ pageSizePreset, ...args }) => (
+  render: ({ pageSizePreset, viewport, ...args }) => (
+    <ViewportScope viewport={viewport}>
     <Controlled
       key={`${args.page}-${args.pageSize}-${pageSizePreset}`}
       {...args}
       pageSizeOptions={PAGE_SIZE_PRESETS[pageSizePreset ?? "25 / 50 / 100"]}
     />
+    </ViewportScope>
   ),
 }
 
@@ -86,7 +96,7 @@ export const Matrix: Story = {
     <StatesMatrix<PaginationProps>
       stretch
       cellClassName="min-w-[560px]"
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       // Без `pageSize` правая часть («Показать на странице» + 25/50/100) не
       // рендерится вовсе, и половина строк матрицы — включая «Без выбора
       // размера» и «Пустой результат» — выглядела одинаково пустой.

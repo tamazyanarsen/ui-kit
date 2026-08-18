@@ -10,7 +10,7 @@ export type ThumbnailSize = "l" | "m"
 // is NOT part of the dark card family despite reusing a lucide "more" icon.
 // The icon-status types render a light tinted square with a lucide glyph.
 export type ThumbnailType =
-  | "more"
+  | "icon"
   | "card"
   | "sticker"
   | "sbp-card"

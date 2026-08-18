@@ -31,7 +31,10 @@ function CreateMenuDemo({ itemCount = CREATE_ITEMS.length, withIcons = true }: P
 }
 
 const meta = {
-  title: "Компоненты/Раскрытое меню создания",
+  // Дизайн-чек №3 №11: «соединить компоненты в папку меню». Туда входят
+  // Настройка избранного, Раскрытое меню навигации, Раскрытое меню
+  // создания и Header — все четыре части одного навигационного узла.
+  title: "Компоненты/Меню/Раскрытое меню создания",
   component: CreateMenuDemo,
   parameters: { layout: "fullscreen" },
   argTypes: {

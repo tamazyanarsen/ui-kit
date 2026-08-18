@@ -257,10 +257,10 @@ function Filter({
               className={cn(
                 // Round-2 audit fix: the `asChip` look's real Figma source
                 // (filter-table's dark pill, P2 Medium 14/20) has no
-                // separate desktop size — the `md:text-base` bump only
+                // separate desktop size — the `desktop:text-base` bump only
                 // applies to the plain Filter label.
                 "min-w-0 truncate text-p2-medium",
-                !asChip && "md:text-p1-medium",
+                !asChip && "desktop:text-p1-medium",
                 // In chip mode the pill class already sets the text colour
                 // for its own Checked/Disabled state — overriding it here
                 // would repaint the dark pill's white label.

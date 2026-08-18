@@ -79,7 +79,7 @@ export function SelectTrigger({
             // to just this span keeps only the value text pushed down,
             // making room for the floated label above it.
             hasFloatingLabel &&
-              "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 md:group-data-popup-open/trigger:pt-5 md:group-[&:not([data-placeholder])]/trigger:pt-5"
+              "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
           )}
         >
           {children}

@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Switcher, type SwitcherProps } from "./switcher"
 
@@ -35,6 +36,7 @@ const SWITCHER_TYPES = ["Text", "Text Badge", "Text Status", "Icon"] as const
 type SwitcherType = (typeof SWITCHER_TYPES)[number]
 
 type PlaygroundArgs = SwitcherProps & {
+  viewport?: Viewport
   itemsCount?: ItemCount
   figmaType?: SwitcherType
 }
@@ -65,6 +67,9 @@ const meta = {
       control: "select",
       options: ITEM_POOL.map((i) => i.value),
     },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     items: ITEMS,
@@ -76,7 +81,19 @@ const meta = {
     showMore: false,
     disabled: false,
     defaultValue: "all",
+    viewport: "auto" as Viewport,
   },
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -120,6 +137,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<SwitcherProps>
+      responsive
       stretch
       baseProps={{ items: ITEMS, value: "all" }}
       columnGroups={[

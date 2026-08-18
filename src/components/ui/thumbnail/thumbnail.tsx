@@ -1,14 +1,16 @@
+import type * as React from "react"
+
 import {
   CircleAlert,
   CircleCheck,
   CircleHelp,
   Clock,
   ImageIcon,
-  MoreHorizontal,
 } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Icon, type IconName } from "@/components/ui/icon"
 
 import { PaymentLogo } from "./payment-logo"
 import {
@@ -31,12 +33,19 @@ const ICON_STATUS_GLYPH = {
 
 // Thumbnail — "Миниатюра": a small icon/logo tile that marks the payment
 // system on a card, or an object's status. Card-family types (card/sticker/
-// sbp-card/sbp-card-account/more) render a dark tile with a payment mark;
+// sbp-card/sbp-card-account) render a dark tile with a payment mark;
 // icon-status types (check/question/clock/alert/alert-red) render a light
-// tinted tile with a lucide glyph; "picture" is a custom illustration slot.
+// tinted tile with a glyph; "picture" is a custom illustration slot;
+// "icon" is a light grey tile with any 24px glyph from the kit.
 interface ThumbnailProps {
   type?: ThumbnailType
   size?: ThumbnailSize
+  /**
+   * Глиф для `type="icon"`. В Figma это instance swap внутри плитки, и по
+   * умолчанию туда положено «многоточие» (`icon / more`) — отсюда прежнее
+   * ошибочное имя варианта `more` (дизайн-чек №3 №4).
+   */
+  icon?: IconName | React.ReactNode
   disabled?: boolean
   paymentSystem?: PaymentSystem
   last4?: string
@@ -50,6 +59,7 @@ interface ThumbnailProps {
 function Thumbnail({
   type = "card",
   size = "l",
+  icon = "ellipsis",
   disabled = false,
   paymentSystem = "mir",
   last4,
@@ -62,7 +72,7 @@ function Thumbnail({
   const isCardFamily = CARD_TYPES.has(type)
   const isSbp = SBP_TYPES.has(type)
   const isIconStatus = isIconStatusType(type)
-  const isMore = type === "more"
+  const isIconTile = type === "icon"
 
   const badgeOffset = type === "picture" ? "top-[58%] right-[8%]" : "top-[-4px] right-[-8px]"
   const badge =
@@ -84,7 +94,7 @@ function Thumbnail({
   let bg: string | undefined
   if (isCardFamily) {
     bg = "var(--tag-black-bg)"
-  } else if (isMore) {
+  } else if (isIconTile) {
     bg = "var(--tag-grey-secondary-bg)"
   } else if (isIconStatus) {
     bg = ICON_STATUS_STYLE[type].bg
@@ -100,16 +110,27 @@ function Thumbnail({
       data-disabled={disabled || undefined}
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center overflow-visible rounded-[8px]",
-        size === "l" ? "size-12" : "size-10",
+        // Size в мастере — три значения: `L / Desktop` (48), `M / Desktop`
+        // (40) и `L-M / Mobile` (40), то есть на мобиле L и M совпадают.
+        // Поэтому L отзывчив, а M одинаков всегда.
+        size === "l" ? "size-10 desktop:size-12" : "size-10",
         containerClassName,
         className
       )}
       style={{ backgroundColor: bg }}
     >
       <span className="flex size-full items-center justify-center overflow-hidden rounded-[8px]">
-        {isMore && (
-          <MoreHorizontal aria-hidden="true" className="size-6 text-[var(--tag-grey-secondary-fg)]" />
-        )}
+        {isIconTile &&
+          (typeof icon === "string" ? (
+            <Icon
+              name={icon}
+              size={24}
+              aria-hidden="true"
+              className="size-6 text-[var(--tag-grey-secondary-fg)]"
+            />
+          ) : (
+            icon
+          ))}
 
         {(type === "card" || type === "sticker") && (
           <PaymentLogo system={paymentSystem} disabled={disabled} />
@@ -119,13 +140,14 @@ function Thumbnail({
           (src ? (
             <img src={src} alt={alt} className="size-full object-cover" />
           ) : (
-            <ImageIcon aria-hidden="true" className="size-6 text-white/90" />
+            <ImageIcon size={24} aria-hidden="true" className="size-6 text-white/90" />
           ))}
 
         {isIconStatus && (() => {
           const Glyph = ICON_STATUS_GLYPH[type]
           return (
             <Glyph
+              size={24}
               aria-hidden="true"
               className="size-6"
               style={{ color: ICON_STATUS_STYLE[type].fg }}

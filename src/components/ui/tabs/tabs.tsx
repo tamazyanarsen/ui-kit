@@ -17,7 +17,7 @@ import { useIsDesktop } from "@/lib/use-is-desktop"
 // `ELK / tabs` v1.2.0 replaced the old Large/Medium *level* property with a
 // responsive Size=Desktop/Mobile pair, so the bar now switches with the
 // viewport instead of a prop: 44px tall with a 32px gap, 16/24 labels and a
-// 24px overflow glyph from `md:` up; 40px / 24px / 14/20 / 16px below it.
+// 24px overflow glyph from `desktop:` up; 40px / 24px / 14/20 / 16px below it.
 // (The two old sizes happened to hold exactly these two sets of numbers.)
 //
 // Overflow ("Show More"): once the row doesn't fit, the trailing tabs move
@@ -84,7 +84,7 @@ function TabButton({
           "text-[var(--tabs-fg)] group-hover:text-[var(--tabs-fg)]",
           "group-data-active:text-[var(--tabs-fg-active)]",
           "group-disabled:text-[var(--tabs-fg-disabled)]",
-          "text-p2-medium md:text-p1-medium"
+          "text-p2-medium desktop:text-p1-medium"
         )}
       >
         {typeof item.icon === "string" ? (
@@ -179,11 +179,11 @@ function Tabs({
                 // Figma pads it 2px and widens the gap to 18px to keep the
                 // trigger the full 40px — otherwise its underline floats
                 // above the bar's bottom border.
-                className="group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none md:gap-4 md:pt-0"
+                className="group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none desktop:gap-4 desktop:pt-0"
               />
             }
           >
-            <Ellipsis aria-hidden="true" className="size-4 md:size-6" />
+            <Ellipsis aria-hidden="true" className="size-4 desktop:size-6" />
             <span
               aria-hidden="true"
               className="h-1 w-full shrink-0 rounded-t-[4px] bg-transparent transition-colors group-hover:bg-[var(--tabs-underline-hover)]"

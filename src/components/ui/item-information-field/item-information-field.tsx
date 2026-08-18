@@ -115,10 +115,10 @@ function InfoIcon({
 // label line: 26px down (27 for the large one, whose 24px glyph sits on a
 // 30px value line) — the same "+2px below the value's top" rule.
 const COPY_OFFSET: Record<FieldType, string> = {
-  "label-left": "mt-[26px] md:mt-[2px]",
-  "label-line": "mt-[26px] md:mt-[2px]",
-  "label-top": "mt-[26px] md:mt-[30px]",
-  "large-value": "mt-[27px] md:mt-[33px]",
+  "label-left": "mt-[26px] desktop:mt-[2px]",
+  "label-line": "mt-[26px] desktop:mt-[2px]",
+  "label-top": "mt-[26px] desktop:mt-[30px]",
+  "large-value": "mt-[27px] desktop:mt-[33px]",
 }
 
 function CopyButton({
@@ -168,7 +168,7 @@ function ItemInformationField({
 }: ItemInformationFieldProps) {
   const large = type === "large-value"
   // Only Label Left and Line put the label beside the value, and only from
-  // `md:` up — Size=Mobile stacks every type (node 70240:38661).
+  // `desktop:` up — Size=Mobile stacks every type (node 70240:38661).
   const sideBySide = type === "label-left" || type === "label-line"
 
   // Label is Medium like the Value — the two differ only in colour — and
@@ -180,7 +180,7 @@ function ItemInformationField({
   // правый край и не перекрывает иконку копирования: сплошной «слово» без
   // пробелов теперь переносится.
   const labelRow = (
-    <span className="block min-w-0 break-words text-p2-medium text-[var(--ifield-label-fg)] md:text-p1-medium">
+    <span className="block min-w-0 break-words text-p2-medium text-[var(--ifield-label-fg)] desktop:text-p1-medium">
       {label}
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
@@ -193,7 +193,7 @@ function ItemInformationField({
         // its own font-medium alongside the text-p1 branch that does.
         // Mobile: 22/30 for the large value, 14/20 for the rest.
         "block min-w-0 break-words",
-        large ? "text-h2-mobile md:text-h2" : "text-p2-medium md:text-p1-medium",
+        large ? "text-h2-mobile desktop:text-h2" : "text-p2-medium desktop:text-p1-medium",
         VALUE_COLOR[valueStatus]
       )}
     >
@@ -205,7 +205,7 @@ function ItemInformationField({
   const subTextRow = subText && (
     <span
       className={cn(
-        "text-p3-medium md:text-p2-medium",
+        "text-p3-medium desktop:text-p2-medium",
         SUBTEXT_COLOR[subTextStatus]
       )}
     >
@@ -229,13 +229,13 @@ function ItemInformationField({
     >
       {/* One DOM for both breakpoints: the label is always the first child
           of this group, stacked above the value on mobile and turned into
-          the left-hand column from `md:` up on the two side-by-side types. */}
+          the left-hand column from `desktop:` up on the two side-by-side types. */}
       <div
         className={cn(
           "flex min-w-0 flex-1 flex-col gap-1",
-          sideBySide && "md:flex-row md:items-start md:gap-6",
-          type === "label-top" && "md:gap-1",
-          large && "md:gap-0"
+          sideBySide && "desktop:flex-row desktop:items-start desktop:gap-6",
+          type === "label-top" && "desktop:gap-1",
+          large && "desktop:gap-0"
         )}
       >
         {/* Label box: an even share of the row, but never wider than 384px
@@ -244,9 +244,9 @@ function ItemInformationField({
         <span
           className={cn(
             "min-w-0",
-            sideBySide && "md:min-w-25 md:flex-1",
-            type === "label-left" && "md:max-w-96",
-            type === "label-line" && "md:max-w-54"
+            sideBySide && "desktop:min-w-25 desktop:flex-1",
+            type === "label-left" && "desktop:max-w-96",
+            type === "label-line" && "desktop:max-w-54"
           )}
         >
           {labelRow}
@@ -257,9 +257,9 @@ function ItemInformationField({
             // large value) and flush on desktop — except Label Top, which
             // keeps 4px there too.
             "flex min-w-0 flex-col items-start gap-1",
-            large && "gap-0.5 md:gap-0",
-            sideBySide && "md:flex-1 md:gap-0",
-            type === "label-top" && "md:gap-1"
+            large && "gap-0.5 desktop:gap-0",
+            sideBySide && "desktop:flex-1 desktop:gap-0",
+            type === "label-top" && "desktop:gap-1"
           )}
         >
           {valueRow}

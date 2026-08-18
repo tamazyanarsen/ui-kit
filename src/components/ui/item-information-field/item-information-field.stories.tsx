@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { RESPONSIVE_NOTE, StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import {
   ItemInformationField,
@@ -18,6 +19,8 @@ const STATUSES: FieldStatus[] = [
   "attention",
   "information",
 ]
+
+type PlaygroundArgs = ItemInformationFieldProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Information Field",
@@ -56,6 +59,9 @@ const meta = {
         "information"
       >[],
     },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     type: "label-left",
@@ -69,6 +75,7 @@ const meta = {
     divider: true,
     valueStatus: "default",
     subTextStatus: "default",
+    viewport: "auto" as Viewport,
   },
   decorators: [
     (Story) => (
@@ -78,12 +85,18 @@ const meta = {
       </ToastProvider>
     ),
   ],
-} satisfies Meta<ItemInformationFieldProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<ItemInformationFieldProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ viewport, ...args }) => (
+    <ViewportScope viewport={viewport}>
+      <ItemInformationField {...args} />
+    </ViewportScope>
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
@@ -93,7 +106,7 @@ export const Matrix: Story = {
       <StatesMatrix<ItemInformationFieldProps>
         stretch
         cellClassName="min-w-[280px]"
-        rowHeader={RESPONSIVE_NOTE}
+        responsive
         baseProps={{ label: "Label", value: "Value" }}
         columnGroups={[
           {

@@ -10,7 +10,7 @@ import { Tooltip } from "@/components/ui/tooltip"
 import { getImaskProps, getMaskPlaceholder, type MaskName } from "./mask"
 
 // Design only defines two size tokens for Input: S (32px, both breakpoints)
-// and L (48px mobile -> 56px desktop, mobile-first via `md:`). There is no M.
+// and L (48px mobile -> 56px desktop, mobile-first via `desktop:`). There is no M.
 const inputBoxVariants = cva(
   "group/input relative flex w-full items-center border border-[var(--input-border)] bg-[var(--input-bg)] transition-colors has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)]",
   {
@@ -21,7 +21,7 @@ const inputBoxVariants = cva(
         // variant) both give a literal px-[16px], same horizontal padding
         // as lg, not a smaller one.
         sm: "h-8 gap-2 rounded-[8px] px-4",
-        lg: "h-12 gap-2 rounded-[16px] px-4 md:h-14",
+        lg: "h-12 gap-2 rounded-[16px] px-4 desktop:h-14",
       },
       invalid: {
         true: "border-[var(--input-border-error)]",
@@ -66,14 +66,14 @@ const inputFieldVariants = cva(
         // десктопе остаётся 14/20 (Desktop. Параграф/P2 Medium, нода
         // 70303:80528). Раньше оба брейкпоинта держали 14/20, из-за чего
         // мобильный S был крупнее макета.
-        sm: "text-p3-medium md:text-p2-medium",
-        lg: "text-p2-medium md:text-p1-medium",
+        sm: "text-p3-medium desktop:text-p2-medium",
+        lg: "text-p2-medium desktop:text-p1-medium",
       },
       // Floating label only exists at the L size — at S (32px) there isn't
       // room for a second line, so the design falls back to a plain
       // placeholder that disappears on input (see the S/Desktop reference).
       floating: {
-        true: "placeholder:text-transparent [&:not(:placeholder-shown)]:pt-4 focus:pt-4 md:[&:not(:placeholder-shown)]:pt-5 md:focus:pt-5",
+        true: "placeholder:text-transparent [&:not(:placeholder-shown)]:pt-4 focus:pt-4 desktop:[&:not(:placeholder-shown)]:pt-5 desktop:focus:pt-5",
         false: "",
       },
     },
@@ -98,7 +98,7 @@ const floatingLabelVariants =
   // the 48px mobile row is `pt-[7px]` and the 56px desktop row centres a
   // 40px (16 + 24) content block in its 54px interior, i.e. also 7px. It
   // used to sit 3px lower on desktop.
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all md:text-p1-medium peer-focus:top-[7px] peer-focus:translate-y-0 peer-focus:text-p3-medium md:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium md:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium peer-focus:top-[7px] peer-focus:translate-y-0 peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
 
 // Trailing glyphs (clear cross, eye, lock, spinner) are 16px at every size —
 // Figma's `icon / close cross` is `size-[16px]` in the S, L-mobile and
@@ -456,18 +456,18 @@ function Input({
                     // twin at the wrong weight would measure the wrong width.
                     "invisible absolute whitespace-pre",
                     // Mirrors inputFieldVariants' own size branches exactly
-                    // (sm: text-p2-medium, lg: text-p2-medium md:text-p1-medium)
+                    // (sm: text-p2-medium, lg: text-p2-medium desktop:text-p1-medium)
                     // — this used to hardcode text-p3-medium/text-p2-medium
                     // instead, which under-measured the lg field's actual
-                    // md:text-p1-medium desktop text. The box ended up
+                    // desktop:text-p1-medium desktop text. The box ended up
                     // narrower than the real content on every keystroke,
                     // scrolling the field and clipping the start of the
                     // value out of view (looked like the digits were
                     // scrambled/duplicated, but the underlying value was
                     // correct all along).
                     size === "sm"
-                      ? "text-p3-medium md:text-p2-medium"
-                      : "text-p2-medium md:text-p1-medium"
+                      ? "text-p3-medium desktop:text-p2-medium"
+                      : "text-p2-medium desktop:text-p1-medium"
                   )}
                 >
                   {maskValue}
@@ -479,19 +479,19 @@ function Input({
                     // every slot uniformly) down to ~1 space-width, per
                     // design-check #31 — the mask value and "₽" aren't
                     // separate flex slots conceptually, just closely-set text.
-                    "-ml-1.5 shrink-0 text-[var(--input-fg)] md:-ml-2",
+                    "-ml-1.5 shrink-0 text-[var(--input-fg)] desktop:-ml-2",
                     // Same size branches as the field itself — see the
                     // measuring span above for why this must match exactly.
                     size === "sm"
-                      ? "text-p3-medium md:text-p2-medium"
-                      : "text-p2-medium md:text-p1-medium",
+                      ? "text-p3-medium desktop:text-p2-medium"
+                      : "text-p2-medium desktop:text-p1-medium",
                     // The field's own text sits lower than the row's
                     // vertical center once the floating label pushes it
                     // down (inputFieldVariants' floating pt-4/pt-5) — match
                     // that here too, or this sibling (centered on the full,
                     // unpadded row height) ends up floating visibly above
                     // the digits instead of sitting next to them.
-                    floating && "pt-4 md:pt-5"
+                    floating && "pt-4 desktop:pt-5"
                   )}
                 >
                   ₽
@@ -530,9 +530,9 @@ function Input({
               // Flush with the value text: the box pads 16px, and a leading
               // icon adds its own width plus the 8px gap (16 + 16 + 8 = 40
               // at S-sized glyphs, 16 + 24 + 8 = 48 once the L row's 24px
-              // one kicks in). The old `md:left-5` put the label 4px right
+              // one kicks in). The old `desktop:left-5` put the label 4px right
               // of the value it labels.
-              iconLeft ? "left-10 md:left-12" : "left-4",
+              iconLeft ? "left-10 desktop:left-12" : "left-4",
               // Without a right edge, `truncate` has nothing to clip against
               // — an absolutely positioned label just grows to fit its text,
               // so a long label (e.g. DatePicker's "Дата начала — Дата

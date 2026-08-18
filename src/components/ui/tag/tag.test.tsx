@@ -45,8 +45,12 @@ describe("Tag", () => {
     expect(container.querySelector("svg")).not.toBeInTheDocument()
   })
 
-  it("sizes down for the small size", () => {
-    render(<Tag size="s">Активен</Tag>)
-    expect(screen.getByText("Активен")).toHaveClass("h-[18px]")
+  // Size=Desktop/Mobile в Figma — это не проп, а форма: мобильная базовая
+  // (18px), десктопная приходит вариантом `desktop:` (дизайн-чек №3 №1).
+  it("renders mobile-first sizing with a desktop override", () => {
+    render(<Tag>Активен</Tag>)
+    const tag = screen.getByText("Активен")
+    expect(tag).toHaveClass("h-[18px]")
+    expect(tag).toHaveClass("desktop:h-[22px]")
   })
 })

@@ -16,6 +16,13 @@ const RATING_LABELS: Record<number, string> = {
   5: "Отлично",
 }
 
+/* Стаггер нижнего блока (дизайн-чек №3 №16). Держим тремя константами, а
+   не тремя копиями строки: задержка у каждого элемента своя, всё остальное
+   общее. */
+const STAGGER_BASE = "transition-all duration-400 ease-out"
+const STAGGER_IN = "translate-y-0 opacity-100"
+const STAGGER_OUT = "translate-y-2 opacity-0"
+
 const DEFAULT_CHIPS = [
   "Долго заполнять",
   "Непонятно",
@@ -84,6 +91,18 @@ function Nps({
   const [hoverValue, setHoverValue] = React.useState<number | null>(null)
   const [internalComment, setInternalComment] = React.useState("")
   const activeComment = comment ?? internalComment
+  // Дизайн-чек №3 №15: «Чипсы должны отрабатывать по одной. Сейчас можно
+  // накликать всё и тексты вставляются последовательно… Должен быть „выбор“
+  // чипсы, она тогда становится тёмно-синей (активной). Если клиент в поле
+  // ввода поменял текст — слетает выбор чипсы, но к нему можно вернуться,
+  // повторно нажав на чипсу».
+  //
+  // То есть чип — не кнопка «дописать», а выбор одного готового ответа:
+  // выбранным считается тот, чей текст сейчас лежит в поле. Поэтому
+  // состояние хранится, но при любом расхождении с полем сбрасывается —
+  // отдельного «снятия выбора» не нужно.
+  const [selectedChip, setSelectedChip] = React.useState<string | null>(null)
+  const activeChip = selectedChip === activeComment ? selectedChip : null
 
   function setRating(next: number) {
     if (value === undefined) setInternalValue(next)
@@ -93,6 +112,11 @@ function Nps({
   function setComment(next: string) {
     if (comment === undefined) setInternalComment(next)
     onCommentChange?.(next)
+  }
+
+  function selectChip(chip: string) {
+    setSelectedChip(chip)
+    setComment(chip)
   }
 
   function handleSubmit() {
@@ -200,47 +224,95 @@ function Nps({
         </p>
       </div>
 
-      {activeValue !== null && (
-        <>
-          {showDescription && (
-            <p className="w-full text-center text-p1-medium text-[var(--nps-title-fg)]">
-              Что можно улучшить?
-            </p>
-          )}
+      {/* Дизайн-чек №3 №16: «Нужна плюс-минус плавная анимация „роста“ окна.
+          Сейчас окно растёт рывком… нужно сделать плавное вырастание со
+          стаггерами нижних элементов (текстареа, чипсы, кнопка)».
 
-          <div className="flex w-full flex-col gap-4">
-            <Textarea
-              label="Комментарий"
-              rows={3}
-              value={activeComment}
-              onChange={(e) => setComment(e.target.value)}
-            />
+          Нижний блок теперь не монтируется по факту оценки, а всегда есть в
+          разметке и раскрывается: grid-строка едет с 0fr до 1fr — это
+          единственный способ анимировать высоту «по содержимому», не зная её
+          заранее. Отрицательный `-mt-8` в свёрнутом виде гасит зазор
+          родительского `gap-8`, иначе пустая строка занимала бы 32px.
 
-            {showChips && (
-              <div className="flex flex-wrap gap-2">
+          Стаггер сделан переходами с разной задержкой, а не keyframe-
+          анимациями: keyframes проигрываются только при монтировании, а
+          блок теперь живёт постоянно. */}
+      <div
+        aria-hidden={activeValue === null}
+        className={cn(
+          "grid w-full transition-all duration-500 ease-out",
+          activeValue !== null ? "mt-0 grid-rows-[1fr]" : "-mt-8 grid-rows-[0fr]"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="flex w-full flex-col items-start gap-8">
+            {showDescription && (
+              <p
+                className={cn(
+                  "w-full text-center text-p1-medium text-[var(--nps-title-fg)]",
+                  STAGGER_BASE,
+                  activeValue !== null ? STAGGER_IN : STAGGER_OUT
+                )}
+                style={{ transitionDelay: activeValue !== null ? "120ms" : "0ms" }}
+              >
+                Что можно улучшить?
+              </p>
+            )}
+
+            <div
+              className={cn(
+                "flex w-full flex-col gap-4",
+                STAGGER_BASE,
+                activeValue !== null ? STAGGER_IN : STAGGER_OUT
+              )}
+              style={{ transitionDelay: activeValue !== null ? "200ms" : "0ms" }}
+            >
+              <Textarea
+                label="Комментарий"
+                value={activeComment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+
+              {showChips && (
+                <div className="flex flex-wrap gap-2">
                 {/* Figma builds these from `ELK / filter-table` in its
                     unselected (Checked=False) look — the frame is named
                     "Chips" on the canvas, but the instances inside are
                     filter-table, not `ELK / chips` (node 64534:44873). */}
-                {chips.map((chip) => (
-                  <FilterTable
-                    key={chip}
-                    onClick={() =>
-                      setComment(activeComment ? `${activeComment} ${chip}` : chip)
-                    }
-                  >
-                    {chip}
-                  </FilterTable>
-                ))}
-              </div>
-            )}
-          </div>
+                  {chips.map((chip) => (
+                    <FilterTable
+                      key={chip}
+                      selected={activeChip === chip}
+                      // Крестика у выбранного чипа тут нет: выбор снимается
+                      // правкой текста в поле, а не кнопкой на самом чипе.
+                      showClose={false}
+                      aria-pressed={activeChip === chip}
+                      onClick={() => selectChip(chip)}
+                    >
+                      {chip}
+                    </FilterTable>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <Button type="button" variant="primary" size="lg" className="w-full" onClick={handleSubmit}>
-            Отправить
-          </Button>
-        </>
-      )}
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              className={cn(
+                "w-full",
+                STAGGER_BASE,
+                activeValue !== null ? STAGGER_IN : STAGGER_OUT
+              )}
+              style={{ transitionDelay: activeValue !== null ? "280ms" : "0ms" }}
+              onClick={handleSubmit}
+            >
+              Отправить
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

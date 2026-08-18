@@ -52,6 +52,7 @@ function TopFixedMessage({
       <div className="flex min-w-0 flex-1 items-center gap-4">
         {showIcon && (
           <CircleAlert
+            size={24}
             aria-hidden="true"
             className="size-6 shrink-0"
             style={{ color: TOP_FIXED_MESSAGE_ICON_COLOR[type] }}
@@ -84,7 +85,10 @@ function TopFixedMessage({
           onClick={onClose}
           className="shrink-0 text-[var(--top-fixed-message-close-fg)] outline-none"
         >
-          <X aria-hidden="true" className="size-6" />
+          {/* Дизайн-чек №3 №9: «Некорректное начертание крестика».
+              Коробка 24px — значит и рисунок 24px (`icon / close cross`,
+              нода 263:6442), а не 16px, растянутый в полтора раза. */}
+          <X size={24} aria-hidden="true" className="size-6" />
         </button>
       )}
     </div>

@@ -212,7 +212,7 @@ function TableColumnSettings({
                           : "cursor-grab active:cursor-grabbing"
                       )}
                     >
-                      <Drag className="size-6" />
+                      <Drag size={24} className="size-6" />
                     </span>
                   )}
                 </div>

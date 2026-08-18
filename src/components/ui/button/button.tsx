@@ -43,7 +43,7 @@ const buttonVariants = cva(
           "bg-[var(--btn-secondary-logo-grey-bg)] text-[var(--btn-secondary-logo-grey-fg)] enabled:hover:bg-[var(--btn-secondary-logo-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-logo-grey-bg-active)]",
       },
       size: {
-        // Mobile-first: unprefixed classes are the mobile form, `md:` switches
+        // Mobile-first: unprefixed classes are the mobile form, `desktop:` switches
         // to the desktop form at the 768px breakpoint. Radii use literal
         // px values (not rounded-xl/2xl) because the button's Figma spec
         // (16px, 12px only for M-mobile) doesn't line up with the kit's
@@ -58,7 +58,7 @@ const buttonVariants = cva(
         // different pair of numbers per side, not just the icon side —
         // and `default` and `lg`-mobile turn out to share identical
         // padding with each other/with `sm` at points where Figma's own
-        // instances happen to match, so there's no md: padding override
+        // instances happen to match, so there's no desktop: padding override
         // needed for `sm`/`default` any more, only for `lg`.
         //
         // Round-3: both sides have to move together, and the smaller value
@@ -68,14 +68,14 @@ const buttonVariants = cva(
         // Icon Right. Previously only one side was overridden, so an
         // icon-at-the-end button padded the icon side to 20 and left the
         // text side at the base — i.e. the asymmetry ran backwards.
-        sm: "h-8 gap-2 rounded-[16px] px-4 text-p3-medium md:text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4",
+        sm: "h-8 gap-2 rounded-[16px] px-4 text-p3-medium desktop:text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4",
         default:
-          "h-10 gap-2 rounded-[12px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 md:h-12 md:rounded-[16px] md:text-p1-medium",
-        lg: "h-12 gap-2 rounded-[16px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 md:h-14 md:px-8 md:text-p1-medium md:has-data-[icon=inline-start]:pl-6 md:has-data-[icon=inline-start]:pr-8 md:has-data-[icon=inline-end]:pl-8 md:has-data-[icon=inline-end]:pr-6 md:[&_svg:not([class*='size-'])]:size-6",
-        icon: "size-10 rounded-[12px] md:size-12 md:rounded-[16px]",
+          "h-10 gap-2 rounded-[12px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-12 desktop:rounded-[16px] desktop:text-p1-medium",
+        lg: "h-12 gap-2 rounded-[16px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-14 desktop:px-8 desktop:text-p1-medium desktop:has-data-[icon=inline-start]:pl-6 desktop:has-data-[icon=inline-start]:pr-8 desktop:has-data-[icon=inline-end]:pl-8 desktop:has-data-[icon=inline-end]:pr-6 desktop:[&_svg:not([class*='size-'])]:size-6",
+        icon: "size-10 rounded-[12px] desktop:size-12 desktop:rounded-[16px]",
         "icon-sm": "size-8 rounded-[16px]",
         "icon-lg":
-          "size-12 rounded-[16px] md:size-14 md:[&_svg:not([class*='size-'])]:size-6",
+          "size-12 rounded-[16px] desktop:size-14 desktop:[&_svg:not([class*='size-'])]:size-6",
       },
     },
     defaultVariants: {
@@ -154,12 +154,12 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
 
   const Glyph = isLogoVariant ? GosuslugiLogo : Icon
 
-  // `lg` and `icon-lg` render their glyph at 24px from the md: breakpoint up
+  // `lg` and `icon-lg` render their glyph at 24px from the desktop: breakpoint up
   // (see the size variants above), and Figma draws a separate 24px artwork
   // for most icons rather than scaling the 16px one. Pick the drawing here
   // so callers never have to remember `size={24}` — they keep writing
   // `<Button size="lg" icon={Mail}>`. It has to be a media query rather than
-  // a `md:` class because this selects the *path*, not the box.
+  // a `desktop:` class because this selects the *path*, not the box.
   const isDesktop = useIsDesktop()
   const glyphSize =
     isDesktop && (resolvedSize === "lg" || resolvedSize === "icon-lg") ? 24 : 16

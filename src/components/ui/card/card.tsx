@@ -100,7 +100,7 @@ function Card({
             )}
           </span>
           {tag && (
-            <Tag color={tagColor} size="l" className="shrink-0">
+            <Tag color={tagColor} className="shrink-0">
               {tag}
             </Tag>
           )}

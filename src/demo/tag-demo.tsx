@@ -7,6 +7,7 @@ import {
 } from "@/demo/scaffold"
 
 import { RowLabel } from "./shared"
+import { ViewportScope } from "@/lib/viewport"
 
 const STATUS_COLORS: { color: TagStatusColor; label: string }[] = [
   { color: "green", label: "Green (Completed)" },
@@ -63,14 +64,14 @@ function TagDemo() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <RowLabel>Размеры — Large (Desktop) / Small (Mobile)</RowLabel>
+          <RowLabel>Размеры — Desktop / Mobile</RowLabel>
           <div className="flex items-center gap-3">
-            <Tag color="green" size="l">
-              Example Text
-            </Tag>
-            <Tag color="green" size="s">
-              Example Text
-            </Tag>
+            <ViewportScope viewport="desktop">
+              <Tag color="green">Example Text</Tag>
+            </ViewportScope>
+            <ViewportScope viewport="mobile">
+              <Tag color="green">Example Text</Tag>
+            </ViewportScope>
           </div>
         </div>
 

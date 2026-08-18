@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Banner, type BannerProps } from "./banner"
 import type { BannerColor, BannerSize } from "./variants"
@@ -18,6 +19,8 @@ import type { BannerColor, BannerSize } from "./variants"
  */
 const SIZES: BannerSize[] = ["desktop", "compact", "mobile"]
 const COLORS: BannerColor[] = ["black", "pink", "green", "blue"]
+
+type PlaygroundArgs = BannerProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Banner",
@@ -41,6 +44,9 @@ const meta = {
     imageSrc: { control: "text" },
     imageAlt: { control: "text" },
     ctaLabel: { control: "text", description: "Пустая подпись — кнопки нет" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     size: "desktop",
@@ -50,11 +56,23 @@ const meta = {
     bullet: false,
     image: true,
     ctaLabel: "Подробнее",
+    viewport: "auto" as Viewport,
   },
-} satisfies Meta<BannerProps>
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<BannerProps>
+type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {}
 

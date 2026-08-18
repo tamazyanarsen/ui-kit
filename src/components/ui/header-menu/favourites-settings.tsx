@@ -91,7 +91,7 @@ function SettingsRow({
             onClick={onToggle}
             className="flex shrink-0 cursor-pointer text-[var(--header-menu-star-fg)] outline-none"
           >
-            <Star filled={favourite} aria-hidden="true" className="size-6 shrink-0" />
+            <Star size={24} filled={favourite} aria-hidden="true" className="size-6 shrink-0" />
           </button>
         }
         trailing={
@@ -115,7 +115,7 @@ function SettingsRow({
               }}
               className="flex shrink-0 cursor-grab text-[var(--header-menu-star-fg)] outline-none active:cursor-grabbing"
             >
-              <Drag aria-hidden="true" className="size-6 shrink-0" />
+              <Drag size={24} aria-hidden="true" className="size-6 shrink-0" />
             </button>
           ) : undefined
         }
@@ -155,13 +155,13 @@ function FavouritesSettings({
         {/* `Modal Top` у этой модалки — вариант без заголовка (пустой холдер
             48px), поэтому ModalHeader не используется, а заголовок стоит
             первым в теле и прокручивается вместе с содержимым. */}
-        <ModalBody className="flex flex-col gap-8 md:pt-12">
-          <ModalTitle className="text-h2-mobile md:text-h2">
+        <ModalBody className="flex flex-col gap-8 desktop:pt-12">
+          <ModalTitle className="text-h2-mobile desktop:text-h2">
             Настройка избранного
           </ModalTitle>
 
           <section className="flex flex-col gap-4">
-            <h3 className="text-h4-mobile text-[var(--modal-title-fg)] md:text-h3">
+            <h3 className="text-h4-mobile text-[var(--modal-title-fg)] desktop:text-h3">
               Добавлено
             </h3>
             {added.length === 0 ? (
@@ -199,7 +199,7 @@ function FavouritesSettings({
 
           {remaining.length > 0 && (
             <section className="flex flex-col gap-4">
-              <h3 className="text-h4-mobile text-[var(--modal-title-fg)] md:text-h3">
+              <h3 className="text-h4-mobile text-[var(--modal-title-fg)] desktop:text-h3">
                 Остальные разделы
               </h3>
               <div className="flex flex-col">

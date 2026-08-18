@@ -2,11 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { Chips, type ChipsProps } from "./chips"
 
@@ -15,7 +16,10 @@ import { Chips, type ChipsProps } from "./chips"
 // пропом, поэтому, как и у остальных интерактивных компонентов кита, их
 // даёт `state` через PseudoBox; Active — это `selected`, Disabled —
 // `disabled`, так что вместе они закрывают весь набор.
-type PlaygroundArgs = ChipsProps & { state?: PlaygroundState }
+type PlaygroundArgs = ChipsProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Chips",
@@ -30,6 +34,9 @@ const meta = {
     selected: { name: "Выбрана", control: "boolean" },
     disabled: { control: "boolean" },
     state: stateArgType,
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
+    // панели истории, а не изменением размера вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     children: "Значение",
@@ -39,6 +46,7 @@ const meta = {
     selected: false,
     disabled: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -46,8 +54,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state}>
+  render: ({ state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport}>
       <Chips {...args} />
     </PseudoBox>
   ),
@@ -58,7 +66,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<ChipsProps>
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{ children: "Значение" }}
       columns={[
         { label: "Текст", props: {} },

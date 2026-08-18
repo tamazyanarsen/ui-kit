@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useScrollEdges } from "@/lib/use-scroll-edges"
 import { Button } from "@/components/ui/button"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
@@ -161,6 +162,16 @@ function NotificationPanel({
   onSecondaryButtonClick,
   className,
 }: NotificationPanelProps) {
+  // Дизайн-чек №3 №13/№14: «Не должно быть разделителя, когда скролл в
+  // верхнем положении» и «…в нижнем положении». Линии под шапкой и над
+  // подвалом — не рамки блоков, а признак того, что за краем осталась
+  // непрочитанная часть списка: сверху она появляется, только когда список
+  // уже прокрутили, снизу — пока не домотали до конца. То же правило и в
+  // том же виде уже работает в теле модалки, поэтому вынесено в общий
+  // `useScrollEdges`.
+  const { ref, scrolledFromTop, scrolledToEnd, update } =
+    useScrollEdges<HTMLDivElement>([items])
+
   return (
     <div
       data-slot="notification-panel"
@@ -170,7 +181,12 @@ function NotificationPanel({
       )}
     >
       {title && (
-        <div className="border-b border-[var(--notification-divider)] px-4 pt-4 pb-3">
+        <div
+          className={cn(
+            "border-b border-transparent px-4 pt-4 pb-3",
+            scrolledFromTop && "border-b-[var(--notification-divider)]"
+          )}
+        >
           <p className="text-h3 text-[var(--notification-title-fg)]">
             {title}
           </p>
@@ -178,6 +194,8 @@ function NotificationPanel({
       )}
 
       <Scrollbar
+        ref={ref}
+        onScroll={update}
         className={cn(
           "flex flex-col",
           showDivider && "divide-y divide-[var(--notification-divider)]",
@@ -194,7 +212,12 @@ function NotificationPanel({
         // Design-check #41: each button fills half the row (was sized to
         // its own text, letting "Прочитать все" and "Настройки" end up
         // visibly different widths).
-        <div className="flex items-center gap-4 border-t border-[var(--notification-divider)] p-4 [&>*]:flex-1">
+        <div
+          className={cn(
+            "flex items-center gap-4 border-t border-transparent p-4 [&>*]:flex-1",
+            !scrolledToEnd && "border-t-[var(--notification-divider)]"
+          )}
+        >
           {primaryButtonLabel && (
             <Button
               type="button"

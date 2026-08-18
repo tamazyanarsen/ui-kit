@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 import { MENU_FAVOURITES, MENU_GROUPS } from "@/stories/menu-fixtures"
 import { Button } from "@/components/ui/button"
 
@@ -11,6 +12,7 @@ import { FavouritesSettings } from "./favourites-settings"
    избранное»), поэтому в историях ей нужна обёртка с собственным
    состоянием — и с показом того, что получилось после «Сохранить». */
 type PlaygroundArgs = {
+  viewport?: Viewport
   favouriteCount: number
   groupCount: number
   openByDefault: boolean
@@ -45,7 +47,10 @@ function FavouritesSettingsDemo({
 }
 
 const meta = {
-  title: "Компоненты/Настройка избранного",
+  // Дизайн-чек №3 №11: «соединить компоненты в папку меню». Туда входят
+  // Настройка избранного, Раскрытое меню навигации, Раскрытое меню
+  // создания и Header — все четыре части одного навигационного узла.
+  title: "Компоненты/Меню/Настройка избранного",
   component: FavouritesSettingsDemo,
   parameters: { layout: "fullscreen" },
   argTypes: {
@@ -58,12 +63,27 @@ const meta = {
       description: "Сколько групп меню участвует — из них собираются оба списка",
     },
     openByDefault: { control: "boolean", description: "Модалка открыта сразу" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     favouriteCount: MENU_FAVOURITES.length,
     groupCount: MENU_GROUPS.length,
     openByDefault: true,
+    viewport: "auto" as Viewport,
   },
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
 } satisfies Meta<PlaygroundArgs>
 
 export default meta

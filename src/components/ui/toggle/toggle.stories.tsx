@@ -3,15 +3,19 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Toggle, type ToggleProps } from "./toggle"
 
-type PlaygroundArgs = ToggleProps & { state?: PlaygroundState }
+type PlaygroundArgs = ToggleProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Toggle",
@@ -24,28 +28,38 @@ const meta = {
     checked: { control: "boolean" },
     disabled: { control: "boolean" },
     state: stateArgType,
+    // Дизайн-чек №3 №7: «Некорректные пропсы (не соответствуют фигме).
+    // Например, нет возможности настроить mobile». В Figma у компонента
+    // есть свойство Size=Desktop/Mobile (666:9029), поэтому в панели
+    // истории оно тоже должно быть — а не переключением вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     label: "Согласен с условиями договора",
     comment: "Договор комплексного банковского обслуживания",
+    checked: false,
     disabled: false,
+    error: "",
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-function Controlled({ state, checked, ...props }: PlaygroundArgs) {
+function Controlled({ state, viewport, checked, ...props }: PlaygroundArgs) {
   const [internal, setInternal] = useState(false)
   return (
-    <PseudoBox state={state}>
-      <Toggle
-        {...props}
-        checked={checked ?? internal}
-        onCheckedChange={setInternal}
-      />
-    </PseudoBox>
+    <ViewportScope viewport={viewport}>
+      <PseudoBox state={state}>
+        <Toggle
+          {...props}
+          checked={checked ?? internal}
+          onCheckedChange={setInternal}
+        />
+      </PseudoBox>
+    </ViewportScope>
   )
 }
 
@@ -106,8 +120,11 @@ export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
+    // Дизайн-чек №3 №8/№18: десктоп и мобайл стоят рядом в одной матрице,
+    // а не прячутся за переключением вьюпорта и не выносятся в отдельную
+    // историю — за это отвечает `responsive`.
     <StatesMatrix<ToggleProps>
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{ label: "Option Text", comment: "Comment" }}
       columns={[
         { label: "Off", props: { checked: false } },

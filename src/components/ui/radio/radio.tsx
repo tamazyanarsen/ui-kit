@@ -89,9 +89,9 @@ function Radio({
           (verified identically against Radio's own 600:8785/600:8778
           instances: no gap between label/caption lines, no top offset at
           Desktop). */}
-      <span className="flex flex-col pt-0.5 md:pt-0">
+      <span className="flex flex-col pt-0.5 desktop:pt-0">
         {label && (
-          <span className="text-p2-medium text-[var(--radio-label-fg)] md:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
+          <span className="text-p2-medium text-[var(--radio-label-fg)] desktop:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
             {label}
           </span>
         )}

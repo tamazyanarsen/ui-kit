@@ -27,7 +27,7 @@ import { DIRECTION_PLACEMENT, type TooltipDirection } from "./variants"
 // `ELK / Modal` instance — a bottom sheet with the title/close row, the body
 // text, and a full-width "Понятно" button pinned to the bottom panel. That
 // swap can't be expressed in CSS (both forms are portalled subtrees), so it
-// runs off a media query rather than a `md:` class.
+// runs off a media query rather than a `desktop:` class.
 const MOBILE_DISMISS_LABEL = "Понятно"
 
 interface HintProps {
@@ -78,10 +78,10 @@ function Hint({
           )}
           <ModalDescription
             className={cn(
-              "px-6 pb-5 md:px-8 md:pb-6",
+              "px-6 pb-5 desktop:px-8 desktop:pb-6",
               // Without a header above it the text needs the header's own top
               // padding, or it collides with the sheet's rounded top edge.
-              !title && "pt-5 md:pt-6"
+              !title && "pt-5 desktop:pt-6"
             )}
           >
             {content}

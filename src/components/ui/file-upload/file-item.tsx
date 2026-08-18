@@ -93,7 +93,7 @@ export function FileListItem({
       ) : (
         <span
           className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-[8px] md:size-12",
+            "flex size-10 shrink-0 items-center justify-center rounded-[8px] desktop:size-12",
             error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
           )}
         >

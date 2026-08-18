@@ -3,11 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { Select, SelectValue } from "./root"
 import { SelectTrigger } from "./trigger"
@@ -75,7 +76,10 @@ function DemoSelect({
   )
 }
 
-type PlaygroundArgs = DemoSelectProps & { state?: PlaygroundState }
+type PlaygroundArgs = DemoSelectProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Select",
@@ -98,6 +102,9 @@ const meta = {
     readOnly: { control: "boolean" },
     open: { control: "boolean" },
     state: stateArgType,
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
+    // панели истории, а не изменением размера вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     size: "lg",
@@ -107,6 +114,7 @@ const meta = {
     readOnly: false,
     open: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -114,8 +122,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state} className="w-80">
+  render: ({ state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport} className="w-80">
       <DemoSelect {...args} />
     </PseudoBox>
   ),
@@ -128,7 +136,7 @@ export const Matrix: Story = {
     <StatesMatrix<DemoSelectProps>
       stretch
       cellClassName="min-w-72"
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       columns={[
         { label: "L (default)", props: { size: "lg" } },
         { label: "S", props: { size: "sm" } },

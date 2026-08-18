@@ -2,7 +2,6 @@ export type TagStatusColor = "green" | "orange" | "red" | "blue" | "grey"
 export type TagSignColor = "black" | "white" | "grey-info"
 export type TagColor = TagStatusColor | TagSignColor
 export type TagVariant = "main" | "secondary"
-export type TagSize = "l" | "s"
 
 interface TagStyle {
   bg: string

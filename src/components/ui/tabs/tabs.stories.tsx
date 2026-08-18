@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Tabs, type TabsProps } from "./tabs"
 
@@ -34,7 +35,11 @@ function decorate(items: typeof ITEMS, type: TabType) {
   }))
 }
 
-type PlaygroundArgs = TabsProps & { itemsCount?: TabCount; figmaType?: TabType }
+type PlaygroundArgs = TabsProps & {
+  itemsCount?: TabCount
+  figmaType?: TabType
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Tabs",
@@ -55,6 +60,9 @@ const meta = {
     },
     showMore: { control: "boolean" },
     defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
+    // v1.2.0 мастера убрала свойство размера в пользу пары Desktop/Mobile —
+    // теперь она выбирается контролом (дизайн-чек №3 №19), а не вьюпортом.
+    viewport: viewportArgType,
   },
   args: {
     items: ITEMS,
@@ -62,6 +70,7 @@ const meta = {
     figmaType: "Text",
     showMore: false,
     defaultValue: "all",
+    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -79,18 +88,20 @@ export const Playground: Story = {
   // Remount when the pinned value or the tab count changes so the
   // `defaultValue` control actually moves the (otherwise internally-owned)
   // selection.
-  render: ({ itemsCount = 5, figmaType = "Text", ...args }) => {
+  render: ({ itemsCount = 5, figmaType = "Text", viewport, ...args }) => {
     const items = decorate(ITEMS.slice(0, itemsCount), figmaType)
     const defaultValue = items.some((i) => i.value === args.defaultValue)
       ? args.defaultValue
       : items[0]?.value
     return (
-      <Controlled
-        key={`${defaultValue}-${itemsCount}`}
-        {...args}
-        items={items}
-        defaultValue={defaultValue}
-      />
+      <ViewportScope viewport={viewport}>
+        <Controlled
+          key={`${defaultValue}-${itemsCount}`}
+          {...args}
+          items={items}
+          defaultValue={defaultValue}
+        />
+      </ViewportScope>
     )
   },
 }
@@ -104,9 +115,8 @@ export const Matrix: Story = {
       cellClassName="min-w-[420px]"
       // v1.2.0 of the master dropped the Large/Medium level property for a
       // responsive Desktop/Mobile pair (44px bar / 32px gaps / 16-24 labels
-      // vs 40/24/14-20), so size is a viewport concern — see the Mobile
-      // story below.
-      rowHeader="Desktop / Mobile — это медиазапрос md:, размера как пропа больше нет (v1.2.0 мастера)."
+      // vs 40/24/14-20). Обе формы рисуются рядом — дизайн-чек №3 №18.
+      responsive
       columns={[{ label: "Tabs" }]}
       rows={[
         {
@@ -168,11 +178,4 @@ export const Matrix: Story = {
       render={(props) => <Tabs {...props} />}
     />
   ),
-}
-
-export const Mobile: Story = {
-  name: "Mobile (< 768px)",
-  globals: { viewport: { value: "mobile1", isRotated: false } },
-  parameters: { controls: { disable: true } },
-  render: () => <Controlled items={ITEMS} />,
 }

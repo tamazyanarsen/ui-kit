@@ -138,7 +138,7 @@ function Banner({
   // get_design_context on the "mobile" and "desktop small" (compact) master
   // components: mobile's CTA is the same blue `primary` fill as desktop
   // (bg #80E3FF); only compact's CTA is white/`secondary-white`. Size "lg"
-  // is itself responsive (h-12/px-6/text-sm below the md: breakpoint,
+  // is itself responsive (h-12/px-6/text-sm below the desktop: breakpoint,
   // h-14/px-8/text-base at/above it) so the same size prop already
   // reproduces both the mobile (48/24/14) and desktop+compact (56/32/16)
   // literal dimensions without branching on size here.

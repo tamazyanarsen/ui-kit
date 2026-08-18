@@ -1,6 +1,7 @@
 import * as React from "react"
 import { X } from "@/icons"
 
+import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Button } from "@/components/ui/button"
 
 import { TOAST_BG, TOAST_BORDER, TOAST_ICON, TOAST_ICON_COLOR } from "./variants"
@@ -83,6 +84,7 @@ function ToastCard({
 }) {
   const type = toast.type ?? "information"
   const Icon = TOAST_ICON[type]
+  const isDesktop = useIsDesktop()
   const data = toast.data
 
   return (
@@ -91,14 +93,19 @@ function ToastCard({
       role="status"
       // Size=Mobile is a 328px card with 16px padding and a 16px close
       // cross; Size=Desktop is 480px with 24px padding and a 24px cross.
-      className="w-full min-w-[320px] animate-in rounded-[16px] border p-4 shadow-universal fade-in-0 slide-in-from-right-4 md:p-6"
+      className="w-full min-w-[320px] animate-in rounded-[16px] border p-4 shadow-universal fade-in-0 slide-in-from-right-4 desktop:p-6"
       style={{
         backgroundColor: TOAST_BG[type],
         borderColor: TOAST_BORDER[type],
       }}
     >
       <div className="flex items-start gap-4">
+        {/* Дизайн-чек №3 №5: «иконки тоста некорректные — слишком жирное
+            начертание». Плитка 24px и на десктопе, и на мобиле, поэтому
+            нужен именно 24px-рисунок из Figma, а не 16px, растянутый до
+            24: у второго кольцо и штрихи в полтора раза толще. */}
         <Icon
+          size={24}
           aria-hidden="true"
           className="size-6 shrink-0"
           style={{ color: TOAST_ICON_COLOR[type] }}
@@ -109,12 +116,12 @@ function ToastCard({
               Informer does: Title 14/20 and Description 12/16 against
               16/24 and 14/20 on Size=Desktop (master `ELK / toast
               message` v2.0.0, node 774:134168). */}
-          <span className="text-p2-medium text-[var(--toast-title-fg)] md:text-p1-medium">
+          <span className="text-p2-medium text-[var(--toast-title-fg)] desktop:text-p1-medium">
             {toast.title}
           </span>
 
           {toast.description && (
-            <p className="text-p3-medium text-[var(--toast-description-fg)] md:text-p2-medium">
+            <p className="text-p3-medium text-[var(--toast-description-fg)] desktop:text-p2-medium">
               {toast.description}
             </p>
           )}
@@ -149,9 +156,19 @@ function ToastCard({
           type="button"
           aria-label="Закрыть"
           onClick={onClose}
-          className="shrink-0 text-[var(--toast-title-fg)] outline-none"
+          className="shrink-0 text-[var(--toast-close-fg)] outline-none"
         >
-          <X aria-hidden="true" className="size-4 md:size-6" />
+          {/* Дизайн-чек №3 №9: «Некорректное начертание крестика… ещё
+              заметил в toast message». У крестика два самостоятельных
+              рисунка, и 24px-коробка должна получать 24px-глиф, иначе
+              линии выходят на треть толще макета. Размер коробки здесь
+              меняется брейкпоинтом (16 → 24), а рисунок — пропом, поэтому
+              выбирать приходится в JS. */}
+          <X
+            size={isDesktop ? 24 : 16}
+            aria-hidden="true"
+            className="size-4 desktop:size-6"
+          />
         </button>
       </div>
     </div>
@@ -168,7 +185,7 @@ function Toaster() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed inset-x-4 top-4 z-50 flex flex-col gap-6 md:inset-x-auto md:top-8 md:right-10 md:w-[480px]"
+      className="fixed inset-x-4 top-4 z-50 flex flex-col gap-6 desktop:inset-x-auto desktop:top-8 desktop:right-10 desktop:w-[480px]"
     >
       {toasts.map((toast) => (
         <ToastCard key={toast.id} toast={toast} onClose={() => close(toast.id)} />

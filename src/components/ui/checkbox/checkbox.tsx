@@ -104,11 +104,11 @@ function Checkbox({
           center against it, while Desktop's 24px line-height already
           matches the box exactly (get_design_context on 600:8967 vs
           600:8960 — Desktop has no top offset, Mobile has pt-[2px]). */}
-      <span className="flex flex-col pt-0.5 md:pt-0">
+      <span className="flex flex-col pt-0.5 desktop:pt-0">
         {label && (
           <span
             className={cn(
-              "text-p2-medium text-[var(--checkbox-label-fg)] md:text-p1-medium",
+              "text-p2-medium text-[var(--checkbox-label-fg)] desktop:text-p1-medium",
               disabled && "text-[var(--checkbox-label-fg-disabled)]"
             )}
           >

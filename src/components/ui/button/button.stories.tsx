@@ -3,11 +3,12 @@ import { Download } from "@/icons"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { Button, type ButtonProps } from "./button"
 
@@ -40,7 +41,11 @@ const STYLE_PROPS: Record<ButtonStyle, Pick<ButtonProps, "icon" | "iconPosition"
   Icon: { icon: Download, iconPosition: "only" },
 }
 
-type PlaygroundArgs = ButtonProps & { state?: PlaygroundState; figmaStyle?: ButtonStyle }
+type PlaygroundArgs = ButtonProps & {
+  state?: PlaygroundState
+  figmaStyle?: ButtonStyle
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Button",
@@ -77,6 +82,10 @@ const meta = {
     disabled: { control: "boolean" },
     children: { control: "text" },
     state: stateArgType,
+    // - Size=Desktop/Mobile — контрол `viewport`. Дизайн-чек №3 №19:
+    //   «пропс на мобайл должен быть в панели стори, не по изменению
+    //   размера вьюпорта».
+    viewport: viewportArgType,
   },
   args: {
     children: "Button",
@@ -86,6 +95,7 @@ const meta = {
     isLoading: false,
     disabled: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -93,8 +103,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, figmaStyle, ...args }) => (
-    <PseudoBox state={state}>
+  render: ({ state, figmaStyle, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport}>
       <Button
         {...args}
         {...STYLE_PROPS[figmaStyle ?? "Text"]}
@@ -113,6 +123,7 @@ export const Matrix: Story = {
           в продукте ЕЛК, просмотр на нём — нецелевой», поэтому целевой размер
           стоит базовым, а остальные два остались отдельными строками ниже. */}
       <StatesMatrix<ButtonProps>
+        responsive
         baseProps={{ children: "Button", size: "lg" }}
         columns={VARIANTS.map((variant) => ({
           label: variant.replace("secondary-", "sec. "),
@@ -149,7 +160,6 @@ export const Matrix: Story = {
       {/* Secondary Logo types always carry the fixed Госуслуги glyph, so
           they have no icon/icon-only rows of their own. */}
       <StatesMatrix<ButtonProps>
-        rowHeader={RESPONSIVE_NOTE}
         baseProps={{ children: "Button", size: "lg" }}
         columnGroups={[
           {
@@ -168,27 +178,6 @@ export const Matrix: Story = {
         ]}
         render={(props) => <Button {...props} />}
       />
-    </div>
-  ),
-}
-
-// Sizes are mobile-first responsive per ui/button/button.png's redline sheet
-// (default/lg switch height+padding at the `md:` breakpoint — 40->48px and
-// 48->56px). `md:` is a viewport media query, not a container one, so this
-// story pins the viewport to see the mobile form.
-//
-// The viewport is pinned through `globals`, not the old
-// `parameters.viewport.defaultViewport` — that form stopped being honoured in
-// Storybook 9+, and the story silently rendered at desktop width.
-export const SizesMobile: Story = {
-  name: "Размеры — Mobile (< 768px)",
-  globals: { viewport: { value: "mobile1", isRotated: false } },
-  parameters: { controls: { disable: true } },
-  render: () => (
-    <div className="flex items-center gap-3">
-      <Button size="sm">Small</Button>
-      <Button size="default">Default</Button>
-      <Button size="lg">Large</Button>
     </div>
   ),
 }

@@ -57,7 +57,7 @@ function AutocompleteField({
           {...props}
         />
         {floating && (
-          <label htmlFor={inputId} className={cn(floatingLabelVariants, "left-4 md:left-5")}>
+          <label htmlFor={inputId} className={cn(floatingLabelVariants, "left-4 desktop:left-5")}>
             {label}
           </label>
         )}

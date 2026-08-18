@@ -3,11 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Radio, type RadioProps } from "./radio"
 import { RadioGroup } from "./root"
@@ -16,7 +17,11 @@ import { RadioGroup } from "./root"
 // Size / State / Error), поэтому в контролах оно должно быть, как и у
 // Checkbox. У самого Radio такого пропа нет: выбранность живёт в группе,
 // поэтому контрол управляет значением обёртки.
-type PlaygroundArgs = RadioProps & { state?: PlaygroundState; checked?: boolean }
+type PlaygroundArgs = RadioProps & {
+  state?: PlaygroundState
+  checked?: boolean
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Radio",
@@ -29,6 +34,9 @@ const meta = {
     checked: { control: "boolean", name: "Checked" },
     disabled: { control: "boolean" },
     state: stateArgType,
+    // Size=Desktop/Mobile — свойство компонент-сета в Figma, поэтому форма
+    // выбирается контролом, а не шириной вьюпорта (дизайн-чек №3 №19).
+    viewport: viewportArgType,
   },
   args: {
     value: "a",
@@ -36,7 +44,9 @@ const meta = {
     comment: "Договор комплексного банковского обслуживания",
     checked: false,
     disabled: false,
+    error: "",
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -46,7 +56,7 @@ type Story = StoryObj<PlaygroundArgs>
 // A Radio only means anything inside a RadioGroup (it's the group that owns
 // the selected value), so the Playground wraps a single one in its own
 // group and keeps it clickable.
-function Controlled({ state, checked, ...props }: PlaygroundArgs) {
+function Controlled({ state, checked, viewport, ...props }: PlaygroundArgs) {
   const [value, setValue] = useState<unknown>(null)
   // Контрол побеждает, когда выставлен, но клик по радио продолжает
   // работать — иначе контрол выглядел бы мёртвым.
@@ -56,11 +66,13 @@ function Controlled({ state, checked, ...props }: PlaygroundArgs) {
     setValue(checked ? props.value : null)
   }
   return (
-    <RadioGroup value={value} onValueChange={setValue}>
-      <PseudoBox state={state}>
-        <Radio {...props} />
-      </PseudoBox>
-    </RadioGroup>
+    <ViewportScope viewport={viewport}>
+      <RadioGroup value={value} onValueChange={setValue}>
+        <PseudoBox state={state}>
+          <Radio {...props} />
+        </PseudoBox>
+      </RadioGroup>
+    </ViewportScope>
   )
 }
 
@@ -169,8 +181,10 @@ export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
+    // Дизайн-чек №3 №18: mobile-варианты выводятся в ту же матрицу рядом с
+    // десктопными, а не отдельной историей и не переключением вьюпорта.
     <StatesMatrix<Cell>
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{ label: "Option Text", comment: "Comment" }}
       columns={[{ label: "Radio" }]}
       rows={[

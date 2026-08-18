@@ -156,7 +156,7 @@ function FilterShell({
             <span
               className={cn(
                 "min-w-0 truncate text-p2-medium",
-                !asChip && "md:text-p1-medium",
+                !asChip && "desktop:text-p1-medium",
                 asChip
                   ? chipChecked
                     ? undefined

@@ -3,17 +3,21 @@ import { Search } from "@/icons"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   iconArgType,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { Input, type InputProps } from "./input"
 import type { MaskName } from "./mask"
 
-type PlaygroundArgs = InputProps & { state?: PlaygroundState }
+type PlaygroundArgs = InputProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Input",
@@ -60,6 +64,9 @@ const meta = {
       ] satisfies MaskName[],
     },
     state: stateArgType,
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
+    // панели истории, а не изменением размера вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     label: "Label",
@@ -70,6 +77,7 @@ const meta = {
     loading: false,
     disabled: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -77,8 +85,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state} className="w-80">
+  render: ({ state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport} className="w-80">
       <Input {...args} />
     </PseudoBox>
   ),
@@ -91,7 +99,7 @@ export const Matrix: Story = {
     <StatesMatrix<InputProps>
       stretch
       cellClassName="min-w-72"
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{ label: "Label", placeholder: "Placeholder" }}
       columns={[
         { label: "L (default)", props: { size: "lg" } },

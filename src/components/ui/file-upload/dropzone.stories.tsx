@@ -6,7 +6,9 @@ import {
   StatesMatrix,
   stateArgType,
   type PlaygroundState,
+  viewportArgType,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { FileUploadDropzone } from "./dropzone"
 
@@ -14,7 +16,7 @@ type DropzoneProps = ComponentProps<typeof FileUploadDropzone>
 
 /* Ось `State` есть в макете (`ELK / file-upload`: State = Default | Hover | Disabled | Error), а hover пропом не
    выставить — его даёт общий контрол `state`. */
-type PlaygroundArgs = DropzoneProps & { state?: PlaygroundState }
+type PlaygroundArgs = DropzoneProps & { state?: PlaygroundState } & { viewport?: Viewport }
 
 const meta = {
   // Дизайн-чек №26: компонент назывался «Dropzone», в Figma он —
@@ -34,6 +36,9 @@ const meta = {
     error: { control: "boolean" },
     disabled: { control: "boolean" },
     multiple: { control: "boolean" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     state: "default" as PlaygroundState,
@@ -41,7 +46,19 @@ const meta = {
     error: false,
     disabled: false,
     multiple: false,
+    viewport: "auto" as Viewport,
   },
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -60,6 +77,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<DropzoneProps>
+      responsive
       stretch
       cellClassName="min-w-[360px]"
       columns={[

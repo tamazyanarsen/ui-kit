@@ -63,6 +63,15 @@ interface FilterTableProps
    * рисует то, что ему дали.
    */
   showCounter?: boolean
+  /**
+   * Рисовать ли крестик у выбранного чипа.
+   *
+   * У фильтра таблицы выбор снимается крестиком, поэтому по умолчанию он
+   * есть. В NPS выбранная подсказка — не фильтр, а «какой вариант сейчас
+   * подставлен в поле»: снимается он правкой текста, а не крестиком
+   * (дизайн-чек №3 №15), поэтому там чип тёмно-синий, но без креста.
+   */
+  showClose?: boolean
 }
 
 const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
@@ -71,6 +80,7 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
       selected = false,
       count,
       showCounter = false,
+      showClose = true,
       disabled,
       className,
       children,
@@ -94,7 +104,12 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
       >
         {/* Only the unselected look centres its label — the selected one is
             left-aligned because the close cross takes the right edge. */}
-        <span className={cn("min-w-0 flex-1 truncate", !selected && "text-center")}>
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate",
+            (!selected || !showClose) && "text-center"
+          )}
+        >
           {children}
         </span>
         {/* The counter is the same #6D6D6D/white badge in both Checked
@@ -104,7 +119,9 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
         {showCounter && count !== undefined && (
           <Badge type="counter" value={count} color="dark-grey" disabled={disabled} />
         )}
-        {selected && <X aria-hidden="true" className="size-4 shrink-0" />}
+        {selected && showClose && (
+          <X aria-hidden="true" className="size-4 shrink-0" />
+        )}
       </button>
     )
   }

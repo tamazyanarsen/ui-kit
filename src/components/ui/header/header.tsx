@@ -416,7 +416,7 @@ function EmployeeUserMenu({
               onClick={onSettingsClick}
               className="flex cursor-default items-center gap-2 rounded-xl px-3 py-2.5 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
             >
-              <Settings aria-hidden="true" className="size-6 shrink-0" />
+              <Settings size={24} aria-hidden="true" className="size-6 shrink-0" />
               Профиль и настройки
             </MenuPrimitive.Item>
           </MenuPrimitive.Popup>
@@ -551,7 +551,7 @@ function Header({
               {sidebarOpen ? (
                 <X size={24} aria-hidden="true" className="size-6" />
               ) : (
-                <Menu aria-hidden="true" className="size-6" />
+                <Menu size={24} aria-hidden="true" className="size-6" />
               )}
             </button>
           )}
@@ -611,7 +611,7 @@ function Header({
                 onClick={() => setLogoutOpen(true)}
                 className="flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
               >
-                <LogOut aria-hidden="true" className="size-6" />
+                <LogOut size={24} aria-hidden="true" className="size-6" />
               </button>
             </div>
           )}

@@ -2,15 +2,19 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { Textarea, type TextareaProps } from "./textarea"
 
-type PlaygroundArgs = TextareaProps & { state?: PlaygroundState }
+type PlaygroundArgs = TextareaProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Text Area",
@@ -27,10 +31,17 @@ const meta = {
     comment: { control: "text" },
     error: { control: "text" },
     placeholder: { control: "text" },
-    rows: { control: "number" },
+    // Дизайн-чек №3 №3: «Разбивка по числу строк в компоненте не нужна и не
+    // должна быть предусмотрена, компонент имеет нужные размеры в фигме».
+    // `rows` остаётся нативным атрибутом textarea, но контролом его больше
+    // не выставляем: высоту задаёт мастер (98px Mobile / 112px Desktop).
+    rows: { table: { disable: true } },
     locked: { control: "boolean" },
     disabled: { control: "boolean" },
     state: stateArgType,
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
+    // панели истории, а не изменением размера вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     label: "Label",
@@ -38,6 +49,7 @@ const meta = {
     locked: false,
     disabled: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -45,12 +57,40 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state} className="w-96">
+  render: ({ state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport} className="w-96">
       <Textarea {...args} />
     </PseudoBox>
   ),
 }
+
+/* Дизайн-чек №3 №3: «Матрица textarea не совпадает с figma. Нужна
+   классическая разбивка desktop/mobile. Разбивка по числу строк в
+   компоненте не нужна».
+
+   Компонент-сет `ELK / text-area` (137:2618) варьируется по четырём осям:
+   Size (Desktop / Mobile), State (Default / Hover / Focused / Disabled),
+   Type (Empty / Filled / Locked) и Add (None / Comment / Error). Разложены
+   они здесь ровно так же, как на листе: State — колонки, Type × Add —
+   строки, Size — две матрицы рядом. */
+const STATES: { label: string; props: Partial<TextareaProps>; pseudo?: "hover" | "focus-within" }[] = [
+  { label: "Default", props: {} },
+  { label: "Hover", props: {}, pseudo: "hover" },
+  { label: "Focused", props: {}, pseudo: "focus-within" },
+  { label: "Disabled", props: { disabled: true } },
+]
+
+const TYPES: { label: string; props: Partial<TextareaProps> }[] = [
+  { label: "Empty", props: {} },
+  { label: "Filled", props: { defaultValue: "Value" } },
+  { label: "Locked", props: { locked: true, defaultValue: "Value" } },
+]
+
+const ADDS: { label: string; props: Partial<TextareaProps> }[] = [
+  { label: "Add: None", props: {} },
+  { label: "Add: Comment", props: { comment: "Comment" } },
+  { label: "Add: Error", props: { error: "Text about error here" } },
+]
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
@@ -59,28 +99,15 @@ export const Matrix: Story = {
     <StatesMatrix<TextareaProps>
       stretch
       cellClassName="min-w-80"
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{ label: "Label", placeholder: "Placeholder" }}
-      columns={[
-        { label: "3 строки (default)", props: {} },
-        { label: "6 строк", props: { rows: 6 } },
-      ]}
-      rows={[
-        { label: "Default", props: {} },
-        { label: "Hover", props: {}, pseudo: "hover" },
-        { label: "Focus", props: {}, pseudo: "focus-within" },
-        { label: "Filled", props: { defaultValue: "Value" } },
-        {
-          label: "Comment",
-          props: { defaultValue: "Value", comment: "Comment" },
-        },
-        {
-          label: "Error",
-          props: { defaultValue: "Value", error: "Text about error here" },
-        },
-        { label: "Locked", props: { locked: true, defaultValue: "Value" } },
-        { label: "Disabled", props: { disabled: true, defaultValue: "Value" } },
-      ]}
+      columns={STATES.map(({ label, props, pseudo }) => ({ label, props, pseudo }))}
+      rows={ADDS.flatMap((add) =>
+        TYPES.map((type) => ({
+          label: `${add.label}\n${type.label}`,
+          props: { ...add.props, ...type.props },
+        }))
+      )}
       render={(props) => <Textarea {...props} />}
     />
   ),

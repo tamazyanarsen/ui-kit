@@ -90,9 +90,9 @@ function OtpConfirmCard({
             Slot both start at x=48 inside the 592px card), wider than
             ModalBody's default 32px desktop padding. */}
         <ModalBody
-          className={cn("flex flex-col gap-8 md:px-12 md:py-12", className)}
+          className={cn("flex flex-col gap-8 desktop:px-12 desktop:py-12", className)}
         >
-          <div className="flex flex-col gap-4 md:gap-2">
+          <div className="flex flex-col gap-4 desktop:gap-2">
             <ModalTitle>{title}</ModalTitle>
             <ModalDescription>
               {subtitle ??

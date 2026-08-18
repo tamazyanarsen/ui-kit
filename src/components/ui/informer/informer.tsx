@@ -60,13 +60,14 @@ function Informer({
       // 592px one (min 400) with 24px — the min-width was 360 and the
       // padding was desktop-only.
       className={cn(
-        "rounded-[16px] p-4 md:min-w-[400px] md:p-6",
+        "rounded-[16px] p-4 desktop:min-w-[400px] desktop:p-6",
         className
       )}
       style={{ backgroundColor: SOLID_BG[solid] }}
     >
       <div className="flex items-start gap-4">
         <Icon
+          size={24}
           aria-hidden="true"
           className="size-6 shrink-0"
           style={{ color: ICON_COLOR[icon] }}
@@ -77,17 +78,17 @@ function Informer({
               {/* Mobile steps the whole text block down one notch:
                   Title 14/20 and date/description 12/16 (Size=Mobile,
                   node 70240:35984), against 16/24 and 14/20 on desktop. */}
-              <span className="text-p2-medium text-[var(--informer-title-fg)] md:text-p1-medium">
+              <span className="text-p2-medium text-[var(--informer-title-fg)] desktop:text-p1-medium">
                 {title}
               </span>
               {date && (
-                <span className="text-p3-medium text-[var(--informer-meta-fg)] md:text-p2-medium">
+                <span className="text-p3-medium text-[var(--informer-meta-fg)] desktop:text-p2-medium">
                   {date}
                 </span>
               )}
             </div>
             {description && (
-              <span className="text-p3-medium text-[var(--informer-description-fg)] md:text-p2-medium">
+              <span className="text-p3-medium text-[var(--informer-description-fg)] desktop:text-p2-medium">
                 {description}
               </span>
             )}

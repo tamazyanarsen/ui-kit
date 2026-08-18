@@ -47,6 +47,38 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Дизайн-чек №3, замечания 8/18/19: «Пропс на мобайл должен быть в панели
+   стори, не по изменению размера вьюпорта» + «нужно выводить в матрице рядом
+   десктоп и мобайл».
+
+   Раньше десктопная форма компонента жила в `md:` — обычном медиазапросе по
+   ширине окна. Из-за этого мобильный вариант нельзя было ни выбрать пропом,
+   ни поставить в матрице рядом с десктопным: оба варианта одного компонента
+   на одной странице требуют, чтобы «десктопность» определялась поддеревом
+   DOM, а не окном.
+
+   `desktop:` — замена `md:` с тем же смыслом по умолчанию, но перекрываемая
+   атрибутом `data-viewport` на любом предке (его ставит `<ViewportScope>`,
+   см. src/lib/viewport.tsx):
+     • нет `data-viewport` — работает как `md:` (ширина окна ≥ 768px);
+     • `data-viewport="mobile"`  — десктопные правила выключены при любой ширине;
+     • `data-viewport="desktop"` — включены при любой ширине.
+
+   Специфичность обеих веток одинаковая (0,2,0) — на класс-селектор `&`
+   накладывается ещё один селектор с атрибутом, — поэтому обе стабильно
+   перебивают базовые (мобильные) утилиты и не конфликтуют между собой. */
+@custom-variant desktop {
+    @media (width >= 48rem) {
+        &:not([data-viewport="mobile"] *) {
+            @slot;
+        }
+    }
+
+    [data-viewport="desktop"] & {
+        @slot;
+    }
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Object Sans', sans-serif;
@@ -86,8 +118,8 @@
        29445:37282/37289/37296/37303). These are genuinely different sizes,
        not a scaled-down reuse of the desktop ones, and components were
        hand-rolling them as text-lg/text-[22px] combos before this existed.
-       Pair with the desktop key at the md: breakpoint, e.g.
-       `text-h2-mobile md:text-h2`. Note H3 and H4 collapse to the same
+       Pair with the desktop key via the desktop: variant, e.g.
+       `text-h2-mobile desktop:text-h2`. Note H3 and H4 collapse to the same
        18/24 on mobile — that is the spec, not a copy-paste slip. */
     --text-h1-mobile: 28px;
     --text-h1-mobile--line-height: 38px;
@@ -1009,6 +1041,11 @@
      new (this is the only message/* component with colored surfaces). */
   --toast-title-fg: var(--grey-1514);
   --toast-description-fg: var(--grey-517);
+  /* Крестик закрытия — grey-517 (#6D6D6D), как в мастере (`icon / close
+     cross` внутри 774:134177), а не цвет заголовка: раньше он был чёрным
+     и вместе с растянутым 16px-рисунком читался жирнее макета
+     (дизайн-чек №3 №9). */
+  --toast-close-fg: var(--grey-517);
   --toast-checked-bg: var(--mint-119);
   --toast-checked-icon: var(--mint-230);
   --toast-checked-border: var(--mint-135);

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, StorySection, StoryShowcase } from "@/stories/matrix"
+import { StatesMatrix, StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Combobox } from "./root"
 import { ComboboxTrigger } from "./trigger"
@@ -148,6 +149,8 @@ function TreeMultiSelect() {
   )
 }
 
+type PlaygroundArgs = DocumentsMultiSelectProps & { viewport?: Viewport }
+
 const meta = {
   title: "Компоненты/Combobox",
   component: DocumentsMultiSelect,
@@ -162,12 +165,26 @@ const meta = {
     error: { control: "text" },
     max: { control: { type: "number", min: 1, max: 5 } },
     disabled: { control: "boolean" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
-  args: { size: "lg", label: "Название", disabled: false },
-} satisfies Meta<DocumentsMultiSelectProps>
+  args: { size: "lg", label: "Название", disabled: false, viewport: "auto" as Viewport },
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<DocumentsMultiSelectProps>
+type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: (args) => (
@@ -186,6 +203,7 @@ export const Matrix: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <StatesMatrix<DocumentsMultiSelectProps>
+        responsive
         stretch
         cellClassName="min-w-[320px]"
         baseProps={{ label: "Label" }}

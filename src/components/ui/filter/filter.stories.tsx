@@ -6,13 +6,15 @@ import {
   iconArgType,
   stateArgType,
   type PlaygroundState,
+  viewportArgType,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Icon } from "@/components/ui/icon"
 
 import { Filter, type FilterProps } from "./filter"
 
-type PlaygroundArgs = FilterProps & { state?: PlaygroundState }
+type PlaygroundArgs = FilterProps & { state?: PlaygroundState } & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Filter",
@@ -38,6 +40,9 @@ const meta = {
     value: { control: "text" },
     defaultValue: { control: "text" },
     state: stateArgType,
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     label: "Статус",
@@ -46,7 +51,19 @@ const meta = {
     disabled: false,
     open: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
+  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
+  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
+  // для всех историй файла — в матрицах она не мешает: там форму задаёт
+  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  decorators: [
+    (Story, context) => (
+      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
+        <Story />
+      </ViewportScope>
+    ),
+  ],
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -68,6 +85,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<FilterProps>
+      responsive
       baseProps={{ label: "Статус" }}
       columnGroups={[
         {

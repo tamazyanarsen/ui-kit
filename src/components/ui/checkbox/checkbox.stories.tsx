@@ -3,11 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
-  RESPONSIVE_NOTE,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { Checkbox, type CheckboxProps } from "./checkbox"
 
@@ -16,11 +17,15 @@ import { Checkbox, type CheckboxProps } from "./checkbox"
      "Current variant" panel of `ELK / checkbox`.
    - Matrix — the full State × Type table the spec sheet draws.
 
-   `size` (Large/Desktop vs Medium/Mobile in Figma) is not a prop here: the
-   component switches on the `md:` breakpoint, so it follows the viewport
-   toolbar rather than a control. */
+   `size` (Large/Desktop vs Medium/Mobile in Figma) — контрол `viewport`.
+   Компонент по-прежнему переключается сам по ширине окна («auto»), но
+   форму можно форсировать, не трогая вьюпорт: дизайн-чек №3 №19, «пропс на
+   мобайл должен быть в панели стори». */
 
-type PlaygroundArgs = CheckboxProps & { state?: PlaygroundState }
+type PlaygroundArgs = CheckboxProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Checkbox",
@@ -37,6 +42,9 @@ const meta = {
     indeterminate: { control: "boolean" },
     disabled: { control: "boolean" },
     state: stateArgType,
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
+    // панели истории, а не изменением размера вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     label: "Согласен с условиями договора",
@@ -44,6 +52,7 @@ const meta = {
     indeterminate: false,
     disabled: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -55,12 +64,13 @@ type Story = StoryObj<PlaygroundArgs>
 // the arg isn't decorative.
 function Controlled({
   state,
+  viewport,
   checked,
   ...props
-}: CheckboxProps & { state?: PlaygroundState }) {
+}: PlaygroundArgs) {
   const [internal, setInternal] = useState(false)
   return (
-    <PseudoBox state={state}>
+    <PseudoBox state={state} viewport={viewport}>
       <Checkbox
         {...props}
         checked={checked ?? internal}
@@ -153,7 +163,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<Cell>
-      rowHeader={RESPONSIVE_NOTE}
+      responsive
       baseProps={{ label: "Option Text", comment: "Comment" }}
       columns={[
         { label: "Checked", props: {} },

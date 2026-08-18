@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority"
 // one trigger implementation.
 
 // Same box treatment as Input: S (32px, radius 8, both breakpoints) and L
-// (48px mobile -> 56px desktop via `md:`, radius 16). No M size.
+// (48px mobile -> 56px desktop via `desktop:`, radius 16). No M size.
 export const selectTriggerVariants = cva(
   // This renders as a <div> (via the `render` prop), not a native form
   // control, so :enabled/:disabled don't apply — data-disabled:pointer-events-none
@@ -18,7 +18,7 @@ export const selectTriggerVariants = cva(
         // select" instance sampled off canvas 666:11 uses px-[16px], same
         // as the lg size, not a smaller horizontal inset.
         sm: "h-8 gap-2 rounded-[8px] px-4 text-p2-medium",
-        lg: "h-12 gap-2 rounded-[16px] px-4 text-p2-medium md:h-14 md:text-p1-medium",
+        lg: "h-12 gap-2 rounded-[16px] px-4 text-p2-medium desktop:h-14 desktop:text-p1-medium",
       },
       invalid: {
         true: "border-[var(--select-border-error)] hover:border-[var(--select-border-error-hover)] focus:border-[var(--select-border-error-hover)]",
@@ -45,7 +45,7 @@ export const selectTriggerVariants = cva(
 // floated caption state — too small when there's no value yet. Matches
 // Input's own fix: text-sm while empty, shrinks to text-xs once floated.
 export const selectFloatingLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 truncate text-p2-medium text-[var(--select-label-fg)] transition-all md:text-p1-medium group-data-popup-open/trigger:top-[7px] group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-medium md:group-data-popup-open/trigger:text-p3-medium group-[&:not([data-placeholder])]/trigger:top-[7px] group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-medium md:group-[&:not([data-placeholder])]/trigger:text-p3-medium group-data-disabled/trigger:text-[var(--select-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 truncate text-p2-medium text-[var(--select-label-fg)] transition-all desktop:text-p1-medium group-data-popup-open/trigger:top-[7px] group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-medium desktop:group-data-popup-open/trigger:text-p3-medium group-[&:not([data-placeholder])]/trigger:top-[7px] group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-medium desktop:group-[&:not([data-placeholder])]/trigger:text-p3-medium group-data-disabled/trigger:text-[var(--select-fg-disabled)]"
 
 export const selectStaticLabelClassName =
   "pointer-events-none absolute inset-y-0 left-4 flex items-center truncate text-p2-medium text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-fg-disabled)]"

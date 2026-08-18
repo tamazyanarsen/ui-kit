@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Hint, type HintProps } from "./hint"
 import type { TooltipDirection } from "./variants"
@@ -16,6 +17,8 @@ const DIRECTIONS: TooltipDirection[] = [
   "left",
   "right",
 ]
+
+type PlaygroundArgs = HintProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Hint",
@@ -48,6 +51,9 @@ const meta = {
     direction: { control: "select", options: DIRECTIONS },
     showCross: { control: "boolean" },
     defaultOpen: { control: "boolean" },
+    // Ниже md подсказка раскрывается как Bottom Sheet. Дизайн-чек №3 №19:
+    // это выбирается контролом, а не пиннингом вьюпорта.
+    viewport: viewportArgType,
   },
   args: {
     content:
@@ -55,18 +61,26 @@ const meta = {
     direction: "top-center",
     showCross: true,
     children: <Button variant="secondary-grey">Открыть подсказку</Button>,
+    viewport: "auto",
   },
-} satisfies Meta<HintProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<HintProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ viewport, ...args }) => (
+    <ViewportScope viewport={viewport}>
+      <Hint {...args} />
+    </ViewportScope>
+  ),
+}
 
 /* Hint is a click-opened, portalled popup, so its variants are laid out as
    live triggers rather than a grid of static cells. Below `md` it becomes a
    Modal bottom sheet with a "Понятно" button (per the master's
-   Direction=Mobile symbol) — switch the viewport to see that form. */
+   Direction=Mobile symbol) — контрол `viewport` в Playground показывает эту
+   форму без изменения ширины окна. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },
@@ -99,19 +113,5 @@ export const Examples: Story = {
         </div>
       </StorySection>
     </StoryShowcase>
-  ),
-}
-
-export const Mobile: Story = {
-  name: "Mobile (< 768px — Bottom Sheet)",
-  globals: { viewport: { value: "mobile1", isRotated: false } },
-  parameters: { controls: { disable: true } },
-  render: () => (
-    <Hint
-      title="Заголовок подсказки"
-      content="На мобильном подсказка раскрывается как Bottom Sheet с кнопкой «Понятно»."
-    >
-      <Button variant="secondary-grey">Открыть подсказку</Button>
-    </Hint>
   ),
 }

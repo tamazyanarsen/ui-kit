@@ -67,6 +67,7 @@ export function ComboboxSearchInput({
     // close but not an exact match).
     <div className="flex shrink-0 items-center gap-2 border-b border-[var(--menu-item-divider)] p-4">
       <Search
+        size={24}
         aria-hidden="true"
         className="size-6 shrink-0 text-[var(--select-icon-fg)]"
       />

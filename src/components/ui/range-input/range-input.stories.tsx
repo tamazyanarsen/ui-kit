@@ -5,8 +5,10 @@ import {
   PseudoBox,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { RangeInput, type RangeInputProps } from "./range-input"
 
@@ -37,6 +39,7 @@ type PlaygroundArgs = RangeInputProps & {
   scalePreset?: ScalePreset
   formatPreset?: FormatPreset
   state?: PlaygroundState
+  viewport?: Viewport
 }
 
 const meta = {
@@ -55,6 +58,9 @@ const meta = {
     step: { control: "number" },
     disabled: { control: "boolean" },
     state: stateArgType,
+    // Дизайн-чек №3 №19: «Пропс на мобайл должен быть в панели стори, не
+    // по изменению размера вьюпорта».
+    viewport: viewportArgType,
     // Captions under the track (Figma's "Шкала"); «Без шкалы» их прячет.
     scalePreset: {
       name: "Шкала",
@@ -81,6 +87,7 @@ const meta = {
     formatPreset: "Без форматирования",
     comment: "Comment",
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -101,8 +108,8 @@ function Controlled({ defaultValue, ...props }: RangeInputProps) {
 }
 
 export const Playground: Story = {
-  render: ({ scalePreset, formatPreset, state, ...args }) => (
-    <PseudoBox state={state} className="w-full">
+  render: ({ scalePreset, formatPreset, state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport} className="w-full">
       <Controlled
         {...args}
         scaleLabels={SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]}
@@ -117,6 +124,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<RangeInputProps>
+      responsive
       stretch
       cellClassName="min-w-[320px]"
       baseProps={{ label: "Label", min: 0, max: 100, step: 1 }}

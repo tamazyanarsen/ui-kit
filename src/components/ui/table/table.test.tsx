@@ -531,18 +531,29 @@ describe("TableCell number type", () => {
 
     const cell = container.querySelector('[data-slot="table-cell"]')!
     expect(cell).toHaveClass("text-right")
-    // Значение разбито на узлы: каждая цифра стоит в коробке 1ch, потому что
-    // в Object Sans табличных цифр НЕТ вовсе и `tabular-nums` ничего не даёт.
-    // Правило в классах при этом оставлено на будущее.
+    // Значение разбито на узлы: каждая цифра стоит в коробке одинаковой
+    // ширины, потому что в Object Sans табличных цифр НЕТ вовсе и
+    // `tabular-nums` ничего не даёт. Правило в классах оставлено на будущее.
     const value = container.querySelector(".tabular-nums.font-medium")!
     expect(value).toHaveClass("text-[var(--table-number-positive-fg)]")
     expect(value.textContent).toBe("+31 922 980,05")
-    const digits = value.querySelectorAll(".w-\\[1ch\\]")
+    // 0.93ch, а не 1ch: `ch` — это ширина нуля, а он в Object Sans заметно
+    // шире прочих цифр, и коробка по нему раздувала число (дизайн-чек:
+    // «надо немного сократить кернинг»).
+    const digits = value.querySelectorAll(".w-\\[0\\.93ch\\]")
     expect(digits).toHaveLength(10)
     // Разряды, запятая и знак ширину не меняют — их не трогаем.
     expect([...digits].map((node) => node.textContent).join("")).toBe(
       "3192298005"
     )
+    // Разрядные пробелы исключены из выделения: при копировании числа они не
+    // должны попадать в текст. Пробел перед знаком валюты — часть значения,
+    // его не трогаем (проверяется отдельным тестом ниже).
+    const separators = value.querySelectorAll(".select-none")
+    expect(separators).toHaveLength(2)
+    expect(
+      [...separators].every((node) => /^\s$/.test(node.textContent!))
+    ).toBe(true)
   })
 
   // Знак живёт В ЯЧЕЙКЕ через неразрывный пробел после числа, а не в

@@ -6,9 +6,15 @@ export type ThumbnailSize = "l" | "m"
 // tile, not a background-color swap). SBP types render that same dark tile
 // but as an absolutely-positioned inner layer instead of an outer fill, so
 // "sbp-card-account" can show a thin gap beneath it (its "peeking second
-// card" effect). "more" is its own light-grey tile with a dark glyph — it
-// is NOT part of the dark card family despite reusing a lucide "more" icon.
-// The icon-status types render a light tinted square with a lucide glyph.
+// card" effect). "icon" is its own light-grey tile with a dark glyph — it
+// is NOT part of the dark card family.
+//
+// Дизайн-чек №3 №4: «Некорректные нейминги в матрице thumbnail. Это не
+// more, это вариант с иконкой». В мастере (687:29204) вариант называется
+// `Type=Icon` и держит любой 24px-глиф набора; «многоточие» — лишь
+// содержимое инстанса по умолчанию, а не имя варианта.
+//
+// The icon-status types render a light tinted square with a glyph.
 export type ThumbnailType =
   | "icon"
   | "card"

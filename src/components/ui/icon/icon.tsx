@@ -55,9 +55,20 @@ interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, "name"> {
    * а не масштабирует. На размер бокса не влияет — его задаёт className.
    */
   size?: 16 | 24
-  /** Только для `star`: заполненная звезда вместо контурной. */
+  /** Только для `star` и `file-icon`: заливка вместо контура. */
   filled?: boolean
 }
+
+/* `filled` понимают всего два глифа. Остальные просто разливают полученные
+   пропсы по `<svg>`, и булев `filled` доезжал до DOM — React ругается
+   «Received `false` for a non-boolean attribute». Раньше это не всплывало,
+   потому что проп почти всегда был `undefined` (такие React выбрасывает
+   сам), но контрол в истории `Icon` передаёт именно `false`.
+
+   Поэтому пробрасываем адресно. Набор маленький и не растёт: у остальных
+   иконок Figma рисует контур и заливку не отдельными вариантами, а разными
+   иконками (`bookmark checked` / `bookmark uncheck`). */
+const FILLED_CAPABLE = new Set(["star", "file-icon"])
 
 function Icon({ name, size = 16, filled, className, ...props }: IconProps) {
   const Glyph = REGISTRY.get(name)
@@ -74,7 +85,7 @@ function Icon({ name, size = 16, filled, className, ...props }: IconProps) {
       data-slot="icon"
       data-icon-name={name}
       size={size}
-      filled={filled}
+      filled={FILLED_CAPABLE.has(name) ? filled : undefined}
       // Размер по умолчанию совпадает с выбранным начертанием, но любой
       // `size-*` в className его перебивает — на то он и className.
       className={cn(size === 24 ? "size-6" : "size-4", className)}

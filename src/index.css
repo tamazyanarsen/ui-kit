@@ -1303,6 +1303,13 @@
   --nps-card-border: var(--grey-114);
   --nps-star-fg: var(--yellow-167);
   --nps-star-empty-fg: var(--grey-134);
+  /* Иллюстрация состояния «Спасибо за оценку».
+     Дизайн-чек №3 №17: «Сейчас проставляется зелёное для всех палитр… Для
+     голубой палитры уже разработано своё изображение, взять его. Зелёное не
+     удалять». Поэтому картинка — токен, а не жёстко зашитый путь: палитра
+     переопределяет его вместе с остальными цветами, и зелёная версия
+     остаётся жить в «Старом ЕЛК». */
+  --nps-done-image: url("./assets/nps/done-illustration.png");
   /* NPS's reply pills moved to the shared FilterTable component (Figma
      builds them from `ELK / filter-table`, not a bespoke chip), so their
      --nps-chip-* tokens are gone — the colours now come from the
@@ -1611,6 +1618,11 @@
    - --top-fixed-message-blue-bg in :root was still holding the *old*
      #E3EEFF; fixed to #EDF6FC there, with #E3EEFF moved down here. */
 [data-product="odl-elk"] {
+  /* Зелёная иллюстрация NPS остаётся за старой палитрой — дизайн-чек №3
+     №17 прямо просит её не удалять. Как только придёт голубая версия,
+     меняется одна строка: `--nps-done-image` в :root. */
+  --nps-done-image: url("./assets/nps/done-illustration.png");
+
   --btn-primary-bg: var(--odl-green-223);
   --btn-primary-bg-hover: var(--odl-green-289);
   --btn-primary-bg-active: var(--odl-green-333);

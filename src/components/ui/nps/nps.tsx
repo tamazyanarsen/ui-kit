@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { FilterTable } from "@/components/ui/filter-table"
 import { Textarea } from "@/components/ui/textarea"
 
-import doneIllustration from "@/assets/nps/done-illustration.png"
 
 const RATING_LABELS: Record<number, string> = {
   1: "Очень плохо",
@@ -135,7 +134,15 @@ function Nps({
       <div data-slot="nps" className={cn(cardClassName, "flex flex-col items-center gap-8 pt-6 pr-6 pb-10 pl-6")}>
         <div className="flex w-full flex-col items-center">
           <CloseButton onClose={onClose} className="ml-auto" />
-          <img src={doneIllustration} alt="" aria-hidden="true" className="h-[176px] w-[232px] object-contain" />
+          {/* Дизайн-чек №3 №17: иллюстрация зависит от палитры, поэтому
+              приходит токеном `--nps-done-image`, а не жёстким путём. Это
+              фон, а не <img>: иначе выбор картинки пришлось бы тащить в JS
+              и дублировать логику темы, которая целиком живёт в CSS. */}
+          <div
+            role="presentation"
+            className="h-[176px] w-[232px] bg-contain bg-center bg-no-repeat"
+            style={{ backgroundImage: "var(--nps-done-image)" }}
+          />
         </div>
         <div className="flex flex-col items-center gap-1 text-center">
           <p className="text-h3 text-[var(--nps-title-fg)]">

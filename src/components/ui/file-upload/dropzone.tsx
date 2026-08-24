@@ -57,8 +57,10 @@ export function FileUploadDropzone({
 
   let containerToneClass: string
   if (disabled) {
+    // Заливка та же, что и в Default: у `State=Disabled` (16029:58001)
+    // меняются только рамка и текст.
     containerToneClass =
-      "cursor-not-allowed border-[var(--file-upload-border-disabled)] bg-[var(--file-upload-bg-disabled)]"
+      "cursor-not-allowed border-[var(--file-upload-border-disabled)] bg-[var(--file-upload-bg)]"
   } else if (error) {
     containerToneClass =
       "cursor-pointer border-[var(--file-upload-border-error)] bg-[var(--file-upload-bg)]"

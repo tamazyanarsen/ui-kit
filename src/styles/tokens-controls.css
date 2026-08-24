@@ -128,10 +128,15 @@
      16029:57996) пунктирная рамка остаётся тем же grey-284, что и в
      Default (16029:57991), а меняется только заливка на
      --file-upload-bg-hover. Прежний --file-upload-border-hover указывал на
-     тот же grey-284 и выражал изменение, которого не существует. */
+     тот же grey-284 и выражал изменение, которого не существует.
+
+     ⚠️ Отдельного токена заливки для Disabled нет по той же причине: у
+     `State=Disabled` (нода 16029:58001) заливки нет вовсе, ровно как и у
+     Default — меняются только рамка и текст на grey-166. Белый фон в
+     Default оставлен намеренно (поле на цветной подложке должно оставаться
+     белым), но раз он один на оба состояния, то и токен один. */
   --file-upload-bg: var(--white-101);
   --file-upload-bg-hover: var(--grey-106);
-  --file-upload-bg-disabled: var(--white-101);
   --file-upload-border: var(--grey-284);
   --file-upload-border-disabled: var(--grey-166);
   --file-upload-border-error: var(--red-418);

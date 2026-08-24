@@ -4,7 +4,7 @@ import { LogOut, Mail, Menu, X } from "@/icons"
 import { Badge } from "@/components/ui/badge"
 
 import { DomRfLogo } from "./dom-rf-logo"
-import { HEADER_ICON_TILE } from "./menu-popup"
+import { HEADER_ICON_TILE, HEADER_ICON_TILE_ACCENT } from "./menu-popup"
 import { NotificationMenu, type NotificationMenuItem } from "./notification-menu"
 import { ProfileMenu, type ProfileMenuOrganization } from "./profile-menu"
 import { DocumentMenu, type HeaderDocumentMenuItem } from "./top-row-menus"
@@ -58,7 +58,7 @@ function MessagesButton({
       type="button"
       aria-label="Сообщения"
       onClick={onClick}
-      className={HEADER_ICON_TILE}
+      className={HEADER_ICON_TILE_ACCENT}
     >
       {/* Бейдж крепится к самой иконке, а не к плитке: иначе он уезжает в
           угол блока 56×64 вместо угла глифа 24×24. */}
@@ -155,6 +155,9 @@ function EmployeeActions({
         unreadCount={notificationItems.length}
       />
       <EmployeeUserMenu name={employeeName} onSettingsClick={onSettingsClick} />
+      {/* Без `HEADER_ICON_TILE_ACCENT`: у `Out (ELK)` знак на наведении не
+          перекрашивается, появляется только подложка — см. разбор состояний
+          в `menu-popup.tsx`. */}
       <button
         type="button"
         aria-label="Выйти"

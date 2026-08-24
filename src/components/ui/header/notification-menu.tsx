@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
-import { HEADER_ICON_TILE, HeaderMenuPopup } from "./menu-popup"
+import { HEADER_ICON_TILE_ACCENT, HeaderMenuPopup } from "./menu-popup"
 
 // Notification dropdown — the bell icon's own popup content. Deliberately
 // not built on the shared Notification component (src/components/ui/
@@ -88,7 +88,7 @@ function NotificationMenu({
             type="button"
             aria-label="Уведомления"
             data-slot="notification-menu-trigger"
-            className={cn(HEADER_ICON_TILE, className)}
+            className={cn(HEADER_ICON_TILE_ACCENT, className)}
           />
         }
       >

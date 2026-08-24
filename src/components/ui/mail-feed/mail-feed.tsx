@@ -54,7 +54,11 @@ function MailFeed({
       data-state={state}
       onClick={onClick}
       className={cn(
-        "flex w-full cursor-pointer flex-col items-start gap-4 rounded-[16px] p-4 transition-shadow hover:shadow-[0px_4px_12px_rgba(139,153,169,0.24)]",
+        // Тень на наведении — общая `shadow-universal` кита (0/4/12
+        // #8B99A9 24%), а не свой литерал: значение то же, но оно уже живёт
+        // токеном, и переписанное вручную расходится с ним при следующей
+        // правке темы.
+        "flex w-full cursor-pointer flex-col items-start gap-4 rounded-[16px] p-4 transition-shadow hover:shadow-universal",
         className
       )}
       style={{ backgroundColor: STATE_BG[state] }}

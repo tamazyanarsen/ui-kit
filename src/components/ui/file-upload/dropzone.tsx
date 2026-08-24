@@ -63,9 +63,15 @@ export function FileUploadDropzone({
     containerToneClass =
       "cursor-pointer border-[var(--file-upload-border-error)] bg-[var(--file-upload-bg)]"
   } else {
+    // На наведении меняется ЗАЛИВКА, а не рамка: у `Size=Desktop,
+    // State=Hover` (нода 16029:57996) появляется фон grey-106 #F8F8F8, а
+    // пунктирная рамка остаётся тем же grey-284, что и в Default (нода
+    // 16029:57991). Раньше здесь висел `hover:border-*` на тот же самый
+    // цвет — то есть наведение не давало вообще никакой реакции.
+    // Перетаскивание файла показывает то же состояние, что и наведение.
     containerToneClass = cn(
-      "cursor-pointer border-[var(--file-upload-border)] bg-[var(--file-upload-bg)] hover:border-[var(--file-upload-border-hover)]",
-      dragOver && "border-[var(--file-upload-border-hover)] bg-[var(--file-upload-bg-hover)]"
+      "cursor-pointer border-[var(--file-upload-border)] bg-[var(--file-upload-bg)] hover:bg-[var(--file-upload-bg-hover)]",
+      dragOver && "bg-[var(--file-upload-bg-hover)]"
     )
   }
 

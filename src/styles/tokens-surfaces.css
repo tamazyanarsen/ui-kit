@@ -162,11 +162,18 @@
      + @2x-1.png — marked "Actual old" in the spec (unlike every other
      message/* component, which are "Actual new"), so treat this one as
      lower-confidence/likely-to-change. Unread dot (#D74B54) matches
-     --input-border-error exactly. Hover/pressed steps reuse the kit's
-     usual Grey 106 / Grey 114 escalation (same as Card's bg/bg-hover). */
+     --input-border-error exactly.
+
+     Заливка на наведении — grey-114, и она же на нажатии. Раньше здесь
+     стояла «обычная для кита эскалация Grey 106 → Grey 114», выведенная по
+     аналогии с Card, а не измеренная. Замер: у обоих вариантов Hover
+     (`Type=Not Viewed` 32173:26640 и `Type=Viewed` 32173:26655) фон
+     #EFEFEF; отдельного варианта Pressed у набора нет вовсе — в
+     документации канваса кадр «Состояние при нажатии кнопки мыши
+     (Pressed)» (32216:16442) держит тот же самый Hover. Поэтому один токен
+     на оба состояния, а не два с придуманной разницей. */
   --notification-bg: var(--white-101);
-  --notification-bg-hover: var(--grey-106);
-  --notification-bg-pressed: var(--grey-114);
+  --notification-bg-hover: var(--grey-114);
   --notification-title-fg: var(--grey-1514);
   --notification-meta-fg: var(--grey-517);
   --notification-dot: var(--red-418);

@@ -122,12 +122,17 @@
 
   /* File Upload + File (list item) tokens. Values follow the same
      border/bg palette as Select/Input; "Grey 100" drag-over fill and the
-     error/loading accents are called out explicitly in the spec text. */
+     error/loading accents are called out explicitly in the spec text.
+
+     Токена рамки на наведении здесь нет намеренно: у `State=Hover` (нода
+     16029:57996) пунктирная рамка остаётся тем же grey-284, что и в
+     Default (16029:57991), а меняется только заливка на
+     --file-upload-bg-hover. Прежний --file-upload-border-hover указывал на
+     тот же grey-284 и выражал изменение, которого не существует. */
   --file-upload-bg: var(--white-101);
   --file-upload-bg-hover: var(--grey-106);
   --file-upload-bg-disabled: var(--white-101);
   --file-upload-border: var(--grey-284);
-  --file-upload-border-hover: var(--grey-284);
   --file-upload-border-disabled: var(--grey-166);
   --file-upload-border-error: var(--red-418);
   --file-upload-fg: var(--grey-1514);

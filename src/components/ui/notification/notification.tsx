@@ -58,8 +58,10 @@ function NotificationItem({
       }
       className={cn(
         "flex items-start gap-4 bg-[var(--notification-bg)] px-4 py-6",
+        // Наведение и нажатие дают ОДНУ заливку: отдельного Pressed у
+        // набора в макете нет, см. комментарий к --notification-bg-hover.
         clickable &&
-          "cursor-pointer transition-colors hover:bg-[var(--notification-bg-hover)] active:bg-[var(--notification-bg-pressed)]",
+          "cursor-pointer transition-colors hover:bg-[var(--notification-bg-hover)] active:bg-[var(--notification-bg-hover)]",
         className
       )}
     >

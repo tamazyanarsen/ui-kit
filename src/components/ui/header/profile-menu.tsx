@@ -71,7 +71,11 @@ function ProfileMenuTrigger({
             // теми же 304px, а название обрезается многоточием — что
             // `truncate` на подписях уже умеет, ему не хватало только
             // предела у самой плитки.
-            "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]",
+            //
+            // Заливки на наведении нет: у `Profile Client Header (ELK)` в
+            // Hover (нода 70303:48897) фон прозрачен, меняется только цвет
+            // названия и знаков — его дают `group-hover` ниже.
+            "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none transition-colors",
             className
           )}
         />

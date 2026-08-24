@@ -117,7 +117,21 @@
      symbol keeps that one icon at the muted #999999 grey in every state
      (Default/Hover/Active all export fill="#999999", confirmed from the
      exported SVGs directly) with a lighter #F8F8F8 hover fill, unlike
-     every other header icon which is the dark #252628 --header-icon-fg. */
+     every other header icon which is the dark #252628 --header-icon-fg.
+
+     --header-item-hover-bg остаётся ТОЛЬКО за строками выпадающих списков
+     шапки. У плиток панели иконок заливки на наведении нет вовсе —
+     проверено рендером состояний в изоляции: Hover у Notification
+     (70303:48926), Letter (70303:48915), Wallet (70303:48867) и обоих
+     профилей (70303:48879, 70303:48897) прозрачен насквозь (альфа 0), а
+     меняется только цвет глифа на --header-hover-fg. Раньше плиткам
+     доставался #EFEFEF, которого в макете нет.
+
+     --header-logout-hover-bg — единственное исключение: у «Выйти»
+     (`Out (ELK)`, нода 70303:48815) на наведении, наоборот, появляется
+     заливка grey-106 #F8F8F8, а глиф остаётся тёмным. Отдельный токен, а
+     не --header-menu-toggle-hover-bg с тем же значением: совпадение цвета
+     здесь случайно, это разные элементы с разными макетами. */
   --header-bg: var(--white-101);
   --header-border: var(--grey-134);
   --header-fg: var(--grey-1514);
@@ -125,6 +139,7 @@
   --header-icon-fg: var(--grey-1514);
   --header-hover-fg: var(--blue-254);
   --header-item-hover-bg: var(--grey-114);
+  --header-logout-hover-bg: var(--grey-106);
   --header-menu-toggle-hover-bg: var(--grey-106);
   --header-divider: var(--grey-134);
   --header-check-fg: var(--blue-254);

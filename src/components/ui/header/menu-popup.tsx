@@ -5,36 +5,47 @@ import { cn } from "@/lib/utils"
 import { Dropdown } from "@/components/ui/dropdown"
 
 /**
- * Плитка панели иконок в шапке.
+ * Плитка панели иконок в шапке — только геометрия, без реакции на курсор.
  *
  * Панель иконок — это смежные плитки во всю высоту строки, а не мелкие
  * кнопки с зазорами: Figma's `Panel` ставит Notification/Letter 56×64,
  * Wallet 88×64 и Profile 304×64 подряд с x = 0, 56, 112, 200 (зазор 0).
  *
- * Здесь только геометрия и заливка. Перекраска глифа на наведении — в
- * {@link HEADER_ICON_TILE_ACCENT}, потому что она есть не у всех плиток.
+ * ⚠️ Заливки на наведении у плиток НЕТ. Проверено рендером состояний в
+ * изоляции: Hover у Notification (70303:48926), Letter (70303:48915),
+ * Wallet (70303:48867) и обоих профилей (70303:48879, 70303:48897)
+ * прозрачен насквозь — альфа 0 в каждом пикселе фона. Прежний #EFEFEF был
+ * взят не из макета. Единственное исключение — «Выйти», см.
+ * {@link HEADER_ICON_TILE_LOGOUT}.
  */
 const HEADER_ICON_TILE =
-  "group flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
+  "group flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors"
 
 /**
- * Плитка, чей глиф на наведении становится брендовым.
+ * Плитка, чей глиф на наведении становится брендовым, — обычный случай.
  *
- * ⚠️ Так ведут себя ВСЕ плитки панели, кроме «Выйти». Проверено по самим
- * ассетам состояний, а не на глаз: у `Notification Header (ELK)` обводка
- * колокольчика #252628 → #14B1D1 (ноды 70303:48922 и 70303:48926), у
- * `Letter Header (ELK)` заливка конверта #14B1D1 в Hover (нода
- * 70303:48915), у `Profile Employee (ELK)` в Hover брендовыми становятся и
- * подпись, и знак (нода 70303:48879).
- *
- * А вот у `Out (ELK)` (ноды 70303:48813 / 70303:48815) SVG в обоих
- * состояниях совпадает байт в байт с заливкой #252628 — на наведении
- * появляется только подложка. Поэтому кнопка «Выйти» берёт
- * {@link HEADER_ICON_TILE} без этой добавки.
+ * Цвет снят с самих ассетов состояний: обводка колокольчика #252628 →
+ * #14B1D1 (ноды 70303:48922 и 70303:48926), заливка конверта и кошелька —
+ * #14B1D1 в Hover (70303:48915, 70303:48867), у профиля сотрудника
+ * брендовыми становятся и подпись, и знак (70303:48879). Состояние Active
+ * от Hover не отличается ничем, поэтому отдельного правила у него нет.
  */
 const HEADER_ICON_TILE_ACCENT = cn(
   HEADER_ICON_TILE,
   "hover:text-[var(--header-hover-fg)]"
+)
+
+/**
+ * Плитка «Выйти» — единственная, которая ведёт себя наоборот.
+ *
+ * У `Out (ELK)` (ноды 70303:48813 / 70303:48815) SVG в Default и Hover
+ * совпадает байт в байт с заливкой #252628: знак не перекрашивается, зато
+ * появляется подложка grey-106 #F8F8F8. Состояния Active у этой плитки в
+ * макете нет вовсе.
+ */
+const HEADER_ICON_TILE_LOGOUT = cn(
+  HEADER_ICON_TILE,
+  "hover:bg-[var(--header-logout-hover-bg)]"
 )
 
 /**
@@ -81,4 +92,9 @@ function HeaderMenuPopup({
   )
 }
 
-export { HEADER_ICON_TILE, HEADER_ICON_TILE_ACCENT, HeaderMenuPopup }
+export {
+  HEADER_ICON_TILE,
+  HEADER_ICON_TILE_ACCENT,
+  HEADER_ICON_TILE_LOGOUT,
+  HeaderMenuPopup,
+}

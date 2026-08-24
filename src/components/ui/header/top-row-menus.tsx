@@ -2,9 +2,10 @@ import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
 import { ChevronDown, CircleUser, Settings, Wallet } from "@/icons"
+import { cn } from "@/lib/utils"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 
-import { HeaderMenuPopup } from "./menu-popup"
+import { HEADER_ICON_TILE_ACCENT, HeaderMenuPopup } from "./menu-popup"
 
 // Меню верхней полосы шапки, у которых нет своего файла: «Документы»
 // (клиент) и меню сотрудника. Уведомления и профиль организации крупнее и
@@ -25,8 +26,9 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
             type="button"
             aria-label="Документы"
             // `Wallet (ELK)` — плитка 88×64 (шире соседних 56, потому что
-            // несёт иконку + шеврон).
-            className="group flex h-16 w-22 shrink-0 cursor-pointer items-center justify-center gap-0.5 text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
+            // несёт иконку + шеврон), поэтому ширина своя, а не из
+            // HEADER_ICON_TILE_ACCENT; реакция на курсор — общая для панели.
+            className={cn(HEADER_ICON_TILE_ACCENT, "w-22 gap-0.5")}
           />
         }
       >
@@ -62,7 +64,10 @@ function EmployeeUserMenu({
         render={
           <button
             type="button"
-            className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]"
+            // Заливки на наведении нет — у `Profile Employee (ELK)` в Hover
+            // (нода 70303:48879) фон прозрачен, брендовыми становятся только
+            // подпись и знаки.
+            className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
           />
         }
       >

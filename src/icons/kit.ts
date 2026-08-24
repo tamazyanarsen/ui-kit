@@ -1,0 +1,53 @@
+// Канонические иконки кита — те, по которым ходят сами компоненты.
+//
+// Every name below is re-exported under every alias the components
+// actually import (some files use lucide's newer `XIcon` naming
+// convention, others the older bare name) so swapping a file's content
+// from a lucide passthrough to the real Figma SVG never requires touching
+// any of the ~48 usage sites — only this alias list.
+
+export { ChevronDown, ChevronDown as ChevronDownIcon } from "./chevron-down"
+export { ChevronUp, ChevronUp as ChevronUpIcon } from "./chevron-up"
+export { ChevronLeft } from "./chevron-left"
+export { ChevronRight } from "./chevron-right"
+export { ChevronsUpDown } from "./chevrons-up-down"
+export type { IconProps } from "./types"
+export { ArrowLeftSmall, ArrowRightSmall } from "./arrow-right-small"
+export { Ellipsis, Ellipsis as MoreHorizontal } from "./ellipsis"
+export { X } from "./x"
+export { Loader2, Loader2 as LoaderCircle } from "./loader"
+export { Lock } from "./lock"
+export { Eye } from "./eye"
+export { EyeOff } from "./eye-off"
+export { Info } from "./info"
+export { Copy } from "./copy"
+export { Drag } from "./drag"
+export { Check, Check as CheckIcon } from "./check"
+export { Minus } from "./minus"
+export { Plus } from "./plus"
+export { CircleAlert } from "./circle-alert"
+export { CircleCheck } from "./circle-check"
+export { CircleHelp } from "./circle-help"
+export { CircleX } from "./circle-x"
+export { Clock } from "./clock"
+export { Search } from "./search"
+export { Pencil } from "./pencil"
+export { Download } from "./download"
+export { FileText } from "./file-text"
+export { FileIcon } from "./file-icon"
+export { CirclePlus } from "./circle-plus"
+export { Star } from "./star"
+export { ImageIcon, ImageIcon as Image } from "./image"
+export { CalendarDays } from "./calendar-days"
+export { Menu } from "./menu"
+export { Mail } from "./mail"
+export { Bell } from "./bell"
+export { Briefcase } from "./briefcase"
+export { CircleUser } from "./circle-user"
+export { LogOut } from "./log-out"
+export { Wallet } from "./wallet"
+export { Settings } from "./settings"
+export { Sbp } from "./sbp"
+export { Coins } from "./coins"
+export { Alarm } from "./alarm"
+

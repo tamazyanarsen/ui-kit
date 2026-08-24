@@ -1,16 +1,9 @@
 import * as React from "react"
-import {
-  ChevronRight,
-  ChevronDown,
-  Info,
-  Check,
-  Ellipsis,
-} from "@/icons"
 
+import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
-import { Toggle } from "@/components/ui/toggle"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Tooltip } from "@/components/ui/tooltip"
+
+import { RightElement, type RightElementType } from "./right-element"
 
 // Item — "Элемент": a content row, always interactive (per the spec's own
 // description: clicking it selects from a list, opens a bottom sheet, or
@@ -18,12 +11,8 @@ import { Tooltip } from "@/components/ui/tooltip"
 // Text+Value+Comment. `subCategory` is the spec's "Sub Category" property —
 // a 2nd-nesting-level row gets extra left indent.
 //
-// Right-element hit areas (per the spec's own "Активные области" section):
-// Navigation/Accordion(Select)/Check/Text/None have NO separate hit area —
-// the whole row is one click target. Information/Toggle/Checkbox DO have
-// their own isolated hit area and must not also fire the row's onClick, so
-// those three are wrapped with stopPropagation (same technique as
-// AccordionListItem's nested Button/Checkbox).
+// Правый элемент со всеми его видами и зонами нажатия — в
+// `right-element.tsx`.
 
 type CommentColor = "grey" | "red" | "yellow"
 
@@ -33,21 +22,15 @@ const COMMENT_COLOR: Record<CommentColor, string> = {
   yellow: "text-[var(--item-comment-yellow-fg)]",
 }
 
-type RightElementType =
-  | "none"
-  | "navigation"
-  | "information"
-  | "select"
-  | "check"
-  | "text"
-  | "toggle"
-  | "checkbox"
+/** Цвет подписи и значения у отключённой строки — один на всех. */
+const DISABLED_FG = "text-[var(--item-value-fg-disabled)]"
 
 interface ItemProps {
   value: React.ReactNode
   text?: React.ReactNode
   comment?: React.ReactNode
   commentColor?: CommentColor
+  /** `true` — заглушка кита, свой узел — как есть, `false`/пусто — без него. */
   thumbnail?: React.ReactNode
   subCategory?: boolean
   disabled?: boolean
@@ -65,10 +48,6 @@ interface ItemProps {
   className?: string
 }
 
-function stopPropagation(event: React.SyntheticEvent) {
-  event.stopPropagation()
-}
-
 function DefaultThumbnail() {
   return (
     // Design-check #35: square with a capped radius, like the kit's own
@@ -81,124 +60,6 @@ function DefaultThumbnail() {
       <Ellipsis size={24} className="size-6" />
     </span>
   )
-}
-
-function RightElement({
-  type,
-  disabled,
-  informationText,
-  rightText,
-  toggleChecked,
-  onToggleChange,
-  checkboxChecked,
-  onCheckboxChange,
-}: Pick<
-  ItemProps,
-  | "disabled"
-  | "informationText"
-  | "rightText"
-  | "toggleChecked"
-  | "onToggleChange"
-  | "checkboxChecked"
-  | "onCheckboxChange"
-> & { type: RightElementType }) {
-  // Round-2 audit: the disabled "icon / arrow next chevron" asset on the
-  // master "ELK / item" component is a distinct fill (#C8C8CB, same as
-  // --item-value-fg-disabled) rather than the default's #999999 dimmed via
-  // opacity — matches the same literal-recolor (not opacity-fade) pattern
-  // already used for the Value/Comment text right above.
-  const iconColorClass = disabled
-    ? "text-[var(--item-value-fg-disabled)]"
-    : "text-[var(--item-icon-fg)]"
-
-  switch (type) {
-    case "navigation":
-      return (
-        <ChevronRight
-          aria-hidden="true"
-          className={cn("size-4 shrink-0", iconColorClass)}
-        />
-      )
-    case "select":
-      return (
-        <ChevronDown
-          aria-hidden="true"
-          className={cn("size-4 shrink-0", iconColorClass)}
-        />
-      )
-    case "check":
-      return (
-        <Check
-          aria-hidden="true"
-          className="size-4 shrink-0 text-[var(--item-check-fg)]"
-          strokeWidth={2.5}
-        />
-      )
-    case "text":
-      return (
-        <span className="shrink-0 text-p1-medium text-[var(--item-right-text-fg)]">
-          {rightText}
-        </span>
-      )
-    case "information":
-      return (
-        <span
-          className="flex shrink-0 items-center justify-center"
-          onMouseDown={stopPropagation}
-          onClick={stopPropagation}
-        >
-          <Tooltip content={informationText}>
-            <button
-              type="button"
-              disabled={disabled}
-              aria-label="Информация"
-              className={cn(
-                // "активная область иконки справа 16х44 px" — tall enough to
-                // hit comfortably, but only as wide as the icon so it doesn't
-                // eat 28px of the row's right edge.
-                "flex h-11 w-4 shrink-0 items-center justify-center outline-none",
-                iconColorClass
-              )}
-            >
-              <Info aria-hidden="true" className="size-4" />
-            </button>
-          </Tooltip>
-        </span>
-      )
-    case "toggle":
-      return (
-        <span
-          className="flex shrink-0 items-center"
-          onMouseDown={stopPropagation}
-          onClick={stopPropagation}
-        >
-          <Toggle
-            checked={toggleChecked}
-            onCheckedChange={onToggleChange}
-            disabled={disabled}
-            aria-label="Переключить"
-          />
-        </span>
-      )
-    case "checkbox":
-      return (
-        <span
-          className="flex shrink-0 items-center"
-          onMouseDown={stopPropagation}
-          onClick={stopPropagation}
-        >
-          <Checkbox
-            checked={checkboxChecked}
-            onCheckedChange={onCheckboxChange}
-            disabled={disabled}
-            aria-label="Выбрать"
-          />
-        </span>
-      )
-    case "none":
-    default:
-      return null
-  }
 }
 
 function Item({
@@ -221,7 +82,7 @@ function Item({
   className,
 }: ItemProps) {
   const hasThumbnail = thumbnail !== undefined && thumbnail !== false
-  const showRightGap = rightElement !== "none"
+  const valueColor = disabled ? DISABLED_FG : "text-[var(--item-value-fg)]"
 
   function handleKeyDown(event: React.KeyboardEvent) {
     if (disabled) return
@@ -270,28 +131,14 @@ function Item({
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <span className="flex min-w-0 flex-col">
             {text && (
-              <span
-                className={cn(
-                  "truncate text-p2-medium",
-                  disabled
-                    ? "text-[var(--item-value-fg-disabled)]"
-                    : "text-[var(--item-value-fg)]"
-                )}
-              >
+              <span className={cn("truncate text-p2-medium", valueColor)}>
                 {text}
               </span>
             )}
             {/* Value wraps up to 3 lines, Comment up to 5 — the spec's own
                 "Максимальное количество строк" note; single-line `truncate`
                 cut long titles that Figma shows wrapping. */}
-            <span
-              className={cn(
-                "line-clamp-3 text-p1-medium",
-                disabled
-                  ? "text-[var(--item-value-fg-disabled)]"
-                  : "text-[var(--item-value-fg)]"
-              )}
-            >
+            <span className={cn("line-clamp-3 text-p1-medium", valueColor)}>
               {value}
             </span>
           </span>
@@ -299,7 +146,7 @@ function Item({
             <span
               className={cn(
                 "line-clamp-5 text-p2-medium",
-                disabled ? "text-[var(--item-value-fg-disabled)]" : COMMENT_COLOR[commentColor]
+                disabled ? DISABLED_FG : COMMENT_COLOR[commentColor]
               )}
             >
               {comment}
@@ -308,7 +155,7 @@ function Item({
         </span>
       </span>
 
-      {showRightGap && (
+      {rightElement !== "none" && (
         <RightElement
           type={rightElement}
           disabled={disabled}
@@ -325,4 +172,4 @@ function Item({
 }
 
 export { Item }
-export type { ItemProps, RightElementType, CommentColor }
+export type { CommentColor, ItemProps, RightElementType }

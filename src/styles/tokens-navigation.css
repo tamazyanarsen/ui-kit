@@ -1,0 +1,170 @@
+/* Семантические токены темы ЕЛК: Теги, фильтры, панели действий, сайдбар, шапка и её меню.
+   Ссылаются на палитру (`palette.css`); компоненты ходят только сюда. */
+
+:root {
+  /* Tag tokens ("Теги"). Main status colors (green/orange/red/blue) are
+     exact matches for existing tokens (--informer-icon-green/yellow/red).
+     Secondary/"Text" variant tints and the grey secondary bg are read
+     directly off the Figma "ELK / tag" instances (Style=*, Desktop) — not
+     computed/estimated. Sign colors (black/white/grey-info) read directly
+     from the labelled swatches in the "Варианты – признаки" section. */
+  --tag-green-bg: var(--mint-230);
+  --tag-green-fg: var(--white-101);
+  --tag-green-secondary-bg: var(--mint-107);
+  --tag-orange-bg: var(--yellow-214);
+  --tag-orange-fg: var(--white-101);
+  --tag-orange-secondary-bg: var(--yellow-104);
+  --tag-red-bg: var(--red-418);
+  --tag-red-fg: var(--white-101);
+  --tag-red-secondary-bg: var(--red-110);
+  --tag-blue-bg: var(--dark-blue-389);
+  --tag-blue-fg: var(--white-101);
+  --tag-blue-secondary-bg: var(--dark-blue-109);
+  --tag-grey-bg: var(--grey-284);
+  --tag-grey-fg: var(--white-101);
+  --tag-grey-secondary-bg: var(--grey-106);
+  --tag-grey-secondary-fg: var(--grey-1514);
+  --tag-black-bg: var(--grey-1514);
+  --tag-black-fg: var(--white-101);
+  --tag-white-bg: var(--white-101);
+  --tag-white-fg: var(--grey-1514);
+  --tag-white-border: var(--grey-134);
+  --tag-grey-info-bg: var(--grey-134);
+  --tag-grey-info-fg: var(--grey-1514);
+
+  /* Chips / Filter tokens ("Chips, Filter" + "Table Filter" specs). Every
+     value here is an exact match for a token already established by
+     another component — pixel-sampling the state matrix in
+     ui/chips/chips, filter@2x-1.png landed precisely on
+     --btn-secondary-grey-bg/-hover (#F4F4F4 / #EFEFEF) for Chips' own
+     bg/hover, so the rest of the surface colors are taken from the same
+     source rather than re-sampled: White/Grey Filter bg reuse
+     --btn-secondary-white-bg/--btn-secondary-grey-bg, the Active border
+     reuses --btn-primary-bg (#80E3FF, already the kit's one cyan), the
+     dark "applied value" Chips variant (ui/filter-table's chip anatomy)
+     reuses --btn-secondary-black-bg (#012F42), and text/disabled colors
+     reuse --select-fg/--select-label-fg/--btn-muted-bg/--btn-muted-fg.
+     Round-2 audit correction: Filter's own White/Grey Hover states are
+     NOT the shared --btn-secondary-grey-bg-hover value — get_design_context
+     on node 54887:29350/54887:29355 gives a literal #F8F8F8 (a lighter
+     grey than #EFEFEF), a Filter-exclusive token distinct from Chips'
+     hover, which stays #EFEFEF (confirmed correct against the "Chips"
+     type's own states). */
+  --chips-fg: var(--grey-1514);
+  --chips-subtitle-fg: var(--grey-284);
+  --chips-light-bg: var(--grey-109);
+  --chips-light-bg-hover: var(--grey-114);
+  --chips-dark-bg: var(--dark-blue-1412);
+
+  /* "ELK / button menu (black)" (node 700:54288) — the selection bar that
+     replaces the white Button Menu while table rows are selected. Fill is
+     the same dark-blue-1412 as --btn-secondary-black-bg; the info bar pairs
+     a grey-166 label with a white value. */
+  --button-menu-black-bg: var(--dark-blue-1412);
+  --button-menu-black-fg: var(--white-101);
+  --button-menu-black-muted-fg: var(--grey-166);
+  /* Светлая панель Button Menu: белая заливка в рамке grey-114. Граница
+     держалась литералом в root.tsx и не переключалась вместе с темой. */
+  --button-menu-bg: var(--white-101);
+  --button-menu-border: var(--grey-114);
+  --chips-dark-bg-hover: var(--dark-blue-961);
+  /* ⚠️ Нажатый чип СВЕТЛЕЕ наведённого: Dark blue 1412 → 961 → 596, то есть
+     ступени идут вверх по светлоте. Это факт кита, а не описка — не «чинить».
+     Светлая ветка при этом идёт вниз как обычно: 109 → 114 → 124. */
+  --chips-dark-bg-active: var(--dark-blue-596);
+  --chips-light-bg-active: var(--grey-124);
+  --chips-dark-fg: var(--white-101);
+  --chips-disabled-bg: var(--grey-109);
+  --chips-disabled-fg: var(--grey-166);
+
+  --filter-fg: var(--grey-1514);
+  --filter-icon-fg: var(--grey-1514);
+  --filter-white-bg: var(--white-101);
+  --filter-white-bg-hover: var(--grey-106);
+  --filter-grey-bg: var(--grey-109);
+  --filter-grey-bg-hover: var(--grey-106);
+  --filter-active-border: var(--blue-223);
+  --filter-disabled-bg: var(--grey-109);
+  --filter-disabled-fg: var(--grey-166);
+
+  /* Sidebar tokens ("Боковая панель для сотрудников", ui/sidebar). Item
+     Hover/Active values are given as exact hex in the spec's own text
+     ("Gray 114 (#EFEFEF)" / "Gray 109 (#F4F4F4)") rather than needing to be
+     sampled — both already match existing --btn-secondary-grey-bg(-hover)
+     exactly, so reused under this component's own namespace per the kit's
+     convention rather than cross-referenced. Named --nav-sidebar-* (not
+     --sidebar-*) to avoid the unrelated shadcn --sidebar-* boilerplate
+     tokens already sitting in :root from the initial scaffold. */
+  --nav-sidebar-bg: var(--white-101);
+  --nav-sidebar-border: var(--grey-134);
+  --nav-sidebar-fg: var(--grey-1514);
+  --nav-sidebar-icon-fg: var(--grey-1514);
+  --nav-sidebar-label-fg: var(--grey-284);
+  --nav-sidebar-item-hover-bg: var(--grey-114);
+  --nav-sidebar-item-active-bg: var(--grey-109);
+
+  /* Header tokens (ui/header, "Шапка"). Accent/hover-blue reuses the same
+     hex as --btn-primary-bg-active/--calendar-accent-fg (#14B1D1) under its
+     own namespace per the kit's convention, rather than cross-referenced —
+     confirmed against the spec's own nav-item/icon hover states.
+     --header-divider corrected to #DEDEDE (round-2 audit): the spec's own
+     "ELK / divider" instances (Profile Menu's settings separator,
+     Notification's item dividers) render at #DEDEDE, not #EFEFEF — the
+     hex previously here was actually --header-item-hover-bg's value,
+     mistakenly reused for the divider role too.
+     --header-menu-toggle-hover-bg/--header-meta-fg (on the sidebar
+     hamburger/close button) added because the spec's own "Menu (ELK)"
+     symbol keeps that one icon at the muted #999999 grey in every state
+     (Default/Hover/Active all export fill="#999999", confirmed from the
+     exported SVGs directly) with a lighter #F8F8F8 hover fill, unlike
+     every other header icon which is the dark #252628 --header-icon-fg. */
+  --header-bg: var(--white-101);
+  --header-border: var(--grey-134);
+  --header-fg: var(--grey-1514);
+  --header-meta-fg: var(--grey-284);
+  --header-icon-fg: var(--grey-1514);
+  --header-hover-fg: var(--blue-254);
+  --header-item-hover-bg: var(--grey-114);
+  --header-menu-toggle-hover-bg: var(--grey-106);
+  --header-divider: var(--grey-134);
+  --header-check-fg: var(--blue-254);
+  --header-logout-fg: var(--red-418);
+  --header-unread-dot: var(--red-418);
+
+  /* Header Menu tokens (ui/header-menu) — «Раскрытое меню навигации» и
+     «Раскрытое меню создания» из MENU DOCS (нода 70303:52281).
+     Панель — белая (--header-bg), поэтому отдельного токена фона у неё нет;
+     ниже только то, чего в шапке ещё не было:
+       group-bg      #F8F8F8 Grey 106 — карточка «Группа страниц»
+       group-fg      #494C4B Grey 868 — заголовок группы
+       star-fg       #C8C8CB Grey 166 — звезда «в избранное». Цвет один и
+                                     тот же в обоих состояниях: в макете
+                                     (и в раскрытом меню, и в «Настройке
+                                     избранного») отличается только
+                                     заливка контура, брендового варианта
+                                     у звезды нет
+       tile-bg       #F4F4F4 Grey 109 — плитка «New Document Card»
+       tile-icon-bg  #FFFFFF          — 48×48 подложка иконки в плитке
+     Затемнение под раскрытым меню — тот же `--modal-backdrop`/70, что и у
+     модалки: пиксельная проба скриншота (70303:58312) даёт (98,101,100)
+     поверх белой страницы, что в точности #1E2321 при 70 %. */
+  --header-menu-group-bg: var(--grey-106);
+  --header-menu-group-fg: var(--grey-868);
+  --header-menu-star-fg: var(--grey-166);
+  --header-menu-tile-bg: var(--grey-109);
+  --header-menu-tile-icon-bg: var(--white-101);
+
+  /* Баннер в меню ЕЛК — три заливки по свойству «Цвет» плюс размытое
+     пятно-градиент 320px поверх (в макете это SVG: круг r=160 с линейным
+     градиентом «оттенок → белый» и blur 64). Имена и значения взяты
+     get_variable_defs на самих баннерах (ноды 70303:58472/58473/58474):
+       Голубой    Blue 121 #B6F3FF    → градиент Blue 114 #CFF7FF
+       Сиреневый  Lavender 135 #D9DBFF → Lavender 116 #EBECFF
+       Зелёный    Mint 135 #89F2BD    → Mint 119 #BDF8DB */
+  --menu-banner-blue-bg: var(--blue-121);
+  --menu-banner-blue-glow: var(--blue-114);
+  --menu-banner-lilac-bg: var(--lavender-135);
+  --menu-banner-lilac-glow: var(--lavender-116);
+  --menu-banner-green-bg: var(--mint-135);
+  --menu-banner-green-glow: var(--mint-119);
+}

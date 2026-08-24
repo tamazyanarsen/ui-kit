@@ -1,0 +1,203 @@
+/* Семантические токены темы ЕЛК: Табы, свитчер, NPS, страницы ошибок, пагинация, элементы списка.
+   Ссылаются на палитру (`palette.css`); компоненты ходят только сюда. */
+
+:root {
+  /* Tabs tokens (ui/tabs). Text/underline colors pixel-confirmed via
+     histogram against ui/tabs/tabs@2x-1.png's own "Elements" state table —
+     all three exactly match existing tokens (--select-caption-fg/-fg/
+     -fg-disabled), reused under this component's own namespace.
+     --tabs-border added (round-2 audit): the spec's own "ELK / tabs"
+     symbol (both Large and Medium) carries a full-width #DEDEDE bottom
+     border on the row itself, separate from the per-tab active underline
+     bar — this was missing from the implementation entirely. */
+  --tabs-fg: var(--grey-517);
+  --tabs-fg-active: var(--grey-1514);
+  --tabs-fg-disabled: var(--grey-166);
+  --tabs-underline-hover: var(--grey-517);
+  --tabs-underline-active: var(--grey-1514);
+  --tabs-border: var(--grey-134);
+
+  /* Switcher tokens ("Cell Switcher", ui/switcher). Grey Solid/White Solid
+     surface pair and Hover values are all histogram-confirmed exact
+     matches for existing tokens (page bg #F8F8F8, --btn-secondary-grey-bg
+     #F4F4F4, --select-fg #252628, --btn-secondary-grey-bg-hover #EFEFEF)
+     — reused, not new colors. The border is its own token even though the
+     hex (#C8C8CB) happens to equal --select-fg-disabled/--btn-muted-fg —
+     that's coincidence, not a shared role, so it isn't cross-referenced.
+     --switcher-active-black-bg corrected to #012F42 (round-2 audit): the
+     spec's own "Content Switcher (ELK)" State=Active Black instance
+     renders --second/dark-blue-colors/dark-blue-1412 (#012F42, the same
+     navy as --btn-secondary-black-bg), not the #252628 near-black
+     previously here — confirmed directly from get_design_context, not by
+     eyeballing a screenshot. */
+  --switcher-fg: var(--grey-1514);
+  --switcher-fg-inactive: var(--grey-517);
+  --switcher-border: var(--grey-166);
+  --switcher-grey-bg: var(--grey-106);
+  --switcher-white-bg: var(--white-101);
+  --switcher-active-bg: var(--white-101);
+  --switcher-active-bg-on-white: var(--grey-109);
+  --switcher-active-black-bg: var(--dark-blue-1412);
+  --switcher-active-black-fg: var(--white-101);
+  --switcher-hover-bg: var(--grey-114);
+  --switcher-disabled-fg: var(--grey-166);
+
+  /* Empty Search Results tokens (ui/empty-search). Reusing the kit's usual
+     dark/grey text pair (--select-fg/--select-caption-fg) under this
+     component's own namespace rather than cross-referencing. */
+  --empty-search-icon-bg: var(--grey-106);
+  --empty-search-icon-fg: var(--grey-1514);
+  --empty-search-title-fg: var(--grey-1514);
+  --empty-search-description-fg: var(--grey-284);
+
+  /* NPS tokens ("Обратная связь", ui/nps). Star fill is a genuinely new
+     color (a warm gold, not reused elsewhere in this kit); everything else
+     reuses established text/surface tokens. The close ("X") icon samples to
+     its own distinct grey (#6D6D6D) in the spec's exported SVG — it's
+     visibly darker than --nps-subtitle-fg (#999999) used for the "Обратная
+     связь"/rating-label text next to it, not a reuse of that token. */
+  --nps-title-fg: var(--grey-1514);
+  --nps-subtitle-fg: var(--grey-284);
+  --nps-close-fg: var(--grey-517);
+  --nps-card-bg: var(--white-101);
+  --nps-card-border: var(--grey-114);
+  --nps-star-fg: var(--yellow-167);
+  --nps-star-empty-fg: var(--grey-134);
+  /* Иллюстрация состояния «Спасибо за оценку».
+     Дизайн-чек №3 №17: «Сейчас проставляется зелёное для всех палитр… Для
+     голубой палитры уже разработано своё изображение, взять его. Зелёное не
+     удалять». Поэтому картинка — токен, а не жёстко зашитый путь: палитра
+     переопределяет его вместе с остальными цветами, и зелёная версия
+     остаётся жить в «Старом ЕЛК».
+     Голубая версия — растр из мастера (символ `State=Done`, канвас
+     Feedback), как и зелёная: иллюстрация объёмная, не перерисовывается. */
+  --nps-done-image: url("../assets/nps/done-illustration-blue.png");
+  /* NPS's reply pills moved to the shared FilterTable component (Figma
+     builds them from `ELK / filter-table`, not a bespoke chip), so their
+     --nps-chip-* tokens are gone — the colours now come from the
+     --chips-light- and --chips-fg set that FilterTable and Chips share. */
+
+  /* Error Page tokens (ui/error-page). The big "403"/"404" numerals are a
+     flat grey in the spec (the mascot illustration itself is out of scope
+     — see error-page.tsx's own comment), reusing the kit's disabled-grey. */
+  --error-page-bg: var(--grey-106);
+  --error-page-title-fg: var(--grey-1514);
+  --error-page-description-fg: var(--grey-1514);
+  --error-page-code-fg: var(--grey-166);
+
+  /* Pagination tokens (ui/pagination). Text/disabled colors reuse the kit's
+     usual dark/muted pair. The three page-pill backgrounds are a genuinely
+     new pale-cyan family — sampled per-state from isolated circle crops
+     (not the kit's saturated --btn-primary-bg cyan): Hover #F0FCFF (barely
+     tinted), Active #CFF7FF (the persistent "current page" highlight),
+     Onclick #B6F3FF (a more saturated momentary press feedback, confirmed
+     as a distinct third shade, not a duplicate of Active). Caption/disabled
+     colors corrected to #999999 (Figma "Base/Grey 284" variable + literal
+     disabled-chevron SVG fill, both #999999 — not the kit's usual #6D6D6D/
+     #C8C8CB pair). Border reuses the kit's #DEDEDE divider grey (Figma
+     "Second/Grey colors/Grey 134", pixel-sampled at rgb(222,222,222)),
+     matching the 1px line at the table/paginator boundary. */
+  --pagination-fg: var(--grey-1514);
+  --pagination-caption-fg: var(--grey-284);
+  --pagination-disabled-fg: var(--grey-284);
+  --pagination-border: var(--grey-134);
+  --pagination-hover-bg: var(--blue-104);
+  --pagination-active-bg: var(--blue-114);
+  --pagination-onclick-bg: var(--blue-121);
+
+  /* Item tokens (ui/item). Hover bg (#EFEFEF, "Grey 114") and the Check
+     icon's cyan (#80E3FF) are exact matches for --btn-secondary-grey-bg-
+     hover / --btn-primary-bg, sampled from the row-hover demo swatch and
+     the Check right-element swatch respectively — reused under this
+     component's own namespace rather than cross-referenced. Comment
+     red/yellow reuse the kit's established error/attention text pair
+     (#D74B54 / #B76E00, same as --accordion-list-description-*). Right-
+     element "Text" example (+1,5%) reuses the kit's success green
+     (#39C182, same as --progress-green / --ifield-success-fg).
+     Thumbnail placeholder is this kit's own flat stand-in (see Button's
+     GosuslugiLogo precedent) for the spec's generic image/avatar slot.
+     The secondary "Text" line (above Value) is the same dark grey as
+     Value itself per the spec — no separate muted color. */
+  --item-value-fg: var(--grey-1514);
+  --item-value-fg-disabled: var(--grey-166);
+  /* Round-2 audit: was #252628 — the literal "icon / arrow next chevron"
+     asset on the master "ELK / item" component (canvas 11159:9039) has
+     fill="#999999", not near-black; the disabled variant's own asset is
+     fill="#C8C8CB" (handled per-instance in item.tsx, not via this token). */
+  --item-icon-fg: var(--grey-284);
+  --item-divider: var(--grey-134);
+  --item-hover-bg: var(--grey-114);
+  /* Round-2 audit: was #80E3FF (the kit's pale-cyan surface color) — the
+     literal "icon / check" asset in the item's own Right Element component
+     uses stroke="#14B1D1", the kit's usual accent-blue (same value as
+     --header-check-fg / --nav-sidebar hover), not the pale surface tone. */
+  --item-check-fg: var(--blue-254);
+  --item-right-text-fg: var(--mint-230);
+  /* Round-2 audit: bg was #F4F4F4, fg was #999999 — both read directly off
+     the literal thumbnail markup on the master "ELK / item" component:
+     bg-[#f8f8f8] container, and the "icon / more" dots asset itself is
+     fill="#252628" (near-black), not a muted grey. */
+  --item-thumbnail-bg: var(--grey-106);
+  --item-thumbnail-fg: var(--grey-1514);
+  --item-comment-grey-fg: var(--grey-284);
+  --item-comment-red-fg: var(--red-418);
+  --item-comment-yellow-fg: var(--yellow-400);
+
+  /* Item.Information Field tokens (ui/item.information-field). Sampled
+     directly from the Value/Sub Text status swatches rather than assumed
+     from other components' reds/greens — turned out to be a mixed bag:
+     Error (#D74B54) is an exact match for the kit-wide error red, but
+     Success (#39C182) and Attention (#EEA20F) are genuinely new, brighter
+     shades distinct from --accordion-list-description-success/attention-fg.
+     Information status reuses the kit's common neutral grey (#999999).
+     Copy icon Default/Hover (#999999 / #6D6D6D, "Grey 284"/"Grey 517" per
+     spec) are also exact matches for existing greys elsewhere in the kit. */
+  --ifield-label-fg: var(--grey-284);
+  --ifield-value-fg: var(--grey-1514);
+  --ifield-subtext-fg: var(--grey-284);
+  --ifield-icon-fg: var(--grey-284);
+  --ifield-divider: var(--grey-134);
+  --ifield-success-fg: var(--mint-230);
+  --ifield-error-fg: var(--red-418);
+  --ifield-attention-fg: var(--yellow-214);
+  --ifield-information-fg: var(--grey-284);
+  --ifield-copy-fg: var(--grey-284);
+  --ifield-copy-fg-hover: var(--grey-517);
+
+  /* Status Screen tokens (ui/status-screen). The spec's illustration is a
+     bespoke 3D mascot per status (a whole printer/device scene, not just an
+     icon) — same call as ErrorPage/NPS elsewhere in this kit: a flat
+     colored badge icon stands in rather than vendoring that artwork. Badge
+     colors are exact reuses of the kit's existing semantic pairs (Tag's
+     green/red secondary bg + accordion-list's success/error/attention text)
+     rather than new colors, since a plain status badge doesn't need its
+     own palette. */
+  --status-screen-title-fg: var(--grey-1514);
+  --status-screen-subtitle-fg: var(--grey-517);
+  --status-screen-success-bg: var(--mint-110);
+  --status-screen-success-fg: var(--mint-396);
+  --status-screen-error-bg: var(--red-117-alt);
+  --status-screen-error-fg: var(--red-418);
+  --status-screen-attention-bg: var(--yellow-114);
+  --status-screen-attention-fg: var(--yellow-400);
+  --status-screen-neutral-bg: var(--grey-109);
+  --status-screen-neutral-fg: var(--grey-517);
+
+  /* Autocomplete tokens. No dedicated Figma spec file for this one (built
+     from a pasted reference screenshot of an ИНН/organization search field,
+     not a ui/* export) — text colors reuse the kit's standard dark/muted
+     pair. Round-2 audit: highlighted-row background updated from the
+     guessed "Grey 109" (#F4F4F4) to #F8F8F8 ("Grey 106") — every literal
+     Menu Point (ELK) instance sampled on canvas 666:11 (Select/Combobox's
+     own dropdown items, both "Text" and "Extended" styles) uses #F8F8F8 for
+     its hover/highlighted state, so this is an extrapolation from that
+     shared list-item component, not a value confirmed against a dedicated
+     Autocomplete frame (none exists). */
+  --autocomplete-title-fg: var(--grey-1514);
+  --autocomplete-subtitle-fg: var(--grey-284);
+  --autocomplete-highlighted-bg: var(--grey-106);
+  /* Match highlight inside a result row. Not specified in Figma (see
+     autocomplete/highlight.tsx) — reuses the kit's primary accent so the
+     value is an existing DS colour rather than a new one. */
+  --autocomplete-match-bg: var(--blue-223);
+}

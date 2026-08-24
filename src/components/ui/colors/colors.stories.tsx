@@ -19,7 +19,7 @@ import { PALETTE, type PaletteColor } from "./palette"
  * заливка компонента.
  *
  * Список цветов не поддерживается руками: `palette.ts` генерируется из
- * `src/index.css` (`python scripts/build-palette.py --ts`), а значение
+ * `src/styles/palette.css` (`python scripts/build-palette.py --ts`), а значение
  * каждого свотча читается живым из CSS-переменной, поэтому страница едет
  * вместе с переключателем «Тема» в тулбаре.
  */

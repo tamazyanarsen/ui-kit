@@ -1,0 +1,96 @@
+
+/* ── Палитра ──────────────────────────────────────────────────────────────
+   Имена переменных ровно как в Figma: `Base/Blue 223` -> `--blue-223`,
+   `Second/Grey colors/Grey 1514` -> `--grey-1514`. Это нижний слой: на него
+   ссылается вся семантика ниже (`--btn-primary-bg: var(--blue-223)`), а
+   компоненты по-прежнему используют семантические имена.
+
+   Почему два слоя, а не одно переименование: тема «Старые цвета»
+   перекрашивает primary в зелёный, и переменная с именем `blue-223`
+   зелёной стать не может, не начав врать. В Figma ровно та же развязка —
+   переменная палитры и ссылающаяся на неё заливка компонента.
+
+   Цветам, которых в наборе Figma нет, имя выведено по правилу «число =
+   контраст к белому × 100» (оно сошлось на 36 из 40 известных цветов), а
+   семейство — по ближайшему тону; такие помечены `выведено`. Палитра
+   старого бренда живёт под префиксом `odl-`: её имён из Figma у нас нет,
+   и без префикса она конфликтует с новой (два разных «Red 182»).
+
+   Перегенерировать: python scripts/build-palette.py --css */
+:root {
+  /* blue */
+  --blue-104:           #F0FCFF; /* выведено */
+  --blue-114:           #CFF7FF; /* Second/Blue colors/Blue 114 */
+  --blue-121:           #B6F3FF; /* Second/Blue colors/Blue 121 */
+  --blue-223:           #80E3FF; /* Base/Blue 223 */
+  --blue-187:           #2FCEEF; /* Second/Blue colors/Blue 187 */
+  --blue-254:           #14B1D1; /* Second/Blue colors/Blue 254 */
+  /* dark-blue */
+  --dark-blue-109:      #EDF6FC; /* Second/Dark blue colors/Dark blue 109 */
+  --dark-blue-322:      #5B90E0; /* выведено */
+  --dark-blue-389:      #2487CA; /* Status/Dark blue 389 */
+  --dark-blue-596:      #1368A1; /* Second/Dark blue colors/Dark blue 596 */
+  --dark-blue-701:      #0D4CD3; /* выведено */
+  --dark-blue-961:      #114870; /* Second/Dark blue colors/Dark blue 961 */
+  --dark-blue-1412:     #012F42; /* Second/Dark blue colors/Dark blue 1412 */
+  /* grey */
+  --grey-106:           #F8F8F8; /* Second/Grey colors/Grey 106 */
+  --grey-109:           #F4F4F4; /* Second/Grey colors/Grey 109 */
+  --grey-114:           #EFEFEF; /* Second/Grey colors/Grey 114 */
+  --grey-124:           #E6E6E6; /* Second/Grey colors/Grey 124 */
+  --grey-134:           #DEDEDE; /* Second/Grey colors/Grey 134 */
+  --grey-166:           #C8C8CB; /* Second/Grey colors/Grey 166 */
+  --grey-284:           #999999; /* Second/Grey colors/Grey 284 */
+  --grey-493:           #6E7170; /* выведено */
+  --grey-517:           #6D6D6D; /* Second/Grey colors/Grey 517 */
+  --grey-645:           #5C5F5E; /* выведено */
+  --grey-868:           #494C4B; /* Second/Grey colors/Grey 868 */
+  --grey-1514:          #252628; /* Second/Grey colors/Grey 1514 */
+  --grey-1593:          #1E2321; /* выведено */
+  /* lavender */
+  --lavender-116:       #EBECFF; /* Second/Lavender colors/Lavender 116 */
+  --lavender-135:       #D9DBFF; /* Second/Lavender colors/Lavender 135 */
+  /* mint */
+  --mint-107:           #E5FCF1; /* Second/Mint colors/Mint 107 */
+  --mint-110:           #E7F8F0; /* выведено */
+  --mint-119:           #BDF8DB; /* Second/Mint colors/Mint 119 */
+  --mint-135:           #89F2BD; /* Second/Mint colors/Mint 135 */
+  --mint-230:           #39C182; /* Status/Mint 230 */
+  --mint-396:           #1F9254; /* выведено */
+  /* red */
+  --red-110:            #FFF0F0; /* Second/Red colors/Red 110 */
+  --red-117:            #FFE8E3; /* Second/Red colors/Red 117 */
+  --red-147:            #FFBEB5; /* Second/Red colors/Red 147 */
+  --red-182:            #FF737D; /* Second/Red colors/Red 182 */
+  --red-344:            #F0535E; /* Second/Red colors/Red 344 */
+  --red-418:            #D74B54; /* Status/Red 418 */
+  /* red-117-alt */
+  --red-117-alt:        #FAE9EA; /* выведено */
+  /* white */
+  --white-101:          #FFFFFF; /* Second/Grey colors/White 101 */
+  /* yellow */
+  --yellow-104:         #FFFAE0; /* Second/Yellow colors/Yellow 104 */
+  --yellow-114:         #FDF0C1; /* Second/Yellow colors/Yellow 114 */
+  --yellow-134:         #FADC89; /* Second/Yellow colors/Yellow 134 */
+  --yellow-167:         #F8C000; /* выведено */
+  --yellow-214:         #EEA20F; /* Status/Yellow 214 */
+  --yellow-400:         #B76E00; /* выведено */
+  /* odl-dark-blue */
+  --odl-dark-blue-117:  #E3EEFF; /* выведено */
+  /* odl-green */
+  --odl-green-107:      #F3F9E6; /* выведено */
+  --odl-green-123:      #D9F0AB; /* выведено */
+  --odl-green-137:      #C4E88B; /* выведено */
+  --odl-green-223:      #82BF00; /* выведено */
+  --odl-green-289:      #72A716; /* выведено */
+  --odl-green-333:      #699B12; /* выведено */
+  /* odl-grey */
+  --odl-grey-873:       #4A4B4D; /* выведено */
+  --odl-grey-1156:      #38393B; /* выведено */
+  /* odl-red */
+  --odl-red-147:        #FFC9B5; /* выведено */
+  --odl-red-182:        #FFAB99; /* выведено */
+  --odl-red-410:        #DE4A2A; /* выведено */
+  --odl-red-488:        #CB4022; /* выведено */
+  --odl-red-603:        #B92F10; /* выведено */
+}

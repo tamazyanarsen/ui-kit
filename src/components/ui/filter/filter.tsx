@@ -1,15 +1,11 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { ChevronDown, ChevronUp, X } from "@/icons"
 
-import { cn } from "@/lib/utils"
-import { filterTablePillClass } from "@/components/ui/filter-table"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { ComboboxFooter } from "@/components/ui/combobox"
 import { Dropdown } from "@/components/ui/dropdown"
+import { Input } from "@/components/ui/input"
 
-const ICON_SIZE = "size-4"
+import { FilterTrigger } from "./filter-trigger"
 
 // Filter — "Фильтр": a Select-like dropdown trigger (ui/chips/chips,
 // filter@2x.png) whose popup is a single value field + Сбросить/Применить
@@ -26,6 +22,9 @@ const ICON_SIZE = "size-4"
 // value (Checked=True). Both looks are genuinely in the specs, so it's a prop
 // rather than a guess at which one is "right": default off keeps
 // chips-filter's own documented behavior, and Table Top opts in.
+//
+// Внешний вид триггера целиком живёт в `filter-trigger.tsx`; здесь —
+// состояние значения и попап с полем ввода.
 interface FilterProps {
   label: React.ReactNode
   icon?: React.ReactNode
@@ -60,7 +59,9 @@ function Filter({
   const [internalOpen, setInternalOpen] = React.useState(false)
   const open = openProp !== undefined ? openProp : internalOpen
 
-  const [internalValue, setInternalValue] = React.useState<string | null>(defaultValue)
+  const [internalValue, setInternalValue] = React.useState<string | null>(
+    defaultValue
+  )
   const activeValue = value !== undefined ? value : internalValue
   const [draft, setDraft] = React.useState(activeValue ?? "")
   const anchorRef = React.useRef<HTMLDivElement>(null)
@@ -110,184 +111,28 @@ function Filter({
   // multi-select kinds can report how many options the draft covers.
   const selectedCount = draft.trim() ? 1 : 0
   const hasValue = Boolean(activeValue)
-  const asChip = chip
-  // Figma's `Checked` property on filter-table — the dark pill.
-  const chipChecked = chip && hasValue
-
-  // Three mutually exclusive trigger looks (chip / disabled / normal) — only
-  // the "normal" one varies further by open state + background, so an
-  // if/else chain reads more clearly here than nesting that variation
-  // inside a ternary for the other two.
-  //
-  // Round-2 audit fix: `disabled` is checked FIRST now, not `asChip` — the
-  // two aren't actually mutually exclusive (chip + disabled + hasValue is a
-  // real combination) and the old asChip-first order silently dropped
-  // disabled styling whenever a chip had a value. Figma's own
-  // State=Disabled,Checked=True pill (filter-table node 1303:99261) is a
-  // literal bg #EFEFEF/fg #C8C8CB — exactly --btn-muted-bg/-fg (which
-  // --filter-disabled-fg already equals hex-for-hex), not
-  // --filter-disabled-bg's lighter #F4F4F4.
-  let triggerToneClass: string
-  if (asChip) {
-    // The chip look is Figma's `ELK / filter-table` — the same pill NPS
-    // renders — so its fill/hover/disabled colours come from the shared
-    // helper instead of being restated here, in whichever Checked state the
-    // filter is currently in. Only the border stays local: filter-table has
-    // none, but this trigger keeps a transparent border-2 so switching
-    // between the chip and plain looks doesn't change the box size.
-    triggerToneClass = cn(
-      "border-transparent",
-      filterTablePillClass({ selected: chipChecked, disabled })
-    )
-  } else if (disabled) {
-    triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
-  } else {
-    // Дизайн-чек №19/№20: брендовая обводка — это состояние «фильтр выбран»,
-    // а не «поповер открыт». В макете `State=Active` у обоих типов —
-    // Filter (White), нода 54887:29390, и Filter (Grey), нода 54887:29400 —
-    // это пилюля с выставленным значением: заливка своя (white-101 у белого,
-    // grey-109 у серого), сверху `border-2` цвета Base/Blue 223. Раньше
-    // обводка держалась только пока открыт список и пропадала сразу после
-    // выбора — то есть «выбранную чипсу с брендовой обводкой» увидеть было
-    // нельзя, о чём дизайн-чек и говорит.
-    triggerToneClass = cn(
-      open || hasValue
-        ? "border-[var(--filter-active-border)]"
-        : "border-transparent",
-      background === "grey"
-        ? "bg-[var(--filter-grey-bg)] hover:bg-[var(--filter-grey-bg-hover)]"
-        : "bg-[var(--filter-white-bg)] hover:bg-[var(--filter-white-bg-hover)]"
-    )
-  }
-
-  function renderTriggerAction() {
-    if (hasValue) {
-      return (
-        <button
-          type="button"
-          aria-label="Сбросить фильтр"
-          disabled={disabled}
-          onMouseDown={(event) => event.stopPropagation()}
-          onClick={handleClear}
-          className={cn(
-            "outline-none",
-            disabled
-              ? "text-[var(--filter-disabled-fg)]"
-              : asChip
-                ? "text-current"
-                : "text-[var(--filter-icon-fg)]"
-          )}
-        >
-          <X aria-hidden="true" className={ICON_SIZE} />
-        </button>
-      )
-    }
-    const Chevron = open ? ChevronUp : ChevronDown
-    return (
-      <Chevron
-        aria-hidden="true"
-        className={cn(
-          ICON_SIZE,
-          "shrink-0",
-          // Design-check #26: was the same dark icon color regardless of
-          // disabled, out of step with the label text lightening alongside it.
-          disabled
-            ? "text-[var(--filter-disabled-fg)]"
-            : asChip
-              ? "text-current"
-              : "text-[var(--filter-icon-fg)]"
-        )}
-      />
-    )
-  }
 
   return (
     <div className="w-fit">
-      <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
-        <PopoverPrimitive.Trigger
+      <PopoverPrimitive.Root
+        open={disabled ? false : open}
+        onOpenChange={setOpen}
+      >
+        <FilterTrigger
+          label={label}
+          icon={icon}
+          background={background}
+          count={count}
           disabled={disabled}
-          nativeButton={false}
-          render={
-            <div
-              ref={anchorRef}
-              data-slot="filter"
-              data-disabled={disabled || undefined}
-              className={cn(
-                // Design-check #24: the open-state border and the generic
-                // focus-visible ring used to layer into a double outline —
-                // the border alone is the DS's actual "open" indicator, so
-                // the ring only kicks in for keyboard focus while closed.
-                //
-                // Round-2 audit fix: border is `border-2` (not the
-                // Tailwind-default 1px) — Figma's Active/Active(Hover)
-                // states (nodes 54887:29390/29395/29400/29405) are a
-                // literal `border-2 border-[#80e3ff]`. Kept at a constant
-                // 2px across every state (color-only swap between
-                // transparent/active) rather than growing on open, so the
-                // box doesn't jump size when the border becomes visible.
-                // Radius is conditionally a full pill for the `asChip`
-                // look — its actual Figma source (the filter-table dark
-                // pill, node 1303:99241) is `rounded-[16px]` on a ~32px
-                // box, i.e. a capsule, not the plain Filter's `rounded-[8px]`.
-                //
-                // The chip look's fill/geometry now come from
-                // filterTablePillClass (see triggerToneClass) so this and
-                // NPS render the same pill from one definition; the plain
-                // Filter look keeps its own 8px-radius box below.
-                "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
-                // filter-table hugs its label (max-w only); the plain
-                // chips-filter box keeps its own 80px floor and 8px radius.
-                asChip ? "min-w-0" : "min-w-20 rounded-[8px]",
-                triggerToneClass,
-                className
-              )}
-            />
-          }
-        >
-          <span className="flex w-full min-w-0 items-center gap-2">
-            {icon && !asChip && (
-              <span
-                aria-hidden="true"
-                className={cn(ICON_SIZE, "shrink-0 text-[var(--filter-icon-fg)]")}
-              >
-                {icon}
-              </span>
-            )}
-            <span
-              className={cn(
-                // Round-2 audit fix: the `asChip` look's real Figma source
-                // (filter-table's dark pill, P2 Medium 14/20) has no
-                // separate desktop size — the `desktop:text-base` bump only
-                // applies to the plain Filter label.
-                "min-w-0 truncate text-p2-medium",
-                !asChip && "desktop:text-p1-medium",
-                // In chip mode the pill class already sets the text colour
-                // for its own Checked/Disabled state — overriding it here
-                // would repaint the dark pill's white label.
-                asChip
-                  ? chipChecked
-                    ? undefined
-                    : "flex-1 text-center"
-                  : disabled
-                    ? "text-[var(--filter-disabled-fg)]"
-                    : "text-[var(--filter-fg)]"
-              )}
-            >
-              {chipChecked ? activeValue : label}
-            </span>
-            {count !== undefined && (
-              <Badge
-                type="counter"
-                value={count}
-                color={asChip ? "dark-grey" : "light-grey"}
-                disabled={disabled}
-              />
-            )}
-            <span className="ml-auto flex shrink-0 items-center">
-              {renderTriggerAction()}
-            </span>
-          </span>
-        </PopoverPrimitive.Trigger>
+          asChip={chip}
+          chipChecked={chip && hasValue}
+          open={open}
+          hasValue={hasValue}
+          activeValue={activeValue}
+          onClear={handleClear}
+          anchorRef={anchorRef}
+          className={className}
+        />
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Positioner
             anchor={anchorRef}

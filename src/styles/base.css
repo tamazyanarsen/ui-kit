@@ -1,0 +1,210 @@
+/* Базовый слой: значения по умолчанию, тёмная тема, сброс и общие
+   правила элементов, утилита `text-link` и ключевые кадры. */
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+
+    /* Высота полос, прибитых к низу вьюпорта (Button Menu / Button Menu
+       Black). Живые полосы публикуют сюда занятую высоту, а всё, что липнет
+       к низу, отсчитывает `inset-block-end` от неё, а не от нуля.
+
+       Зачем: горизонтальная полоса прокрутки таблицы прижата к низу экрана,
+       а панель массовых действий поднимается ровно при выборе строк — то
+       есть полоса пропадала бы под ней именно тогда, когда таблицей активно
+       пользуются. Величина меряется, а не берётся из токена: панель задана
+       через min-height и растёт от содержимого. */
+    --viewport-inset-bottom: 0px;
+}
+
+.dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+}
+
+/* Themed scrollbar (ui/scrollbar) — applied by the `Scrollbar` component.
+   Chromium/WebKit supports distinct vertical/horizontal scrollbar-gutter
+   sizing via the `:vertical`/`:horizontal` pseudo-classes on the
+   `::-webkit-scrollbar` pseudo-element itself, which is exactly what the
+   spec calls for (4px vertical vs 8px horizontal) — Firefox has no
+   equivalent per-axis control (`scrollbar-width` is a single keyword for
+   both axes), so it falls back to its own "thin" preset for both. */
+/* Figma's "Ссылка/" family (P1–P4 Link Medium/Regular, node 1361:131490) is
+   NOT a separate size scale: `Ссылка/P1 Link Medium` reports the exact same
+   16/24/500 metrics as `Параграф/P1 Medium` (verified on node 29445:37511) —
+   the only delta is the underline, drawn `from-font` with ink-skipping off.
+   So a link is its paragraph step plus this utility, e.g.
+   `text-p1-medium text-link`, rather than seven duplicate size keys.
+   Declared with @utility (not a plain class in @layer base) so it composes
+   with variants the way the rest of the kit's classes do — `hover:text-link`
+   is what the hover-underline affordances actually want. */
+@utility text-link {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: from-font;
+  text-underline-offset: from-font;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+
+@layer base {
+  .themed-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+  }
+  .themed-scrollbar::-webkit-scrollbar:vertical {
+    width: 4px;
+  }
+  .themed-scrollbar::-webkit-scrollbar:horizontal {
+    height: 8px;
+  }
+  .themed-scrollbar::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-bg);
+    border-radius: 9999px;
+  }
+  .themed-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-bg);
+    border-radius: 9999px;
+  }
+}
+
+@layer base {
+  /* Sticky table header — "Шапка (закрепляется всегда при достижении верха
+     вьюпорта, открепляется вместе с достижением низа блока данных)"
+     (Проектирование таблиц ЕЛК, node 70279:7616). Applied from the `<table>`
+     rather than per cell so that `<TableHeadCell>` doesn't have to thread a
+     flag through context just to add one declaration; the offset lets a page
+     with its own fixed site header park the row below it. */
+  table[data-sticky-header] thead th {
+    position: sticky;
+    top: var(--table-header-top, 0px);
+  }
+
+  /* Кнопка действий на ЗАЛИТОЙ строке остаётся белой во всех своих
+     состояниях. Зачем правило вообще нужно: у типа `Secondary (White)` покой
+     белый, а ховер и нажатие — Grey 114 / Grey 124, то есть РОВНО цвета
+     заливки строки. Без него кнопка исчезала в строке именно в тот момент,
+     когда на неё наводят, — замер давал строку rgb(239,239,239) и кнопку
+     rgb(239,239,239).
+
+     Отклика кнопка при этом не теряет: на залитой строке она читается как
+     единственное белое пятно, а сам факт наведения уже показала строка.
+     Правило работает только там, где строка залита: на обычной белой строке
+     кнопка невидима, и её собственный серый ховер — единственная подсказка,
+     что это кнопка, поэтому его не трогаем.
+
+     Селектор по `[data-slot]`, а не по классам Tailwind: фон кнопки задаётся
+     её собственными утилитами, и перебить их из строки можно только более
+     специфичным правилом. */
+  tr[data-slot="table-row"][data-selected] td[data-type="button"] button,
+  tr[data-slot="table-row"][data-added] td[data-type="button"] button,
+  tr[data-slot="table-row"]:has([data-popup-open]) td[data-type="button"] button,
+  tr[data-slot="table-row"][data-clickable]:hover td[data-type="button"] button,
+  tr[data-slot="table-row"][data-clickable]:active td[data-type="button"] button {
+    background-color: var(--table-bg);
+  }
+
+  /* Нативная ГОРИЗОНТАЛЬНАЯ полоса прокрутки таблицы погашена — вместо неё
+     своя (см. table/scrollbar.tsx). Причина: нативная тянется на всю ширину
+     прокручиваемого узла, то есть проходит ПОД закреплёнными блоками, сидит у
+     нижнего края этой области, а не вьюпорта, и показывается по правилам ОС.
+     Ни одно из трёх требований к полосе ею не выражается.
+
+     ⚠️ Вертикальная при этом остаётся: контейнер с липкой шапкой ограничен по
+     высоте и прокручивается по вертикали сам, и отнимать у него единственную
+     подсказку об этом незачем. Отсюда `::-webkit-scrollbar:horizontal`, а не
+     `scrollbar-width: none` — последнее в Firefox гасит обе оси сразу, там
+     вертикальная прокрутка остаётся только колесом. Разделения по осям в
+     стандартном свойстве нет, так что это осознанная плата. */
+  [data-slot="table-container"] {
+    scrollbar-width: none;
+  }
+  [data-slot="table-container"]::-webkit-scrollbar:horizontal {
+    display: none;
+  }
+}
+
+/* "Added" row highlight — "Для каждой строки время жизни подсветки
+   составляет 2000 ms, из которых: 1000 ms статично, 1000 ms в режиме
+   затухания" (node 70279:9969). The fill is Hover's grey, so the animation
+   only has to fade it back to the row's own white. */
+@keyframes table-row-added {
+  0%,
+  50% {
+    background-color: var(--table-row-added-bg);
+  }
+  100% {
+    background-color: var(--table-bg);
+  }
+}

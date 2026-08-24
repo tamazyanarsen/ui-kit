@@ -1,21 +1,11 @@
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHeadCell,
-  TableCell,
-  MIN_COLUMN_WIDTH,
-  NESTING_INDENT,
-} from "./table"
-export type {
-  TableProps,
-  TableRowProps,
-  TableHeadCellProps,
-  TableCellProps,
-  TableHeadCellType,
-  TableCellType,
-} from "./table"
+export { Table, TableBody, TableHeader, TableRow } from "./table"
+export type { TableProps, TableRowProps } from "./table"
+export { TableHeadCell } from "./head-cell"
+export type { TableHeadCellProps } from "./head-cell"
+export { TableCell } from "./cell"
+export type { TableCellProps } from "./cell"
+export type { TableCellType, TableHeadCellType } from "./types"
+export { MIN_COLUMN_WIDTH, NESTING_INDENT } from "./geometry"
 export { TableBlock, TableBlockEmpty } from "./block"
 export { TableColumnSettings } from "./column-settings"
 export type { TableColumnSettingsProps, TableColumn } from "./column-settings"

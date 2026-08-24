@@ -46,7 +46,7 @@ const preview: Preview = {
           // каждый цветовой токен, включая не зависящие от бренда и статуса,
           // поэтому всё, что осталось серым или синим, держит цвет
           // захардкоженным литералом. Подробности — в комментарии над блоком
-          // [data-product="test-mono"] в src/index.css.
+          // [data-product="test-mono"] в src/styles/theme-test-mono.css.
           { value: 'test-mono', title: 'Тест — монохром' },
         ],
         dynamicTitle: true,

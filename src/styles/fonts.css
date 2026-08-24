@@ -1,0 +1,45 @@
+/* Фирменная гарнитура. Подключается первой: на неё ссылается
+   `--font-sans` в `theme.css`. */
+
+/* Object Sans — company brand typeface (see ui/changecolor rebrand docs).
+   Only Regular/Medium/Heavy + their Slanted (italic) counterparts exist as
+   static weights (400/500/800); there's no 600/700 cut. Tailwind's
+   font-semibold/font-bold utilities (used across the kit) still resolve
+   correctly without fake-bold synthesis: per the CSS Fonts font-weight
+   matching algorithm, a request for 600 or 700 searches upward first and
+   lands on the nearest registered face, Heavy (800), automatically. */
+@font-face {
+    font-family: 'Object Sans';
+    src: url('../assets/Object Sans/ObjectSans-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Object Sans';
+    src: url('../assets/Object Sans/ObjectSans-Slanted.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Object Sans';
+    src: url('../assets/Object Sans/ObjectSans-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Object Sans';
+    src: url('../assets/Object Sans/ObjectSans-Heavy.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Object Sans';
+    src: url('../assets/Object Sans/ObjectSans-HeavySlanted.woff2') format('woff2');
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+}

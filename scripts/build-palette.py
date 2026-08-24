@@ -24,8 +24,33 @@ import re
 import sys
 from pathlib import Path
 
-CSS = Path("src/index.css")
-STORY = Path("src/components/ui/colors/colors.stories.tsx")
+STYLES = Path("src/styles")
+# Имена из набора Figma живут в самом `palette.ts` (поле `figma`) — он же и
+# перезаписывается. Раньше источником была таблица в `colors.stories.tsx`, но
+# история давно читает `PALETTE` из этого модуля, и таблицы там больше нет.
+PALETTE_TS = Path("src/components/ui/colors/palette.ts")
+
+# Стили разложены по файлам (см. src/index.css). Скрипту нужен один сплошной
+# текст в том же порядке, что и в импортах, — иначе срезы между маркерами
+# `--btn-primary-bg:` / `[data-product="odl-elk"]` / `[data-product="test-mono"]`
+# теряют смысл.
+CSS_ORDER = [
+    "palette.css",
+    "tokens-forms.css",
+    "tokens-controls.css",
+    "tokens-surfaces.css",
+    "tokens-navigation.css",
+    "tokens-content.css",
+    "tokens-table.css",
+    "theme-odl-elk.css",
+    "theme-test-mono.css",
+]
+
+
+def read_css() -> str:
+    return "\n".join(
+        (STYLES / name).read_text(encoding="utf-8") for name in CSS_ORDER
+    )
 
 
 def rgb(hex_value: str):
@@ -114,20 +139,18 @@ def ts_module(palette, derived, named, root: str, odl: str) -> str:
         name = palette[hex_value]
         figma = "null" if hex_value in derived else f'"{named[hex_value]}"'
         used = users.get(name, [])
+        # Одна строка на цвет: файл читается как таблица, а не как
+        # полсотни развёрнутых объектов на четыреста строк.
         rows.append(
-            "  {\n"
-            f'    name: "{name}",\n'
-            f'    family: "{family(name)}",\n'
-            f'    hex: "{hex_value}",\n'
-            f"    figma: {figma},\n"
-            f"    usedBy: {json.dumps(used, ensure_ascii=False)},\n"
-            "  },"
+            f'  {{ name: "{name}", family: "{family(name)}", '
+            f'hex: "{hex_value}", figma: {figma}, '
+            f"usedBy: {json.dumps(used, ensure_ascii=False)} }},"
         )
 
     return (
         "// СГЕНЕРИРОВАНО: python scripts/build-palette.py --ts\n"
-        "// Правьте палитру в src/index.css и перегенерируйте — руками этот\n"
-        "// файл не редактируется. `figma: null` — имя выведено по правилу\n"
+        "// Правьте палитру в src/styles/palette.css и перегенерируйте — руками\n"
+        "// этот файл не редактируется. `figma: null` — имя выведено по правилу\n"
         "// контраста, а не взято из набора Figma.\n"
         "\nexport interface PaletteColor {\n"
         "  /** Имя CSS-переменной без `--`, как в Figma. */\n"
@@ -145,13 +168,13 @@ def ts_module(palette, derived, named, root: str, odl: str) -> str:
 
 
 def main() -> None:
-    story = STORY.read_text(encoding="utf-8")
+    known = PALETTE_TS.read_text(encoding="utf-8")
     named = {
         h.upper(): f
-        for h, f in re.findall(r'hex: "(#[0-9A-Fa-f]{6})", figma: "([^"]+)"', story)
+        for h, f in re.findall(r'hex: "(#[0-9A-Fa-f]{6})", figma: "([^"]+)"', known)
     }
 
-    css = CSS.read_text(encoding="utf-8")
+    css = read_css()
     root = css[css.index("--btn-primary-bg:") : css.index('[data-product="odl-elk"]')]
     odl = css[css.index('[data-product="odl-elk"]') : css.index('[data-product="test-mono"]')]
 

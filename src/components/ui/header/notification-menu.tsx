@@ -1,11 +1,12 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
-import { Bell } from "@/icons"
-import { Scrollbar } from "@/components/ui/scrollbar"
 
+import { Bell } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Dropdown } from "@/components/ui/dropdown"
+import { Scrollbar } from "@/components/ui/scrollbar"
+
+import { HEADER_ICON_TILE, HeaderMenuPopup } from "./menu-popup"
 
 // Notification dropdown — the bell icon's own popup content. Deliberately
 // not built on the shared Notification component (src/components/ui/
@@ -32,7 +33,53 @@ interface NotificationMenuProps {
   className?: string
 }
 
-function NotificationMenu({ items, unreadCount = 0, className }: NotificationMenuProps) {
+/** Подписи под заголовком выровнены по тексту, а не по точке-индикатору. */
+const META_LINE = "pl-3.5 text-p3-regular text-[var(--header-meta-fg)]"
+
+function NotificationRow({ item }: { item: NotificationMenuItem }) {
+  return (
+    <MenuPrimitive.Item
+      onClick={item.onClick}
+      data-slot="notification-menu-item"
+      className="flex cursor-default flex-col gap-1 px-4 py-3 outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <span className="flex items-start gap-2">
+          {!item.viewed && (
+            <span
+              aria-hidden="true"
+              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--header-unread-dot)]"
+            />
+          )}
+          <span
+            className={cn(
+              "text-p2-regular",
+              item.viewed
+                ? "font-normal text-[var(--header-meta-fg)]"
+                : "font-medium text-[var(--header-fg)]"
+            )}
+          >
+            {item.title}
+          </span>
+        </span>
+        {item.status && (
+          <span className="shrink-0 text-p2-medium text-[var(--header-fg)]">
+            {item.status}
+          </span>
+        )}
+      </div>
+      <span className={META_LINE}>{item.org}</span>
+      <span className={META_LINE}>{item.timestamp}</span>
+      <span className={META_LINE}>{item.description}</span>
+    </MenuPrimitive.Item>
+  )
+}
+
+function NotificationMenu({
+  items,
+  unreadCount = 0,
+  className,
+}: NotificationMenuProps) {
   return (
     <MenuPrimitive.Root modal={false}>
       <MenuPrimitive.Trigger
@@ -41,14 +88,7 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
             type="button"
             aria-label="Уведомления"
             data-slot="notification-menu-trigger"
-            className={cn(
-              // Панель иконок в шапке — это смежные плитки во всю высоту
-              // строки, а не мелкие кнопки с зазорами: Figma's `Panel`
-              // ставит Notification/Letter 56×64, Wallet 88×64 и Profile
-              // 304×64 подряд с x = 0, 56, 112, 200 (зазор 0).
-              "group flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors hover:bg-[var(--header-item-hover-bg)] hover:text-[var(--header-hover-fg)]",
-              className
-            )}
+            className={cn(HEADER_ICON_TILE, className)}
           />
         }
       >
@@ -67,75 +107,27 @@ function NotificationMenu({ items, unreadCount = 0, className }: NotificationMen
         </span>
       </MenuPrimitive.Trigger>
 
-      <MenuPrimitive.Portal>
-        <MenuPrimitive.Positioner
-          side="bottom"
-          align="start"
-          sideOffset={8}
-          className="isolate z-50"
-        >
-          <MenuPrimitive.Popup
-            data-slot="notification-menu-content"
-            render={<Dropdown className="flex w-[380px] flex-col overflow-hidden bg-[var(--header-bg)]" />}
-          >
-            <p className="border-b border-[var(--header-divider)] px-4 py-3 text-p1-medium text-[var(--header-fg)]">
-              Уведомления
-            </p>
-            {/* Spec: fixed 584px height once content reaches it, then
-                scrolls, with a 32px bottom padding — capped lower here
-                (420px) since this kit's demo content is only two items,
-                but the scroll/padding mechanics match. */}
-            <Scrollbar className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] pb-8">
-              {items.map((item) => (
-                <MenuPrimitive.Item
-                  key={item.id}
-                  onClick={item.onClick}
-                  data-slot="notification-menu-item"
-                  className="flex cursor-default flex-col gap-1 px-4 py-3 outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="flex items-start gap-2">
-                      {!item.viewed && (
-                        <span
-                          aria-hidden="true"
-                          className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--header-unread-dot)]"
-                        />
-                      )}
-                      <span
-                        className={cn(
-                          "text-p2-regular",
-                          item.viewed
-                            ? "font-normal text-[var(--header-meta-fg)]"
-                            : "font-medium text-[var(--header-fg)]"
-                        )}
-                      >
-                        {item.title}
-                      </span>
-                    </span>
-                    {item.status && (
-                      <span className="shrink-0 text-p2-medium text-[var(--header-fg)]">
-                        {item.status}
-                      </span>
-                    )}
-                  </div>
-                  <span className="pl-3.5 text-p3-regular text-[var(--header-meta-fg)]">
-                    {item.org}
-                  </span>
-                  <span className="pl-3.5 text-p3-regular text-[var(--header-meta-fg)]">
-                    {item.timestamp}
-                  </span>
-                  <span className="pl-3.5 text-p3-regular text-[var(--header-meta-fg)]">
-                    {item.description}
-                  </span>
-                </MenuPrimitive.Item>
-              ))}
-            </Scrollbar>
-          </MenuPrimitive.Popup>
-        </MenuPrimitive.Positioner>
-      </MenuPrimitive.Portal>
+      <HeaderMenuPopup
+        slot="notification-menu-content"
+        align="start"
+        className="flex w-[380px] flex-col"
+      >
+        <p className="border-b border-[var(--header-divider)] px-4 py-3 text-p1-medium text-[var(--header-fg)]">
+          Уведомления
+        </p>
+        {/* Spec: fixed 584px height once content reaches it, then scrolls,
+            with a 32px bottom padding — capped lower here (420px) since this
+            kit's demo content is only two items, but the scroll/padding
+            mechanics match. */}
+        <Scrollbar className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] pb-8">
+          {items.map((item) => (
+            <NotificationRow key={item.id} item={item} />
+          ))}
+        </Scrollbar>
+      </HeaderMenuPopup>
     </MenuPrimitive.Root>
   )
 }
 
 export { NotificationMenu }
-export type { NotificationMenuProps, NotificationMenuItem }
+export type { NotificationMenuItem, NotificationMenuProps }

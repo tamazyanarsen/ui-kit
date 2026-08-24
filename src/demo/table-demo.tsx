@@ -1,85 +1,41 @@
 import * as React from "react"
-import { Download, Search } from "@/icons"
 
+import { Search } from "@/icons"
+import { Button } from "@/components/ui/button"
+import { ButtonMenuBlack } from "@/components/ui/button-menu"
+import { EmptySearchResults } from "@/components/ui/empty-search"
+import { Pagination } from "@/components/ui/pagination"
 import {
   Table,
   TableBlock,
   TableBlockEmpty,
   TableBody,
   TableCell,
-  TableColumnSettings,
-  TableHeadCell,
-  TableHeader,
   TableRow,
-  type TableColumn,
 } from "@/components/ui/table"
-import {
-  TableTop,
-  TableTopDetails,
-  TableTopSummary,
-  TableTopSummaryItem,
-  TableTopTitle,
-  TableTopToolbar,
-} from "@/components/ui/table-top"
-import { Button } from "@/components/ui/button"
-import { ButtonMenuBlack } from "@/components/ui/button-menu"
-import { EmptySearchResults } from "@/components/ui/empty-search"
-import { Input } from "@/components/ui/input"
-import { Pagination } from "@/components/ui/pagination"
-import type { TagColor } from "@/components/ui/tag"
 import {
   AccordionItem,
   AccordionTrigger,
   AccordionPanel,
 } from "@/demo/scaffold"
+// Данные общие со стендом Storybook — один набор строк на оба стенда.
+import { AMOUNT_UNITS, INITIAL_COLUMNS, TABLE_ROWS } from "@/stories/table-data"
 
 import { RowLabel } from "./shared"
-
-interface Row {
-  id: string
-  /** 0-based nesting depth — "контент сдвигается вправо на 16px" per level. */
-  level: number
-  parent?: string
-  code: string
-  title: string
-  status: TagColor
-  statusLabel: string
-  number: string
-  account: string
-  payer: string
-  amount: string
-  /** Знак живёт при значении, а не в заголовке столбца: в одной колонке
-   * значения бывают в разных единицах, и «Сумма, ₽» этого не выражает. */
-  unit: string
-  amountNote?: string
-  positive?: boolean
-}
-
-/** Все знаки колонки суммы. Ячейка своей колонки не видит, поэтому список
- * собирается здесь и отдаётся каждой ячейке: слот знака резервирует ширину по
- * самому широкому глифу, и разряды продолжают стоять друг под другом. */
-const AMOUNT_UNITS = ["₽", "$"]
-
-const ROWS: Row[] = [
-  { id: "1", level: 0, code: "1", title: "Подготовка территории строительства", status: "green", statusLabel: "Исполнен", number: "159638", account: "40702 810 7 00590062573", payer: "ИП Филлимонов Павел Алексеевич", amount: "10 000 000,00", unit: "₽", amountNote: "Списание" },
-  { id: "1.1", level: 1, parent: "1", code: "1.1", title: "Договор о развитии застроенной территории", status: "orange", statusLabel: "Готов к подписанию", number: "159639", account: "40702 810 7 00590062573", payer: "ООО «ВИЛКА-СТРОЙ»", amount: "2 000 000,00", unit: "₽", amountNote: "Списание" },
-  { id: "1.1.1", level: 2, parent: "1.1", code: "1.1.1", title: "Работы и услуги сторонних организаций", status: "grey", statusLabel: "Черновик", number: "159640", account: "40702 810 7 00590062573", payer: "ООО «РИС И КУРИЦА»", amount: "+31 922 980,05", unit: "₽", amountNote: "Поступление", positive: true },
-  { id: "1.1.1.1", level: 3, parent: "1.1.1", code: "1.1.1.1", title: "Водоснабжение, энергоснабжение и водоотведение", status: "red", statusLabel: "Замечания банка", number: "154438", account: "40702 810 7 00590062573", payer: "ИП Филлимонов Павел Алексеевич", amount: "500 000,00", unit: "$" },
-  { id: "2", level: 0, code: "2", title: "Основные объекты строительства", status: "orange", statusLabel: "На согласовании", number: "40038", account: "40702 810 7 00590062573", payer: "ООО «ИВАНОВО-СТРОЙ»", amount: "6 000 000,00", unit: "₽", amountNote: "Списание" },
-  { id: "3", level: 0, code: "3", title: "Объекты подсобного и обслуживающего назначения", status: "green", statusLabel: "Исполнен", number: "40039", account: "40702 810 7 00590062573", payer: "ИП Воропаев Сергей Владимирович", amount: "99 999,99", unit: "₽" },
-]
+import { TableDemoHead } from "./table-demo-head"
+import { TableDemoTop } from "./table-demo-top"
 
 /** "Выбрать на всех страницах (781)" — the count is the filtered total, not
  * the page. */
 const TOTAL_RECORDS = 781
 
-const COLUMNS: TableColumn[] = [
-  { id: "status", label: "Статус", visible: true, locked: true },
-  { id: "number", label: "Номер платежа", visible: true },
-  { id: "account", label: "Со счёта", visible: true },
-  { id: "payer", label: "Получатель", visible: true },
-  { id: "amount", label: "Сумма", visible: true },
-]
+/** Переключает членство в множестве, не мутируя исходное. */
+function toggleIn(set: Set<string>, id: string) {
+  const next = new Set(set)
+  if (next.has(id)) next.delete(id)
+  else next.add(id)
+  return next
+}
 
 // Demo owns real controlled state (selection, sort, expansion, columns) — per
 // this kit's own convention (see the Select/Calendar demos), Table's checkbox,
@@ -91,7 +47,7 @@ function TableExample() {
     new Set(["1", "1.1", "1.1.1"])
   )
   const [sort, setSort] = React.useState<"asc" | "desc" | null>("asc")
-  const [columns, setColumns] = React.useState(COLUMNS)
+  const [columns, setColumns] = React.useState(INITIAL_COLUMNS)
   const [query, setQuery] = React.useState("")
   const [added, setAdded] = React.useState<string | null>(null)
   const [allPagesSelected, setAllPagesSelected] = React.useState(false)
@@ -108,16 +64,16 @@ function TableExample() {
 
   const shown = React.useMemo(() => {
     const matching = query.trim()
-      ? ROWS.filter((row) =>
+      ? TABLE_ROWS.filter((row) =>
           row.title.toLowerCase().includes(query.trim().toLowerCase())
         )
-      : ROWS
+      : TABLE_ROWS
     // A row is visible only while every ancestor is expanded.
     return matching.filter((row) => {
       let parent = row.parent
       while (parent) {
         if (!expanded.has(parent)) return false
-        parent = ROWS.find((candidate) => candidate.id === parent)?.parent
+        parent = TABLE_ROWS.find((candidate) => candidate.id === parent)?.parent
       }
       return true
     })
@@ -134,23 +90,11 @@ function TableExample() {
     setSelected(allSelected ? new Set() : new Set(shown.map((row) => row.id)))
   }
 
-  function toggleRow(id: string) {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
+  const toggleRow = (id: string) =>
+    setSelected((prev) => toggleIn(prev, id))
 
-  function toggleExpanded(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
+  const toggleExpanded = (id: string) =>
+    setExpanded((prev) => toggleIn(prev, id))
 
   // "Нажатие кнопки сворачивания в шапке таблицы сворачивает весь блок до
   // строк первого уровня. Повторное нажатие разворачивает все строки до
@@ -158,7 +102,7 @@ function TableExample() {
   const anyExpanded = expanded.size > 0
   function toggleAllExpanded() {
     setExpanded(
-      anyExpanded ? new Set() : new Set(ROWS.map((row) => row.id))
+      anyExpanded ? new Set() : new Set(TABLE_ROWS.map((row) => row.id))
     )
   }
 
@@ -169,145 +113,33 @@ function TableExample() {
   }
 
   const hasParent = (id: string) =>
-    ROWS.some((row) => row.parent === id)
+    TABLE_ROWS.some((row) => row.parent === id)
 
   return (
     <div className="flex flex-col items-stretch gap-4">
       <TableBlock>
-        <TableTop>
-          <TableTopTitle
-            title="Связанные платежи"
-            action={
-              <Button variant="primary" size="sm">
-                Создать
-              </Button>
-            }
-          />
-          <TableTopToolbar>
-            <Input
-              size="sm"
-              label="Поиск по нескольким критериям"
-              iconLeft={<Search aria-hidden="true" className="size-4" />}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              clearable
-              onClear={() => setQuery("")}
-              containerClassName="w-65"
-            />
-            <Button variant="secondary-grey" size="sm" onClick={highlightNewRow}>
-              Добавить строку
-            </Button>
-          </TableTopToolbar>
-          <TableTopSummary
-            info={
-              <>
-                <TableTopSummaryItem label="Выбрано фильтров:" value="0" />
-                <TableTopSummaryItem
-                  label="Результатов:"
-                  value={String(shown.length)}
-                />
-              </>
-            }
-            actions={
-              <>
-                <Button variant="secondary-grey" size="sm" icon={Download}>
-                  Скачать
-                </Button>
-                <TableColumnSettings
-                  columns={columns}
-                  onColumnsChange={setColumns}
-                />
-              </>
-            }
-          />
-          <TableTopDetails
-            items={[
-              { label: "Возвраты", value: "20 шт" },
-              { label: "Кешбэк", value: "17 шт" },
-              { label: "Поступления", value: "15 шт" },
-              { label: "Сумма операций", value: "40 500 000,00 ₽" },
-              { label: "Сумма параметра №1", value: "1 500 000,00 ₽" },
-              { label: "Сумма параметра №2", value: "500 000,00 ₽" },
-            ]}
-          />
-        </TableTop>
+        <TableDemoTop
+          query={query}
+          onQueryChange={setQuery}
+          onAddRow={highlightNewRow}
+          rowCount={shown.length}
+          columns={columns}
+          onColumnsChange={setColumns}
+        />
 
         <Table fixed stickyHeader containerClassName="max-h-[340px]">
-          <TableHeader>
-            <tr>
-              <TableHeadCell
-                type="checkbox"
-                pin="left"
-                checked={allSelected}
-                indeterminate={someSelected}
-                onCheckedChange={toggleAll}
-              />
-              {/* The hierarchy column carries the collapse-all chevron, the
-                  title and the sort control in one cell — exactly as the
-                  spec's own "⌃ Код ⇅" header does. */}
-              <TableHeadCell
-                type="subtitle-left"
-                pin="left"
-                collapsible
-                expanded={anyExpanded}
-                onExpandedChange={toggleAllExpanded}
-                // No sort and no resize on the hierarchy column: "в таблицах
-                // со сворачиванием/разворачиванием не предусмотрена
-                // пользовательская сортировка" and its width "опредяется в
-                // момент проектирования".
-                defaultWidth={220}
-              >
-                Код
-              </TableHeadCell>
-              <TableHeadCell resizable defaultWidth={280}>
-                Статья расходов
-              </TableHeadCell>
-              {visibleColumns.has("status") && (
-                <TableHeadCell resizable defaultWidth={180}>
-                  Статус
-                </TableHeadCell>
-              )}
-              {visibleColumns.has("number") && (
-                <TableHeadCell
-                  resizable
-                  defaultWidth={160}
-                  sortable
-                  sortDirection={sort}
-                  // ⚠️ Круг замкнут на двух направлениях: нажатием сортировку
-                  // не сбросить. Возврата в «нет сортировки» нет намеренно —
-                  // иначе строки остались бы переставленными, а действующий
-                  // критерий ушёл бы из виду.
-                  onSortClick={() =>
-                    setSort((prev) => (prev === "asc" ? "desc" : "asc"))
-                  }
-                >
-                  Номер платежа
-                </TableHeadCell>
-              )}
-              {visibleColumns.has("account") && (
-                <TableHeadCell resizable defaultWidth={220}>
-                  Со счёта
-                </TableHeadCell>
-              )}
-              {visibleColumns.has("payer") && (
-                <TableHeadCell resizable defaultWidth={260}>
-                  Получатель
-                </TableHeadCell>
-              )}
-              {visibleColumns.has("amount") && (
-                <TableHeadCell
-                  type="subtitle-right"
-                  resizable
-                  defaultWidth={200}
-                  sortable
-                >
-                  Сумма
-                </TableHeadCell>
-              )}
-              {/* Филлер над правым закреплённым блоком действий. */}
-              <TableHeadCell type="filler" pin="right" />
-            </tr>
-          </TableHeader>
+          <TableDemoHead
+            visibleColumns={visibleColumns}
+            allSelected={allSelected}
+            someSelected={someSelected}
+            onSelectAll={toggleAll}
+            anyExpanded={anyExpanded}
+            onExpandAll={toggleAllExpanded}
+            sort={sort}
+            onSortClick={() =>
+              setSort((prev) => (prev === "asc" ? "desc" : "asc"))
+            }
+          />
           <TableBody>
             {shown.map((row) => (
               <TableRow
@@ -430,7 +262,6 @@ function TableExample() {
     </div>
   )
 }
-
 function TableDemo() {
   return (
     <AccordionItem value="table">

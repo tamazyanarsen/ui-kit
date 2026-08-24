@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 // overflowing container (dropdown lists, tables, modal bodies). Per the
 // spec, thickness genuinely differs by axis — 4px vertical, 8px horizontal
 // ("Горизонтальный скролл ... имеет большую толщину") — handled by the
-// `.themed-scrollbar` CSS class (index.css) via WebKit's `:vertical`/
+// `.themed-scrollbar` CSS class (styles/base.css) via WebKit's `:vertical`/
 // `:horizontal` scrollbar pseudo-classes, with `scrollbar-width: thin` as
 // Firefox's best-available (axis-uniform) fallback.
 //

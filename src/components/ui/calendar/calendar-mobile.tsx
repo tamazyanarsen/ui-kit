@@ -1,223 +1,19 @@
 import * as React from "react"
-import { ChevronLeft, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { Scrollbar } from "@/components/ui/scrollbar"
-import { MONTHS_RU_FULL, addMonths, isInRange, isSameDay } from "@/lib/calendar"
+
+import { CalendarFooter } from "./footer"
+import { SheetHeader, SheetNav } from "./mobile-chrome"
 import {
-  CalendarFooter,
-  DayGrid,
-  HeaderLabel,
-  MonthGrid,
-  NavHeader,
-  WeekdaysRow,
-  YearGrid,
-} from "./primitives"
-import { useInfiniteCount } from "./use-infinite-count"
+  SheetDecadeSections,
+  SheetMonthSections,
+  SheetYearSections,
+} from "./mobile-sections"
+import { HeaderLabel, NavHeader } from "./nav-header"
+import { YearGrid } from "./picker-grid"
 import type { CalendarMode, CalendarSingleMonth } from "./types"
-
-// Figma's "Title" row: pt-24/pb-8/px-16, 18px/medium/24-leading text, close
-// button on a #f4f4f4 (--calendar-range-bg) circle — measured off the real
-// mobile bottom-sheet usage mock, not the isolated anatomy symbol.
-function SheetHeader({
-  title,
-  onClose,
-}: {
-  title: string
-  onClose?: () => void
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 px-4 pt-6 pb-2">
-      <h2 className="text-h4-mobile text-[var(--calendar-fg)]">
-        {title}
-      </h2>
-      {/* `ELK / button` instance in Figma (node 7415:58839) on a grey-109
-          #F4F4F4 fill — that is Button's own `secondary-grey`, not the
-          calendar's day-hover token that happens to share the hex. */}
-      <Button
-        variant="secondary-grey"
-        size="sm"
-        iconPosition="only"
-        icon={X}
-        aria-label="Закрыть"
-        onClick={onClose}
-        className="shrink-0"
-      />
-    </div>
-  )
-}
-
-// Figma's "Subtitle" nav row: same gap-8 as coded (gap-2), but pb-8 (pb-2),
-// not pb-3 — measured off the same real bottom-sheet mock as SheetHeader.
-function SheetNav({ label, onBack }: { label: string; onBack?: () => void }) {
-  return (
-    <div className="flex items-center gap-2 px-4 pb-2">
-      {onBack && (
-        // `ELK / button` instance in Figma (node 7415:58841), white fill.
-        <Button
-          variant="secondary-white"
-          size="sm"
-          iconPosition="only"
-          icon={ChevronLeft}
-          aria-label="Назад"
-          onClick={onBack}
-          className="shrink-0"
-        />
-      )}
-      {/* Matches the desktop nav pill's "Май"/"2024" label
-          (get_design_context on 7415:58522) — Object Sans Medium (P2
-          Medium), not Regular. */}
-      <span className="text-p2-medium text-[var(--calendar-fg)]">{label}</span>
-    </div>
-  )
-}
-
-// Per-month heading used inside the Day/Range infinite scroll (mode="single"
-// | "range"): Figma renders this as the same rounded pill/label used for the
-// desktop nav ("Май"), not a plain heading — confirmed against the real
-// bottom-sheet usage mock (title "Выберите даты" → nav "2024" → pill "Май").
-function MonthPillHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start px-3 pt-2 pb-4 text-p2-medium text-[var(--calendar-fg)]">
-      <HeaderLabel>{children}</HeaderLabel>
-    </div>
-  )
-}
-
-// Per-year/decade heading used inside the Month/Year infinite scroll
-// (mode="month" | "year"): Figma's MonthYear (Mobile) anatomy shows this as
-// a 22px/medium/30-leading heading ("2024", "2013 – 2024"), not text-lg
-// font-semibold.
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="px-4 pt-[22px] pb-4 text-h2-mobile text-[var(--calendar-fg)]">
-      {children}
-    </h3>
-  )
-}
-
-function SheetMonthSections({
-  mode,
-  anchor,
-  count,
-  today,
-  value,
-  normStart,
-  normEnd,
-  onSelectDay,
-  disabledDate,
-}: {
-  mode: CalendarMode
-  anchor: CalendarSingleMonth
-  count: number
-  today: Date
-  value: Date | null
-  normStart: Date | null
-  normEnd: Date | null
-  onSelectDay: (date: Date) => void
-  disabledDate?: (date: Date) => boolean
-}) {
-  const sections = Array.from({ length: count }, (_, i) =>
-    addMonths(anchor.year, anchor.month, i - 1)
-  )
-  return (
-    <>
-      {sections.map((m, i) => (
-        <div key={i}>
-          <MonthPillHeading>{MONTHS_RU_FULL[m.month]}</MonthPillHeading>
-          <WeekdaysRow size="mobile" />
-          <DayGrid
-            year={m.year}
-            month={m.month}
-            today={today}
-            isSelected={mode === "single" ? (d) => isSameDay(d, value) : () => false}
-            isRangeStart={
-              mode === "range" ? (d) => isSameDay(d, normStart) : undefined
-            }
-            isRangeEnd={
-              mode === "range" ? (d) => isSameDay(d, normEnd) : undefined
-            }
-            isRangeMiddle={
-              mode === "range" ? (d) => isInRange(d, normStart, normEnd) : undefined
-            }
-            onSelectDay={onSelectDay}
-            isDisabled={disabledDate}
-            size="mobile"
-          />
-        </div>
-      ))}
-    </>
-  )
-}
-
-function SheetYearSections({
-  anchorYear,
-  count,
-  today,
-  monthValue,
-  onSelectMonth,
-}: {
-  anchorYear: number
-  count: number
-  today: Date
-  monthValue: { year: number; month: number } | null | undefined
-  onSelectMonth: (year: number, month: number) => void
-}) {
-  const years = Array.from({ length: count }, (_, i) => anchorYear - 1 + i)
-  return (
-    <>
-      {years.map((y) => (
-        <div key={y}>
-          <SectionHeading>{y}</SectionHeading>
-          <MonthGrid
-            selectedMonth={monthValue?.year === y ? monthValue.month : null}
-            currentMonth={y === today.getFullYear() ? today.getMonth() : null}
-            onSelectMonth={(m) => onSelectMonth(y, m)}
-            size="mobile"
-          />
-        </div>
-      ))}
-    </>
-  )
-}
-
-function SheetDecadeSections({
-  anchorDecadeEnd,
-  count,
-  today,
-  yearValue,
-  onSelectYear,
-}: {
-  anchorDecadeEnd: number
-  count: number
-  today: Date
-  yearValue: number | null
-  onSelectYear: (year: number) => void
-}) {
-  const decadeEnds = Array.from(
-    { length: count },
-    (_, i) => anchorDecadeEnd + i * 12
-  )
-  return (
-    <>
-      {decadeEnds.map((end) => (
-        <div key={end}>
-          <SectionHeading>
-            {end - 11} — {end}
-          </SectionHeading>
-          <YearGrid
-            decadeEnd={end}
-            selectedYear={yearValue}
-            currentYear={today.getFullYear()}
-            onSelectYear={onSelectYear}
-            size="mobile"
-          />
-        </div>
-      ))}
-    </>
-  )
-}
+import { useInfiniteCount } from "./use-infinite-count"
 
 interface CalendarMobileProps {
   mode: CalendarMode
@@ -245,7 +41,7 @@ interface CalendarMobileProps {
   disabledDate?: (date: Date) => boolean
 }
 
-export function CalendarMobile({
+function CalendarMobile({
   mode,
   title,
   onClose,
@@ -278,21 +74,22 @@ export function CalendarMobile({
   const [jumpOpen, setJumpOpen] = React.useState(false)
   const [jumpDecadeEnd, setJumpDecadeEnd] = React.useState(decadeEnd)
 
-  function resetSheetScroll() {
-    monthsInfinite.reset()
-    yearsInfinite.reset()
-    sheetScrollRef.current?.scrollTo({ top: 0 })
-  }
-
   function openJumpPicker() {
     setJumpDecadeEnd(focus.year)
     setJumpOpen(true)
   }
 
-  function handleJumpToYear(y: number) {
-    setFocus((f) => ({ ...f, year: y }))
+  function handleJumpToYear(year: number) {
+    setFocus((current) => ({ ...current, year }))
     setJumpOpen(false)
-    resetSheetScroll()
+    monthsInfinite.reset()
+    yearsInfinite.reset()
+    sheetScrollRef.current?.scrollTo({ top: 0 })
+  }
+
+  function shiftDecade(step: number) {
+    setDecadeEnd((year) => year + step)
+    decadesInfinite.reset()
   }
 
   // The header nav and the scrollable body below it each switch between
@@ -303,8 +100,8 @@ export function CalendarMobile({
     if (jumpOpen) {
       return (
         <NavHeader
-          onPrev={() => setJumpDecadeEnd((y) => y - 12)}
-          onNext={() => setJumpDecadeEnd((y) => y + 12)}
+          onPrev={() => setJumpDecadeEnd((year) => year - 12)}
+          onNext={() => setJumpDecadeEnd((year) => year + 12)}
           variant="picker"
         >
           <HeaderLabel>
@@ -316,14 +113,8 @@ export function CalendarMobile({
     if (mode === "year") {
       return (
         <NavHeader
-          onPrev={() => {
-            setDecadeEnd((y) => y - 12)
-            decadesInfinite.reset()
-          }}
-          onNext={() => {
-            setDecadeEnd((y) => y + 12)
-            decadesInfinite.reset()
-          }}
+          onPrev={() => shiftDecade(-12)}
+          onNext={() => shiftDecade(12)}
           variant="picker"
         >
           <HeaderLabel>
@@ -364,7 +155,7 @@ export function CalendarMobile({
             count={yearsInfinite.count}
             today={today}
             monthValue={monthValue}
-            onSelectMonth={(year, m) => onMonthChange?.({ year, month: m })}
+            onSelectMonth={(year, month) => onMonthChange?.({ year, month })}
           />
           <div ref={yearsInfinite.sentinelRef} className="h-px" />
         </>
@@ -378,7 +169,7 @@ export function CalendarMobile({
             count={decadesInfinite.count}
             today={today}
             yearValue={yearValue ?? null}
-            onSelectYear={(y) => onYearChange?.(y)}
+            onSelectYear={(year) => onYearChange?.(year)}
           />
           <div ref={decadesInfinite.sentinelRef} className="h-px" />
         </>
@@ -419,13 +210,12 @@ export function CalendarMobile({
       {/* Figma's real mobile mock stacks repeated month sections with a
           24px gap ("Calendar" wrapper, gap-[24px]) — applied uniformly to
           the month/year/decade lists here. */}
-      <Scrollbar
-        ref={sheetScrollRef}
-        className="flex flex-1 flex-col gap-6"
-      >
+      <Scrollbar ref={sheetScrollRef} className="flex flex-1 flex-col gap-6">
         {renderSheetBody()}
       </Scrollbar>
       {footer && <CalendarFooter compact onReset={onReset} onApply={onApply} />}
     </div>
   )
 }
+
+export { CalendarMobile }

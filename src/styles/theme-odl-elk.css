@@ -1,0 +1,248 @@
+
+/* Старый_ЕЛК theme ("как было") — add data-product="odl-elk" to <html> to render every
+   rebranded component in the pre-rebrand green/near-black palette instead of
+   the current default cyan/navy one. No component needs any changes for this
+   to apply.
+
+   Values are the exact "Было" (old) side of the bank's official color-
+   replacement map (ui/changecolor/Инструкция по замене цветов Банка.svg,
+   "Было: Green colors" -> "Стало: Blue colors (Банк)" table), applied to every
+   token below that currently holds the matching "Стало" (new) hex:
+     #80E3FF -> #82BF00 (Green 223)   #2FCEEF -> #72A716 (Green 289)
+     #14B1D1 -> #699B12 (Green 333)   #B6F3FF -> #C4E88B (Green 137)
+     #CFF7FF -> #D9F0AB (Green 123)   #F0FCFF -> #F3F9E6 (Green 107)
+
+   --btn-secondary-black-* reverts to #252628 (Grey 1514, the kit's plain
+   near-black neutral) rather than a "old navy" — that same instruction doc
+   marks #012F42/#114870 as brand-new additions with no "Было" counterpart,
+   confirming the old brand had no navy accent at all and used near-black
+   instead (also matches the As-is swatch in ui/changecolor/Переходный этап
+   ребрендинга.svg's Button row). Its hover/active shades have no measured
+   Figma source, so they're derived by applying this same file's own
+   lighten-on-interaction delta already established for
+   --btn-secondary-logo-grey (+19, then +18 per RGB channel) rather than
+   invented outright — flagged as an approximation pending confirmation.
+
+   --btn-primary-fg flips to white here — the color-replacement map only
+   covers backgrounds, but the As-is swatch in that same Button row shows
+   white label text on the old green primary (the current theme's dark
+   #252628 label only works against the new pale-cyan background).
+
+   **Second pass (2026-08-07) — verified against the render, not just the
+   map.** The instruction page also carries a side-by-side "WebLK —
+   Сравнение основных компонентов на переходный период ребрендинга" table
+   (node 70251:48106) showing every affected component As-is next to To-be.
+   Exporting it at full resolution and diffing the two columns band by band
+   yields the complete swatch map, which is what every "(измерено)" value
+   below comes from:
+
+     #82BF00 <- #80E3FF   #82BF00 <- #2FCEEF   #699B12 <- #14B1D1
+     #252628 <- #012F42   #82BF00 <- #39C182   #DE4A2A <- #D74B54
+     #D9F0AB <- #BDF8DB   #C4E88B <- #89F2BD   #FFC9B5 <- #FFE8E3
+     #FFAB99 <- #FFBEB5   #E3EEFF <- #EDF6FC   #F3F9E6 <- #CFF7FF
+
+   Two things that map alone would have got wrong, and one bug it exposed:
+   - Progress Bar's step fill and Item's check glyph sat on the wrong step
+     of the green ramp (the component's own token moved during the rebrand,
+     so a palette-level substitution isn't enough).
+   - The whole error-red family (#D74B54) and success-green family
+     (#39C182) had no old-theme counterpart at all, so every error/success
+     accent stayed rebranded under data-product="odl-elk".
+   - --top-fixed-message-blue-bg in :root was still holding the *old*
+     #E3EEFF; fixed to #EDF6FC there, with #E3EEFF moved down here. */
+[data-product="odl-elk"] {
+  /* Зелёная иллюстрация NPS остаётся за старой палитрой — дизайн-чек №3
+     №17 прямо просит её не удалять. Как только придёт голубая версия,
+     меняется одна строка: `--nps-done-image` в :root. */
+  --nps-done-image: url("../assets/nps/done-illustration.png");
+
+  --btn-primary-bg: var(--odl-green-223);
+  --btn-primary-bg-hover: var(--odl-green-289);
+  --btn-primary-bg-active: var(--odl-green-333);
+  --btn-primary-fg: var(--white-101);
+
+  --btn-secondary-black-bg: var(--grey-1514);
+  --btn-secondary-black-bg-hover: var(--odl-grey-1156); /* approximated, see comment above */
+  --btn-secondary-black-bg-active: var(--odl-grey-873); /* approximated, see comment above */
+
+  /* Лоудер брендовый, поэтому в старой теме он зелёный. Warning не менялся
+     при ребрендинге (подтверждено диффом As-is/To-be), развилки не требует. */
+  --loader-fg: var(--odl-green-223);
+
+  --checkbox-checked-bg: var(--odl-green-223);
+  --checkbox-checked-bg-hover: var(--odl-green-289);
+
+  --radio-checked-bg: var(--odl-green-223);
+  --radio-checked-bg-hover: var(--odl-green-289);
+
+  --toggle-track-checked-bg: var(--odl-green-223);
+  --toggle-track-checked-bg-hover: var(--odl-green-289);
+  --toggle-track-checked-bg-disabled: var(--odl-green-137);
+
+  --range-input-accent: var(--odl-green-223);
+  /* Renamed from --range-input-accent-hover alongside the root token (see
+     round-2 audit comment there) — same #72A716 value, just no longer tied
+     to a thumb :hover interaction. */
+  --range-input-indicator-bg: var(--odl-green-289);
+  /* Design-check #45: thumb arrows are white in the old-brand theme (the
+     new theme's dark #252628 icon only reads against the pale cyan thumb —
+     against the old theme's green it needs the light variant instead). */
+  --range-input-thumb-icon-fg: var(--white-101);
+
+  --steps-active-ring: var(--odl-green-223);
+  --steps-fade-arrow-bg: var(--grey-1514);
+
+  /* Measured, not derived: the As-is step bar renders #82BF00, one step up
+     from the #72A716 the palette map alone would predict — the component's
+     own token moved a step in the rebrand, so the map can't be applied
+     blindly here. Same reasoning applies everywhere below marked
+     "(измерено)". */
+  --progress-step-fill: var(--odl-green-223);
+
+  --calendar-accent-fg: var(--odl-green-333);
+  --calendar-selected-bg: var(--grey-1514);
+
+  --filter-active-border: var(--odl-green-223);
+
+  /* #14B1D1 -> #699B12 per the replacement map (was #82BF00, i.e. the wrong
+     step of the ramp — the check glyph uses the same accent as the header's
+     links, which the As-is render shows at #699B12). */
+  --item-check-fg: var(--odl-green-333);
+
+  --file-item-loading-fg: var(--odl-green-289);
+
+  --chips-dark-bg: var(--grey-1514);
+  --chips-dark-bg-hover: var(--odl-grey-1156); /* approximated, see comment above */
+  /* Тёмно-синие ступени в старой палитре пары не имеют — берётся серая
+     линейка того же порядка светлоты. Без этой строки нажатый чип оставался
+     бы Dark blue 596, то есть синим посреди зелёной темы. */
+  --chips-dark-bg-active: var(--grey-517);
+
+  --switcher-active-black-bg: var(--grey-1514);
+  --button-menu-black-bg: var(--grey-1514); /* измерено */
+
+  /* Active is measured (#CFF7FF -> #F3F9E6, the selected page-size pill in
+     the As-is paginator). Hover/Onclick aren't drawn anywhere in the
+     instruction, so they stay derived from the replacement map's green ramp
+     — which puts hover at the same lightest step as active, since the old
+     palette has nothing lighter than Green 107. Flagged as approximate. */
+  --pagination-hover-bg: var(--odl-green-107);
+  --pagination-active-bg: var(--odl-green-107);
+  --pagination-onclick-bg: var(--odl-green-123);
+
+  --header-hover-fg: var(--odl-green-333);
+  --header-check-fg: var(--odl-green-333);
+
+  /* --- Success green: #39C182 -> #82BF00 (измерено на Informer, Toast,
+     Progress Bar и Tag в таблице As-is/To-be). Every token below holds the
+     same semantic "success" swatch, so they move together. --- */
+  --accordion-list-description-success-fg: var(--odl-green-223);
+  --progress-green: var(--odl-green-223);
+  --event-status-success-bg: var(--odl-green-223);
+  --informer-icon-green: var(--odl-green-223);
+  --toast-checked-icon: var(--odl-green-223);
+  --tag-green-bg: var(--odl-green-223);
+  --item-right-text-fg: var(--odl-green-223);
+  --ifield-success-fg: var(--odl-green-223);
+  /* No As-is counterpart drawn for the pale Secondary tint — derived as the
+     lightest green of the replacement map (Green 107). Approximate. */
+  --tag-green-secondary-bg: var(--odl-green-107);
+
+  /* --- Error red: #D74B54 -> #DE4A2A (измерено на Progress Bar, Top Fixed
+     Message и Tag). Kit-wide error swatch, so every holder moves.
+
+     Дизайн-чек №6: «У нас цвет красного статуса алый, для голубой новой
+     палитры цвет красного статуса скорее красно-розовый» — то есть развилка
+     по красному нужна во ВСЕХ компонентах, а не только там, где она уже была.
+     Недостающие держатели дописаны ниже; источник значений — таблица
+     «Было: Red colors / Стало: Red colors» на канвасе ребрендинга
+     (нода 70251:44107):
+
+       Было:  Red 603 #B92F10, Red 211 #CB4022, Red 241 #DE4A2A,
+              Red 182 #FFAB99, Red 147 #FFC9B5, Red 117 #FFE8E3, Red 109 #FFF2F0
+       Стало: Red 418 #D74B54, Red 344 #F0535E, Red 262 #FF737D,
+              Red 158 #FFBEB5, Red 117 #FFE8E3, Red 110 #FFF0F0
+
+     Светлые тинты сопоставляются по позиции в рампе — это подтверждают два
+     уже измеренных пикселями перехода (#FFAB99 <- #FFBEB5 и #FFC9B5 <-
+     #FFE8E3), поэтому следующая ступень даёт #FFE8E3 <- #FFF0F0.
+
+     Hover/active деструктивной кнопки раньше были выдуманы (#F05733/#FF6E4D,
+     «derived»): в новой теме кнопка на взаимодействии светлеет, и та же
+     логика была перенесена на старую. Но в палитре «Было» светлее #DE4A2A
+     нет ничего, кроме пастельных тинтов — зато ровно над ним стоят две
+     тёмные ступени, Red 211 и Red 603. То есть старый бренд на hover/active
+     ТЕМНЕЛ. Значения взяты из палитры, а не выведены, но на живом рендере
+     не сверялись — старой темы кнопки в этом файле Figma нет. --- */
+  --btn-destructive-bg: var(--odl-red-410);
+  --btn-destructive-bg-hover: var(--odl-red-488); /* Red 211 */
+  --btn-destructive-bg-active: var(--odl-red-603); /* Red 603 */
+  --input-border-error: var(--odl-red-410);
+  --input-border-error-hover: var(--odl-red-488);
+  --input-caption-error-fg: var(--odl-red-410);
+  --otp-error-fg: var(--odl-red-410);
+  --select-border-error: var(--odl-red-410);
+  --select-border-error-hover: var(--odl-red-488);
+  --select-caption-error-fg: var(--odl-red-410);
+  --checkbox-border-error: var(--odl-red-410);
+  --checkbox-caption-error-fg: var(--odl-red-410);
+  --radio-border-error: var(--odl-red-410);
+  --radio-caption-error-fg: var(--odl-red-410);
+  --toggle-caption-error-fg: var(--odl-red-410);
+  --range-input-accent-error: var(--odl-red-410);
+  --range-input-caption-error-fg: var(--odl-red-410);
+  --file-upload-border-error: var(--odl-red-410);
+  --file-item-error-fg: var(--odl-red-410);
+  --accordion-list-description-error-fg: var(--odl-red-410);
+  --progress-red: var(--odl-red-410);
+  --steps-status-error-fg: var(--odl-red-410);
+  --badge-red-bg: var(--odl-red-410);
+  --informer-icon-red: var(--odl-red-410);
+  --notification-dot: var(--odl-red-410);
+  --toast-error-icon: var(--odl-red-410);
+  --top-fixed-message-red-icon: var(--odl-red-410);
+  --tag-red-bg: var(--odl-red-410);
+  --header-logout-fg: var(--odl-red-410);
+  --header-unread-dot: var(--odl-red-410);
+  --item-comment-red-fg: var(--odl-red-410);
+  --ifield-error-fg: var(--odl-red-410);
+  --status-screen-error-fg: var(--odl-red-410);
+
+  /* --- Message surfaces (измерено попиксельно на карточках Toast и Top
+     Fixed Message в таблице As-is/To-be) --- */
+  --toast-checked-bg: var(--odl-green-123);
+  --toast-checked-border: var(--odl-green-137);
+  --toast-error-bg: var(--odl-red-147);
+  --toast-error-border: var(--odl-red-182);
+  --top-fixed-message-red-bg: var(--odl-red-147);
+  --top-fixed-message-blue-bg: var(--odl-dark-blue-117);
+  --accordion-card-blocked-bg-hover: var(--odl-red-147);
+  --mail-feed-error-bg: var(--odl-red-147);
+  /* #F0FCFF -> #F3F9E6 per the replacement map (same pale tint the paginator
+     uses). Not drawn in the instruction — derived. */
+  --mail-feed-new-bg: var(--odl-green-107);
+
+  /* --- Дизайн-чек №6: держатели статусных цветов, у которых развилки не было
+     вовсе, поэтому в старой теме они оставались ребрендированными. Найдены
+     сплошной сверкой :root против этого блока по семействам цветов. --- */
+
+  /* Самый светлый красный тинт, #FFF0F0 (Red 110) -> #FFE8E3 (Red 117) — на
+     ступень ниже по рампе «Было», см. разбор выше. Именно это замечание
+     дизайнер и поймал на Blocked-состоянии аккордеона. */
+  --accordion-card-blocked-bg: var(--red-117);
+  --file-item-error-bg: var(--red-117);
+  --tag-red-secondary-bg: var(--red-117);
+  /* #FAE9EA — разовое значение Status Screen, которого нет ни в одной палитре
+     Figma (см. story «.Colors»). Отправлен на ту же светлую ступень, что и
+     остальные пастельные красные. Выведено, не измерено. */
+  --status-screen-error-bg: var(--red-117);
+
+  /* Зелёный success: тот же #39C182 -> #82BF00, что и у соседей выше — этот
+     держатель просто пропустили. */
+  --table-number-positive-fg: var(--odl-green-223);
+  /* Тёмно-зелёный #1F9254 и пастельный #E7F8F0 в карте замен не размечены:
+     отправлены на тёмную и самую светлую ступени зелёной рампы «Было»
+     (Green 333 / Green 107). Выведено, не измерено. */
+  --status-screen-success-fg: var(--odl-green-333);
+  --status-screen-success-bg: var(--odl-green-107);
+}

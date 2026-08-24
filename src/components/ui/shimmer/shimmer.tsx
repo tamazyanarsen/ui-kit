@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 //
 // Motion is a plain opacity pulse (`animate-pulse`), not a sliding shine
 // sweep — the highlight is baked into the static gradient background
-// instead (see the --shimmer-* token comment in index.css) — at the spec's
+// instead (see the --shimmer-* token comment in styles/tokens-table.css) — at the spec's
 // own 1.8s cycle rather than Tailwind's default 2s.
 interface ShimmerProps extends React.ComponentProps<"div"> {
   shape?: "square" | "circle"

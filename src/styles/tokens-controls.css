@@ -1,0 +1,146 @@
+/* Семантические токены темы ЕЛК: Чекбокс, радио, тумблер, слайдер, загрузка файлов.
+   Ссылаются на палитру (`palette.css`); компоненты ходят только сюда. */
+
+:root {
+  /* Checkbox + multi-select Combobox tokens. Checked fill sampled directly
+     from the "Список" multi-select spec screenshot — it's the same cyan as
+     --btn-primary-bg, kept in its own namespace in case that changes.
+     Standalone Checkbox additionally uses the label/caption tokens below,
+     measured from ui/checkbox/checkbox-1.svg — hover border and the
+     checked-hover fill are notably NOT the same as Combobox's static item
+     checkbox, which has no hover state of its own. */
+  --checkbox-bg: var(--white-101);
+  --checkbox-border: var(--grey-166);
+  --checkbox-border-hover: var(--grey-1514);
+  --checkbox-border-error: var(--red-418);
+  --checkbox-checked-bg: var(--blue-223);
+  --checkbox-checked-bg-hover: var(--blue-187);
+  --checkbox-checked-fg: var(--grey-1514);
+  --checkbox-disabled-bg: var(--grey-114);
+  --checkbox-disabled-border: var(--grey-166);
+  --checkbox-disabled-fg: var(--grey-166);
+  --checkbox-label-fg: var(--grey-1514);
+  --checkbox-label-fg-disabled: var(--grey-284);
+  --checkbox-caption-fg: var(--grey-284);
+  --checkbox-caption-fg-disabled: var(--grey-166);
+  --checkbox-caption-error-fg: var(--red-418);
+
+  /* Radio tokens. Same 24×24 box size, gap, and label/caption palette as
+     Checkbox (measured from ui/radio/radio-1.svg) — pixel-sampled directly
+     from the anatomy PNG since checked/hover circles are drawn as filled
+     paths, not <circle> elements grep can pull colors from. Unchecked is a
+     hollow ring (bg + border, no fill); checked is a SOLID filled disc
+     (bg = the accent color, border transparent) with a contrasting dot on
+     top — not a colored ring like Checkbox's box, confirmed by zooming into
+     the raster (a first pass wrongly assumed a ring here). */
+  --radio-bg: var(--white-101);
+  --radio-border: var(--grey-166);
+  --radio-border-hover: var(--grey-1514);
+  --radio-checked-bg: var(--blue-223);
+  --radio-checked-bg-hover: var(--blue-187);
+  --radio-checked-dot: var(--grey-1514);
+  --radio-disabled-bg: var(--grey-114);
+  --radio-disabled-border: var(--grey-166);
+  --radio-disabled-dot: var(--grey-166);
+  --radio-label-fg: var(--grey-1514);
+  --radio-label-fg-disabled: var(--grey-284);
+  --radio-caption-fg: var(--grey-284);
+  --radio-caption-fg-disabled: var(--grey-166);
+  /* Round-2 audit addition: Radio's own Error=True anatomy variant
+     (600:8785 Desktop / 600:8790 Mobile) was previously unimplemented — a
+     prior pass wrongly assumed no error state existed for Radio. Both
+     values are literal matches for Checkbox's --checkbox-border-error /
+     --checkbox-caption-error-fg (same Red 418 swatch, #D74B54). */
+  --radio-border-error: var(--red-418);
+  --radio-caption-error-fg: var(--red-418);
+
+  /* Toggle tokens, measured from ui/toggle/toggle-1.svg. Unlike
+     Checkbox/Radio, the track itself never gets an error color — only the
+     caption text turns red, and it can stack a comment + a separate error
+     line simultaneously (see ToggleField). */
+  --toggle-track-bg: var(--grey-284);
+  --toggle-track-bg-hover: var(--grey-166);
+  --toggle-track-checked-bg: var(--blue-223);
+  --toggle-track-checked-bg-hover: var(--blue-187);
+  --toggle-track-bg-disabled: var(--grey-114);
+  --toggle-track-checked-bg-disabled: var(--blue-121);
+  --toggle-thumb-bg: var(--white-101);
+  --toggle-label-fg: var(--grey-1514);
+  --toggle-label-fg-disabled: var(--grey-284);
+  --toggle-caption-fg: var(--grey-284);
+  --toggle-caption-fg-disabled: var(--grey-166);
+  --toggle-caption-error-fg: var(--red-418);
+
+  /* Range Input tokens, measured from ui/range input/range Input.svg,
+     cross-checked against the raster (thumb/indicator are filled paths, not
+     colored rects — same trap as Radio). Border follows Input's convention
+     (hover/focused = #999999), not Checkbox/Radio's (#252628) — this is a
+     bordered-box field like Input, not a standalone control. Unlike
+     Checkbox/Radio's colored-border error, error here keeps the box border
+     neutral and only recolors the track/thumb accent + caption text. */
+  --range-input-bg: var(--white-101);
+  --range-input-bg-disabled: var(--grey-114);
+  --range-input-border: var(--grey-166);
+  --range-input-border-hover: var(--grey-284);
+  --range-input-border-disabled: var(--grey-166);
+  --range-input-label-fg: var(--grey-284);
+  --range-input-value-fg: var(--grey-1514);
+  /* Round-2 audit fix: was #C8C8CB. Pixel-sampled the live Disabled/Filled
+     symbol screenshot (14342:39960) — the Value text renders as solid
+     #6D6D6D (grey-517), not the lighter grey used for borders. */
+  --range-input-value-fg-disabled: var(--grey-517);
+  /* Round-2 audit fix: was #EFEFEF. Pixel-sampled the unfilled portion of
+     the track across Default/Hover/Disabled/Error screenshots (all at the
+     same coordinates, right of the thumb) — consistently #C8C8CB
+     (grey-166), never the lighter #EFEFEF. */
+  --range-input-track-bg: var(--grey-166);
+  /* Thumb pill color — pixel-sampled #80E3FF (base/blue-223) in every
+     enabled state screenshot (Default/Hover/Focused all identical); this is
+     a static color, not something that recolors on the thumb's own :hover. */
+  --range-input-accent: var(--blue-223);
+  /* Round-2 audit fix: this was previously applied as a Thumb :hover
+     recolor, which pixel-sampling disproves — the Default/Hover/Focused
+     screenshots all show the *indicator* (filled track, left of the thumb)
+     as a constant #2FCEEF while the thumb itself stays #80E3FF; neither
+     changes with the whole-box Hover/Focused state. Renamed from
+     --range-input-accent-hover to reflect that it's the indicator's
+     permanent fill, not a hover interaction. */
+  --range-input-indicator-bg: var(--blue-187);
+  --range-input-accent-disabled: var(--grey-166);
+  --range-input-accent-error: var(--red-418);
+  --range-input-thumb-icon-fg: var(--grey-1514);
+  --range-input-thumb-icon-fg-error: var(--white-101);
+  /* Round-2 audit addition: the Disabled symbol's chevron icon SVGs
+     (fill="white") show the thumb icon turning white on a grey disabled
+     thumb, same treatment as the error state — the component previously
+     left the icon at --range-input-thumb-icon-fg (dark) when disabled,
+     unreadable against the grey pill. */
+  --range-input-thumb-icon-fg-disabled: var(--white-101);
+  --range-input-scale-fg: var(--grey-284);
+  --range-input-caption-fg: var(--grey-284);
+  --range-input-caption-error-fg: var(--red-418);
+
+  /* File Upload + File (list item) tokens. Values follow the same
+     border/bg palette as Select/Input; "Grey 100" drag-over fill and the
+     error/loading accents are called out explicitly in the spec text. */
+  --file-upload-bg: var(--white-101);
+  --file-upload-bg-hover: var(--grey-106);
+  --file-upload-bg-disabled: var(--white-101);
+  --file-upload-border: var(--grey-284);
+  --file-upload-border-hover: var(--grey-284);
+  --file-upload-border-disabled: var(--grey-166);
+  --file-upload-border-error: var(--red-418);
+  --file-upload-fg: var(--grey-1514);
+  --file-upload-fg-disabled: var(--grey-166);
+  --file-upload-subtitle-fg: var(--grey-284);
+  --file-upload-subtitle-fg-disabled: var(--grey-166);
+
+  --file-item-fg: var(--grey-1514);
+  --file-item-meta-fg: var(--grey-284);
+  --file-item-icon-fg: var(--grey-1514);
+  --file-item-icon-bg: var(--grey-106);
+  --file-item-fg-disabled: var(--grey-166);
+  --file-item-loading-fg: var(--blue-187);
+  --file-item-error-fg: var(--red-418);
+  --file-item-error-bg: var(--red-110);
+}

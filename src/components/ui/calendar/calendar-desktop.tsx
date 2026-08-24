@@ -1,14 +1,9 @@
 import { cn } from "@/lib/utils"
 import { MONTHS_RU_FULL, addMonths, isInRange, isSameDay } from "@/lib/calendar"
-import {
-  CalendarFooter,
-  DayGrid,
-  HeaderLabel,
-  MonthGrid,
-  NavHeader,
-  WeekdaysRow,
-  YearGrid,
-} from "./primitives"
+import { CalendarFooter } from "./footer"
+import { DayGrid, WeekdaysRow } from "./day-grid"
+import { HeaderLabel, NavHeader } from "./nav-header"
+import { MonthGrid, YearGrid } from "./picker-grid"
 import type { CalendarMode, CalendarSingleMonth, CalendarView } from "./types"
 
 interface CalendarDesktopProps {

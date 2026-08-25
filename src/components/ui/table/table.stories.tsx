@@ -13,6 +13,8 @@ import {
 import { StorySection, StoryShowcase } from "@/stories/matrix"
 import { TABLE_ROWS } from "@/stories/table-data"
 import { TableExample, type TableExampleProps } from "@/stories/table-example"
+import { TableFieldTypesExample } from "@/stories/table-field-types-example"
+import { TableFieldsExample } from "@/stories/table-fields-example"
 
 const meta = {
   title: "Компоненты/Table",
@@ -228,6 +230,31 @@ export const Matrix: Story = {
         description="Прокрутите таблицу по горизонтали: закреплённые блоки слева и справа отбрасывают тень только пока за ними есть скрытый контент."
       >
         <TableExample stickyHeader />
+      </StorySection>
+    </StoryShowcase>
+  ),
+}
+
+/* Третья история — не вариант оформления, а второй способ собрать таблицу:
+   вместо разметки строк место использования отдаёт данные и конфиг полей, а
+   ячейки строит `DataTable` по типу поля. */
+export const Fields: Story = {
+  name: "По конфигу полей (DataTable)",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StoryShowcase>
+      <StorySection
+        title="Таблица по конфигу полей"
+        description="Ни одной ячейки в разметке: `fields` описывает столбцы, `rows` отдаёт данные. Даты приходят строками ISO, суммы — числами, статусы — ключами словаря; формат, выключка, табличные цифры и знак валюты выбираются по типу поля. Вложенность выключает сортировку — по документации она невозможна без нарушения иерархии."
+      >
+        <TableFieldsExample />
+      </StorySection>
+
+      <StorySection
+        title="Все типы полей"
+        description="По столбцу на тип: text, list («Несколько (N)»), number, money, percent, date, datetime, time, boolean, checkbox, tag, link, custom и пустое значение."
+      >
+        <TableFieldTypesExample />
       </StorySection>
     </StoryShowcase>
   ),

@@ -6,6 +6,17 @@ export { TableCell } from "./cell"
 export type { TableCellProps } from "./cell"
 export type { TableCellType, TableHeadCellType } from "./types"
 export { MIN_COLUMN_WIDTH, NESTING_INDENT } from "./geometry"
+export { DataTable } from "./data-table"
+export type { DataTableProps } from "./data-table-props"
+export { columnsFromFields } from "./table-columns"
+export type { TableSort } from "./use-table-sort"
+export { TABLE_FIELD_TYPES } from "./field-types"
+export type {
+  TableField,
+  TableFieldTag,
+  TableFieldType,
+  TableFieldTypeSpec,
+} from "./field-types"
 export { TableBlock, TableBlockEmpty } from "./block"
 export { TableColumnSettings } from "./column-settings"
 export type { TableColumnSettingsProps, TableColumn } from "./column-settings"

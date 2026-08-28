@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 interface ToggleOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
+  /** Строка — текст ошибки; `true` — только состояние ошибки, без текста. */
   error?: React.ReactNode
 }
 
@@ -27,9 +28,13 @@ function Toggle({
 }: ToggleProps) {
   const generatedId = React.useId()
   const toggleId = id ?? generatedId
-  const hasCaption = Boolean(comment || error)
+  // Дизайн-чек 3/3 №6: `error` принимает и `true` — состояние ошибки без
+  // текста (у тогла трек не краснеет, поэтому визуально это ничего не
+  // добавляет, но контрол «Error» остаётся независимым от «Show Error Text»).
+  const errorText = typeof error === "boolean" ? null : error
+  const hasCaption = Boolean(comment || errorText)
   const commentId = comment ? `${toggleId}-comment` : undefined
-  const errorId = error ? `${toggleId}-error` : undefined
+  const errorId = errorText ? `${toggleId}-error` : undefined
   const describedBy = [commentId, errorId].filter(Boolean).join(" ") || undefined
 
   const track = (
@@ -104,12 +109,12 @@ function Toggle({
             {comment}
           </span>
         )}
-        {error && (
+        {errorText && (
           <span
             id={errorId}
             className="text-p3-medium text-[var(--toggle-caption-error-fg)]"
           >
-            {error}
+            {errorText}
           </span>
         )}
       </span>

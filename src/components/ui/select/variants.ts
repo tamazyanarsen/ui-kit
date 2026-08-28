@@ -17,8 +17,14 @@ export const selectTriggerVariants = cva(
         // Round-2 audit: was px-3 (12px) — the literal 32px-tall "ELK /
         // select" instance sampled off canvas 666:11 uses px-[16px], same
         // as the lg size, not a smaller horizontal inset.
-        sm: "h-8 gap-2 rounded-[8px] px-4 text-p2-medium",
-        lg: "h-12 gap-2 rounded-[16px] px-4 text-p2-medium desktop:h-14 desktop:text-p1-medium",
+        // Дизайн-чек 3/3 №21: высоты стали минимальными, а не жёсткими.
+        // Маска `Logotype BIK` (7170:88715) — трёхстрочная (подпись, значение
+        // и БИК), её блок в макете 52px, и в коробку фиксированной высоты
+        // 56px она не влезала: третья строка обрезалась нижней границей.
+        // Пустое и однострочное поле от этой замены не меняется — контент
+        // ниже минимума, `items-center` держит его по центру.
+        sm: "min-h-8 gap-2 rounded-[8px] px-4 text-p2-medium",
+        lg: "min-h-12 gap-2 rounded-[16px] px-4 text-p2-medium desktop:min-h-14 desktop:text-p1-medium",
       },
       invalid: {
         true: "border-[var(--select-border-error)] hover:border-[var(--select-border-error-hover)] focus:border-[var(--select-border-error-hover)]",

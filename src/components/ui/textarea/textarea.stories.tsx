@@ -36,7 +36,11 @@ const meta = {
     // `rows` остаётся нативным атрибутом textarea, но контролом его больше
     // не выставляем: высоту задаёт мастер (98px Mobile / 112px Desktop).
     rows: { table: { disable: true } },
-    locked: { control: "boolean" },
+    locked: { control: "boolean", name: "Lock Input" },
+    lockedHint: { control: "text", name: "Причина блокировки" },
+    // Дизайн-чек 3/3 №19: тогл иконки «i» в строке комментария.
+    showCommentIcon: { control: "boolean", name: "Show Comment Icon" },
+    commentHint: { control: "text", name: "Текст по клику на «i»" },
     disabled: { control: "boolean" },
     state: stateArgType,
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
@@ -46,7 +50,11 @@ const meta = {
   args: {
     label: "Label",
     placeholder: "Placeholder",
+    comment: "Comment",
     locked: false,
+    lockedHint: "Поле заполняется автоматически и не редактируется",
+    showCommentIcon: false,
+    commentHint: "Дополнительная информация по полю",
     disabled: false,
     state: "default" as PlaygroundState,
     viewport: "auto" as Viewport,
@@ -56,10 +64,22 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
+/* Дизайн-чек 3/3 №18: у Lock Input в спеке (52140:162555) написано «всегда
+   заполнено» — пустое заблокированное поле состояния не показывает. Поэтому
+   при включённом `locked` в Playground подставляется текст; `key` заставляет
+   поле перемонтироваться, иначе неуправляемая textarea сохранила бы старое
+   значение при переключении контрола. */
+const LOCKED_VALUE =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna"
+
 export const Playground: Story = {
   render: ({ state, viewport, ...args }) => (
     <PseudoBox state={state} viewport={viewport} className="w-96">
-      <Textarea {...args} />
+      <Textarea
+        key={args.locked ? "locked" : "editable"}
+        {...args}
+        defaultValue={args.locked ? LOCKED_VALUE : undefined}
+      />
     </PseudoBox>
   ),
 }

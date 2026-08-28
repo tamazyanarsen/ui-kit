@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react"
 
-import { Download, Search } from "@/icons"
+import { Download } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuBlack } from "@/components/ui/button-menu"
-import { EmptySearchResults } from "@/components/ui/empty-search"
+import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
 import { Pagination } from "@/components/ui/pagination"
 import {
   DataTable,
@@ -145,12 +145,7 @@ function TableFieldsExample({
         containerClassName={stickyHeader ? "max-h-[320px]" : undefined}
         onRowClick={clickable ? () => {} : undefined}
         empty={
-          <EmptySearchResults
-            icon={<Search aria-hidden="true" />}
-            title="По вашему запросу ничего не найдено"
-            description="Попробуйте изменить критерии поиска"
-            buttonLabel="Сбросить фильтры"
-          />
+          <EmptySearchResults {...EMPTY_FILTERED} />
         }
       />
 

@@ -40,10 +40,24 @@ export function useOverflowCount(itemCount: number, reservedWidth: number, gap =
     const widthOf = (el: HTMLElement | null) =>
       el ? el.getBoundingClientRect().width : 0
 
-    const fitsAll =
-      itemRefs.current.slice(0, itemCount).reduce((sum, el) => sum + widthOf(el), 0) +
-      gap * (itemCount - 1)
+    const itemsWidth = itemRefs.current
+      .slice(0, itemCount)
+      .reduce((sum, el) => sum + widthOf(el), 0)
     const available = container.clientWidth
+
+    // ⚠️ Нулевая ширина — это «ещё не померили», а не «не помещается».
+    // Контейнер бывает нулевым, пока он скрыт, не разложен или отрисован в
+    // jsdom, а элементы — пока не подхватился шрифт. Без этой проверки
+    // расчёт `gap * (itemCount - 1)` сам по себе больше нулевого
+    // `available`, и ряд схлопывается до одного элемента на пустом месте:
+    // именно так табы и свитчер потеряли все пункты, кроме первого, как
+    // только зазор начали учитывать (дизайн-чек 3/3 №12).
+    if (available === 0 || itemsWidth === 0) {
+      setVisibleCount(itemCount)
+      return
+    }
+
+    const fitsAll = itemsWidth + gap * (itemCount - 1)
 
     if (fitsAll <= available) {
       setVisibleCount(itemCount)

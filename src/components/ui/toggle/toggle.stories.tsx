@@ -12,9 +12,15 @@ import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Toggle, type ToggleProps } from "./toggle"
 
-type PlaygroundArgs = ToggleProps & {
+type PlaygroundArgs = Omit<ToggleProps, "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
+  // Дизайн-чек 3/3 №6: состояние ошибки, её текст и комментарий
+  // переключаются отдельными тоглами, а не наличием текста в поле ввода.
+  error?: boolean
+  errorText?: string
+  showErrorText?: boolean
+  showComment?: boolean
 }
 
 const meta = {
@@ -23,10 +29,13 @@ const meta = {
   parameters: { layout: "centered" },
   argTypes: {
     label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
     checked: { control: "boolean" },
     disabled: { control: "boolean" },
+    error: { control: "boolean", name: "Error" },
+    showErrorText: { control: "boolean", name: "Show Error Text" },
+    errorText: { control: "text", name: "Текст ошибки" },
+    showComment: { control: "boolean", name: "Show Comment" },
+    comment: { control: "text", name: "Текст комментария" },
     state: stateArgType,
     // Дизайн-чек №3 №7: «Некорректные пропсы (не соответствуют фигме).
     // Например, нет возможности настроить mobile». В Figma у компонента
@@ -37,9 +46,12 @@ const meta = {
   args: {
     label: "Согласен с условиями договора",
     comment: "Договор комплексного банковского обслуживания",
+    showComment: true,
     checked: false,
     disabled: false,
-    error: "",
+    error: false,
+    errorText: "Text about error here",
+    showErrorText: true,
     state: "default" as PlaygroundState,
     viewport: "auto" as Viewport,
   },
@@ -48,13 +60,27 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-function Controlled({ state, viewport, checked, ...props }: PlaygroundArgs) {
+function Controlled({
+  state,
+  viewport,
+  checked,
+  error,
+  errorText,
+  showErrorText,
+  showComment,
+  comment,
+  ...props
+}: PlaygroundArgs) {
   const [internal, setInternal] = useState(false)
   return (
     <ViewportScope viewport={viewport}>
       <PseudoBox state={state}>
         <Toggle
           {...props}
+          // Дизайн-чек 3/3 №7: комментарий и ошибка выводятся вместе,
+          // включение ошибки комментарий не гасит (макет 1242:99741).
+          comment={showComment ? comment : undefined}
+          error={error ? (showErrorText ? errorText || true : true) : undefined}
           checked={checked ?? internal}
           onCheckedChange={setInternal}
         />

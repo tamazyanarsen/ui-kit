@@ -40,6 +40,14 @@ interface EmptySearchResultsProps {
   buttonLabel?: React.ReactNode
   /** «Нам здесь может понадобиться либо брендовая кнопка, либо серая». */
   buttonVariant?: "primary" | "secondary-grey"
+  /**
+   * Иконка в кнопке. Дизайн-чек 3/3 №27: у кейса «нулевой результат
+   * фильтрации» кнопка «Сбросить фильтры» несёт тот же значок
+   * `icon / clear filter`, что и одноимённая кнопка в шапке таблицы, —
+   * «чтобы два способа сбросить фильтры читались как одно действие»
+   * (пакет дизайнера, EmptySearchResults/empty-cases.tsx).
+   */
+  buttonIcon?: React.ComponentType<React.SVGProps<SVGSVGElement>>
   onButtonClick?: () => void
   className?: string
 }
@@ -52,6 +60,7 @@ function EmptySearchResults({
   showButton,
   buttonLabel,
   buttonVariant = "secondary-grey",
+  buttonIcon,
   onButtonClick,
   className,
 }: EmptySearchResultsProps) {
@@ -103,6 +112,8 @@ function EmptySearchResults({
           type="button"
           variant={buttonVariant}
           size="sm"
+          icon={buttonIcon}
+          iconPosition={buttonIcon ? "left" : undefined}
           onClick={onButtonClick}
         >
           {buttonLabel}

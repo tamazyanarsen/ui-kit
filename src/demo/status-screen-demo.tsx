@@ -34,8 +34,8 @@ function StatusScreenDemo() {
                 status="success"
                 title="Операция выполнена"
                 subtitle="Перевод успешно отправлен получателю"
-                primaryLabel="Готово"
-                secondaryLabel="К списку операций"
+                primaryButtonLabel="Готово"
+                secondaryButtonLabel="К списку операций"
               />
             </div>
           </div>
@@ -47,7 +47,7 @@ function StatusScreenDemo() {
                 status="error"
                 title="Не удалось выполнить операцию"
                 subtitle="Попробуйте повторить позже"
-                primaryLabel="Повторить"
+                primaryButtonLabel="Повторить"
               />
             </div>
           </div>
@@ -59,7 +59,7 @@ function StatusScreenDemo() {
                 status="attention"
                 title="Требуется подтверждение"
                 subtitle="Подтвердите операцию в приложении банка"
-                secondaryLabel="Отмена"
+                secondaryButtonLabel="Отмена"
               />
             </div>
           </div>
@@ -76,7 +76,7 @@ function StatusScreenDemo() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {STATUSES.map(({ status, label }) => (
                 <div key={status} className="rounded-lg border border-[#DEDEDE]">
-                  <StatusScreen status={status} title={label} primaryLabel="Button" />
+                  <StatusScreen status={status} title={label} primaryButtonLabel="Button" />
                 </div>
               ))}
             </div>

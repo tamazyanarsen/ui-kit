@@ -17,10 +17,19 @@ import { RadioGroup } from "./root"
 // Size / State / Error), поэтому в контролах оно должно быть, как и у
 // Checkbox. У самого Radio такого пропа нет: выбранность живёт в группе,
 // поэтому контрол управляет значением обёртки.
-type PlaygroundArgs = RadioProps & {
+type PlaygroundArgs = Omit<RadioProps, "error"> & {
   state?: PlaygroundState
   checked?: boolean
   viewport?: Viewport
+  // Дизайн-чек 3/3 №2: раньше в панели были только поля ввода `comment` и
+  // `error`, а переключателей состояний не было — чтобы включить ошибку,
+  // приходилось руками набирать текст, а чтобы её убрать — стирать его.
+  // Теперь состояние ошибки, показ её текста и показ комментария —
+  // три независимых тогла (Error / Show Comment из свойств `ELK / radio`).
+  error?: boolean
+  errorText?: string
+  showErrorText?: boolean
+  showComment?: boolean
 }
 
 const meta = {
@@ -29,10 +38,13 @@ const meta = {
   parameters: { layout: "centered" },
   argTypes: {
     label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
     checked: { control: "boolean", name: "Checked" },
     disabled: { control: "boolean" },
+    error: { control: "boolean", name: "Error" },
+    showErrorText: { control: "boolean", name: "Show Error Text" },
+    errorText: { control: "text", name: "Текст ошибки" },
+    showComment: { control: "boolean", name: "Show Comment" },
+    comment: { control: "text", name: "Текст комментария" },
     state: stateArgType,
     // Size=Desktop/Mobile — свойство компонент-сета в Figma, поэтому форма
     // выбирается контролом, а не шириной вьюпорта (дизайн-чек №3 №19).
@@ -42,9 +54,12 @@ const meta = {
     value: "a",
     label: "Согласен с условиями договора",
     comment: "Договор комплексного банковского обслуживания",
+    showComment: true,
     checked: false,
     disabled: false,
-    error: "",
+    error: false,
+    errorText: "Text about error here",
+    showErrorText: true,
     state: "default" as PlaygroundState,
     viewport: "auto" as Viewport,
   },
@@ -56,7 +71,17 @@ type Story = StoryObj<PlaygroundArgs>
 // A Radio only means anything inside a RadioGroup (it's the group that owns
 // the selected value), so the Playground wraps a single one in its own
 // group and keeps it clickable.
-function Controlled({ state, checked, viewport, ...props }: PlaygroundArgs) {
+function Controlled({
+  state,
+  checked,
+  viewport,
+  error,
+  errorText,
+  showErrorText,
+  showComment,
+  comment,
+  ...props
+}: PlaygroundArgs) {
   const [value, setValue] = useState<unknown>(null)
   // Контрол побеждает, когда выставлен, но клик по радио продолжает
   // работать — иначе контрол выглядел бы мёртвым.
@@ -69,7 +94,13 @@ function Controlled({ state, checked, viewport, ...props }: PlaygroundArgs) {
     <ViewportScope viewport={viewport}>
       <RadioGroup value={value} onValueChange={setValue}>
         <PseudoBox state={state}>
-          <Radio {...props} />
+          <Radio
+            {...props}
+            comment={showComment ? comment : undefined}
+            // `true` — состояние ошибки без текста: обводка краснеет,
+            // подпись остаётся комментарием (см. radio.tsx).
+            error={error ? (showErrorText ? errorText || true : true) : undefined}
+          />
         </PseudoBox>
       </RadioGroup>
     </ViewportScope>

@@ -30,9 +30,9 @@ const TABS: TabItem[] = [
   { value: "closed", label: "Закрытые" },
 ]
 
-/* `Number of Chips` — свойство `Group Chips (ELK)` (1…12+). Раньше в
-   истории было жёстко два фильтра, и проверить, как панель ведёт себя при
-   переполнении, было негде. */
+/* `Number of Chips` — свойство `Chips Table` (1…16 по таблице свойств
+   8503:20951). Раньше в истории было жёстко два фильтра, и проверить, как
+   панель ведёт себя при переполнении, было негде. */
 const CHIP_LABELS = [
   "Статус",
   "Менеджер",
@@ -42,7 +42,31 @@ const CHIP_LABELS = [
   "Период",
   "Счёт",
   "Контрагент",
+  "Подразделение",
+  "Ategория",
+  "Ответственный",
+  "Источник",
+  "Приоритет",
+  "Регион",
+  "Проект",
+  "Договор",
 ]
+
+/* Дизайн-чек 3/3 №25: «по многим компонентам внутри компонента table top
+   недостаточно контролов отображения». Полный список свойств из макета
+   (1246:196999) — четыре таблицы, по одной на вложенный блок:
+
+     Table Top      — Show Title, Show Tab, Show Filter
+     Title Options  — Show Button
+     Chips Table    — Number of Chips (1–16), Show Search, Show Last Chips,
+                      Show Clean Filter
+     Filter Options — Type (Setting / Select), Show Filters, Show Select,
+                      Show Setting, Show Download
+
+   Раньше из них в контролах жили только пять, причём под своими именами
+   («showActions» одним тумблером гасил и «Скачать», и «Настроить столбцы»,
+   а «Ещё фильтры» и «Сбросить фильтры» не гасились вовсе). Ниже пропсы
+   названы ровно как свойства в макете, чтобы список сходился один в один. */
 
 const SORT_OPTIONS = [
   { value: "desc", label: "По убыванию" },
@@ -75,29 +99,49 @@ function DownloadMenu() {
 }
 
 interface FullExampleProps {
+  // Table Top
   title?: string
-  showTitleAction?: boolean
-  showTabs?: boolean
-  showSearch?: boolean
-  showFilters?: boolean
+  showTitle?: boolean
+  showTab?: boolean
+  showFilter?: boolean
+  // Title Options
+  showButton?: boolean
+  // Chips Table
   chipsCount?: number
-  showActions?: boolean
+  showSearch?: boolean
+  showLastChips?: boolean
+  showCleanFilter?: boolean
+  // Filter Options (информационная строка)
+  resultType?: "Setting" | "Select"
+  showFilters?: boolean
+  showSelect?: boolean
+  showSetting?: boolean
+  showDownload?: boolean
+  // Собственный слот кита — «Сводка» внизу (70279:10367)
   showDetails?: boolean
 }
 
 function FullExample({
   title = "Заголовок таблицы",
-  showTitleAction = true,
-  showTabs = true,
-  showSearch = true,
-  showFilters = true,
+  showTitle = true,
+  showTab = true,
+  showFilter = true,
+  showButton = true,
   chipsCount = 2,
-  showActions = true,
+  showSearch = true,
+  showLastChips = true,
+  showCleanFilter = true,
+  resultType = "Setting",
+  showFilters = true,
+  showSelect = false,
+  showSetting = true,
+  showDownload = true,
   showDetails = true,
 }: FullExampleProps = {}) {
   const [tab, setTab] = useState("all")
   const [search, setSearch] = useState("")
   const [moreOpen, setMoreOpen] = useState(false)
+  const [sort, setSort] = useState<string | null>("desc")
   const [values, setValues] = useState<Record<string, string | null>>({})
   // Первый чип виден всегда, остальные раскрываются кнопкой «Ещё фильтры» —
   // так же, как в макете.
@@ -105,36 +149,74 @@ function FullExample({
   const visibleChips = moreOpen ? chips : chips.slice(0, 1)
   const appliedCount = Object.values(values).filter(Boolean).length
 
+  // `Type=Setting` — справа кнопки управления таблицей, `Type=Select` — поле
+  // сортировки. По таблице свойств это одна ось, поэтому Select появляется
+  // только во втором режиме.
+  const settingMode = resultType === "Setting"
+  const summaryActions = settingMode ? (
+    <>
+      {showDownload && <DownloadMenu />}
+      {showSetting && (
+        <Button variant="secondary-grey" size="sm" icon={Settings2} iconPosition="left">
+          Настроить столбцы
+        </Button>
+      )}
+    </>
+  ) : showSelect ? (
+    <Select items={SORT_OPTIONS} value={sort} onValueChange={setSort}>
+      <SelectTrigger size="sm">
+        <SelectValue placeholder="Сортировка" />
+      </SelectTrigger>
+      <SelectContent>
+        {SORT_OPTIONS.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
+            {o.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  ) : undefined
+  const hasSummaryActions = settingMode
+    ? showDownload || showSetting
+    : showSelect
+
   return (
     <TableTop>
-      <TableTopTitle
-        title={title}
-        action={
-          showTitleAction ? (
-            <Button variant="secondary-grey" size="sm">
-              Button
-            </Button>
-          ) : undefined
-        }
-      />
-      {showTabs && <Tabs items={TABS} value={tab} onValueChange={setTab} />}
-      <TableTopToolbar>
-        {/* Figma's search field is a fixed 260px column inside the filter
-            row; Input's own root is always w-full, so the width lives on a
-            wrapper. */}
-        {showSearch && (
-        <div className="w-[260px]">
-          <Input
-            size="sm"
-            iconLeft={<Search aria-hidden="true" />}
-            placeholder="Поиск по нескольким крит..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        )}
-        {showFilters &&
-          visibleChips.map((label) => (
+      {showTitle && (
+        <TableTopTitle
+          title={title}
+          action={
+            showButton ? (
+              <Button variant="secondary-grey" size="sm">
+                Button
+              </Button>
+            ) : undefined
+          }
+        />
+      )}
+      {showTab && <Tabs items={TABS} value={tab} onValueChange={setTab} />}
+      {/* Дизайн-чек 3/3 №24: «при отключении контрола show Filters кнопка
+          "Ещё фильтры" должна тоже скрываться». Раньше под флагом были только
+          сами чипы, а CountButton и «Сбросить фильтры» стояли снаружи и
+          оставались висеть в пустой строке. Теперь `Show Filter` гасит всю
+          строку фильтров целиком — как одно свойство `ELK / table-top`. */}
+      {showFilter && (
+        <TableTopToolbar>
+          {/* Figma's search field is a fixed 260px column inside the filter
+              row; Input's own root is always w-full, so the width lives on a
+              wrapper. */}
+          {showSearch && (
+            <div className="w-[260px]">
+              <Input
+                size="sm"
+                iconLeft={<Search aria-hidden="true" />}
+                placeholder="Поиск по нескольким крит..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          )}
+          {visibleChips.map((label) => (
             <Filter
               key={label}
               label={label}
@@ -145,51 +227,47 @@ function FullExample({
               chip
             />
           ))}
-        {/* "Ещё фильтры" is an `ELK / count button` in the spec — the counter
-            is a corner badge on the button, dark rather than red here. */}
-        <CountButton
-          variant="secondary-grey"
-          size="sm"
-          icon={ChevronDown}
-          iconPosition="left"
-          count={appliedCount}
-          countColor="black"
-          onClick={() => setMoreOpen((v) => !v)}
-        >
-          {moreOpen ? "Скрыть фильтры" : "Ещё фильтры"}
-        </CountButton>
-        {appliedCount > 0 && (
-          <Button
-            variant="secondary-grey"
-            size="sm"
-            icon={X}
-            iconPosition="left"
-            onClick={() => setValues({})}
-          >
-            Сбросить фильтры
-          </Button>
-        )}
-      </TableTopToolbar>
+          {/* "Ещё фильтры" — `Show Last Chips` в макете; это `ELK / count
+              button`, счётчик рисуется угловым бейджем, тёмным, а не красным. */}
+          {showLastChips && (
+            <CountButton
+              variant="secondary-grey"
+              size="sm"
+              icon={ChevronDown}
+              iconPosition="left"
+              count={appliedCount}
+              countColor="black"
+              onClick={() => setMoreOpen((v) => !v)}
+            >
+              {moreOpen ? "Скрыть фильтры" : "Ещё фильтры"}
+            </CountButton>
+          )}
+          {showCleanFilter && appliedCount > 0 && (
+            <Button
+              variant="secondary-grey"
+              size="sm"
+              icon={X}
+              iconPosition="left"
+              onClick={() => setValues({})}
+            >
+              Сбросить фильтры
+            </Button>
+          )}
+        </TableTopToolbar>
+      )}
       <TableTopSummary
         info={
-          <>
-            <TableTopSummaryItem
-              label="Выбрано фильтров:"
-              value={appliedCount}
-            />
-            <TableTopSummaryItem label="Результатов:" value={8} />
-          </>
-        }
-        actions={
-          showActions ? (
+          showFilters ? (
             <>
-              <DownloadMenu />
-              <Button variant="secondary-grey" size="sm" icon={Settings2} iconPosition="left">
-                Настроить столбцы
-              </Button>
+              <TableTopSummaryItem
+                label="Выбрано фильтров:"
+                value={appliedCount}
+              />
+              <TableTopSummaryItem label="Результатов:" value={8} />
             </>
           ) : undefined
         }
+        actions={hasSummaryActions ? summaryActions : undefined}
       />
       {/* "Сводка" — the Details slot at the bottom of `ELK / table-top`
           (node 70279:10367). Optional: "Дополнительная функция, наличие

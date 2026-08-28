@@ -22,9 +22,9 @@ describe("StatusScreen", () => {
     render(
       <StatusScreen
         title="Заголовок"
-        primaryLabel="На главную"
+        primaryButtonLabel="На главную"
         onPrimaryClick={onPrimaryClick}
-        secondaryLabel="Отмена"
+        secondaryButtonLabel="Отмена"
         onSecondaryClick={onSecondaryClick}
       />
     )

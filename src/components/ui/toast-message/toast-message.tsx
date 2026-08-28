@@ -86,6 +86,7 @@ function ToastCard({
   const Icon = TOAST_ICON[type]
   const isDesktop = useIsDesktop()
   const data = toast.data
+  const showCross = toast.showCross ?? true
 
   return (
     <div
@@ -93,10 +94,17 @@ function ToastCard({
       role="status"
       // Size=Mobile is a 328px card with 16px padding and a 16px close
       // cross; Size=Desktop is 480px with 24px padding and a 24px cross.
-      className="w-full min-w-[320px] animate-in rounded-[16px] border p-4 shadow-universal fade-in-0 slide-in-from-right-4 desktop:p-6"
+      className="w-full min-w-[320px] animate-in rounded-[16px] p-4 shadow-universal fade-in-0 slide-in-from-right-4 desktop:p-6"
       style={{
         backgroundColor: TOAST_BG[type],
-        borderColor: TOAST_BORDER[type],
+        // Дизайн-чек 3/3 №31: «сейчас размер тоста 76px, должен быть 74px».
+        // В Figma обводка нарисована ВНУТРЬ рамки, поэтому не увеличивает
+        // высоту: 24 (pt) + 2 (pt-0.5 текстовой колонки) + 24 (Title 16/24)
+        // + 24 (pb) = 74 (774:134177). CSS-`border` же добавлялся снаружи и
+        // давал 76. `outline` с отрицательным offset рисует ту же линию, но
+        // вне потока — высота становится ровно 74.
+        outline: `1px solid ${TOAST_BORDER[type]}`,
+        outlineOffset: "-1px",
       }}
     >
       <div className="flex items-start gap-4">
@@ -152,6 +160,9 @@ function ToastCard({
           )}
         </div>
 
+        {/* Дизайн-чек 3/3 №8: Show Cross — свойство компонент-сета
+            `ELK / toast message` (774:134186), поэтому крестик отключаемый. */}
+        {showCross && (
         <button
           type="button"
           aria-label="Закрыть"
@@ -170,6 +181,7 @@ function ToastCard({
             className="size-4 desktop:size-6"
           />
         </button>
+        )}
       </div>
     </div>
   )

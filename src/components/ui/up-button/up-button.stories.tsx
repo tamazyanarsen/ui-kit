@@ -36,11 +36,23 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
+/* Дизайн-чек 3/3 №30: «кнопки съехали влево вверх относительно всей таблицы
+   с матрицей состояний».
+
+   Причина: сам компонент прибит к углу окна классами `fixed right-6 bottom-6`
+   — так он и должен вести себя в продукте. Матрица гасила только `fixed`,
+   подставляя `relative`; `right-6 bottom-6` при этом оставались в силе и
+   сдвигали каждую кнопку на 24px вверх и влево от её ячейки. Класс `static`
+   снимает обе беды разом: он тоже из группы `position` (значит, побеждает
+   `fixed` в tailwind-merge), но, в отличие от `relative`, у статичного
+   элемента смещения `right`/`bottom` вообще не применяются. */
+const STORY_POSITION = "static"
+
 export const Playground: Story = {
   render: ({ state, ...args }) => (
     <div className="relative h-40 w-full">
       <PseudoBox state={state} className="absolute right-6 bottom-6">
-        <UpButton {...args} />
+        <UpButton {...args} className={STORY_POSITION} />
       </PseudoBox>
     </div>
   ),
@@ -62,7 +74,7 @@ export const Matrix: Story = {
         // open) — it fades out rather than unmounting.
         { label: "Hidden", props: { hidden: true } },
       ]}
-      render={(props) => <UpButton {...props} className="relative" />}
+      render={(props) => <UpButton {...props} className={STORY_POSITION} />}
     />
   ),
 }

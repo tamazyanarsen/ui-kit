@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react"
 
-import { Search } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuBlack } from "@/components/ui/button-menu"
-import { EmptySearchResults } from "@/components/ui/empty-search"
+import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
 import { Pagination } from "@/components/ui/pagination"
 import {
   Table,
@@ -214,12 +213,9 @@ function TableExample({
 
       {rows.length === 0 && (
         <TableBlockEmpty>
-          <EmptySearchResults
-            icon={<Search aria-hidden="true" />}
-            title="По вашему запросу ничего не найдено"
-            description="Попробуйте изменить критерии поиска"
-            buttonLabel="Сбросить фильтры"
-          />
+          {/* Дизайн-чек 3/3 №27: пустое состояние берётся готовым пресетом
+              кита, а не пересобирается тут по частям — см. EMPTY_FILTERED. */}
+          <EmptySearchResults {...EMPTY_FILTERED} />
         </TableBlockEmpty>
       )}
 

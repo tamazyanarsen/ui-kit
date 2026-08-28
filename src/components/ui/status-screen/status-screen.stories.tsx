@@ -25,21 +25,32 @@ const meta = {
   title: "Компоненты/Status Screen",
   component: StatusScreen,
   parameters: { layout: "padded" },
+  // Дизайн-чек 3/3 №17: добавлены тоглы Show Subtitle и Show Buttons, а
+  // подписи кнопок переименованы — `primaryLabel`/`secondaryLabel` не давали
+  // понять, что это тексты основной и второстепенной кнопки.
   argTypes: {
     status: { control: "select", options: STATUSES },
-    title: { control: "text" },
-    subtitle: { control: "text" },
-    primaryLabel: { control: "text" },
-    // `secondaryLabel` is typed React.ReactNode but every usage is a plain
-    // string — pin a text control so leaving it unset doesn't fall back to
-    // Storybook's "Set object" JSON-editor placeholder.
-    secondaryLabel: { control: "text" },
+    title: { control: "text", name: "Заголовок" },
+    showSubtitle: { control: "boolean", name: "Show Subtitle" },
+    subtitle: { control: "text", name: "Текст подзаголовка" },
+    showButtons: { control: "boolean", name: "Show Buttons" },
+    primaryButtonLabel: { control: "text", name: "Текст основной кнопки" },
+    // Пропсы типизированы как React.ReactNode, но во всех сценариях это
+    // обычные строки — контрол закреплён текстовым, иначе Storybook
+    // подставляет JSON-редактор «Set object».
+    secondaryButtonLabel: {
+      control: "text",
+      name: "Текст второстепенной кнопки",
+    },
   },
   args: {
     status: "success",
     title: "Платёж выполнен",
+    showSubtitle: true,
     subtitle: "Средства зачислены на счёт получателя",
-    primaryLabel: "На главную",
+    showButtons: true,
+    primaryButtonLabel: "На главную",
+    secondaryButtonLabel: "Отмена",
   },
 } satisfies Meta<StatusScreenProps>
 
@@ -100,15 +111,15 @@ export const Matrix: Story = {
             label: "+ одна кнопка",
             props: {
               subtitle: "Средства зачислены на счёт получателя",
-              primaryLabel: "На главную",
+              primaryButtonLabel: "На главную",
             },
           },
           {
             label: "+ две кнопки",
             props: {
               subtitle: "Средства зачислены на счёт получателя",
-              primaryLabel: "На главную",
-              secondaryLabel: "Отмена",
+              primaryButtonLabel: "На главную",
+              secondaryButtonLabel: "Отмена",
             },
           },
         ]}

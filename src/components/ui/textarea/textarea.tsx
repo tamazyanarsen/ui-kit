@@ -1,8 +1,10 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Lock } from "@/icons"
+import { Information, Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { Hint } from "@/components/ui/tooltip"
+import { FieldTooltip } from "@/components/ui/input/hover-tooltip"
 
 // Sizing verified against ui/textarea/*.svg (exact vector rects, not just
 // pixel-sampled PNGs): radius is 16px (not the theme's rounded-2xl, which
@@ -62,7 +64,30 @@ interface TextareaOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
   error?: React.ReactNode
+  /**
+   * Lock Input — поле заблокировано для редактирования.
+   *
+   * Дизайн-чек 3/3 №18: «неверное поведение компонента при настройке
+   * заблокированного поля». В спеке рядом с этим состоянием (52140:162555)
+   * написано буквально: «Состояние поля ввода заблокировано. Всегда
+   * заполнено. При наведении отображается Tooltip с информацией о причине
+   * невозможности редактирования поля». Из трёх требований выполнялось одно:
+   * поле становилось `readOnly` и получало замок, но подсказки при наведении
+   * не было вообще — ровно та же связка, что у Input, просто сюда её не
+   * донесли. Теперь Textarea тоже оборачивается в `FieldTooltip`.
+   */
   locked?: boolean
+  /** Причина блокировки — показывается в Tooltip при наведении. */
+  lockedHint?: React.ReactNode
+  /**
+   * Comment & Icon — иконка «i» в правом краю строки комментария
+   * (52140:162590). Дизайн-чек 3/3 №19: её не было ни в компоненте, ни в
+   * контролах. По спеке «иконка предназначена для возможности отобразить
+   * дополнительную информацию», поэтому она не декоративная: текст подсказки
+   * приходит в `commentHint` и раскрывается по клику через Hint.
+   */
+  showCommentIcon?: boolean
+  commentHint?: React.ReactNode
   containerClassName?: string
 }
 
@@ -77,6 +102,9 @@ function Textarea({
   comment,
   error,
   locked = false,
+  lockedHint,
+  showCommentIcon = false,
+  commentHint,
   disabled,
   id,
   rows = 3,
@@ -112,6 +140,10 @@ function Textarea({
     // the Comment/Error variants (7426:2047, 158:3743) is a flex-col with
     // gap-[4px] between the box and the caption row.
     <div className="flex w-full flex-col gap-1">
+      {/* Дизайн-чек 3/3 №18: подсказка о причине блокировки — та же обёртка,
+          что и у Input (input/hover-tooltip.tsx). Она монтируется всегда и
+          просто держится закрытой, когда объяснять нечего. */}
+      <FieldTooltip content={locked ? lockedHint : null}>
       <div
         className={cn(
           textareaBoxVariants({ invalid, interactive: !locked }),
@@ -186,22 +218,46 @@ function Textarea({
           />
         )}
       </div>
+      </FieldTooltip>
       {(comment || error) && (
         // Round-2 audit fix: missing px-4 and font-medium — the Figma
         // Comment/Error rows (52140:162226, 52140:162391) both use
         // px-[16px] (aligning with the box's own inner padding) and
         // font-['Object_Sans:Medium'], neither of which this caption had.
-        <p
-          id={captionId}
-          className={cn(
-            "px-4 text-p3-medium",
-            error
-              ? "text-[var(--input-caption-error-fg)]"
-              : "text-[var(--input-caption-fg)]"
-          )}
-        >
-          {error ?? comment}
-        </p>
+        //
+        // Дизайн-чек 3/3 №19: строка комментария в макете — flex-ряд с
+        // gap-[4px], где текст занимает всё свободное место, а иконка «i»
+        // 16×16 прижата к правому краю (52140:162590).
+        <div className="flex w-full items-start gap-1 px-4">
+          <p
+            id={captionId}
+            className={cn(
+              "min-w-0 flex-1 text-p3-medium",
+              error
+                ? "text-[var(--input-caption-error-fg)]"
+                : "text-[var(--input-caption-fg)]"
+            )}
+          >
+            {error ?? comment}
+          </p>
+          {showCommentIcon &&
+            (commentHint ? (
+              <Hint content={commentHint} direction="down-center">
+                <button
+                  type="button"
+                  aria-label="Дополнительная информация"
+                  className="shrink-0 text-[var(--input-caption-fg)] outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  <Information aria-hidden="true" className="size-4" />
+                </button>
+              </Hint>
+            ) : (
+              <Information
+                aria-hidden="true"
+                className="size-4 shrink-0 text-[var(--input-caption-fg)]"
+              />
+            ))}
+        </div>
       )}
     </div>
   )

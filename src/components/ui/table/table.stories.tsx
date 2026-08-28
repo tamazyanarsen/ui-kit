@@ -20,19 +20,44 @@ const meta = {
   title: "Компоненты/Table",
   component: TableExample,
   parameters: { layout: "padded" },
+  /* Дизайн-чек 3/3 №28: «сложно ориентироваться в списке контролов».
+     Раньше это был плоский список из двенадцати булевых в алфавитном
+     беспорядке — по нему нельзя понять, что к чему относится. В макете
+     свойства расписаны отдельными таблицами на каждую часть таблицы
+     («Свойства компонента — Table Title Cell», 10623:30106, и соседние),
+     поэтому контролы сгруппированы так же: блок, шапка, столбцы, строки. */
   argTypes: {
-    block: { control: "boolean" },
-    showTop: { control: "boolean" },
-    showDetails: { control: "boolean" },
-    showPagination: { control: "boolean" },
-    selectable: { control: "boolean" },
-    sortable: { control: "boolean" },
-    nested: { control: "boolean" },
-    pinned: { control: "boolean" },
-    stickyHeader: { control: "boolean" },
-    resizable: { control: "boolean" },
-    showDescription: { control: "boolean" },
-    empty: { control: "boolean" },
+    block: {
+      control: "boolean",
+      description: "Обёртка-карточка вокруг шапки, таблицы и пагинатора",
+      table: { category: "Блок" },
+    },
+    showTop: { control: "boolean", table: { category: "Блок" } },
+    showDetails: { control: "boolean", table: { category: "Блок" } },
+    showPagination: { control: "boolean", table: { category: "Блок" } },
+
+    stickyHeader: { control: "boolean", table: { category: "Шапка" } },
+    sortable: { control: "boolean", table: { category: "Шапка" } },
+
+    pinned: {
+      control: "boolean",
+      description: "Закрепление первых и последних столбцов",
+      table: { category: "Столбцы" },
+    },
+    resizable: { control: "boolean", table: { category: "Столбцы" } },
+
+    selectable: { control: "boolean", table: { category: "Строки" } },
+    nested: {
+      control: "boolean",
+      description: "Древовидные строки со сворачиванием",
+      table: { category: "Строки" },
+    },
+    showDescription: { control: "boolean", table: { category: "Строки" } },
+    empty: {
+      control: "boolean",
+      description: "Нулевой результат отбора вместо строк",
+      table: { category: "Строки" },
+    },
   },
   args: {
     block: true,

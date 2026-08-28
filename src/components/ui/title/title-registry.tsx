@@ -4,6 +4,8 @@ import { CircleHelp } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+import { TitleHeading } from "./heading"
+
 // TitleRegistry — "Заголовок без статуса", `ELK / title-page` with
 // Type=Registry (node 8712:15258). The page heading used above a registry:
 // the H2 title, an optional description, and an action group on the right —
@@ -45,9 +47,7 @@ function TitleRegistry({
       {...props}
     >
       <div className="flex w-full items-start gap-12">
-        <h1 className="min-w-0 flex-1 truncate text-h2 text-[var(--title-fg)]">
-          {title}
-        </h1>
+        <TitleHeading>{title}</TitleHeading>
         {showButtons && (
           // Same optical `pt-6` as Title Card's help button.
           <div className="flex shrink-0 items-center gap-2 pt-1.5">

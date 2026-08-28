@@ -21,8 +21,35 @@ const FRUIT_OPTIONS = [
   { value: "cherry", label: "Cherry" },
 ]
 
+/* Дизайн-чек 3/3 №21: «не хватает контролов для выбора маски». В макете
+   (65732:19613) содержимое триггера — отдельный набор «масок»: Empty (только
+   подпись), Fill (подпись + значение), Lock (то же плюс замок),
+   Logotype (логотип слева от подписи/значения) и Logotype BIK (логотип и
+   третья строка с БИК). В контролах выбрать их было нельзя. */
+const SELECT_MASKS = ["Empty", "Fill", "Lock", "Logotype", "Logotype BIK"] as const
+type SelectMask = (typeof SELECT_MASKS)[number]
+
+const BANK_OPTIONS = [
+  { value: "alfa", label: "Альфа-Банк", bik: "044525593" },
+  { value: "sber", label: "Сбербанк", bik: "044525225" },
+  { value: "vtb", label: "ВТБ", bik: "044525187" },
+]
+
+/** Кружок-логотип банка — в макете это 24px-слот перед подписью. */
+function BankLogo({ letter }: { letter: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#EF3124] text-[12px] font-medium text-white"
+    >
+      {letter}
+    </span>
+  )
+}
+
 interface DemoSelectProps {
   size?: "sm" | "lg"
+  mask?: SelectMask
   label?: string
   placeholder?: string
   error?: string
@@ -36,6 +63,7 @@ interface DemoSelectProps {
 
 function DemoSelect({
   size,
+  mask = "Fill",
   label = "Label",
   placeholder = "",
   error,
@@ -46,27 +74,71 @@ function DemoSelect({
   readOnly,
   open,
 }: DemoSelectProps) {
-  const [value, setValue] = useState<string | null>(defaultValue)
+  const withLogo = mask === "Logotype" || mask === "Logotype BIK"
+  const options = withLogo ? BANK_OPTIONS : FRUIT_OPTIONS
+  // Маска Empty — это незаполненное поле, Lock — заблокированное.
+  const initial = mask === "Empty" ? null : (defaultValue ?? options[0].value)
+  const [value, setValue] = useState<string | null>(initial)
+  // Дизайн-чек 3/3 №21: контрол Open не работал, потому что состояние
+  // передавалось через `defaultOpen` — его читают только при монтировании,
+  // поэтому переключение контрола на уже смонтированном поле ничего не
+  // меняло. Держим `open` управляемым, но с локальным состоянием, чтобы
+  // список по-прежнему можно было закрыть мышью.
+  const [isOpen, setIsOpen] = useState(Boolean(open))
+  const [lastOpen, setLastOpen] = useState(open)
+  if (open !== lastOpen) {
+    setLastOpen(open)
+    setIsOpen(Boolean(open))
+  }
+
   return (
     <Select
-      items={FRUIT_OPTIONS}
+      items={options}
       value={value}
       onValueChange={setValue}
       disabled={disabled}
-      readOnly={readOnly}
-      defaultOpen={open}
+      readOnly={readOnly || mask === "Lock"}
+      open={isOpen}
+      onOpenChange={setIsOpen}
     >
       <SelectTrigger
         size={size}
         label={label}
         error={error}
         comment={comment}
-        onClear={clearable ? () => setValue(null) : undefined}
+        // Дизайн-чек 3/3 №26: `clearable` до сих пор доходил только до
+        // обработчика `onClear`, а сам проп триггера оставался в дефолтном
+        // `true` — крестик рисовался всегда, просто переставал что-либо
+        // делать. Прокидываем флаг явно.
+        clearable={clearable}
+        onClear={() => setValue(null)}
       >
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder}>
+          {(selected: unknown) => {
+            const option = options.find((o) => o.value === selected)
+            if (!option) return null
+            const bik =
+              mask === "Logotype BIK" && "bik" in option
+                ? String(option.bik)
+                : null
+            return (
+              <>
+                {withLogo && <BankLogo letter={option.label[0]} />}
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate">{option.label}</span>
+                  {bik && (
+                    <span className="text-p3-medium text-[var(--select-label-fg)]">
+                      {bik}
+                    </span>
+                  )}
+                </span>
+              </>
+            )
+          }}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {FRUIT_OPTIONS.map((o) => (
+        {options.map((o) => (
           <SelectItem key={o.value} value={o.value}>
             {o.label}
           </SelectItem>
@@ -92,11 +164,12 @@ const meta = {
   // all. Declare every one of them explicitly instead.
   argTypes: {
     size: { control: "inline-radio", options: ["lg", "sm"] },
+    mask: { control: "select", options: SELECT_MASKS, name: "Маска" },
     label: { control: "text" },
     placeholder: { control: "text" },
     error: { control: "text" },
     comment: { control: "text" },
-    defaultValue: { control: "select", options: [null, "apple", "banana", "cherry"] },
+    defaultValue: { table: { disable: true } },
     clearable: { control: "boolean" },
     disabled: { control: "boolean" },
     readOnly: { control: "boolean" },
@@ -108,7 +181,9 @@ const meta = {
   },
   args: {
     size: "lg",
+    mask: "Fill",
     label: "Label",
+    comment: "Comment",
     clearable: true,
     disabled: false,
     readOnly: false,

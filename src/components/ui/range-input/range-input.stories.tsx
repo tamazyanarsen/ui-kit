@@ -35,11 +35,17 @@ type FormatPreset = keyof typeof FORMAT_PRESETS
    Focused, Disabled, Error). Disabled и Error задаются пропами, а hover и
    фокус пропом не выставить — их даёт общий контрол `state`, как у
    остальных полей ввода кита. */
-type PlaygroundArgs = RangeInputProps & {
+type PlaygroundArgs = Omit<RangeInputProps, "error"> & {
   scalePreset?: ScalePreset
   formatPreset?: FormatPreset
   state?: PlaygroundState
   viewport?: Viewport
+  // Дизайн-чек 3/3 №3: состояние ошибки, её текст и комментарий —
+  // три независимых тогла, а не наличие текста в поле ввода.
+  error?: boolean
+  errorText?: string
+  showErrorText?: boolean
+  showComment?: boolean
 }
 
 const meta = {
@@ -51,8 +57,11 @@ const meta = {
   // Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
     label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
+    error: { control: "boolean", name: "Error" },
+    showErrorText: { control: "boolean", name: "Show Error Text" },
+    errorText: { control: "text", name: "Текст ошибки" },
+    showComment: { control: "boolean", name: "Show Comment" },
+    comment: { control: "text", name: "Текст комментария" },
     min: { control: "number" },
     max: { control: "number" },
     step: { control: "number" },
@@ -86,6 +95,10 @@ const meta = {
     scalePreset: "0 — 50 — 100",
     formatPreset: "Без форматирования",
     comment: "Comment",
+    showComment: true,
+    error: false,
+    errorText: "Text about error here",
+    showErrorText: true,
     state: "default" as PlaygroundState,
     viewport: "auto" as Viewport,
   },
@@ -108,10 +121,25 @@ function Controlled({ defaultValue, ...props }: RangeInputProps) {
 }
 
 export const Playground: Story = {
-  render: ({ scalePreset, formatPreset, state, viewport, ...args }) => (
+  render: ({
+    scalePreset,
+    formatPreset,
+    state,
+    viewport,
+    error,
+    errorText,
+    showErrorText,
+    showComment,
+    comment,
+    ...args
+  }) => (
     <PseudoBox state={state} viewport={viewport} className="w-full">
       <Controlled
         {...args}
+        comment={showComment ? comment : undefined}
+        // `true` — состояние ошибки без текста: шкала краснеет, подпись
+        // остаётся комментарием (см. range-input.tsx).
+        error={error ? (showErrorText ? errorText || true : true) : undefined}
         scaleLabels={SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]}
         format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
       />

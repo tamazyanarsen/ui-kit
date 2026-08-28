@@ -13,6 +13,8 @@ interface ToastOptions {
   type?: ToastType
   title: React.ReactNode
   description?: React.ReactNode
+  /** Дизайн-чек 3/3 №8: Show Cross — свойство компонент-сета в Figma. */
+  showCross?: boolean
   timeout?: number
   data?: ToastData
 }

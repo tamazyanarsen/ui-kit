@@ -4,6 +4,10 @@ import { ChevronLeft, ChevronRight } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  ARROW_BASE,
+  arrowPositionClass,
+} from "@/components/ui/tooltip/variants"
 
 import { statusColor, type StepState, type StepStatus } from "./variants"
 
@@ -14,13 +18,16 @@ import { statusColor, type StepState, type StepStatus } from "./variants"
 // muted grey per the spec). Card content ("Description") is single-line
 // only per the spec's own constraint note.
 //
-// `showLeftFade`/`showRightFade` + `onClickLeft`/`onClickRight` are purely
-// presentational callbacks — deciding which steps to show on navigation is
-// app-level logic this component doesn't own. What the component DOES own:
-// once the caller flips a step's `state` to "active" (in response to those
-// callbacks or anything else), it scrolls that card into view itself —
-// otherwise the fade/arrows would be decorative dead ends whenever the row
-// is wider than its container.
+// Дизайн-чек 3/3 №15: «при нажатии на кнопки Left и Right Fade блок с
+// шагами не прокручивается в нужную сторону». Раньше `onClickLeft`/
+// `onClickRight` были ЧИСТО презентационными колбэками: без них стрелки
+// вообще ничего не делали, и в Playground (где колбэков нет) выглядели
+// мёртвыми. Теперь прокрутку ленты компонент делает сам — это его
+// собственная геометрия, а не прикладная логика, — а колбэк вызывается
+// дополнительно, если он передан.
+//
+// Компонент также сам подкручивает карточку в зону видимости, когда её
+// `state` становится "active".
 interface Step {
   title: React.ReactNode
   description: React.ReactNode
@@ -118,12 +125,28 @@ function StepCard({
         <TooltipPrimitive.Trigger render={card} />
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Positioner side="bottom" sideOffset={8}>
+            {/* Дизайн-чек 3/3 №29: у подсказки не было стрелки направления —
+                пузырь висел «сам по себе». Рисуем ту же стрелку, что у
+                Tooltip/Hint, и по тем же правилам (см. variants.ts там). */}
             <TooltipPrimitive.Popup
               data-slot="step-tooltip"
-              className="min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
-            >
-              {disabledHint}
-            </TooltipPrimitive.Popup>
+              className="relative min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+              render={(popupProps, state) => (
+                <div {...popupProps}>
+                  {disabledHint}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      ARROW_BASE,
+                      // Пузырь подсказки шага красится своим токеном, а не
+                      // общим --tooltip-bg, поэтому цвет стрелки переопределяем.
+                      "bg-[var(--steps-tooltip-bg)]",
+                      arrowPositionClass(state.side, state.align)
+                    )}
+                  />
+                </div>
+              )}
+            />
           </TooltipPrimitive.Positioner>
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>
@@ -174,6 +197,7 @@ function Steps({
   className,
 }: StepsProps) {
   const cardRefs = React.useRef<Array<HTMLDivElement | null>>([])
+  const stripRef = React.useRef<HTMLDivElement>(null)
   const activeIndex = steps.findIndex((step) => step.state === "active")
 
   React.useEffect(() => {
@@ -185,10 +209,37 @@ function Steps({
     })
   }, [activeIndex])
 
+  // Шаг прокрутки — на одну «страницу» ленты, но не больше её ширины: так
+  // на узком контейнере стрелка сдвигает ровно то, что видно.
+  function scrollBy(direction: -1 | 1) {
+    const strip = stripRef.current
+    if (!strip) return
+    const delta = direction * strip.clientWidth
+    // `scrollBy` есть не везде (в jsdom его нет вовсе) — там просто сдвигаем
+    // `scrollLeft`, поведение то же, только без плавности.
+    if (typeof strip.scrollBy === "function") {
+      strip.scrollBy({ left: delta, behavior: "smooth" })
+    } else {
+      strip.scrollLeft += delta
+    }
+  }
+
   return (
     <div data-slot="steps" className={cn("relative", className)}>
-      {showLeftFade && <FadeArrow side="left" onClick={onClickLeft} />}
-      <div className="flex items-stretch gap-4 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {showLeftFade && (
+        <FadeArrow
+          side="left"
+          onClick={() => {
+            scrollBy(-1)
+            onClickLeft?.()
+          }}
+        />
+      )}
+      <div
+        ref={stripRef}
+        data-slot="steps-strip"
+        className="flex items-stretch gap-4 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {steps.map((step, index) => (
           <StepCard
             key={index}
@@ -199,7 +250,15 @@ function Steps({
           />
         ))}
       </div>
-      {showRightFade && <FadeArrow side="right" onClick={onClickRight} />}
+      {showRightFade && (
+        <FadeArrow
+          side="right"
+          onClick={() => {
+            scrollBy(1)
+            onClickRight?.()
+          }}
+        />
+      )}
     </div>
   )
 }

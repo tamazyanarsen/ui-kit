@@ -36,17 +36,41 @@ interface DemoSidebarProps {
   itemsCount?: number
 }
 
+/* Дизайн-чек 3/3 №22: «при смене контролов Open и Show Text Select ничего
+   не происходит». Оба значения уходили в `defaultOpen` / `defaultExpandedGroups`,
+   а их читают только при монтировании — на уже отрисованной панели
+   переключение контрола ничего не меняло. Держим оба состояния локально и
+   синхронизируем с пропом, когда контрол поменяли: панель по-прежнему можно
+   свернуть/развернуть мышью, но контрол теперь тоже работает. */
 function DemoSidebar({
   defaultOpen = true,
   activeItem = true,
   expandGroup = false,
   itemsCount = 4,
 }: DemoSidebarProps) {
+  const [open, setOpen] = useState(defaultOpen)
+  const [lastOpen, setLastOpen] = useState(defaultOpen)
+  if (defaultOpen !== lastOpen) {
+    setLastOpen(defaultOpen)
+    setOpen(defaultOpen)
+  }
+
+  const [expanded, setExpanded] = useState<string[]>(
+    expandGroup ? ["payments"] : []
+  )
+  const [lastExpand, setLastExpand] = useState(expandGroup)
+  if (expandGroup !== lastExpand) {
+    setLastExpand(expandGroup)
+    setExpanded(expandGroup ? ["payments"] : [])
+  }
+
   return (
     <div className="h-96">
       <Sidebar
-        defaultOpen={defaultOpen}
-        defaultExpandedGroups={expandGroup ? ["payments"] : []}
+        open={open}
+        onOpenChange={setOpen}
+        expandedGroups={expanded}
+        onExpandedGroupsChange={setExpanded}
       >
         {ITEM_POOL.slice(0, itemsCount).map((item, index) =>
           item.group ? (

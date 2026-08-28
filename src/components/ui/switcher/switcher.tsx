@@ -142,7 +142,11 @@ function Switcher({
 
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     resolvedItems.length,
-    ELLIPSIS_RESERVED[size]
+    ELLIPSIS_RESERVED[size],
+    // Зазор обязателен третьим аргументом — без него хук складывает только
+    // ширины сегментов и считает переполненный ряд помещающимся (та же
+    // ошибка, что нашлась в табах по дизайн-чеку 3/3 №12).
+    GAP_PX[size]
   )
 
   const effectiveVisible = showMore ? visibleCount : resolvedItems.length

@@ -21,28 +21,111 @@ const meta = {
   title: "Компоненты/Table Top",
   component: FullExample,
   parameters: { layout: "padded" },
+  /* Дизайн-чек 3/3 №25: контролы разложены по тем же четырём таблицам
+     свойств, что и в макете (1246:196999), и названы так же — иначе список
+     не сверить. Категории Storybook повторяют названия таблиц. */
   argTypes: {
-    title: { control: "text" },
-    showTitleAction: { control: "boolean" },
-    showTabs: { control: "boolean" },
-    showSearch: { control: "boolean" },
-    showFilters: { control: "boolean" },
+    title: { control: "text", table: { category: "Table Top" } },
+    showTitle: {
+      control: "boolean",
+      name: "Show Title",
+      table: { category: "Table Top" },
+    },
+    showTab: {
+      control: "boolean",
+      name: "Show Tab",
+      table: { category: "Table Top" },
+    },
+    showFilter: {
+      control: "boolean",
+      name: "Show Filter",
+      description: "Строка фильтров целиком — вместе с «Ещё фильтры»",
+      table: { category: "Table Top" },
+    },
+
+    showButton: {
+      control: "boolean",
+      name: "Show Button",
+      table: { category: "Title Options" },
+    },
+
     chipsCount: {
       name: "Number of Chips",
       control: { type: "range", min: 1, max: CHIP_LABELS.length, step: 1 },
       description: "Сколько фильтров-чипов в панели; лишние скрыты под «Ещё фильтры»",
+      table: { category: "Chips Table" },
     },
-    showActions: { control: "boolean" },
-    showDetails: { control: "boolean" },
+    showSearch: {
+      control: "boolean",
+      name: "Show Search",
+      table: { category: "Chips Table" },
+    },
+    showLastChips: {
+      control: "boolean",
+      name: "Show Last Chips",
+      description: "Кнопка «Ещё фильтры» / «Скрыть фильтры»",
+      table: { category: "Chips Table" },
+    },
+    showCleanFilter: {
+      control: "boolean",
+      name: "Show Clean Filter",
+      description: "Кнопка «Сбросить фильтры» (видна, когда фильтры выбраны)",
+      table: { category: "Chips Table" },
+    },
+
+    resultType: {
+      control: "inline-radio",
+      options: ["Setting", "Select"],
+      name: "Type",
+      description: "Справа в строке итогов: кнопки управления или сортировка",
+      table: { category: "Filter Options" },
+    },
+    showFilters: {
+      control: "boolean",
+      name: "Show Filters",
+      description: "Индикаторы «Выбрано фильтров» и «Результатов»",
+      table: { category: "Filter Options" },
+    },
+    showSelect: {
+      control: "boolean",
+      name: "Show Select",
+      description: "Поле сортировки — только при Type=Select",
+      table: { category: "Filter Options" },
+    },
+    showSetting: {
+      control: "boolean",
+      name: "Show Setting",
+      description: "Кнопка «Настроить столбцы» — только при Type=Setting",
+      table: { category: "Filter Options" },
+    },
+    showDownload: {
+      control: "boolean",
+      name: "Show Download",
+      description: "Кнопка «Скачать» — только при Type=Setting",
+      table: { category: "Filter Options" },
+    },
+
+    showDetails: {
+      control: "boolean",
+      name: "Сводка (Details)",
+      table: { category: "Table Top" },
+    },
   },
   args: {
     title: "Заголовок таблицы",
-    showTitleAction: true,
-    showTabs: true,
-    showSearch: true,
-    showFilters: true,
+    showTitle: true,
+    showTab: true,
+    showFilter: true,
+    showButton: true,
     chipsCount: 2,
-    showActions: true,
+    showSearch: true,
+    showLastChips: true,
+    showCleanFilter: true,
+    resultType: "Setting",
+    showFilters: true,
+    showSelect: false,
+    showSetting: true,
+    showDownload: true,
     showDetails: true,
   },
 } satisfies Meta<FullExampleProps>

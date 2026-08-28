@@ -15,20 +15,42 @@ const BASE_STEPS: Step[] = [
     state: "disabled",
     disabledHint: "Заполните предыдущий шаг",
   },
+  { title: "Шаг 5", description: "Оплата" },
+  { title: "Шаг 6", description: "Доставка документов" },
+  { title: "Шаг 7", description: "Регистрация" },
+  { title: "Шаг 8", description: "Завершение" },
 ]
 
 /* Дизайн-чек №17: количество шагов — списком, а не правкой JSON-массива.
    Пул устроен так, что с ростом числа подключаются и разные состояния шага
-   (заполнен → активный → обычный → заблокированный). */
-const STEP_COUNTS = [1, 2, 3, 4] as const
+   (заполнен → активный → обычный → заблокированный).
+
+   Дизайн-чек 3/3 №15: пул расширен до 8 — на четырёх шагах лента помещалась
+   в контейнер целиком, прокручивать было нечего, и стрелки Left/Right Fade
+   выглядели неработающими даже после того, как прокрутку научились делать. */
+const STEP_COUNTS = [1, 2, 3, 4, 5, 6, 7, 8] as const
 type StepCount = (typeof STEP_COUNTS)[number]
 
 /* `State` и `Type` — свойства `Steps (ELK)` / `Steps Status (ELK)`:
-   Disabled / Default / Active и None / Error / Filled. В пуле они и раньше
-   были расставлены по шагам, но выбрать состояние конкретного шага было
-   нельзя — контролы задают его текущему (второму) шагу. */
+   Disabled / Default / Active и None / Error / Filled.
+
+   Дизайн-чек 3/3 №14: раньше контролы меняли состояние ТОЛЬКО второго шага
+   («контролы State и Type указаны только для одного из нескольких шагов»),
+   что и выглядело, и работало как случайность. Теперь они применяются ко
+   всем шагам сразу — это свойства одной карточки, а лента лишь повторяет её.
+
+   Дизайн-чек 3/3 №13: контрол Type при этом не давал ВООБЩЕ никакого
+   эффекта, потому что `status` красит только строку статуса, а `statusText`
+   ниже не передавался — красить было нечего. Подпись к каждому статусу
+   заведена здесь же. */
 const STEP_STATES = ["default", "active", "disabled"] as const
 const STEP_STATUSES = ["none", "filled", "error"] as const
+
+const STATUS_TEXT: Record<(typeof STEP_STATUSES)[number], string | undefined> = {
+  none: "Не заполнено",
+  filled: "Заполнено",
+  error: "Ошибка в данных",
+}
 
 type PlaygroundArgs = StepsProps & {
   stepsCount?: StepCount
@@ -48,12 +70,12 @@ const meta = {
     },
     steps: { table: { disable: true } },
     currentState: {
-      name: "State (2-го шага)",
+      name: "State",
       control: "inline-radio",
       options: STEP_STATES,
     },
     currentStatus: {
-      name: "Type (2-го шага)",
+      name: "Type",
       control: "inline-radio",
       options: STEP_STATUSES,
     },
@@ -62,11 +84,13 @@ const meta = {
   },
   args: {
     steps: BASE_STEPS,
-    stepsCount: 4,
-    currentState: "active",
+    stepsCount: 8,
+    currentState: "default",
     currentStatus: "none",
-    showLeftFade: false,
-    showRightFade: false,
+    // Включены по умолчанию: на 8 шагах лента заведомо не помещается,
+    // поэтому обе стрелки сразу и видны, и рабочие.
+    showLeftFade: true,
+    showRightFade: true,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -74,18 +98,22 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ stepsCount = 4, currentState, currentStatus, ...args }) => {
-    const steps = BASE_STEPS.slice(0, stepsCount).map((step, index) =>
-      index === 1
-        ? {
-            ...step,
-            state: (currentState ?? step.state) as StepState | undefined,
-            status: (currentStatus === "none"
-              ? undefined
-              : (currentStatus ?? step.status)) as StepStatus | undefined,
-          }
-        : step
-    )
+  render: ({
+    stepsCount = 4,
+    currentState = "active",
+    currentStatus = "none",
+    ...args
+  }) => {
+    const steps = BASE_STEPS.slice(0, stepsCount).map((step) => ({
+      ...step,
+      state: currentState as StepState,
+      status: currentStatus as StepStatus,
+      statusText: STATUS_TEXT[currentStatus],
+      // Подсказка нужна только заблокированному шагу — на остальных
+      // состояниях её в макете нет.
+      disabledHint:
+        currentState === "disabled" ? "Заполните предыдущий шаг" : undefined,
+    }))
     return <Steps {...args} steps={steps} />
   },
 }

@@ -4,7 +4,6 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
@@ -28,16 +27,15 @@ import { useIsDesktop } from "@/lib/use-is-desktop"
 // "Text / Text" popup — but the trigger itself is custom-styled here since
 // Tabs' own anatomy calls for a plain inline ellipsis, not ButtonMenu's
 // bordered secondary-grey button.
+// Дизайн-чек 3/3 №11: «Таба с иконкой быть не может, только с бейджем или
+// статусом, отдельно одной иконкой без текста есть только таб more». Поэтому
+// у вкладки нет слота `icon` — оформление задаётся только `badge`/`status`, а
+// единственная иконка в компоненте — многоточие у таба «Ещё» ниже.
 interface TabItem {
   value: string
   label: React.ReactNode
   badge?: number
   status?: boolean
-  /**
-   * `Type=Icon` компонент-сета `Tabs (ELK)` — иконка перед подписью.
-   * Имя из набора кита либо готовый узел.
-   */
-  icon?: IconName | React.ReactNode
   disabled?: boolean
 }
 
@@ -46,6 +44,16 @@ interface TabsProps {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
+  /**
+   * `Show More` компонент-сета — показывать таб «…».
+   *
+   * Дизайн-чек 3/3 №12: раньше этот проп означал «схлопывать ли лишние
+   * вкладки», поэтому в широком Playground, где ничего не переполнялось,
+   * переключатель не давал никакого видимого эффекта. Теперь он делает ровно
+   * то, что называется: принудительно показывает таб «Ещё». Схлопывание же
+   * происходит всегда, когда ряд не помещается, — иначе выключённый
+   * `showMore` прятал бы вкладки без способа до них добраться.
+   */
   showMore?: boolean
   className?: string
 }
@@ -87,11 +95,6 @@ function TabButton({
           "text-p2-medium desktop:text-p1-medium"
         )}
       >
-        {typeof item.icon === "string" ? (
-          <Icon name={item.icon} aria-hidden="true" className="size-4 shrink-0" />
-        ) : (
-          item.icon
-        )}
         {item.label}
         {item.badge !== undefined && (
           <Badge type="counter" value={item.badge} color="black" disabled={!active} />
@@ -133,13 +136,20 @@ function Tabs({
 
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     items.length,
-    ELLIPSIS_RESERVED[sizeKey]
+    ELLIPSIS_RESERVED[sizeKey],
+    // Дизайн-чек 3/3 №12: третий аргумент — зазор — не передавался, и хук
+    // складывал только ширины самих вкладок. На пяти табах это 4×32 = 128px
+    // неучтённого зазора: ряд, который в реальности не помещался, считался
+    // помещающимся, и таб «Ещё» не появлялся вообще никогда.
+    GAP[sizeKey]
   )
 
-  const effectiveVisible = showMore ? visibleCount : items.length
-  const visibleItems = items.slice(0, effectiveVisible)
-  const hiddenItems = items.slice(effectiveVisible)
+  // Схлопываем всегда, когда ряд не помещается; `showMore` лишь добавляет
+  // таб «Ещё» даже тогда, когда прятать нечего (дизайн-чек 3/3 №12).
+  const visibleItems = items.slice(0, visibleCount)
+  const hiddenItems = items.slice(visibleCount)
   const hasOverflow = hiddenItems.length > 0
+  const showOverflowTab = hasOverflow || showMore
 
   return (
     <div
@@ -167,7 +177,7 @@ function Tabs({
         />
       ))}
 
-      {hasOverflow && (
+      {showOverflowTab && (
         <MenuPrimitive.Root modal={false}>
           <MenuPrimitive.Trigger
             render={
@@ -175,6 +185,10 @@ function Tabs({
                 type="button"
                 aria-label="Ещё"
                 data-slot="tabs-overflow-trigger"
+                // Таб виден по `showMore`, но открывать пустой Dropdown
+                // незачем — пока за многоточием ничего не спрятано, он
+                // просто не раскрывается.
+                disabled={!hasOverflow}
                 // The mobile glyph is 16px against a 20px label line, so
                 // Figma pads it 2px and widens the gap to 18px to keep the
                 // trigger the full 40px — otherwise its underline floats

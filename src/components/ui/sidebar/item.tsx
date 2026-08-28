@@ -76,7 +76,16 @@ function SidebarItem({
         // Nested rows are `pl-[48px] pr-[8px] py-[8px]` in the master; 48
         // is exactly px-2 + a 24px icon + the 16px gap, so their labels
         // line up under the parent's.
-        open ? (nested ? "py-2 pr-2 pl-12" : "p-2") : "h-10 justify-center px-0",
+        //
+        // Дизайн-чек 3/3 №23: «в свёрнутом варианте меню при наведении/
+        // нажатии на иконку выделяется неверная область клика, она должна
+        // быть больше». Свёрнутая полоса центрирует детей (`items-center` в
+        // sidebar.tsx), поэтому пункт сжимался по содержимому, а `px-0`
+        // оставлял его шириной ровно в иконку — подсветка выходила 24×40
+        // вместо квадрата 40×40. В макете (2314:30693) свёрнутый пункт —
+        // `p-[8px] rounded-[8px]` вокруг 24px-иконки, то есть те же 8px
+        // отступа, что и в развёрнутом состоянии.
+        open ? (nested ? "py-2 pr-2 pl-12" : "p-2") : "size-10 justify-center p-2",
         className
       )}
     >
@@ -134,7 +143,10 @@ function SidebarGroup({
       aria-label={typeof label === "string" ? label : undefined}
       onClick={() => requestOpenGroup(value)}
       className={cn(
-        "flex h-10 w-full shrink-0 items-center justify-center rounded-[8px] text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        // Дизайн-чек 3/3 №23: та же область 40×40 с 8px отступа, что и у
+        // обычного пункта в свёрнутой полосе (2314:30693) — `w-full` здесь
+        // не помогал, потому что родитель сжат по содержимому.
+        "flex size-10 shrink-0 items-center justify-center rounded-[8px] p-2 text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
         className
       )}
     >

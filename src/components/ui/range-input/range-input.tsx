@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 interface RangeInputOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
+  /** Строка — текст ошибки; `true` — только состояние ошибки, без текста. */
   error?: React.ReactNode
   scaleLabels?: React.ReactNode[]
   format?: Intl.NumberFormatOptions
@@ -33,7 +34,12 @@ function RangeInput({
   disabled,
   ...props
 }: RangeInputProps) {
-  const hasCaption = Boolean(comment || error)
+  // Дизайн-чек 3/3 №3: состояние ошибки и её текст переключаются отдельно,
+  // поэтому `error` принимает и `true` — красная шкала без подписи.
+  const invalid = Boolean(error)
+  const errorText = typeof error === "boolean" ? null : error
+  const caption = errorText ?? comment
+  const hasCaption = Boolean(caption)
 
   return (
     // Round-2 audit fix: outer gap was gap-1.5 (6px); the root component
@@ -122,7 +128,7 @@ function RangeInput({
                   // evidence disproves. See --range-input-indicator-bg.
                   "absolute h-full rounded-full bg-[var(--range-input-indicator-bg)]",
                   disabled && "!bg-[var(--range-input-accent-disabled)]",
-                  error && "!bg-[var(--range-input-accent-error)]"
+                  invalid && "!bg-[var(--range-input-accent-error)]"
                 )}
               />
               <SliderPrimitive.Thumb
@@ -143,7 +149,7 @@ function RangeInput({
                   // Indicator above).
                   "focus-visible:ring-3 focus-visible:ring-ring/50",
                   disabled && "!bg-[var(--range-input-accent-disabled)]",
-                  error && "!bg-[var(--range-input-accent-error)]"
+                  invalid && "!bg-[var(--range-input-accent-error)]"
                 )}
               >
                 {/* size-4: Figma places each small arrow in its own 16px
@@ -157,14 +163,14 @@ function RangeInput({
                     // fill="white", but disabled previously fell through to
                     // the default dark icon color.
                     disabled && "text-[var(--range-input-thumb-icon-fg-disabled)]",
-                    error && "text-[var(--range-input-thumb-icon-fg-error)]"
+                    invalid && "text-[var(--range-input-thumb-icon-fg-error)]"
                   )}
                 />
                 <ArrowRightSmall
                   className={cn(
                     "size-4 text-[var(--range-input-thumb-icon-fg)]",
                     disabled && "text-[var(--range-input-thumb-icon-fg-disabled)]",
-                    error && "text-[var(--range-input-thumb-icon-fg-error)]"
+                    invalid && "text-[var(--range-input-thumb-icon-fg-error)]"
                   )}
                 />
               </SliderPrimitive.Thumb>
@@ -191,12 +197,12 @@ function RangeInput({
         <p
           className={cn(
             "px-4 text-p3-medium",
-            error
+            invalid
               ? "text-[var(--range-input-caption-error-fg)]"
               : "text-[var(--range-input-caption-fg)]"
           )}
         >
-          {error ?? comment}
+          {caption}
         </p>
       )}
     </div>

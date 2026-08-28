@@ -17,6 +17,10 @@ interface TitleExampleProps {
   /** Только для «со статусом»: тег и Information Text. */
   showTag?: boolean
   showInformation?: boolean
+  /* Дизайн-чек 3/3 №10: у Information Text два вида — «ссылка» и «текст»
+     (пары «подпись: значение»), а в контролах переключателя не было, поэтому
+     второй вид из Playground был недостижим. */
+  informationType?: "link" | "text"
   /** Только для «без статуса»: кнопки действий страницы. */
   showActions?: boolean
   showSecondaryAction?: boolean
@@ -30,6 +34,7 @@ function TitleExample({
   showHelp = true,
   showTag = true,
   showInformation = true,
+  informationType = "link",
   showActions = true,
   showSecondaryAction = true,
 }: TitleExampleProps = {}) {
@@ -66,7 +71,17 @@ function TitleExample({
       tag={showTag ? "Example Text" : undefined}
       information={
         showInformation ? (
-          <TitleInformationText href="#">Link</TitleInformationText>
+          informationType === "text" ? (
+            <TitleInformationText
+              type="text"
+              items={[
+                { label: "Text", value: "Value" },
+                { label: "Text", value: "Value" },
+              ]}
+            />
+          ) : (
+            <TitleInformationText href="#">Link</TitleInformationText>
+          )
         ) : undefined
       }
     />
@@ -85,6 +100,11 @@ const meta = {
     showHelp: { control: "boolean" },
     showTag: { control: "boolean" },
     showInformation: { control: "boolean" },
+    informationType: {
+      name: "Information Text",
+      control: "inline-radio",
+      options: ["link", "text"],
+    },
     showActions: { control: "boolean" },
     showSecondaryAction: { control: "boolean" },
   },
@@ -96,6 +116,7 @@ const meta = {
     showHelp: true,
     showTag: true,
     showInformation: true,
+    informationType: "link",
     showActions: true,
     showSecondaryAction: true,
   },

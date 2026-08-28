@@ -17,12 +17,20 @@ const DIRECTIONS: TooltipDirection[] = [
   "right",
 ]
 
+type PlaygroundArgs = TooltipProps & { showTitle?: boolean }
+
 const meta = {
   title: "Компоненты/Tooltip",
   component: Tooltip,
   parameters: { layout: "centered" },
   argTypes: {
     content: { control: "text" },
+    // Дизайн-чек 3/3 №5: Show Title / Show Cross — свойства компонент-сета
+    // `ELK / tooltip & hint` (11756:8037 / 11756:8039), поэтому они должны
+    // переключаться из панели, а не быть зашиты.
+    showTitle: { control: "boolean", name: "Show Title" },
+    title: { control: "text", name: "Текст заголовка" },
+    showCross: { control: "boolean", name: "Show Cross" },
     direction: { control: "select", options: DIRECTIONS },
     disabled: { control: "boolean" },
     // `children` is a React.ReactElement (the trigger) — no JSON value can
@@ -44,16 +52,23 @@ const meta = {
   },
   args: {
     content: "Подсказка с пояснением",
+    title: "Title",
+    showTitle: false,
+    showCross: false,
     direction: "top-center",
     disabled: false,
     children: <Button variant="secondary-grey">Наведите курсор</Button>,
   },
-} satisfies Meta<TooltipProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<TooltipProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ showTitle, title, ...args }) => (
+    <Tooltip {...args} title={showTitle ? title : undefined} />
+  ),
+}
 
 /* Tooltips are portalled popups that only appear on hover, so a matrix would
    show empty cells — the directions are laid out as a spaced grid of live

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 interface RadioOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
+  /** Строка — текст ошибки; `true` — только состояние ошибки, без текста. */
   error?: React.ReactNode
 }
 
@@ -37,7 +38,15 @@ function Radio({
 }: RadioProps) {
   const generatedId = React.useId()
   const radioId = id ?? generatedId
-  const hasCaption = Boolean(comment || error)
+  // Дизайн-чек 3/3 №2: состояние ошибки и её текст переключаются отдельно,
+  // поэтому `error` принимает и `true` (только красная обводка, без текста).
+  // В Figma подпись — один слой («Text Error» в обоих вариантах Error=True/False,
+  // 600:8773 / 600:8785), который просто краснеет, поэтому текст ошибки и
+  // комментарий делят одну строку, а не стакаются.
+  const invalid = Boolean(error)
+  const errorText = typeof error === "boolean" ? null : error
+  const caption = errorText ?? comment
+  const hasCaption = Boolean(caption)
   const captionId = hasCaption ? `${radioId}-caption` : undefined
 
   const circle = (
@@ -55,11 +64,15 @@ function Radio({
         // reasoning for the label/caption's `group-has-*` further below.
         "group/circle flex size-6 shrink-0 items-center justify-center rounded-full border outline-none transition-colors",
         "border-[var(--radio-border)] bg-[var(--radio-bg)]",
-        "not-data-[disabled]:hover:border-[var(--radio-border-hover)]",
+        // Дизайн-чек 3/3 №1: ховер-обводка только для НЕвыбранного кружка.
+        // Без `not-data-[checked]` этот класс сортируется после
+        // `data-[checked]:border-transparent` и в состоянии Checked+Hover
+        // возвращает тёмное кольцо, которого в макете (600:8823 / 600:8829) нет.
+        "not-data-[disabled]:not-data-[checked]:hover:border-[var(--radio-border-hover)]",
         "data-[checked]:border-transparent data-[checked]:bg-[var(--radio-checked-bg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--radio-checked-bg-hover)]",
         "focus-visible:ring-3 focus-visible:ring-ring/50",
         "data-[disabled]:cursor-not-allowed data-[disabled]:!border-[var(--radio-disabled-border)] data-[disabled]:!bg-[var(--radio-disabled-bg)]",
-        error && "!border-[var(--radio-border-error)]",
+        invalid && "!border-[var(--radio-border-error)]",
         className
       )}
       {...props}
@@ -100,7 +113,7 @@ function Radio({
             id={captionId}
             className={cn(
               "text-p3-medium",
-              error
+              invalid
                 ? "text-[var(--radio-caption-error-fg)]"
                 : "text-[var(--radio-caption-fg)]",
               // `!` forces this to win regardless of Tailwind's declaration
@@ -109,7 +122,7 @@ function Radio({
               "group-has-data-[disabled]:!text-[var(--radio-caption-fg-disabled)]"
             )}
           >
-            {error ?? comment}
+            {caption}
           </span>
         )}
       </span>

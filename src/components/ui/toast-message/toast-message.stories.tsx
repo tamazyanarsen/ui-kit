@@ -26,6 +26,11 @@ interface PlaygroundArgs {
   type: ToastType
   title: string
   description?: string
+  // Дизайн-чек 3/3 №8: поле описания было, а тогла показа — нет; крестика
+  // в контролах не было вовсе. Оба — свойства компонент-сета в Figma
+  // (Show Description / Show Cross, 774:134177).
+  showDescription?: boolean
+  showCross?: boolean
   buttons: ToastButtons
   viewport?: Viewport
 }
@@ -34,6 +39,8 @@ function ToastLauncher({
   type,
   title,
   description,
+  showDescription,
+  showCross,
   buttons,
   viewport,
 }: PlaygroundArgs) {
@@ -44,7 +51,13 @@ function ToastLauncher({
     <ViewportScope viewport={viewport}>
       <Button
         onClick={() =>
-          toast.add({ type, title, description, data: buttonData(buttons) })
+          toast.add({
+            type,
+            title,
+            description: showDescription ? description : undefined,
+            showCross,
+            data: buttonData(buttons),
+          })
         }
       >
         Показать тост
@@ -65,7 +78,9 @@ const meta = {
   argTypes: {
     type: { control: "select", options: TYPES },
     title: { control: "text" },
-    description: { control: "text" },
+    showDescription: { control: "boolean", name: "Show Description" },
+    description: { control: "text", name: "Текст описания" },
+    showCross: { control: "boolean", name: "Show Cross" },
     buttons: { control: "select", options: ["none", "two", "black", "white"] },
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
@@ -74,7 +89,9 @@ const meta = {
   args: {
     type: "checked",
     title: "Скопировано в буфер обмена",
-    description: "",
+    description: "Ссылка на документ сохранена",
+    showDescription: false,
+    showCross: true,
     buttons: "none",
     viewport: "auto" as Viewport,
   },

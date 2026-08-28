@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tag, type TagColor } from "@/components/ui/tag"
 
+import { TitleHeading } from "./heading"
 import { TitleInformationText } from "./information-text"
 
 // TitleCard — "Заголовок со статусом", `ELK / title-page` with Type=Title
@@ -79,9 +80,7 @@ function TitleCard({
           between that group, the Назад button and the status row. */}
       <div className="flex w-full flex-col items-start gap-2">
         <div className="flex w-full items-start gap-12">
-          <h1 className="min-w-0 flex-1 truncate text-h2 text-[var(--title-fg)]">
-            {title}
-          </h1>
+          <TitleHeading>{title}</TitleHeading>
           {showHelp && (
             // `pt-6` on the wrapper, not on the button: Figma aligns the
             // 32px button optically against the 44px title line rather than

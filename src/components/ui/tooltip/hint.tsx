@@ -16,7 +16,12 @@ import {
   ModalTrigger,
 } from "@/components/ui/modal"
 
-import { DIRECTION_PLACEMENT, type TooltipDirection } from "./variants"
+import {
+  ARROW_BASE,
+  DIRECTION_PLACEMENT,
+  arrowPositionClass,
+  type TooltipDirection,
+} from "./variants"
 
 // Hint — click-triggered, dismissed via its own "X" or an outside click
 // (Popover's default behavior). Unlike Tooltip, it carries more content: an
@@ -112,7 +117,6 @@ function Hint({
           side={side}
           align={align}
           sideOffset={8}
-          arrowPadding={16}
           className="z-50"
         >
           <PopoverPrimitive.Popup
@@ -131,27 +135,37 @@ function Hint({
               "relative flex max-w-[592px] items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
               className
             )}
-          >
-            <div className="flex min-w-0 flex-1 flex-col gap-2 pr-1">
-              {title && (
-                <PopoverPrimitive.Title className="font-medium">
-                  {title}
-                </PopoverPrimitive.Title>
-              )}
-              <div>{content}</div>
-            </div>
-            {showCross && (
-              <PopoverPrimitive.Close
-                aria-label="Закрыть"
-                className="shrink-0 text-[var(--tooltip-fg)] outline-none"
-              >
-                <X aria-hidden="true" className="size-4" />
-              </PopoverPrimitive.Close>
+            /* Дизайн-чек 3/3 №4: та же правка, что и у Tooltip — стрелка
+               прижата к грани пузыря по разрешённым side/align, а не наведена
+               на центр якоря штатным `<Popover.Arrow>`. */
+            render={(popupProps, state) => (
+              <div {...popupProps}>
+                <div className="flex min-w-0 flex-1 flex-col gap-2 pr-1">
+                  {title && (
+                    <PopoverPrimitive.Title className="font-medium">
+                      {title}
+                    </PopoverPrimitive.Title>
+                  )}
+                  <div>{content}</div>
+                </div>
+                {showCross && (
+                  <PopoverPrimitive.Close
+                    aria-label="Закрыть"
+                    className="shrink-0 text-[var(--tooltip-fg)] outline-none"
+                  >
+                    <X aria-hidden="true" className="size-4" />
+                  </PopoverPrimitive.Close>
+                )}
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    ARROW_BASE,
+                    arrowPositionClass(state.side, state.align)
+                  )}
+                />
+              </div>
             )}
-            <PopoverPrimitive.Arrow className="data-[side=bottom]:top-0 data-[side=bottom]:-translate-y-1/2 data-[side=top]:bottom-0 data-[side=top]:translate-y-1/2 data-[side=left]:right-0 data-[side=left]:translate-x-1/2 data-[side=right]:left-0 data-[side=right]:-translate-x-1/2">
-              <div className="size-3 rotate-45 bg-[var(--tooltip-bg)]" />
-            </PopoverPrimitive.Arrow>
-          </PopoverPrimitive.Popup>
+          />
         </PopoverPrimitive.Positioner>
       </PopoverPrimitive.Portal>
     </PopoverPrimitive.Root>

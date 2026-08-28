@@ -22,6 +22,7 @@ import { ToggleDemo } from "@/demo/toggle-demo"
 import { RangeInputDemo } from "@/demo/range-input-demo"
 import { BannerDemo } from "@/demo/banner-demo"
 import { SelectionButtonDemo } from "@/demo/selection-button-demo"
+import { CardBoxDemo } from "@/demo/card-box-demo"
 import { CardDemo } from "@/demo/card-demo"
 import { BankCardDemo } from "@/demo/bank-card-demo"
 import { ProgressBarDemo } from "@/demo/progress-bar-demo"
@@ -109,6 +110,7 @@ function App() {
           <RangeInputDemo />
           <BannerDemo />
           <SelectionButtonDemo />
+          <CardBoxDemo />
           <CardDemo />
           <BankCardDemo />
           <ProgressBarDemo />

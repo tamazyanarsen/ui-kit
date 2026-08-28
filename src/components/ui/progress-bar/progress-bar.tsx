@@ -121,14 +121,14 @@ function ProgressBar({
   return (
     <div data-slot="progress-bar" className={cn("flex flex-col gap-2", className)}>
       <div className="flex flex-col gap-1">
-        <div className="flex items-baseline justify-between gap-4">
-          <span className="text-p1-medium text-[var(--progress-title-fg)]">
-            {title}
-          </span>
+        {/* "Top" (node 70333:2141/70333:1981): Title hugs its content, the
+            trailing label takes the rest of the row and ellipsizes — the
+            title is the one line that must never be cut. Type shrinks to
+            P1 Medium Mobile (14/20) below `desktop`. */}
+        <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
+          <span className="shrink-0">{title}</span>
           {label && (
-            <span className="shrink-0 text-p1-medium text-[var(--progress-title-fg)]">
-              {label}
-            </span>
+            <span className="min-w-0 flex-1 truncate text-right">{label}</span>
           )}
         </div>
 
@@ -140,12 +140,16 @@ function ProgressBar({
       </div>
 
       {(subtitle || description) && (
-        <div className="flex items-baseline gap-4 text-p1-medium">
+        // "Status Line (ELK)" (node 70333:2146/70333:2154) — 16px gap, the
+        // trailing description grows and right-aligns.
+        <div className="flex items-center gap-4 text-p2-medium desktop:text-p1-medium">
           {subtitle && (
-            <span style={{ color: STATUS_FG[status] }}>{subtitle}</span>
+            <span className="shrink-0" style={{ color: STATUS_FG[status] }}>
+              {subtitle}
+            </span>
           )}
           {description && (
-            <span className="ml-auto shrink-0 text-[var(--progress-meta-fg)]">
+            <span className="min-w-0 flex-1 truncate text-right text-[var(--progress-meta-fg)]">
               {description}
             </span>
           )}

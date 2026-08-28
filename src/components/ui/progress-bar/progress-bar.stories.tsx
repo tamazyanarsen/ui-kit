@@ -1,9 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { PseudoBox, StatesMatrix, viewportArgType } from "@/stories/matrix"
+import type { Viewport } from "@/lib/viewport"
 
 import { ProgressBar, type ProgressBarProps } from "./progress-bar"
 import type { ProgressBarStatus } from "./variants"
+
+/* Ось `Size` (Desktop | Mobile) в макете есть, но пропом не выставляется —
+   её даёт общий контрол `viewport`. */
+type PlaygroundArgs = ProgressBarProps & { viewport?: Viewport }
 
 const STATUSES: ProgressBarStatus[] = [
   "default",
@@ -21,6 +26,7 @@ const meta = {
   // a plain string — pin text controls so leaving one unset doesn't fall
   // back to Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
+    viewport: viewportArgType,
     variant: { control: "inline-radio", options: ["step", "timeline"] },
     title: { control: "text" },
     label: { control: "text" },
@@ -33,18 +39,27 @@ const meta = {
     currentStep: { control: { type: "number", min: 0, max: 10 } },
   },
   args: {
+    viewport: "auto" as Viewport,
     variant: "timeline",
     title: "Title",
     label: "Label",
+    subtitle: "Value",
+    description: "Description",
     value: 50,
     status: "default",
   },
-} satisfies Meta<ProgressBarProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<ProgressBarProps>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ viewport, ...args }) => (
+    <PseudoBox viewport={viewport} className="w-full">
+      <ProgressBar {...args} />
+    </PseudoBox>
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
@@ -54,6 +69,7 @@ export const Matrix: Story = {
       {/* Timeline — a continuous bar whose fill colour is set by `color`,
           independent of the caption colour set by `status`. */}
       <StatesMatrix<ProgressBarProps>
+        responsive
         stretch
         cellClassName="min-w-[280px]"
         baseProps={{
@@ -83,6 +99,7 @@ export const Matrix: Story = {
       />
       {/* Step — a segmented bar ("Шаг 2 из 4"). */}
       <StatesMatrix<ProgressBarProps>
+        responsive
         stretch
         cellClassName="min-w-[280px]"
         baseProps={{ variant: "step", totalSteps: 4, label: "Label" }}

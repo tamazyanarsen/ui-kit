@@ -4,13 +4,15 @@ import { ChevronDownIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
-// AccordionCard — the standalone "card" accordion from the spec (Title +
-// Subtitle header, Default/Blocked color type). Distinct from the plain
-// text-row Accordion in ./accordion.tsx, which is only used for this repo's
-// own docs-page chrome and has a different visual language (no card
-// background, no subtitle, always-visible trailing chevron on the whole
-// row). Each card owns its own single-item Base UI Accordion.Root, so
-// multiple cards stacked on a page open/close independently.
+// AccordionCard — the standalone "card" accordion from the spec (`ELK /
+// accordion`, node 70333:4508 — Title + Subtitle header, Default/Blocked
+// color type, Desktop/Mobile sizes). Distinct from the plain text-row
+// Accordion in `src/demo/scaffold`, which is only used for this repo's own
+// docs-page chrome and has a different visual language (no card background,
+// no subtitle, always-visible trailing chevron on the whole row), and from
+// AccordionList (`ELK / content accordion`). Each card owns its own
+// single-item Base UI Accordion.Root, so multiple cards stacked on a page
+// open/close independently.
 const ITEM_VALUE = "item"
 
 interface AccordionCardProps {
@@ -59,7 +61,12 @@ function AccordionCard({
           <AccordionPrimitive.Trigger
             data-slot="accordion-card-trigger"
             className={cn(
-              "flex w-full flex-col gap-1 p-6 text-left outline-none transition-colors [&[data-panel-open]_svg]:rotate-180",
+              // Mobile (`Size=Mobile`, node 70333:4514): the whole header
+              // shrinks — 16px padding instead of 24, 16px between text and
+              // chevron instead of 24, H4 Mobile / P1 Medium Mobile type.
+              // The 4px title↔subtitle gap and the 16px chevron are the same
+              // in both forms.
+              "flex w-full flex-col gap-1 p-4 text-left outline-none transition-colors desktop:p-6 [&[data-panel-open]_svg]:rotate-180",
               blocked
                 ? "hover:bg-[var(--accordion-card-blocked-bg-hover)]"
                 : "hover:bg-[var(--accordion-card-bg-hover)]"
@@ -69,8 +76,8 @@ function AccordionCard({
                 line (Figma puts it at y=24, i.e. exactly the card's own top
                 padding), not vertically centred on the 28px line — centring
                 dropped it 6px lower than the master. */}
-            <span className="flex items-start justify-between gap-6">
-              <span className="text-h4 text-[var(--accordion-card-title-fg)]">
+            <span className="flex items-start justify-between gap-4 desktop:gap-6">
+              <span className="text-h4-mobile text-[var(--accordion-card-title-fg)] desktop:text-h4">
                 {title}
               </span>
               <ChevronDownIcon
@@ -79,7 +86,7 @@ function AccordionCard({
               />
             </span>
             {subtitle && (
-              <span className="text-p1-medium text-[var(--accordion-card-subtitle-fg)]">
+              <span className="text-p2-medium text-[var(--accordion-card-subtitle-fg)] desktop:text-p1-medium">
                 {subtitle}
               </span>
             )}
@@ -97,7 +104,7 @@ function AccordionCard({
                 24px bottom padding. A prior audit pass concluded there was
                 no divider based on a vector-source re-check that didn't
                 hold up against this literal data. */}
-            <div className="border-t border-[var(--accordion-card-divider)] px-6 pt-6 pb-6">
+            <div className="border-t border-[var(--accordion-card-divider)] p-4 desktop:p-6">
               {children}
             </div>
           </AccordionPrimitive.Panel>

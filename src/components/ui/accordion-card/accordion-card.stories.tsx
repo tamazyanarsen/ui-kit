@@ -5,16 +5,22 @@ import {
   PseudoBox,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import type { Viewport } from "@/lib/viewport"
 
 import { AccordionCard } from "./accordion-card"
 
 type AccordionCardProps = ComponentProps<typeof AccordionCard>
 
-/* Ось `State` есть в макете (`ELK / accordion`: State = Default | Hover), а hover пропом не
-   выставить — его даёт общий контрол `state`. */
-type PlaygroundArgs = AccordionCardProps & { state?: PlaygroundState }
+/* Оси `State` и `Size` есть в макете (`ELK / accordion`: State = Default |
+   Hover, Size = Desktop | Mobile), но пропами не выставляются — их дают
+   общие контролы `state` и `viewport`. */
+type PlaygroundArgs = AccordionCardProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Accordion",
@@ -26,6 +32,7 @@ const meta = {
   // once it's left unset, instead of a plain text control.
   argTypes: {
     state: stateArgType,
+    viewport: viewportArgType,
     title: { control: "text" },
     subtitle: { control: "text" },
     children: { control: "text" },
@@ -34,6 +41,7 @@ const meta = {
   },
   args: {
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
     title: "Заголовок карточки",
     subtitle: "Подзаголовок с пояснением",
     children: "Раскрытое содержимое карточки.",
@@ -46,8 +54,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state} className="w-full">
+  render: ({ state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport} className="w-full">
       <AccordionCard {...args} />
     </PseudoBox>
   ),
@@ -58,6 +66,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<AccordionCardProps>
+      responsive
       stretch
       cellClassName="min-w-[360px]"
       baseProps={{ title: "Title", children: "Раскрытое содержимое карточки." }}

@@ -12,7 +12,7 @@ import { RowLabel } from "./shared"
 function EmptySearchDemo() {
   return (
     <AccordionItem value="empty-search">
-      <AccordionTrigger>Empty Search Results</AccordionTrigger>
+      <AccordionTrigger>Empty Page</AccordionTrigger>
       <AccordionPanel>
         <div className="flex flex-col gap-2">
           <RowLabel>Полный набор — Icon / Title / Description / Button</RowLabel>
@@ -26,11 +26,11 @@ function EmptySearchDemo() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <RowLabel>Large Icon + свой значок</RowLabel>
+          <RowLabel>Плитка M (largeIcon=false) + свой значок</RowLabel>
           <div className="rounded-lg border border-[#DEDEDE]">
             <EmptySearchResults
               icon={<Search aria-hidden="true" />}
-              largeIcon
+              largeIcon={false}
               title="Ничего не найдено"
               description="По вашему запросу результатов нет"
             />

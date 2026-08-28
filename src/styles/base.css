@@ -119,15 +119,34 @@
 }
 
 @layer base {
-  .themed-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+  /* Стандартные `scrollbar-width`/`scrollbar-color` объявляются ТОЛЬКО там,
+     где нет `::-webkit-scrollbar` (то есть в Firefox). В Chromium любое
+     ненулевое значение этих свойств переключает браузер на собственную
+     отрисовку полосы и ПОЛНОСТЬЮ отключает вебкитовые псевдоэлементы: с
+     ними полоса выходила 10px со стрелками вместо макетных 4px (замер на
+     card-box: `offsetWidth - clientWidth` = 10 при `width: 4px` ниже).
+     Firefox своего попиксельного контроля не имеет, поэтому там остаётся
+     пресет `thin` — он один на обе оси, отсюда и оговорка выше про 4/8px. */
+  @supports not selector(::-webkit-scrollbar) {
+    .themed-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+    }
   }
-  .themed-scrollbar::-webkit-scrollbar:vertical {
+  /* Одно правило на базовый `::-webkit-scrollbar`, а не два на `:vertical`/
+     `:horizontal`: во-первых, `width` и так относится только к вертикальной
+     полосе, а `height` — только к горизонтальной; во-вторых (и это важнее)
+     Chromium включает кастомную отрисовку полосы, только если объявлен САМ
+     `::-webkit-scrollbar` — с одними лишь `:vertical`/`:horizontal`
+     правилами он рисовал системную полосу 15px. */
+  .themed-scrollbar::-webkit-scrollbar {
     width: 4px;
-  }
-  .themed-scrollbar::-webkit-scrollbar:horizontal {
     height: 8px;
+  }
+  /* Кнопок-стрелок в макете нет — на Windows Chromium они рисуются по
+     умолчанию и съедают концы полосы. */
+  .themed-scrollbar::-webkit-scrollbar-button {
+    display: none;
   }
   .themed-scrollbar::-webkit-scrollbar-track {
     background: var(--scrollbar-track-bg);

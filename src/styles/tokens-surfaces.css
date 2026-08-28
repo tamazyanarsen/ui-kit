@@ -39,6 +39,15 @@
   --accordion-list-description-error-fg: var(--red-418);
   --accordion-list-description-information-fg: var(--grey-284);
 
+  /* Card Box tokens (`ELK / card-box`, node 70333:11271) — страничный блок,
+     в который укладываются секции. Заливка White 101 (та же, что у
+     табличного блока, — --table-bg), заголовок Grey 1514, разделители под
+     шапкой и над нижней кромкой Grey 134: всё три взяты из литерального
+     вывода get_design_context по вариантам Desktop/Small. */
+  --card-box-bg: var(--white-101);
+  --card-box-title-fg: var(--grey-1514);
+  --card-box-divider: var(--grey-134);
+
   /* Card tokens (bank-card list row). Values pixel-sampled directly from
      ui/card/card@2x.png + card@2x-1.png (Figma export) — row bg/hover
      confirmed as exact Grey 106 / Grey 114, title as Grey 1514, and the

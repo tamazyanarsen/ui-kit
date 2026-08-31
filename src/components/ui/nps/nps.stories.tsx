@@ -2,21 +2,21 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { StatesMatrix } from "@/stories/matrix"
 
-import { Nps, type NpsProps } from "./nps"
+import { Nps, type NpsEstimateType, type NpsProps, type NpsShowChips } from "./nps"
 
-/* Дизайн-чек №17: количество реплик-подсказок выбирается списком, а не
-   правкой JSON-массива в контролах. */
-const CHIP_POOL = [
-  "Долго грузится",
-  "Непонятный интерфейс",
-  "Не хватает функций",
-  "Всё устраивает",
-]
+/* Дизайн-чек №4 №11: контрол оценки называется «Estimate Type» и выбирается
+   из None, 1–5 — по элементу «Estimate (ELK)» (нода 70326:40173).
+   Дизайн-чек №4 №12: отдельного `defaultValue` в контролах нет — оценка
+   задаётся одним этим контролом (история пересоздаётся, чтобы звёзды
+   оставались кликабельными). */
+const ESTIMATE_TYPES = ["None", 1, 2, 3, 4, 5] as const
+type EstimateType = (typeof ESTIMATE_TYPES)[number]
 
-const CHIP_COUNTS = [0, 1, 2, 3, 4] as const
-type ChipCount = (typeof CHIP_COUNTS)[number]
+/* Дизайн-чек №4 №13: «Show Chips» — тоже None, 1–5: сколько предлагаемых
+   ответов показать (таблица свойств, нода 70326:40017). */
+const SHOW_CHIPS: NpsShowChips[] = ["none", 1, 2, 3, 4, 5]
 
-type PlaygroundArgs = NpsProps & { chipsCount?: ChipCount }
+type PlaygroundArgs = NpsProps & { estimateType?: EstimateType }
 
 const meta = {
   title: "Компоненты/NPS",
@@ -25,29 +25,28 @@ const meta = {
   // `title` is typed React.ReactNode but every real usage (including the
   // component's own runtime default) is a plain string — pin a text control
   // so an unset value doesn't fall back to Storybook's "Set object"
-  // placeholder. `value`/`defaultValue` are typed `number | null` — the
-  // `| null` union confuses Storybook's type inference into the same
-  // JSON-editor placeholder, even though every real usage is a 1–5 rating.
+  // placeholder.
   argTypes: {
     title: { control: "text" },
-    value: { control: "number" },
-    defaultValue: { control: "number" },
-    comment: { control: "text" },
-    chipsCount: {
-      name: "Количество реплик",
+    estimateType: {
+      name: "Estimate Type",
       control: "select",
-      options: CHIP_COUNTS,
+      options: ESTIMATE_TYPES,
     },
+    // Оценка задаётся контролом «Estimate Type» — сырые пропы скрыты.
+    value: { table: { disable: true } },
+    defaultValue: { table: { disable: true } },
+    comment: { control: "text" },
     chips: { table: { disable: true } },
     showDescription: { control: "boolean" },
-    showChips: { control: "boolean" },
+    showChips: { name: "Show Chips", control: "select", options: SHOW_CHIPS },
     submitted: { control: "boolean" },
   },
   args: {
+    estimateType: "None",
     showDescription: true,
-    showChips: true,
+    showChips: 5,
     submitted: false,
-    chipsCount: 4,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -55,8 +54,14 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ chipsCount = 4, ...args }) => (
-    <Nps {...args} chips={CHIP_POOL.slice(0, chipsCount)} />
+  // Оценка приходит контролом, но звёзды должны оставаться живыми, поэтому
+  // она задаётся начальным значением, а история пересоздаётся по ключу.
+  render: ({ estimateType = "None", value: _value, defaultValue: _default, ...args }) => (
+    <Nps
+      key={String(estimateType)}
+      {...args}
+      defaultValue={estimateType === "None" ? null : (estimateType as NpsEstimateType)}
+    />
   ),
 }
 
@@ -69,11 +74,12 @@ export const Matrix: Story = {
       cellClassName="min-w-[420px]"
       columns={[{ label: "Feedback (NPS)" }]}
       rows={[
-        { label: "Оценка не выбрана", props: {} },
-        { label: "Оценка 4", props: { defaultValue: 4 } },
-        { label: "Оценка 2", props: { defaultValue: 2 } },
+        { label: "Estimate Type: None", props: {} },
+        { label: "Estimate Type: 4", props: { defaultValue: 4 } },
+        { label: "Estimate Type: 2", props: { defaultValue: 2 } },
         // Both follow-up blocks are independently switchable.
-        { label: "Без плашек", props: { defaultValue: 3, showChips: false } },
+        { label: "Show Chips: none", props: { defaultValue: 3, showChips: "none" } },
+        { label: "Show Chips: 2", props: { defaultValue: 3, showChips: 2 } },
         {
           label: "Без поля комментария",
           props: { defaultValue: 3, showDescription: false },

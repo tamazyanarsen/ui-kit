@@ -27,16 +27,26 @@ import { cn } from "@/lib/utils"
 // - current near the end ("End"):     1 … last-4 last-3 last-2 last-1 last
 // - otherwise ("Middle"):             1 … current-1 current current+1 … last
 
-const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100]
+/**
+ * Дизайн-чек №4 №7: элемент «Page Count (ELK)» (нода 14679:38986) имеет
+ * ровно два значения `Value` — «100 (Without 75)» и «100», поэтому набор
+ * записей на странице задаётся выбором из них, а не произвольным массивом.
+ */
+const PAGE_COUNT_OPTIONS = {
+  "100 (Without 75)": [25, 50, 100],
+  "100": [25, 50, 75, 100],
+} satisfies Record<string, number[]>
+
+type PaginationPageCount = keyof typeof PAGE_COUNT_OPTIONS
 
 interface PaginationProps {
   page: number
   totalPages: number
   onPageChange?: (page: number) => void
   pageSize?: number
-  pageSizeOptions?: number[]
+  /** «Page Count» — набор вариантов числа записей на странице. */
+  pageCount?: PaginationPageCount
   onPageSizeChange?: (size: number) => void
-  showPageSize?: boolean
   /**
    * Показывать ли блок переключения страниц.
    *
@@ -52,6 +62,10 @@ interface PaginationProps {
    * если система возвращает пустое значение, пагинатор также отображается,
    * но отображается только правая часть (с выбором числа записей на
    * странице)» — вот для второго случая и нужен `showPages={false}`.
+   *
+   * Дизайн-чек №4 №6: при `showPages={false}` блок «Показать на странице»
+   * остаётся на своём месте (справа в Size=L), а не переезжает влево — сам
+   * блок Page Count отключать нечем (дизайн-чек №4 №7).
    */
   showPages?: boolean
   /**
@@ -178,16 +192,16 @@ function Pagination({
   page,
   totalPages,
   onPageChange,
-  pageSize,
-  pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+  pageSize = 25,
+  pageCount = "100 (Without 75)",
   onPageSizeChange,
-  showPageSize = true,
   showPages = true,
   size = "L",
   className,
 }: PaginationProps) {
   const pages = totalPages > 0 ? getPageList(page, totalPages) : [1]
   const showNav = totalPages > 1
+  const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
 
   function goTo(next: number) {
     if (next < 1 || next > totalPages || next === page) return
@@ -208,65 +222,66 @@ function Pagination({
       )}
     >
       {showPages && (
-      <div className="flex items-center gap-1">
-        {showNav && (
-          <NavButton
-            icon={ChevronLeft}
-            label="Предыдущая страница"
-            disabled={page <= 1}
-            onClick={() => goTo(page - 1)}
-          />
-        )}
-        {pages.map((entry, index) =>
-          entry === "ellipsis" ? (
-            <span
-              key={`ellipsis-${index}`}
-              aria-hidden="true"
-              data-slot="pagination-ellipsis"
-              className="flex size-9 shrink-0 items-center justify-center text-[var(--pagination-fg)]"
-            >
-              <Ellipsis aria-hidden="true" className="size-4" />
-            </span>
-          ) : (
-            <PageButton
-              key={entry}
-              page={entry}
-              active={entry === page}
-              onClick={() => goTo(entry)}
+        <div className="flex items-center gap-1">
+          {showNav && (
+            <NavButton
+              icon={ChevronLeft}
+              label="Предыдущая страница"
+              disabled={page <= 1}
+              onClick={() => goTo(page - 1)}
             />
-          )
-        )}
-        {showNav && (
-          <NavButton
-            icon={ChevronRight}
-            label="Следующая страница"
-            disabled={page >= totalPages}
-            onClick={() => goTo(page + 1)}
-          />
-        )}
-      </div>
-      )}
-
-      {showPageSize && pageSize !== undefined && (
-        <div className="flex items-center gap-4">
-          <span className="text-p2-medium whitespace-nowrap text-[var(--pagination-caption-fg)]">
-            Показать на странице
-          </span>
-          <div className="flex items-center gap-1">
-            {pageSizeOptions.map((size) => (
-              <SizeButton
-                key={size}
-                size={size}
-                active={size === pageSize}
-                onClick={() => onPageSizeChange?.(size)}
+          )}
+          {pages.map((entry, index) =>
+            entry === "ellipsis" ? (
+              <span
+                key={`ellipsis-${index}`}
+                aria-hidden="true"
+                data-slot="pagination-ellipsis"
+                className="flex size-9 shrink-0 items-center justify-center text-[var(--pagination-fg)]"
+              >
+                <Ellipsis aria-hidden="true" className="size-4" />
+              </span>
+            ) : (
+              <PageButton
+                key={entry}
+                page={entry}
+                active={entry === page}
+                onClick={() => goTo(entry)}
               />
-            ))}
-          </div>
+            )
+          )}
+          {showNav && (
+            <NavButton
+              icon={ChevronRight}
+              label="Следующая страница"
+              disabled={page >= totalPages}
+              onClick={() => goTo(page + 1)}
+            />
+          )}
         </div>
       )}
+
+      {/* Page Count — обязательный блок: отключать его нечем, а при
+          выключенном блоке страниц он остаётся на своём месте (в Size=L —
+          справа, `ml-auto`). */}
+      <div className={cn("flex items-center gap-4", size === "L" && "ml-auto")}>
+        <span className="text-p2-medium whitespace-nowrap text-[var(--pagination-caption-fg)]">
+          Показать на странице
+        </span>
+        <div className="flex items-center gap-1">
+          {pageSizeOptions.map((option) => (
+            <SizeButton
+              key={option}
+              size={option}
+              active={option === pageSize}
+              onClick={() => onPageSizeChange?.(option)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
 
-export { Pagination }
-export type { PaginationProps }
+export { Pagination, PAGE_COUNT_OPTIONS }
+export type { PaginationProps, PaginationPageCount }

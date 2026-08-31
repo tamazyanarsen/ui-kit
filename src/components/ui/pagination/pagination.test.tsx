@@ -67,8 +67,20 @@ describe("Pagination", () => {
     expect(onPageSizeChange).toHaveBeenCalledWith(50)
   })
 
-  it("hides the page-size controls when showPageSize is false", () => {
-    render(<Pagination page={1} totalPages={5} pageSize={25} showPageSize={false} />)
-    expect(screen.queryByText("Показать на странице")).not.toBeInTheDocument()
+  // Дизайн-чек №4 №7: блок Page Count отключать нечем — он есть всегда,
+  // даже когда блок страниц скрыт.
+  it("keeps the Page Count block when the pages block is hidden", () => {
+    render(<Pagination page={1} totalPages={5} pageSize={25} showPages={false} />)
+    expect(screen.getByText("Показать на странице")).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Следующая страница" })).not.toBeInTheDocument()
+  })
+
+  // Дизайн-чек №4 №7: два набора Page Count — «100 (Without 75)» и «100».
+  it("renders the page-size options selected by pageCount", () => {
+    const { rerender } = render(<Pagination page={1} totalPages={5} pageSize={25} />)
+    expect(screen.queryByRole("button", { name: "75" })).not.toBeInTheDocument()
+
+    rerender(<Pagination page={1} totalPages={5} pageSize={25} pageCount="100" />)
+    expect(screen.getByRole("button", { name: "75" })).toBeInTheDocument()
   })
 })

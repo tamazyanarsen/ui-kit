@@ -4,22 +4,19 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { StatesMatrix, viewportArgType } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
-import { Pagination, type PaginationProps } from "./pagination"
+import {
+  PAGE_COUNT_OPTIONS,
+  Pagination,
+  type PaginationPageCount,
+  type PaginationProps,
+} from "./pagination"
 
 /* Дизайн-чек №17: набор вариантов «записей на странице» — готовые пресеты,
-   а не JSON-массив в контролах. */
-const PAGE_SIZE_PRESETS = {
-  "25 / 50 / 100": [25, 50, 100],
-  "10 / 25 / 50": [10, 25, 50],
-  "50 / 100": [50, 100],
-} satisfies Record<string, number[]>
+   а не JSON-массив в контролах. Дизайн-чек №4 №7: пресетов ровно два — по
+   значениям `Value` элемента «Page Count (ELK)» (нода 14679:38986). */
+const PAGE_COUNTS = Object.keys(PAGE_COUNT_OPTIONS) as PaginationPageCount[]
 
-type PageSizePreset = keyof typeof PAGE_SIZE_PRESETS
-
-type PlaygroundArgs = PaginationProps & {
-  pageSizePreset?: PageSizePreset
-  viewport?: Viewport
-}
+type PlaygroundArgs = PaginationProps & { viewport?: Viewport }
 
 const meta = {
   title: "Компоненты/Paginator",
@@ -34,26 +31,27 @@ const meta = {
     page: { control: { type: "number", min: 1 } },
     totalPages: { control: { type: "number", min: 1 } },
     pageSize: { control: "number" },
-    pageSizePreset: {
-      name: "Варианты записей на странице",
-      control: "select",
-      options: Object.keys(PAGE_SIZE_PRESETS),
+    pageCount: {
+      name: "Page Count",
+      control: "inline-radio",
+      options: PAGE_COUNTS,
     },
-    pageSizeOptions: { table: { disable: true } },
-    showPages: { name: "Блок страниц", control: "boolean" },
-    showPageSize: { name: "Выбор числа записей", control: "boolean" },
+    // Дизайн-чек №4 №6: контрол называется «Page» — по имени элемента
+    // «Page (ELK)» (свойство «Show All Page» в таблице свойств).
+    showPages: { name: "Page", control: "boolean" },
+    // Дизайн-чек №4 №8: className — не свойство компонента из макета.
+    className: { table: { disable: true } },
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
     viewport: viewportArgType,
   },
   args: {
     size: "L",
-    pageSizePreset: "25 / 50 / 100",
+    pageCount: "100 (Without 75)",
     page: 5,
     totalPages: 20,
     pageSize: 25,
     showPages: true,
-    showPageSize: true,
     viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
@@ -78,13 +76,12 @@ function Controlled({ page, pageSize, ...props }: PaginationProps) {
 export const Playground: Story = {
   // Remount on every arg change so the `page`/`pageSize` controls actually
   // move the (otherwise internally-owned) state.
-  render: ({ pageSizePreset, viewport, ...args }) => (
+  render: ({ viewport, ...args }) => (
     <ViewportScope viewport={viewport}>
-    <Controlled
-      key={`${args.page}-${args.pageSize}-${pageSizePreset}`}
-      {...args}
-      pageSizeOptions={PAGE_SIZE_PRESETS[pageSizePreset ?? "25 / 50 / 100"]}
-    />
+      <Controlled
+        key={`${args.page}-${args.pageSize}-${args.pageCount}`}
+        {...args}
+      />
     </ViewportScope>
   ),
 }
@@ -97,9 +94,6 @@ export const Matrix: Story = {
       stretch
       cellClassName="min-w-[560px]"
       responsive
-      // Без `pageSize` правая часть («Показать на странице» + 25/50/100) не
-      // рендерится вовсе, и половина строк матрицы — включая «Без выбора
-      // размера» и «Пустой результат» — выглядела одинаково пустой.
       baseProps={{ pageSize: 25 }}
       columns={[{ label: "Paginator" }]}
       rows={[
@@ -109,8 +103,8 @@ export const Matrix: Story = {
         { label: "Средняя из 20", props: { page: 10, totalPages: 20 } },
         { label: "Последняя из 20", props: { page: 20, totalPages: 20 } },
         {
-          label: "Без выбора размера",
-          props: { page: 1, totalPages: 10, showPageSize: false },
+          label: "Page Count = 100\n(25 / 50 / 75 / 100)",
+          props: { page: 1, totalPages: 10, pageCount: "100" },
         },
         // «Если все записи отображаются на одной странице, в правой части
         // пагинатора должен оставаться только один активный элемент —

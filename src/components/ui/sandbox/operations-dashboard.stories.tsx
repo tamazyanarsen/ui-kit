@@ -99,7 +99,7 @@ function OperationsDashboard() {
         <p className="py-8 text-center text-sm text-[#999999]">Операций с таким статусом нет</p>
       )}
 
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} showPageSize={false} />
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   )
 }

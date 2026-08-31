@@ -30,7 +30,7 @@ function ProgressBarDemo() {
               <ProgressBar
                 key={total}
                 title={`Шаг 2 из ${total}`}
-                label="Label"
+                description="Description"
                 totalSteps={total}
                 currentStep={2}
               />
@@ -43,10 +43,10 @@ function ProgressBarDemo() {
           <ProgressBar
             variant="timeline"
             title="Title"
-            label="Label"
+            description="Description"
             value={60}
             subtitle="Value"
-            description="Description"
+            statusDescription="Description"
           />
         </div>
 
@@ -58,10 +58,10 @@ function ProgressBarDemo() {
                 key={status}
                 variant="timeline"
                 title="Title"
-                label="Label"
+                description="Description"
                 value={60}
                 subtitle="Value"
-                description="Description"
+                statusDescription="Description"
                 status={status}
               />
             ))}
@@ -85,9 +85,10 @@ function ProgressBarDemo() {
           полностью залитой — текущий шаг всегда заштрихован), оставшиеся —
           плоский трек. <code>variant="timeline"</code> — непрерывная шкала
           от <code>value</code> (0–100); цвет заливки по умолчанию считается
-          автоматически (0–50 зелёный, 50–99 жёлтый/оранжевый, 100 красный),
-          но можно задать явно через <code>color</code>. <code>status</code>{" "}
-          красит только текст Subtitle и не связан с цветом самой шкалы.
+          автоматически (0–50 Success, 50–99 Attention, 100 Error), но можно
+          задать явно через <code>statusTimeline</code> (в том числе нейтральный{" "}
+          <code>process</code>). <code>status</code> красит только текст
+          Subtitle в группе Status Line и не связан с цветом самой шкалы.
         </p>
       </AccordionPanel>
     </AccordionItem>

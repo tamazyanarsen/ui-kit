@@ -31,7 +31,7 @@ function NpsDemo() {
             <Nps
               defaultValue={4}
               showDescription={false}
-              showChips={false}
+              showChips="none"
             />
           </div>
         </div>

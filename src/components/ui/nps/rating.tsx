@@ -3,6 +3,8 @@ import * as React from "react"
 import { Star } from "@/icons"
 import { cn } from "@/lib/utils"
 
+import type { NpsEstimateType } from "./nps"
+
 const RATING_LABELS: Record<number, string> = {
   1: "Очень плохо",
   2: "Плохо",
@@ -11,17 +13,17 @@ const RATING_LABELS: Record<number, string> = {
   5: "Отлично",
 }
 
-const STARS = [1, 2, 3, 4, 5]
+const STARS: NpsEstimateType[] = [1, 2, 3, 4, 5]
 
 /** Пять звёзд и подпись оценки под ними. */
 function StarRating({
   value,
   onChange,
 }: {
-  value: number | null
-  onChange: (value: number) => void
+  value: NpsEstimateType | null
+  onChange: (value: NpsEstimateType) => void
 }) {
-  const [hoverValue, setHoverValue] = React.useState<number | null>(null)
+  const [hoverValue, setHoverValue] = React.useState<NpsEstimateType | null>(null)
   const displayValue = hoverValue ?? value
 
   return (
@@ -60,24 +62,23 @@ function StarRating({
         })}
       </div>
 
-      {/* Design-check #42: always rendered (with a reserved-space
-          placeholder when empty) instead of conditionally mounting — the
-          conditional version collapsed to 0 height between hovers, so the
-          card kept growing/shrinking as the cursor moved across the stars.
-
-          Дизайн-чек №35: подпись читает выбранное значение, а не наведённое
+      {/* Дизайн-чек №35: подпись читает выбранное значение, а не наведённое
           — «надпись должна появляться только по факту выбора конкретной
           оценки». Раньше она бежала за курсором по звёздам ещё до выбора.
           Звёзды по наведению подсвечиваться продолжают: это обычная
-          обратная связь на ховер, и к ней замечаний не было. */}
-      <p
-        className={cn(
-          "text-center text-p1-medium text-[var(--nps-subtitle-fg)]",
-          !value && "invisible"
-        )}
-      >
-        {value ? RATING_LABELS[value] : " "}
-      </p>
+          обратная связь на ховер, и к ней замечаний не было.
+
+          Дизайн-чек №4 №9: «убрать лишний отступ в 12px под звёздами». В
+          пустом состоянии подпись не рендерится вовсе — спрятанный
+          placeholder (design-check #42) высоты не давал, но оставлял зазор
+          `gap-3` под звёздами, из-за которого карточка была 246px вместо
+          232px по макету. Прыжков при наведении это не вернёт: подпись
+          зависит от выбранной оценки, а не от ховера. */}
+      {value && (
+        <p className="text-center text-p1-medium text-[var(--nps-subtitle-fg)]">
+          {RATING_LABELS[value]}
+        </p>
+      )}
     </div>
   )
 }

@@ -1,17 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { StatesMatrix, StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { OtpConfirmCard } from "./confirm-card"
+import { OtpInput } from "./input"
+import { ResendCode } from "./resend-code"
 
 type OtpConfirmCardProps = ComponentProps<typeof OtpConfirmCard>
+type OtpInputProps = ComponentProps<typeof OtpInput>
+type ResendCodeProps = ComponentProps<typeof ResendCode>
 
 type PlaygroundArgs = OtpConfirmCardProps & { viewport?: Viewport }
 
+// Дизайн-чек №4 №1: в Figma это один компонент `ELK / otp-code`, а
+// `Input Code` и «отправить повторно» — его элементы (секция Elements на
+// канвасе 1357:132865). Поэтому в Storybook тоже один раздел «OTP code»:
+// Playground/Варианты использования показывают сам компонент, а элементы
+// вынесены отдельными матрицами внутри этого же раздела.
 const meta = {
-  title: "Компоненты/OTP Confirm Card",
+  title: "Компоненты/OTP code",
   component: OtpConfirmCard,
   parameters: { layout: "centered" },
   // The card is a dialog (Figma composes it from ELK / Modal), so the
@@ -108,5 +117,54 @@ export const Examples: Story = {
         />
       </StorySection>
     </StoryShowcase>
+  ),
+}
+
+/* Элемент Input Code — Figma рисует его отдельной таблицей состояний
+   (Input Code Desktop/Mobile, 11490:14320 / 11490:23533). */
+export const InputCodeMatrix: Story = {
+  name: "Элемент «Input Code»",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<OtpInputProps>
+      responsive
+      stretch
+      cellClassName="min-w-[280px]"
+      columns={[
+        { label: "6 знаков", props: { length: 6 } },
+        { label: "4 знака", props: { length: 4 } },
+      ]}
+      rows={[
+        { label: "Пустой", props: {} },
+        { label: "Focus", props: {}, pseudo: "focus-within" },
+        { label: "Заполнен", props: { defaultValue: "123456" } },
+        {
+          label: "Error",
+          props: { defaultValue: "1234", error: "Неверный код" },
+        },
+        { label: "Disabled", props: { defaultValue: "1234", disabled: true } },
+      ]}
+      render={(props) => <OtpInput {...props} />}
+    />
+  ),
+}
+
+/* Элемент «отправить повторно» — счётчик и активная ссылка после нуля. */
+export const ResendCodeMatrix: Story = {
+  name: "Элемент «Resend Code»",
+  parameters: { layout: "fullscreen", controls: { disable: true } },
+  render: () => (
+    <StatesMatrix<ResendCodeProps>
+      responsive
+      columns={[{ label: "Resend Code" }]}
+      rows={[
+        { label: "Отсчёт (60 с)", props: { seconds: 60 } },
+        { label: "Отсчёт (5 с)", props: { seconds: 5 } },
+        // At 0 the counter turns into an active "отправить ещё раз" link.
+        { label: "Готово (0 с)", props: { seconds: 0 } },
+        { label: "Готово · Hover", props: { seconds: 0 }, pseudo: "hover" },
+      ]}
+      render={(props) => <ResendCode {...props} />}
+    />
   ),
 }

@@ -35,7 +35,7 @@ function PaginationDemo() {
 
           <div className="flex flex-col gap-2">
             <RowLabel>Begin — 1 2 3 4 5 … 8</RowLabel>
-            <Pagination page={1} totalPages={8} pageSize={25} showPageSize={false} />
+            <Pagination page={1} totalPages={8} pageSize={25} />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -45,7 +45,7 @@ function PaginationDemo() {
               totalPages={26}
               onPageChange={setMiddlePage}
               pageSize={25}
-              showPageSize={false}
+             
             />
           </div>
 
@@ -56,7 +56,7 @@ function PaginationDemo() {
               totalPages={26}
               onPageChange={setEndPage}
               pageSize={25}
-              showPageSize={false}
+             
             />
           </div>
 
@@ -67,13 +67,13 @@ function PaginationDemo() {
               totalPages={3209}
               onPageChange={setBigPage}
               pageSize={25}
-              showPageSize={false}
+             
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <RowLabel>1 страница — только текущая, без стрелок в потоке</RowLabel>
-            <Pagination page={1} totalPages={1} pageSize={25} pageSizeOptions={[25, 50, 100]} />
+            <Pagination page={1} totalPages={1} pageSize={25} pageCount="100 (Without 75)" />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -82,7 +82,7 @@ function PaginationDemo() {
               page={1}
               totalPages={4}
               pageSize={50}
-              pageSizeOptions={[25, 50, 75, 100]}
+              pageCount="100"
             />
           </div>
 

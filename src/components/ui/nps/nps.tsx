@@ -20,6 +20,8 @@ import { StarRating } from "./rating"
 // Звёзды живут в `rating.tsx`, раскрывающийся низ карточки — в
 // `feedback-panel.tsx`.
 
+// Дизайн-чек №4 №10: тексты предлагаемых ответов — из описания компонента
+// ДС (нода 64540:44922).
 const DEFAULT_CHIPS = [
   "Долго заполнять",
   "Непонятно",
@@ -27,16 +29,30 @@ const DEFAULT_CHIPS = [
   "Не понимаю статус платежа",
 ]
 
+/**
+ * Дизайн-чек №4 №13: «Show Chips» — не булев флаг, а выбор из None, 1–5
+ * (таблица «Свойства компонента», нода 70326:40017): сколько предлагаемых
+ * ответов показывать, `"none"` — не показывать вовсе.
+ */
+type NpsShowChips = "none" | 1 | 2 | 3 | 4 | 5
+
+/**
+ * Дизайн-чек №4 №11: «Estimate Type» — оценка None, 1–5 (элемент
+ * «Estimate (ELK)», нода 70326:40173).
+ */
+type NpsEstimateType = 1 | 2 | 3 | 4 | 5
+
 interface NpsProps {
   title?: React.ReactNode
-  value?: number | null
-  defaultValue?: number | null
+  /** «Estimate Type»: 1–5 или `null` (None). */
+  value?: NpsEstimateType | null
+  defaultValue?: NpsEstimateType | null
   onValueChange?: (value: number) => void
   comment?: string
   onCommentChange?: (value: string) => void
   chips?: string[]
   showDescription?: boolean
-  showChips?: boolean
+  showChips?: NpsShowChips
   submitted?: boolean
   onSubmit?: (data: { value: number; comment: string }) => void
   onClose?: () => void
@@ -118,7 +134,7 @@ function Nps({
   onCommentChange,
   chips = DEFAULT_CHIPS,
   showDescription = true,
-  showChips = true,
+  showChips = 5,
   submitted = false,
   onSubmit,
   onClose,
@@ -141,7 +157,7 @@ function Nps({
   const [selectedChip, setSelectedChip] = React.useState<string | null>(null)
   const activeChip = selectedChip === activeComment ? selectedChip : null
 
-  function setRating(next: number) {
+  function setRating(next: NpsEstimateType) {
     if (value === undefined) setInternalValue(next)
     onValueChange?.(next)
   }
@@ -189,8 +205,8 @@ function Nps({
       <FeedbackPanel
         open={activeValue !== null}
         showDescription={showDescription}
-        showChips={showChips}
-        chips={chips}
+        showChips={showChips !== "none"}
+        chips={showChips === "none" ? [] : chips.slice(0, showChips)}
         activeChip={activeChip}
         onChipSelect={selectChip}
         comment={activeComment}
@@ -202,4 +218,4 @@ function Nps({
 }
 
 export { Nps }
-export type { NpsProps }
+export type { NpsProps, NpsEstimateType, NpsShowChips }

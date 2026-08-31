@@ -3,5 +3,6 @@ export type { ProgressBarProps } from "./progress-bar"
 export type {
   ProgressBarVariant,
   ProgressBarStatus,
-  ProgressBarTimelineColor,
+  ProgressBarStatusLine,
+  ProgressBarStatusTimeline,
 } from "./variants"

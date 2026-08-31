@@ -26,6 +26,9 @@ dist-ssr
 *storybook.log
 storybook-static
 
+# Отчёт rollup-plugin-visualizer после сборки.
+/stats.html
+
 # Playwright MCP debug output
 .playwright-mcp/
 

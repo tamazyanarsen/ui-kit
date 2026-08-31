@@ -27,7 +27,9 @@ function AmountSuffix({
   size: InputSize
   /** Поле с плавающей подписью сдвигает свой текст вниз — знаку туда же. */
   floating: boolean
-  measureRef: React.RefObject<HTMLSpanElement>
+  // React.Ref, а не RefObject: типы React 18 и 19 по-разному типизируют
+  // результат useRef(null), а Ref принимает обе формы.
+  measureRef: React.Ref<HTMLSpanElement>
 }) {
   return (
     <>

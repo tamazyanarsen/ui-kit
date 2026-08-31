@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 
 // OtpInput — a single native <input>, not Base UI's OTPField (6 separate
 // slot inputs). The spec shows one continuous underline with a centered
@@ -45,7 +46,7 @@ function OtpInput({
   defaultValue,
   ...props
 }: OtpInputProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = error ? `${inputId}-caption` : undefined

@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { ChevronDown, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 import {
   SELECT_ICON_SIZE,
   selectFloatingLabelClassName,
@@ -38,7 +39,7 @@ export function ComboboxTrigger({
   id,
   ...props
 }: Omit<ComboboxPrimitive.Trigger.Props, "render"> & ComboboxTriggerOwnProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const triggerId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = comment || error ? `${triggerId}-caption` : undefined

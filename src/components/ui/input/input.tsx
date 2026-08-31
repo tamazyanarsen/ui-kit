@@ -3,6 +3,7 @@ import type { VariantProps } from "class-variance-authority"
 import { IMaskInput } from "react-imask"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 
 import { AmountSuffix } from "./amount-suffix"
 import { FieldTooltip, useHoverTooltip } from "./hover-tooltip"
@@ -70,7 +71,7 @@ function Input({
   value,
   ...props
 }: InputProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = comment || error ? `${inputId}-caption` : undefined

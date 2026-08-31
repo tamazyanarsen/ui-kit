@@ -3,6 +3,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { ChevronDownIcon, Lock, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 import {
   SELECT_ICON_SIZE,
   selectFloatingLabelClassName,
@@ -31,7 +32,7 @@ export function SelectTrigger({
   id,
   ...props
 }: Omit<SelectPrimitive.Trigger.Props, "render"> & SelectTriggerOwnProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const triggerId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = comment || error ? `${triggerId}-caption` : undefined

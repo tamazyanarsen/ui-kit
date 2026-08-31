@@ -33,6 +33,7 @@ export default defineConfig(({ command }) => ({
       include: [
         "src/index.ts",
         "src/lib/utils.ts",
+        "src/lib/use-id.ts",
         "src/components/ui/**/*.ts",
         "src/components/ui/**/*.tsx",
         // Иконки экспортируются по subpath (`@core/ui-kit/icons/lock`), так

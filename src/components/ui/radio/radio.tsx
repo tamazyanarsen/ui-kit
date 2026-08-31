@@ -2,6 +2,7 @@ import * as React from "react"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 
 interface RadioOwnProps {
   label?: React.ReactNode
@@ -36,7 +37,7 @@ function Radio({
   id,
   ...props
 }: RadioProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const radioId = id ?? generatedId
   // Дизайн-чек 3/3 №2: состояние ошибки и её текст переключаются отдельно,
   // поэтому `error` принимает и `true` (только красная обводка, без текста).

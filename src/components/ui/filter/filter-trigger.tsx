@@ -22,7 +22,9 @@ interface FilterTriggerProps {
   hasValue: boolean
   activeValue: string | null
   onClear: (event: React.SyntheticEvent) => void
-  anchorRef: React.RefObject<HTMLDivElement>
+  // React.Ref, а не RefObject: типы React 18 и 19 по-разному типизируют
+  // результат useRef(null), а Ref принимает обе формы.
+  anchorRef: React.Ref<HTMLDivElement>
   className?: string
 }
 

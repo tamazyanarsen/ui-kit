@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Information, Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 import { Hint } from "@/components/ui/tooltip"
 import { FieldTooltip } from "@/components/ui/input/hover-tooltip"
 
@@ -111,7 +112,7 @@ function Textarea({
   placeholder,
   ...props
 }: TextareaProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const textareaId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = comment || error ? `${textareaId}-caption` : undefined

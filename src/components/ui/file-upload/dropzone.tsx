@@ -2,6 +2,7 @@ import * as React from "react"
 import { CirclePlus } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 
 // FileUploadDropzone — Drag & Drop target. States: default, hover (drag
 // over — fills with Grey 100 per spec), disabled, error.
@@ -47,7 +48,7 @@ export function FileUploadDropzone({
 }: FileUploadDropzoneProps) {
   const [dragOver, setDragOver] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const inputId = React.useId()
+  const inputId = useId()
 
   function openPicker() {
     if (!disabled) inputRef.current?.click()

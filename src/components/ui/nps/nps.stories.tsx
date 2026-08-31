@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { StatesMatrix } from "@/stories/matrix"
+import { orderedOptionLabels } from "@/stories/options"
 
 import { Nps, type NpsEstimateType, type NpsProps, type NpsShowChips } from "./nps"
 
@@ -30,7 +31,7 @@ const meta = {
     title: { control: "text" },
     estimateType: {
       name: "Estimate Type",
-      control: "select",
+      control: { type: "select", labels: orderedOptionLabels(ESTIMATE_TYPES) },
       options: ESTIMATE_TYPES,
     },
     // Оценка задаётся контролом «Estimate Type» — сырые пропы скрыты.
@@ -39,8 +40,18 @@ const meta = {
     comment: { control: "text" },
     chips: { table: { disable: true } },
     showDescription: { control: "boolean" },
-    showChips: { name: "Show Chips", control: "select", options: SHOW_CHIPS },
+    showChips: {
+      name: "Show Chips",
+      // `none` показываем как «None» — ровно как в таблице свойств.
+      control: {
+        type: "select",
+        labels: orderedOptionLabels(SHOW_CHIPS, { none: "None" }),
+      },
+      options: SHOW_CHIPS,
+    },
     submitted: { control: "boolean" },
+    // Дизайн-чек №4 №8: className — не свойство компонента из макета.
+    className: { table: { disable: true } },
   },
   args: {
     estimateType: "None",

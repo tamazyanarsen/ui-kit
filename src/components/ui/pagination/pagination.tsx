@@ -39,6 +39,11 @@ const PAGE_COUNT_OPTIONS = {
 
 type PaginationPageCount = keyof typeof PAGE_COUNT_OPTIONS
 
+/** Порядок как в макете. Отдельным массивом, а не `Object.keys`: ключ «100»
+ *  похож на целое число, и в объекте JS поднимает его выше «100 (Without
+ *  75)» — перечисление ключей порядок из макета не сохраняет. */
+const PAGE_COUNTS: PaginationPageCount[] = ["100 (Without 75)", "100"]
+
 interface PaginationProps {
   page: number
   totalPages: number
@@ -283,5 +288,5 @@ function Pagination({
   )
 }
 
-export { Pagination, PAGE_COUNT_OPTIONS }
+export { Pagination, PAGE_COUNT_OPTIONS, PAGE_COUNTS }
 export type { PaginationProps, PaginationPageCount }

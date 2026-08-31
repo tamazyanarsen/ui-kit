@@ -44,6 +44,17 @@ describe("OtpInput", () => {
     render(<OtpInput aria-label="Код" error="Неверный код" />)
     expect(screen.getByText("Неверный код")).toBeInTheDocument()
   })
+
+  // Значение из пропа подчиняется тем же правилам, что и ввод с клавиатуры.
+  it("clamps a value passed through props to the code length", () => {
+    const { rerender } = render(
+      <OtpInput aria-label="Код" length={4} defaultValue="123456" />
+    )
+    expect(screen.getByLabelText("Код")).toHaveValue("1234")
+
+    rerender(<OtpInput aria-label="Код" length={4} value="12ab3456" />)
+    expect(screen.getByLabelText("Код")).toHaveValue("1234")
+  })
 })
 
 describe("ResendCode", () => {

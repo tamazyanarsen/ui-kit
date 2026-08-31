@@ -83,6 +83,8 @@ const meta = {
       options: STATUSES,
       table: { category: "Status Line" },
     },
+    // Дизайн-чек №4 №8: className — не свойство компонента из макета.
+    className: { table: { disable: true } },
   },
   args: {
     viewport: "auto" as Viewport,

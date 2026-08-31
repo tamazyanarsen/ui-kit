@@ -18,6 +18,19 @@ interface OtpInputProps
   containerClassName?: string
 }
 
+/** Значение из пропа приводим к тем же правилам, что и ввод с клавиатуры:
+ *  только цифры и не длиннее `length`. С клавиатуры лишнее не ввести
+ *  (maxLength + handleChange), а переданное программно значение рисовалось
+ *  целиком — в матрице колонка «4 знака» показывала шестизначный код. */
+function clampCode(
+  raw: React.ComponentProps<"input">["value"],
+  length: number
+) {
+  return raw === undefined
+    ? undefined
+    : String(raw).replace(/\D/g, "").slice(0, length)
+}
+
 function OtpInput({
   length = 6,
   error,
@@ -28,12 +41,20 @@ function OtpInput({
   disabled,
   id,
   placeholder = "Введите код из СМС",
+  value,
+  defaultValue,
   ...props
 }: OtpInputProps) {
   const generatedId = React.useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = error ? `${inputId}-caption` : undefined
+  // Отдаём инпуту ровно один из value/defaultValue — иначе React ругается на
+  // одновременно контролируемое и неконтролируемое поле.
+  const codeProps =
+    value !== undefined
+      ? { value: clampCode(value, length) }
+      : { defaultValue: clampCode(defaultValue, length) }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const digits = event.target.value.replace(/\D/g, "").slice(0, length)
@@ -60,6 +81,7 @@ function OtpInput({
         aria-invalid={invalid || undefined}
         aria-describedby={captionId}
         onChange={handleChange}
+        {...codeProps}
         className={cn(
           "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em]",
           "placeholder:text-p2-medium placeholder: placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",

@@ -2,19 +2,14 @@ import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import { orderedOptionLabels } from "@/stories/options"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
-import {
-  PAGE_COUNT_OPTIONS,
-  Pagination,
-  type PaginationPageCount,
-  type PaginationProps,
-} from "./pagination"
+import { PAGE_COUNTS, Pagination, type PaginationProps } from "./pagination"
 
 /* Дизайн-чек №17: набор вариантов «записей на странице» — готовые пресеты,
    а не JSON-массив в контролах. Дизайн-чек №4 №7: пресетов ровно два — по
    значениям `Value` элемента «Page Count (ELK)» (нода 14679:38986). */
-const PAGE_COUNTS = Object.keys(PAGE_COUNT_OPTIONS) as PaginationPageCount[]
 
 type PlaygroundArgs = PaginationProps & { viewport?: Viewport }
 
@@ -33,7 +28,7 @@ const meta = {
     pageSize: { control: "number" },
     pageCount: {
       name: "Page Count",
-      control: "inline-radio",
+      control: { type: "inline-radio", labels: orderedOptionLabels(PAGE_COUNTS) },
       options: PAGE_COUNTS,
     },
     // Дизайн-чек №4 №6: контрол называется «Page» — по имени элемента

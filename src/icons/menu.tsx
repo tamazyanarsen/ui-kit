@@ -7,12 +7,6 @@ import type { IconProps } from "./types"
 // макета.
 export function Menu({ size: _size, ...props }: IconProps) {
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path
-        d="M13 10C13.5523 10 14 10.4477 14 11C14 11.5523 13.5523 12 13 12H1C0.447715 12 0 11.5523 0 11C0 10.4477 0.447715 10 1 10H13ZM13 5C13.5523 5 14 5.44772 14 6C14 6.55228 13.5523 7 13 7H1C0.447715 7 0 6.55228 0 6C0 5.44772 0.447715 5 1 5H13ZM13 0C13.5523 0 14 0.447715 14 1C14 1.55228 13.5523 2 13 2H1C0.447715 2 0 1.55228 0 1C0 0.447715 0.447715 0 1 0H13Z"
-        transform="translate(1 2)"
-        fill="currentColor"
-      />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 12a1 1 0 1 1 0 2H2a1 1 0 1 1 0-2zm0-5a1 1 0 1 1 0 2H2a1 1 0 0 1 0-2zm0-5a1 1 0 1 1 0 2H2a1 1 0 0 1 0-2z"/></svg>
   )
 }

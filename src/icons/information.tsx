@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Information({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM0 12C0 5.373 5.373 0 12 0C18.627 0 24 5.373 24 12C24 18.627 18.627 24 12 24C5.373 24 0 18.627 0 12Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M10.25 11.25C10.25 10.698 10.698 10.25 11.25 10.25H12C12.552 10.25 13 10.698 13 11.25V15.532C13.431 15.643 13.75 16.034 13.75 16.5C13.75 17.052 13.302 17.5 12.75 17.5H12C11.448 17.5 11 17.052 11 16.5V12.218C10.569 12.107 10.25 11.716 10.25 11.25Z" fill="currentColor" /> <path d="M11.812 9C12.434 9 12.938 8.496 12.938 7.875C12.938 7.254 12.434 6.75 11.812 6.75C11.191 6.75 10.688 7.254 10.688 7.875C10.688 8.496 11.191 9 11.812 9Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2M0 12C0 5.373 5.373 0 12 0s12 5.373 12 12-5.373 12-12 12S0 18.627 0 12" clipRule="evenodd"/><path fill="currentColor" fillRule="evenodd" d="M10.25 11.25a1 1 0 0 1 1-1H12a1 1 0 0 1 1 1v4.282a1 1 0 0 1-.25 1.968H12a1 1 0 0 1-1-1v-4.282a1 1 0 0 1-.75-.968" clipRule="evenodd"/><path fill="currentColor" d="M11.812 9a1.126 1.126 0 1 0 0-2.251 1.126 1.126 0 0 0 0 2.251"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M14 8C14 4.686 11.314 2 8 2C4.686 2 2 4.686 2 8C2 11.314 4.686 14 8 14C11.314 14 14 11.314 14 8ZM16 8C16 12.418 12.418 16 8 16C3.582 16 0 12.418 0 8C0 3.582 3.582 0 8 0C12.418 0 16 3.582 16 8Z" fill="currentColor" /> <path d="M8 6.5C8.552 6.5 9 6.948 9 7.5V10.135C9.299 10.308 9.5 10.63 9.5 11C9.5 11.552 9.052 12 8.5 12H8C7.448 12 7 11.552 7 11V8.364C6.701 8.191 6.5 7.87 6.5 7.5C6.5 6.948 6.948 6.5 7.5 6.5H8Z" fill="currentColor" /> <path d="M7.777 5.812C8.467 5.812 9.027 5.252 9.027 4.562C9.027 3.872 8.467 3.312 7.777 3.312C7.087 3.312 6.527 3.872 6.527 4.562C6.527 5.252 7.087 5.812 7.777 5.812Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 8A6 6 0 1 0 2 8a6 6 0 0 0 12 0m2 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/><path fill="currentColor" d="M8 6.5a1 1 0 0 1 1 1v2.635A1 1 0 0 1 8.5 12H8a1 1 0 0 1-1-1V8.364A1 1 0 0 1 7.5 6.5zm-.223-.688a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5"/></svg>
   )
 }

@@ -8,16 +8,6 @@ import type { IconProps } from "./types"
 // rather than pulling in lucide-react.
 export function ImageIcon({ size: _size, ...props }: IconProps) {
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <rect x="1.5" y="2.5" width="13" height="11" rx="1.4" stroke="currentColor" strokeWidth="1.2" />
-      <circle cx="5.5" cy="6" r="1.25" fill="currentColor" />
-      <path
-        d="M2 11.5l3.3-3.3a1 1 0 0 1 1.4 0L9 10.5l1.6-1.6a1 1 0 0 1 1.4 0L14.5 11.5"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><rect width="13" height="11" x="1.5" y="2.5" stroke="currentColor" strokeWidth="1.2" rx="1.4"/><circle cx="5.5" cy="6" r="1.25" fill="currentColor"/><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="m2 11.5 3.3-3.3a1 1 0 0 1 1.4 0L9 10.5l1.6-1.6a1 1 0 0 1 1.4 0l2.5 2.6"/></svg>
   )
 }

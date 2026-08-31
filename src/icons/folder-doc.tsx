@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function FolderDoc({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M4 1C4 0.448 4.448 0 5 0H20C20.552 0 21 0.448 21 1V12H22C22.552 12 23 12.448 23 13V21C23 22.657 21.657 24 20 24H4C2.343 24 1 22.657 1 21V9C1 8.448 1.448 8 2 8H4V1ZM6 8H9C9.345 8 9.665 8.178 9.848 8.47L12.054 12H19V2H6V8ZM21 14H11.5C11.155 14 10.835 13.822 10.652 13.53L8.446 10H3V21C3 21.552 3.448 22 4 22H20C20.552 22 21 21.552 21 21V14ZM8 5C8 4.448 8.448 4 9 4H16C16.552 4 17 4.448 17 5C17 5.552 16.552 6 16 6H9C8.448 6 8 5.552 8 5ZM12 9C12 8.448 12.448 8 13 8H16C16.552 8 17 8.448 17 9C17 9.552 16.552 10 16 10H13C12.448 10 12 9.552 12 9Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M4 1a1 1 0 0 1 1-1h15a1 1 0 0 1 1 1v11h1a1 1 0 0 1 1 1v8a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V9a1 1 0 0 1 1-1h2zm2 7h3a1 1 0 0 1 .848.47L12.054 12H19V2H6zm15 6h-9.5a1 1 0 0 1-.848-.47L8.446 10H3v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1zM8 5a1 1 0 0 1 1-1h7a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1m4 4a1 1 0 0 1 1-1h3a1 1 0 0 1 0 2h-3a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M13 0C13.552 0 14 0.448 14 1V8H15C15.552 8 16 8.448 16 9V13C16 14.657 14.657 16 13 16H3C1.343 16 0 14.657 0 13V7C0 6.448 0.448 6 1 6H2V1C2 0.448 2.448 0 3 0H13ZM2 13C2 13.552 2.448 14 3 14H13C13.552 14 14 13.552 14 13V10H7C6.735 10 6.48 9.895 6.293 9.707L4.586 8H2V13ZM4 6H5C5.265 6 5.52 6.105 5.707 6.293L7.414 8H12V2H4V6ZM10 3C10.552 3 11 3.448 11 4C11 4.552 10.552 5 10 5H6C5.448 5 5 4.552 5 4C5 3.448 5.448 3 6 3H10Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M13 0a1 1 0 0 1 1 1v7h1a1 1 0 0 1 1 1v4a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V7a1 1 0 0 1 1-1h1V1a1 1 0 0 1 1-1zM2 13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3H7a1 1 0 0 1-.707-.293L4.586 8H2zm2-7h1c.265 0 .52.105.707.293L7.414 8H12V2H4zm6-3a1 1 0 0 1 0 2H6a1 1 0 0 1 0-2z"/></svg>
   )
 }

@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Document({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M3 2C3 0.895 3.895 0 5 0H15C15.265 0 15.52 0.105 15.707 0.293L21.707 6.293C21.895 6.48 22 6.735 22 7V22C22 23.105 21.105 24 20 24H5C3.895 24 3 23.105 3 22V2ZM14 2L5 2V22H20V8H16C14.895 8 14 7.105 14 6V2ZM16 3.414L18.586 6H16V3.414ZM7 12C7 11.448 7.448 11 8 11H17C17.552 11 18 11.448 18 12C18 12.552 17.552 13 17 13H8C7.448 13 7 12.552 7 12ZM7 17C7 16.448 7.448 16 8 16H17C17.552 16 18 16.448 18 17C18 17.552 17.552 18 17 18H8C7.448 18 7 17.552 7 17Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M3 2a2 2 0 0 1 2-2h10c.265 0 .52.105.707.293l6 6A1 1 0 0 1 22 7v15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm11 0H5v20h15V8h-4a2 2 0 0 1-2-2zm2 1.414L18.586 6H16zM7 12a1 1 0 0 1 1-1h9a1 1 0 0 1 0 2H8a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h9a1 1 0 0 1 0 2H8a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M9.586 0C10.116 0 10.625 0.211 11 0.586L13.414 3C13.789 3.375 14 3.884 14 4.414V14C14 15.105 13.105 16 12 16H4C2.895 16 2 15.105 2 14V2C2 0.895 2.895 0 4 0H9.586ZM4 14H12V6H9C8.448 6 8 5.552 8 5V2H4V14ZM10 10.5C10.552 10.5 11 10.948 11 11.5C11 12.052 10.552 12.5 10 12.5H6C5.448 12.5 5 12.052 5 11.5C5 10.948 5.448 10.5 6 10.5H10ZM10 7.5C10.552 7.5 11 7.948 11 8.5C11 9.052 10.552 9.5 10 9.5H6C5.448 9.5 5 9.052 5 8.5C5 7.948 5.448 7.5 6 7.5H10ZM10 4H11.586L10 2.414V4Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M9.586 0A2 2 0 0 1 11 .586L13.414 3A2 2 0 0 1 14 4.414V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zM4 14h8V6H9a1 1 0 0 1-1-1V2H4zm6-3.5a1 1 0 0 1 0 2H6a1 1 0 0 1 0-2zm0-3a1 1 0 0 1 0 2H6a1 1 0 0 1 0-2zM10 4h1.586L10 2.414z"/></svg>
   )
 }

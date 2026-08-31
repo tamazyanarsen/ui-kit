@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function SbpBlack({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M11.514 2.13C11.831 1.95 12.219 1.96 12.528 2.15L19.528 6.5C19.817 6.68 19.995 6.99 20 7.33C20.005 7.67 19.837 7.99 19.553 8.18L13.849 11.97L19.528 15.5C19.817 15.68 19.995 15.99 20 16.33C20.005 16.67 19.837 16.99 19.553 17.18L12.553 21.83C12.247 22.04 11.852 22.06 11.527 21.88C11.203 21.71 11 21.37 11 21V13.71L5.553 17.33C5.247 17.54 4.852 17.56 4.527 17.38C4.203 17.21 4 16.87 4 16.5V7.5C4 7.14 4.197 6.8 4.514 6.63C4.831 6.45 5.219 6.46 5.528 6.65L11 10.05V3C11 2.64 11.197 2.3 11.514 2.13ZM13 4.8V10.13L17.151 7.38L13 4.8ZM6 9.3V14.63L10.151 11.88L6 9.3ZM13 19.13V13.8L17.151 16.38L13 19.13Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M11.514 2.13a1 1 0 0 1 1.014.02l7 4.35c.289.18.467.49.472.83s-.163.66-.447.85l-5.704 3.79 5.679 3.53c.289.18.467.49.472.83s-.163.66-.447.85l-7 4.65a.97.97 0 0 1-1.026.05A.99.99 0 0 1 11 21v-7.29l-5.447 3.62a.97.97 0 0 1-1.026.05A.99.99 0 0 1 4 16.5v-9c0-.36.197-.7.514-.87a1 1 0 0 1 1.014.02L11 10.05V3c0-.36.197-.7.514-.87M13 4.8v5.33l4.151-2.75zM6 9.3v5.33l4.151-2.75zm7 9.83V13.8l4.151 2.58z" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M8 2V14L13 11L3 5V11L13 5L8 2Z" stroke="black" strokeWidth="2" strokeLinejoin="round" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path stroke="#000" strokeLinejoin="round" strokeWidth="2" d="M8 2v12l5-3L3 5v6l10-6z"/></svg>
   )
 }

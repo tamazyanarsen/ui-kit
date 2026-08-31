@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Money({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M1.043 16.71C1.203 16.181 1.761 15.883 2.29 16.043L17.735 20.723L18.519 16.804C18.628 16.262 19.154 15.911 19.696 16.019C20.237 16.128 20.589 16.655 20.48 17.196L19.48 22.196C19.425 22.473 19.256 22.713 19.014 22.858C18.772 23.003 18.48 23.039 18.21 22.957L1.71 17.957C1.181 17.797 0.883 17.239 1.043 16.71Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M1 5C1 4.448 1.447 4 2 4H22C22.552 4 23 4.448 23 5V17C23 17.552 22.552 18 22 18H2C1.447 18 1 17.552 1 17V5ZM3 6V16H21V6H3Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M16 11C16 10.448 16.447 10 17 10H18C18.552 10 19 10.448 19 11C19 11.552 18.552 12 18 12H17C16.447 12 16 11.552 16 11Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M5 11C5 10.448 5.447 10 6 10H7C7.552 10 8 10.448 8 11C8 11.552 7.552 12 7 12H6C5.447 12 5 11.552 5 11Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M12 12C12.552 12 13 11.552 13 11C13 10.448 12.552 10 12 10C11.447 10 11 10.448 11 11C11 11.552 11.447 12 12 12ZM12 14C13.657 14 15 12.657 15 11C15 9.343 13.657 8 12 8C10.343 8 9 9.343 9 11C9 12.657 10.343 14 12 14Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M1.043 16.71a1 1 0 0 1 1.247-.667l15.445 4.68.784-3.919a1 1 0 0 1 1.961.392l-1 5a.997.997 0 0 1-1.27.761l-16.5-5a1 1 0 0 1-.667-1.247" clipRule="evenodd"/><path fill="currentColor" fillRule="evenodd" d="M1 5a1 1 0 0 1 1-1h20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm2 1v10h18V6z" clipRule="evenodd"/><path fill="currentColor" fillRule="evenodd" d="M16 11a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1M5 11a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H6a1 1 0 0 1-1-1m7 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 2a3 3 0 1 0 0-6 3 3 0 0 0 0 6" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M15 2C15.552 2 16 2.448 16 3V12C16 12.552 15.552 13 15 13H13.845L13.2 15.405C13.057 15.939 12.508 16.255 11.975 16.112L0.741 13.103C0.27 12.976 -0.031 12.534 0.003 12.065C0.002 12.044 0 12.022 0 12V3C0 2.448 0.448 2 1 2H15ZM11.526 13.922L11.773 13H8.086L11.526 13.922ZM2 11H14V4H2V11ZM8 5C9.381 5 10.5 6.119 10.5 7.5C10.5 8.881 9.381 10 8 10C6.619 10 5.5 8.881 5.5 7.5C5.5 6.119 6.619 5 8 5ZM4 6.5C4.552 6.5 5 6.948 5 7.5C5 8.052 4.552 8.5 4 8.5C3.448 8.5 3 8.052 3 7.5C3 6.948 3.448 6.5 4 6.5ZM12 6.5C12.552 6.5 13 6.948 13 7.5C13 8.052 12.552 8.5 12 8.5C11.448 8.5 11 8.052 11 7.5C11 6.948 11.448 6.5 12 6.5ZM8 7C7.724 7 7.5 7.224 7.5 7.5C7.5 7.776 7.724 8 8 8C8.276 8 8.5 7.776 8.5 7.5C8.5 7.224 8.276 7 8 7Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M15 2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1.155l-.645 2.405a1 1 0 0 1-1.225.707L.741 13.103a1 1 0 0 1-.738-1.038L0 12V3a1 1 0 0 1 1-1zm-3.474 11.922.247-.922H8.086zM2 11h12V4H2zm6-6a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5M4 6.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2m8 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2M8 7a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1"/></svg>
   )
 }

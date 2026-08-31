@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function AddCard({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M2 4.5V7.5H19V4.5H2ZM21 4.278C21 3.306 20.218 2.5 19.231 2.5H1.769C0.782 2.5 0 3.306 0 4.278V16.722C0 17.694 0.782 18.5 1.769 18.5H13C13.552 18.5 14 18.052 14 17.5C14 16.948 13.552 16.5 13 16.5H2V9.5H19V10.5C19 11.052 19.448 11.5 20 11.5C20.552 11.5 21 11.052 21 10.5V4.278ZM20 13.5C20.552 13.5 21 13.948 21 14.5V16.5H23C23.552 16.5 24 16.948 24 17.5C24 18.052 23.552 18.5 23 18.5H21V20.5C21 21.052 20.552 21.5 20 21.5C19.448 21.5 19 21.052 19 20.5V18.5H17C16.448 18.5 16 18.052 16 17.5C16 16.948 16.448 16.5 17 16.5H19V14.5C19 13.948 19.448 13.5 20 13.5Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M2 4.5v3h17v-3zm19-.222c0-.972-.782-1.778-1.769-1.778H1.769C.782 2.5 0 3.306 0 4.278v12.444c0 .972.782 1.778 1.769 1.778H13a1 1 0 0 0 0-2H2v-7h17v1a1 1 0 0 0 2 0zM20 13.5a1 1 0 0 1 1 1v2h2a1 1 0 0 1 0 2h-2v2a1 1 0 0 1-2 0v-2h-2a1 1 0 0 1 0-2h2v-2a1 1 0 0 1 1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="56.000 248.000 16.000 16.000" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <defs><clipPath id="add-card-16-clip0_70326_26"> <rect width="16" height="16" fill="white" transform="translate(56 248)" /> </clipPath></defs><g clipPath="url(#add-card-16-clip0_70326_26)"> <path d="M69 257C69.552 257 70 257.448 70 258V259.005H71.005C71.557 259.005 72.005 259.453 72.005 260.005C72.005 260.557 71.557 261.005 71.005 261.005H70V262C70 262.552 69.552 263 69 263C68.448 263 68 262.552 68 262V261.005H67.005C66.453 261.005 66.005 260.557 66.005 260.005C66.005 259.453 66.453 259.005 67.005 259.005H68V258C68 257.448 68.448 257 69 257ZM68 250C69.105 250 70 250.895 70 252V255C70 255.552 69.552 256 69 256C68.448 256 68 255.552 68 255H58V259H64C64.552 259 65 259.448 65 260C65 260.552 64.552 261 64 261H58C56.895 261 56 260.105 56 259V252C56 250.895 56.895 250 58 250H68ZM58 253H68V252H58V253Z" fill="currentColor" /> </g>
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-56 -248)"><defs><clipPath id="add-card-16-clip0_70326_26"><path fill="#fff" d="M56 248h16v16H56z"/></clipPath></defs><g clipPath="url(#add-card-16-clip0_70326_26)"><path fill="currentColor" d="M69 257a1 1 0 0 1 1 1v1.005h1.005a1 1 0 0 1 0 2H70V262a1 1 0 0 1-2 0v-.995h-.995a1 1 0 0 1 0-2H68V258a1 1 0 0 1 1-1m-1-7a2 2 0 0 1 2 2v3a1 1 0 0 1-2 0H58v4h6a1 1 0 0 1 0 2h-6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2zm-10 3h10v-1H58z"/></g></g></svg>
   )
 }

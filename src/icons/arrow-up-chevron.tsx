@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function ArrowUpChevron({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M2.293 15.71C1.902 15.32 1.902 14.68 2.293 14.29L11.293 5.29C11.683 4.9 12.317 4.9 12.707 5.29L21.707 14.29C22.098 14.68 22.098 15.32 21.707 15.71C21.317 16.1 20.683 16.1 20.293 15.71L12 7.41L3.707 15.71C3.317 16.1 2.683 16.1 2.293 15.71Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M2.293 15.71a1.006 1.006 0 0 1 0-1.42l9-9a1 1 0 0 1 1.414 0l9 9c.391.39.391 1.03 0 1.42a1 1 0 0 1-1.414 0L12 7.41l-8.293 8.3a1 1 0 0 1-1.414 0" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M7.368 3.91C7.761 3.59 8.341 3.61 8.707 3.98L14.364 9.64C14.754 10.03 14.754 10.66 14.364 11.05C13.973 11.44 13.34 11.44 12.95 11.05L7.999 6.1L3.05 11.05C2.66 11.44 2.026 11.44 1.636 11.05C1.246 10.66 1.246 10.03 1.636 9.64L7.293 3.98L7.368 3.91Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M7.368 3.91a.997.997 0 0 1 1.339.07l5.657 5.66c.39.39.39 1.02 0 1.41a1 1 0 0 1-1.414 0L7.999 6.1 3.05 11.05a1 1 0 0 1-1.414 0 .996.996 0 0 1 0-1.41l5.657-5.66z"/></svg>
   )
 }

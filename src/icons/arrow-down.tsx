@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function ArrowDown({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M18.364 13.793C18.755 14.183 18.755 14.817 18.364 15.207L12.707 20.864C12.317 21.254 11.684 21.254 11.293 20.864L5.636 15.207C5.246 14.817 5.246 14.183 5.636 13.793C6.027 13.402 6.66 13.402 7.05 13.793L11 17.743L11 3.843C11 3.291 11.448 2.843 12 2.843C12.552 2.843 13 3.291 13 3.843L13 17.743L16.95 13.793C17.34 13.402 17.974 13.402 18.364 13.793Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M18.364 13.793a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414 0l-5.657-5.657a1 1 0 0 1 1.414-1.414l3.95 3.95v-13.9a1 1 0 0 1 2 0v13.9l3.95-3.95a1 1 0 0 1 1.414 0" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M2.477 4.465C2.477 3.912 2.925 3.465 3.477 3.465C4.03 3.465 4.477 3.912 4.477 4.465V9.121L5.247 8.351C5.637 7.961 6.27 7.961 6.661 8.351C7.052 8.742 7.052 9.375 6.661 9.765L4.184 12.243C3.794 12.633 3.16 12.633 2.769 12.243L0.293 9.765C-0.098 9.375 -0.098 8.742 0.293 8.351C0.683 7.961 1.316 7.961 1.707 8.351L2.477 9.122V4.465Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M2.477 4.465a1 1 0 1 1 2 0v4.656l.77-.77a1 1 0 0 1 1.414 1.414l-2.477 2.478c-.39.39-1.024.39-1.415 0L.293 9.765a.999.999 0 1 1 1.414-1.414l.77.771z"/></svg>
   )
 }

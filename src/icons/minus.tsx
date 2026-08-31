@@ -2,11 +2,6 @@ import type { IconProps } from "./types"
 
 export function Minus({ size: _size, ...props }: IconProps) {
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path
-        d="M14 7C14.5523 7 15 7.44772 15 8C15 8.55228 14.5523 9 14 9H2C1.44772 9 1 8.55228 1 8C1 7.44772 1.44772 7 2 7H14Z"
-        fill="currentColor"
-      />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 7a1 1 0 1 1 0 2H2a1 1 0 0 1 0-2z"/></svg>
   )
 }

@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Metro({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path d="M15.381 5.054L15.231 5.054L12.03 11.326L8.714 5L4.173 16.428H3V17.346H9.428V16.428H8.153L9.428 12.856L12.03 17.346L14.53 12.856L15.805 16.428H14.53V17.346H20.906V16.428H19.802L15.381 5.054Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M15.381 5.054h-.15l-3.201 6.272L8.714 5 4.173 16.428H3v.918h6.428v-.918H8.153l1.275-3.572 2.602 4.49 2.5-4.49 1.275 3.572H14.53v.918h6.376v-.918h-1.104z"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M10.254 3.369L10.154 3.369L8.02 7.55L5.809 3.333L2.782 10.952H2V11.564H6.285V10.952H5.435L6.285 8.571L8.02 11.564L9.686 8.571L10.537 10.952H9.686V11.564H13.938V10.952H13.201L10.254 3.369Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M10.254 3.369h-.1L8.02 7.55 5.809 3.333l-3.027 7.619H2v.612h4.285v-.612h-.85l.85-2.381 1.735 2.993 1.666-2.993.851 2.381h-.851v.612h4.252v-.612h-.737z"/></svg>
   )
 }

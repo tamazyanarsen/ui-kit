@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Chat({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M1 3C1 1.895 1.895 1 3 1H21C22.105 1 23 1.895 23 3V21C23 21.394 22.769 21.751 22.41 21.912C22.05 22.074 21.63 22.009 21.336 21.747L17.12 18H3C1.895 18 1 17.105 1 16V3ZM21 3H3V16H17.12C17.61 16 18.082 16.18 18.449 16.505L21 18.773V3ZM6 7C6 6.448 6.448 6 7 6H17C17.552 6 18 6.448 18 7C18 7.552 17.552 8 17 8H7C6.448 8 6 7.552 6 7ZM6 12C6 11.448 6.448 11 7 11H12C12.552 11 13 11.448 13 12C13 12.552 12.552 13 12 13H7C6.448 13 6 12.552 6 12Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M1 3a2 2 0 0 1 2-2h18a2 2 0 0 1 2 2v18a1 1 0 0 1-1.664.747L17.12 18H3a2 2 0 0 1-2-2zm20 0H3v13h14.12c.49 0 .962.18 1.329.505L21 18.773zM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 0 2H7a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h5a1 1 0 0 1 0 2H7a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M14 2C14.552 2 15 2.448 15 3V14C15 14.39 14.773 14.745 14.418 14.908C14.063 15.071 13.645 15.013 13.349 14.759L10.931 12.685H2C1.448 12.685 1 12.237 1 11.685V3C1 2.448 1.448 2 2 2H14ZM3 10.685H11.3L11.389 10.688C11.596 10.707 11.793 10.789 11.951 10.925L13 11.824V4H3V10.685ZM8 8C8.552 8 9 8.448 9 9C9 9.552 8.552 10 8 10H5C4.448 10 4 9.552 4 9C4 8.448 4.448 8 5 8H8ZM10 5C10.552 5 11 5.448 11 6C11 6.552 10.552 7 10 7H5C4.448 7 4 6.552 4 6C4 5.448 4.448 5 5 5H10Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 2a1 1 0 0 1 1 1v11a1 1 0 0 1-1.651.759l-2.418-2.074H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM3 10.685h8.3l.089.003c.207.019.404.101.562.237l1.049.899V4H3zM8 8a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2zm2-3a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2z"/></svg>
   )
 }

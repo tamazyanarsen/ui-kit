@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function CheckCircle({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M17.765 8.56C18.146 8.959 18.132 9.592 17.732 9.973L11.01 16.39C10.623 16.759 10.015 16.759 9.629 16.39L6.268 13.182C5.868 12.8 5.854 12.167 6.235 11.768C6.616 11.368 7.249 11.354 7.649 11.735L10.319 14.284L16.351 8.527C16.751 8.145 17.384 8.16 17.765 8.56Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM0 12C0 5.373 5.373 0 12 0C18.627 0 24 5.373 24 12C24 18.627 18.627 24 12 24C5.373 24 0 18.627 0 12Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M17.765 8.56a1 1 0 0 1-.033 1.413L11.01 16.39a1 1 0 0 1-1.381 0l-3.361-3.208a1 1 0 1 1 1.381-1.447l2.67 2.549 6.032-5.757a1 1 0 0 1 1.414.033" clipRule="evenodd"/><path fill="currentColor" fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2M0 12C0 5.373 5.373 0 12 0s12 5.373 12 12-5.373 12-12 12S0 18.627 0 12" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M14 8C14 4.686 11.314 2 8 2C4.686 2 2 4.686 2 8C2 11.314 4.686 14 8 14C11.314 14 14 11.314 14 8ZM10.518 5.526C10.917 5.145 11.55 5.16 11.932 5.56C12.313 5.959 12.298 6.592 11.898 6.974L7.621 11.057C7.235 11.425 6.627 11.425 6.24 11.057L4.102 9.015C3.702 8.633 3.687 8.001 4.068 7.602C4.45 7.202 5.083 7.187 5.482 7.568L6.931 8.95L10.518 5.526ZM16 8C16 12.418 12.418 16 8 16C3.582 16 0 12.418 0 8C0 3.582 3.582 0 8 0C12.418 0 16 3.582 16 8Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 8A6 6 0 1 0 2 8a6 6 0 0 0 12 0m-3.482-2.474a1 1 0 1 1 1.38 1.448l-4.277 4.083a1 1 0 0 1-1.381 0L4.102 9.015a.999.999 0 1 1 1.38-1.447L6.931 8.95zM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/></svg>
   )
 }

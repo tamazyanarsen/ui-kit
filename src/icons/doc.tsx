@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Doc({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M2.5 2C2.5 0.895 3.395 0 4.5 0H14.086C14.616 0 15.125 0.211 15.5 0.586L20.914 6C21.289 6.375 21.5 6.884 21.5 7.414V22C21.5 23.105 20.605 24 19.5 24H4.5C3.395 24 2.5 23.105 2.5 22V2ZM14.086 2H4.5V22H19.5V7.414L14.086 2ZM6.5 12C6.5 11.448 6.948 11 7.5 11H16.5C17.052 11 17.5 11.448 17.5 12C17.5 12.552 17.052 13 16.5 13H7.5C6.948 13 6.5 12.552 6.5 12ZM6.5 17C6.5 16.448 6.948 16 7.5 16H16.5C17.052 16 17.5 16.448 17.5 17C17.5 17.552 17.052 18 16.5 18H7.5C6.948 18 6.5 17.552 6.5 17Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M2.5 2a2 2 0 0 1 2-2h9.586A2 2 0 0 1 15.5.586L20.914 6a2 2 0 0 1 .586 1.414V22a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2zm11.586 0H4.5v20h15V7.414zM6.5 12a1 1 0 0 1 1-1h9a1 1 0 0 1 0 2h-9a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h9a1 1 0 0 1 0 2h-9a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M10 0C10.265 0 10.519 0.105 10.707 0.293L13.707 3.293C13.895 3.481 14 3.735 14 4V15C14 15.552 13.552 16 13 16H3C2.448 16 2 15.552 2 15V1C2 0.448 2.448 0 3 0H10ZM4 14H12V4.414L9.586 2H4V14ZM10 10C10.552 10 11 10.448 11 11C11 11.552 10.552 12 10 12H6C5.448 12 5 11.552 5 11C5 10.448 5.448 10 6 10H10ZM10 7C10.552 7 11 7.448 11 8C11 8.552 10.552 9 10 9H6C5.448 9 5 8.552 5 8C5 7.448 5.448 7 6 7H10Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M10 0a1 1 0 0 1 .707.293l3 3A1 1 0 0 1 14 4v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1zM4 14h8V4.414L9.586 2H4zm6-4a1 1 0 0 1 0 2H6a1 1 0 0 1 0-2zm0-3a1 1 0 0 1 0 2H6a1 1 0 0 1 0-2z"/></svg>
   )
 }

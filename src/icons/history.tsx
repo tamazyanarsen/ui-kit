@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function History({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 3C7.029 3 3 7.029 3 12C3 16.971 7.029 21 12 21C16.971 21 21 16.971 21 12C21 7.029 16.971 3 12 3ZM1 12C1 5.925 5.925 1 12 1C18.075 1 23 5.925 23 12C23 18.075 18.075 23 12 23C5.925 23 1 18.075 1 12ZM12 6.455C12.552 6.455 13 6.902 13 7.455V12.322L16.559 14.309C17.041 14.578 17.214 15.187 16.945 15.669C16.676 16.151 16.067 16.324 15.584 16.055L11.513 13.782C11.196 13.606 11 13.272 11 12.909V7.455C11 6.902 11.448 6.455 12 6.455Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M12 3a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12m11-5.545a1 1 0 0 1 1 1v4.867l3.559 1.987a1 1 0 1 1-.975 1.746l-4.071-2.273a1 1 0 0 1-.513-.873V7.455a1 1 0 0 1 1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="68.000 888.000 16.000 16.000" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <defs><clipPath id="history-16-clip9_70326_26"> <rect width="16" height="16" fill="white" transform="translate(68 888)" /> </clipPath></defs><g clipPath="url(#history-16-clip9_70326_26)"> <g> <path d="M76 891.811C75.44 891.811 74.987 892.265 74.987 892.824V896.635C74.987 897.002 75.186 897.341 75.506 897.52L78.351 899.108C78.84 899.38 79.457 899.205 79.73 898.717C80.002 898.228 79.827 897.611 79.339 897.338L77.013 896.04V892.824C77.013 892.265 76.559 891.811 76 891.811Z" fill="currentColor" /> <path fillRule="evenodd" clipRule="evenodd" d="M76 888C71.582 888 68 891.582 68 896C68 900.418 71.582 904 76 904C80.418 904 84 900.418 84 896C84 891.582 80.418 888 76 888ZM70.026 896C70.026 892.701 72.701 890.026 76 890.026C79.299 890.026 81.974 892.701 81.974 896C81.974 899.299 79.299 901.974 76 901.974C72.701 901.974 70.026 899.299 70.026 896Z" fill="currentColor" /> </g> </g>
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-68 -888)"><defs><clipPath id="history-16-clip9_70326_26"><path fill="#fff" d="M68 888h16v16H68z"/></clipPath></defs><g fill="currentColor" clipPath="url(#history-16-clip9_70326_26)"><path d="M76 891.811c-.56 0-1.013.454-1.013 1.013v3.811c0 .367.199.706.519.885l2.845 1.588a1.015 1.015 0 0 0 1.379-.391 1.015 1.015 0 0 0-.391-1.379l-2.326-1.298v-3.216c0-.559-.454-1.013-1.013-1.013"/><path fillRule="evenodd" d="M76 888a8 8 0 1 0 0 16 8 8 0 0 0 0-16m-5.974 8a5.974 5.974 0 1 1 11.949 0 5.974 5.974 0 0 1-11.949 0" clipRule="evenodd"/></g></g></svg>
   )
 }

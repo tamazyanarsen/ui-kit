@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function ArrowRight({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M13.793 18.364C14.184 18.754 14.817 18.754 15.207 18.364L20.864 12.707C21.255 12.317 21.255 11.683 20.864 11.293L15.207 5.636C14.817 5.246 14.184 5.246 13.793 5.636C13.402 6.027 13.402 6.66 13.793 7.05L17.743 11L3.843 11C3.291 11 2.843 11.448 2.843 12C2.843 12.552 3.291 13 3.843 13H17.743L13.793 16.95C13.402 17.34 13.402 17.973 13.793 18.364Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M13.793 18.364a1 1 0 0 0 1.414 0l5.657-5.657a1 1 0 0 0 0-1.414l-5.657-5.657a1 1 0 0 0-1.414 1.414l3.95 3.95h-13.9a1 1 0 0 0 0 2h13.9l-3.95 3.95a1 1 0 0 0 0 1.414" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M8.352 6.661C8.742 7.051 9.375 7.051 9.766 6.661L12.243 4.184C12.633 3.794 12.633 3.16 12.243 2.77L9.766 0.292C9.375 -0.098 8.742 -0.098 8.352 0.292C7.961 0.683 7.961 1.317 8.352 1.707L9.122 2.477H4.465C3.913 2.477 3.465 2.925 3.465 3.477C3.465 4.029 3.913 4.477 4.465 4.477H9.122L8.352 5.247C7.961 5.637 7.961 6.27 8.352 6.661Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M8.352 6.661a1 1 0 0 0 1.414 0l2.477-2.477a1 1 0 0 0 0-1.414L9.766.292a1 1 0 0 0-1.414 1.415l.77.77H4.465a1 1 0 0 0 0 2h4.657l-.77.77a1 1 0 0 0 0 1.414"/></svg>
   )
 }

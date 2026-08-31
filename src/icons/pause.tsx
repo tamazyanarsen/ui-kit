@@ -5,15 +5,11 @@ import type { IconProps } from "./types"
 export function Pause({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M9 21C8.448 21 8 20.55 8 20L8 4C8 3.45 8.448 3 9 3C9.552 3 10 3.45 10 4L10 20C10 20.55 9.552 21 9 21ZM15 21C14.448 21 14 20.55 14 20L14 4C14 3.45 14.448 3 15 3C15.552 3 16 3.45 16 4L16 20C16 20.55 15.552 21 15 21Z" fill="currentColor" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M9 21c-.552 0-1-.45-1-1V4c0-.55.448-1 1-1s1 .45 1 1v16c0 .55-.448 1-1 1m6 0c-.552 0-1-.45-1-1V4c0-.55.448-1 1-1s1 .45 1 1v16c0 .55-.448 1-1 1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M10 3C10 2.45 10.448 2 11 2C11.552 2 12 2.45 12 3V13C12 13.55 11.552 14 11 14C10.448 14 10 13.55 10 13V3Z" fill="currentColor" /> <path d="M4 3C4 2.45 4.448 2 5 2C5.552 2 6 2.45 6 3V13C6 13.55 5.552 14 5 14C4.448 14 4 13.55 4 13V3Z" fill="currentColor" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M10 3c0-.55.448-1 1-1s1 .45 1 1v10c0 .55-.448 1-1 1s-1-.45-1-1zM4 3c0-.55.448-1 1-1s1 .45 1 1v10c0 .55-.448 1-1 1s-1-.45-1-1z"/></svg>
   )
 }

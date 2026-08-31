@@ -28,22 +28,6 @@ export function FileIcon({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path
-        d="M3.5 1.5H9L12.5 5V13.5C12.5 14.0523 12.0523 14.5 11.5 14.5H4.5C3.94772 14.5 3.5 14.0523 3.5 13.5V1.5Z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 1.5V4.5C9 5.05228 9.44772 5.5 10 5.5H12.5"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-      />
-      <path d="M5.5 7H6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M5.5 9.25H10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M5.5 11.5H10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-    </svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path stroke="currentColor" strokeLinejoin="round" strokeWidth="1.2" d="M3.5 1.5H9L12.5 5v8.5a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1z"/><path stroke="currentColor" strokeLinejoin="round" strokeWidth="1.2" d="M9 1.5v3a1 1 0 0 0 1 1h2.5"/><path stroke="currentColor" strokeLinecap="round" strokeWidth="1.2" d="M5.5 7h1m-1 2.25h5m-5 2.25h5"/></svg>
   )
 }

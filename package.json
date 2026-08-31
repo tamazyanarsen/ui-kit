@@ -17,7 +17,15 @@
       "import": "./dist/index.js"
     },
     "./style.css": "./dist/index.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./icons/*": {
+      "types": "./dist/icons/*.d.ts",
+      "import": "./dist/icons/*.js"
+    },
+    "./*": {
+      "types": "./dist/components/ui/*/index.d.ts",
+      "import": "./dist/components/ui/*/index.js"
+    }
   },
   "publishConfig": {
     "registry": "https://test.registry.com"
@@ -42,7 +50,6 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.25.0",
     "react-imask": "^7.6.1",
     "tailwind-merge": "^3.6.0"
   },

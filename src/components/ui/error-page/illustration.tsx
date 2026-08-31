@@ -1,8 +1,11 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
-import errorIllustration from "@/assets/error-page/error-illustration.png"
-import noCodeMascot from "@/assets/error-page/no-code-mascot.png"
+import { Picture } from "@/lib/picture"
+import errorIllustrationAvif from "@/assets/error-page/error-illustration.avif"
+import errorIllustrationWebp from "@/assets/error-page/error-illustration.webp"
+import noCodeMascotAvif from "@/assets/error-page/no-code-mascot.avif"
+import noCodeMascotWebp from "@/assets/error-page/no-code-mascot.webp"
 
 /**
  * Image Error (ELK) — иллюстрация страницы ошибки.
@@ -102,7 +105,13 @@ function ErrorPageIllustration({
         data-type="image"
         className={cn("relative w-full overflow-hidden", className)}
       >
-        <img src={noCodeMascot} alt="" aria-hidden="true" className="mx-auto block h-40 w-auto" />
+        <Picture
+          avif={noCodeMascotAvif}
+          webp={noCodeMascotWebp}
+          alt=""
+          aria-hidden="true"
+          className="mx-auto block h-40 w-auto"
+        />
       </div>
     )
   }
@@ -118,8 +127,9 @@ function ErrorPageIllustration({
         className
       )}
     >
-      <img
-        src={errorIllustration}
+      <Picture
+        avif={errorIllustrationAvif}
+        webp={errorIllustrationWebp}
         alt=""
         aria-hidden="true"
         className="absolute max-w-none"

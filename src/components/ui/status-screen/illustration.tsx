@@ -1,15 +1,26 @@
-import attentionImg from "@/assets/status-screen/attention.png"
-import clockImg from "@/assets/status-screen/clock.png"
-import editImg from "@/assets/status-screen/edit.png"
-import errorImg from "@/assets/status-screen/error.png"
-import lockImg from "@/assets/status-screen/lock.png"
-import questionImg from "@/assets/status-screen/question.png"
-import searchAttentionImg from "@/assets/status-screen/search-attention.png"
-import searchImg from "@/assets/status-screen/search.png"
-import successImg from "@/assets/status-screen/success.png"
-import timeAttentionImg from "@/assets/status-screen/time-attention.png"
+import attentionAvif from "@/assets/status-screen/attention.avif"
+import attentionWebp from "@/assets/status-screen/attention.webp"
+import clockAvif from "@/assets/status-screen/clock.avif"
+import clockWebp from "@/assets/status-screen/clock.webp"
+import editAvif from "@/assets/status-screen/edit.avif"
+import editWebp from "@/assets/status-screen/edit.webp"
+import errorAvif from "@/assets/status-screen/error.avif"
+import errorWebp from "@/assets/status-screen/error.webp"
+import lockAvif from "@/assets/status-screen/lock.avif"
+import lockWebp from "@/assets/status-screen/lock.webp"
+import questionAvif from "@/assets/status-screen/question.avif"
+import questionWebp from "@/assets/status-screen/question.webp"
+import searchAttentionAvif from "@/assets/status-screen/search-attention.avif"
+import searchAttentionWebp from "@/assets/status-screen/search-attention.webp"
+import searchAvif from "@/assets/status-screen/search.avif"
+import searchWebp from "@/assets/status-screen/search.webp"
+import successAvif from "@/assets/status-screen/success.avif"
+import successWebp from "@/assets/status-screen/success.webp"
+import timeAttentionAvif from "@/assets/status-screen/time-attention.avif"
+import timeAttentionWebp from "@/assets/status-screen/time-attention.webp"
 
 import { cn } from "@/lib/utils"
+import { Picture } from "@/lib/picture"
 
 import type { StatusType } from "./variants"
 
@@ -30,17 +41,17 @@ import type { StatusType } from "./variants"
  * В макете кадр рисуется в коробке 232×176; тень — отдельный слой под ним,
  * но она уже впечатана в сам растр, поэтому отдельным элементом не рисуется.
  */
-const STATUS_IMAGE: Record<StatusType, string> = {
-  success: successImg,
-  error: errorImg,
-  attention: attentionImg,
-  question: questionImg,
-  search: searchImg,
-  clock: clockImg,
-  lock: lockImg,
-  edit: editImg,
-  "search-attention": searchAttentionImg,
-  "time-attention": timeAttentionImg,
+const STATUS_IMAGE: Record<StatusType, { avif: string; webp: string }> = {
+  attention: { avif: attentionAvif, webp: attentionWebp },
+  clock: { avif: clockAvif, webp: clockWebp },
+  edit: { avif: editAvif, webp: editWebp },
+  error: { avif: errorAvif, webp: errorWebp },
+  lock: { avif: lockAvif, webp: lockWebp },
+  question: { avif: questionAvif, webp: questionWebp },
+  "search-attention": { avif: searchAttentionAvif, webp: searchAttentionWebp },
+  search: { avif: searchAvif, webp: searchWebp },
+  success: { avif: successAvif, webp: successWebp },
+  "time-attention": { avif: timeAttentionAvif, webp: timeAttentionWebp },
 }
 
 function StatusIllustration({
@@ -51,8 +62,9 @@ function StatusIllustration({
   className?: string
 }) {
   return (
-    <img
-      src={STATUS_IMAGE[status]}
+    <Picture
+      avif={STATUS_IMAGE[status].avif}
+      webp={STATUS_IMAGE[status].webp}
       alt=""
       aria-hidden="true"
       width={232}

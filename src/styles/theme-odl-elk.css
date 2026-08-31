@@ -54,7 +54,7 @@
   /* Зелёная иллюстрация NPS остаётся за старой палитрой — дизайн-чек №3
      №17 прямо просит её не удалять. Как только придёт голубая версия,
      меняется одна строка: `--nps-done-image` в :root. */
-  --nps-done-image: url("../assets/nps/done-illustration.png");
+  --nps-done-image: url("../assets/nps/done-illustration.webp");
 
   --btn-primary-bg: var(--odl-green-223);
   --btn-primary-bg-hover: var(--odl-green-289);
@@ -245,4 +245,14 @@
      (Green 333 / Green 107). Выведено, не измерено. */
   --status-screen-success-fg: var(--odl-green-333);
   --status-screen-success-bg: var(--odl-green-107);
+}
+
+/* AVIF поверх WebP: `image-set()` с `type()` понимают не все браузеры,
+   поэтому базовым значением остаётся WebP (см. выше), а лёгкий AVIF
+   подставляется только там, где `image-set` действительно поддержан.
+   Картинка — фон, а не `<img>`, поэтому `<picture>` тут не применить. */
+@supports (background-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"))) {
+  [data-product="odl-elk"] {
+    --nps-done-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"));
+  }
 }

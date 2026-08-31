@@ -71,7 +71,7 @@
      остаётся жить в «Старом ЕЛК».
      Голубая версия — растр из мастера (символ `State=Done`, канвас
      Feedback), как и зелёная: иллюстрация объёмная, не перерисовывается. */
-  --nps-done-image: url("../assets/nps/done-illustration-blue.png");
+  --nps-done-image: url("../assets/nps/done-illustration-blue.webp");
   /* NPS's reply pills moved to the shared FilterTable component (Figma
      builds them from `ELK / filter-table`, not a bespoke chip), so their
      --nps-chip-* tokens are gone — the colours now come from the
@@ -200,4 +200,14 @@
      autocomplete/highlight.tsx) — reuses the kit's primary accent so the
      value is an existing DS colour rather than a new one. */
   --autocomplete-match-bg: var(--blue-223);
+}
+
+/* AVIF поверх WebP: `image-set()` с `type()` понимают не все браузеры,
+   поэтому базовым значением остаётся WebP (см. выше), а лёгкий AVIF
+   подставляется только там, где `image-set` действительно поддержан.
+   Картинка — фон, а не `<img>`, поэтому `<picture>` тут не применить. */
+@supports (background-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"))) {
+  :root {
+    --nps-done-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"));
+  }
 }

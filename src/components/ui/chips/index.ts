@@ -1,2 +1,2 @@
 export { Chips } from "./chips"
-export type { ChipsProps } from "./chips"
+export type { ChipsProps, ChipsType } from "./chips"

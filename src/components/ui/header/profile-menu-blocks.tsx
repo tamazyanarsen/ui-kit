@@ -6,7 +6,7 @@ import { Check, LogOut, Settings } from "@/icons"
 import { cn } from "@/lib/utils"
 
 // Содержимое меню профиля: карточка единственной организации, список
-// организаций и блок настроек. Вынесено из `profile-menu.tsx` — там остаётсяv
+// организаций и блок настроек. Вынесено из `profile-menu.tsx` — там остаётся
 // сам компонент с поиском и выбором раскладки.
 
 interface ProfileMenuOrganization {

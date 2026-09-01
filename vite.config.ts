@@ -1,9 +1,9 @@
-import fs from "node:fs"
-import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
-import { defineConfig } from "vitest/config"
+import fs from "node:fs"
+import path from "path"
 import dts from "vite-plugin-dts"
+import { defineConfig } from "vitest/config"
 
 // Точки входа: корневой бочонок плюс бочонок каждого компонента. Компонентные
 // нужны затем, чтобы `@core/ui-kit/button` резолвился в реальный файл: без
@@ -53,6 +53,14 @@ export default defineConfig(({ command }) => ({
   // public/favicon.svg + icons.svg; the published library doesn't, so skip
   // copying them into dist during `vite build`.
   publicDir: command === "build" ? false : "public",
+  // Пути к ассетам обязаны быть относительными, иначе пакет ломается у
+  // потребителя: при base "/" Vite зашивает `/assets/lock.avif`, браузер идёт
+  // за ним в корень сайта микрофронта, а файл лежит в
+  // node_modules/@core/ui-kit/dist/assets. С относительным base Vite отдаёт
+  // для JS `new URL("./…", import.meta.url)` — этот паттерн бандлер
+  // потребителя распознаёт и копирует файл к себе, — а для CSS путь
+  // относительно самого CSS-файла. На dev-сервер не влияет.
+  base: command === "build" ? "./" : "/",
   build: {
     // This library ships as an npm package (@core/ui-kit) consumed by host
     // apps at build time, not as an HTML app — see src/index.ts for the
@@ -67,7 +75,7 @@ export default defineConfig(({ command }) => ({
     // один компонент вместо всего кита.
     assetsInlineLimit: 0,
     cssCodeSplit: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: componentEntries(),
       // Без strict публичные экспорты вытрясаются: у обычного (не
       // библиотечного) режима entry считается приложением, и неиспользуемое

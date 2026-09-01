@@ -1,12 +1,12 @@
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
-import { Check, LogOut, Settings } from "@/icons"
-import { cn } from "@/lib/utils"
 import { Divider } from "@/components/ui/divider"
 import { Scrollbar } from "@/components/ui/scrollbar"
+import { Check, LogOut, Settings } from "@/icons"
+import { cn } from "@/lib/utils"
 
 // Содержимое меню профиля: карточка единственной организации, список
-// организаций и блок настроек. Вынесено из `profile-menu.tsx` — там остаётся
+// организаций и блок настроек. Вынесено из `profile-menu.tsx` — там остаётсяv
 // сам компонент с поиском и выбором раскладки.
 
 interface ProfileMenuOrganization {
@@ -130,3 +130,4 @@ function SettingsBlock({
 
 export { MENU_ITEM, OrganizationList, SettingsBlock, SingleOrganization }
 export type { ProfileMenuOrganization }
+

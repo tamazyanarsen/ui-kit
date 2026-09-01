@@ -280,7 +280,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/sync-exports.mjs --check && tsc -b && vite build",
     "size": "node scripts/measure.mjs",
     "size:probe": "node scripts/size-probe.mjs",
     "exports:sync": "node scripts/sync-exports.mjs",

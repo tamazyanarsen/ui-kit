@@ -2,6 +2,7 @@ import * as React from "react"
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 
 interface ToggleOwnProps {
   label?: React.ReactNode
@@ -26,7 +27,7 @@ function Toggle({
   id,
   ...props
 }: ToggleProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const toggleId = id ?? generatedId
   // Дизайн-чек 3/3 №6: `error` принимает и `true` — состояние ошибки без
   // текста (у тогла трек не краснеет, поэтому визуально это ничего не

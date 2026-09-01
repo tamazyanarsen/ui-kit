@@ -3,6 +3,7 @@ import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import { Check, Minus } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 
 interface CheckboxOwnProps {
   label?: React.ReactNode
@@ -32,7 +33,7 @@ function Checkbox({
   id,
   ...props
 }: CheckboxProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const checkboxId = id ?? generatedId
   const hasCaption = Boolean(comment || error)
   const captionId = hasCaption ? `${checkboxId}-caption` : undefined

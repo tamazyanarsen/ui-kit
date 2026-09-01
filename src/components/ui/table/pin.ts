@@ -101,9 +101,13 @@ interface PinnedCellState {
  * That holds because the spec's pinned blocks are always contiguous runs at
  * the start and end of the row.
  */
+// `React.Ref`, а не `RefObject`: типы React 18 и 19 по-разному типизируют
+// результат useRef(null) (RefObject<T> против RefObject<T | null>), а
+// вариантность дженериков не даёт одному аннотированию удовлетворить оба —
+// Ref принимает обе формы и на входе хука, и при навешивании на DOM.
 function usePinnedCell<T extends HTMLTableCellElement>(
   pin: TablePin | undefined
-): { ref: React.RefObject<T>; offset: number; edge: boolean } {
+): { ref: React.Ref<T>; offset: number; edge: boolean } {
   const ref = React.useRef<T>(null)
   const [state, setState] = React.useState<PinnedCellState>({
     offset: 0,

@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { Loader2, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useId } from "@/lib/use-id"
 import {
   inputBoxVariants,
   inputFieldVariants,
@@ -37,7 +38,7 @@ function AutocompleteField({
   placeholder,
   ...props
 }: Omit<ComboboxPrimitive.Input.Props, "size"> & AutocompleteFieldOwnProps) {
-  const generatedId = React.useId()
+  const generatedId = useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const captionId = comment || error ? `${inputId}-caption` : undefined

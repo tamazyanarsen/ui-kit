@@ -1,7 +1,13 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import {
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Modal, ModalTrigger, ModalClose } from "./root"
@@ -11,19 +17,52 @@ import { ModalBody } from "./body"
 import { ModalFooter } from "./footer"
 import { Button } from "@/components/ui/button"
 
-/* Свойства компонент-сета `ELK / modal`: Size, Type (Large / Small / With
-   Image), Column (One / Two / One Title), Show Title, Show Buttons. Size и
-   Show Buttons контролами уже были; заголовок, картинка и колонки — нет,
-   хотя это отдельные варианты макета. Модалка собирается из частей
-   (ModalHeader / ModalBody / ModalFooter), поэтому у неё нет одного пропа
-   на каждый: контролы синтетические и переключают состав. */
+/* Панель свойств компонент-сета `ELK / Modal` (45321:17265) и его частей:
+
+     ELK / Modal            Size = Desktop | Mobile
+                            Type = Large Modal | Small Modal | With Image
+     Modal Top (…, ELK)     Show Title = True | False
+     Modal Body (…, ELK)    Column = One | One Title | Two
+                            Show Buttons = True | False
+     Modal Bottom (…, ELK)  Type = Two Buttons | Primary | Secondary
+
+   Дизайн-чек Storybook 2 (от Notification до Loader) №2 и №3: раньше `Type`
+   был размазан по двум контролам (`size` = l/m и булев «Type: With Image»),
+   а подвал не переключался вовсе. Теперь панель повторяет макет: один `Type`
+   на три значения и группы вложенных частей.
+
+   Модалка собирается из частей (ModalHeader / ModalBody / ModalFooter),
+   поэтому одного пропа на каждое свойство у неё нет — контролы
+   синтетические и переключают состав. */
+type ModalType = "large" | "small" | "image"
+type ModalColumn = "one" | "one-title" | "two"
+type ModalBottomType = "two-buttons" | "primary" | "secondary"
+
+const TYPE_LABELS: Record<ModalType, string> = {
+  large: "Large Modal",
+  small: "Small Modal",
+  image: "With Image",
+}
+
+const COLUMN_LABELS: Record<ModalColumn, string> = {
+  one: "One",
+  "one-title": "One Title",
+  two: "Two",
+}
+
+const BOTTOM_LABELS: Record<ModalBottomType, string> = {
+  "two-buttons": "Two Buttons",
+  primary: "Primary",
+  secondary: "Secondary",
+}
+
 interface ConfirmModalProps {
-  size?: "l" | "m"
+  type?: ModalType
   title?: string
   description?: string
   showTitle?: boolean
-  showImage?: boolean
-  columns?: 1 | 2
+  column?: ModalColumn
+  bottomType?: ModalBottomType
   showClose?: boolean
   showFooter?: boolean
   triggerLabel?: string
@@ -32,12 +71,12 @@ interface ConfirmModalProps {
 }
 
 function ConfirmModal({
-  size = "l",
+  type = "large",
   title = "Удалить карту?",
   description = "Это действие нельзя отменить — карта будет удалена из вашего профиля.",
   showTitle = true,
-  showImage = false,
-  columns = 1,
+  column = "one",
+  bottomType = "two-buttons",
   showClose = true,
   showFooter = true,
   triggerLabel = "Открыть модалку",
@@ -45,6 +84,11 @@ function ConfirmModal({
   viewport,
 }: ConfirmModalProps) {
   const [open, setOpen] = useState(false)
+  // Large Modal — коробка 1008px (size="l"), Small Modal и With Image — 592
+  // (size="m"). Иллюстрация есть только у третьего типа.
+  const size = type === "large" ? "l" : "m"
+  const showImage = type === "image"
+  const columns = column === "two" ? 2 : 1
   return (
     // Скоуп охватывает и триггер, и портал: `ModalContent` дублирует
     // `data-viewport` на самом попапе, потому что портал уносит его из
@@ -64,6 +108,11 @@ function ConfirmModal({
           </ModalHeader>
         )}
         <ModalBody className={columns === 2 ? "desktop:grid desktop:grid-cols-2 desktop:gap-6" : undefined}>
+          {/* `Column=One Title` — колонка со своим заголовком внутри тела,
+              отдельно от шапки модалки. */}
+          {column === "one-title" && (
+            <p className="mb-2 text-h4 text-[#252628]">Заголовок блока</p>
+          )}
           {/* `Type=With Image` — иллюстрация над текстом. */}
           {showImage && (
             <div
@@ -87,12 +136,20 @@ function ConfirmModal({
             </p>
           )}
         </ModalBody>
+        {/* `Modal Bottom (…, ELK)`, свойство Type: две кнопки, только
+            основная или только второстепенная. */}
         {showFooter && (
           <ModalFooter>
-            <Button variant="secondary-grey" onClick={() => setOpen(false)}>
-              Отмена
-            </Button>
-            <ModalClose render={<Button variant="primary" />}>Удалить</ModalClose>
+            {bottomType !== "primary" && (
+              <Button variant="secondary-grey" onClick={() => setOpen(false)}>
+                Отмена
+              </Button>
+            )}
+            {bottomType !== "secondary" && (
+              <ModalClose render={<Button variant="primary" />}>
+                Удалить
+              </ModalClose>
+            )}
           </ModalFooter>
         )}
       </ModalContent>
@@ -109,32 +166,44 @@ const meta = {
   // from a component module, so react-docgen-typescript doesn't extract its
   // props — declare every control explicitly.
   argTypes: {
-    size: { control: "inline-radio", options: ["l", "m"] },
-    title: { control: "text" },
-    description: { control: "text" },
-    triggerLabel: { control: "text" },
-    showTitle: { control: "boolean", name: "Show Title" },
-    showImage: { control: "boolean", name: "Type: With Image" },
-    columns: { control: "inline-radio", options: [1, 2], name: "Column" },
-    showClose: { control: "boolean" },
-    showFooter: { control: "boolean", name: "Show Buttons" },
-    longBody: { control: "boolean" },
     // Мобильная форма (Bottom Sheet) выбирается контролом, а не пиннингом
     // вьюпорта — дизайн-чек №3 №19.
-    viewport: viewportArgType,
+    viewport: sizeArgType,
+    type: optionsArgType("Type", TYPE_LABELS, "inline-radio"),
+    showTitle: {
+      ...toggleArgType("Show Title"),
+      table: { category: "Modal Top (ELK)" },
+    },
+    column: {
+      ...optionsArgType("Column", COLUMN_LABELS, "inline-radio"),
+      table: { category: "Modal Body (ELK)" },
+    },
+    showFooter: {
+      ...toggleArgType("Show Buttons"),
+      table: { category: "Modal Body (ELK)" },
+    },
+    bottomType: {
+      ...optionsArgType("Type", BOTTOM_LABELS, "inline-radio"),
+      table: { category: "Modal Bottom (ELK)" },
+    },
+    showClose: { name: "Крестик", control: "boolean" },
+    longBody: { name: "Длинное содержимое", control: "boolean" },
+    title: { control: "text", table: { category: "Контент" } },
+    description: { control: "text", table: { category: "Контент" } },
+    triggerLabel: { control: "text", table: { category: "Контент" } },
   },
   args: {
-    size: "l",
+    viewport: "desktop",
+    type: "large",
     title: "Удалить карту?",
     description:
       "Это действие нельзя отменить — карта будет удалена из вашего профиля.",
     showTitle: true,
-    showImage: false,
-    columns: 1,
+    column: "one",
+    bottomType: "two-buttons",
     showClose: true,
     showFooter: true,
     longBody: false,
-    viewport: "auto",
   },
 } satisfies Meta<ConfirmModalProps>
 
@@ -152,15 +221,39 @@ export const Examples: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StoryShowcase>
+      {/* Дизайн-чек Storybook 2 (от Notification до Loader) №3: «проверь
+          варианты модального окна (Type)… скорректируй варианты
+          использования». Раздел ниже перебирает ровно три значения Type из
+          макета, а не «размеры L/M». */}
       <StorySection
-        title="Размеры"
-        description="L — 64px боковые отступы, M — 48px."
+        title="Type — Large Modal / Small Modal / With Image"
+        description="Large — коробка 1008px, Small — 592px, With Image — те же 592 с иллюстрацией над текстом."
       >
-        <ConfirmModal size="l" triggerLabel="Large" />
-        <ConfirmModal size="m" triggerLabel="Medium" />
+        <ConfirmModal type="large" triggerLabel="Large Modal" />
+        <ConfirmModal type="small" triggerLabel="Small Modal" />
+        <ConfirmModal type="image" triggerLabel="With Image" />
+      </StorySection>
+
+      <StorySection
+        title="Column — One / One Title / Two"
+        description="Свойство Modal Body: одна колонка, одна со своим заголовком, две (только у Large)."
+      >
+        <ConfirmModal column="one" triggerLabel="One" />
+        <ConfirmModal column="one-title" triggerLabel="One Title" />
+        <ConfirmModal column="two" triggerLabel="Two" />
+      </StorySection>
+
+      <StorySection
+        title="Modal Bottom — Two Buttons / Primary / Secondary"
+        description="Свойство Type подвала: обе кнопки, только основная или только второстепенная."
+      >
+        <ConfirmModal bottomType="two-buttons" triggerLabel="Two Buttons" />
+        <ConfirmModal bottomType="primary" triggerLabel="Primary" />
+        <ConfirmModal bottomType="secondary" triggerLabel="Secondary" />
       </StorySection>
 
       <StorySection title="Состав">
+        <ConfirmModal triggerLabel="Без заголовка" showTitle={false} />
         <ConfirmModal triggerLabel="Без описания" description="" />
         <ConfirmModal triggerLabel="Без крестика" showClose={false} />
         <ConfirmModal triggerLabel="Без подвала" showFooter={false} />

@@ -10,15 +10,32 @@ import { SKIN_STYLES, type BankCardSkin } from "./variants"
 // Две стороны карты и поле с раскрытием значения. Вынесены из
 // `bank-card.tsx`: там остаётся сам компонент с его состоянием переворота.
 
+/**
+ * Свойство `Size` компонент-сета ` ELK / cards`.
+ *
+ * Дизайн-чек Storybook (Аня Багрова) №19: «отсутствует вариант Mobile». В
+ * макете это отдельные символы (`Size=Mobile, …`, напр. 52969:11687), а не
+ * та же карта под медиазапросом: коробка 254×160 вместо 332×208, логотип
+ * платёжной системы 52×17 вместо 80×26 и зазор между ним и номером 4 вместо
+ * 6. Внутренние поля, скругление и размеры шрифтов совпадают.
+ */
+export type BankCardSize = "desktop" | "mobile"
+
+const CARD_BOX: Record<BankCardSize, string> = {
+  desktop: "h-[208px] w-[332px]",
+  mobile: "h-[160px] w-[254px]",
+}
+
 function RevealField({
-  label,
+  compact = false,
   maskedValue,
   revealedValue,
   revealed,
   onToggle,
   className,
 }: {
-  label?: string
+  /** Мобильная карта: подпись поля 14/20 вместо 16/24 (52969:11796). */
+  compact?: boolean
   maskedValue: string
   revealedValue: string
   revealed: boolean
@@ -32,7 +49,12 @@ function RevealField({
         className
       )}
     >
-      <span className="min-w-0 flex-1 truncate text-p1-medium text-white">
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate text-white",
+          compact ? "text-p2-medium" : "text-p1-medium"
+        )}
+      >
         {revealed ? revealedValue : maskedValue}
       </span>
       <button
@@ -50,13 +72,13 @@ function RevealField({
           <Eye aria-hidden="true" className="size-4" />
         )}
       </button>
-      {label && <span className="shrink-0 text-p3-medium text-[#999]">{label}</span>}
     </div>
   )
 }
 
 function CardFace({
   skin,
+  size = "desktop",
   paymentSystem,
   last4,
   balance,
@@ -69,6 +91,7 @@ function CardFace({
   className,
 }: {
   skin: BankCardSkin
+  size?: BankCardSize
   paymentSystem: PaymentSystem
   last4: string
   balance: React.ReactNode
@@ -86,7 +109,8 @@ function CardFace({
     <div
       data-slot="bank-card-face"
       className={cn(
-        "relative flex h-[208px] w-[332px] flex-col gap-4 overflow-hidden rounded-[16px] border border-white p-4 shadow-[0px_23px_12px_-15px_rgba(0,0,0,0.15)]",
+        "relative flex flex-col gap-4 overflow-hidden rounded-[16px] border border-white p-4 shadow-[0px_23px_12px_-15px_rgba(0,0,0,0.15)]",
+        CARD_BOX[size],
         className
       )}
       style={style}
@@ -106,9 +130,18 @@ function CardFace({
 
       {showPaymentSystem && (
         // 6px between the payment-system logo and the masked number — the
-        // master's "PS and number" column is `gap-[6px]`, not 4.
-        <div className="relative flex flex-1 flex-col items-start gap-1.5">
-          <PaymentLogo system={paymentSystem} size="lg" />
+        // master's "PS and number" column is `gap-[6px]`, not 4. У мобильного
+        // символа (52969:11709) он же 4.
+        <div
+          className={cn(
+            "relative flex flex-1 flex-col items-start",
+            size === "mobile" ? "gap-1" : "gap-1.5"
+          )}
+        >
+          <PaymentLogo
+            system={paymentSystem}
+            size={size === "mobile" ? "md" : "lg"}
+          />
           {showCardNumber && (
             // get_design_context on the "Face, Style=Mono" master (52969:11715):
             // the masked number line is Medium (500), not the browser default.
@@ -141,6 +174,7 @@ function CardFace({
 }
 
 function CardBack({
+  size = "desktop",
   last4,
   cardNumber,
   cvc,
@@ -151,6 +185,7 @@ function CardBack({
   style,
   className,
 }: {
+  size?: BankCardSize
   last4: string
   cardNumber: string
   cvc: string
@@ -165,26 +200,37 @@ function CardBack({
     <div
       data-slot="bank-card-back"
       className={cn(
-        "flex h-[208px] w-[332px] flex-col justify-between overflow-hidden rounded-[16px] border border-white bg-[var(--tag-black-bg)] p-4 shadow-[0px_23px_12px_-15px_rgba(37,38,40,0.15)]",
+        // Десктопная сторона распирает блоки по краям, мобильная (52969:11793)
+        // ставит их подряд с зазором 9.
+        "flex flex-col overflow-hidden rounded-[16px] border border-white bg-[var(--tag-black-bg)] p-4 shadow-[0px_23px_12px_-15px_rgba(37,38,40,0.15)]",
+        size === "mobile" ? "gap-[9px]" : "justify-between",
+        CARD_BOX[size],
         className
       )}
       style={style}
     >
       <div className="flex flex-col gap-4">
         <RevealField
+          compact={size === "mobile"}
           maskedValue={`···· ···· ···· ${last4}`}
           revealedValue={cardNumber}
           revealed={revealed === "number"}
           onToggle={() => onToggleReveal("number")}
         />
-        <RevealField
-          maskedValue="···"
-          revealedValue={cvc}
-          revealed={revealed === "cvc"}
-          onToggle={() => onToggleReveal("cvc")}
-          label="CVC/CVV"
-          className="w-[72px]"
-        />
+        {/* Подпись «CVC/CVV» — сосед плашки, а не её содержимое: в макете
+            (52969:11798) она стоит рядом с 72px-плашкой во flex-строке.
+            Раньше она лежала внутри и потому налезала на глаз. */}
+        <div className="flex items-center gap-2">
+          <RevealField
+            compact={size === "mobile"}
+            maskedValue="···"
+            revealedValue={cvc}
+            revealed={revealed === "cvc"}
+            onToggle={() => onToggleReveal("cvc")}
+            className="w-[72px] shrink-0"
+          />
+          <span className="text-p3-medium text-[#999]">CVC/CVV</span>
+        </div>
       </div>
 
       <div className="flex flex-col gap-0.5">

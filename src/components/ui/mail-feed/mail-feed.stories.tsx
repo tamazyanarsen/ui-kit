@@ -26,7 +26,9 @@ const STATES: MailFeedState[] = ["default", "new", "used", "error"]
 type PlaygroundArgs = MailFeedProps & { hover?: boolean }
 
 const meta = {
-  title: "Компоненты/Mail Feed",
+  // Дизайн-чек Storybook 2 (от Notification до Loader) №9: «замени название
+  // компонента "Mail Components"».
+  title: "Компоненты/Mail Components",
   component: MailFeed,
   parameters: { layout: "padded" },
   argTypes: {
@@ -71,6 +73,12 @@ export const Playground: Story = {
   ),
 }
 
+/* Дизайн-чек Storybook 2 (от Notification до Loader) №5: «скорректируй вид в
+   сетку, опираясь на структуру компонента по ссылке». Сет `Mail feed`
+   (796:69794) разложен тремя осями: `Property 1` (Default / New / Used /
+   Error), `Hover` (No / Yes) и `Checkbox` (No / Yes) — 16 символов. Раньше
+   Hover был одной лишней строкой сбоку, а не осью, поэтому половина сета в
+   матрицу не попадала. */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
@@ -79,14 +87,27 @@ export const Matrix: Story = {
       stretch
       cellClassName="min-w-[492px]"
       baseProps={ROW_PROPS}
-      columns={[
-        { label: "Без чекбокса", props: {} },
-        { label: "С чекбоксом", props: { showCheckbox: true } },
+      columnGroups={[
+        {
+          label: "Hover = No",
+          columns: [
+            { label: "Checkbox = No", props: {} },
+            { label: "Checkbox = Yes", props: { showCheckbox: true } },
+          ],
+        },
+        {
+          label: "Hover = Yes",
+          columns: [
+            { label: "Checkbox = No", props: {}, pseudo: "hover" as const },
+            {
+              label: "Checkbox = Yes",
+              props: { showCheckbox: true },
+              pseudo: "hover" as const,
+            },
+          ],
+        },
       ]}
-      rows={[
-        ...STATES.map((state) => ({ label: state, props: { state } })),
-        { label: "Hover", props: { state: "default" as MailFeedState }, pseudo: "hover" as const },
-      ]}
+      rows={STATES.map((state) => ({ label: state, props: { state } }))}
       render={(props) => <Controlled {...props} />}
     />
   ),

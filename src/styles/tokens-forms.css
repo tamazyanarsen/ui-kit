@@ -51,17 +51,22 @@
   --btn-muted-fg: var(--grey-166);
   --btn-muted-border: var(--grey-166);
 
-  /* Loader ("icon / loader", нода 26561:26028).
+  /* Loader (компонент-сет "icon / loader", нода 70326:21335 на странице
+     ALL ICONS, раздел "24. Loaders").
      Дизайн-чек №8: лоудер НЕ зависит ни от типа кнопки, ни от статусных
-     цветов — он всегда брендовый. Проверено пиксельно: Figma отдаёт спиннер
-     растром, и в состоянии Loading у кнопки Primary он замеряется как
-     #80E3FF (Base/Blue 223) с альфа-градиентом по кольцу — тот же цвет, что
-     и заливка брендовой кнопки. Раньше кнопка красила спиннер в свой
-     --btn-accent, из-за чего в матрице было шесть разных лоудеров.
-     Второй цвет — warning: единственный дополнительный вариант, который
-     дизайнер разрешил завести в Core Component. */
+     цветов. Раньше кнопка красила спиннер в свой --btn-accent, из-за чего в
+     матрице было шесть разных лоудеров.
+     Дизайн-чек Storybook 2 (от Notification до Loader) №6: у сета три цвета,
+     и все три сняты пиксельно с его растров (Figma отдаёт лоудер картинкой с
+     альфа-градиентом по кольцу):
+       Green  #80E3FF — Base/Blue 223, брендовый слот, едет вместе с темой
+       Yellow #F8C000 — Yellow 167. Раньше здесь стоял статусный Yellow 214
+                        (#EEA20F), то есть не тот жёлтый
+       White  #FFFFFF — для тёмных подложек; в макете эта строка нарисована
+                        на плашке Grey 124 #E6E6E6, иначе её не видно */
   --loader-fg: var(--blue-223);
-  --loader-warning-fg: var(--yellow-214);
+  --loader-warning-fg: var(--yellow-167);
+  --loader-white-fg: var(--white-101);
 
   /* Input component tokens. Values measured directly from ui/input.svg
      (Figma export) and confirmed against the L/Desktop reference render. */

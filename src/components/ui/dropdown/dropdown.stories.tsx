@@ -1,11 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, optionsArgType } from "@/stories/matrix"
+import { cn } from "@/lib/utils"
 import { Divider } from "@/components/ui/divider"
 import { Scrollbar } from "@/components/ui/scrollbar"
 import { Button } from "@/components/ui/button"
 
-import { Dropdown, DropdownItem } from "./dropdown"
+import {
+  Dropdown,
+  DropdownHeader,
+  DropdownItem,
+  type DropdownSize,
+} from "./dropdown"
 
 /**
  * Dropdown — поверхность выпадающего списка, которую Figma документирует
@@ -21,9 +27,12 @@ import { Dropdown, DropdownItem } from "./dropdown"
  *   Add    None | One Button | Two Buttons — панель действий снизу
  *   Size   Desktop | Mobile Full Screen | Mobile Bottom Sheet
  *
- * `Size` в контролах нет: мобильные формы — это не свойство поверхности, а
- * решение потребителя (Combobox рисует нижний лист через Modal), поэтому
- * пункт списка здесь был бы глухим.
+ * Дизайн-чек Storybook (Аня Багрова) №27: «отсутствует вариант Mobile».
+ * Раньше `Size` в контролах не было — считалось, что мобильные формы это
+ * решение потребителя. Но в мастере они отличаются самой поверхностью: Full
+ * Screen — во весь экран, без скруглений и тени; Bottom Sheet — лист снизу
+ * со скруглением только сверху. Плюс обе несут строку заголовка с
+ * крестиком. Всё это теперь умеет сам компонент.
  */
 
 const ITEMS = [
@@ -44,10 +53,17 @@ const ADD = ["None", "One Button", "Two Buttons"] as const
 type AddValue = (typeof ADD)[number]
 
 interface PlaygroundArgs {
+  size: DropdownSize
   value: number
   add: AddValue
   showDescription: boolean
   maxHeight: number
+}
+
+const SIZE_LABELS: Record<DropdownSize, string> = {
+  desktop: "Desktop",
+  "mobile-full-screen": "Mobile Full Screen",
+  "mobile-bottom-sheet": "Mobile Bottom Sheet",
 }
 
 /* Панель действий — тот же `ELK / button` в footer'е, что у Combobox:
@@ -76,6 +92,7 @@ function Footer({ add }: { add: AddValue }) {
 }
 
 function DropdownDemo({
+  size = "desktop",
   value = 5,
   add = "None",
   showDescription = true,
@@ -89,19 +106,41 @@ function DropdownDemo({
       description={showDescription ? item.description : undefined}
     />
   ))
+  const mobile = size !== "desktop"
 
-  return (
-    <Dropdown className="w-96 overflow-hidden">
+  const surface = (
+    <Dropdown size={size} className={cn("overflow-hidden", !mobile && "w-96")}>
+      {mobile && <DropdownHeader title="Выберите раздел" />}
       {maxHeight > 0 ? (
         // У длинного списка появляется собственный ELK / scrollbar.
         <Scrollbar className="pr-2" style={{ maxHeight }}>
           {list}
         </Scrollbar>
       ) : (
-        list
+        <div className={cn(mobile && "min-h-0 flex-1 overflow-y-auto")}>{list}</div>
       )}
       <Footer add={add} />
     </Dropdown>
+  )
+
+  if (!mobile) return surface
+
+  // Мобильные формы показываются внутри рамки телефона: без неё «во весь
+  // экран» и «лист снизу» на холсте Storybook выглядят одинаково.
+  return (
+    <div className="relative flex h-[560px] w-[360px] flex-col overflow-hidden rounded-[24px] border border-[var(--divider)] bg-[var(--card-bg)]">
+      {size === "mobile-bottom-sheet" && (
+        <div className="absolute inset-0 bg-[var(--modal-backdrop)]/70" />
+      )}
+      <div
+        className={cn(
+          "relative flex min-h-0 flex-1 flex-col",
+          size === "mobile-bottom-sheet" && "justify-end"
+        )}
+      >
+        {surface}
+      </div>
+    </div>
   )
 }
 
@@ -110,6 +149,7 @@ const meta = {
   component: DropdownDemo,
   parameters: { layout: "padded" },
   argTypes: {
+    size: optionsArgType("Size", SIZE_LABELS),
     value: {
       name: "Value (строк)",
       control: { type: "range", min: 1, max: ITEMS.length, step: 1 },
@@ -131,7 +171,13 @@ const meta = {
       description: "Максимальная высота списка; 0 — без ограничения и без скролла",
     },
   },
-  args: { value: 5, add: "None", showDescription: true, maxHeight: 0 },
+  args: {
+    size: "desktop",
+    value: 5,
+    add: "None",
+    showDescription: true,
+    maxHeight: 0,
+  },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -166,6 +212,16 @@ export const Examples: Story = {
         description="Основной текст P1 Medium, описание P3 Medium — те же токены, что у общей строки меню (дизайн-чек №21)."
       >
         <DropdownDemo value={4} />
+      </StorySection>
+
+      <StorySection
+        title="Size = Mobile Full Screen / Mobile Bottom Sheet"
+        description="Мобильные формы поверхности: во весь экран без скруглений и лист снизу со скруглением только сверху. Обе несут строку заголовка с крестиком."
+      >
+        <div className="flex items-start gap-6">
+          <DropdownDemo size="mobile-full-screen" value={6} />
+          <DropdownDemo size="mobile-bottom-sheet" value={4} />
+        </div>
       </StorySection>
 
       <StorySection

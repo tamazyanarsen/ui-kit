@@ -1,9 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import {
+  StoryContentArea,
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 
 import { ButtonMenu } from "./root"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
+import type {
+  SelectionButtonDirection,
+  SelectionButtonSize,
+} from "@/components/ui/selection-button"
 import { Button } from "@/components/ui/button"
 
 /* Свойства унаследованы из компонент-сета «ELK / button menu» (нода
@@ -44,13 +54,33 @@ function menuButtons(type: MenuType, count: ButtonCount) {
   ))
 }
 
-function Overflow() {
+function Overflow(props: {
+  direction?: SelectionButtonDirection
+  size?: SelectionButtonSize
+  showDropdown?: boolean
+}) {
   return (
-    <ButtonMenuOverflow>
+    <ButtonMenuOverflow {...props}>
       <ButtonMenuOverflowItem text="Дублировать" description="Создать копию" />
       <ButtonMenuOverflowItem text="Удалить" />
     </ButtonMenuOverflow>
   )
+}
+
+/* Дизайн-чек Storybook (Аня Багрова) №10. Панель свойств `ELK / button
+   menu` вложенная: кроме собственного `Type` в ней раскрыты свойства двух
+   инстансов — «Pabel Of Buttons (Primary, ELK)» с `Number Of Buttons` и
+   «ELK Selection Button» (кнопка «ещё») с `Size`, `Direction` и
+   `Show Dropdown`. Здесь они разложены по тем же группам. */
+const SELECTION_BUTTON = {
+  table: { category: "ELK Selection Button" },
+}
+
+const DIRECTION_LABELS: Record<SelectionButtonDirection, string> = {
+  "top-right": "Top Right",
+  "top-left": "Top Left",
+  "down-right": "Down Right",
+  "down-left": "Down Left",
 }
 
 interface PlaygroundArgs {
@@ -58,6 +88,9 @@ interface PlaygroundArgs {
   buttons: ButtonCount
   overflow: boolean
   pinned: boolean
+  overflowSize: SelectionButtonSize
+  overflowDirection: SelectionButtonDirection
+  showDropdown: boolean
 }
 
 const meta = {
@@ -68,9 +101,9 @@ const meta = {
   //
   // ButtonMenu is a full-width, bottom-anchored bar (not a floating w-fit
   // pill — see root.tsx's design-check #5 note), so it's shown inside a
-  // fixed-width container that stands in for its usual content area rather
-  // than Storybook's unconstrained "centered" canvas, which would otherwise
-  // stretch it edge-to-edge across the whole preview.
+  // scrollable stand-in for its usual content area (`StoryContentArea`)
+  // rather than Storybook's bare canvas — otherwise there is nothing for
+  // `sticky bottom-0` to stick to.
   parameters: { layout: "padded" },
   argTypes: {
     type: {
@@ -84,6 +117,23 @@ const meta = {
       description: "Количество кнопок в панели — от одной до четырёх",
       control: "inline-radio",
       options: BUTTON_COUNTS,
+      table: { category: "Pabel Of Buttons (Primary, ELK)" },
+    },
+    overflowSize: {
+      ...optionsArgType<SelectionButtonSize>(
+        "Size",
+        { lg: "L", sm: "S" },
+        "inline-radio"
+      ),
+      ...SELECTION_BUTTON,
+    },
+    overflowDirection: {
+      ...optionsArgType("Direction", DIRECTION_LABELS),
+      ...SELECTION_BUTTON,
+    },
+    showDropdown: {
+      ...toggleArgType("Show Dropdown"),
+      ...SELECTION_BUTTON,
     },
     pinned: {
       name: "Закреплена снизу",
@@ -103,6 +153,9 @@ const meta = {
     buttons: 3,
     overflow: true,
     pinned: true,
+    overflowSize: "lg",
+    overflowDirection: "top-right",
+    showDropdown: true,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -110,10 +163,16 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ type, buttons, overflow, pinned }) => (
-    // Прокручиваемый контейнер — иначе закрепление негде показать: sticky
-    // прижимает панель к низу именно прокручиваемой области.
-    <div className="flex h-72 w-[640px] flex-col overflow-y-auto rounded-2xl border border-[var(--divider)]">
+  render: ({
+    type,
+    buttons,
+    overflow,
+    pinned,
+    overflowSize,
+    overflowDirection,
+    showDropdown,
+  }) => (
+    <StoryContentArea height="h-72">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
           <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
@@ -123,9 +182,15 @@ export const Playground: Story = {
       </div>
       <ButtonMenu pinned={pinned} className="mt-auto">
         {menuButtons(type, buttons)}
-        {overflow && <Overflow />}
+        {overflow && (
+          <Overflow
+            size={overflowSize}
+            direction={overflowDirection}
+            showDropdown={showDropdown}
+          />
+        )}
       </ButtonMenu>
-    </div>
+    </StoryContentArea>
   ),
 }
 
@@ -134,7 +199,7 @@ export const Playground: Story = {
    оговаривает «Панель не должна перекрывать кнопку „Показать ещё“». */
 function PinnedDemo({ pinned }: { pinned: boolean }) {
   return (
-    <div className="flex h-80 w-[640px] flex-col overflow-y-auto rounded-2xl border border-[var(--divider)]">
+    <StoryContentArea height="h-80">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 12 }, (_, index) => (
           <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
@@ -148,7 +213,7 @@ function PinnedDemo({ pinned }: { pinned: boolean }) {
       <ButtonMenu pinned={pinned} className="mt-auto">
         {menuButtons("With Primary", 2)}
       </ButtonMenu>
-    </div>
+    </StoryContentArea>
   )
 }
 
@@ -189,7 +254,7 @@ export const Examples: Story = {
               : "Когда ни одно действие не является основным. Количество кнопок — от одной до четырёх."
           }
         >
-          <div className="flex w-[640px] flex-col gap-4">
+          <div className="flex w-full flex-col gap-4">
             {BUTTON_COUNTS.map((count) => (
               <ButtonMenu key={count} pinned={false}>
                 {menuButtons(type, count)}
@@ -203,7 +268,7 @@ export const Examples: Story = {
         title="С меню «ещё»"
         description="Кнопка More может использоваться только в случае, если отображаются три кнопки."
       >
-        <div className="w-[640px]">
+        <div className="w-full">
           <ButtonMenu>
             {menuButtons("With Primary", 3)}
             <Overflow />

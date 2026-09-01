@@ -148,6 +148,9 @@
   --event-connector: var(--grey-134);
   --event-status-success-bg: var(--mint-230);
   --event-status-attention-bg: var(--yellow-214);
+  /* Значок подписанта в состоянии Cancel — та же красная ступень, что и у
+     остальных ошибок кита (дизайн-чек Storybook (Аня Багрова) №31). */
+  --event-status-error-bg: var(--red-418);
   --event-file-bg: var(--grey-106);
 
   /* Informer tokens ("Уведомление внутри контентного блока"). Values

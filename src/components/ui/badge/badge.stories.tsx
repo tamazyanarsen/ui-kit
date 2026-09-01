@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  stateArgTypeOf,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import { Badge, type BadgeProps } from "./badge"
 import type { BadgeColor } from "./variants"
@@ -13,23 +18,56 @@ const COLORS: BadgeColor[] = [
   "black",
 ]
 
+/* Дизайн-чек Storybook (Аня Багрова) №8: панель контролов приведена к
+   «Свойствам компонента» `ELK / badge` — State (Default / Disabled),
+   Type (Counter / Point), Color (Red / Black / Contra-Red / Dark-Grey /
+   Light-Grey). Порядок значений Color тоже из макета. */
+const COLOR_LABELS: Record<BadgeColor, string> = {
+  red: "Red",
+  black: "Black",
+  "contra-red": "Contra-Red",
+  "dark-grey": "Dark-Grey",
+  "light-grey": "Light-Grey",
+}
+
+// State в макете — список из двух значений, в коде — булев `disabled`.
+type PlaygroundArgs = BadgeProps & { state?: PlaygroundState }
+
 const meta = {
   title: "Компоненты/Badge",
   component: Badge,
   parameters: { layout: "centered" },
   argTypes: {
-    type: { control: "inline-radio", options: ["counter", "point"] },
-    color: { control: "select", options: COLORS },
-    value: { control: { type: "number", min: 0, max: 999 } },
-    disabled: { control: "boolean" },
+    state: stateArgTypeOf(["default", "disabled"]),
+    type: optionsArgType(
+      "Type",
+      { counter: "Counter", point: "Point" },
+      "inline-radio"
+    ),
+    color: optionsArgType("Color", COLOR_LABELS),
+    value: {
+      control: { type: "number", min: 0, max: 999 },
+      table: { category: "Контент" },
+    },
+    disabled: { table: { disable: true } },
+    className: { table: { disable: true } },
   },
-  args: { type: "counter", color: "red", value: 3, disabled: false },
-} satisfies Meta<BadgeProps>
+  args: {
+    state: "default" as PlaygroundState,
+    type: "counter",
+    color: "red",
+    value: 3,
+  },
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<PlaygroundArgs>
 
-export const Playground: Story = {}
+export const Playground: Story = {
+  render: ({ state, ...args }) => (
+    <Badge {...args} disabled={state === "disabled"} />
+  ),
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

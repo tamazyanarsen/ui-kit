@@ -98,9 +98,14 @@ function ProfileMenuTrigger({
           )}
         </span>
       </span>
+      {/* Дизайн-чек Storybook (Аня Багрова) №1: «при hover иконка чемодана и
+          наименование организации окрашиваются в Blue 254… шеврон остаётся
+          Grey 1514». Проверено по ассетам состояний `Profile Client Header
+          (ELK)` (70303:48890 → 70303:48897): SVG шеврона в Default и Hover
+          один и тот же, брендовыми становятся только кейс и название. */}
       <ChevronDown
         aria-hidden="true"
-        className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-hover:text-[var(--header-hover-fg)] group-data-popup-open:rotate-180"
+        className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-data-popup-open:rotate-180"
       />
     </MenuPrimitive.Trigger>
   )
@@ -141,13 +146,16 @@ function ProfileMenu({
         className={className}
       />
 
-      <HeaderMenuPopup slot="profile-menu-content" className="w-80 py-2">
+      {/* Ширина 400 — из мастера `Profile Menu (ELK)` (70303:49093): панель
+          `w-[400px]`, скругление 16, universal shadow. Прежние 320 не давали
+          длинному названию организации уложиться в две строки. */}
+      <HeaderMenuPopup slot="profile-menu-content" className="w-100">
         {isSingle ? (
           <SingleOrganization organization={activeOrg} />
         ) : (
           <>
             {showSearch && (
-              <div className="px-3 pb-2">
+              <div className="px-4 pt-4 pb-2">
                 <Input
                   size="sm"
                   placeholder="Поиск"
@@ -164,7 +172,7 @@ function ProfileMenu({
                 />
               </div>
             )}
-            <p className="px-4 pt-1 pb-2 text-p1-medium text-[var(--header-fg)]">
+            <p className="px-4 pt-4 pb-2 text-p1-medium text-[var(--header-fg)]">
               {isSearching
                 ? "Мои организации — результаты поиска"
                 : `Мои организации (${organizations.length})`}

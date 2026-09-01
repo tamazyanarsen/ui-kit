@@ -1,4 +1,5 @@
 import * as React from "react"
+import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
@@ -15,14 +16,38 @@ import { cn } from "@/lib/utils"
 // forwardRef is required, not optional: Base UI's `render` prop forwards a
 // ref to the element it swaps in (for floating-ui positioning/focus
 // management) — a plain function component here silently drops that ref.
-const Dropdown = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
-  function Dropdown({ className, children, ...props }, ref) {
+/**
+ * Свойство `Size` компонент-сета `ELK / dropdown` (5739:16497).
+ *
+ * Дизайн-чек Storybook (Аня Багрова) №27: «отсутствует вариант Mobile». В
+ * макете их два и они отличаются не только шириной: Mobile Full Screen —
+ * лист во весь экран без скруглений и тени, Mobile Bottom Sheet — лист
+ * снизу со скруглением только сверху. Оба несут строку заголовка с
+ * крестиком, поэтому рядом лежит {@link DropdownHeader}.
+ */
+type DropdownSize = "desktop" | "mobile-full-screen" | "mobile-bottom-sheet"
+
+const DROPDOWN_SIZE: Record<DropdownSize, string> = {
+  desktop: "rounded-[16px] shadow-universal",
+  "mobile-full-screen": "flex h-full w-full flex-col rounded-none",
+  "mobile-bottom-sheet":
+    "flex max-h-[80vh] w-full flex-col rounded-t-[16px] shadow-universal",
+}
+
+interface DropdownProps extends React.ComponentProps<"div"> {
+  size?: DropdownSize
+}
+
+const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
+  function Dropdown({ className, size = "desktop", children, ...props }, ref) {
     return (
       <div
         ref={ref}
         data-slot="dropdown"
+        data-size={size}
         className={cn(
-          "rounded-[16px] bg-popover text-popover-foreground shadow-universal outline-none origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "bg-popover text-popover-foreground outline-none origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          DROPDOWN_SIZE[size],
           className
         )}
         {...props}
@@ -32,6 +57,39 @@ const Dropdown = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
     )
   }
 )
+
+/**
+ * Строка заголовка мобильных форм: название списка и крестик закрытия
+ * (в макете — `Title` + `24x24 / Cross`, поля 16).
+ */
+function DropdownHeader({
+  title,
+  onClose,
+  className,
+}: {
+  title: React.ReactNode
+  onClose?: () => void
+  className?: string
+}) {
+  return (
+    <div
+      data-slot="dropdown-header"
+      className={cn("flex items-center gap-4 p-4", className)}
+    >
+      <span className="min-w-0 flex-1 truncate text-h4-mobile text-[var(--menu-item-fg)]">
+        {title}
+      </span>
+      <button
+        type="button"
+        aria-label="Закрыть"
+        onClick={onClose}
+        className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-[var(--menu-item-fg)] outline-none"
+      >
+        <X size={24} aria-hidden="true" className="size-6" />
+      </button>
+    </div>
+  )
+}
 
 interface DropdownItemProps extends React.ComponentProps<"div"> {
   text: React.ReactNode
@@ -81,5 +139,5 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
   }
 )
 
-export { Dropdown, DropdownItem }
-export type { DropdownItemProps }
+export { Dropdown, DropdownHeader, DropdownItem }
+export type { DropdownItemProps, DropdownProps, DropdownSize }

@@ -7,7 +7,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Dropdown } from "@/components/ui/dropdown"
 import { Thumbnail } from "@/components/ui/thumbnail"
 
-import { MenuItemContent, menuItemRowClass } from "./menu-item"
+import {
+  MenuItemContent,
+  menuItemRowClass,
+  type MenuItemLevel,
+} from "./menu-item"
 
 /**
  * Menu Item — «Menu Point (ELK)», централизованная строка выпадающего
@@ -35,8 +39,12 @@ import { MenuItemContent, menuItemRowClass } from "./menu-item"
 const STYLES = ["Text", "Extended", "Title", "Thumbnail"] as const
 type MenuItemStyle = (typeof STYLES)[number]
 
+/** Свойство `Type` сета — Level 1…4. */
+const LEVELS: MenuItemLevel[] = [1, 2, 3, 4]
+
 interface PlaygroundArgs {
   figmaStyle: MenuItemStyle
+  level: MenuItemLevel
   text: string
   description: string
   label: string
@@ -48,6 +56,7 @@ interface PlaygroundArgs {
 
 function Row({
   figmaStyle,
+  level = 1,
   text,
   description,
   label,
@@ -60,7 +69,8 @@ function Row({
       data-disabled={disabled || undefined}
       className={menuItemRowClass(
         "hover:bg-[var(--menu-item-bg-highlighted)]",
-        "data-disabled:pointer-events-none data-disabled:opacity-40"
+        "data-disabled:pointer-events-none data-disabled:opacity-40",
+        level
       )}
     >
       <MenuItemContent
@@ -86,7 +96,9 @@ function Row({
 }
 
 const meta = {
-  title: "Компоненты/Menu Item",
+  // Дизайн-чек Storybook 2 (от Notification до Loader) №8: «замени название
+  // компонента на "Menu point"» — так называется компонент-сет в Figma.
+  title: "Компоненты/Menu Point",
   parameters: { layout: "padded" },
   argTypes: {
     figmaStyle: {
@@ -94,6 +106,13 @@ const meta = {
       control: "inline-radio",
       options: STYLES,
       description: "Свойство Style компонент-сета Menu Point (ELK)",
+    },
+    level: {
+      name: "Type",
+      control: "inline-radio",
+      options: [1, 2, 3, 4],
+      description:
+        "Свойство Type компонент-сета — уровень вложенности. Отличается левым полем: 16 px на уровень",
     },
     text: { control: "text", description: "Основной текст, P1 Medium" },
     description: { control: "text", description: "Строка под основным текстом (Style=Extended)" },
@@ -105,6 +124,7 @@ const meta = {
   },
   args: {
     figmaStyle: "Extended",
+    level: 1,
     text: "Название пункта",
     description: "Пояснение под названием",
     label: "Подпись сверху",
@@ -134,25 +154,30 @@ export const Examples: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <div className="flex flex-col gap-8 p-8">
+      {/* Дизайн-чек Storybook 2 (от Notification до Loader) №4: «скорректируй
+          вид в сетку, опираясь на структуру компонента по ссылке». В макете
+          (`Menu Point (ELK)`, 5877:18233) сет разложен именно сеткой: по
+          горизонтали — Style, по вертикали — Type (Level 1…4) × State. Здесь
+          та же сетка. */}
       <StatesMatrix<PlaygroundArgs>
         stretch
-        cellClassName="min-w-[360px]"
-        rowHeader="Style — набор слотов строки. Контейнер и подсветка те же, меняется только содержимое."
-        columns={[{ label: "Menu Point (ELK)" }]}
-        rows={[
-          { label: "Text", props: { figmaStyle: "Text" } },
-          { label: "Extended", props: { figmaStyle: "Extended" } },
-          { label: "Title", props: { figmaStyle: "Title" } },
-          { label: "Thumbnail", props: { figmaStyle: "Thumbnail" } },
-          { label: "Hover", props: { figmaStyle: "Extended" }, pseudo: "hover" },
-          { label: "Disabled", props: { figmaStyle: "Extended", disabled: true } },
-          { label: "Выбран", props: { figmaStyle: "Text", showCheck: true } },
-        ]}
+        cellClassName="min-w-[280px]"
+        rowHeader="Ось Style — набор слотов строки; ось Type (Level 1…4) — левое поле, по 16 px на уровень; State — Default / Hover / Disabled."
+        columns={STYLES.map((figmaStyle) => ({
+          label: figmaStyle,
+          props: { figmaStyle },
+        }))}
+        rows={LEVELS.flatMap((level) => [
+          { label: `Level ${level} · Default`, props: { level } },
+          { label: `Level ${level} · Hover`, props: { level }, pseudo: "hover" as const },
+          { label: `Level ${level} · Disabled`, props: { level, disabled: true } },
+        ])}
         baseProps={{
           figmaStyle: "Extended",
-          text: "Название пункта",
-          description: "Пояснение под названием",
-          label: "Подпись сверху",
+          level: 1,
+          text: "Text",
+          description: "Description",
+          label: "Label",
           leading: undefined,
           showCheck: false,
           disabled: false,
@@ -166,7 +191,7 @@ export const Examples: Story = {
 
       <div className="flex flex-col gap-2">
         <p className="text-p2-medium text-[var(--btn-primary-fg)]">
-          Ведущий элемент: чекбокс, иконка, миниатюра
+          Ведущий и замыкающий элементы: чекбокс, иконка, миниатюра, счётчик
         </p>
         <p className="text-p3-regular text-[var(--accordion-card-subtitle-fg)]">
           Дизайн-чек №21: ведущий элемент 24px совпадает по высоте с первой

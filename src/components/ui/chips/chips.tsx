@@ -17,6 +17,12 @@ import { Badge } from "@/components/ui/badge"
 interface ChipsProps {
   children: React.ReactNode
   subtitle?: React.ReactNode
+  /**
+   * Свойство `Show Icon` компонент-сета — вспомогательная иконка слева от
+   * значения. В макете её ставит дизайнер («иконка круга в компоненте
+   * является примером»), поэтому проп принимает готовый узел.
+   */
+  icon?: React.ReactNode
   count?: number
   closable?: boolean
   onRemove?: () => void
@@ -36,6 +42,7 @@ interface ChipsProps {
 function Chips({
   children,
   subtitle,
+  icon,
   count,
   closable = false,
   onRemove,
@@ -74,6 +81,19 @@ function Chips({
         </span>
       )}
       <span className="flex w-full min-w-0 items-center gap-2">
+        {icon && (
+          <span
+            aria-hidden="true"
+            className={cn(
+              "flex shrink-0 [&_svg]:size-4",
+              disabled
+                ? "text-[var(--chips-disabled-fg)]"
+                : "text-[var(--chips-fg)]"
+            )}
+          >
+            {icon}
+          </span>
+        )}
         <span
           className={cn(
             "min-w-0 truncate text-p2-medium desktop:text-p1-medium",

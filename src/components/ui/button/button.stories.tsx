@@ -4,8 +4,8 @@ import { Download } from "@/icons"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  optionsArgType,
+  stateArgTypeOf,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
@@ -41,9 +41,44 @@ const STYLE_PROPS: Record<ButtonStyle, Pick<ButtonProps, "icon" | "iconPosition"
   Icon: { icon: Download, iconPosition: "only" },
 }
 
+/* Дизайн-чек Storybook (Аня Багрова) №9: панель контролов приведена к
+   «Свойствам компонента» `ELK / button`.
+
+   `Size` в Figma — одно свойство с шестью значениями: размер и форма
+   (Desktop/Mobile) там не разъезжаются. В коде это пара `size` +
+   `<ViewportScope>`, поэтому контрол один, а `render` разбирает его на две
+   части. */
+const SIZE_LABELS = {
+  "lg-desktop": "L-Desktop",
+  "default-desktop": "M-Desktop",
+  "sm-desktop": "S-Desktop",
+  "lg-mobile": "L-Mobile",
+  "default-mobile": "M-Mobile",
+  "sm-mobile": "S-Mobile",
+} as const
+type FigmaSize = keyof typeof SIZE_LABELS
+
+/* Свойство `Type`. Первые семь имён — ровно из списка в замечании; три
+   последних значения в коде без пары в этом списке, но они настоящие
+   варианты кита, поэтому остаются в контроле под описательными именами,
+   иначе из Playground их не достать. */
+const TYPE_LABELS: Record<NonNullable<ButtonProps["variant"]>, string> = {
+  primary: "Primary (Blue)",
+  "secondary-black": "Secondary (Dark Blue)",
+  "secondary-logo-black": "Secondary Logo (Dark Blue)",
+  "secondary-grey": "Tretiary (Grey)",
+  "secondary-white": "Tretiary-Variant (White)",
+  "secondary-logo-border-white": "Secondary Logo Border (White)",
+  destructive: "Danger (Red)",
+  "secondary-outline": "· с обводкой (White)",
+  "secondary-logo-white": "· Secondary Logo (White)",
+  "secondary-logo-grey": "· Secondary Logo (Grey)",
+}
+
 type PlaygroundArgs = ButtonProps & {
   state?: PlaygroundState
   figmaStyle?: ButtonStyle
+  figmaSize?: FigmaSize
   viewport?: Viewport
 }
 
@@ -52,17 +87,23 @@ const meta = {
   component: Button,
   parameters: { layout: "centered" },
   argTypes: {
-    // Mirrors Figma's own "Current variant" panel for ELK / button (Size /
-    // State / Type / Style dropdowns) as closely as Storybook's mechanisms
-    // allow, so a designer can compare against Figma control-for-control:
-    // - Size/Type map 1:1 onto the real `size`/`variant` props below.
-    // - State (Default / Hover / Pressed / Focus) is a CSS pseudo-class, not
-    //   a prop — the shared `state` control below forces it through
-    //   storybook-addon-pseudo-states. Disabled/Loading are real props.
+    // Панель повторяет «Свойства компонента» ELK / button (Size / State /
+    // Type / Style), чтобы дизайнер сверял её с Figma контрол в контрол:
+    // - Size — один список из шести значений, см. SIZE_LABELS выше.
+    // - State (Hover / Active) — CSS-псевдоклассы, их форсирует аддон
+    //   pseudo-states через PseudoBox; Disabled и Loading — настоящие пропы.
     // - Style — см. `figmaStyle` ниже (в UI подписан «Style»; имя `style`
     //   занято DOM-пропом кнопки, поэтому арг называется иначе).
-    variant: { control: "select", options: [...VARIANTS, ...LOGO_VARIANTS] },
-    size: { control: "inline-radio", options: ["sm", "default", "lg"] },
+    figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS),
+    state: stateArgTypeOf([
+      "default",
+      "hover",
+      "active",
+      "disabled",
+      "loading",
+    ]),
+    variant: optionsArgType("Type", TYPE_LABELS),
+    size: { table: { disable: true } },
     // Дизайн-чек №11: раньше здесь были два отдельных контрола — `icon`
     // (только «None»/«Download») и `iconPosition`, — и из выпадающего списка
     // нельзя было выбрать сторону иконки: «сейчас иконку в кнопке нельзя
@@ -78,24 +119,18 @@ const meta = {
     },
     icon: { table: { disable: true } },
     iconPosition: { table: { disable: true } },
-    isLoading: { control: "boolean" },
-    disabled: { control: "boolean" },
-    children: { control: "text" },
-    state: stateArgType,
-    // - Size=Desktop/Mobile — контрол `viewport`. Дизайн-чек №3 №19:
-    //   «пропс на мобайл должен быть в панели стори, не по изменению
-    //   размера вьюпорта».
-    viewport: viewportArgType,
+    // Disabled и Loading — значения оси State, отдельных контролов у них нет.
+    isLoading: { table: { disable: true } },
+    disabled: { table: { disable: true } },
+    viewport: { table: { disable: true } },
+    children: { control: "text", table: { category: "Контент" } },
   },
   args: {
-    children: "Button",
-    variant: "primary",
-    size: "lg",
-    figmaStyle: "Text",
-    isLoading: false,
-    disabled: false,
+    figmaSize: "lg-desktop" as FigmaSize,
     state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
+    variant: "primary",
+    figmaStyle: "Text",
+    children: "Button",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -103,15 +138,24 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, figmaStyle, viewport, ...args }) => (
-    <PseudoBox state={state} viewport={viewport}>
-      <Button
-        {...args}
-        {...STYLE_PROPS[figmaStyle ?? "Text"]}
-        aria-label={figmaStyle === "Icon" ? "Скачать" : undefined}
-      />
-    </PseudoBox>
-  ),
+  render: ({ state, figmaStyle, figmaSize = "lg-desktop", ...args }) => {
+    const [size, viewport] = figmaSize.split("-") as [
+      NonNullable<ButtonProps["size"]>,
+      Viewport,
+    ]
+    return (
+      <PseudoBox state={state} viewport={viewport}>
+        <Button
+          {...args}
+          size={size}
+          disabled={state === "disabled"}
+          isLoading={state === "loading"}
+          {...STYLE_PROPS[figmaStyle ?? "Text"]}
+          aria-label={figmaStyle === "Icon" ? "Скачать" : undefined}
+        />
+      </PseudoBox>
+    )
+  },
 }
 
 export const Matrix: Story = {

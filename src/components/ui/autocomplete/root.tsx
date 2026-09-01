@@ -1,6 +1,16 @@
 import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
+// ⚠️ У компонента НЕТ истории в Storybook, и это намеренно.
+//
+// Дизайн-чек Storybook (Аня Багрова) №7: «в UI Kit Web LK не существует как
+// такового компонента — у нас есть отдельно Input + Dropdown». То есть в
+// дизайн-системе Autocomplete не самостоятельный компонент, а композиция, и
+// в каталоге Storybook ему не место. Код при этом остаётся: он экспортирован
+// из пакета и используется потребителями, удалять его — ломающее изменение,
+// которое дизайн-чек не решает. Новую вёрстку собирайте из `Input` и
+// `Dropdown` (или берите `Combobox`, если нужен множественный выбор).
+//
 // Autocomplete — a single-select type-ahead: the visible field IS the
 // trigger (an `Input`-styled `Combobox.Input`, not a button that opens a
 // popup), and results appear inline below as the user types. Distinct from

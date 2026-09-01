@@ -12,6 +12,7 @@ function Calendar({
   onClose,
   className,
   footer = true,
+  showSecondaryButton = true,
   onReset,
   onApply,
   defaultMonth,
@@ -141,6 +142,7 @@ function Calendar({
         onClose={onClose}
         className={className}
         footer={footer}
+        showSecondaryButton={showSecondaryButton}
         onReset={handleReset}
         onApply={handleApply}
         today={today}
@@ -166,6 +168,7 @@ function Calendar({
       mode={mode}
       className={className}
       footer={footer}
+      showSecondaryButton={showSecondaryButton}
       onReset={handleReset}
       onApply={handleApply}
       view={view}

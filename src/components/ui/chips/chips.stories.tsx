@@ -3,50 +3,82 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  iconArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
 
 import { Chips, type ChipsProps } from "./chips"
 
-// `State` — свойство компонент-сета `ELK / chips, filter` (Default, Hover,
-// Active, Active (Hover), Disabled). Hover и нажатие нельзя выставить
-// пропом, поэтому, как и у остальных интерактивных компонентов кита, их
-// даёт `state` через PseudoBox; Active — это `selected`, Disabled —
-// `disabled`, так что вместе они закрывают весь набор.
+/* Панель «Свойства компонента» компонент-сета «ELK / chips, filter»
+   (таблица 54887:28874):
+
+     Size        Desktop, Mobile
+     State       Default, Hover, Active, Active (Hover), Disabled
+     Type        Filter (White), Filter Headline (White), Filter (Grey),
+                 Filter Headline (Grey), Chips
+     Show Count  True, False
+     Show Icon   True, False
+     Show Select True, False
+
+   Дизайн-чек Storybook (Аня Багрова) №23 просит привести панель контролов к
+   этому списку. Двух свойств здесь нет, и обоих — по делу:
+
+   • «Type» — в коде сет разложен на два компонента, и Chips это ровно
+     значение Type=Chips. Четыре значения «Filter …» — компонент Filter со
+     свойством «Фон» (white / grey); об этом отдельно рассказывает история
+     «Белая / серая и обводка — см. Filter» ниже.
+   • «Show Select» — шеврон вызова Dropdown, он есть только у типов Filter:
+     у чипсы выпадающего списка нет, значение с неё снимается крестиком
+     (контрол «Крестик»).
+*/
+
+// Hover и нажатие нельзя выставить пропом, поэтому их даёт `state` через
+// PseudoBox; Active — это `selected`, Disabled — `disabled`.
 type PlaygroundArgs = ChipsProps & {
   state?: PlaygroundState
   viewport?: Viewport
+  showCount?: boolean
 }
+
+const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   title: "Компоненты/Chips",
   component: Chips,
   parameters: { layout: "centered" },
   argTypes: {
-    children: { control: "text" },
-    subtitle: { control: "text" },
-    count: { control: { type: "number", min: 0, max: 99 } },
-    closable: { control: "boolean" },
+    viewport: sizeArgType,
+    // «Active (Hover)» из макета — это selected + псевдокласс hover, то
+    // есть пара контролов State + «Выбрана», а не отдельное значение списка.
+    state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
+    showCount: toggleArgType("Show Count"),
+    icon: {
+      ...iconArgType("Вспомогательная иконка слева от значения"),
+      name: "Show Icon",
+    },
     // Дизайн-чек №19: состояние «выбрана» (State=Active в макете).
     selected: { name: "Выбрана", control: "boolean" },
-    disabled: { control: "boolean" },
-    state: stateArgType,
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
-    // панели истории, а не изменением размера вьюпорта.
-    viewport: viewportArgType,
+    closable: { name: "Крестик", control: "boolean" },
+    children: { control: "text", ...CONTENT },
+    subtitle: { control: "text", ...CONTENT },
+    count: { control: { type: "number", min: 0, max: 99 }, ...CONTENT },
+    disabled: { table: { disable: true } },
+    className: { table: { disable: true } },
+    onRemove: { table: { disable: true } },
   },
   args: {
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
+    showCount: true,
+    selected: false,
+    closable: false,
     children: "Значение",
     subtitle: "",
     count: 5,
-    closable: false,
-    selected: false,
-    disabled: false,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -54,9 +86,13 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, viewport, ...args }) => (
+  render: ({ state, viewport, showCount, count, ...args }) => (
     <PseudoBox state={state} viewport={viewport}>
-      <Chips {...args} />
+      <Chips
+        {...args}
+        count={showCount ? count : undefined}
+        disabled={state === "disabled"}
+      />
     </PseudoBox>
   ),
 }

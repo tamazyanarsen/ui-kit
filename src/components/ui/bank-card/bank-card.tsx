@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 import { useToast } from "@/components/ui/toast-message"
 
-import { CardBack, CardFace } from "./faces"
+import { CardBack, CardFace, type BankCardSize } from "./faces"
 import type { BankCardSkin } from "./variants"
 
 // BankCard — "ELK / cards": the full bank-card visual (not to be confused
@@ -22,6 +22,14 @@ import type { BankCardSkin } from "./variants"
 // ассеты у Figma есть, слоем `Card Image` внутри каждого символа.
 interface BankCardProps {
   skin?: BankCardSkin
+  /** Свойство `Size` — Desktop (332×208) или Mobile (254×160). */
+  size?: BankCardSize
+  /**
+   * Свойство `Type` — какой стороной лежит карта. Управляемый близнец
+   * внутреннего переворота по клику: задан — сторона фиксирована снаружи,
+   * не задан — картой управляет клик по ней.
+   */
+  type?: "face" | "back"
   paymentSystem?: PaymentSystem
   last4?: string
   cardNumber?: string
@@ -38,6 +46,8 @@ interface BankCardProps {
 
 function BankCard({
   skin = "mono",
+  size = "desktop",
+  type,
   paymentSystem = "mir",
   last4 = "4498",
   cardNumber = "2200 1234 5678 4498",
@@ -51,12 +61,19 @@ function BankCard({
   showRequisites = true,
   className,
 }: BankCardProps) {
-  const [side, setSide] = React.useState<"face" | "back">("face")
+  const [internalSide, setInternalSide] = React.useState<"face" | "back">("face")
+  const side = type ?? internalSide
+  const setSide = React.useCallback(
+    (next: "face" | "back") => {
+      if (type === undefined) setInternalSide(next)
+    },
+    [type]
+  )
   const [revealed, setRevealed] = React.useState<"number" | "cvc" | null>(null)
   const { add } = useToast()
 
   function flip() {
-    setSide((prev) => (prev === "face" ? "back" : "face"))
+    setSide(side === "face" ? "back" : "face")
   }
 
   function toggleReveal(field: "number" | "cvc") {
@@ -83,7 +100,11 @@ function BankCard({
           flip()
         }
       }}
-      className={cn("relative h-[208px] w-[332px] cursor-pointer outline-none", className)}
+      className={cn(
+        "relative cursor-pointer outline-none",
+        size === "mobile" ? "h-[160px] w-[254px]" : "h-[208px] w-[332px]",
+        className
+      )}
       style={{ perspective: "1200px" }}
     >
       <div
@@ -95,6 +116,7 @@ function BankCard({
       >
         <CardFace
           skin={skin}
+          size={size}
           paymentSystem={paymentSystem}
           last4={last4}
           balance={balance}
@@ -107,6 +129,7 @@ function BankCard({
           className="absolute inset-0"
         />
         <CardBack
+          size={size}
           last4={last4}
           cardNumber={cardNumber}
           cvc={cvc}
@@ -123,4 +146,4 @@ function BankCard({
 }
 
 export { BankCard }
-export type { BankCardProps }
+export type { BankCardProps, BankCardSize }

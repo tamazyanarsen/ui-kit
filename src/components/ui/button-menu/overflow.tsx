@@ -4,6 +4,11 @@ import { Ellipsis } from "@/icons"
 
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
+import {
+  SELECTION_BUTTON_PLACEMENT,
+  type SelectionButtonDirection,
+  type SelectionButtonSize,
+} from "@/components/ui/selection-button/selection-button"
 
 // The "..." overflow trigger + its dropdown menu. Per the spec this is the
 // same Dropdown component as Select ("Больше информации о выпадающем списке
@@ -18,31 +23,54 @@ interface ButtonMenuOverflowProps
    *  все действия белые и 32px, включая «ещё» (дизайн-чек №12). Обычно
    *  проставляется самой панелью, руками передавать не нужно. */
   tone?: "light" | "dark"
+  /**
+   * Сторона раскрытия списка — свойство `Direction` вложенного
+   * `ELK Selection Button` (см. {@link SelectionButtonDirection}).
+   *
+   * Дизайн-чек Storybook (Аня Багрова) №10: в панели свойств `ELK / button
+   * menu` кнопка «ещё» — это инстанс Selection Button со своими Size,
+   * Direction и Show Dropdown, а здесь их не было вовсе.
+   */
+  direction?: SelectionButtonDirection
+  /** Свойство `Size` вложенного Selection Button. По умолчанию идёт от
+   *  панели: белая — L, чёрная — S. */
+  size?: SelectionButtonSize
+  /** Свойство `Show Dropdown`: выключенное значение оставляет один триггер
+   *  без выпадающего списка. */
+  showDropdown?: boolean
 }
 
 function ButtonMenuOverflow({
   children,
   modal = false,
   tone = "light",
+  direction = "down-right",
+  size,
+  showDropdown = true,
   ...props
 }: ButtonMenuOverflowProps) {
+  const resolvedSize = size ?? (tone === "dark" ? "sm" : "lg")
+  const trigger = (
+    <Button
+      variant={tone === "dark" ? "secondary-white" : "secondary-grey"}
+      size={resolvedSize}
+      icon={Ellipsis}
+      iconPosition="only"
+      aria-label="Ещё"
+    />
+  )
+
+  if (!showDropdown) return trigger
+
+  const { side, align } = SELECTION_BUTTON_PLACEMENT[direction]
+
   return (
     <MenuPrimitive.Root modal={modal} {...props}>
-      <MenuPrimitive.Trigger
-        render={
-          <Button
-            variant={tone === "dark" ? "secondary-white" : "secondary-grey"}
-            size={tone === "dark" ? "sm" : "lg"}
-            icon={Ellipsis}
-            iconPosition="only"
-            aria-label="Ещё"
-          />
-        }
-      />
+      <MenuPrimitive.Trigger render={trigger} />
       <MenuPrimitive.Portal>
         <MenuPrimitive.Positioner
-          side="bottom"
-          align="start"
+          side={side}
+          align={align}
           sideOffset={8}
           className="isolate z-50"
         >

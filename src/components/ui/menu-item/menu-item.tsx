@@ -35,6 +35,23 @@ import { cn } from "@/lib/utils"
 const MENU_ITEM_ROW_CLASS =
   "relative flex w-full cursor-default items-start gap-4 p-4 text-left outline-hidden select-none"
 
+/**
+ * Свойство `Type` компонент-сета — уровень вложенности строки.
+ *
+ * Значения макета — Level 1…4, и отличаются они только левым полем: Level 1
+ * это обычные `p-16`, дальше поле растёт на 16 за уровень (`Level 2` —
+ * `pl-[32px] pr-[16px] py-[16px]`, нода 28080:55756). Правое поле и
+ * вертикальные не меняются.
+ */
+type MenuItemLevel = 1 | 2 | 3 | 4
+
+const MENU_ITEM_LEVEL: Record<MenuItemLevel, string> = {
+  1: "",
+  2: "pl-8",
+  3: "pl-12",
+  4: "pl-16",
+}
+
 interface MenuItemContentProps {
   /** Ведущий элемент: чекбокс, иконка, тумбнейл. */
   leading?: React.ReactNode
@@ -86,9 +103,18 @@ function MenuItemContent({
 /** Классы контейнера строки. `highlighted` — селектор подсветки того
  *  примитива, в который строка вкладывается (у Base UI это
  *  `data-highlighted`, у обычной кнопки — `hover`). */
-function menuItemRowClass(highlighted: string, className?: ClassValue) {
-  return cn(MENU_ITEM_ROW_CLASS, highlighted, className)
+function menuItemRowClass(
+  highlighted: string,
+  className?: ClassValue,
+  level: MenuItemLevel = 1
+) {
+  return cn(MENU_ITEM_ROW_CLASS, MENU_ITEM_LEVEL[level], highlighted, className)
 }
 
-export { MenuItemContent, menuItemRowClass, MENU_ITEM_ROW_CLASS }
-export type { MenuItemContentProps }
+export {
+  MenuItemContent,
+  menuItemRowClass,
+  MENU_ITEM_ROW_CLASS,
+  MENU_ITEM_LEVEL,
+}
+export type { MenuItemContentProps, MenuItemLevel }

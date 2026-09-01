@@ -38,9 +38,18 @@ const FOOTER_SIZE = {
 
 function CalendarFooter({
   compact,
+  showSecondary = true,
   onReset,
   onApply,
 }: {
+  /**
+   * Свойство `Show Secondary Button` панели свойств: вторичная кнопка
+   * «Сбросить». Выключенная оставляет в подвале одну «Применить».
+   *
+   * Дизайн-чек Storybook (Аня Багрова) №17: свойство есть в макете, но в
+   * коде управлять им было нечем.
+   */
+  showSecondary?: boolean
   /** Mobile sheet uses the M-size button footer (48px); desktop popover uses
    * L (56px) — the two layouts are chosen explicitly by the caller via
    * `layout`, not by a CSS breakpoint, so this is a prop, not a `desktop:`
@@ -58,15 +67,19 @@ function CalendarFooter({
         compact ? "h-12" : "h-14"
       )}
     >
-      <Button
-        variant="secondary-white"
-        size="lg"
-        onClick={onReset}
-        className={cn(FOOTER_BUTTON, sizeClass)}
-      >
-        Сбросить
-      </Button>
-      <Divider orientation="vertical" />
+      {showSecondary && (
+        <>
+          <Button
+            variant="secondary-white"
+            size="lg"
+            onClick={onReset}
+            className={cn(FOOTER_BUTTON, sizeClass)}
+          >
+            Сбросить
+          </Button>
+          <Divider orientation="vertical" />
+        </>
+      )}
       <Button
         variant="secondary-white"
         size="lg"

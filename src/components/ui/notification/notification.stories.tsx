@@ -1,6 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, StorySection, StoryShowcase } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  stateArgTypeOf,
+  toggleArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 
 import {
   NotificationItem,
@@ -35,12 +44,35 @@ const ITEM_COUNTS = [0, 1, 2, 3] as const
 type ItemCount = (typeof ITEM_COUNTS)[number]
 
 /* Переключатели видимости кнопок живут в истории, а не в компоненте: сами
-   пропсы — это подписи, а не флаги (дизайн-чек №27). */
+   пропсы — это подписи, а не флаги (дизайн-чек №27).
+
+   Дизайн-чек Storybook 2 (от Notification до Loader) №1: панель приведена к
+   «Свойствам компонента» `ELK / notification` (таблица 32216:16255):
+
+     State                 Default, Hover, Pressed
+     Type                  Not Viewed, Viewed
+     Show Sum              True, False
+     Show Status           True, False
+     Show Description      True, False
+     Show Button           True, False
+     Show Divider          True, False
+     Show Secondary Button True, False
+     Show ScrollBar        True, False
+
+   State и Type относятся к строке уведомления, остальное — к панели. */
 type PlaygroundArgs = NotificationPanelProps & {
+  state?: PlaygroundState
+  viewed?: boolean
+  showSum?: boolean
+  showStatus?: boolean
+  showDescription?: boolean
+  showItemButton?: boolean
   showPrimaryButton?: boolean
   showSecondaryButton?: boolean
   itemsCount?: ItemCount
 }
+
+const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   title: "Компоненты/Notification",
@@ -51,31 +83,53 @@ const meta = {
   // doesn't fall back to its "Set object" JSON-editor placeholder when one
   // is left unset (same fix as tooltip/hint.tsx's `title`).
   argTypes: {
-    title: { control: "text" },
+    state: stateArgTypeOf(["default", "hover", "pressed"]),
+    viewed: optionsArgType(
+      "Type",
+      { false: "Not Viewed", true: "Viewed" },
+      "inline-radio"
+    ),
+    showSum: toggleArgType("Show Sum"),
+    showStatus: toggleArgType("Show Status"),
+    showDescription: toggleArgType("Show Description"),
+    showItemButton: toggleArgType("Show Button", "Кнопка внутри уведомления"),
+    showDivider: toggleArgType("Show Divider"),
     // Дизайн-чек №27: кнопки включаются булевыми переключателями.
-    showPrimaryButton: { name: "Основная кнопка", control: "boolean" },
-    primaryButtonLabel: { control: "text" },
-    showSecondaryButton: { name: "Дополнительная кнопка", control: "boolean" },
-    secondaryButtonLabel: { control: "text" },
-    showDivider: { control: "boolean" },
-    showScrollBar: { control: "boolean" },
-    maxHeight: { control: "number" },
+    showPrimaryButton: toggleArgType("Show Button (панель)", "Основная кнопка панели"),
+    showSecondaryButton: toggleArgType("Show Secondary Button"),
+    showScrollBar: toggleArgType("Show ScrollBar"),
+    title: { control: "text", ...CONTENT },
+    primaryButtonLabel: { control: "text", ...CONTENT },
+    secondaryButtonLabel: { control: "text", ...CONTENT },
+    maxHeight: { control: "number", ...CONTENT },
     // Дизайн-чек №17: количество уведомлений — списком. Ноль нужен, чтобы
     // проверить пустую панель.
     itemsCount: {
       name: "Количество уведомлений",
       control: "select",
       options: ITEM_COUNTS,
+      ...CONTENT,
     },
     items: { table: { disable: true } },
   },
   args: {
     items: ITEMS,
     itemsCount: ITEMS.length as ItemCount,
+    state: "default" as PlaygroundState,
+    viewed: false,
+    showSum: true,
+    showStatus: true,
+    showDescription: true,
+    showItemButton: true,
+    showDivider: true,
+    showScrollBar: true,
     showPrimaryButton: true,
-    primaryButtonLabel: "Прочитать все",
     showSecondaryButton: true,
-    secondaryButtonLabel: "Настройки",
+    // Дизайн-чек Storybook 2 (от Notification до Loader) №7: «изменить
+    // название кнопок по компоненту». В мастере (32216:16028) основная —
+    // «В центр уведомлений», дополнительная — «Прочитать все (23)».
+    primaryButtonLabel: "В центр уведомлений",
+    secondaryButtonLabel: "Прочитать все (23)",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -84,6 +138,12 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: ({
+    state,
+    viewed,
+    showSum,
+    showStatus,
+    showDescription,
+    showItemButton,
     showPrimaryButton,
     primaryButtonLabel,
     showSecondaryButton,
@@ -91,12 +151,27 @@ export const Playground: Story = {
     itemsCount,
     ...args
   }) => (
-    <NotificationPanel
-      {...args}
-      items={ITEMS.slice(0, itemsCount ?? ITEMS.length)}
-      primaryButtonLabel={showPrimaryButton ? primaryButtonLabel : undefined}
-      secondaryButtonLabel={showSecondaryButton ? secondaryButtonLabel : undefined}
-    />
+    // State и Type — свойства строки уведомления, поэтому переключатели
+    // применяются к каждой строке списка, а псевдосостояние — ко всей панели.
+    <PseudoBox state={state}>
+      <NotificationPanel
+        {...args}
+        items={ITEMS.slice(0, itemsCount ?? ITEMS.length).map((item) => ({
+          ...item,
+          viewed,
+          sum: showSum ? (item.sum ?? "5 000,00 ₽") : undefined,
+          status: showStatus ? (item.status ?? "Status") : undefined,
+          description: showDescription
+            ? (item.description ?? "Description")
+            : undefined,
+          buttonLabel: showItemButton ? "Button" : undefined,
+        }))}
+        primaryButtonLabel={showPrimaryButton ? primaryButtonLabel : undefined}
+        secondaryButtonLabel={
+          showSecondaryButton ? secondaryButtonLabel : undefined
+        }
+      />
+    </PseudoBox>
   ),
 }
 

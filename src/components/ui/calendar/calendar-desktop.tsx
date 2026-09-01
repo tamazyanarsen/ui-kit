@@ -10,6 +10,7 @@ interface CalendarDesktopProps {
   mode: CalendarMode
   className?: string
   footer: boolean
+  showSecondaryButton?: boolean
   onReset?: () => void
   onApply?: () => void
 
@@ -37,6 +38,7 @@ export function CalendarDesktop({
   mode,
   className,
   footer,
+  showSecondaryButton = true,
   onReset,
   onApply,
   view,
@@ -114,7 +116,13 @@ export function CalendarDesktop({
           disabledDate={disabledDate}
         />
       )}
-      {footer && <CalendarFooter onReset={onReset} onApply={onApply} />}
+      {footer && (
+        <CalendarFooter
+          showSecondary={showSecondaryButton}
+          onReset={onReset}
+          onApply={onApply}
+        />
+      )}
     </div>
   )
 }

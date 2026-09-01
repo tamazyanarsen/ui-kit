@@ -51,11 +51,6 @@
    - --top-fixed-message-blue-bg in :root was still holding the *old*
      #E3EEFF; fixed to #EDF6FC there, with #E3EEFF moved down here. */
 [data-product="odl-elk"] {
-  /* Зелёная иллюстрация NPS остаётся за старой палитрой — дизайн-чек №3
-     №17 прямо просит её не удалять. Как только придёт голубая версия,
-     меняется одна строка: `--nps-done-image` в :root. */
-  --nps-done-image: url("../assets/nps/done-illustration.webp");
-
   --btn-primary-bg: var(--odl-green-223);
   --btn-primary-bg-hover: var(--odl-green-289);
   --btn-primary-bg-active: var(--odl-green-333);
@@ -71,6 +66,11 @@
 
   --checkbox-checked-bg: var(--odl-green-223);
   --checkbox-checked-bg-hover: var(--odl-green-289);
+  /* Дизайн-чек Storybook (Аня Багрова) №26: «в старых цветах галка внутри
+     чекбокса чёрная… должна быть белой Base/White 101 (#FFFFFF)». В новой
+     палитре заливка светло-голубая (Blue 223), и тёмная галка на ней
+     читается; старая — тёмно-зелёная #82BF00, на ней нужна белая. */
+  --checkbox-checked-fg: var(--white-101);
 
   --radio-checked-bg: var(--odl-green-223);
   --radio-checked-bg-hover: var(--odl-green-289);
@@ -202,6 +202,7 @@
   --toast-error-icon: var(--odl-red-410);
   --top-fixed-message-red-icon: var(--odl-red-410);
   --tag-red-bg: var(--odl-red-410);
+  --event-status-error-bg: var(--odl-red-410);
   --header-logout-fg: var(--odl-red-410);
   --header-unread-dot: var(--odl-red-410);
   --item-comment-red-fg: var(--odl-red-410);
@@ -251,8 +252,15 @@
    поэтому базовым значением остаётся WebP (см. выше), а лёгкий AVIF
    подставляется только там, где `image-set` действительно поддержан.
    Картинка — фон, а не `<img>`, поэтому `<picture>` тут не применить. */
+/* Зелёная иллюстрация NPS остаётся за старой палитрой — дизайн-чек №3 №17
+   прямо просит её не удалять. Правило, а не токен: почему — см. комментарий
+   у `.nps-done-image` в tokens-content.css. */
+[data-product="odl-elk"] .nps-done-image {
+  background-image: url("../assets/nps/done-illustration.webp");
+}
+
 @supports (background-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"))) {
-  [data-product="odl-elk"] {
-    --nps-done-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"));
+  [data-product="odl-elk"] .nps-done-image {
+    background-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"));
   }
 }

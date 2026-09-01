@@ -47,6 +47,13 @@ const meta = {
       name: "Counter: значение",
       if: { arg: "showCounter", truthy: true },
     },
+    showClose: {
+      control: "boolean",
+      name: "Крестик",
+      description:
+        "Снятие выбора крестиком. Есть только у выбранного чипа: у подсказки NPS выбор снимается правкой текста, а не крестом",
+      if: { arg: "selected", truthy: true },
+    },
     disabled: { control: "boolean", name: "State: Disabled" },
     state: stateArgType,
   },
@@ -55,6 +62,7 @@ const meta = {
     selected: false,
     showCounter: true,
     count: 12,
+    showClose: true,
     disabled: false,
     state: "default" as PlaygroundState,
   },

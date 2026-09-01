@@ -18,6 +18,8 @@ export interface CalendarProps {
   onClose?: () => void
   className?: string
   footer?: boolean
+  /** Свойство `Show Secondary Button` — кнопка «Сбросить» в подвале. */
+  showSecondaryButton?: boolean
   onReset?: () => void
   onApply?: () => void
   defaultMonth?: Date

@@ -1,5 +1,6 @@
 export { Event } from "./event"
 export type {
+  EventStepType,
   EventProps,
   EventSignatory,
   EventInfoRow,

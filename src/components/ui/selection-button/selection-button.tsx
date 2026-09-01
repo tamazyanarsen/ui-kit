@@ -42,7 +42,9 @@ interface SelectionButtonProps {
   className?: string
 }
 
-const PLACEMENT: Record<
+/** Направление раскрытия → сторона и выравнивание позиционера. Экспортируется
+ *  ради «ещё» в Button Menu: в Figma это тот же вложенный Selection Button. */
+const SELECTION_BUTTON_PLACEMENT: Record<
   SelectionButtonDirection,
   { side: "top" | "bottom"; align: "start" | "end" }
 > = {
@@ -80,7 +82,7 @@ function SelectionButton({
     return resolvedTrigger
   }
 
-  const { side, align } = PLACEMENT[direction]
+  const { side, align } = SELECTION_BUTTON_PLACEMENT[direction]
 
   return (
     <MenuPrimitive.Root modal={modal}>
@@ -114,5 +116,5 @@ function SelectionButton({
   )
 }
 
-export { SelectionButton }
+export { SelectionButton, SELECTION_BUTTON_PLACEMENT }
 export type { SelectionButtonProps, SelectionButtonItem }

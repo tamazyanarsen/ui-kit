@@ -70,8 +70,17 @@
      переопределяет его вместе с остальными цветами, и зелёная версия
      остаётся жить в «Старом ЕЛК».
      Голубая версия — растр из мастера (символ `State=Done`, канвас
-     Feedback), как и зелёная: иллюстрация объёмная, не перерисовывается. */
-  --nps-done-image: url("../assets/nps/done-illustration-blue.webp");
+     Feedback), как и зелёная: иллюстрация объёмная, не перерисовывается.
+
+     ⚠️ Картинка приходит КЛАССОМ `.nps-done-image` (объявлен в конце файла),
+     а не токеном. Токеном она уже была, и это ломалось: относительный
+     `url()` внутри пользовательского свойства браузер резолвит от документа,
+     а не от таблицы стилей, в которой свойство объявлено. В собранном
+     Storybook (CSS лежит в /assets/) это давало запрос
+     /done-illustration-blue-*.avif и 404, а у потребителя пакета — запрос к
+     корню его сайта вместо node_modules/@core/ui-kit/dist. У обычного
+     `background-image` в правиле такой проблемы нет: Vite переписывает путь,
+     и резолвится он относительно CSS. */
   /* NPS's reply pills moved to the shared FilterTable component (Figma
      builds them from `ELK / filter-table`, not a bespoke chip), so their
      --nps-chip-* tokens are gone — the colours now come from the
@@ -206,8 +215,12 @@
    поэтому базовым значением остаётся WebP (см. выше), а лёгкий AVIF
    подставляется только там, где `image-set` действительно поддержан.
    Картинка — фон, а не `<img>`, поэтому `<picture>` тут не применить. */
+.nps-done-image {
+  background-image: url("../assets/nps/done-illustration-blue.webp");
+}
+
 @supports (background-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"))) {
-  :root {
-    --nps-done-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"));
+  .nps-done-image {
+    background-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"));
   }
 }

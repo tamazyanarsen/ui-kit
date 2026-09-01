@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 
 import { AccordionList, AccordionListItem } from "./accordion-list"
 
@@ -15,29 +19,61 @@ const DESCRIPTION_TYPES = [
   "information",
 ] as const
 
+const CONTENT = { table: { category: "Контент" } }
+
+/* `showDescription` / `showSubtitle` — синтетические аргументы: в макете это
+   свойства-переключатели, в коде — наличие содержимого в слоте. */
+type PlaygroundArgs = ItemProps & {
+  showDescription?: boolean
+  showSubtitle?: boolean
+}
+
 const meta = {
   title: "Компоненты/Content Accordion",
   component: AccordionListItem,
   parameters: { layout: "padded" },
   argTypes: {
-    title: { control: "text" },
-    subtitle: { control: "text" },
-    description: { control: "text" },
-    descriptionType: { control: "select", options: DESCRIPTION_TYPES },
-    buttonLabel: { control: "text" },
-    buttonsType: { control: "inline-radio", options: ["button", "dropdown", "both"] },
-    showCheckbox: { control: "boolean" },
-    defaultChecked: { control: "boolean" },
-    showButtons: { control: "boolean" },
-    defaultOpen: { control: "boolean" },
-    children: { control: "text" },
-    titleAs: { control: "inline-radio", options: ["h3", "h4"] },
+    // Дизайн-чек Storybook (Аня Багрова) №25: панель приведена к «Свойствам
+    // компонента» — Style, Open, Show Checkbox, Show Description,
+    // Show Buttons, Show Subtitle. Остальные контролы — наполнение строки,
+    // они убраны в отдельную группу.
+    titleAs: optionsArgType(
+      "Style",
+      { h3: "Title H3", h4: "Title H4" },
+      "inline-radio"
+    ),
+    defaultOpen: toggleArgType("Open"),
+    showCheckbox: toggleArgType("Show Checkbox"),
+    showDescription: toggleArgType("Show Description"),
+    showButtons: toggleArgType("Show Buttons"),
+    showSubtitle: toggleArgType("Show Subtitle"),
+    defaultChecked: { name: "Чекбокс отмечен", control: "boolean" },
+    title: { control: "text", ...CONTENT },
+    subtitle: { control: "text", ...CONTENT },
+    description: { control: "text", ...CONTENT },
+    descriptionType: {
+      control: "select",
+      options: DESCRIPTION_TYPES,
+      ...CONTENT,
+    },
+    buttonLabel: { control: "text", ...CONTENT },
+    buttonsType: {
+      control: "inline-radio",
+      options: ["button", "dropdown", "both"],
+      ...CONTENT,
+    },
+    children: { control: "text", ...CONTENT },
+    // Управляемые близнецы `defaultChecked` / `defaultOpen`.
+    checked: { table: { disable: true } },
+    open: { table: { disable: true } },
   },
   args: {
     title: "Личные данные",
     subtitle: "Паспорт, СНИЛС",
     showCheckbox: true,
     defaultChecked: true,
+    showDescription: true,
+    showSubtitle: true,
     description: "Подписано",
     // Дизайн-чек №24, вторая половина («поменять цвет»). Пять статусов сами
     // по себе совпадают с макетом один в один: Status (ELK), нода 50451:9206
@@ -51,17 +87,28 @@ const meta = {
     buttonsType: "both",
     buttonLabel: "Изменить",
     defaultOpen: true,
+    titleAs: "h3",
     children: "Содержимое раздела личных данных.",
   },
-} satisfies Meta<ItemProps>
+} satisfies Meta<PlaygroundArgs>
 
 export default meta
-type Story = StoryObj<ItemProps>
+type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: (args) => (
+  render: ({ showDescription, showSubtitle, description, subtitle, ...args }) => (
     <AccordionList>
-      <AccordionListItem {...args} />
+      {/* Дизайн-чек Storybook (Аня Багрова) №24: «не работает настройка
+          Checked — при изменении True на False остаётся Checked».
+          `defaultChecked` и `defaultOpen` — начальные значения, а не
+          управляемые пропы: без перемонтирования по ключу переключатель в
+          панели выглядит мёртвым. */}
+      <AccordionListItem
+        key={`${args.defaultChecked}-${args.defaultOpen}`}
+        {...args}
+        subtitle={showSubtitle ? subtitle : undefined}
+        description={showDescription ? description : undefined}
+      />
     </AccordionList>
   ),
 }

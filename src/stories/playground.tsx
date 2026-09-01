@@ -61,7 +61,18 @@ export const viewportArgType = {
    can't pass them as props — it wraps the component in this instead, which
    storybook-addon-pseudo-states turns into the real thing. `disabled` stays a
    genuine prop and is handled per component. */
-export type PlaygroundState = "default" | "hover" | "pressed" | "focus"
+export type PlaygroundState =
+  | "default"
+  | "hover"
+  /** То же, что `active` — историческое имя, Figma называет это состояние Active. */
+  | "pressed"
+  | "active"
+  | "focus"
+  /* Disabled и Loading — настоящие пропы, а не псевдоклассы: в оси State
+     они есть у части компонентов, поэтому значения объявлены здесь, а
+     раскладывает их в пропы сама история. */
+  | "disabled"
+  | "loading"
 
 export const PLAYGROUND_STATES: PlaygroundState[] = [
   "default",
@@ -74,7 +85,10 @@ const PLAYGROUND_STATE_CLASS: Record<PlaygroundState, string | undefined> = {
   default: undefined,
   hover: "pseudo-hover-all",
   pressed: "pseudo-active-all pseudo-hover-all",
+  active: "pseudo-active-all pseudo-hover-all",
   focus: "pseudo-focus-visible-all",
+  disabled: undefined,
+  loading: undefined,
 }
 
 export function PseudoBox({
@@ -117,7 +131,17 @@ export const stateArgType = {
  * остальной набор был недоступен. С появлением компонента `Icon` список
  * можно собрать целиком — `mapping` превращает имя в узел.
  */
-export function iconArgType(description = "Иконка из набора кита") {
+export function iconArgType(
+  description = "Иконка из набора кита",
+  /**
+   * Какое начертание подставлять. У части набора Figma рисует 16 и 24
+   * отдельно, поэтому там, где компонент отводит иконке коробку 24px,
+   * контрол обязан отдавать именно 24-й рисунок — иначе в неё попадает
+   * растянутый 16-й и выглядит тоньше и мельче макета (дизайн-чек Storybook
+   * (Аня Багрова) №28 про «слишком маленькую иконку»).
+   */
+  size: 16 | 24 = 16
+) {
   const NONE = "без иконки"
   return {
     description,
@@ -125,7 +149,10 @@ export function iconArgType(description = "Иконка из набора кит
     options: [NONE, ...ICON_NAMES],
     mapping: Object.fromEntries([
       [NONE, undefined],
-      ...ICON_NAMES.map((name) => [name, <Icon key={name} name={name} />]),
+      ...ICON_NAMES.map((name) => [
+        name,
+        <Icon key={name} name={name} size={size} />,
+      ]),
     ]),
   }
 }

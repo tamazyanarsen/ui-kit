@@ -207,7 +207,7 @@ function SingleMatrix<P>({
 
 /* Обвязка историй лежит рядом и реэкспортируется отсюда, чтобы истории
    импортировали всё из одного места (`@/stories/matrix`). */
-export { StorySection, StoryShowcase } from "./showcase"
+export { StoryContentArea, StorySection, StoryShowcase } from "./showcase"
 export {
   PLAYGROUND_STATES,
   PseudoBox,
@@ -218,3 +218,9 @@ export {
   viewportArgType,
 } from "./playground"
 export type { PlaygroundState } from "./playground"
+export {
+  optionsArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
+} from "./figma-props"

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CircleCheck, Clock, FileIcon } from "@/icons"
+import { CircleCheck, CircleX, Clock, FileIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,14 @@ import { SIGNATORY_STATUS_COLOR, STATUS_TAG_COLOR, type EventStatus } from "./va
 // optional and simply omits when its data isn't given — same pattern as
 // Card/Banner's "Show X" toggles.
 interface EventSignatory {
-  status: "success" | "attention"
+  /**
+   * Свойство `Type` вложенного `Signatories (ELK)`: Done — подписано,
+   * Partial — ждёт подписи, Cancel — отказ.
+   *
+   * Дизайн-чек Storybook (Аня Багрова) №31: третьего значения в коде не
+   * было вовсе, из панели его было не достать.
+   */
+  status: "success" | "attention" | "error"
   name: React.ReactNode
   // Design-check #21: the spec's own signer example carries a second,
   // lighter-colored attribute after the name (e.g. "Петров П.П. — Первая
@@ -38,8 +45,16 @@ interface EventDocument {
   onClick?: () => void
 }
 
+/**
+ * Свойство `Type` вложенного `Step Event (ELK)` — где строка стоит в
+ * цепочке: First (только линия вниз), Middle (линии вверх и вниз), End
+ * (только линия вверх).
+ */
+type EventStepType = "first" | "middle" | "end"
+
 interface EventProps {
   type?: "text" | "tag"
+  stepType?: EventStepType
   title: React.ReactNode
   status?: EventStatus
   timestamp?: React.ReactNode
@@ -57,6 +72,7 @@ interface EventProps {
 
 function Event({
   type = "text",
+  stepType,
   title,
   status = "attention",
   timestamp,
@@ -71,17 +87,32 @@ function Event({
   showConnector = true,
   className,
 }: EventProps) {
+  // `stepType` — свойство макета, `showConnector` — прежний булев проп той же
+  // оси. Задан явный тип шага — он и решает.
+  const step: EventStepType = stepType ?? (showConnector ? "first" : "end")
+  const lineAbove = step !== "first"
+  const lineBelow = step !== "end"
+
   return (
-    <div data-slot="event" className={cn("flex gap-2", className)}>
+    <div data-slot="event" data-step={step} className={cn("flex gap-2", className)}>
       <div className="flex w-2 shrink-0 flex-col items-center">
+        {lineAbove && (
+          <span
+            aria-hidden="true"
+            className="h-2 w-px shrink-0 rounded-b-[4px] bg-[var(--event-connector)]"
+          />
+        )}
         <span
           aria-hidden="true"
           // The dot sits 8px down (a 3px connector stub plus the column's own
           // 5px gap in "Step Event (ELK)"), and the stripe below it starts
           // another 5px lower with a 4px rounded top.
-          className="mt-2 size-2 shrink-0 rounded-full bg-[var(--event-connector)]"
+          className={cn(
+            "size-2 shrink-0 rounded-full bg-[var(--event-connector)]",
+            lineAbove ? "mt-[5px]" : "mt-2"
+          )}
         />
-        {showConnector && (
+        {lineBelow && (
           <span
             aria-hidden="true"
             className="mt-[5px] w-px flex-1 rounded-t-[4px] bg-[var(--event-connector)]"
@@ -125,7 +156,12 @@ function Event({
         {signatories && signatories.length > 0 && (
           <div className="flex flex-col gap-2">
             {signatories.map((signatory, index) => {
-              const Icon = signatory.status === "success" ? CircleCheck : Clock
+              const Icon =
+                signatory.status === "success"
+                  ? CircleCheck
+                  : signatory.status === "error"
+                    ? CircleX
+                    : Clock
               return (
                 <div
                   key={index}
@@ -240,4 +276,4 @@ function Event({
 }
 
 export { Event }
-export type { EventProps, EventSignatory, EventInfoRow, EventDocument }
+export type { EventStepType, EventProps, EventSignatory, EventInfoRow, EventDocument }

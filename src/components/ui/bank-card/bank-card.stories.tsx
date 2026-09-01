@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import type { PaymentSystem } from "@/components/ui/thumbnail"
-import { StatesMatrix } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 
 import { BankCard, type BankCardProps } from "./bank-card"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
@@ -10,34 +14,52 @@ import { SKIN_LABELS, type BankCardSkin } from "./variants"
 const SKINS = Object.keys(SKIN_LABELS) as BankCardSkin[]
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "visa", "unionpay"]
 
+const CONTENT = { table: { category: "Контент" } }
+
 const meta = {
   title: "Компоненты/Cards",
   component: BankCard,
   parameters: { layout: "centered" },
   argTypes: {
-    skin: { control: "select", options: SKINS },
+    /* Дизайн-чек Storybook (Аня Багрова) №20: панель приведена к «Свойствам
+       компонента» ` ELK / cards` — Size, Type, Style, Show Payment System,
+       Show Card Number, Show Balance, Show Requisites. Подписи Style — из
+       того же макета (SKIN_LABELS). */
+    size: optionsArgType(
+      "Size",
+      { desktop: "Desktop", mobile: "Mobile" },
+      "inline-radio"
+    ),
+    type: optionsArgType(
+      "Type",
+      { face: "Face", back: "Back" },
+      "inline-radio"
+    ),
+    skin: optionsArgType("Style", SKIN_LABELS),
     // `paymentSystem` is a plain string union (`PaymentSystem`, imported
     // from thumbnail/variants) but react-docgen can't resolve an imported
     // type alias into an enum, so it falls back to a generic "Set object"
     // JSON editor — pin the real option list explicitly instead, same fix
     // as Badge's `color`.
-    paymentSystem: { control: "select", options: PAYMENT_SYSTEMS },
+    paymentSystem: { control: "select", options: PAYMENT_SYSTEMS, ...CONTENT },
     // `balance` is `React.ReactNode` but every usage (including the
     // component's own default) is a plain string — without this, leaving it
     // unset falls back to the same generic "Set object" JSON editor.
-    balance: { control: "text" },
-    cardNumber: { control: "text" },
+    balance: { control: "text", ...CONTENT },
+    cardNumber: { control: "text", ...CONTENT },
     // Shown by the SBP/sticker skins instead of the full masked number.
-    last4: { control: "text" },
-    cardholderName: { control: "text" },
-    expiry: { control: "text" },
-    cvc: { control: "text" },
-    showPaymentSystem: { control: "boolean" },
-    showCardNumber: { control: "boolean" },
-    showBalance: { control: "boolean" },
-    showRequisites: { control: "boolean" },
+    last4: { control: "text", ...CONTENT },
+    cardholderName: { control: "text", ...CONTENT },
+    expiry: { control: "text", ...CONTENT },
+    cvc: { control: "text", ...CONTENT },
+    showPaymentSystem: toggleArgType("Show Payment System"),
+    showCardNumber: toggleArgType("Show Card Number"),
+    showBalance: toggleArgType("Show Balance"),
+    showRequisites: toggleArgType("Show Requisites"),
   },
   args: {
+    size: "desktop",
+    type: "face",
     skin: "mono",
     last4: "4482",
     showPaymentSystem: true,
@@ -92,6 +114,24 @@ export const Matrix: Story = {
           },
         ]}
         rows={[{ label: "Default", props: {} }]}
+        render={(props) => <BankCard {...props} />}
+      />
+      {/* Дизайн-чек Storybook (Аня Багрова) №19: в макете у каждого скина
+          два размера — Desktop 332×208 и Mobile 254×160. */}
+      <StatesMatrix<BankCardProps>
+        columnGroups={[
+          {
+            label: "Size",
+            columns: [
+              { label: "Desktop", props: { size: "desktop" } },
+              { label: "Mobile", props: { size: "mobile" } },
+            ],
+          },
+        ]}
+        rows={[
+          { label: "Face", props: { type: "face" } },
+          { label: "Back", props: { type: "back" } },
+        ]}
         render={(props) => <BankCard {...props} />}
       />
       {/* Every block of the card is independently switchable. */}

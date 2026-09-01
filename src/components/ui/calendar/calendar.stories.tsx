@@ -1,13 +1,38 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
-import { ViewportScope, type Viewport } from "@/lib/viewport"
+import {
+  StatesMatrix,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
+import { ViewportScope } from "@/lib/viewport"
 
 import { Calendar } from "./calendar"
 import type { CalendarProps } from "./types"
 
-type PlaygroundArgs = CalendarProps & { viewport?: Viewport }
+/* Дизайн-чек Storybook (Аня Багрова) №16 и №17.
+
+   №16 — «при изменении на мобильный вариант компонента отображение не
+   меняется». Форму календаря задаёт не `<ViewportScope>`, а собственный
+   проп `layout` (`popover` — десктопная карточка, `sheet` — мобильный
+   лист): это два разных дерева, а не одно с медиазапросом. В панели же
+   стоял общий контрол `viewport`, который для этого компонента не делает
+   ничего. Теперь `Size` переключает именно `layout` (и заодно скоуп, чтобы
+   вложенные размеры шрифтов шли по той же форме).
+
+   №17 — панель приведена к «Свойствам компонента»: Size, Type, Show
+   Buttons, Show Secondary Button. Внутреннее свойство `Type` инстанса
+   `Calendar (Desktop, ELK)` (Day / Month / Year / Range) — та же ось, что и
+   внешняя, поэтому контрол один: Week = Day, Double Calendar = Range. */
+const TYPE_LABELS: Record<NonNullable<CalendarProps["mode"]>, string> = {
+  single: "Week",
+  month: "Month",
+  year: "Year",
+  range: "Double Calendar",
+}
+
+type PlaygroundArgs = CalendarProps
 
 const meta = {
   title: "Компоненты/Calendar",
@@ -22,10 +47,18 @@ const meta = {
   // plain object, not a real Date instance). `control: false` removes the
   // footgun instead of just prettying up a control that was never safe.
   argTypes: {
-    mode: { control: "inline-radio", options: ["single", "range", "month", "year"] },
-    layout: { control: "inline-radio", options: ["popover", "sheet"] },
-    title: { control: "text" },
-    footer: { control: "boolean" },
+    layout: optionsArgType(
+      "Size",
+      { popover: "Desktop", sheet: "Mobile" },
+      "inline-radio"
+    ),
+    mode: optionsArgType("Type", TYPE_LABELS),
+    footer: toggleArgType("Show Buttons"),
+    showSecondaryButton: toggleArgType(
+      "Show Secondary Button",
+      "Кнопка «Сбросить» в подвале"
+    ),
+    title: { control: "text", table: { category: "Контент" } },
     // A predicate, not a value — no JSON control can express one, so map a
     // friendly choice to a real function (same technique as Button's `icon`).
     disabledDate: {
@@ -41,21 +74,30 @@ const meta = {
     rangeValue: { control: false },
     monthValue: { control: false },
     yearValue: { control: false },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
   },
-  args: { mode: "single", layout: "popover", footer: true, title: "Выберите дату", viewport: "auto" as Viewport },
-  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
-  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
-  // для всех историй файла — в матрицах она не мешает: там форму задаёт
-  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  args: {
+    layout: "popover",
+    mode: "single",
+    footer: true,
+    showSecondaryButton: true,
+    title: "Выберите дату",
+  },
+  // Скоуп идёт за `layout`: у листа мобильные размеры шрифтов, у карточки —
+  // десктопные. В матрицах форму задаёт сама матрица (`responsive`), поэтому
+  // там args.layout не выставлен и скоуп остаётся в «auto».
   decorators: [
-    (Story, context) => (
-      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
-        <Story />
-      </ViewportScope>
-    ),
+    (Story, context) => {
+      const layout = (context.args as { layout?: CalendarProps["layout"] }).layout
+      return (
+        <ViewportScope
+          viewport={
+            layout === "sheet" ? "mobile" : layout === "popover" ? "desktop" : "auto"
+          }
+        >
+          <Story />
+        </ViewportScope>
+      )
+    },
   ],
 } satisfies Meta<PlaygroundArgs>
 

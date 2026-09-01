@@ -106,13 +106,17 @@ function NpsDone({
       <div className="flex w-full flex-col items-center">
         <CloseButton onClose={onClose} className="ml-auto" />
         {/* Дизайн-чек №3 №17: иллюстрация зависит от палитры, поэтому
-            приходит токеном `--nps-done-image`, а не жёстким путём. Это
-            фон, а не <img>: иначе выбор картинки пришлось бы тащить в JS
-            и дублировать логику темы, которая целиком живёт в CSS. */}
+            приходит из CSS классом `.nps-done-image`, а не жёстким путём.
+            Это фон, а не <img>: иначе выбор картинки пришлось бы тащить в JS
+            и дублировать логику темы, которая целиком живёт в CSS.
+
+            Именно класс, а не токен с `url()`: относительный путь внутри
+            пользовательского свойства браузер резолвит от документа, из-за
+            чего картинка 404-ила в собранном Storybook и у потребителя
+            пакета (см. комментарий в src/styles/tokens-content.css). */}
         <div
           role="presentation"
-          className="h-[176px] w-[232px] bg-contain bg-center bg-no-repeat"
-          style={{ backgroundImage: "var(--nps-done-image)" }}
+          className="nps-done-image h-[176px] w-[232px] bg-contain bg-center bg-no-repeat"
         />
       </div>
       <div className="flex flex-col items-center gap-1 text-center">

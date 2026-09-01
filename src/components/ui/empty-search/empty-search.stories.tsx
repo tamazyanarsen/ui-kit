@@ -5,17 +5,28 @@ import {
   PseudoBox,
   StatesMatrix,
   iconArgType,
-  viewportArgType,
+  sizeArgType,
+  toggleArgType,
 } from "@/stories/matrix"
 import type { Viewport } from "@/lib/viewport"
+
+import { ArrowRotateReload, ClearFilter } from "@/icons"
 
 import { EmptySearchResults } from "./empty-search"
 
 type EmptySearchResultsProps = ComponentProps<typeof EmptySearchResults>
 
 /* Ось `Size` (Desktop | Mobile) в макете есть, но пропом не выставляется —
-   её даёт общий контрол `viewport`. */
-type PlaygroundArgs = EmptySearchResultsProps & { viewport?: Viewport }
+   форму задаёт `<ViewportScope>`.
+
+   Дизайн-чек Storybook (Аня Багрова) №29: панель приведена к «Свойствам
+   компонента» — Size, Show Button, Show Description. */
+type PlaygroundArgs = EmptySearchResultsProps & {
+  viewport?: Viewport
+  showDescription?: boolean
+}
+
+const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   // Мастер в Figma переименован в `ELK / empty-page` — заголовок истории
@@ -24,21 +35,42 @@ const meta = {
   component: EmptySearchResults,
   parameters: { layout: "padded" },
   argTypes: {
-    viewport: viewportArgType,
+    viewport: sizeArgType,
+    showButton: toggleArgType("Show Button"),
+    showDescription: toggleArgType("Show Description"),
     // `icon` — готовый JSX-узел, значением из контрола его не набрать.
     // Иконка выбирается из набора: `null` — вообще без неё, остальные
     // значения приходят из общего реестра (см. iconArgType).
-    icon: iconArgType("Иконка в плитке; «без иконки» — плитка не рисуется"),
+    // Плитка отводит глифу коробку 24px, поэтому контрол отдаёт 24-е
+    // начертание набора, а не растянутое 16-е (дизайн-чек №28).
+    icon: iconArgType("Иконка в плитке; «без иконки» — плитка не рисуется", 24),
     // `description`/`buttonLabel` are `React.ReactNode` but every usage is a
     // plain string — without this, leaving one unset falls back to a generic
     // "Set object" JSON editor.
-    title: { control: "text" },
-    description: { control: "text" },
+    title: { control: "text", ...CONTENT },
+    description: { control: "text", ...CONTENT },
     // Дизайн-чек №27: кнопка включается булевым свойством, а её вид —
     // отдельным списком, а не «включается текстовой строчкой».
-    showButton: { control: "boolean" },
-    buttonLabel: { control: "text" },
-    buttonVariant: { control: "inline-radio", options: ["primary", "secondary-grey"] },
+    buttonLabel: { control: "text", ...CONTENT },
+    // Дизайн-чек 3/3 №27: у кейса «нулевой результат фильтрации» кнопка
+    // «Сбросить фильтры» несёт значок `icon / clear filter`. Проп принимает
+    // компонент-глиф, поэтому контрол — тот же реестр иконок.
+    buttonIcon: {
+      name: "Иконка в кнопке",
+      control: { type: "select" as const },
+      options: ["без иконки", "clear-filter", "arrow-rotate-reload"],
+      mapping: {
+        "без иконки": undefined,
+        "clear-filter": ClearFilter,
+        "arrow-rotate-reload": ArrowRotateReload,
+      },
+      ...CONTENT,
+    },
+    buttonVariant: {
+      control: "inline-radio",
+      options: ["primary", "secondary-grey"],
+      ...CONTENT,
+    },
     largeIcon: {
       control: "boolean",
       description:
@@ -46,7 +78,8 @@ const meta = {
     },
   },
   args: {
-    viewport: "auto" as Viewport,
+    viewport: "desktop" as Viewport,
+    showDescription: true,
     title: "Ничего не найдено",
     description: "Попробуйте изменить параметры поиска",
     largeIcon: true,
@@ -63,9 +96,12 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ viewport, ...args }) => (
+  render: ({ viewport, showDescription, description, ...args }) => (
     <PseudoBox viewport={viewport} className="w-full">
-      <EmptySearchResults {...args} />
+      <EmptySearchResults
+        {...args}
+        description={showDescription ? description : undefined}
+      />
     </PseudoBox>
   ),
 }

@@ -1,8 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, StorySection, StoryShowcase } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
+import type { Viewport } from "@/lib/viewport"
 
-import { Event, type EventProps } from "./event"
+import { Event, type EventProps, type EventSignatory } from "./event"
 import type { EventStatus } from "./variants"
 
 const STATUSES: EventStatus[] = [
@@ -42,13 +51,39 @@ const listCountArg = (name: string) =>
   ({ name, control: "select", options: LIST_COUNTS }) as const
 
 /* Переключатель видимости кнопки живёт в истории, а не в компоненте: сам
-   проп — это подпись, а не флаг (дизайн-чек №27). */
+   проп — это подпись, а не флаг (дизайн-чек №27).
+
+   Дизайн-чек Storybook (Аня Багрова) №31: панель приведена к «Свойствам
+   компонента» — Size, Show Signatories / Information / Comment / Documents /
+   Button, плюс вложенные группы `Step Event (ELK)` (Type), `Head Event (ELK)`
+   (Type) и `Signatories (ELK)` (Type). Блоки в коде включаются наличием
+   содержимого, поэтому у истории синтетические переключатели, а количество
+   строк в каждом блоке осталось отдельным контролом наполнения. */
+type SignatoryType = "done" | "partial" | "cancel"
+
+const SIGNATORY_STATUS: Record<SignatoryType, EventSignatory["status"]> = {
+  done: "success",
+  partial: "attention",
+  cancel: "error",
+}
+
 type PlaygroundArgs = EventProps & {
+  viewport?: Viewport
+  showSignatories?: boolean
+  showInformation?: boolean
+  showComment?: boolean
+  showDocuments?: boolean
   showButton?: boolean
+  signatoryType?: SignatoryType
   signatoriesCount?: ListCount
   infoCount?: ListCount
   documentsCount?: ListCount
 }
+
+const CONTENT = { table: { category: "Контент" } }
+const STEP_EVENT = { table: { category: "Step Event (ELK)" } }
+const HEAD_EVENT = { table: { category: "Head Event (ELK)" } }
+const SIGNATORIES = { table: { category: "Signatories (ELK)" } }
 
 const meta = {
   title: "Компоненты/Event",
@@ -58,25 +93,61 @@ const meta = {
   // usage is a plain string — without this, leaving one unset falls back to
   // a generic "Set object" JSON editor.
   argTypes: {
-    type: { control: "inline-radio", options: ["text", "tag"] },
-    status: { control: "select", options: STATUSES },
-    title: { control: "text" },
-    timestamp: { control: "text" },
-    author: { control: "text" },
-    commentLabel: { control: "text" },
-    comment: { control: "text" },
+    viewport: sizeArgType,
+    showSignatories: toggleArgType("Show Signatories"),
+    showInformation: toggleArgType("Show Information"),
+    showComment: toggleArgType("Show Comment"),
+    showDocuments: toggleArgType("Show Documents"),
     // Дизайн-чек №27: кнопка включается булевым переключателем.
-    showButton: { name: "Кнопка", control: "boolean" },
-    buttonLabel: { control: "text" },
-    showConnector: { control: "boolean" },
-    signatoriesCount: listCountArg("Подписантов"),
-    infoCount: listCountArg("Строк реквизитов"),
-    documentsCount: listCountArg("Документов"),
+    showButton: toggleArgType("Show Button"),
+    stepType: {
+      ...optionsArgType(
+        "Type",
+        { first: "First", middle: "Middle", end: "End" },
+        "inline-radio"
+      ),
+      ...STEP_EVENT,
+    },
+    type: {
+      ...optionsArgType(
+        "Type",
+        { text: "Event", tag: "Status" },
+        "inline-radio"
+      ),
+      ...HEAD_EVENT,
+    },
+    signatoryType: {
+      ...optionsArgType(
+        "Type",
+        { partial: "Partial", done: "Done", cancel: "Cancel" },
+        "inline-radio"
+      ),
+      ...SIGNATORIES,
+    },
+    status: { control: "select", options: STATUSES, ...CONTENT },
+    title: { control: "text", ...CONTENT },
+    timestamp: { control: "text", ...CONTENT },
+    author: { control: "text", ...CONTENT },
+    commentLabel: { control: "text", ...CONTENT },
+    comment: { control: "text", ...CONTENT },
+    buttonLabel: { control: "text", ...CONTENT },
+    signatoriesCount: { ...listCountArg("Подписантов"), ...CONTENT },
+    infoCount: { ...listCountArg("Строк реквизитов"), ...CONTENT },
+    documentsCount: { ...listCountArg("Документов"), ...CONTENT },
+    // Старый булев близнец оси `Step Event / Type`.
+    showConnector: { table: { disable: true } },
     signatories: { table: { disable: true } },
     info: { table: { disable: true } },
     documents: { table: { disable: true } },
   },
   args: {
+    viewport: "desktop" as Viewport,
+    showSignatories: true,
+    showInformation: true,
+    showComment: true,
+    showDocuments: true,
+    stepType: "first",
+    signatoryType: "partial",
     type: "text",
     status: "default",
     title: "Заявка отправлена",
@@ -98,20 +169,42 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: ({
+    viewport,
     showButton,
+    showSignatories,
+    showInformation,
+    showComment,
+    showDocuments,
+    signatoryType = "partial",
     buttonLabel,
+    comment,
     signatoriesCount = 2,
     infoCount = 2,
     documentsCount = 2,
     ...args
   }) => (
-    <Event
-      {...args}
-      buttonLabel={showButton ? buttonLabel : undefined}
-      signatories={SIGNATORY_POOL.slice(0, signatoriesCount)}
-      info={INFO_POOL.slice(0, infoCount)}
-      documents={DOCUMENT_POOL.slice(0, documentsCount)}
-    />
+    <PseudoBox viewport={viewport} className="w-full">
+      <Event
+        {...args}
+        buttonLabel={showButton ? buttonLabel : undefined}
+        comment={showComment ? comment : undefined}
+        // Свойство `Type` вложенного Signatories задаёт статус первой
+        // строки — остальные остаются как в примере.
+        signatories={
+          showSignatories
+            ? SIGNATORY_POOL.slice(0, signatoriesCount).map((item, index) =>
+                index === 0
+                  ? { ...item, status: SIGNATORY_STATUS[signatoryType] }
+                  : item
+              )
+            : undefined
+        }
+        info={showInformation ? INFO_POOL.slice(0, infoCount) : undefined}
+        documents={
+          showDocuments ? DOCUMENT_POOL.slice(0, documentsCount) : undefined
+        }
+      />
+    </PseudoBox>
   ),
 }
 

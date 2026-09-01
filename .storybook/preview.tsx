@@ -7,9 +7,23 @@ const preview: Preview = {
   parameters: {
     controls: {
       matchers: {
-       color: /(background|color)$/i,
+       // Матчера на цвет тут нет намеренно. Штатный `/(background|color)$/i`
+       // цепляется за ИМЯ пропа и подсовывает пипетку каждому `…Color` /
+       // `…Background` — а в ките это не свободные цвета, а перечисления
+       // токенов (`tagColor`, `countColor`, Tag `color`) и даже булев
+       // `greyBackground`. Пипетка им не подходит, и на каждую такую историю
+       // аддон писал в консоль «Control of type color only supports string,
+       // received "union"/"boolean"». Значения выбираются списком, см.
+       // `optionsArgType` в src/stories/figma-props.tsx.
        date: /Date$/i,
       },
+      // Дизайн-чек Storybook (Аня Багрова): панель контролов сверяется со
+      // «Свойствами компонента» в Figma, а обработчики и `className` —
+      // детали реализации, свойствами макета они не являются и только
+      // засоряют список. Прячем их разом по всей сборке, а не в каждой
+      // истории (`on[A-Z]…` — обработчики, `className`/`style` — вёрстка,
+      // `ref`/`children` Storybook и так не показывает контролом).
+      exclude: /^(on[A-Z].*|className|style)$/,
     },
 
     a11y: {

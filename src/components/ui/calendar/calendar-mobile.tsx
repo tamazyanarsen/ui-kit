@@ -21,6 +21,7 @@ interface CalendarMobileProps {
   onClose?: () => void
   className?: string
   footer: boolean
+  showSecondaryButton?: boolean
   onReset?: () => void
   onApply?: () => void
 
@@ -47,6 +48,7 @@ function CalendarMobile({
   onClose,
   className,
   footer,
+  showSecondaryButton = true,
   onReset,
   onApply,
   today,
@@ -213,7 +215,14 @@ function CalendarMobile({
       <Scrollbar ref={sheetScrollRef} className="flex flex-1 flex-col gap-6">
         {renderSheetBody()}
       </Scrollbar>
-      {footer && <CalendarFooter compact onReset={onReset} onApply={onApply} />}
+      {footer && (
+        <CalendarFooter
+          compact
+          showSecondary={showSecondaryButton}
+          onReset={onReset}
+          onApply={onApply}
+        />
+      )}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
-import { ChevronDown, CircleUser, Settings, Wallet } from "@/icons"
+import { Admin, ChevronDown, CircleUser, Wallet } from "@/icons"
 import { cn } from "@/lib/utils"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 
@@ -28,14 +28,21 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
             // `Wallet (ELK)` — плитка 88×64 (шире соседних 56, потому что
             // несёт иконку + шеврон), поэтому ширина своя, а не из
             // HEADER_ICON_TILE_ACCENT; реакция на курсор — общая для панели.
-            className={cn(HEADER_ICON_TILE_ACCENT, "w-22 gap-0.5")}
+            //
+            // Дизайн-чек Storybook (Аня Багрова) №2: «отступ от иконки
+            // кошелька до шеврона должен быть 16 px». В мастере `Wallet
+            // Header (ELK)` (70303:48864) — `gap-[16px] px-[16px] py-[20px]`,
+            // что и даёт 16 + 24 + 16 + 16 + 16 = 88.
+            className={cn(HEADER_ICON_TILE_ACCENT, "w-22 gap-4")}
           />
         }
       >
         <Wallet size={24} aria-hidden="true" className="size-6" />
+        {/* Шеврон на наведении не перекрашивается — см. комментарий у
+            ProfileMenuTrigger: в макете его SVG одинаков в Default и Hover. */}
         <ChevronDown
           aria-hidden="true"
-          className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
+          className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-data-popup-open:rotate-180"
         />
       </MenuPrimitive.Trigger>
       <HeaderMenuPopup slot="header-document-menu-content">
@@ -81,15 +88,15 @@ function EmployeeUserMenu({
         </span>
         <ChevronDown
           aria-hidden="true"
-          className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
+          className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-data-popup-open:rotate-180"
         />
       </MenuPrimitive.Trigger>
       <HeaderMenuPopup slot="header-employee-menu-content">
         <MenuPrimitive.Item
           onClick={onSettingsClick}
-          className="flex cursor-default items-center gap-2 rounded-xl px-3 py-2.5 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+          className="flex w-full cursor-default items-center gap-2 p-4 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
         >
-          <Settings size={24} aria-hidden="true" className="size-6 shrink-0" />
+          <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
           Профиль и настройки
         </MenuPrimitive.Item>
       </HeaderMenuPopup>

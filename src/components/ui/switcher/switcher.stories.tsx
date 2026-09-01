@@ -1,8 +1,12 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
-import { ViewportScope, type Viewport } from "@/lib/viewport"
+import {
+  StatesMatrix,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
+
 
 import { Switcher, type SwitcherProps } from "./switcher"
 
@@ -23,9 +27,15 @@ const ITEM_POOL = [
   { value: "done", label: "Завершённые", badge: 3 },
   { value: "draft", label: "Черновики" },
   { value: "archive", label: "Архив" },
+  { value: "sent", label: "Отправленные" },
+  { value: "rejected", label: "Отклонённые" },
+  { value: "signed", label: "Подписанные" },
 ]
 
-const ITEM_COUNTS = [1, 2, 3, 4, 5] as const
+/* Свойство `Volume` вложенного `Cell Switcher Value` — от 2 до 8 ячеек
+   (дизайн-чек Storybook (Аня Багрова) №22). Раньше список обрывался на
+   пяти, и верхние значения макета проверить было нечем. */
+const ITEM_COUNTS = [2, 3, 4, 5, 6, 7, 8] as const
 type ItemCount = (typeof ITEM_COUNTS)[number]
 
 const ITEMS = ITEM_POOL.slice(0, 3)
@@ -36,64 +46,81 @@ const SWITCHER_TYPES = ["Text", "Text Badge", "Text Status", "Icon"] as const
 type SwitcherType = (typeof SWITCHER_TYPES)[number]
 
 type PlaygroundArgs = SwitcherProps & {
-  viewport?: Viewport
   itemsCount?: ItemCount
   figmaType?: SwitcherType
 }
+
+const CELL_VALUE = { table: { category: "Cell Switcher Value" } }
+const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   title: "Компоненты/Cell Switcher",
   component: Switcher,
   parameters: { layout: "padded" },
   argTypes: {
-    size: { control: "inline-radio", options: ["lg", "md"] },
-    activeVariant: { control: "inline-radio", options: ["surface", "black"] },
-    greyBackground: { control: "boolean" },
-    showMore: { control: "boolean" },
-    disabled: { control: "boolean" },
+    /* Дизайн-чек Storybook (Аня Багрова) №22: панель приведена к «Свойствам
+       компонента» — Size, Grey Background и вложенный `Cell Switcher Value`
+       со своими Volume и Show More.
+
+       `Size` здесь — не ViewportScope: у компонента нет `desktop:`-классов,
+       формы задаёт собственный проп `size` (Large/Medium), который тот же
+       лист макета подписывает Desktop/Mobile. */
+    size: optionsArgType(
+      "Size",
+      { lg: "Desktop", md: "Mobile" },
+      "inline-radio"
+    ),
+    greyBackground: toggleArgType("Grey Background"),
     itemsCount: {
-      name: "Количество вкладок",
-      control: "select",
-      options: ITEM_COUNTS,
+      ...optionsArgType<ItemCount>(
+        "Volume",
+        Object.fromEntries(ITEM_COUNTS.map((n) => [n, String(n)])) as Record<
+          ItemCount,
+          string
+        >
+      ),
+      ...CELL_VALUE,
     },
+    showMore: {
+      ...toggleArgType(
+        "Show More",
+        "Ячейки, которые не помещаются в строку, сворачиваются в «…». Видно на больших значениях Volume — на двух-трёх ячейках сворачивать нечего"
+      ),
+      ...CELL_VALUE,
+    },
+    activeVariant: {
+      name: "Active Black",
+      control: "inline-radio",
+      options: ["surface", "black"],
+      ...CONTENT,
+    },
+    disabled: { control: "boolean", ...CONTENT },
     items: { table: { disable: true } },
     figmaType: {
       name: "Type",
       control: "inline-radio",
       options: SWITCHER_TYPES,
       description: "Оформление вкладки: текст, со счётчиком, со статусом или с иконкой",
+      ...CONTENT,
     },
     defaultValue: {
       control: "select",
       options: ITEM_POOL.map((i) => i.value),
+      ...CONTENT,
     },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
+    value: { table: { disable: true } },
   },
   args: {
     items: ITEMS,
-    itemsCount: 3,
+    itemsCount: 5,
     figmaType: "Text",
     size: "lg",
     activeVariant: "surface",
     greyBackground: true,
-    showMore: false,
+    showMore: true,
     disabled: false,
     defaultValue: "all",
-    viewport: "auto" as Viewport,
   },
-  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
-  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
-  // для всех историй файла — в матрицах она не мешает: там форму задаёт
-  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
-  decorators: [
-    (Story, context) => (
-      <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>
-        <Story />
-      </ViewportScope>
-    ),
-  ],
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -122,12 +149,21 @@ export const Playground: Story = {
       ? args.defaultValue
       : items[0]?.value
     return (
-      <Controlled
-        key={`${defaultValue}-${itemsCount}`}
-        {...args}
-        items={items}
-        defaultValue={defaultValue}
-      />
+      // Дизайн-чек Storybook (Аня Багрова) №21: «не работает настройка
+      // Show More». Сворачивание в «…» включается переполнением строки, а на
+      // голом холсте `layout: padded` три вкладки помещались всегда — по
+      // контролу ничего не происходило. Теперь ряд стоит в контейнере
+      // фиксированной ширины, и на больших Volume «…» действительно
+      // появляется, а выключенный Show More показывает все ячейки.
+      <div className="w-[560px] max-w-full">
+        <Controlled
+          key={`${defaultValue}-${itemsCount}`}
+          {...args}
+          className="flex w-full"
+          items={items}
+          defaultValue={defaultValue}
+        />
+      </div>
     )
   },
 }

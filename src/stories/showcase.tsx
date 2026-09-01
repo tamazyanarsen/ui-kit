@@ -18,6 +18,42 @@ export function StoryShowcase({
   )
 }
 
+/**
+ * Прокручиваемая «контентная область» — подставка под закреплённые снизу
+ * панели (Button Menu, Button Menu Black): `sticky bottom-0` прижимает их к
+ * низу именно прокручиваемого контейнера, на голом холсте закрепление не
+ * увидеть.
+ *
+ * Дизайн-чек Storybook (Аня Багрова) №11–13, №15: раньше такая подставка в
+ * каждой истории писалась своя и с фиксированной шириной (`w-[640px]` /
+ * `w-[720px]`) и полным скруглением (`rounded-2xl` + `overflow-y-auto`).
+ * Отсюда были оба замечания — «компонент не растягивается по ширине
+ * контентной области» и «нижние углы компонента имеют скругления»: панель и
+ * тогда была `w-full` со скруглением только сверху, обрезала её обвязка.
+ */
+export function StoryContentArea({
+  height,
+  children,
+  className,
+}: {
+  /** Высота области, например `h-72` — от неё зависит, будет ли прокрутка. */
+  height: string
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={cn(
+        "flex w-full flex-col overflow-y-auto rounded-t-2xl border border-b-0 border-[var(--divider)]",
+        height,
+        className
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+
 export function StorySection({
   title,
   description,

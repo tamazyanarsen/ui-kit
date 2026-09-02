@@ -1,11 +1,6 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Picture } from "@/lib/picture"
-import errorIllustrationAvif from "@/assets/error-page/error-illustration.avif"
-import errorIllustrationWebp from "@/assets/error-page/error-illustration.webp"
-import noCodeMascotAvif from "@/assets/error-page/no-code-mascot.avif"
-import noCodeMascotWebp from "@/assets/error-page/no-code-mascot.webp"
 
 /**
  * Image Error (ELK) — иллюстрация страницы ошибки.
@@ -34,6 +29,13 @@ import noCodeMascotWebp from "@/assets/error-page/no-code-mascot.webp"
  * Всё в процентах от контейнера, поэтому блок масштабируется вместе с
  * ним — мобильный вариант в макете это ровно тот же кадр шириной 328px
  * (нода 48696:4521).
+ *
+ * Обе картинки приходят фоном из CSS (классы `.error-page-illustration-image`
+ * и `.error-page-mascot-image`), а не через `<img>`: в «Старом ЕЛК» карабин и
+ * маскот зелёные (нода 70340:718 «old image for error page»), и выбор версии
+ * должен остаться в CSS-теме, как у `.nps-done-image`, — иначе логику темы
+ * пришлось бы дублировать в JS. Геометрия зелёных ассетов совпадает с
+ * голубыми пиксель в пиксель, поэтому раскладка ниже от темы не зависит.
  */
 
 /* Цифры — ровно те пути, что отдаёт Figma (assets 4e20187e / fdf1b2f8),
@@ -105,12 +107,9 @@ function ErrorPageIllustration({
         data-type="image"
         className={cn("relative w-full overflow-hidden", className)}
       >
-        <Picture
-          avif={noCodeMascotAvif}
-          webp={noCodeMascotWebp}
-          alt=""
-          aria-hidden="true"
-          className="mx-auto block h-40 w-auto"
+        <div
+          role="presentation"
+          className="error-page-mascot-image mx-auto block aspect-[700/484] h-40 bg-contain bg-center bg-no-repeat"
         />
       </div>
     )
@@ -127,12 +126,9 @@ function ErrorPageIllustration({
         className
       )}
     >
-      <Picture
-        avif={errorIllustrationAvif}
-        webp={errorIllustrationWebp}
-        alt=""
-        aria-hidden="true"
-        className="absolute max-w-none"
+      <div
+        role="presentation"
+        className="error-page-illustration-image absolute bg-contain bg-center bg-no-repeat"
         style={{ left: "19.07%", top: "-17.21%", width: "65.59%", height: "114.34%" }}
       />
       {/* Левая цифра — четвёрка в обоих кодах. */}

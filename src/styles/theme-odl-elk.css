@@ -259,8 +259,34 @@
   background-image: url("../assets/nps/done-illustration.webp");
 }
 
+/* Error Page: в старой теме карабин и маскот зелёные — нода 70340:718 «old
+   image for error page» в файле Ui-kit | Web LK. Это тот же 3D-кадр, что и
+   в текущей теме, перекрашенный, поэтому зелёные PNG собраны из исходных
+   растров той ноды и уложены в тот же холст, что и голубые (1600×1119 и
+   700×484, силуэт совпадает в пределах пикселя) — раскладка компонента от
+   темы не зависит.
+
+   Тусклый «призрак» инструментов, лежащий в макете отдельным слоем под
+   иллюстрацией, не переносился: в голубом ассете его тоже нет, а на фоне
+   #F8F8F8 (--error-page-bg) он практически не виден. */
+[data-product="odl-elk"] .error-page-illustration-image {
+  background-image: url("../assets/error-page/error-illustration-green.webp");
+}
+
+[data-product="odl-elk"] .error-page-mascot-image {
+  background-image: url("../assets/error-page/no-code-mascot-green.webp");
+}
+
 @supports (background-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"))) {
   [data-product="odl-elk"] .nps-done-image {
     background-image: image-set(url("../assets/nps/done-illustration.avif") type("image/avif"));
+  }
+
+  [data-product="odl-elk"] .error-page-illustration-image {
+    background-image: image-set(url("../assets/error-page/error-illustration-green.avif") type("image/avif"));
+  }
+
+  [data-product="odl-elk"] .error-page-mascot-image {
+    background-image: image-set(url("../assets/error-page/no-code-mascot-green.avif") type("image/avif"));
   }
 }

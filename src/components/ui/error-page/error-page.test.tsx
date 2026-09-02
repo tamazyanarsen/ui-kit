@@ -39,7 +39,9 @@ describe("ErrorPage", () => {
     const illustration = container.querySelector('[data-slot="error-page-illustration"]')
     expect(illustration).toHaveAttribute("data-type", "image")
     expect(illustration?.querySelectorAll("svg")).toHaveLength(0)
-    expect(container.querySelectorAll("img")).toHaveLength(1)
+    // Картинка — фон из CSS-темы, а не <img>: в «Старом ЕЛК» она зелёная,
+    // см. комментарий в illustration.tsx.
+    expect(illustration?.querySelector(".error-page-mascot-image")).toBeInTheDocument()
   })
 
   it("renders the action button and calls onButtonClick", async () => {

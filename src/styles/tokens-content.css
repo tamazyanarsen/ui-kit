@@ -219,8 +219,29 @@
   background-image: url("../assets/nps/done-illustration-blue.webp");
 }
 
+/* Иллюстрации Error Page — по той же схеме и по той же причине: в «Старом
+   ЕЛК» карабин и маскот зелёные (нода 70340:718), поэтому картинка приходит
+   классом из темы, а не импортом в компоненте. Кадр у зелёной и голубой
+   версии совпадает пиксель в пиксель, так что раскладка в illustration.tsx
+   одна на обе темы. */
+.error-page-illustration-image {
+  background-image: url("../assets/error-page/error-illustration.webp");
+}
+
+.error-page-mascot-image {
+  background-image: url("../assets/error-page/no-code-mascot.webp");
+}
+
 @supports (background-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"))) {
   .nps-done-image {
     background-image: image-set(url("../assets/nps/done-illustration-blue.avif") type("image/avif"));
+  }
+
+  .error-page-illustration-image {
+    background-image: image-set(url("../assets/error-page/error-illustration.avif") type("image/avif"));
+  }
+
+  .error-page-mascot-image {
+    background-image: image-set(url("../assets/error-page/no-code-mascot.avif") type("image/avif"));
   }
 }

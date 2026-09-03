@@ -46,6 +46,10 @@
       "types": "./dist/components/ui/banner/index.d.ts",
       "import": "./dist/components/ui/banner/index.js"
     },
+    "./block-widget": {
+      "types": "./dist/components/ui/block-widget/index.d.ts",
+      "import": "./dist/components/ui/block-widget/index.js"
+    },
     "./button": {
       "types": "./dist/components/ui/button/index.d.ts",
       "import": "./dist/components/ui/button/index.js"

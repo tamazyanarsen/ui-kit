@@ -48,6 +48,24 @@
   --card-box-title-fg: var(--grey-1514);
   --card-box-divider: var(--divider);
 
+  /* Block Widget tokens — `ELK / block-widget (solid)` (сет 70343:13144) и
+     `ELK / block-widget (border)` (сет 70343:13300), Version 1.0.0,
+     Release 67.32.
+
+     Два сета, а не одно свойство с двумя значениями: у сплошного есть
+     состояние `State=Hover`, у обводки его нет вовсе — то есть сплошной
+     умеет быть кликабельным, а обводка это всегда статичная рамка.
+
+     Заливка Grey 106 → Grey 114 на наведении (та же ступень, что у
+     Accordion Card). Обводка — общий `--divider` (#DEDEDE): это кромка
+     блока, но рисуется она тем же серым, и заводить под неё вторую
+     переменную незачем. */
+  --block-widget-bg: var(--grey-106);
+  --block-widget-bg-hover: var(--grey-114);
+  --block-widget-border: var(--divider);
+  --block-widget-title-fg: var(--grey-1514);
+  --block-widget-muted-fg: var(--grey-284);
+
   /* Card tokens (bank-card list row). Values pixel-sampled directly from
      ui/card/card@2x.png + card@2x-1.png (Figma export) — row bg/hover
      confirmed as exact Grey 106 / Grey 114, title as Grey 1514, and the

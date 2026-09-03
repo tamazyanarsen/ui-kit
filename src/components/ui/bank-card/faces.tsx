@@ -229,7 +229,7 @@ function CardBack({
             onToggle={() => onToggleReveal("cvc")}
             className="w-[72px] shrink-0"
           />
-          <span className="text-p3-medium text-[#999]">CVC/CVV</span>
+          <span className="text-p3-medium text-[var(--bank-card-meta-fg)]">CVC/CVV</span>
         </div>
       </div>
 
@@ -237,7 +237,7 @@ function CardBack({
         <span className="w-full text-p4-regular text-white uppercase">
           {cardholderName}
         </span>
-        <span className="text-p3-medium text-[#999]">до {expiry}</span>
+        <span className="text-p3-medium text-[var(--bank-card-meta-fg)]">до {expiry}</span>
       </div>
     </div>
   )

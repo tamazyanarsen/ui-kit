@@ -1,3 +1,4 @@
+import type * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
@@ -49,17 +50,22 @@ const ICON_OPTIONS: Record<string, IssueIcon | undefined> = {
 
 type PlaygroundArgs = Omit<IssueItemProps, "icon"> & {
   viewport?: Viewport
-  iconName?: string
+  /** Контрол выбирает глиф ПО ИМЕНИ, а компонент принимает компонент. */
+  icon?: string
 }
 
 const meta = {
   title: "Компоненты/Issue Item",
-  component: IssueItem,
+  // Контрол `Значок` называется `icon` — как проп компонента, иначе сверка
+  // «все ли пропы выведены в Controls» его не засчитывает. Но выбирает он
+  // ИМЯ глифа, а компонент принимает сам глиф, поэтому типы у аргумента и у
+  // пропа расходятся — отсюда приведение.
+  component: IssueItem as unknown as React.ComponentType<PlaygroundArgs>,
   parameters: { layout: "padded" },
   argTypes: {
     viewport: sizeArgType,
     status: optionsArgType("Status", STATUS_LABELS),
-    iconName: {
+    icon: {
       name: "Значок",
       description:
         "Слот значка — наша надстройка сверх сета. Цвет остаётся статусным: смысл несёт он, а слот говорит, о ЧЁМ проблема",
@@ -71,7 +77,7 @@ const meta = {
   args: {
     viewport: "desktop" as Viewport,
     status: "error" as IssueStatus,
-    iconName: "icon / alert (по умолчанию)",
+    icon: "icon / alert (по умолчанию)",
     children: "Не заполнено обязательное поле «ИНН организации»",
   },
 } satisfies Meta<PlaygroundArgs>
@@ -80,9 +86,9 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ viewport, iconName, ...args }) => (
+  render: ({ viewport, icon, ...args }) => (
     <PseudoBox viewport={viewport}>
-      <IssueItem {...args} icon={ICON_OPTIONS[iconName ?? ""]} />
+      <IssueItem {...args} icon={ICON_OPTIONS[icon ?? ""]} />
     </PseudoBox>
   ),
 }

@@ -81,6 +81,16 @@
   --card-thumb-bg: var(--grey-1514);
   --card-thumb-fg: var(--white-101);
 
+  /* Лицевая сторона банковской карты (ui/bank-card). Служебные подписи на
+     тёмном пластике — «CVC/CVV», «до 09/28» — Grey 284; в коде стояли
+     литералом `#999`, из-за чего не ехали вместе с темой. */
+  --bank-card-meta-fg: var(--grey-284);
+
+  /* Баннер (ui/banner). Цветные подложки бледные, поэтому светлый текст
+     нужен только чёрному варианту. Стояло литералом `#252628`. */
+  --banner-fg: var(--grey-1514);
+  --banner-fg-inverse: var(--white-101);
+
   /* Progress Bar tokens. Values pixel-sampled directly from
      ui/progress-bar/progress bar@2x.png + @2x-1.png (Figma export). The
      step-wizard fill (#2FCEEF) is an exact match for --btn-primary-bg-hover

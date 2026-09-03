@@ -63,7 +63,9 @@ export function bannerBackgroundImage(size: BannerSize, color: BannerColor) {
 // variant needs light text — matches the four color-row instances in the
 // "Colored banner" spec section exactly.
 export function bannerForegroundClassName(color: BannerColor) {
-  return color === "black" ? "text-white" : "text-[#252628]"
+  return color === "black"
+    ? "text-[var(--banner-fg-inverse)]"
+    : "text-[var(--banner-fg)]"
 }
 
 export const bannerVariants = cva("relative flex bg-cover", {

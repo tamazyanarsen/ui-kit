@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Comment } from "@/icons"
+import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 
 import { RightElement, type RightElementType } from "./right-element"
@@ -62,16 +62,19 @@ function DefaultThumbnail() {
     // `Thumbnail` component (ui/thumbnail) — was a small rounded-full
     // circle, which doesn't match that convention.
     //
-    // ⚠️ Глиф — `comment` (пузырь с чёрточками), а НЕ `more`/`message`.
-    // Имя ноды в макете врёт, содержимое — нет: плашка подписана
-    // `icon / more` (это имя мастера сета), а рисует она ассет с именем
-    // `imgIconComment`. Смотреть надо на имя ассета, а не на подпись слоя —
-    // ровно на этом мы и поставили сюда многоточие.
+    // ⚠️ Глиф заглушки — `icon / more` (многоточие), и менять его на
+    // `comment` НЕ НУЖНО. Проверено вектором: ассет мастера
+    // (`ELK / thumbnail` внутри 31845:82855) — это ровно три точки.
+    //
+    // Замечание «значок в рекомендациях: message → comment» относится не к
+    // умолчанию компонента, а к КОНКРЕТНОЙ строке на экране отчётов, где
+    // плашка переопределена инстансом. Судить о глифе по имени слоя нельзя
+    // ни в ту, ни в другую сторону — только по скачанному вектору.
     <span
       aria-hidden="true"
       className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
     >
-      <Comment size={24} className="size-6" />
+      <Ellipsis size={24} className="size-6" />
     </span>
   )
 }
@@ -150,7 +153,12 @@ function Item({
           </span>
         )}
 
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
+        {/* ⚠️ Прижата к верху ПЛАШКА, а текст остаётся по центру: в мастере
+            (31845:82859) колонка содержимого — `self-stretch justify-center`.
+            Разница видна только у короткого содержимого: рядом с плашкой 48
+            однострочное значение 24 должно стоять по её центру, а не по
+            верхней кромке. */}
+        <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 self-stretch">
           <span className="flex min-w-0 flex-col">
             {text && (
               <span className={cn("truncate text-p2-medium", valueColor)}>

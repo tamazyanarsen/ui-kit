@@ -41,7 +41,7 @@ function CreateMenu({ items = [], className }: CreateMenuProps) {
               type="button"
               data-slot="header-create-menu-item"
               onClick={item.onClick}
-              className="flex h-38 w-40 min-h-36 min-w-36 shrink-0 cursor-pointer flex-col items-start gap-4 rounded-[16px] bg-[var(--header-menu-tile-bg)] p-4 text-left outline-none transition-colors hover:bg-[var(--header-item-hover-bg)]"
+              className="flex h-38 w-40 min-h-36 min-w-36 shrink-0 cursor-pointer flex-col items-start gap-4 rounded-[16px] bg-[var(--header-menu-tile-bg)] p-4 text-left outline-none transition-colors focus-visible:focus-ring hover:bg-[var(--header-item-hover-bg)]"
             >
               {item.icon && (
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--header-menu-tile-icon-bg)] p-3 text-[var(--header-icon-fg)] [&_svg]:size-6">

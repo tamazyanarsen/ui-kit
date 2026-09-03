@@ -22,6 +22,9 @@ from pathlib import Path
 SKIP = {
     "className",
     "containerClassName",
+    # Тот же класс, что и два выше: лазейка под стили конкретного места
+    # применения, а не свойство компонента — контролом её выводить незачем.
+    "contentClassName",
     "children",
     "ref",
     "key",

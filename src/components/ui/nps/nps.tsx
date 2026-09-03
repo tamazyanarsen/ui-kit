@@ -1,10 +1,10 @@
 import * as React from "react"
 
-import { X } from "@/icons"
 import { cn } from "@/lib/utils"
 
 import { FeedbackPanel } from "./feedback-panel"
 import { StarRating } from "./rating"
+import { CloseCross } from "@/components/ui/close-cross"
 
 // NPS — "Обратная связь": a feedback card (5-star rating → comment + quick-
 // reply chips → submit → "Спасибо за оценку" done state). Per spec the
@@ -67,19 +67,13 @@ function CloseButton({
   className?: string
 }) {
   return (
-    <button
-      type="button"
-      aria-label="Закрыть"
+    /* Figma's NPS card closes with `icon / close cross` at 24px
+       (node 64534:44748). */
+    <CloseCross
+      size={24}
       onClick={onClose}
-      className={cn(
-        "shrink-0 cursor-pointer text-[var(--nps-close-fg)] outline-none",
-        className
-      )}
-    >
-      {/* Figma's NPS card closes with `icon / close cross` at 24px
-          (node 64534:44748). */}
-      <X size={24} aria-hidden="true" className="size-6" />
-    </button>
+      className={cn("text-[var(--nps-close-fg)]", className)}
+    />
   )
 }
 

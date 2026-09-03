@@ -49,7 +49,7 @@ function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
       data-active={active || undefined}
       onClick={item.onClick}
       className={cn(
-        "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none transition-colors hover:text-[var(--header-hover-fg)]",
+        "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
         active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
       )}
     >
@@ -91,7 +91,7 @@ function NavOverflow({ items }: { items: HeaderNavItem[] }) {
             // Раскрытое «Ещё» — брендового цвета вместе с шевроном (макет
             // «Свёрнутое меню — избранные разделы уходят в „Ещё“», нода
             // 70303:58398).
-            className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
+            className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
           />
         }
       >

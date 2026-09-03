@@ -1,4 +1,4 @@
-import { ChevronDown, X } from "@/icons"
+import { ChevronUp, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -86,6 +86,18 @@ interface ChipsProps {
    * выключен.
    */
   showSelect?: boolean
+  /**
+   * Панель, которую открывает эта чипса, СЕЙЧАС РАСКРЫТА.
+   *
+   * Признак раскрытия обязателен: шеврон не переворачивался не из-за CSS, а
+   * потому что компонент просто не знал, что панель открыта. Заодно это
+   * `aria-expanded` — без него чипса-триггер молчит о своём состоянии.
+   *
+   * Сквозное правило кита: свёрнуто — вниз, развёрнуто — ВВЕРХ. Вправо или
+   * влево шеврон разворачивания не смотрит никогда, даже там, где в сете он
+   * нарисован вбок.
+   */
+  open?: boolean
   count?: number
   closable?: boolean
   onRemove?: () => void
@@ -108,6 +120,7 @@ function Chips({
   subtitle,
   icon,
   showSelect = false,
+  open = false,
   count,
   closable = false,
   onRemove,
@@ -125,6 +138,8 @@ function Chips({
       data-type={type}
       data-selected={selected || undefined}
       data-disabled={disabled || undefined}
+      data-open={(showSelect && open) || undefined}
+      aria-expanded={showSelect ? open : undefined}
       className={cn(
         // Design-check #14: rounded-2xl (18px on this kit's custom radius
         // scale) reads as a full pill at this height — the Figma source
@@ -185,10 +200,11 @@ function Chips({
           </span>
         )}
         {showSelect && (
-          <ChevronDown
+          <ChevronUp
             aria-hidden="true"
             className={cn(
-              "size-4 shrink-0",
+              "size-4 shrink-0 transition-transform duration-150 ease-out",
+              !open && "rotate-180",
               disabled
                 ? "text-[var(--chips-disabled-fg)]"
                 : "text-[var(--chips-fg)]"
@@ -202,7 +218,7 @@ function Chips({
             disabled={disabled}
             onClick={onRemove}
             className={cn(
-              "ml-auto shrink-0 outline-none",
+              "ml-auto shrink-0 outline-none focus-visible:focus-ring",
               disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-fg)]"
             )}
           >

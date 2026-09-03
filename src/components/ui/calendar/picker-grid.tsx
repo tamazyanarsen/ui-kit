@@ -52,7 +52,7 @@ function PickerGrid<T extends string | number>({
             type="button"
             onClick={() => onSelect(value)}
             className={cn(
-              "flex items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
+              "flex items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:focus-ring",
               size === "mobile" ? "h-12" : "h-9",
               isSelected
                 ? "bg-[var(--calendar-selected-bg)] text-[var(--calendar-selected-fg)]"

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { X } from "@/icons"
+import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -126,14 +126,10 @@ function Informer({
             gap was 12px instead of 16. */}
         {showCross && (
           <span className="flex shrink-0 items-center py-1">
-            <button
-              type="button"
-              aria-label="Закрыть"
+            <CloseCross
               onClick={onClose}
-              className="flex text-[var(--informer-title-fg)] outline-none"
-            >
-              <X aria-hidden="true" className="size-4" />
-            </button>
+              className="text-[var(--informer-title-fg)]"
+            />
           </span>
         )}
       </div>

@@ -101,7 +101,7 @@ function BankCard({
         }
       }}
       className={cn(
-        "relative cursor-pointer outline-none",
+        "relative cursor-pointer outline-none focus-visible:focus-ring",
         size === "mobile" ? "h-[160px] w-[254px]" : "h-[208px] w-[332px]",
         className
       )}

@@ -106,7 +106,7 @@ export function SelectTrigger({
                 event.stopPropagation()
                 onClear?.()
               }}
-              className="hidden text-[var(--select-icon-fg)] outline-none group-[&:not([data-placeholder])]/trigger:flex group-data-disabled/trigger:!hidden"
+              className="hidden text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring group-[&:not([data-placeholder])]/trigger:flex group-data-disabled/trigger:!hidden"
             >
               <X aria-hidden="true" className={SELECT_ICON_SIZE[size]} />
             </button>

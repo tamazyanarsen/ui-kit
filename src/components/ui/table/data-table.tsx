@@ -75,6 +75,8 @@ function DataTable<Row>({
   rowActions,
   columnSettings,
   resizable = false,
+  total,
+  gridLines = false,
   headMenu,
   empty,
   fixed = true,
@@ -168,6 +170,24 @@ function DataTable<Row>({
   const hasActionsField = columns.some((field) => field.type === "actions")
   const extraActions = rowActions && !hasActionsField
 
+  // Геометрия итоговой строки. `span` считается по КОЛОНКАМ конфига, а
+  // служебный столбец выбора добавляется сам: место применения про него не
+  // знает, он включается пропом `selectable`.
+  const totalSpanColumns = Math.min(
+    Math.max(total?.span ?? 1, 1),
+    columns.length
+  )
+  const totalLeadingSpan = totalSpanColumns + (selectable ? 1 : 0)
+  const totalTailColumns = columns.slice(totalSpanColumns)
+  // Первая ячейка живёт в левом закрепе только если он и правда закрывает
+  // ВСЕ перекрытые ею колонки — иначе она уезжала бы вместе с телом лишь
+  // частью себя.
+  const totalLeadingPin: TablePin | undefined =
+    selectionPin === "left" &&
+    columns.slice(0, totalSpanColumns).every((field) => field.pin === "left")
+      ? "left"
+      : undefined
+
   function handleRowClick(row: Row, key: string) {
     if (!onRowClick) return undefined
     return (event: React.MouseEvent<HTMLTableRowElement>) => {
@@ -183,6 +203,7 @@ function DataTable<Row>({
       <Table
         fixed={fixed}
         stickyHeader={stickyHeader}
+        gridLines={gridLines}
         className={className}
         containerClassName={containerClassName}
       >
@@ -282,6 +303,39 @@ function DataTable<Row>({
               )}
             </TableRow>
           ))}
+
+          {/* Итоговая строка. Стоит ПОСЛЕ строк данных и вне `visibleRows`,
+              поэтому сортировка, сворачивание и отбор её не трогают — они
+              работают только со списком `rows`. Внутри обычного `<tbody>`,
+              значит при горизонтальной прокрутке едет вместе с телом.
+
+              Первая ячейка перекрывает `span` ведущих колонок через
+              `colSpan`, дальше идут ячейки хвоста — по одной на колонку,
+              теми же типами и с тем же форматированием, что и в строках:
+              левые кромки чисел совпадают с одноимёнными шапками. */}
+          {total && (
+            <TableRow data-slot="table-total-row">
+              <TableCell
+                type="text"
+                pin={totalLeadingPin}
+                colSpan={totalLeadingSpan}
+                className="font-medium"
+              >
+                {total.label}
+              </TableCell>
+
+              {totalTailColumns.map((field) => (
+                <TableCell
+                  key={field.key}
+                  pin={field.pin}
+                  unitVariants={unitVariants[field.key]}
+                  {...fieldCellProps(field, total.row)}
+                />
+              ))}
+
+              {extraActions && <TableCell type="button" pin="right" />}
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 

@@ -66,7 +66,7 @@ function AccordionCard({
               // chevron instead of 24, H4 Mobile / P1 Medium Mobile type.
               // The 4px title↔subtitle gap and the 16px chevron are the same
               // in both forms.
-              "flex w-full flex-col gap-1 p-4 text-left outline-none transition-colors desktop:p-6 [&[data-panel-open]_svg]:rotate-180",
+              "flex w-full flex-col gap-1 p-4 text-left outline-none focus-visible:focus-ring transition-colors desktop:p-6 [&[data-panel-open]_svg]:rotate-180",
               blocked
                 ? "hover:bg-[var(--accordion-card-blocked-bg-hover)]"
                 : "hover:bg-[var(--accordion-card-bg-hover)]"

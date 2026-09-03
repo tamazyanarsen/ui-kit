@@ -78,6 +78,10 @@
       "types": "./dist/components/ui/chips/index.d.ts",
       "import": "./dist/components/ui/chips/index.js"
     },
+    "./close-cross": {
+      "types": "./dist/components/ui/close-cross/index.d.ts",
+      "import": "./dist/components/ui/close-cross/index.js"
+    },
     "./combobox": {
       "types": "./dist/components/ui/combobox/index.d.ts",
       "import": "./dist/components/ui/combobox/index.js"
@@ -141,6 +145,14 @@
     "./input": {
       "types": "./dist/components/ui/input/index.d.ts",
       "import": "./dist/components/ui/input/index.js"
+    },
+    "./issue-item": {
+      "types": "./dist/components/ui/issue-item/index.d.ts",
+      "import": "./dist/components/ui/issue-item/index.js"
+    },
+    "./issue-list": {
+      "types": "./dist/components/ui/issue-list/index.d.ts",
+      "import": "./dist/components/ui/issue-list/index.js"
     },
     "./item": {
       "types": "./dist/components/ui/item/index.d.ts",

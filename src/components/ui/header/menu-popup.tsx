@@ -19,7 +19,7 @@ import { Dropdown } from "@/components/ui/dropdown"
  * {@link HEADER_ICON_TILE_LOGOUT}.
  */
 const HEADER_ICON_TILE =
-  "group flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none transition-colors"
+  "group flex h-16 w-14 shrink-0 cursor-pointer items-center justify-center text-[var(--header-icon-fg)] outline-none focus-visible:focus-ring transition-colors"
 
 /**
  * Плитка, чей глиф на наведении становится брендовым, — обычный случай.

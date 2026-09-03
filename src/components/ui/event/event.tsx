@@ -230,7 +230,7 @@ function Event({
                   // the other three sides, so the 48px tile lines up with
                   // the "Приложенные документы:" label above it — a uniform
                   // 4px inset pushed it out of that column.
-                  className="flex items-center gap-4 overflow-hidden rounded-[8px] pr-4 text-left outline-none"
+                  className="flex items-center gap-4 overflow-hidden rounded-[8px] pr-4 text-left outline-none focus-visible:focus-ring"
                 >
                   <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--event-file-bg)]">
                     {/* Figma nests the same `ELK / files` row here as File

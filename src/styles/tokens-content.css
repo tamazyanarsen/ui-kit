@@ -15,7 +15,7 @@
   --tabs-fg-disabled: var(--grey-166);
   --tabs-underline-hover: var(--grey-517);
   --tabs-underline-active: var(--grey-1514);
-  --tabs-border: var(--grey-134);
+  --tabs-border: var(--divider);
 
   /* Switcher tokens ("Cell Switcher", ui/switcher). Grey Solid/White Solid
      surface pair and Hover values are all histogram-confirmed exact
@@ -109,7 +109,7 @@
   --pagination-fg: var(--grey-1514);
   --pagination-caption-fg: var(--grey-284);
   --pagination-disabled-fg: var(--grey-284);
-  --pagination-border: var(--grey-134);
+  --pagination-border: var(--divider);
   --pagination-hover-bg: var(--blue-104);
   --pagination-active-bg: var(--blue-114);
   --pagination-onclick-bg: var(--blue-121);
@@ -134,7 +134,7 @@
      fill="#999999", not near-black; the disabled variant's own asset is
      fill="#C8C8CB" (handled per-instance in item.tsx, not via this token). */
   --item-icon-fg: var(--grey-284);
-  --item-divider: var(--grey-134);
+  --item-divider: var(--divider);
   --item-hover-bg: var(--grey-114);
   /* Round-2 audit: was #80E3FF (the kit's pale-cyan surface color) — the
      literal "icon / check" asset in the item's own Right Element component
@@ -165,7 +165,7 @@
   --ifield-value-fg: var(--grey-1514);
   --ifield-subtext-fg: var(--grey-284);
   --ifield-icon-fg: var(--grey-284);
-  --ifield-divider: var(--grey-134);
+  --ifield-divider: var(--divider);
   --ifield-success-fg: var(--mint-230);
   --ifield-error-fg: var(--red-418);
   --ifield-attention-fg: var(--yellow-214);

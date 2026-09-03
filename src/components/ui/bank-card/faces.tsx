@@ -64,7 +64,7 @@ function RevealField({
           event.stopPropagation()
           onToggle()
         }}
-        className="flex shrink-0 cursor-pointer items-center justify-center text-white outline-none"
+        className="flex shrink-0 cursor-pointer items-center justify-center text-white outline-none focus-visible:focus-ring"
       >
         {revealed ? (
           <EyeOff aria-hidden="true" className="size-4" />
@@ -162,7 +162,7 @@ function CardFace({
               }}
               // "Показать реквизиты" sits in the same font-['Object_Sans:Medium']
               // "Balance" wrapper as the balance amount above it (52969:11715).
-              className="w-fit cursor-pointer text-p3-medium text-white outline-none hover:underline"
+              className="w-fit cursor-pointer text-p3-medium text-white outline-none focus-visible:focus-ring hover:underline"
             >
               Показать реквизиты
             </button>

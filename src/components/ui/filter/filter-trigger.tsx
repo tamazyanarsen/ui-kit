@@ -111,7 +111,7 @@ function TriggerAction({
         disabled={disabled}
         onMouseDown={(event) => event.stopPropagation()}
         onClick={onClear}
-        className={cn("outline-none", toneClass)}
+        className={cn("outline-none focus-visible:focus-ring", toneClass)}
       >
         <X aria-hidden="true" className={ICON_SIZE} />
       </button>
@@ -167,7 +167,7 @@ function FilterTrigger({
             // `asChip` look — its actual Figma source (the filter-table dark
             // pill, node 1303:99241) is `rounded-[16px]` on a ~32px box,
             // i.e. a capsule, not the plain Filter's `rounded-[8px]`.
-            "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+            "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:focus-ring data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
             // filter-table hugs its label (max-w only); the plain
             // chips-filter box keeps its own 80px floor and 8px radius.
             asChip ? "min-w-0" : "min-w-20 rounded-[8px]",

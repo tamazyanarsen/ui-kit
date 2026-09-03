@@ -3,10 +3,15 @@ import type { VariantProps } from "class-variance-authority"
 import { IMaskInput } from "react-imask"
 
 import { cn } from "@/lib/utils"
+import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
 
 import { AmountSuffix } from "./amount-suffix"
 import { FieldTooltip, useHoverTooltip } from "./hover-tooltip"
-import { getImaskProps, type MaskName } from "./mask"
+import {
+  MASK_GROUP_SEPARATORS,
+  getImaskProps,
+  type MaskName,
+} from "./mask"
 import { InputTrailingSlot, hasTrailingSlot } from "./trailing-slot"
 import { resolvePlaceholder, useMask } from "./use-mask"
 import {
@@ -125,12 +130,36 @@ function Input({
     onClear?.()
   }
 
+  // Разрядный пробел — отбивка по 3 разряда, а не символ значения, и в
+  // буфер он попадать не должен: «120 000 000,00 ₽» копируется как
+  // «120000000,00 ₽», знак валюты при этом ОСТАЁТСЯ — он часть значения.
+  //
+  // Обработчики ставятся только там, где маска объявила разделители: у
+  // свободного поля их нет вовсе (см. MASK_GROUP_SEPARATORS).
+  const copyWithoutSeparators = useCopyWithoutSeparators(
+    mask ? MASK_GROUP_SEPARATORS[mask] : undefined
+  )
+
   // Общие для обеих реализаций поля (нативной и маскированной) атрибуты.
+  // ⚠️ Заблокированное поле ПРИНИМАЕТ TAB.
+  //
+  // Нативный `disabled` убирает элемент из обхода клавиатурой полностью, и
+  // человек, идущий по форме табом, не узнаёт о существовании поля вовсе —
+  // ни его подписи, ни причины блокировки. Поэтому блокировка выражается
+  // парой `readOnly` + `aria-disabled`: редактировать нельзя, а дойти и
+  // прочитать — можно. Кольцо фокуса при этом обязательно (см. variants.ts):
+  // рамка у заблокированного поля своя и на фокус не реагирует.
+  //
+  // Следствие, о котором надо знать: значение такого поля УХОДИТ в нативную
+  // отправку формы (у `disabled` этого не происходило). Кит всюду
+  // управляемый, полезную нагрузку собирает приложение, — но если поле
+  // стоит в настоящей `<form>` с `name`, нужное поведение задаёт она.
   const fieldProps = {
+    ...copyWithoutSeparators,
     id: inputId,
     "data-slot": "input",
-    disabled,
-    readOnly: locked,
+    "aria-disabled": disabled || undefined,
+    readOnly: locked || disabled,
     placeholder: resolvedPlaceholder,
     "aria-invalid": invalid || undefined,
     "aria-describedby": captionId,

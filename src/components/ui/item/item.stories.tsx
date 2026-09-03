@@ -94,6 +94,12 @@ const meta = {
       control: "select",
       options: RIGHT_ELEMENTS,
     },
+    open: {
+      name: "Раскрыта",
+      control: "boolean",
+      description:
+        "Панель, которую раскрывает строка, сейчас открыта (Right Element = select): шеврон смотрит вверх и выставляется aria-expanded",
+    },
     subCategory: { name: "Sub Сategory", control: "boolean" },
     divider: { control: "boolean" },
     disabled: { name: "State: Disabled", control: "boolean" },
@@ -112,6 +118,7 @@ const meta = {
     value: "Перевод между счетами",
     rightElement: "navigation",
     showRightElement: true,
+    open: false,
     subCategory: false,
     disabled: false,
     showComment: true,

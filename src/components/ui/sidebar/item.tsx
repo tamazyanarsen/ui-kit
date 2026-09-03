@@ -72,7 +72,7 @@ function SidebarItem({
       data-active={active || undefined}
       aria-label={!open && typeof label === "string" ? label : undefined}
       className={cn(
-        "flex min-h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        "flex min-h-10 shrink-0 cursor-pointer items-center gap-4 rounded-[8px] text-p1-medium text-[var(--nav-sidebar-fg)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
         // Nested rows are `pl-[48px] pr-[8px] py-[8px]` in the master; 48
         // is exactly px-2 + a 24px icon + the 16px gap, so their labels
         // line up under the parent's.
@@ -146,7 +146,7 @@ function SidebarGroup({
         // Дизайн-чек 3/3 №23: та же область 40×40 с 8px отступа, что и у
         // обычного пункта в свёрнутой полосе (2314:30693) — `w-full` здесь
         // не помогал, потому что родитель сжат по содержимому.
-        "flex size-10 shrink-0 items-center justify-center rounded-[8px] p-2 text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
+        "flex size-10 shrink-0 items-center justify-center rounded-[8px] p-2 text-[var(--nav-sidebar-fg)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)]",
         className
       )}
     >
@@ -173,7 +173,7 @@ function SidebarGroup({
               // `p-[8px] items-start` trigger: a two-line label grows the
               // row downward and keeps the icon and chevron pinned to the
               // first line rather than re-centring them.
-              "flex min-h-10 w-full cursor-pointer items-start gap-4 rounded-[8px] p-2 text-left text-p1-medium text-[var(--nav-sidebar-fg)] outline-none transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
+              "flex min-h-10 w-full cursor-pointer items-start gap-4 rounded-[8px] p-2 text-left text-p1-medium text-[var(--nav-sidebar-fg)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--nav-sidebar-item-hover-bg)] data-active:bg-[var(--nav-sidebar-item-active-bg)] [&[data-panel-open]_[data-slot=sidebar-group-chevron]]:rotate-180",
               className
             )}
           >

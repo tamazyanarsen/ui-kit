@@ -6,6 +6,8 @@ import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
+import { GROUP_SPACES, formatSignSpacing } from "@/lib/number-format"
+import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
 
 interface RangeInputOwnProps {
   label?: React.ReactNode
@@ -40,6 +42,9 @@ function RangeInput({
   const errorText = typeof error === "boolean" ? null : error
   const caption = errorText ?? comment
   const hasCaption = Boolean(caption)
+  // Разрядный пробел — отбивка по 3 разряда, а не символ значения: в буфер
+  // уходит «5000000», а не «5 000 000».
+  const copyWithoutSeparators = useCopyWithoutSeparators(GROUP_SPACES)
 
   return (
     // Round-2 audit fix: outer gap was gap-1.5 (6px); the root component
@@ -89,8 +94,22 @@ function RangeInput({
               {label}
             </SliderPrimitive.Label>
           )}
+          {/* Значение проходит через общий модуль формата чисел, а не
+              отдаётся ICU как есть. Две правки, обе сквозные:
+
+              • отбивка знака НЕ одна на все — `%`, `‰`, `°` набираются
+                вплотную к числу («50%»), а знак валюты через неразрывный
+                пробел («1 200 000 ₽»). ICU для `ru-RU` отбивает пробелом
+                всё подряд;
+              • разрядный пробел приводится к одному символу: ICU в части
+                сборок отдаёт узкий неразрывный, и снятие разрядов при
+                копировании по нему промахивается.
+
+              Копирование значения ползунка разряды снимает: «5 000 000» →
+              «5000000» (см. `useCopyWithoutSeparators`). */}
           <SliderPrimitive.Value
             data-slot="range-input-value"
+            {...copyWithoutSeparators}
             className={cn(
               // Figma's desktop symbol (687:18395) gives Label = P3 Medium
               // 12/16 and Value = P1 Medium 16/24. Both were `leading-tight`
@@ -98,7 +117,13 @@ function RangeInput({
               "text-p2-medium text-[var(--range-input-value-fg)] desktop:text-p1-medium",
               disabled && "!text-[var(--range-input-value-fg-disabled)]"
             )}
-          />
+          >
+            {/* `formattedValues` — массив: у диапазона два конца. Склейка та
+                же, что у Base UI по умолчанию (тире с пробелами). */}
+            {(formattedValues) =>
+              formattedValues.map(formatSignSpacing).join(" – ")
+            }
+          </SliderPrimitive.Value>
           {/* Track sits ON the box's bottom border, not inside the padding —
               confirmed by pixel-cropping the anatomy raster: the thumb pill
               visibly straddles the border, half in/half out. Control is
@@ -147,7 +172,7 @@ function RangeInput({
                   // thumb staying #80E3FF; that darker blue belongs to the
                   // indicator permanently, not the thumb on hover (see
                   // Indicator above).
-                  "focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "focus-visible:focus-ring",
                   disabled && "!bg-[var(--range-input-accent-disabled)]",
                   invalid && "!bg-[var(--range-input-accent-error)]"
                 )}

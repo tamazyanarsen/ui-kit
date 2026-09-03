@@ -21,7 +21,7 @@
      getting its own pair. */
   --table-fg: var(--grey-1514);
   --table-description-fg: var(--grey-284);
-  --table-divider: var(--grey-134);
+  --table-divider: var(--divider);
   --table-row-hover-bg: var(--grey-114);
   --table-row-active-bg: var(--grey-124);
   --table-row-added-bg: var(--grey-114);
@@ -46,6 +46,15 @@
 
   --table-bg: var(--white-101);
   --table-number-positive-fg: var(--mint-230);
+
+  /* Знак у пояснения ячейки (`descriptionSign`) — дельта под значением.
+     Цветным должен быть только сам знак, а не весь комментарий, поэтому у
+     него своя тройка токенов, а не общий цвет строки пояснения. Ступени —
+     те же, что у статусов кита: зелёный положительной динамики совпадает с
+     `--table-number-positive-fg`, красный и жёлтый — с informer'ом. */
+  --table-sign-positive-fg: var(--mint-230);
+  --table-sign-negative-fg: var(--red-418);
+  --table-sign-attention-fg: var(--yellow-214);
   --table-summary-divider: var(--grey-166);
 
   /* Граница закреплённых колонок. Раньше здесь была тень (примитив кита
@@ -56,7 +65,7 @@
      закреп действительно ушёл контент. В сам кит правка приедет позже.
      Накладка, а не border: рамка забрала бы пиксель ширины закрепа, и
      шапка разъехалась бы с телом. */
-  --table-pin-divider: var(--grey-134);
+  --table-pin-divider: var(--divider);
 
   /* Собственная горизонтальная полоса прокрутки таблицы. В ките не
      нарисована — числа свои. Нативную пришлось выключить: она проходит ПОД

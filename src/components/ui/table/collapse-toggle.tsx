@@ -41,7 +41,7 @@ function TableCollapseToggle({
       // The glyph is already at full contrast, so a colour change would be
       // no focus indicator at all — it gets the kit's ring like every other
       // control in the table.
-      className="group/collapse relative flex shrink-0 cursor-pointer rounded-[4px] text-[var(--table-fg)] outline-none before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="group/collapse relative flex shrink-0 cursor-pointer rounded-[4px] text-[var(--table-fg)] outline-none before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] focus-visible:focus-ring"
     >
       <ChevronUp
         aria-hidden="true"

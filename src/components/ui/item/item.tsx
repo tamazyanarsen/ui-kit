@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Ellipsis } from "@/icons"
+import { Comment } from "@/icons"
 import { cn } from "@/lib/utils"
 
 import { RightElement, type RightElementType } from "./right-element"
@@ -38,6 +38,14 @@ interface ItemProps {
   onClick?: () => void
 
   rightElement?: RightElementType
+  /**
+   * Панель, которую раскрывает строка, СЕЙЧАС ОТКРЫТА (`rightElement="select"`).
+   *
+   * Признак раскрытия обязателен: шеврон не переворачивался не из-за CSS, а
+   * потому что компонент не знал, что панель открыта. Заодно это
+   * `aria-expanded` на самой строке.
+   */
+  open?: boolean
   informationText?: React.ReactNode
   rightText?: React.ReactNode
   toggleChecked?: boolean
@@ -53,11 +61,17 @@ function DefaultThumbnail() {
     // Design-check #35: square with a capped radius, like the kit's own
     // `Thumbnail` component (ui/thumbnail) — was a small rounded-full
     // circle, which doesn't match that convention.
+    //
+    // ⚠️ Глиф — `comment` (пузырь с чёрточками), а НЕ `more`/`message`.
+    // Имя ноды в макете врёт, содержимое — нет: плашка подписана
+    // `icon / more` (это имя мастера сета), а рисует она ассет с именем
+    // `imgIconComment`. Смотреть надо на имя ассета, а не на подпись слоя —
+    // ровно на этом мы и поставили сюда многоточие.
     <span
       aria-hidden="true"
       className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
     >
-      <Ellipsis size={24} className="size-6" />
+      <Comment size={24} className="size-6" />
     </span>
   )
 }
@@ -73,6 +87,7 @@ function Item({
   divider = true,
   onClick,
   rightElement = "none",
+  open = false,
   informationText,
   rightText,
   toggleChecked,
@@ -97,6 +112,8 @@ function Item({
       role="button"
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled || undefined}
+      aria-expanded={rightElement === "select" ? open : undefined}
+      data-open={(rightElement === "select" && open) || undefined}
       onClick={disabled ? undefined : onClick}
       onKeyDown={handleKeyDown}
       data-slot="item"
@@ -117,11 +134,16 @@ function Item({
         divider ? "border-[var(--item-divider)]" : "border-transparent",
         "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
         "data-[disabled]:cursor-not-allowed",
-        "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
+        "focus-visible:focus-ring-inset",
         className
       )}
     >
-      <span className="flex min-w-0 flex-1 items-center gap-4">
+      {/* ⚠️ `items-start`, а не `items-center`: плашка ПРИЖАТА К ВЕРХУ,
+          вровень с первой строкой значения (кит объявляет `items-start`) —
+          48 × 48 на top 16, радиус 8, фон Grey 106, значок 24. По центру
+          высоты строки она стояла только у однострочного значения, а на
+          двух строках уезжала вниз. */}
+      <span className="flex min-w-0 flex-1 items-start gap-4">
         {hasThumbnail && (
           <span className={cn("shrink-0", disabled && "opacity-50")}>
             {thumbnail === true ? <DefaultThumbnail /> : thumbnail}
@@ -159,6 +181,7 @@ function Item({
         <RightElement
           type={rightElement}
           disabled={disabled}
+          open={open}
           informationText={informationText}
           rightText={rightText}
           toggleChecked={toggleChecked}

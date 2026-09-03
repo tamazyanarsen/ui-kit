@@ -105,9 +105,14 @@ const meta = {
       table: { category: "Filter Options" },
     },
 
+    // Четвёртое булево свойство `ELK / table-top` (сет 51104:13311,
+    // Version 1.0.2, Release 67.31) — имя контрола как в панели «Свойства
+    // компонента», а не как слот в коде.
     showDetails: {
       control: "boolean",
-      name: "Сводка (Details)",
+      name: "Show Summary",
+      description:
+        "Постоянная нижняя строка шапки: подпись «Сводка» и лента пар «параметр: значение». Умолчание — выключено: дока кита называет её дополнительной функцией, наличие которой определяется при разработке продукта",
       table: { category: "Table Top" },
     },
   },
@@ -126,7 +131,7 @@ const meta = {
     showSelect: false,
     showSetting: true,
     showDownload: true,
-    showDetails: true,
+    showDetails: false,
   },
 } satisfies Meta<FullExampleProps>
 

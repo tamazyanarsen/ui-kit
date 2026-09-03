@@ -92,7 +92,7 @@ function FilterShell({
             onClear()
           }}
           className={cn(
-            "outline-none",
+            "outline-none focus-visible:focus-ring",
             disabled
               ? "text-[var(--filter-disabled-fg)]"
               : asChip
@@ -136,7 +136,7 @@ function FilterShell({
               data-slot="filter"
               data-disabled={disabled || undefined}
               className={cn(
-                "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:ring-3 not-data-popup-open:focus-visible:ring-ring/50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+                "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:focus-ring data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
                 asChip ? "min-w-20" : "min-w-20 rounded-[8px]",
                 triggerToneClass,
                 className

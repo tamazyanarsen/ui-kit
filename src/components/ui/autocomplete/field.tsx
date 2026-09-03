@@ -70,7 +70,7 @@ function AutocompleteField({
         {clearable && (
           <ComboboxPrimitive.Clear
             aria-label="Очистить поле"
-            className="shrink-0 text-[var(--input-icon-fg)] outline-none"
+            className="shrink-0 text-[var(--input-icon-fg)] outline-none focus-visible:focus-ring"
           >
             <X aria-hidden="true" className={INPUT_ICON_SIZE[size]} />
           </ComboboxPrimitive.Clear>

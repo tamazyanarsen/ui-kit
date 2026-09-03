@@ -111,7 +111,7 @@ function AccordionListItem({
             // accordion` начинается прямо от края (Top-фрейм x=0..719,
             // дети от x=0) — отступы даёт контентный блок страницы, в
             // который компонент вкладывается.
-            className="flex w-full cursor-pointer items-start gap-4 text-left outline-none transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
+            className="flex w-full cursor-pointer items-start gap-4 text-left outline-none focus-visible:focus-ring transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
           >
             {showCheckbox && (
               <span

@@ -36,6 +36,22 @@ interface TableProps extends React.ComponentProps<"table"> {
    * below a fixed site header.
    */
   stickyHeader?: boolean
+  /**
+   * Разлиновка — сетка тонких линий между ячейками.
+   *
+   * Отдельное свойство таблицы, а не умолчание: по умолчанию строки
+   * отделены только воздухом (замер двух эталонных рендеров показывает в
+   * пустой колонке ровно две линии #DEDEDE — под шапкой блока и под самой
+   * шапкой таблицы, между строками ни одной).
+   *
+   * ⚠️ Линии рисуются по МАРКЕРУ на таблице, а не селекторами вида
+   * `td:not(:first-child)`. Такие правила промахиваются мимо ячеек — первая
+   * ячейка бывает шевроном или чекбоксом, последняя филлером, — проигрывают
+   * по специфичности собственным правилам ячейки и попадают в уже занятый
+   * псевдоэлемент. Здесь занят только `::after` подвижной ячейки, а линия
+   * закрепа остаётся отдельным узлом.
+   */
+  gridLines?: boolean
   className?: string
   /** Styles the horizontally scrolling viewport that wraps the table. */
   containerClassName?: string
@@ -46,6 +62,7 @@ function Table({
   className,
   fixed = false,
   stickyHeader = false,
+  gridLines = false,
   containerClassName,
   containerRef,
   ...props
@@ -64,6 +81,9 @@ function Table({
         <div
           ref={innerRef}
           data-slot="table-container"
+          // См. `scrollbar.tsx`: окно прокрутки — фокусируемый узел без
+          // `tabindex`, кольцо ему выдаёт правило по этому маркеру.
+          data-scroll-window=""
           // `themed-scrollbar` оставлен ради ВЕРТИКАЛЬНОЙ полосы (её растит
           // липкая шапка с ограниченной высотой контейнера); горизонтальная
           // нативная погашена в styles/base.css — вместо неё своя, см.
@@ -76,6 +96,7 @@ function Table({
           <table
             data-slot="table"
             data-sticky-header={stickyHeader || undefined}
+            data-grid-lines={gridLines || undefined}
             className={cn(
               "w-full border-separate border-spacing-0 bg-[var(--table-bg)] text-p2-regular text-[var(--table-fg)]",
               fixed && "table-fixed",

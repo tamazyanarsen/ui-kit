@@ -10,6 +10,7 @@ import {
   TableBlock,
   TableColumnSettings,
   columnsFromFields,
+  selectableRowKeys,
   type TableField,
 } from "@/components/ui/table"
 import {
@@ -47,6 +48,10 @@ interface TableFieldsExampleProps {
   clickable?: boolean
   /** Пустой результат вместо строк. */
   empty?: boolean
+  /** Разлиновка — сетка линий между ячейками. */
+  gridLines?: boolean
+  /** Итоговая строка «Итого» под строками данных. */
+  total?: boolean
 }
 
 function TableFieldsExample({
@@ -60,6 +65,8 @@ function TableFieldsExample({
   resizable = true,
   clickable = true,
   empty = false,
+  gridLines = false,
+  total = false,
 }: TableFieldsExampleProps = {}) {
   const [selected, setSelected] = useState<string[]>([])
   const [approved, setApproved] = useState<Set<string>>(new Set(["1", "2"]))
@@ -99,6 +106,9 @@ function TableFieldsExample({
     return CONTRACTS.map(({ children: _children, ...row }) => row)
   }, [empty, nested])
 
+  // Ключи всех отобранных строк со всех страниц — считает блок, а не экран.
+  const allKeys = useMemo(() => selectableRowKeys(rows), [rows])
+
   const table = (
     <>
       {showTop && (
@@ -137,6 +147,40 @@ function TableFieldsExample({
         fields={fields}
         rows={rows}
         columnSettings={columns}
+        gridLines={gridLines}
+        /* Итоги — синтетическая «строка», а не запись данных: форматируются
+           теми же полями, что и колонки, поэтому «Сумма» печатается тем же
+           форматтером и с тем же знаком валюты, что и в строках. */
+        total={
+          total
+            ? {
+                label: "Итого",
+                span: 2,
+                /* Пусто везде, кроме числовых колонок: итог складывает
+                   суммы, а статус, плательщика и дату складывать не из
+                   чего. Пустое значение поле рисует прочерком. */
+                row: {
+                  id: "total",
+                  code: "",
+                  subject: "",
+                  account: "",
+                  status: "" as ContractRow["status"],
+                  payers: [],
+                  date: "",
+                  updatedAt: "",
+                  rate: 0,
+                  amount: rows.reduce((sum, row) => sum + row.amount, 0),
+                  unit: "₽",
+                  amountNote: "",
+                  approved: false,
+                  attachments: rows.reduce(
+                    (sum, row) => sum + row.attachments,
+                    0
+                  ),
+                } as ContractRow,
+              }
+            : undefined
+        }
         selectable={selectable}
         selectedKeys={selected}
         onSelectedKeysChange={setSelected}
@@ -159,14 +203,23 @@ function TableFieldsExample({
     <div className="flex flex-col gap-4">
       {block ? <TableBlock>{table}</TableBlock> : table}
       {selectable && selected.length > 0 && (
+        /* Разделение обязанностей массового выбора:
+           чекбокс шапки выбирает СТРАНИЦУ (видимые строки), а кнопка
+           «Выбрать на всех страницах (N)» — весь отбор. Число и ключи для
+           неё считает `selectableRowKeys` — ТА ЖЕ функция, которой таблица
+           набирает «выбрать все» внутри себя. Вторая копия расчёта здесь
+           разошлась бы молча: в кнопке одно число, выбралось бы другое. */
         <ButtonMenuBlack
           info={[
             {
               label: "Выбрано",
-              value: String(selected.length),
+              value: `${selected.length} из ${allKeys.length}`,
               className: "w-16",
             },
           ]}
+          selectAllPagesCount={allKeys.length}
+          selectedCount={selected.length}
+          onSelectAllPages={() => setSelected(allKeys)}
           onClose={() => setSelected([])}
         >
           <Button>Подписать и отправить</Button>

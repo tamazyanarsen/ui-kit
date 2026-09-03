@@ -97,7 +97,7 @@ export function ComboboxTrigger({
                 onClear?.()
               }}
               className={cn(
-                "text-[var(--select-icon-fg)] outline-none",
+                "text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring",
                 placeholder && "hidden"
               )}
             >

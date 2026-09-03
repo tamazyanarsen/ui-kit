@@ -43,7 +43,18 @@ const SAMPLE_FIELDS: TableField<SampleRow>[] = [
   { key: "text", title: "text", width: 160 },
   { key: "list", title: "list", width: 150 },
   { key: "number", title: "number", type: "number", width: 120 },
-  { key: "money", title: "money", type: "money", signed: true, width: 200 },
+  {
+    key: "money",
+    title: "money",
+    type: "money",
+    signed: true,
+    width: 240,
+    // Дельта под значением: цветной ТОЛЬКО знак, а не весь комментарий —
+    // статус несёт стрелка, остальное служебный текст.
+    description: () => "к прошлому месяцу",
+    descriptionSign: () => "↑ 12 %",
+    descriptionSignTone: () => "positive",
+  },
   { key: "percent", title: "percent", type: "percent", decimals: 2, width: 130 },
   { key: "date", title: "date", type: "date", width: 130 },
   { key: "datetime", title: "datetime", type: "datetime", width: 180 },

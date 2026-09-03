@@ -27,9 +27,23 @@ describe("Textarea", () => {
     expect(screen.queryByText("Подсказка")).not.toBeInTheDocument()
   })
 
-  it("is disabled when disabled is set", () => {
+  // ⚠️ Как и у Input: заблокированная область принимает Tab. Блокировка это
+  // пара `readOnly` + `aria-disabled`, а не нативный `disabled`, который
+  // убрал бы её из обхода клавиатурой целиком.
+  it("blocks editing but stays reachable by Tab when disabled", async () => {
+    const user = userEvent.setup()
     render(<Textarea label="Комментарий" disabled />)
-    expect(screen.getByLabelText("Комментарий")).toBeDisabled()
+
+    const field = screen.getByLabelText("Комментарий")
+    expect(field).toHaveAttribute("aria-disabled", "true")
+    expect(field).toHaveAttribute("readonly")
+    expect(field).not.toBeDisabled()
+
+    await user.tab()
+    expect(field).toHaveFocus()
+
+    await user.keyboard("текст")
+    expect(field).toHaveValue("")
   })
 
   it("marks itself read-only and shows the lock icon when locked", () => {

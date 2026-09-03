@@ -18,7 +18,7 @@
   --accordion-card-title-fg: var(--grey-1514);
   --accordion-card-subtitle-fg: var(--grey-517);
   --accordion-card-icon-fg: var(--grey-1514);
-  --accordion-card-divider: var(--grey-134);
+  --accordion-card-divider: var(--divider);
 
   /* Accordion (content list) tokens. Base palette (border/title/subtitle)
      follows the same neutral scale as the rest of the kit. Round-2 audit:
@@ -28,8 +28,8 @@
      distinct from the card Accordion's subtitle grey-517 (#6D6D6D).
      Error/#D74B54 already matched the prior best-effort guess; the other
      three did not. */
-  --accordion-list-border: var(--grey-134);
-  --accordion-list-divider: var(--grey-134);
+  --accordion-list-border: var(--divider);
+  --accordion-list-divider: var(--divider);
   --accordion-list-title-fg: var(--grey-1514);
   --accordion-list-subtitle-fg: var(--grey-284);
   --accordion-list-icon-fg: var(--grey-1514);
@@ -46,7 +46,7 @@
      вывода get_design_context по вариантам Desktop/Small. */
   --card-box-bg: var(--white-101);
   --card-box-title-fg: var(--grey-1514);
-  --card-box-divider: var(--grey-134);
+  --card-box-divider: var(--divider);
 
   /* Card tokens (bank-card list row). Values pixel-sampled directly from
      ui/card/card@2x.png + card@2x-1.png (Figma export) — row bg/hover
@@ -169,6 +169,20 @@
   --informer-icon-green: var(--mint-230);
   --informer-icon-grey: var(--grey-284);
 
+  /* Issue Item / Issue List — строка «что не так» и её список
+     (`Error (ELK)` / `Errors List (ELK)`). Цвет значка по темам: ошибка
+     rgb(215,75,84) в «Голубой» и rgb(222,74,42) в «Зелёной» — ровно та же
+     красная ступень, что у информера, поэтому берётся её токен, а не
+     заводится вторая. Предупреждение rgb(238,162,15) в обеих темах.
+
+     `--issue-icon-info` — наша надстройка сверх сета (третий статус): роль
+     совпадает со значком «Information (Grey)» информера, поэтому взят тот
+     же примитив Grey 284; в «Зелёной» палитре серый не меняется. */
+  --issue-fg: var(--grey-1514);
+  --issue-icon-error: var(--informer-icon-red);
+  --issue-icon-attention: var(--informer-icon-yellow);
+  --issue-icon-info: var(--informer-icon-grey);
+
   /* Notification tokens ("Уведомления и новости" panel). Values
      pixel-sampled directly from ui/message/notification/notification@2x.png
      + @2x-1.png — marked "Actual old" in the spec (unlike every other
@@ -189,7 +203,7 @@
   --notification-title-fg: var(--grey-1514);
   --notification-meta-fg: var(--grey-517);
   --notification-dot: var(--red-418);
-  --notification-divider: var(--grey-134);
+  --notification-divider: var(--divider);
   /* Timestamp ("11.08.2025, 16:30") is a lighter grey than status/
      description — base/grey-284 (#999999), confirmed via live
      get_design_context on node 32216:16404/16492 — distinct from

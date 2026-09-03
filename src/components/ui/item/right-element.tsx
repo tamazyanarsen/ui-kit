@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Check, ChevronDown, ChevronRight, Info } from "@/icons"
+import { Check, ChevronRight, ChevronUp, Info } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Toggle } from "@/components/ui/toggle"
@@ -26,6 +26,8 @@ type RightElementType =
 interface RightElementProps {
   type: RightElementType
   disabled?: boolean
+  /** Панель, которую раскрывает строка, сейчас открыта (тип `select`). */
+  open?: boolean
   informationText?: React.ReactNode
   rightText?: React.ReactNode
   toggleChecked?: boolean
@@ -60,6 +62,7 @@ function IsolatedControl({
 function RightElement({
   type,
   disabled,
+  open = false,
   informationText,
   rightText,
   toggleChecked,
@@ -87,9 +90,20 @@ function RightElement({
 
     case "select":
       return (
-        <ChevronDown
+        // Свёрнуто — вниз, развёрнуто — вверх: сквозное правило кита. Знать
+        // о раскрытии строка обязана сама (проп `open`), иначе шеврон
+        // «не переворачивается» — и это не проблема CSS.
+        //
+        // ⚠️ `navigation` выше остаётся шевроном ВБОК намеренно: это переход
+        // на карточку, а не разворачивание, и правило про вверх/вниз к нему
+        // не относится.
+        <ChevronUp
           aria-hidden="true"
-          className={cn("size-4 shrink-0", iconColorClass)}
+          className={cn(
+            "size-4 shrink-0 transition-transform duration-150 ease-out",
+            !open && "rotate-180",
+            iconColorClass
+          )}
         />
       )
 
@@ -121,7 +135,7 @@ function RightElement({
                 // "активная область иконки справа 16х44 px" — tall enough to
                 // hit comfortably, but only as wide as the icon so it
                 // doesn't eat 28px of the row's right edge.
-                "flex h-11 w-4 shrink-0 items-center justify-center outline-none",
+                "flex h-11 w-4 shrink-0 items-center justify-center outline-none focus-visible:focus-ring",
                 iconColorClass
               )}
             >

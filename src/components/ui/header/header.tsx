@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { Settings } from "@/icons"
 import { cn } from "@/lib/utils"
+import { useViewportInsetTop } from "@/lib/use-viewport-inset-top"
 import { Button } from "@/components/ui/button"
 import {
   CreateMenu,
@@ -102,6 +103,19 @@ interface HeaderProps {
   onSidebarOpenChange?: (open: boolean) => void
   onLogout?: () => void
   phoneNumber?: React.ReactNode
+  /**
+   * Закрепить шапку у верха вьюпорта.
+   *
+   * Кроме самого `sticky` это включает публикацию занятой высоты в
+   * `--viewport-inset-top`: липкая шапка ТАБЛИЦЫ читает её по умолчанию и
+   * поэтому не уезжает под шапку страницы. Дефект был у всех длинных
+   * таблиц сразу, и чинится он здесь — странице не нужно передавать отступ
+   * в каждую таблицу руками.
+   *
+   * Умолчание — выключено: закрепление задаёт каркас страницы, а витрины
+   * кита ставят шапку в поток.
+   */
+  pinned?: boolean
   className?: string
 }
 
@@ -131,6 +145,7 @@ function Header({
   onSidebarOpenChange,
   onLogout,
   phoneNumber,
+  pinned = false,
   className,
 }: HeaderProps) {
   const [logoutOpen, setLogoutOpen] = React.useState(false)
@@ -163,13 +178,21 @@ function Header({
     if (!showNavRow) setOpenPanel(null)
   }, [showNavRow])
 
+  // Занятый верх вьюпорта публикуется отсюда — см. `pinned`. Величина
+  // МЕРЯЕТСЯ: ряд навигации бывает скрыт, и высота шапки от этого меняется.
+  const rootRef = React.useRef<HTMLDivElement>(null)
+  useViewportInsetTop(rootRef, pinned)
+
   return (
     <div
+      ref={rootRef}
       data-slot="header"
       data-type={type}
       data-client-type={type === "client" ? clientHeaderType : undefined}
+      data-pinned={pinned || undefined}
       className={cn(
         "relative flex w-full flex-col bg-[var(--header-bg)]",
+        pinned && "sticky top-0 z-40",
         className
       )}
     >

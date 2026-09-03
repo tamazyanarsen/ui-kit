@@ -74,7 +74,7 @@ function EmployeeUserMenu({
             // Заливки на наведении нет — у `Profile Employee (ELK)` в Hover
             // (нода 70303:48879) фон прозрачен, брендовыми становятся только
             // подпись и знаки.
-            className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none transition-colors hover:text-[var(--header-hover-fg)]"
+            className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]"
           />
         }
       >

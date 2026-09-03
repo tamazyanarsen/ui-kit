@@ -45,7 +45,7 @@ function PageLink({
         data-active={active || undefined}
         onClick={link.onClick}
         className={cn(
-          "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium outline-none transition-colors hover:text-[var(--header-hover-fg)]",
+          "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
           active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
         )}
       >
@@ -62,7 +62,7 @@ function PageLink({
             // отличается только заливка контура (см. «Настройку избранного»,
             // нода 70303:58450, где добавленные разделы помечены такой же
             // серой звездой, а не брендовой).
-            "flex cursor-pointer flex-col items-start py-[3px] pl-1 text-[var(--header-menu-star-fg)] outline-none transition-opacity",
+            "flex cursor-pointer flex-col items-start py-[3px] pl-1 text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring transition-opacity",
             favourite
               ? "opacity-100"
               : "opacity-0 group-hover/link:opacity-100 focus-visible:opacity-100"
@@ -138,7 +138,7 @@ function BannerDots({
           aria-label={`Баннер ${index + 1}`}
           aria-current={index === active}
           onClick={() => onSelect(index)}
-          className="flex cursor-pointer items-center p-1 outline-none"
+          className="flex cursor-pointer items-center p-1 outline-none focus-visible:focus-ring"
         >
           <span
             className={cn(

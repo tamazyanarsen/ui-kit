@@ -41,9 +41,24 @@ describe("Input", () => {
     expect(screen.queryByText("Подсказка")).not.toBeInTheDocument()
   })
 
-  it("is disabled when disabled is set", () => {
+  // ⚠️ Заблокированное поле принимает Tab: блокировка выражается парой
+  // `readOnly` + `aria-disabled`, а не нативным `disabled`, который убрал бы
+  // поле из обхода клавиатурой целиком. Редактировать нельзя, дойти и
+  // прочитать — можно.
+  it("blocks editing but stays reachable by Tab when disabled", async () => {
+    const user = userEvent.setup()
     render(<Input label="Имя" disabled />)
-    expect(screen.getByLabelText("Имя")).toBeDisabled()
+
+    const field = screen.getByLabelText("Имя")
+    expect(field).toHaveAttribute("aria-disabled", "true")
+    expect(field).toHaveAttribute("readonly")
+    expect(field).not.toBeDisabled()
+
+    await user.tab()
+    expect(field).toHaveFocus()
+
+    await user.keyboard("Иван")
+    expect(field).toHaveValue("")
   })
 
   it("toggles password visibility", async () => {

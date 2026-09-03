@@ -276,6 +276,13 @@ export const Fields: Story = {
       </StorySection>
 
       <StorySection
+        title="Разлиновка и итоговая строка"
+        description="Разлиновка — отдельное свойство таблицы: по умолчанию строки отделены воздухом, сетка ячеек включается явно. Итоговая строка не строка данных: не сортируется, не разворачивается и не уезжает при отборе, а её первая ячейка перекрывает несколько ведущих колонок — дальше числа идут колонка в колонку с одноимёнными шапками."
+      >
+        <TableFieldsExample gridLines total selectable={false} nested={false} />
+      </StorySection>
+
+      <StorySection
         title="Все типы полей"
         description="По столбцу на тип: text, list («Несколько (N)»), number, money, percent, date, datetime, time, boolean, checkbox, tag, link, custom и пустое значение."
       >

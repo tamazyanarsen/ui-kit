@@ -42,7 +42,7 @@ function SidebarToggle({
       type="button"
       aria-label={open ? "Закрыть меню" : "Открыть меню"}
       onClick={() => onOpenChange?.(!open)}
-      className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-meta-fg)] outline-none transition-colors hover:bg-[var(--header-menu-toggle-hover-bg)]"
+      className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-meta-fg)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--header-menu-toggle-hover-bg)]"
     >
       <Glyph size={24} aria-hidden="true" className="size-6" />
     </button>

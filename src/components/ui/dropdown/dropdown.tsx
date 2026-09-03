@@ -83,7 +83,7 @@ function DropdownHeader({
         type="button"
         aria-label="Закрыть"
         onClick={onClose}
-        className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-[var(--menu-item-fg)] outline-none"
+        className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-[var(--menu-item-fg)] outline-none focus-visible:focus-ring"
       >
         <X size={24} aria-hidden="true" className="size-6" />
       </button>

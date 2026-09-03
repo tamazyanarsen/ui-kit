@@ -136,7 +136,7 @@ function FullExample({
   showSelect = false,
   showSetting = true,
   showDownload = true,
-  showDetails = true,
+  showDetails = false,
 }: FullExampleProps = {}) {
   const [tab, setTab] = useState("all")
   const [search, setSearch] = useState("")
@@ -270,8 +270,18 @@ function FullExample({
         actions={hasSummaryActions ? summaryActions : undefined}
       />
       {/* "Сводка" — the Details slot at the bottom of `ELK / table-top`
-          (node 70279:10367). Optional: "Дополнительная функция, наличие
-          определяется при разработке конкретного продукта". */}
+          (node 70279:10367).
+
+          ⚠️ Умолчание — ВЫКЛЮЧЕНО, хотя в мастере Figma свойство
+          `Show Summary` включено. Документация кита называет сводку
+          «дополнительной функцией, наличие которой определяется при
+          разработке конкретного продукта», и прямое правило документации
+          сильнее правила «дефолт как в сете».
+
+          (Сравните с кнопкой «Выбрать на всех страницах» у Button Menu
+          Black — там умолчание, наоборот, снимается с сета: возможность,
+          спрятанная по умолчанию, просто не находится. Разница ровно в
+          том, что доки про неё такого не пишут.) */}
       {showDetails && (
         <TableTopDetails
           items={[

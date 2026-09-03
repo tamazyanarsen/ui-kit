@@ -27,7 +27,7 @@ const textareaBoxVariants = cva(
   // `transition-all`, а не `transition-colors`: вместе с подписью едет и
   // вертикальный отступ коробки (16px → 8px), иначе текст прыгал бы под
   // плавно уезжающей подписью (дизайн-чек №3 №2).
-  "group/textarea relative flex min-h-[98px] w-full flex-col rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] p-4 transition-all has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)] desktop:min-h-[112px]",
+  "group/textarea relative flex min-h-[98px] w-full flex-col rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] p-4 transition-all has-[[aria-disabled=true]]:cursor-not-allowed has-[[aria-disabled=true]]:border-[var(--input-border-disabled)] has-[[aria-disabled=true]]:bg-[var(--input-bg-disabled)] desktop:min-h-[112px]",
   {
     variants: {
       invalid: {
@@ -156,8 +156,13 @@ function Textarea({
           id={textareaId}
           data-slot="textarea"
           rows={rows}
-          disabled={disabled}
-          readOnly={locked}
+          // ⚠️ Заблокированная область ПРИНИМАЕТ TAB — блокировка это пара
+          // `readOnly` + `aria-disabled`, а не нативный `disabled`, который
+          // убрал бы её из обхода клавиатурой целиком (см. тот же разбор у
+          // Input). Кольцо фокуса при этом обязательно: у заблокированной
+          // области рамка своя и на фокус не реагирует.
+          aria-disabled={disabled || undefined}
+          readOnly={locked || disabled}
           placeholder={resolvedPlaceholder}
           aria-invalid={invalid || undefined}
           aria-describedby={captionId}
@@ -172,7 +177,7 @@ function Textarea({
             // placeholder-as-label text going from #999 to #6D6D6D on
             // hover — same tone as --textarea-border-hover — which this
             // component previously never did.
-            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] disabled:cursor-not-allowed disabled:text-[var(--textarea-fg-disabled)] desktop:text-p1-medium",
+            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring desktop:text-p1-medium",
             // Плавающая подпись перекрывает первую строку, поэтому в
             // «поднятом» состоянии текст уходит вниз ровно на её высоту
             // (16px строка + 4px зазор): 8px внутреннего отступа коробки
@@ -214,7 +219,7 @@ function Textarea({
             // (#C8C8CB) — the Disabled+Locked lock icon SVG
             // (11282:15677) is fill="#999999", matching --input-label-fg
             // exactly rather than the lighter Input grey.
-            className="absolute top-4 right-4 order-1 size-4 shrink-0 text-[var(--input-icon-fg)] group-has-[:disabled]/textarea:text-[var(--textarea-icon-fg-disabled)]"
+            className="absolute top-4 right-4 order-1 size-4 shrink-0 text-[var(--input-icon-fg)] group-has-[[aria-disabled=true]]/textarea:text-[var(--textarea-icon-fg-disabled)]"
           />
         )}
       </div>
@@ -246,7 +251,7 @@ function Textarea({
                 <button
                   type="button"
                   aria-label="Дополнительная информация"
-                  className="shrink-0 text-[var(--input-caption-fg)] outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="shrink-0 text-[var(--input-caption-fg)] outline-none focus-visible:focus-ring"
                 >
                   <Information aria-hidden="true" className="size-4" />
                 </button>

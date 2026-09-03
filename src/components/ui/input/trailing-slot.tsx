@@ -45,7 +45,7 @@ function InputTrailingSlot({
         aria-hidden="true"
         className={cn(
           ICON_SIZE[size],
-          "shrink-0 text-[var(--input-icon-fg)] group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
+          "shrink-0 text-[var(--input-icon-fg)] group-has-[[aria-disabled=true]]/input:text-[var(--input-fg-disabled)]"
         )}
       />
     )
@@ -70,7 +70,7 @@ function InputTrailingSlot({
         type="button"
         aria-label={passwordVisible ? "Скрыть пароль" : "Показать пароль"}
         onClick={() => onPasswordVisibleChange(!passwordVisible)}
-        className="shrink-0 text-[var(--input-icon-fg)] outline-none disabled:hidden"
+        className="shrink-0 text-[var(--input-icon-fg)] outline-none focus-visible:focus-ring disabled:hidden"
         disabled={disabled}
       >
         <Glyph aria-hidden="true" className={ICON_SIZE[size]} />
@@ -94,7 +94,7 @@ function InputTrailingSlot({
         onClick={onClear}
         // Крестик появляется только у заполненного поля — отсюда
         // `:not(:placeholder-shown)` на соседе-инпуте.
-        className="hidden shrink-0 text-[var(--input-icon-fg)] outline-none peer-[&:not(:placeholder-shown)]:block disabled:hidden"
+        className="hidden shrink-0 text-[var(--input-icon-fg)] outline-none focus-visible:focus-ring peer-[&:not(:placeholder-shown)]:block disabled:hidden"
         disabled={disabled}
       >
         <X aria-hidden="true" className={ICON_SIZE[size]} />

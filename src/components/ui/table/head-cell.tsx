@@ -121,6 +121,7 @@ function TableHeadCell({
 
   const { resolvedWidth, startResize } = useColumnResize({
     type,
+    pin,
     width,
     defaultWidth,
     onWidthChange,
@@ -148,7 +149,18 @@ function TableHeadCell({
       className={cn(
         headCellPaddingYClass(type),
         headCellPaddingXClass(type, pin, divider),
-        "font-medium",
+        // Высота ячейки шапки в ките ФИКСИРОВАНА 48 — содержимое обрезается,
+        // а не растягивает шапку (подпись усекается многоточием, см.
+        // `TableHeadCellTitle`). Без явной высоты длинное название в одном
+        // столбце раздвигало бы всю строку шапки, и липкая шапка съезжала бы
+        // относительно посчитанного под неё отступа.
+        "h-12",
+        // C5: ячейка шапки НЕ ЗАДАВАЛА цвет текста — начертание корень
+        // задавал, а цвет нет, и любое содержимое слота (чекбокс, кнопка
+        // меню) наследовало чистый чёрный документа во всех трёх темах.
+        // Правильный цвет — Grey 284; подпись и сортировка ставят его же
+        // сами, но полагаться на это нельзя: слот произвольный.
+        "font-medium text-[var(--table-description-fg)]",
         // The header's bottom rule is drawn per cell (`border-b` on
         // `ELK / table-title-cell`) so it stays put under sticky cells — but
         // as a pseudo-element, not a real border. Figma strokes frames on the

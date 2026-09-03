@@ -5,6 +5,7 @@ import type { TagColor, TagVariant } from "@/components/ui/tag"
 
 import type { TableRowAction } from "./cell-action"
 import type { TableCellProps } from "./cell"
+import type { TableSignTone } from "./cell-value"
 import type { TablePin } from "./pin"
 import type { TableCellType } from "./types"
 
@@ -129,6 +130,16 @@ interface TableField<Row = unknown> {
   value?: (row: Row) => unknown
   /** Пояснение под значением (P3 Regular, серое). */
   description?: (row: Row) => React.ReactNode
+  /**
+   * Знак ПЕРЕД пояснением — стрелка дельты, «+», «−».
+   *
+   * Отдельно от `description` потому, что цвет у них разный: цветным
+   * должен быть только знак, а не весь комментарий. «↑ 12 % к прошлому
+   * месяцу» — статус несёт стрелка, остальное служебный текст.
+   */
+  descriptionSign?: (row: Row) => React.ReactNode
+  /** Статусный цвет знака. По умолчанию — цвет самого пояснения. */
+  descriptionSignTone?: (row: Row) => TableSignTone | undefined
   /** Готовое форматирование значения — вместо форматирования по типу. */
   format?: (value: unknown, row: Row) => React.ReactNode
   /** Своё содержимое ячейки целиком. Для типа `custom` обязателен. */

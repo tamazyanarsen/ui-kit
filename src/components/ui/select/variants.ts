@@ -10,7 +10,7 @@ export const selectTriggerVariants = cva(
   // This renders as a <div> (via the `render` prop), not a native form
   // control, so :enabled/:disabled don't apply — data-disabled:pointer-events-none
   // is what actually stops hover/focus from reaching it once disabled.
-  "group/trigger relative flex w-full cursor-pointer items-center border border-[var(--select-border)] bg-[var(--select-bg)] text-left outline-none transition-colors select-none data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-[var(--select-border-disabled)] data-disabled:bg-[var(--select-bg-disabled)] focus-visible:ring-3 focus-visible:ring-ring/50",
+  "group/trigger relative flex w-full cursor-pointer items-center border border-[var(--select-border)] bg-[var(--select-bg)] text-left outline-none transition-colors select-none data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-[var(--select-border-disabled)] data-disabled:bg-[var(--select-bg-disabled)] focus-visible:focus-ring",
   {
     variants: {
       size: {

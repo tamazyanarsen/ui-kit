@@ -97,7 +97,7 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
         disabled={disabled}
         className={cn(
           filterTablePillClass({ selected, disabled }),
-          "cursor-pointer outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none",
+          "cursor-pointer outline-none focus-visible:focus-ring disabled:pointer-events-none",
           className
         )}
         {...props}

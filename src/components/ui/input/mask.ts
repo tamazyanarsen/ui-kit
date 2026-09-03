@@ -1,5 +1,7 @@
 import { IMask } from "react-imask"
 
+import { NARROW_NBSP, NBSP } from "@/lib/number-format"
+
 // Thin config layer over react-imask (wraps the imask.js core) — hand-rolled
 // masking got the classic bugs (literal digits in a fixed prefix like
 // phone's "+7" being mistaken for user input, caret jumping to the end and
@@ -43,6 +45,28 @@ const PLACEHOLDERS: Record<MaskName, string> = {
   date: "ДД.ММ.ГГГГ",
   amount: "0 ₽",
   time: "ЧЧ:ММ",
+}
+
+/**
+ * Разрядные разделители, которые НЕ должны попадать в буфер обмена
+ * (см. `useCopyWithoutSeparators`).
+ *
+ * ⚠️ Разделитель объявляет КАЖДАЯ маска, и списка по умолчанию нет: у суммы
+ * и номера карты это пробел, у телефона ещё и дефис — снять один пробел
+ * значило бы отдать `+7912345-67-89`, то есть полуформат.
+ *
+ * Маски, которых здесь нет, копируются как есть: паспорт, счёт, ИНН, КПП,
+ * КБК и дата — это не отбивка по разрядам, а формат самого номера, и без
+ * пробелов он читается хуже, а не лучше. Свободное поле без маски тем более
+ * трогать нельзя — умолчание «снимать» превращало адрес в
+ * «Дом 12345 корп 2».
+ */
+export const MASK_GROUP_SEPARATORS: Partial<
+  Record<MaskName, readonly string[]>
+> = {
+  amount: [" ", NBSP, NARROW_NBSP],
+  card: [" "],
+  phone: [" ", "-"],
 }
 
 export function getMaskPlaceholder(name: MaskName): string {

@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
    Свойства унаследованы из компонент-сета «ELK / button menu (black)»
    (нода 700:54288):
 
-     Button = None | One | Two | Three | Four
+     Button = None | One | Tho | Three | Four
 
    Плюс информационный бар: «элементы информационного бара, располагающегося
    в правой части панели, можно при необходимости частично или полностью
@@ -28,10 +28,14 @@ import { Button } from "@/components/ui/button"
 const BUTTON_COUNTS = [0, 1, 2, 3, 4] as const
 type ButtonCount = (typeof BUTTON_COUNTS)[number]
 
+/* ⚠️ «Tho» — опечатка самого кита в значении «Two». Не исправлена
+   намеренно: имя значения здесь должно совпадать с панелью «Свойства
+   компонента» посимвольно, иначе сверка со списком свойств перестаёт быть
+   один в один. Чинить это надо в Figma, а не у себя. */
 const FIGMA_BUTTON_NAMES: Record<ButtonCount, string> = {
   0: "None",
   1: "One",
-  2: "Two",
+  2: "Tho",
   3: "Three",
   4: "Four",
 }
@@ -57,6 +61,9 @@ const INFO_ITEMS = [INFO_COUNT, INFO_SUM, INFO_WRITE_OFF]
 
 interface PlaygroundArgs {
   buttons: ButtonCount
+  showButton: boolean
+  selectAllCount: number
+  selectedCount: number
   overflow: boolean
   showBar: boolean
   showCount: boolean
@@ -104,6 +111,26 @@ const meta = {
       ...optionsArgType<ButtonCount>("Button", FIGMA_BUTTON_LABELS, "inline-radio"),
       description: "Свойство Button компонента ELK / button menu (black)",
     },
+    // Четвёртое булево свойство сета (появилось вместе с кнопкой
+    // «Выбрать на всех страницах»).
+    showButton: toggleArgType(
+      "Show Button",
+      "Кнопка «Выбрать на всех страницах (N)» над полосой. Включена по умолчанию: возможность, спрятанная по умолчанию, просто не находится"
+    ),
+    selectAllCount: {
+      name: "N — строк под отбором",
+      description:
+        "Считает табличный блок по ОТОБРАННЫМ строкам всех страниц (`selectableRowKeys`), а не экран: вторая копия расчёта разошлась бы молча",
+      control: { type: "number", min: 0, max: 999 },
+      table: { category: "Контент" },
+    },
+    selectedCount: {
+      name: "Выбрано сейчас",
+      description:
+        "Кнопка пропадает, когда выбрано всё, и возвращается, как только снята хотя бы одна галка — вместе с ней уходит и распорка, блок возвращается к 72",
+      control: { type: "number", min: 0, max: 999 },
+      table: { category: "Контент" },
+    },
     showBar: toggleArgType(
       "Show Bar",
       "Информационный бар в правой части панели целиком"
@@ -127,6 +154,9 @@ const meta = {
   },
   args: {
     buttons: 2,
+    showButton: true,
+    selectAllCount: 40,
+    selectedCount: 10,
     overflow: false,
     showBar: true,
     showCount: true,
@@ -141,7 +171,16 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ buttons, overflow, showClose, pinned, ...bar }) => (
+  render: ({
+    buttons,
+    overflow,
+    showClose,
+    pinned,
+    showButton,
+    selectAllCount,
+    selectedCount,
+    ...bar
+  }) => (
     <StoryContentArea height="h-72">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
@@ -155,6 +194,10 @@ export const Playground: Story = {
         className="mt-auto"
         info={infoBar(bar)}
         onClose={showClose ? () => {} : undefined}
+        showSelectAllPages={showButton}
+        selectAllPagesCount={selectAllCount}
+        selectedCount={selectedCount}
+        onSelectAllPages={() => {}}
       >
         {blackButtons(buttons)}
         {overflow && (

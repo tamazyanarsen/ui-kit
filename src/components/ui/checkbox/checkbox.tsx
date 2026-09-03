@@ -55,7 +55,7 @@ function Checkbox({
         "not-data-[disabled]:not-data-[checked]:not-data-[indeterminate]:hover:border-[var(--checkbox-border-hover)]",
         "data-[checked]:border-transparent data-[checked]:bg-[var(--checkbox-checked-bg)] data-[checked]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--checkbox-checked-bg-hover)]",
         "data-[indeterminate]:border-transparent data-[indeterminate]:bg-[var(--checkbox-checked-bg)] data-[indeterminate]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:data-[indeterminate]:hover:bg-[var(--checkbox-checked-bg-hover)]",
-        "focus-visible:ring-3 focus-visible:ring-ring/50",
+        "focus-visible:focus-ring",
         "data-[disabled]:cursor-not-allowed data-[disabled]:!border-[var(--checkbox-disabled-border)] data-[disabled]:!bg-[var(--checkbox-disabled-bg)] data-[disabled]:data-[checked]:!text-[var(--checkbox-disabled-fg)] data-[disabled]:data-[indeterminate]:!text-[var(--checkbox-disabled-fg)]",
         error && "!border-[var(--checkbox-border-error)]",
         className

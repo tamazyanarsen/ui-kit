@@ -6,7 +6,10 @@ import { cva } from "class-variance-authority"
 type InputSize = "sm" | "lg"
 
 const inputBoxVariants = cva(
-  "group/input relative flex w-full items-center border border-[var(--input-border)] bg-[var(--input-bg)] transition-colors has-[:disabled]:cursor-not-allowed has-[:disabled]:border-[var(--input-border-disabled)] has-[:disabled]:bg-[var(--input-bg-disabled)]",
+  // ⚠️ Заблокированное поле помечается `aria-disabled`, а НЕ нативным
+  // `disabled` — см. комментарий у `fieldProps` в input.tsx. Поэтому все
+  // селекторы состояния идут по атрибуту, а не по псевдоклассу.
+  "group/input relative flex w-full items-center border border-[var(--input-border)] bg-[var(--input-bg)] transition-colors has-[[aria-disabled=true]]:cursor-not-allowed has-[[aria-disabled=true]]:border-[var(--input-border-disabled)] has-[[aria-disabled=true]]:bg-[var(--input-bg-disabled)]",
   {
     variants: {
       size: {
@@ -68,7 +71,11 @@ const FIELD_TEXT_SIZE: Record<InputSize, string> = {
 
 const inputFieldVariants = cva(
   // Weight lives in each size variant's text-pN-medium below, not here.
-  "peer min-w-0 flex-1 bg-transparent text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] disabled:cursor-not-allowed disabled:text-[var(--input-fg-disabled)]",
+  // Кольцо фокуса заблокированному полю нужно обязательно: обычное поле
+  // показывает фокус собственной рамкой (состояние Focused кита), а у
+  // заблокированного рамка своя и на фокус не меняется — без кольца
+  // невозможно понять, где ты вообще находишься.
+  "peer min-w-0 flex-1 bg-transparent text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--input-fg-disabled)] aria-disabled:focus-visible:focus-ring",
   {
     variants: {
       size: FIELD_TEXT_SIZE,
@@ -101,7 +108,7 @@ const floatingLabelVariants =
   // the 48px mobile row is `pt-[7px]` and the 56px desktop row centres a
   // 40px (16 + 24) content block in its 54px interior, i.e. also 7px. It
   // used to sit 3px lower on desktop.
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium peer-focus:top-[7px] peer-focus:translate-y-0 peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[:disabled]/input:text-[var(--input-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium peer-focus:top-[7px] peer-focus:translate-y-0 peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[[aria-disabled=true]]/input:text-[var(--input-fg-disabled)]"
 
 // Trailing glyphs (clear cross, eye, lock, spinner) are 16px at every size —
 // Figma's `icon / close cross` is `size-[16px]` in the S, L-mobile and

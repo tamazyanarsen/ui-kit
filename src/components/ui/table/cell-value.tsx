@@ -10,6 +10,16 @@ import {
 } from "./number-cell"
 import { useTruncated } from "./use-truncated"
 
+/** Статусный цвет знака у пояснения — см. `descriptionSign` у ячейки. */
+type TableSignTone = "default" | "positive" | "negative" | "attention"
+
+const SIGN_TONE_CLASS: Record<TableSignTone, string | undefined> = {
+  default: undefined,
+  positive: "text-[var(--table-sign-positive-fg)]",
+  negative: "text-[var(--table-sign-negative-fg)]",
+  attention: "text-[var(--table-sign-attention-fg)]",
+}
+
 /**
  * Значение ячейки Text/Number с необязательной подписью под ним.
  *
@@ -22,6 +32,8 @@ import { useTruncated } from "./use-truncated"
 function TableCellValue({
   children,
   description,
+  descriptionSign,
+  descriptionSignTone,
   alignRight,
   numeric,
   tone,
@@ -30,6 +42,8 @@ function TableCellValue({
 }: {
   children?: React.ReactNode
   description?: React.ReactNode
+  descriptionSign?: React.ReactNode
+  descriptionSignTone?: TableSignTone
   alignRight: boolean
   numeric: boolean
   tone: "default" | "positive"
@@ -95,6 +109,24 @@ function TableCellValue({
               numeric && "tabular-nums"
             )}
           >
+            {/* ⚠️ Знак у пояснения красится ОТДЕЛЬНО от самого пояснения.
+                Дельта под значением — это «↑ 12 % к прошлому месяцу»:
+                цветной должна быть только стрелка, а не весь комментарий.
+                Раньше статусный цвет пришлось бы вешать на всю строку, и
+                служебный текст читался как статус. */}
+            {descriptionSign !== undefined && descriptionSign !== null && (
+              <>
+                <span
+                  data-slot="table-cell-description-sign"
+                  className={SIGN_TONE_CLASS[descriptionSignTone ?? "default"]}
+                >
+                  {descriptionSign}
+                </span>
+                {/* Настоящий пробел, а не отступ: иначе знак и пояснение
+                    слипаются при копировании — «↑ 12 %к прошлому месяцу». */}
+                {" "}
+              </>
+            )}
             {description}
           </span>
         )}
@@ -136,3 +168,4 @@ function TableCellTag({
 }
 
 export { TableCellTag, TableCellValue }
+export type { TableSignTone }

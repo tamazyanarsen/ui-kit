@@ -31,6 +31,11 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
         ref={ref}
         data-slot="scrollbar"
         data-orientation={orientation}
+        // Окно прокрутки фокусируемо БЕЗ `tabindex` — браузер даёт его
+        // само, чтобы область можно было листать клавиатурой. Маркер
+        // ничего не добавляет в обход табом, он только выдаёт кольцо
+        // фокуса кита (см. styles/base.css).
+        data-scroll-window=""
         className={cn(
           "themed-scrollbar",
           orientation === "vertical"

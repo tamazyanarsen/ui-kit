@@ -135,7 +135,7 @@ function FilterDate({
                 type="button"
                 onClick={() => setDraft(preset.range())}
                 className={cn(
-                  "cursor-pointer outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "cursor-pointer outline-none focus-visible:focus-ring",
                   filterTablePillClass({ selected: false })
                 )}
               >

@@ -125,8 +125,6 @@
   --otp-placeholder-fg: var(--grey-284);
   --otp-underline: var(--grey-284);
   --otp-error-fg: var(--red-418);
-  --otp-close-bg: var(--grey-109);
-  --otp-close-fg: var(--grey-1514);
   --otp-title-fg: var(--grey-1514);
   --otp-subtitle-fg: var(--grey-517);
 
@@ -142,7 +140,22 @@
      value; new dividers should use the shared Divider component instead of
      adding another one. */
   --divider: var(--grey-134);
-  --modal-divider: var(--grey-134);
+  /* Кольцо фокуса — одно на весь кит: 2px сплошной Dark blue 389 с отступом
+     2 (`.focus-ring`, см. base.css). Раньше каждый компонент рисовал
+     shadcn-овский `ring-3 ring-ring/50` — серую полупрозрачную тень 3px,
+     которая не совпадала ни с одним значением кита и не менялась вместе с
+     темой. Цвет намеренно НЕ переопределяется в «Зелёной» теме: кольцо —
+     системная подсказка доступности, а не элемент бренда. */
+  --focus-ring: var(--dark-blue-389);
+
+  /* Отклик на НАЖАТИЕ плоского крестика закрытия (`CloseCross`). Цвет покоя
+     задаёт место применения (у тоста свой, у тултипа свой, на чёрной панели
+     белый), а ступень нажатия — общая: у крестика её раньше не было вовсе у
+     четырёх мест из одиннадцати. Место применения при необходимости
+     переопределяет её у себя — на тёмной панели Grey 1514 сделал бы глиф
+     невидимым. */
+  --close-cross-fg-active: var(--grey-1514);
+  --modal-divider: var(--divider);
   --modal-title-fg: var(--grey-1514);
 
   /* Строка выпадающего списка ("menu item") — общая для Select, Combobox,
@@ -154,7 +167,7 @@
   --menu-item-bg-highlighted: var(--grey-106);
   --menu-item-fg: var(--grey-1514);
   --menu-item-description-fg: var(--grey-284);
-  --menu-item-divider: var(--grey-134);
+  --menu-item-divider: var(--divider);
 
   /* Calendar component tokens. Values measured directly from
      ui/calendar1.svg + ui/calendar2.svg (Figma export). */
@@ -165,7 +178,7 @@
   --calendar-selected-bg: var(--dark-blue-1412);
   --calendar-selected-fg: var(--white-101);
   --calendar-range-bg: var(--grey-109);
-  --calendar-divider: var(--grey-134);
+  --calendar-divider: var(--divider);
 
   /* Select trigger tokens. Same palette as Input (identical box treatment
      in the Figma spec) — kept in its own namespace so it can diverge later. */

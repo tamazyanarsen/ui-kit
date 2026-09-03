@@ -65,7 +65,7 @@ function TableHeadCellTitle({
         // The colour shift alone is not a focus indicator — it is the same
         // darkening the cell already does on hover — so the sort control
         // carries the kit's standard ring as well.
-        "flex min-w-0 cursor-pointer items-center gap-2 rounded-[4px] outline-none transition-colors hover:text-[var(--table-fg)] focus-visible:text-[var(--table-fg)] focus-visible:ring-3 focus-visible:ring-ring/50",
+        "flex min-w-0 cursor-pointer items-center gap-2 rounded-[4px] outline-none transition-colors hover:text-[var(--table-fg)] focus-visible:text-[var(--table-fg)] focus-visible:focus-ring",
         alignRight ? "justify-end" : "flex-1",
         sortDirection
           ? "text-[var(--table-fg)]"

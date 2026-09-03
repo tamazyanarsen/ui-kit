@@ -77,7 +77,7 @@ export function ComboboxSearchInput({
           // get_design_context on the "ELK / dropdown" search row (e.g.
           // 29750:53185): the search text sits in a font-['Object_Sans:Medium']
           // wrapper, Medium at 16px, not the browser default.
-          "h-6 w-full min-w-0 border-0 bg-transparent text-p1-medium text-[var(--select-fg)] outline-none placeholder:text-[var(--select-label-fg)]",
+          "h-6 w-full min-w-0 border-0 bg-transparent text-p1-medium text-[var(--select-fg)] outline-none focus-visible:focus-ring placeholder:text-[var(--select-label-fg)]",
           className
         )}
         {...props}
@@ -90,7 +90,7 @@ export function ComboboxSearchInput({
       )}
       <ComboboxPrimitive.Clear
         aria-label="Очистить поиск"
-        className="flex shrink-0 items-center justify-center text-[var(--select-icon-fg)] outline-none"
+        className="flex shrink-0 items-center justify-center text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring"
       >
         <X aria-hidden="true" className="size-4" />
       </ComboboxPrimitive.Clear>

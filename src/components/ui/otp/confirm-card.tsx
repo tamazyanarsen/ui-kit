@@ -21,7 +21,8 @@ import { ResendCode } from "./resend-code"
 // kit's real Modal rather than a look-alike card. Everything the old
 // hand-rolled shell carried turned out to be a byte-for-byte copy of
 // Modal's chrome — 592px wide (`size="m"`), 32px radius, the close button
-// on #F4F4F4/#252628 (--otp-close-* == --btn-secondary-grey-*), and the
+// on #F4F4F4/#252628 (то есть на общем --btn-secondary-grey-*: своей пары
+// токенов у крестика OTP больше нет — плашку красит один общий), and the
 // title/subtitle typography that ModalTitle/ModalDescription already own.
 //
 // Note this makes the component a real dialog: portal, backdrop, focus trap

@@ -10,7 +10,9 @@ import { extendTailwindMerge } from "tailwind-merge"
 // The compound text-pN-{regular,medium,heavy} utilities (one per named
 // Figma paragraph style) go in the same group so they still evict a bare
 // text-h*/text-p* or an earlier compound class passed in via cn() overrides.
-const twMerge = extendTailwindMerge({
+// Параметр-generic объявляет ИМЕНА новых групп: без него tailwind-merge
+// принимает в `extend.classGroups` только свои штатные идентификаторы.
+const twMerge = extendTailwindMerge<"focus-ring">({
   extend: {
     classGroups: {
       "font-size": [
@@ -33,6 +35,11 @@ const twMerge = extendTailwindMerge({
       // one. Filed under text-decoration so it conflicts with underline/
       // no-underline the way it actually behaves.
       "text-decoration": ["text-link"],
+      // Кольцо фокуса кита (base.css). Обе утилиты пишут один и тот же
+      // `outline`, отличаясь только знаком отступа, поэтому должны вытеснять
+      // друг друга; без своей группы twMerge прочитал бы `focus-ring` как
+      // цвет и оставил бы рядом с `focus-ring-inset` обе.
+      "focus-ring": ["focus-ring", "focus-ring-inset"],
     },
   },
 })

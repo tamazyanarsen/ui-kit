@@ -15,6 +15,17 @@ const MIN_COLUMN_WIDTH = 48
 const NESTING_INDENT = 16
 
 /**
+ * Сколько ширины окна прокрутки обязано остаться подвижным столбцам.
+ *
+ * Предел есть только у ЗАКРЕПЛЁННОЙ колонки: растянув её, можно было
+ * съесть всю видимую ширину — закреп занимал бы окно целиком, а
+ * горизонтальная прокрутка схлопывалась вместе с содержимым, которое она
+ * должна показывать. У обычной колонки предела нет намеренно: она
+ * растягивает СОДЕРЖИМОЕ и добавляет прокрутки, а не гасит её.
+ */
+const MIN_SCROLLABLE_REST = 160
+
+/**
  * Horizontal padding for one cell. Base is the 8px both sides that keeps
  * every row on the same grid ("Для совпадения левого отступа все строки
  * таблицы используют внутренние паддинги по 8px с обеих сторон"); a pinned
@@ -146,6 +157,7 @@ function isControlType(type: TableHeadCellType | TableCellType) {
 export {
   CONTROL_COLUMN_WIDTH,
   MIN_COLUMN_WIDTH,
+  MIN_SCROLLABLE_REST,
   NESTING_INDENT,
   cellPaddingXClass,
   cellPaddingYClass,

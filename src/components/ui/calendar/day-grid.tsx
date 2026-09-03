@@ -107,7 +107,7 @@ function DayButton({
         disabled={disabled}
         onClick={() => onSelectDay(cell.date)}
         className={cn(
-          "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
+          "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:focus-ring",
           disabled
             ? "cursor-not-allowed text-[var(--calendar-disabled-fg)]"
             : selected || inRangeEdge

@@ -8,7 +8,7 @@ import {
   TableCellAction,
   type TableCellActionProps,
 } from "./cell-action"
-import { TableCellTag, TableCellValue } from "./cell-value"
+import { TableCellTag, TableCellValue, type TableSignTone } from "./cell-value"
 import { TableCollapseToggle, collapseLabel } from "./collapse-toggle"
 import {
   NESTING_INDENT,
@@ -28,6 +28,16 @@ interface TableCellProps
   children?: React.ReactNode
   /** "Show Description" — a muted second line under Text/Number cells. */
   description?: React.ReactNode
+  /**
+   * Знак ПЕРЕД пояснением — стрелка дельты, «+», «−» и т.п.
+   *
+   * Отдельно от `description` ровно потому, что цвет у них разный: цветным
+   * должен быть только знак, а не весь комментарий. «↑ 12 % к прошлому
+   * месяцу» — статус несёт стрелка, остальное служебный текст.
+   */
+  descriptionSign?: React.ReactNode
+  /** Статусный цвет знака. По умолчанию — цвет самого пояснения. */
+  descriptionSignTone?: TableSignTone
   icon?: React.ReactNode
   tagColor?: TagColor
   checked?: boolean
@@ -73,6 +83,8 @@ function TableCell({
   type = "text",
   children,
   description,
+  descriptionSign,
+  descriptionSignTone,
   icon,
   tagColor = "green",
   checked,
@@ -177,6 +189,8 @@ function TableCell({
           {expandable && type === "text" && collapseToggle}
           <TableCellValue
             description={description}
+            descriptionSign={descriptionSign}
+            descriptionSignTone={descriptionSignTone}
             alignRight={isRight}
             numeric={type === "number"}
             tone={tone}

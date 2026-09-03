@@ -89,7 +89,7 @@ function SettingsRow({
             aria-pressed={favourite}
             aria-label={favourite ? "Убрать из избранного" : "Добавить в избранное"}
             onClick={onToggle}
-            className="flex shrink-0 cursor-pointer text-[var(--header-menu-star-fg)] outline-none"
+            className="flex shrink-0 cursor-pointer text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring"
           >
             <Star size={24} filled={favourite} aria-hidden="true" className="size-6 shrink-0" />
           </button>
@@ -113,7 +113,7 @@ function SettingsRow({
                   onMoveBy?.(1)
                 }
               }}
-              className="flex shrink-0 cursor-grab text-[var(--header-menu-star-fg)] outline-none active:cursor-grabbing"
+              className="flex shrink-0 cursor-grab text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring active:cursor-grabbing"
             >
               <Drag size={24} aria-hidden="true" className="size-6 shrink-0" />
             </button>

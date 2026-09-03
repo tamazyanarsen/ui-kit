@@ -76,6 +76,12 @@ const meta = {
       "Show Select",
       "Шеврон вызова Dropdown. В макете есть только у типов Filter: с чипсы значение снимается крестиком"
     ),
+    open: {
+      name: "Раскрыта",
+      control: "boolean",
+      description:
+        "Панель, которую открывает чипса, сейчас раскрыта: шеврон смотрит вверх и выставляется aria-expanded. Свёрнуто — вниз, развёрнуто — вверх, вбок шеврон разворачивания не смотрит никогда",
+    },
     // Дизайн-чек №19: состояние «выбрана» (State=Active в макете).
     selected: { name: "Выбрана", control: "boolean" },
     closable: { name: "Крестик", control: "boolean" },
@@ -90,6 +96,7 @@ const meta = {
     type: "chips" as ChipsType,
     showCount: true,
     showSelect: false,
+    open: false,
     selected: false,
     closable: false,
     children: "Значение",

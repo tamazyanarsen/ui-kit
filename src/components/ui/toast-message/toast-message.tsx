@@ -1,11 +1,11 @@
 import * as React from "react"
-import { X } from "@/icons"
 
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Button } from "@/components/ui/button"
 
 import { TOAST_BG, TOAST_BORDER, TOAST_ICON, TOAST_ICON_COLOR } from "./variants"
 import { ToastContext, useToast, type ToastItem, type ToastOptions } from "./use-toast"
+import { CloseCross } from "@/components/ui/close-cross"
 
 // Toast Message — "Всплывающее уведомление". Shows a notification
 // noticeably without blocking the user's work; auto-dismisses after 8s
@@ -163,24 +163,16 @@ function ToastCard({
         {/* Дизайн-чек 3/3 №8: Show Cross — свойство компонент-сета
             `ELK / toast message` (774:134186), поэтому крестик отключаемый. */}
         {showCross && (
-        <button
-          type="button"
-          aria-label="Закрыть"
+        /* Дизайн-чек №3 №9: «Некорректное начертание крестика… ещё
+           заметил в toast message». У крестика два самостоятельных рисунка,
+           и 24px-коробка должна получать 24px-глиф, иначе линии выходят на
+           треть толще макета. Размер здесь меняется брейкпоинтом (16 → 24),
+           поэтому выбирать приходится в JS, а не вариантом. */
+        <CloseCross
+          size={isDesktop ? 24 : 16}
           onClick={onClose}
-          className="shrink-0 text-[var(--toast-close-fg)] outline-none"
-        >
-          {/* Дизайн-чек №3 №9: «Некорректное начертание крестика… ещё
-              заметил в toast message». У крестика два самостоятельных
-              рисунка, и 24px-коробка должна получать 24px-глиф, иначе
-              линии выходят на треть толще макета. Размер коробки здесь
-              меняется брейкпоинтом (16 → 24), а рисунок — пропом, поэтому
-              выбирать приходится в JS. */}
-          <X
-            size={isDesktop ? 24 : 16}
-            aria-hidden="true"
-            className="size-4 desktop:size-6"
-          />
-        </button>
+          className="text-[var(--toast-close-fg)]"
+        />
         )}
       </div>
     </div>

@@ -82,7 +82,7 @@ function TabButton({
       onClick={onClick}
       data-slot="tabs-item"
       data-active={active || undefined}
-      className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 outline-none disabled:cursor-not-allowed"
+      className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 outline-none focus-visible:focus-ring disabled:cursor-not-allowed"
     >
       <span
         className={cn(
@@ -193,7 +193,7 @@ function Tabs({
                 // Figma pads it 2px and widens the gap to 18px to keep the
                 // trigger the full 40px — otherwise its underline floats
                 // above the bar's bottom border.
-                className="group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none desktop:gap-4 desktop:pt-0"
+                className="group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none focus-visible:focus-ring desktop:gap-4 desktop:pt-0"
               />
             }
           >

@@ -2,6 +2,7 @@ import * as React from "react"
 import { Info, Copy } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { NoOrphan } from "@/lib/no-orphan"
 import { Tooltip } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/toast-message"
 
@@ -86,22 +87,35 @@ function InfoIcon({
   large?: boolean
 }) {
   return (
-    <span
-      className={cn(
-        "relative ml-2 inline-flex shrink-0 align-baseline",
-        large ? "top-[-4px]" : "top-[2px]"
-      )}
-    >
-      <Tooltip content={content}>
-        <button
-          type="button"
-          aria-label="Информация"
-          className="flex size-4 shrink-0 items-center justify-center text-[var(--ifield-icon-fg)] outline-none"
-        >
-          <Info aria-hidden="true" className="size-4" />
-        </button>
-      </Tooltip>
-    </span>
+    // ⚠️ Значок-подсказка стоит ИНЛАЙНОМ внутри переносимого текста, поэтому
+    // на узких ширинах он уезжал на новую строку один: у подписи это
+    // случалось на 45 ширинах из 301, у значения — на 36.
+    //
+    // `NoOrphan` — ОТДЕЛЬНАЯ обёртка вокруг коробки значка, а не её замена:
+    // сам значок `inline-flex`, то есть атомарный инлайновый бокс, и перед
+    // таким боксом у браузера своя точка переноса. Слить их в один узел —
+    // значит оставить эту точку снаружи, и приём перестаёт работать
+    // (замерено: 24 одиноких значка из 271 ширины вместо нуля).
+    <NoOrphan>
+      <span
+        className={cn(
+          // Зазор 8 складывается из неразрывного пробела спейсера (~4) и
+          // этих 4.
+          "relative ml-1 inline-flex shrink-0 align-baseline",
+          large ? "top-[-4px]" : "top-[2px]"
+        )}
+      >
+        <Tooltip content={content}>
+          <button
+            type="button"
+            aria-label="Информация"
+            className="flex size-4 shrink-0 items-center justify-center text-[var(--ifield-icon-fg)] outline-none focus-visible:focus-ring"
+          >
+            <Info aria-hidden="true" className="size-4" />
+          </button>
+        </Tooltip>
+      </span>
+    </NoOrphan>
   )
 }
 
@@ -142,7 +156,7 @@ function CopyButton({
       onClick={handleCopy}
       aria-label="Копировать"
       className={cn(
-        "relative flex shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none transition-colors before:absolute before:-inset-2 before:content-[''] hover:text-[var(--ifield-copy-fg-hover)]",
+        "relative flex shrink-0 items-center justify-center text-[var(--ifield-copy-fg)] outline-none focus-visible:focus-ring transition-colors before:absolute before:-inset-2 before:content-[''] hover:text-[var(--ifield-copy-fg-hover)]",
         large ? "size-6" : "size-4",
         COPY_OFFSET[type]
       )}

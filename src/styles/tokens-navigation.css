@@ -133,7 +133,7 @@
      не --header-menu-toggle-hover-bg с тем же значением: совпадение цвета
      здесь случайно, это разные элементы с разными макетами. */
   --header-bg: var(--white-101);
-  --header-border: var(--grey-134);
+  --header-border: var(--divider);
   --header-fg: var(--grey-1514);
   --header-meta-fg: var(--grey-284);
   --header-icon-fg: var(--grey-1514);
@@ -141,7 +141,7 @@
   --header-item-hover-bg: var(--grey-114);
   --header-logout-hover-bg: var(--grey-106);
   --header-menu-toggle-hover-bg: var(--grey-106);
-  --header-divider: var(--grey-134);
+  --header-divider: var(--divider);
   --header-check-fg: var(--blue-254);
   --header-logout-fg: var(--red-418);
   --header-unread-dot: var(--red-418);

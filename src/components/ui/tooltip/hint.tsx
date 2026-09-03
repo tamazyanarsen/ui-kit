@@ -151,7 +151,7 @@ function Hint({
                 {showCross && (
                   <PopoverPrimitive.Close
                     aria-label="Закрыть"
-                    className="shrink-0 text-[var(--tooltip-fg)] outline-none"
+                    className="shrink-0 text-[var(--tooltip-fg)] outline-none focus-visible:focus-ring"
                   >
                     <X aria-hidden="true" className="size-4" />
                   </PopoverPrimitive.Close>

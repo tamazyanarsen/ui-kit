@@ -1,6 +1,5 @@
 import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
-import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
@@ -10,6 +9,7 @@ import {
   arrowPositionClass,
   type TooltipDirection,
 } from "./variants"
+import { CloseCross } from "@/components/ui/close-cross"
 
 // Tooltip — hover-triggered, smaller sibling of Hint (see hint.tsx). Per the
 // spec: opens after a 400ms hover delay (so moving the cursor across the page
@@ -77,14 +77,10 @@ function Tooltip({
                     <div>{content}</div>
                   </div>
                   {showCross && (
-                    <button
-                      type="button"
-                      aria-label="Закрыть"
+                    <CloseCross
                       onClick={() => setOpen(false)}
-                      className="shrink-0 text-[var(--tooltip-fg)] outline-none"
-                    >
-                      <X aria-hidden="true" className="size-4" />
-                    </button>
+                      className="text-[var(--tooltip-fg)]"
+                    />
                   )}
                   <span
                     aria-hidden="true"

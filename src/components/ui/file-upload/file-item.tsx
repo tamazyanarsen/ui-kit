@@ -145,7 +145,7 @@ export function FileListItem({
             type="button"
             aria-label="Загрузить заново"
             onClick={onRetry}
-            className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none"
+            className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
           >
             <Download aria-hidden="true" className="size-4" />
           </button>
@@ -155,7 +155,7 @@ export function FileListItem({
             type="button"
             aria-label="Удалить файл"
             onClick={onRemove}
-            className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none"
+            className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
           >
             <X aria-hidden="true" className="size-4" />
           </button>

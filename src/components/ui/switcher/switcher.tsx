@@ -94,7 +94,7 @@ function SegmentButton({
         // Weight lives in SEGMENT_PADDING's text-pN-medium (passed in via
         // `className` below), not here — kept separate since size and
         // weight ship together as one Figma-named style per size.
-        "flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
+        "flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
         activeBg,
         className
       )}
@@ -187,7 +187,7 @@ function Switcher({
                 type="button"
                 aria-label="Ещё"
                 data-slot="switcher-overflow-trigger"
-                className="flex shrink-0 cursor-pointer items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none transition-colors hover:bg-[var(--switcher-hover-bg)]"
+                className="flex shrink-0 cursor-pointer items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--switcher-hover-bg)]"
               />
             }
           >

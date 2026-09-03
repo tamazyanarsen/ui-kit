@@ -51,7 +51,7 @@ function FilterBoolean({
         onClick?.(event)
       }}
       className={cn(
-        "max-w-64 min-w-20 cursor-pointer truncate outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed",
+        "max-w-64 min-w-20 cursor-pointer truncate outline-none focus-visible:focus-ring disabled:cursor-not-allowed",
         filterTablePillClass({ selected: active, disabled }),
         className
       )}

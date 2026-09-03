@@ -45,7 +45,7 @@ function StarRating({
               aria-label={`${star} из 5, ${RATING_LABELS[star]}`}
               onMouseEnter={() => setHoverValue(star)}
               onClick={() => onChange(star)}
-              className="cursor-pointer outline-none"
+              className="cursor-pointer outline-none focus-visible:focus-ring"
             >
               <Star
                 aria-hidden="true"

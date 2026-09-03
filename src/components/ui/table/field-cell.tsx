@@ -44,6 +44,8 @@ function fieldCellProps<Row>(
     type: spec.cell,
     align: fieldAlign(field),
     description: field.description?.(row),
+    descriptionSign: field.descriptionSign?.(row),
+    descriptionSignTone: field.descriptionSignTone?.(row),
   }
 
   // Слотовые типы значение не показывают — они его отдают компоненту.
@@ -197,7 +199,7 @@ function FieldLink({
   return (
     <a
       href={href}
-      className="text-link outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="text-link outline-none focus-visible:focus-ring"
       onClick={(event) => {
         event.stopPropagation()
         onClick?.()

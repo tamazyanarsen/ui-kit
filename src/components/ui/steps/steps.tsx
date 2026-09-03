@@ -238,6 +238,7 @@ function Steps({
       <div
         ref={stripRef}
         data-slot="steps-strip"
+        data-scroll-window=""
         className="flex items-stretch gap-4 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {steps.map((step, index) => (

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CircleAlert, X } from "@/icons"
+import { CircleAlert } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import {
   TOP_FIXED_MESSAGE_ICON_COLOR,
   type TopFixedMessageType,
 } from "./variants"
+import { CloseCross } from "@/components/ui/close-cross"
 
 // Top Fixed Message — "Закреплённое сообщение". Full-width, sits flush
 // under the header (0px offset) and scrolls together with the page
@@ -79,17 +80,14 @@ function TopFixedMessage({
       </div>
 
       {showIconClose && (
-        <button
-          type="button"
-          aria-label="Закрыть"
+        /* Дизайн-чек №3 №9: «Некорректное начертание крестика».
+           Коробка 24px — значит и рисунок 24px (`icon / close cross`,
+           нода 263:6442), а не 16px, растянутый в полтора раза. */
+        <CloseCross
+          size={24}
           onClick={onClose}
-          className="shrink-0 text-[var(--top-fixed-message-close-fg)] outline-none"
-        >
-          {/* Дизайн-чек №3 №9: «Некорректное начертание крестика».
-              Коробка 24px — значит и рисунок 24px (`icon / close cross`,
-              нода 263:6442), а не 16px, растянутый в полтора раза. */}
-          <X size={24} aria-hidden="true" className="size-6" />
-        </button>
+          className="text-[var(--top-fixed-message-close-fg)]"
+        />
       )}
     </div>
   )

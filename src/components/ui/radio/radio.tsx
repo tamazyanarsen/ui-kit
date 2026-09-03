@@ -70,7 +70,7 @@ function Radio({
         // возвращает тёмное кольцо, которого в макете (600:8823 / 600:8829) нет.
         "not-data-[disabled]:not-data-[checked]:hover:border-[var(--radio-border-hover)]",
         "data-[checked]:border-transparent data-[checked]:bg-[var(--radio-checked-bg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--radio-checked-bg-hover)]",
-        "focus-visible:ring-3 focus-visible:ring-ring/50",
+        "focus-visible:focus-ring",
         "data-[disabled]:cursor-not-allowed data-[disabled]:!border-[var(--radio-disabled-border)] data-[disabled]:!bg-[var(--radio-disabled-bg)]",
         invalid && "!border-[var(--radio-border-error)]",
         className

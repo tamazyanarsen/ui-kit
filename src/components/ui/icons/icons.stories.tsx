@@ -21,7 +21,10 @@ function IconTile({ name }: { name: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
-    navigator.clipboard?.writeText(`<Icon name="${name}" />`)
+    // Отклонение промиса гасим осознанно: в витрине иконок копирование —
+        // удобство, и небезопасный контекст или снятый фокус не повод ронять
+        // необработанное отклонение в консоль.
+        navigator.clipboard?.writeText(`<Icon name="${name}" />`).catch(() => {})
     setCopied(true)
     setTimeout(() => setCopied(false), 1200)
   }

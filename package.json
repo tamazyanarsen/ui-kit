@@ -336,6 +336,7 @@
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.0.3",
+    "echarts": "^6.1.0",
     "jsdom": "^29.1.1",
     "oxlint": "^1.71.0",
     "react": "^18.3.1",

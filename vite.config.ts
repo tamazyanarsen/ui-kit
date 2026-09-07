@@ -116,5 +116,11 @@ export default defineConfig(({ command }) => ({
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
+    // Тесты кита живут только в `src`. Ограничение появилось, когда в
+    // `design_check/` лёг чужой проект (`charts-test` на Jest): vitest
+    // подхватывал его `*.test.js`, падал на `it is not defined` и красил
+    // весь прогон — при 423 зелёных тестах кита. Это не наш код и не наш
+    // раннер, поэтому он просто не входит в выборку.
+    include: ["src/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
   },
 }))

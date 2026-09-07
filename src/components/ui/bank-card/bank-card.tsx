@@ -76,7 +76,14 @@ function BankCard({
     setSide(side === "face" ? "back" : "face")
   }
 
-  function toggleReveal(field: "number" | "cvc") {
+  // Показать реквизит и положить его в буфер — два разных действия, и
+  // сообщение относится только ко второму. `writeText` штатно отклоняется
+  // (небезопасный контекст, отказ в разрешении, документ не в фокусе), а
+  // тост «Номер карты скопирован» раньше показывался и в этом случае —
+  // вместе с необработанным отклонением промиса. Раскрытие при этом
+  // остаётся: пользователь всё равно видит номер и может списать его
+  // руками.
+  async function toggleReveal(field: "number" | "cvc") {
     if (revealed === field) {
       setRevealed(null)
       return
@@ -84,8 +91,12 @@ function BankCard({
     setRevealed(field)
     const value = field === "number" ? cardNumber : cvc
     const label = field === "number" ? "Номер карты скопирован" : "CVC-код скопирован"
-    navigator.clipboard?.writeText(value.replace(/\s/g, ""))
-    add({ type: "checked", title: label, timeout: 3000 })
+    try {
+      await navigator.clipboard?.writeText(value.replace(/\s/g, ""))
+      add({ type: "checked", title: label, timeout: 3000 })
+    } catch {
+      add({ type: "error", title: "Не удалось скопировать", timeout: 3000 })
+    }
   }
 
   return (

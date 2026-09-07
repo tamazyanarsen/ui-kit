@@ -145,9 +145,21 @@ function CopyButton({
   const toast = useToast()
   const large = type === "large-value"
 
-  function handleCopy() {
-    navigator.clipboard.writeText(copyValue)
-    toast.add({ type: "checked", title: "Скопировано в буфер обмена" })
+  // Тост показывается по РЕЗУЛЬТАТУ записи, а не рядом с её вызовом.
+  //
+  // `writeText` возвращает промис и штатно отклоняется: небезопасный
+  // контекст (http), отказ в разрешении, документ не в фокусе. Раньше
+  // промис не обрабатывался вовсе — и это давало сразу два дефекта:
+  // необработанное отклонение в консоли и тост «Скопировано в буфер
+  // обмена» в тот момент, когда не скопировалось ничего. Поймано сплошным
+  // прогоном историй: копирование в неактивном кадре отклонялось молча.
+  async function handleCopy() {
+    try {
+      await navigator.clipboard?.writeText(copyValue)
+      toast.add({ type: "checked", title: "Скопировано в буфер обмена" })
+    } catch {
+      toast.add({ type: "error", title: "Не удалось скопировать" })
+    }
   }
 
   return (

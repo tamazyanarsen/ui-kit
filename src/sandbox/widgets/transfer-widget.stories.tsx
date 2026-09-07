@@ -102,7 +102,7 @@ function TransferWidget() {
 }
 
 const meta = {
-  title: "Компоненты/Перевод между счетами",
+  title: "Песочница/Виджет: перевод между счетами",
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (

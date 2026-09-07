@@ -182,6 +182,18 @@ function ToastCard({
 // Toaster — the fixed viewport. Per the spec: desktop top-right, 32px
 // from the header, 40px from the right edge, 24px gap between stacked
 // toasts; mobile: top, 16px edge padding.
+//
+// «От ШАПКИ», а не от края вьюпорта — и это разные числа, как только шапка
+// закреплена (`Header pinned`). Отсчёт от нуля клал тост ПОВЕРХ шапки,
+// закрывая переключатель организации и значки уведомлений; поймано на
+// песочном экране «Реестр заявок на аккредитив», где тост нарисован ниже
+// шапки, а рисовался на ней.
+//
+// Занятую высоту публикует сама шапка (`useViewportInsetTop`), и это тот же
+// механизм, которым уже пользуются липкая шапка таблицы сверху и полоса
+// прокрутки снизу (`--viewport-inset-bottom`). Отступ спецификации (16
+// мобильный / 32 десктопный) прибавляется к нему, а не заменяет: без
+// закреплённой шапки переменная равна нулю и поведение прежнее.
 function Toaster() {
   const { toasts, close } = useToast()
 
@@ -189,7 +201,7 @@ function Toaster() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed inset-x-4 top-4 z-50 flex flex-col gap-6 desktop:inset-x-auto desktop:top-8 desktop:right-10 desktop:w-[480px]"
+      className="fixed inset-x-4 top-[calc(var(--viewport-inset-top,0px)+1rem)] z-50 flex flex-col gap-6 desktop:inset-x-auto desktop:top-[calc(var(--viewport-inset-top,0px)+2rem)] desktop:right-10 desktop:w-[480px]"
     >
       {toasts.map((toast) => (
         <ToastCard key={toast.id} toast={toast} onClose={() => close(toast.id)} />

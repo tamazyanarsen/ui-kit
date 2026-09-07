@@ -106,11 +106,22 @@ interface HeaderProps {
   /**
    * Закрепить шапку у верха вьюпорта.
    *
+   * ⚠️ Закрепляется НЕ ВСЯ шапка. Дизайн-чек от 07.09, замечание 29: «У
+   * компонента Header при скролле не открепилась верхняя часть. Должна
+   * открепляться, закрепляется только вторая строка с кнопками и
+   * закреплённой навигацией». То есть верхний ряд (логотип, уведомления,
+   * профиль) уезжает вместе со страницей, а прилипает только нижний.
+   *
+   * Исключение — шапки БЕЗ нижнего ряда (сотрудник, неавторизованный вход):
+   * там прилипать нечему, и закрепляется вся шапка, как раньше.
+   *
    * Кроме самого `sticky` это включает публикацию занятой высоты в
    * `--viewport-inset-top`: липкая шапка ТАБЛИЦЫ читает её по умолчанию и
    * поэтому не уезжает под шапку страницы. Дефект был у всех длинных
    * таблиц сразу, и чинится он здесь — странице не нужно передавать отступ
-   * в каждую таблицу руками.
+   * в каждую таблицу руками. Меряется при этом ИМЕННО ЗАКРЕПЛЁННЫЙ узел:
+   * если мерить весь корень, то после того как он уедет вверх, перекрытие
+   * посчитается нулевым, а нижний ряд всё ещё будет закрывать верх экрана.
    *
    * Умолчание — выключено: закрепление задаёт каркас страницы, а витрины
    * кита ставят шапку в поток.
@@ -178,10 +189,18 @@ function Header({
     if (!showNavRow) setOpenPanel(null)
   }, [showNavRow])
 
-  // Занятый верх вьюпорта публикуется отсюда — см. `pinned`. Величина
-  // МЕРЯЕТСЯ: ряд навигации бывает скрыт, и высота шапки от этого меняется.
+  // Что именно закрепляется — см. `pinned`. Если нижний ряд есть, липнет
+  // только он; если его нет, липнет вся шапка.
+  const pinnedRow = pinned && showNavRow
+  const pinnedRoot = pinned && !showNavRow
+
+  // Занятый верх вьюпорта публикуется отсюда. Величина МЕРЯЕТСЯ у того
+  // узла, который реально закреплён, — оба вызова живут рядом, неактивный
+  // просто ничего не публикует.
   const rootRef = React.useRef<HTMLDivElement>(null)
-  useViewportInsetTop(rootRef, pinned)
+  const navRowRef = React.useRef<HTMLDivElement>(null)
+  useViewportInsetTop(rootRef, pinnedRoot)
+  useViewportInsetTop(navRowRef, pinnedRow)
 
   return (
     <div
@@ -191,8 +210,21 @@ function Header({
       data-client-type={type === "client" ? clientHeaderType : undefined}
       data-pinned={pinned || undefined}
       className={cn(
-        "relative flex w-full flex-col bg-[var(--header-bg)]",
-        pinned && "sticky top-0 z-40",
+        // ⚠️ `display: contents`, когда липнет только нижний ряд.
+        //
+        // `position: sticky` ограничен коробкой СВОЕГО РОДИТЕЛЯ: пока
+        // нижний ряд лежал внутри обычного блока шапки, он уезжал вместе с
+        // ним, едва блок высотой 128px уходил за верх экрана (замерено:
+        // при scrollY=600 ряд стоял на −536, то есть не липнул вовсе).
+        // `contents` убирает коробку корня, и рядом становится родителем
+        // сама страница — ряд липнет на всю её высоту.
+        //
+        // Из-за этого фон переезжает на сами полосы: у корня его больше
+        // негде рисовать.
+        pinnedRow
+          ? "contents"
+          : "relative flex w-full flex-col bg-[var(--header-bg)]",
+        pinnedRoot && "sticky top-0 z-40",
         className
       )}
     >
@@ -237,58 +269,71 @@ function Header({
       </TopRow>
 
       {showNavRow && (
-        <NavRow
-          items={resolvedNavItems}
-          activeSection={activeSection}
-          menuOpen={openPanel === "menu"}
-          onMenuOpenChange={(open) => setOpenPanel(open ? "menu" : null)}
-          createOpen={openPanel === "create"}
-          onCreateOpenChange={(open) => setOpenPanel(open ? "create" : null)}
-          showCreate={showCreate}
-          favouritesEnabled={favouritesEnabled}
-        />
-      )}
-
-      {openPanel === "menu" && (
-        <MenuOverlay
-          onClose={() => setOpenPanel(null)}
-          footer={
-            favouritesEnabled && (
-              <Button
-                variant="secondary-white"
-                size="sm"
-                icon={Settings}
-                onClick={() => setFavouritesSettingsOpen(true)}
-              >
-                Настроить избранное
-              </Button>
-            )
-          }
+        // Обёртка нужна ровно затем, чтобы закрепление и раскрывающиеся
+        // панели считались от НИЖНЕГО РЯДА, а не от всей шапки: панель
+        // стоит `top-full`, и якорем ей обязан быть тот узел, который
+        // остаётся на экране.
+        <div
+          ref={navRowRef}
+          data-slot="header-pinned-row"
+          className={cn(
+            "relative bg-[var(--header-bg)]",
+            pinnedRow && "sticky top-0 z-40"
+          )}
         >
-          <HeaderMenu
-            groups={menuGroups}
-            banners={menuBanners}
-            favourites={favourites}
-            activeLink={activeSection}
-            // Звезда работает сразу, без «Сохранить»: подсказка пустого
-            // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
-            // его сюда». Новый раздел встаёт в конец ряда.
-            onFavouriteToggle={
-              onFavouritesChange &&
-              ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
-            }
-            showFavourites={favouritesEnabled}
-            // Панель ниже кнопки «Настроить избранное» не уезжает: 128px
-            // шапки + 32px отступа + 32px кнопки + 32px снизу = 14rem.
-            maxHeight="calc(100vh - 14rem)"
+          <NavRow
+            items={resolvedNavItems}
+            activeSection={activeSection}
+            menuOpen={openPanel === "menu"}
+            onMenuOpenChange={(open) => setOpenPanel(open ? "menu" : null)}
+            createOpen={openPanel === "create"}
+            onCreateOpenChange={(open) => setOpenPanel(open ? "create" : null)}
+            showCreate={showCreate}
+            favouritesEnabled={favouritesEnabled}
           />
-        </MenuOverlay>
-      )}
 
-      {openPanel === "create" && (
-        <MenuOverlay onClose={() => setOpenPanel(null)}>
-          <CreateMenu items={createItems} />
-        </MenuOverlay>
+        {openPanel === "menu" && (
+          <MenuOverlay
+            onClose={() => setOpenPanel(null)}
+            footer={
+              favouritesEnabled && (
+                <Button
+                  variant="secondary-white"
+                  size="sm"
+                  icon={Settings}
+                  onClick={() => setFavouritesSettingsOpen(true)}
+                >
+                  Настроить избранное
+                </Button>
+              )
+            }
+          >
+            <HeaderMenu
+              groups={menuGroups}
+              banners={menuBanners}
+              favourites={favourites}
+              activeLink={activeSection}
+              // Звезда работает сразу, без «Сохранить»: подсказка пустого
+              // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
+              // его сюда». Новый раздел встаёт в конец ряда.
+              onFavouriteToggle={
+                onFavouritesChange &&
+                ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
+              }
+              showFavourites={favouritesEnabled}
+              // Панель ниже кнопки «Настроить избранное» не уезжает: 128px
+              // шапки + 32px отступа + 32px кнопки + 32px снизу = 14rem.
+              maxHeight="calc(100vh - 14rem)"
+            />
+          </MenuOverlay>
+        )}
+
+        {openPanel === "create" && (
+          <MenuOverlay onClose={() => setOpenPanel(null)}>
+            <CreateMenu items={createItems} />
+          </MenuOverlay>
+        )}
+        </div>
       )}
 
       {onFavouritesChange && (

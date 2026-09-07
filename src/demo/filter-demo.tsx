@@ -23,8 +23,8 @@ function FilterTableExample() {
   return (
     <div className="rounded-lg border border-[#DEDEDE] p-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Filter label="Статус" value={status} onValueChange={setStatus} chip />
-        <Filter label="Сумма" value={amount} onValueChange={setAmount} chip />
+        <Filter label="Статус" value={status} onValueChange={setStatus} />
+        <Filter label="Сумма" value={amount} onValueChange={setAmount} />
       </div>
       <table className="mt-4 w-full text-left text-p2-regular">
         <thead>

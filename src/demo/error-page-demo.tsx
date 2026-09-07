@@ -16,7 +16,7 @@ function ErrorPageDemo() {
           <RowLabel>403 — доступ ограничен</RowLabel>
           <div className="rounded-lg border border-[#DEDEDE]">
             <ErrorPage
-              code="403"
+              type="403"
               title="Страница недоступна"
               description="У вас нет доступа для просмотра этой страницы. Вы можете вернуться на главную"
               buttonLabel="На главную"
@@ -28,7 +28,7 @@ function ErrorPageDemo() {
           <RowLabel>404 — страница не найдена</RowLabel>
           <div className="rounded-lg border border-[#DEDEDE]">
             <ErrorPage
-              code="404"
+              type="404"
               title="Страница не найдена"
               description="Возможно, она была удалена или вы перешли по неверной ссылке. Проверьте адрес ещё раз"
               buttonLabel="На главную"

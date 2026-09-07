@@ -60,7 +60,6 @@ function LettersTableHeader({
         {CHIPS.map((label) => (
           <Filter
             key={label}
-            chip
             label={label}
             value={chips[label] ?? null}
             onValueChange={(next) => onChipChange(label, next)}

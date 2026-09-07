@@ -1,15 +1,34 @@
 import { useMemo, useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import { Button } from "@/components/ui/button"
+import { CardBox } from "@/components/ui/card-box"
+import { EmptySearchResults } from "@/components/ui/empty-search"
 import { Filter } from "@/components/ui/filter"
 import { Table, TableHeader, TableBody, TableRow, TableHeadCell, TableCell } from "@/components/ui/table"
 import { Pagination } from "@/components/ui/pagination"
+import {
+  TableTop,
+  TableTopTitle,
+  TableTopToolbar,
+} from "@/components/ui/table-top"
 import type { TagColor } from "@/components/ui/tag"
 
 // Sandbox — "История операций": a filter bar + data table + pagination
 // wired together like a real transactions screen, not just one component's
 // own isolated states. Filtering/paging happen client-side over a fixed
 // dataset purely to demonstrate the components reacting to each other.
+//
+// Дизайн-чек от 07.09, замечание 27: «Такой комбинации не существует в ДС.
+// 1. В табличных блоках внешние паддинги равны нулю. 2. Напротив заголовка
+// стоит Chips, это невозможно, должна быть кнопка».
+//
+// Витрина была собрана мимо кита: белая коробка с `p-6` и своим радиусом
+// вместо `CardBox type="table"` (у которого внешние поля нулевые, а шапка
+// несёт свои 16), заголовок — `text-lg` мимо шкалы, а напротив него стоял
+// фильтр. Теперь это штатная связка `CardBox` → `TableTop` (`TableTopTitle`
+// с кнопкой в слоте `action`, фильтр — в панели `TableTopToolbar` под
+// заголовком) → `Table` → `Pagination`.
 
 interface Operation {
   id: string
@@ -54,20 +73,28 @@ function OperationsDashboard() {
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
-    <div className="flex w-[720px] flex-col gap-4 rounded-3xl border border-[#DEDEDE] bg-white p-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-[#252628]">История операций</h2>
-        <Filter
-          label="Статус"
-          background="grey"
-          value={status}
-          onValueChange={(next) => {
-            setStatus(next)
-            setPage(1)
-          }}
-          placeholder="Выполнен / В обработке / Отклонён"
+    <CardBox type="table" className="w-[720px]">
+      <TableTop>
+        <TableTopTitle
+          title="История операций"
+          action={
+            <Button variant="secondary-grey" size="sm">
+              Выписка
+            </Button>
+          }
         />
-      </div>
+        <TableTopToolbar>
+          <Filter
+            label="Статус"
+            value={status}
+            onValueChange={(next) => {
+              setStatus(next)
+              setPage(1)
+            }}
+            placeholder="Выполнен / В обработке / Отклонён"
+          />
+        </TableTopToolbar>
+      </TableTop>
 
       <Table>
         <TableHeader>
@@ -96,11 +123,18 @@ function OperationsDashboard() {
       </Table>
 
       {pageRows.length === 0 && (
-        <p className="py-8 text-center text-sm text-[#999999]">Операций с таким статусом нет</p>
+        // Пустая выдача — компонент кита, а не абзац мимо шкалы. Пагинатор
+        // при этом остаётся, но без номеров слева (замечание 24).
+        <EmptySearchResults title="Операций с таким статусом нет" />
       )}
 
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-    </div>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        showPages={pageRows.length > 0}
+      />
+    </CardBox>
   )
 }
 

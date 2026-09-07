@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Grid } from "@/components/ui/grid"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
 import {
@@ -96,11 +97,9 @@ function HeaderMenu({
   const buckets = distribute(groups, columns, offsets)
 
   const grid = (
-    <div
-      className={cn(
-        "grid w-full max-w-[1800px] grid-cols-12 gap-6 pt-4 pb-10",
-        maxHeight === undefined && "min-w-0"
-      )}
+    <Grid
+      columns
+      className={cn("pt-4 pb-10", maxHeight === undefined && "min-w-0")}
     >
       {buckets.map((bucket, index) => (
         <div
@@ -132,14 +131,14 @@ function HeaderMenu({
           ))}
         </div>
       ))}
-    </div>
+    </Grid>
   )
 
   return (
     <div
       data-slot="header-menu"
       className={cn(
-        "flex w-full flex-col items-center overflow-hidden rounded-b-[32px] bg-[var(--header-bg)] px-10",
+        "flex w-full flex-col items-center overflow-hidden rounded-b-[32px] bg-[var(--header-bg)]",
         className
       )}
     >
@@ -148,7 +147,7 @@ function HeaderMenu({
       ) : (
         // В макете у панели свой `ELK / scrollbar` с инсетом 8px справа
         // (нода 70303:53432) — то же, что рисует Scrollbar кита.
-        <Scrollbar className="w-full pr-2" style={{ maxHeight }}>
+        <Scrollbar inset="dropdown" className="w-full" style={{ maxHeight }}>
           <div className="flex w-full justify-center">{grid}</div>
         </Scrollbar>
       )}

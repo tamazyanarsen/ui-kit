@@ -66,13 +66,13 @@
       "types": "./dist/components/ui/card/index.d.ts",
       "import": "./dist/components/ui/card/index.js"
     },
+    "./card-account": {
+      "types": "./dist/components/ui/card-account/index.d.ts",
+      "import": "./dist/components/ui/card-account/index.js"
+    },
     "./card-box": {
       "types": "./dist/components/ui/card-box/index.d.ts",
       "import": "./dist/components/ui/card-box/index.js"
-    },
-    "./card-pictogram": {
-      "types": "./dist/components/ui/card-pictogram/index.d.ts",
-      "import": "./dist/components/ui/card-pictogram/index.js"
     },
     "./checkbox": {
       "types": "./dist/components/ui/checkbox/index.d.ts",
@@ -129,6 +129,10 @@
     "./filter-table": {
       "types": "./dist/components/ui/filter-table/index.d.ts",
       "import": "./dist/components/ui/filter-table/index.js"
+    },
+    "./grid": {
+      "types": "./dist/components/ui/grid/index.d.ts",
+      "import": "./dist/components/ui/grid/index.js"
     },
     "./header": {
       "types": "./dist/components/ui/header/index.d.ts",

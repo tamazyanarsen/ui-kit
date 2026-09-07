@@ -224,7 +224,6 @@ function FullExample({
               onValueChange={(next) =>
                 setValues((prev) => ({ ...prev, [label]: next }))
               }
-              chip
             />
           ))}
           {/* "Ещё фильтры" — `Show Last Chips` в макете; это `ELK / count

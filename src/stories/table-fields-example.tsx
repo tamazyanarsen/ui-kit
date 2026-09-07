@@ -214,7 +214,6 @@ function TableFieldsExample({
             {
               label: "Выбрано",
               value: `${selected.length} из ${allKeys.length}`,
-              className: "w-16",
             },
           ]}
           selectAllPagesCount={allKeys.length}

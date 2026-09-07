@@ -104,7 +104,18 @@ function Checkbox({
           center against it, while Desktop's 24px line-height already
           matches the box exactly (get_design_context on 600:8967 vs
           600:8960 — Desktop has no top offset, Mobile has pt-[2px]). */}
-      <span className="flex flex-col pt-0.5 desktop:pt-0">
+      {/* ⚠️ Порядок переворачивается на мобайле, а не на десктопе.
+          Дизайн-чек от 07.09, замечания 9 и 25: «Checkbox/Radio/Toggle в
+          варианте mobile должны ставить элемент СПРАВА от текста (не
+          слева)… для десктопа остаётся слева».
+
+          Переворот сделан `order` на текстовом блоке, а не перестановкой в
+          разметке: коробка обязана остаться первой в DOM — за ней ходят
+          `htmlFor`, порядок обхода с клавиатуры и чтение с экрана, и
+          менять их ради оформления нельзя. `flex-1` в мобильной форме
+          прижимает коробку к правому краю строки, а не оставляет её
+          болтаться сразу за текстом. */}
+      <span className="order-first flex flex-1 flex-col pt-0.5 desktop:order-none desktop:flex-none desktop:pt-0">
         {label && (
           <span
             className={cn(

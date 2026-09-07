@@ -3,7 +3,10 @@ import { useMemo, useState } from "react"
 import { AccordionList, AccordionListItem } from "@/components/ui/accordion-list"
 import { Button } from "@/components/ui/button"
 import { ButtonMenu } from "@/components/ui/button-menu"
-import { ItemInformationField } from "@/components/ui/item-information-field"
+import {
+  ItemInformationField,
+  ItemInformationFieldGroup,
+} from "@/components/ui/item-information-field"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import {
   Select,
@@ -175,7 +178,9 @@ function TrancheRequestScreen() {
                 title="Информация о договоре подряда"
                 titleAs="h3"
               >
-                <div className="flex flex-col gap-4">
+                {/* Дизайн-чек от 07.09, замечание 5: у Label Left зазор
+                    нулевой — был `gap-4`. */}
+                <ItemInformationFieldGroup>
                   <ItemInformationField
                     type="label-left"
                     label="Подрядчик"
@@ -191,7 +196,7 @@ function TrancheRequestScreen() {
                     label="Срок выполнения работ"
                     value="12.09.2022 — 30.09.2026"
                   />
-                </div>
+                </ItemInformationFieldGroup>
               </AccordionListItem>
             </AccordionList>
           </SandboxBlock>

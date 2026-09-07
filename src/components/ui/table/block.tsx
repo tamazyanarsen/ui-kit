@@ -17,14 +17,23 @@ import { cn } from "@/lib/utils"
 // So this is only the card: the 16px inset belongs to the elements inside it
 // (`TableTop` already carries its own p-16, `Pagination` its own), and the
 // rules between sections are the bottom borders the header/rows already
-// draw. `overflow-hidden` is what keeps the rows' full-bleed fills inside
-// the 16px radius.
+// draw. Подрезка по радиусу — то, что держит заливки строк во всю ширину
+// внутри 16px скругления.
+//
+// ⚠️ Подрезка именно `overflow-clip`, а не `overflow-hidden`. Дизайн-чек от
+// 07.09, замечание 32: «У таблиц всегда должна закрепляться нижняя полоса
+// горизонтальной прокрутки». Полоса — `sticky bottom-0`, а `overflow:
+// hidden` делает блок ПРОКРУЧИВАЕМОЙ областью: липкий потомок начинает
+// считаться от неё, а не от вьюпорта, и полоса замирала у нижней кромки
+// блока — на реестре аккредитивов это 733px ниже нижнего края экрана.
+// `overflow: clip` режет по тому же радиусу, но области прокрутки не
+// создаёт. То же исправлено у `CardBox type="table"` и у песочного блока.
 function TableBlock({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="table-block"
       className={cn(
-        "w-full overflow-hidden rounded-[16px] bg-[var(--table-bg)]",
+        "w-full overflow-clip rounded-[16px] bg-[var(--table-bg)]",
         className
       )}
       {...props}

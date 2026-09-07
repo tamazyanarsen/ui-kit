@@ -76,6 +76,22 @@ const meta = {
       description:
         "Размер плитки (свойство Large Icon мастера): true — L (48px на десктопе), false — M (40px)",
     },
+    // Дизайн-чек от 07.09, замечание 13: «пиктограмма должна быть просто
+    // компонентом Thumbnail». Тип плитки — его собственное свойство Type,
+    // и теперь он выбирается здесь, а не зашит в «иконку».
+    thumbnailType: {
+      name: "Thumbnail / Type",
+      control: "select",
+      options: [
+        "icon",
+        "check",
+        "question",
+        "clock",
+        "alert",
+        "alert-red",
+        "picture",
+      ],
+    },
   },
   args: {
     viewport: "desktop" as Viewport,
@@ -83,6 +99,7 @@ const meta = {
     title: "Ничего не найдено",
     description: "Попробуйте изменить параметры поиска",
     largeIcon: true,
+    thumbnailType: "icon",
     // По умолчанию кнопка включена: иначе её вариант и подпись не видно, а
     // Playground должен показывать все необязательные блоки (см. правило
     // «Playground покрывает все свойства»).
@@ -120,6 +137,8 @@ export const Matrix: Story = {
         { label: "Плитка L", props: { largeIcon: true } },
         { label: "Плитка M", props: { largeIcon: false } },
         { label: "Без иконки", props: { icon: null } },
+        // Плитка — это Thumbnail целиком, а не только его «иконочный» тип.
+        { label: "Статус", props: { thumbnailType: "alert" as const } },
       ]}
       rows={[
         { label: "Только заголовок", props: {} },

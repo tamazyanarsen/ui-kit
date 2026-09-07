@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils"
 import {
   ARROW_BASE,
   DIRECTION_PLACEMENT,
+  TOOLTIP_WIDTH,
   arrowPositionClass,
   type TooltipDirection,
+  type TooltipWidth,
 } from "./variants"
 import { CloseCross } from "@/components/ui/close-cross"
 
@@ -26,6 +28,12 @@ interface TooltipProps {
    * курсора, крестик нужен не всегда. */
   showCross?: boolean
   direction?: TooltipDirection
+  /**
+   * Режим ширины: `base` — 256px, `auto` — по содержимому.
+   *
+   * Дизайн-чек от 07.09, замечание 18 (см. `TOOLTIP_WIDTH` в variants.ts).
+   */
+  width?: TooltipWidth
   children: React.ReactElement
   className?: string
   /** Keeps the tooltip permanently closed while leaving the wrapper mounted.
@@ -42,6 +50,7 @@ function Tooltip({
   title,
   showCross = false,
   direction = "top-center",
+  width = "base",
   children,
   className,
   disabled = false,
@@ -94,7 +103,8 @@ function Tooltip({
               className={cn(
                 // Раскладка та же, что у Hint: текстовая колонка и крестик —
                 // соседи в одной строке (gap-2), а не «иконка над текстом».
-                "relative flex max-w-64 items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+                "relative flex items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+                TOOLTIP_WIDTH[width],
                 className
               )}
             />

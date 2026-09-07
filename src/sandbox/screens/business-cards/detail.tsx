@@ -14,6 +14,7 @@ import {
   TableTop,
   TableTopSummary,
   TableTopSummaryItem,
+  TableTopTitle,
   TableTopToolbar,
 } from "@/components/ui/table-top"
 import { TitleCard } from "@/components/ui/title"
@@ -186,11 +187,17 @@ function BusinessCardDetail() {
             </SandboxSection>
           </SandboxBlock>
 
-          <SandboxBlock padding={0}>
-            <div className="px-8 pt-8">
-              <SandboxSection title="История операций" gap={0} />
-            </div>
+          <SandboxBlock padding={0} className="gap-0">
+            {/* Дизайн-чек от 07.09, замечание 30: «Слишком большие паддинги.
+                Перепроверить компонент Table Top, судя по всему, он собран
+                неправильно». Собран он верно (прозрачная колонка с полем 16
+                и одной линией снизу) — неправильно был собран ЭКРАН:
+                заголовок стоял отдельным узлом с `px-8 pt-8`, а между ним и
+                шапкой таблицы работал зазор блока 32. В сумме над панелью
+                фильтров набегало 48px пустоты. Заголовок — это `TableTopTitle`
+                внутри самой шапки, там же он получает свои 16. */}
             <TableTop>
+              <TableTopTitle title="История операций" />
               <TableTopToolbar>
                 <div className="w-[260px]">
                   <Input
@@ -206,7 +213,6 @@ function BusinessCardDetail() {
                 {CHIPS.map((label) => (
                   <Filter
                     key={label}
-                    chip
                     label={label}
                     value={chips[label] ?? null}
                     onValueChange={(next) => {

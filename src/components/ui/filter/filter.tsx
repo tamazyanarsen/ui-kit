@@ -15,13 +15,18 @@ import { FilterTrigger } from "./filter-trigger"
 // a value, popup closed; click clears without reopening) per chips-filter's
 // own "Варианты — поведение Select" row.
 //
-// `chip` opts into the *other* documented look: the filter renders as
-// `ELK / filter-table` (node 1303:99241), the capsule used in the filter bar
-// above a table — grey #F4F4F4 with a chevron while empty (its Checked=False,
-// Select=True variant) and dark #012F42 with a close cross once it has a
-// value (Checked=True). Both looks are genuinely in the specs, so it's a prop
-// rather than a guess at which one is "right": default off keeps
-// chips-filter's own documented behavior, and Table Top opts in.
+// Видов вызова у фильтра два, и оба есть в макетах:
+//
+//   • `table-filter` — пилюля `ELK / filter-table` (нода 1303:99241): серая
+//     #F4F4F4 с шевроном, пока пусто, и тёмная #012F42 с крестиком, когда
+//     значение выбрано. Это ВИД ПО УМОЛЧАНИЮ;
+//   • `chips` — коробка chips-filter.
+//
+// Дизайн-чек от 07.09, замечание 17: «Не тот элемент вызова фильтра. В
+// компоненте Filter по умолчанию используется не Chips, а Table Filter».
+// Раньше умолчанием была коробка, а пилюля включалась пропом `chip` — то
+// есть каждый реестр в песочнице обязан был не забыть его передать, и
+// витрина фильтра показывала не тот вид, который в продукте основной.
 //
 // Внешний вид триггера целиком живёт в `filter-trigger.tsx`; здесь —
 // состояние значения и попап с полем ввода.
@@ -34,7 +39,8 @@ interface FilterProps {
   value?: string | null
   defaultValue?: string | null
   onValueChange?: (value: string | null) => void
-  chip?: boolean
+  /** Вид элемента вызова — см. комментарий выше. */
+  variant?: "table-filter" | "chips"
   open?: boolean
   onOpenChange?: (open: boolean) => void
   placeholder?: string
@@ -50,7 +56,7 @@ function Filter({
   value,
   defaultValue = null,
   onValueChange,
-  chip = false,
+  variant = "table-filter",
   open: openProp,
   onOpenChange,
   placeholder = "Введите значение",
@@ -124,8 +130,8 @@ function Filter({
           background={background}
           count={count}
           disabled={disabled}
-          asChip={chip}
-          chipChecked={chip && hasValue}
+          asChip={variant === "table-filter"}
+          chipChecked={variant === "table-filter" && hasValue}
           open={open}
           hasValue={hasValue}
           activeValue={activeValue}

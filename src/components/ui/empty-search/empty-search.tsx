@@ -3,7 +3,7 @@ import { CircleAlert } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Thumbnail } from "@/components/ui/thumbnail"
+import { Thumbnail, type ThumbnailType } from "@/components/ui/thumbnail"
 
 // EmptySearchResults — «Пустая страница» (`ELK / empty-page`, node
 // 70333:270): a centered info block for "nothing found" / "couldn't load"
@@ -19,6 +19,17 @@ import { Thumbnail } from "@/components/ui/thumbnail"
 // the same in both.
 interface EmptySearchResultsProps {
   icon?: React.ReactNode
+  /**
+   * Тип плитки — тот же `Type`, что у компонента `Thumbnail`.
+   *
+   * Дизайн-чек от 07.09, замечание 13: «Для Empty Page пиктограмма должна
+   * быть просто компонентом Thumbnail. Правки в ДС уже внесены». Плитка и
+   * раньше была инстансом `Thumbnail`, но тип был ЗАШИТ в `icon`, поэтому
+   * все статусные плитки миниатюры (check / question / clock / alert /
+   * alert-red) и картиночная `picture` пустой странице были недоступны — с
+   * точки зрения дизайнера пиктограмма была своя, а не компонент.
+   */
+  thumbnailType?: ThumbnailType
   /**
    * Размер плитки под иконку — свойство `Large Icon` мастера. Плитка в
    * макете это инстанс `ELK / thumbnail`, поэтому значения совпадают с его
@@ -54,6 +65,7 @@ interface EmptySearchResultsProps {
 
 function EmptySearchResults({
   icon,
+  thumbnailType = "icon",
   largeIcon = true,
   title,
   description,
@@ -65,12 +77,12 @@ function EmptySearchResults({
   className,
 }: EmptySearchResultsProps) {
   const isButtonVisible = showButton ?? buttonLabel != null
+  // Глиф нужен только плитке `icon`: у статусных типов Thumbnail рисует
+  // свой собственный, а у `picture` его нет вовсе.
+  const isIconTile = thumbnailType === "icon"
   const resolvedIcon =
-    icon === undefined ? (
-      <CircleAlert size={24} aria-hidden="true" />
-    ) : (
-      icon
-    )
+    icon === undefined ? <CircleAlert size={24} aria-hidden="true" /> : icon
+  const showThumbnail = isIconTile ? Boolean(resolvedIcon) : true
 
   return (
     <div
@@ -80,17 +92,18 @@ function EmptySearchResults({
         className
       )}
     >
-      {resolvedIcon && (
+      {showThumbnail && (
         // Плитка — не локальная вёрстка, а инстанс Thumbnail (в макете это
-        // буквально `ELK / thumbnail` с типом «иконка»): 8px радиус, фон
-        // Grey 106, глиф 24px.
+        // буквально `ELK / thumbnail`): 8px радиус, фон Grey 106, глиф 24px.
         <Thumbnail
-          type="icon"
+          type={thumbnailType}
           size={largeIcon ? "l" : "m"}
           icon={
-            <span className="flex items-center justify-center text-[var(--empty-search-icon-fg)] [&_svg]:size-6">
-              {resolvedIcon}
-            </span>
+            isIconTile ? (
+              <span className="flex items-center justify-center text-[var(--empty-search-icon-fg)] [&_svg]:size-6">
+                {resolvedIcon}
+              </span>
+            ) : undefined
           }
         />
       )}

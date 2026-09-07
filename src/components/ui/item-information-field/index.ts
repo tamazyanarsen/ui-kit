@@ -4,3 +4,5 @@ export type {
   FieldType,
   FieldStatus,
 } from "./item-information-field"
+export { ItemInformationFieldGroup } from "./group"
+export type { ItemInformationFieldGroupProps } from "./group"

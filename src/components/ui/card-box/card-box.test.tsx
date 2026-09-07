@@ -49,19 +49,35 @@ describe("CardBox", () => {
     expect(root).toHaveStyle({ "--card-box-max-h": "320px" })
   })
 
-  it("forces the scroll dividers when showScrollbar is true", () => {
+  // Дизайн-чек от 07.09, замечание 6: «При достижении края со стороны края
+  // не должен быть виден серый разделитель. Правило корневое». Раньше
+  // `showScrollbar` форсировал ОБА разделителя разом, и верхний светился у
+  // области, прокрученной в самый верх, — теперь сторону решает положение
+  // прокрутки, а проп умеет только погасить оба.
+  it("does not draw the top divider at the top of the scroll, even with showScrollbar", () => {
     const { container } = render(
       <CardBox type="small" title="Заголовок" showScrollbar>
         x
       </CardBox>
     )
-    // Верхний разделитель живёт на шапке отдельной линией, нижний — рамкой
-    // на полосе внизу.
+    // Верхний разделитель живёт на шапке отдельной линией.
     expect(
       container.querySelectorAll(".bg-\\[var\\(--card-box-divider\\)\\]")
-    ).toHaveLength(1)
+    ).toHaveLength(0)
+  })
+
+  it("hides both dividers when showScrollbar is false", () => {
+    const { container } = render(
+      <CardBox type="small" title="Заголовок" showScrollbar={false}>
+        x
+      </CardBox>
+    )
+    expect(
+      container.querySelectorAll(".bg-\\[var\\(--card-box-divider\\)\\]")
+    ).toHaveLength(0)
+    // Нижний — рамкой на полосе внизу.
     expect(
       container.querySelectorAll(".border-t-\\[var\\(--card-box-divider\\)\\]")
-    ).toHaveLength(1)
+    ).toHaveLength(0)
   })
 })

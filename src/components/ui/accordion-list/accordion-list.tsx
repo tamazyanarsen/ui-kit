@@ -99,7 +99,11 @@ function AccordionListItem({
           ? (value: string[]) => onOpenChange(value.includes(ITEM_VALUE))
           : undefined
       }
-      className={cn("w-full bg-white", className)}
+      // Дизайн-чек от 07.09, замечание 10: «Content Accordion не должен
+      // обладать собственным фоном… он просто лежит на подложке, у которой
+      // свои правила цвета». Было `bg-white` — из-за него строка рисовала
+      // белую полосу поверх серой подложки блока.
+      className={cn("w-full", className)}
     >
       <AccordionPrimitive.Item value={ITEM_VALUE}>
         <AccordionPrimitive.Header render={titleAs === "h4" ? <h4 /> : <h3 />}>

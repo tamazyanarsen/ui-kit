@@ -71,7 +71,7 @@ function OrganizationList({
     // Figma puts an `ELK / scrollbar` inside this list (node 46107:43566 —
     // 4px track, 2px radius, 8px inset), which is what the kit's Scrollbar
     // renders.
-    <Scrollbar className="flex max-h-100 flex-col">
+    <Scrollbar inset="dropdown" className="flex max-h-100 flex-col">
       {organizations.map((org) => (
         <MenuPrimitive.Item
           key={org.id}

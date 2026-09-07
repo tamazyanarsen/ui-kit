@@ -1,4 +1,4 @@
-export { SandboxPage, SandboxColumns, GRID_WIDTH, span } from "./page"
+export { SandboxPage, SandboxColumns } from "./page"
 export type { SandboxPageProps } from "./page"
 export {
   SandboxBlock,

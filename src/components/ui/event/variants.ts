@@ -1,11 +1,9 @@
 import type { TagColor } from "@/components/ui/tag/variants"
 
-export type EventStatus =
-  | "default"
-  | "success"
-  | "attention"
-  | "error"
-  | "information"
+// Дизайн-чек от 07.09, замечание 15: «Удалить вариант Information в
+// компоненте Event — не используем синий статус в продукте в 99% случаев,
+// отдельный вариант под это не нужен».
+export type EventStatus = "default" | "success" | "attention" | "error"
 
 // Signatory row icon tint — only "success"/"attention" ever occur here (see
 // EventSignatory["status"]); the tag pill above no longer needs its own
@@ -22,12 +20,10 @@ export const SIGNATORY_STATUS_COLOR: Record<
 
 // type="tag" renders the title as a <Tag> (reusing its palette instead of a
 // hand-rolled pill) — this mapping is what the standalone --event-status-*-bg
-// tokens above used to hardcode by hand, including a bug where "information"
-// silently fell back to grey instead of Tag's blue.
+// tokens above used to hardcode by hand.
 export const STATUS_TAG_COLOR: Record<EventStatus, TagColor> = {
   default: "grey",
   success: "green",
   attention: "orange",
   error: "red",
-  information: "blue",
 }

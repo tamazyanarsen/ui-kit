@@ -50,6 +50,18 @@ const meta = {
       options: SHOW_CHIPS,
     },
     submitted: { control: "boolean" },
+    // Дизайн-чек от 07.09, замечания 21 и 22.
+    floating: {
+      name: "Плавающее окно",
+      control: "boolean",
+      description:
+        "Правый нижний угол вьюпорта, слоем выше тостов (--z-nps > --z-toast)",
+    },
+    question: {
+      control: "text",
+      description:
+        "Вопрос под звёздами. Пусто — считается от оценки: у «Отлично» он другой",
+    },
     // Дизайн-чек №4 №8: className — не свойство компонента из макета.
     className: { table: { disable: true } },
   },
@@ -58,6 +70,7 @@ const meta = {
     showDescription: true,
     showChips: 5,
     submitted: false,
+    floating: false,
   },
 } satisfies Meta<PlaygroundArgs>
 

@@ -59,8 +59,16 @@ function Informer({
       // Size=Mobile is a 328px card with 16px padding, Size=Desktop a
       // 592px one (min 400) with 24px — the min-width was 360 and the
       // padding was desktop-only.
+      // ⚠️ Минимум взят `min(400px, 100%)`, а не голыми 400px. Дизайн-чек от
+      // 07.09, замечание 28: «Информер не должен вылезать за пределы блока…
+      // у информера не должно быть макс ширины, он должен встроиться в
+      // правила содержащего его блока». Жёсткие 400 — это именно то, что
+      // мешало: в узком виджете (перевод между счетами) карточка отказывалась
+      // сжиматься и вылезала за скруглённый край блока. `min()` оставляет
+      // спецификационный минимум там, где место есть, и снимает его там, где
+      // его нет.
       className={cn(
-        "rounded-[16px] p-4 desktop:min-w-[400px] desktop:p-6",
+        "rounded-[16px] p-4 desktop:min-w-[min(400px,100%)] desktop:p-6",
         className
       )}
       style={{ backgroundColor: SOLID_BG[solid] }}

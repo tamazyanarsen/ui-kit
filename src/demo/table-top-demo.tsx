@@ -115,13 +115,12 @@ function TableTopFilterSettingExample() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Filter label="Статус" value={status} onValueChange={setStatus} chip />
+        <Filter label="Статус" value={status} onValueChange={setStatus} />
         {moreOpen && (
           <Filter
             label="Менеджер"
             value={manager}
             onValueChange={setManager}
-            chip
           />
         )}
         {/* "Ещё фильтры" is an `ELK / count button` in the spec — the counter

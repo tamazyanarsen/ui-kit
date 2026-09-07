@@ -58,6 +58,14 @@ interface ItemInformationFieldProps {
   labelInfo?: React.ReactNode
   valueInfo?: React.ReactNode
   copyable?: boolean
+  /**
+   * Разделитель под строкой (только у типа Label Left).
+   *
+   * Три состояния: `undefined` — «как в списке» (линии нет у последней
+   * строки, правило `:last-child` в styles/base.css), `true`/`false` —
+   * явное решение вызывающего, оно сильнее правила списка. Причина та же,
+   * что у `Item.divider` (дизайн-чек от 07.09, замечание 20).
+   */
   divider?: boolean
   className?: string
 }
@@ -109,7 +117,10 @@ function InfoIcon({
           <button
             type="button"
             aria-label="Информация"
-            className="flex size-4 shrink-0 items-center justify-center text-[var(--ifield-icon-fg)] outline-none focus-visible:focus-ring"
+            // Дизайн-чек от 07.09, замечание 19: значок отзывается на
+            // наведение сам, а не только всплывающей через 400 мс
+            // подсказкой — иначе он читается как нарисованный.
+            className="flex size-4 shrink-0 cursor-help items-center justify-center text-[var(--ifield-icon-fg)] outline-none transition-colors hover:text-[var(--ifield-icon-fg-hover)] focus-visible:focus-ring"
           >
             <Info aria-hidden="true" className="size-4" />
           </button>
@@ -189,7 +200,7 @@ function ItemInformationField({
   labelInfo,
   valueInfo,
   copyable = false,
-  divider = true,
+  divider,
   className,
 }: ItemInformationFieldProps) {
   const large = type === "large-value"
@@ -243,13 +254,16 @@ function ItemInformationField({
     <div
       data-slot="item-information-field"
       data-type={type}
+      data-divider={divider === undefined ? undefined : divider ? "on" : "off"}
       className={cn(
         "flex items-start gap-4",
         // Only Label Left is a padded, ruled row; the other three are bare
         // content the container spaces out (16px) itself.
         type === "label-left" && "border-b pt-4 pb-[15px]",
         type === "label-left" &&
-          (divider ? "border-[var(--ifield-divider)]" : "border-transparent"),
+          (divider === false
+            ? "border-transparent"
+            : "border-[var(--ifield-divider)]"),
         className
       )}
     >

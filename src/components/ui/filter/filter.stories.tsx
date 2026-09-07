@@ -25,7 +25,15 @@ const meta = {
     placeholder: { control: "text" },
     background: { control: "inline-radio", options: ["white", "grey"] },
     count: { control: { type: "number", min: 0, max: 99 } },
-    chip: { control: "boolean" },
+    // Дизайн-чек от 07.09, замечание 17: «В компоненте Filter по умолчанию
+    // используется не Chips, а Table Filter».
+    variant: {
+      name: "Вид вызова",
+      control: "inline-radio",
+      options: ["table-filter", "chips"],
+      description:
+        "table-filter — пилюля над таблицей (умолчание), chips — коробка chips-filter",
+    },
     disabled: { control: "boolean" },
     // Forces the popup open — the Playground is `layout: "padded"` so it has
     // room to render below the trigger.
@@ -47,7 +55,7 @@ const meta = {
   args: {
     label: "Статус",
     background: "white",
-    chip: false,
+    variant: "table-filter",
     disabled: false,
     open: false,
     state: "default" as PlaygroundState,
@@ -96,8 +104,11 @@ export const Matrix: Story = {
           ],
         },
         {
-          label: "Chip (filter-table)",
-          columns: [{ label: "Chip", props: { chip: true } }],
+          label: "Вид вызова",
+          columns: [
+            { label: "table-filter", props: { variant: "table-filter" as const } },
+            { label: "chips", props: { variant: "chips" as const } },
+          ],
         },
       ]}
       rows={[

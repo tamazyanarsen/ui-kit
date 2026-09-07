@@ -14,8 +14,17 @@ const meta = {
   parameters: { layout: "padded" },
   argTypes: {
     orientation: { control: "inline-radio", options: ["vertical", "horizontal"] },
+    // Дизайн-чек от 07.09, замечание 26: «Для выпадающих списков Scrollbar
+    // не может вылезать за контур. Всегда у Scrollbar есть отступы… для
+    // скруглённых выпадающих списков отступ ещё больше».
+    inset: {
+      name: "Inset",
+      control: "inline-radio",
+      options: ["none", "dropdown", "rounded"],
+      description: "Отступ полосы от края поверхности: нет / 8px / 16px",
+    },
   },
-  args: { orientation: "vertical" },
+  args: { orientation: "vertical", inset: "dropdown" },
 } satisfies Meta<ScrollbarProps>
 
 export default meta
@@ -24,7 +33,7 @@ type Story = StoryObj<ScrollbarProps>
 export const Playground: Story = {
   render: (args) =>
     args.orientation === "horizontal" ? (
-      <Scrollbar {...args} className="w-80 rounded-2xl border bg-white p-4">
+      <Scrollbar {...args} className="w-80 rounded-2xl bg-white p-4">
         <div className="flex w-[900px] gap-4">
           {Array.from({ length: 6 }, (_, i) => (
             <div
@@ -37,7 +46,7 @@ export const Playground: Story = {
     ) : (
       <Scrollbar
         {...args}
-        className="h-52 w-56 rounded-2xl border bg-white py-2 pr-2 pl-4"
+        className="h-52 w-56 rounded-2xl bg-white py-2 pl-4"
       >
         <ul className="flex flex-col gap-3">
           {Array.from({ length: 8 }, (_, i) => (
@@ -64,7 +73,7 @@ export const Examples: Story = {
       >
         <Scrollbar
           orientation="vertical"
-          className="h-52 w-56 rounded-2xl border bg-white py-2 pr-2 pl-4"
+          className="h-52 w-56 rounded-2xl bg-white py-2 pl-4"
         >
           <ul className="flex flex-col gap-3">
             {Array.from({ length: 8 }, (_, i) => (
@@ -82,7 +91,7 @@ export const Examples: Story = {
       >
         <Scrollbar
           orientation="horizontal"
-          className="w-80 rounded-2xl border bg-white p-4"
+          className="w-80 rounded-2xl bg-white p-4"
         >
           <div className="flex w-[900px] gap-4">
             {Array.from({ length: 6 }, (_, i) => (

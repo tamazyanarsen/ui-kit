@@ -15,13 +15,42 @@ function MenuOverlay({
   footer?: React.ReactNode
   onClose: () => void
 }) {
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  // Высота — «до низа экрана», и посчитать её в CSS нечем.
+  //
+  // Раньше здесь стояло `h-[calc(100vh-8rem)]` — «экран минус шапка 128».
+  // Но с тех пор как закрепляется только НИЖНИЙ ряд шапки (дизайн-чек от
+  // 07.09, замечание 29), расстояние от верха экрана до низа этого ряда
+  // ходит между 128 (страница в самом верху) и 64 (верхний ряд уехал), и
+  // константа стала врать ровно на эту разницу: панель либо не доставала до
+  // низа экрана, либо вылезала за него и добавляла странице прокрутки.
+  //
+  // Поэтому величина МЕРЯЕТСЯ у самой панели — как и занятый верх вьюпорта
+  // в use-viewport-inset-top.
+  React.useLayoutEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    const measure = () => {
+      const { top } = element.getBoundingClientRect()
+      element.style.height = `${Math.max(0, window.innerHeight - top)}px`
+    }
+
+    measure()
+    window.addEventListener("scroll", measure, { passive: true, capture: true })
+    window.addEventListener("resize", measure)
+    return () => {
+      window.removeEventListener("scroll", measure, { capture: true })
+      window.removeEventListener("resize", measure)
+    }
+  }, [])
+
   return (
     <div
+      ref={ref}
       data-slot="header-menu-overlay"
-      // Высота — «экран минус шапка»: в макете Menu Overlay ровно 952 при
-      // экране 1080 и шапке 128 (64 + 64). Просто `h-screen` дал бы лишние
-      // 128px прокрутки документа.
-      className="absolute inset-x-0 top-full z-40 h-[calc(100vh-8rem)]"
+      className="absolute inset-x-0 top-full z-40"
     >
       <button
         type="button"

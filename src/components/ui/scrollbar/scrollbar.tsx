@@ -10,14 +10,24 @@ import { cn } from "@/lib/utils"
 // `:horizontal` scrollbar pseudo-classes, with `scrollbar-width: thin` as
 // Firefox's best-available (axis-uniform) fallback.
 //
-// This only supplies the themed look + overflow behavior for a single axis
-// each — the spec's own inset rules (8px top/bottom/right in a dropdown,
-// 16px left/right/bottom in a table) are layout decisions for the
-// *consumer* to apply via padding/className on their own content, not
-// something this wrapper should bake in, since those insets depend on
-// which component it's embedded in.
+// Отступ полосы от края поверхности компонент теперь УМЕЕТ САМ (проп
+// `inset`). Раньше это считалось задачей вызывающего — «пусть добавит
+// padding», — и оказалось, что так его в принципе не решить: нативная
+// полоса стоит по краю рамки, а не паддинга (подробности — у правила
+// `.themed-scrollbar[data-inset]` в styles/base.css). Дизайн-чек от 07.09,
+// замечание 26.
 interface ScrollbarProps extends React.ComponentProps<"div"> {
   orientation?: "vertical" | "horizontal"
+  /**
+   * Отступ полосы от края поверхности.
+   *
+   *   • `none` — полоса по краю коробки. Годится там, где Scrollbar сам и
+   *     есть край: прокручиваемая область страницы, тело таблицы;
+   *   • `dropdown` — 8px, норма для выпадающих списков и панелей;
+   *   • `rounded` — 16px, для скруглённых поверхностей, где 8 не хватает,
+   *     чтобы полоса не наезжала на закругление.
+   */
+  inset?: "none" | "dropdown" | "rounded"
 }
 
 // forwardRef because consumers need the scrolling node itself, not just its
@@ -25,12 +35,16 @@ interface ScrollbarProps extends React.ComponentProps<"div"> {
 // which edge divider to show. Under React 18 a plain function component here
 // would drop the ref outright (see the same constraint on Button/Dropdown).
 const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
-  function Scrollbar({ orientation = "vertical", className, ...props }, ref) {
+  function Scrollbar(
+    { orientation = "vertical", inset = "none", className, ...props },
+    ref
+  ) {
     return (
       <div
         ref={ref}
         data-slot="scrollbar"
         data-orientation={orientation}
+        data-inset={inset === "none" ? undefined : inset}
         // Окно прокрутки фокусируемо БЕЗ `tabindex` — браузер даёт его
         // само, чтобы область можно было листать клавиатурой. Маркер
         // ничего не добавляет в обход табом, он только выдаёт кольцо

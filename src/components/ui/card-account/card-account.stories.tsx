@@ -3,13 +3,13 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { StatesMatrix } from "@/stories/matrix"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 
-import { CardPictogram, type CardPictogramProps } from "./card-pictogram"
+import { CardAccount, type CardAccountProps } from "./card-account"
 
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
 
 const meta = {
-  title: "Компоненты/Card Pictogram",
-  component: CardPictogram,
+  title: "Компоненты/Card Account",
+  component: CardAccount,
   parameters: { layout: "centered" },
   argTypes: {
     paymentSystem: { control: "select", options: PAYMENT_SYSTEMS },
@@ -20,10 +20,10 @@ const meta = {
     paymentSystem: "mir",
     number: "4482",
   },
-} satisfies Meta<CardPictogramProps>
+} satisfies Meta<CardAccountProps>
 
 export default meta
-type Story = StoryObj<CardPictogramProps>
+type Story = StoryObj<CardAccountProps>
 
 export const Playground: Story = {}
 
@@ -31,7 +31,7 @@ export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
-    <StatesMatrix<CardPictogramProps>
+    <StatesMatrix<CardAccountProps>
       columns={PAYMENT_SYSTEMS.map((paymentSystem) => ({
         label: paymentSystem,
         props: { paymentSystem },
@@ -40,7 +40,7 @@ export const Matrix: Story = {
         { label: "С окончанием номера", props: { number: "4482" } },
         { label: "Без номера", props: { number: undefined } },
       ]}
-      render={(props) => <CardPictogram {...props} />}
+      render={(props) => <CardAccount {...props} />}
     />
   ),
 }

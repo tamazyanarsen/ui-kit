@@ -35,8 +35,14 @@ const PINNED_CLASS = "sticky bottom-0 z-30"
 interface ButtonMenuBlackInfoItem {
   label: React.ReactNode
   value: React.ReactNode
-  /** Figma fixes the first ("Выбрано") column at 64px; the rest size to
-   * content. Pass a width class here rather than baking one in. */
+  /**
+   * Дополнительные классы колонки.
+   *
+   * ⚠️ Ширину здесь задавать НЕ НУЖНО. Дизайн-чек от 07.09, замечание 4:
+   * «Не допускается перенос. Текст в 1 строку, ширина параметра
+   * динамическая». Раньше первой колонке («Выбрано») ставили `w-16` — 64px
+   * из макета, — и «3 документа» разваливалось на три строки.
+   */
   className?: string
 }
 
@@ -184,14 +190,21 @@ function ButtonMenuBlack({
             className="flex items-center gap-8 text-p2-medium"
           >
             {info.map((item, index) => (
+              // Дизайн-чек от 07.09, замечание 4: перенос не допускается,
+              // ширина колонки динамическая. `shrink-0` + `whitespace-nowrap`
+              // — это и есть «в одну строку»: без первого колонка сжималась
+              // соседями, без второго рвалась по пробелам.
               <div
                 key={index}
-                className={cn("flex flex-col items-start", item.className)}
+                className={cn(
+                  "flex shrink-0 flex-col items-start whitespace-nowrap",
+                  item.className
+                )}
               >
                 <span className="text-[var(--button-menu-black-muted-fg)]">
                   {item.label}
                 </span>
-                <span className="overflow-hidden text-ellipsis text-[var(--button-menu-black-fg)]">
+                <span className="text-[var(--button-menu-black-fg)]">
                   {item.value}
                 </span>
               </div>

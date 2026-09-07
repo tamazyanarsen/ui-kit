@@ -19,8 +19,10 @@ import {
 import {
   ARROW_BASE,
   DIRECTION_PLACEMENT,
+  TOOLTIP_WIDTH,
   arrowPositionClass,
   type TooltipDirection,
+  type TooltipWidth,
 } from "./variants"
 
 // Hint — click-triggered, dismissed via its own "X" or an outside click
@@ -40,6 +42,14 @@ interface HintProps {
   content: React.ReactNode
   showCross?: boolean
   direction?: TooltipDirection
+  /**
+   * Режим ширины: `base` — 256px, `auto` — по содержимому (до 592).
+   *
+   * Дизайн-чек от 07.09, замечание 18 (см. `TOOLTIP_WIDTH` в variants.ts).
+   * Раньше Hint был жёстко 592 — на десктопе это половина колонки, и
+   * короткая подсказка растягивалась во всю её ширину.
+   */
+  width?: TooltipWidth
   children: React.ReactElement
   open?: boolean
   defaultOpen?: boolean
@@ -52,6 +62,7 @@ function Hint({
   content,
   showCross = true,
   direction = "down-center",
+  width = "base",
   children,
   open,
   defaultOpen,
@@ -132,7 +143,8 @@ function Hint({
               // the *whole* text column (not just the title line), the
               // text column is narrower throughout, which changes the
               // wrap point for long body copy versus stacking icon-above.
-              "relative flex max-w-[592px] items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+              "relative flex items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+              TOOLTIP_WIDTH[width],
               className
             )}
             /* Дизайн-чек 3/3 №4: та же правка, что и у Tooltip — стрелка

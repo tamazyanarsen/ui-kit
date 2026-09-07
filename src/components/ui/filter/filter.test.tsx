@@ -52,10 +52,16 @@ describe("Filter", () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(
-      <Filter label="Статус" defaultValue="Оплачен" onValueChange={onValueChange} />
+      <Filter
+        label="Статус"
+        variant="chips"
+        defaultValue="Оплачен"
+        onValueChange={onValueChange}
+      />
     )
 
-    // A plain (non-chip) filter keeps showing its label, not the value.
+    // Коробка chips-filter показывает подпись, а не значение (в отличие от
+    // вида `table-filter`, который с этого чека стал умолчанием).
     await user.click(screen.getByText("Статус"))
     await user.click(await screen.findByRole("button", { name: "Сбросить" }))
 
@@ -75,8 +81,8 @@ describe("Filter", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
   })
 
-  it("renders the applied value as a dark chip when chip is set", () => {
-    render(<Filter label="Статус" defaultValue="Оплачен" chip />)
+  it("renders the applied value as a dark table-filter pill when set", () => {
+    render(<Filter label="Статус" defaultValue="Оплачен" />)
     expect(screen.getByText("Оплачен")).toBeInTheDocument()
     expect(screen.queryByText("Статус")).not.toBeInTheDocument()
   })

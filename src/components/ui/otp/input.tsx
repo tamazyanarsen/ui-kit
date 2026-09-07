@@ -83,7 +83,17 @@ function OtpInput({
         onChange={handleChange}
         {...codeProps}
         className={cn(
-          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none focus-visible:focus-ring desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em]",
+          // Дизайн-чек от 07.09, замечание 23: «Фокус на поле сделать
+          // невидимым — по умолчанию поле кода в фокусе имеет синюю рамку,
+          // её не нужно выводить». Поэтому здесь нет `focus-visible:focus-ring`.
+          //
+          // Доступность от этого не страдает: поле в карточке ОДНО и
+          // получает фокус само при открытии, а признак фокуса у него —
+          // мигающая каретка по центру подчёркивания (ровно так состояние
+          // Focus нарисовано в мастере). Рамка вокруг 368-пиксельной строки
+          // была бы не «кольцом вокруг контрола», а рамкой вокруг половины
+          // окна.
+          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em]",
           "placeholder:text-p2-medium placeholder: placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",
           invalid && "text-[var(--otp-error-fg)]",
           "disabled:cursor-not-allowed disabled:opacity-50",

@@ -245,7 +245,6 @@ function TableCompositionDemo() {
             {
               label: "Выбрано",
               value: allPagesSelected ? String(TOTAL_RECORDS) : String(selected.size),
-              className: "w-16",
             },
             { label: "На сумму", value: "400 000,02 ₽" },
           ]}

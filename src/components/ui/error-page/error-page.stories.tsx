@@ -19,14 +19,23 @@ const meta = {
   component: ErrorPage,
   parameters: { layout: "fullscreen" },
   argTypes: {
-    code: { control: "text" },
+    // Дизайн-чек от 07.09, замечание 14: «выбор из списка или радио.
+    // Варианты — 403, 404, Image». Свободная строка не годилась: компонент
+    // и так понимает ровно три значения, а панель предлагала вписать любое.
+    type: {
+      name: "Type",
+      control: "inline-radio",
+      options: ["403", "404", "image"],
+      description:
+        "Вариант страницы. 403 и 404 рисуют крупные цифры с маскотом вместо нуля, Image — обобщённую иллюстрацию без цифр",
+    },
     title: { control: "text" },
     description: { control: "text" },
     showButton: { name: "Кнопка", control: "boolean" },
     buttonLabel: { control: "text" },
   },
   args: {
-    code: "404",
+    type: "404",
     title: "Страница не найдена",
     description: "Возможно, она была перемещена или удалена",
     showButton: true,
@@ -55,7 +64,7 @@ export const Matrix: Story = {
         {
           label: "404",
           props: {
-            code: "404",
+            type: "404",
             title: "Страница не найдена",
             description: "Возможно, она была перемещена или удалена",
             buttonLabel: "На главную",
@@ -64,16 +73,20 @@ export const Matrix: Story = {
         {
           label: "403",
           props: {
-            code: "403",
+            type: "403",
             title: "Доступ запрещён",
             description: "У вас нет прав для просмотра этой страницы",
             buttonLabel: "На главную",
           },
         },
         {
-          label: "500",
+          // Любая другая ошибка (500, техработы) — это `Type=Image`:
+          // цифрового начертания в мастере под них нет вовсе. Раньше строка
+          // называлась «500» и передавала `code: "500"`, что выглядело как
+          // поддержанный вариант, а компонент молча рисовал ту же картинку.
+          label: "Прочие ошибки (Image)",
           props: {
-            code: "500",
+            type: "image",
             title: "Что-то пошло не так",
             description: "Мы уже работаем над этим — попробуйте позже",
             buttonLabel: "Обновить",
@@ -89,7 +102,7 @@ export const Matrix: Story = {
         },
         {
           label: "Без кнопки",
-          props: { code: "404", title: "Страница не найдена" },
+          props: { type: "404", title: "Страница не найдена" },
         },
       ]}
       render={(props) => <ErrorPage {...props} />}

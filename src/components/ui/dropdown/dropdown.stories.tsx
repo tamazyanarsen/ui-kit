@@ -113,7 +113,7 @@ function DropdownDemo({
       {mobile && <DropdownHeader title="Выберите раздел" />}
       {maxHeight > 0 ? (
         // У длинного списка появляется собственный ELK / scrollbar.
-        <Scrollbar className="pr-2" style={{ maxHeight }}>
+        <Scrollbar inset="dropdown" style={{ maxHeight }}>
           {list}
         </Scrollbar>
       ) : (

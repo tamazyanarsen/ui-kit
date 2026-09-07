@@ -14,13 +14,7 @@ import type { Viewport } from "@/lib/viewport"
 import { Event, type EventProps, type EventSignatory } from "./event"
 import type { EventStatus } from "./variants"
 
-const STATUSES: EventStatus[] = [
-  "default",
-  "success",
-  "attention",
-  "error",
-  "information",
-]
+const STATUSES: EventStatus[] = ["default", "success", "attention", "error"]
 
 /* Дизайн-чек №17: три списка события (подписанты, реквизиты, документы)
    раньше правились JSON-редактором. Теперь у каждого — счётчик, а сами
@@ -277,7 +271,11 @@ export const Matrix: Story = {
           description="Коннектор связывает соседние события; у последнего его нет."
         >
           <div className="w-full">
-            <Event title="Заявка создана" timestamp="09:00" author="Иванов И.И." />
+            {/* Дизайн-чек от 07.09, замечание 16: «Лучше универсальный
+                нейминг под все сущности — „Создано“»: лента показывает не
+                только заявки, а «Заявка создана» привязывала пример к
+                одной сущности. */}
+            <Event title="Создано" timestamp="09:00" author="Иванов И.И." />
             <Event
               type="tag"
               title="На согласовании"

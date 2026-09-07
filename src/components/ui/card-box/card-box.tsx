@@ -38,10 +38,12 @@ interface CardBoxProps {
   /**
    * Свойство `Show Scrollbar` мастера — признак «контент не поместился»:
    * разделители под шапкой и над нижней кромкой. Только для `type="small"`.
-   * По умолчанию (`undefined`) вычисляется сам по положению прокрутки, как
-   * у ModalBody: сверху разделитель появляется, только когда уже прокрутили,
-   * снизу — пока не домотали до конца. `true`/`false` форсируют вид (нужно
-   * для матрицы состояний, где скролла нет).
+   *
+   * Сторону разделителя решает ПОЛОЖЕНИЕ прокрутки, а не этот проп: сверху
+   * он появляется, только когда уже прокрутили, снизу — пока не домотали до
+   * конца (дизайн-чек от 07.09, замечание 6 — правило корневое). Проп умеет
+   * ровно одно: `false` гасит оба разделителя. `true` и `undefined`
+   * равнозначны.
    */
   showScrollbar?: boolean
   /**
@@ -89,7 +91,11 @@ function CardBox({
       <section
         data-slot="card-box"
         data-type={type}
-        className={cn(ROOT, "flex flex-col overflow-hidden", className)}
+        // `overflow-clip`, а не `hidden`: подрезает строки по радиусу так
+        // же, но не создаёт области прокрутки — иначе липкая нижняя полоса
+        // таблицы считалась бы от блока, а не от вьюпорта (дизайн-чек от
+        // 07.09, замечание 32; то же самое сделано у песочного блока).
+        className={cn(ROOT, "flex flex-col overflow-clip", className)}
       >
         {/* padding 16px в обеих формах — в отличие от `small`, шапка
             табличного блока на десктопе не увеличивается. */}
@@ -130,8 +136,19 @@ function CardBoxSmall({
   const { ref, scrolledFromTop, scrolledToEnd, update } =
     useScrollEdges<HTMLDivElement>([children])
 
-  const topDivider = showScrollbar ?? scrolledFromTop
-  const bottomDivider = showScrollbar ?? !scrolledToEnd
+  // ⚠️ Положение прокрутки решает ВСЕГДА, а `showScrollbar` может только
+  // погасить оба разделителя.
+  //
+  // Дизайн-чек от 07.09, замечание 6: «При достижении края со стороны края
+  // не должен быть виден серый разделитель. Правило КОРНЕВОЕ, применить ко
+  // всем компонентам». Раньше здесь стояло `showScrollbar ?? положение`, то
+  // есть переданный `true` включал ОБА разделителя разом — и верхний
+  // светился у области, прокрученной в самый верх. ModalBody и Notification
+  // считают то же самое только по положению, так что расходился с правилом
+  // ровно этот компонент.
+  const overflowing = showScrollbar !== false
+  const topDivider = overflowing && scrolledFromTop
+  const bottomDivider = overflowing && !scrolledToEnd
 
   return (
     <section

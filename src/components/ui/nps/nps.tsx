@@ -42,6 +42,34 @@ type NpsShowChips = "none" | 1 | 2 | 3 | 4 | 5
  */
 type NpsEstimateType = 1 | 2 | 3 | 4 | 5
 
+/**
+ * Вопрос под звёздами зависит от оценки.
+ *
+ * Дизайн-чек от 07.09, замечание 22: «Когда оценка „Отлично“ — не
+ * спрашиваем, что можно улучшить. Вопрос звучит в этом случае иначе».
+ * Раньше строка была одна на все пять оценок, и высшая оценка получала
+ * «Что можно улучшить?» — то есть карточка просила пожаловаться того, кто
+ * только что похвалил.
+ *
+ * ⚠️ Формулировка для пятёрки поставлена по смыслу: матрица вопросов лежит
+ * в файле `ESnThXjNXu55oAZWZJEKra` (нода 64534:44318), к которому у сборки
+ * нет доступа. Правило («у высшей оценки вопрос другой») реализовано, текст
+ * подлежит сверке — и переопределяется пропом `question`.
+ */
+const TOP_RATING = 5
+
+/**
+ * ⚠️ Сравнение, а не поиск по словарю с ключами 1…5. Словарь молча отдаёт
+ * `undefined` на всём, что пришло не тем типом (например строкой «5» из
+ * URL-аргумента Storybook), и вопрос пропадает целиком вместо того, чтобы
+ * ошибиться формулировкой.
+ */
+function ratingQuestion(value: NpsEstimateType) {
+  return Number(value) >= TOP_RATING
+    ? "Что понравилось больше всего?"
+    : "Что можно улучшить?"
+}
+
 interface NpsProps {
   title?: React.ReactNode
   /** «Estimate Type»: 1–5 или `null` (None). */
@@ -52,8 +80,24 @@ interface NpsProps {
   onCommentChange?: (value: string) => void
   chips?: string[]
   showDescription?: boolean
+  /**
+   * Вопрос под звёздами. По умолчанию считается от оценки — см.
+   * {@link RATING_QUESTION}.
+   */
+  question?: React.ReactNode
   showChips?: NpsShowChips
   submitted?: boolean
+  /**
+   * Показать карточку плавающим окном в правом нижнем углу вьюпорта.
+   *
+   * Дизайн-чек от 07.09, замечание 21: «Убедиться, что у NPS выше z-index,
+   * чем у тостов… окно складывает тосты в стопку и накрывает их, если во
+   * вьюпорте мало высоты». Пока карточка была просто узлом в потоке, её
+   * слой зависел от места вставки, и «выше тостов» не гарантировалось
+   * ничем. В плавающем режиме слой берётся из общего порядка
+   * (`--z-nps`, styles/tokens-surfaces.css) — он выше `--z-toast`.
+   */
+  floating?: boolean
   onSubmit?: (data: { value: number; comment: string }) => void
   onClose?: () => void
   className?: string
@@ -79,6 +123,9 @@ function CloseButton({
 
 const CARD_CLASS =
   "w-[360px] rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-[0px_8px_12px_rgba(0,0,0,0.06)]"
+
+/** Плавающее окно: правый нижний угол, поверх тостов. */
+const FLOATING_CLASS = "fixed right-10 bottom-10 z-(--z-nps)"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({
@@ -132,6 +179,8 @@ function Nps({
   onCommentChange,
   chips = DEFAULT_CHIPS,
   showDescription = true,
+  question,
+  floating = false,
   showChips = 5,
   submitted = false,
   onSubmit,
@@ -175,7 +224,13 @@ function Nps({
     onSubmit?.({ value: activeValue, comment: activeComment })
   }
 
-  if (submitted) return <NpsDone onClose={onClose} className={className} />
+  if (submitted)
+    return (
+      <NpsDone
+        onClose={onClose}
+        className={cn(floating && FLOATING_CLASS, className)}
+      />
+    )
 
   return (
     <div
@@ -184,6 +239,7 @@ function Nps({
         CARD_CLASS,
         "flex flex-col items-start gap-8 pt-6 pr-6 pl-6",
         activeValue !== null ? "pb-6" : "pb-10",
+        floating && FLOATING_CLASS,
         className
       )}
     >
@@ -203,6 +259,9 @@ function Nps({
       <FeedbackPanel
         open={activeValue !== null}
         showDescription={showDescription}
+        question={
+          question ?? (activeValue ? ratingQuestion(activeValue) : undefined)
+        }
         showChips={showChips !== "none"}
         chips={showChips === "none" ? [] : chips.slice(0, showChips)}
         activeChip={activeChip}

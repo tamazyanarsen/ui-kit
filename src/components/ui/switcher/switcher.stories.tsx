@@ -32,7 +32,7 @@ const ITEM_POOL = [
   { value: "signed", label: "Подписанные" },
 ]
 
-/* Свойство `Volume` вложенного `Cell Switcher Value` — от 2 до 8 ячеек
+/* Свойство `Volume` вложенного `Switcher Value` — от 2 до 8 ячеек
    (дизайн-чек Storybook (Аня Багрова) №22). Раньше список обрывался на
    пяти, и верхние значения макета проверить было нечем. */
 const ITEM_COUNTS = [2, 3, 4, 5, 6, 7, 8] as const
@@ -50,16 +50,20 @@ type PlaygroundArgs = SwitcherProps & {
   figmaType?: SwitcherType
 }
 
-const CELL_VALUE = { table: { category: "Cell Switcher Value" } }
+/* Дизайн-чек от 07.09, замечание 8: «Переименовать в Switcher, как в ДС».
+   Переименована и вложенная группа: раз компонент больше не «Cell», её
+   старое имя из таблицы свойств Figma читалось бы как незавершённая
+   правка. */
+const CELL_VALUE = { table: { category: "Switcher Value" } }
 const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
-  title: "Компоненты/Cell Switcher",
+  title: "Компоненты/Switcher",
   component: Switcher,
   parameters: { layout: "padded" },
   argTypes: {
     /* Дизайн-чек Storybook (Аня Багрова) №22: панель приведена к «Свойствам
-       компонента» — Size, Grey Background и вложенный `Cell Switcher Value`
+       компонента» — Size, Grey Background и вложенный `Switcher Value`
        со своими Volume и Show More.
 
        `Size` здесь — не ViewportScope: у компонента нет `desktop:`-классов,

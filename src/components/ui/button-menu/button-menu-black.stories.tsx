@@ -51,10 +51,13 @@ const FIGMA_BUTTON_LABELS: Record<ButtonCount, string> = {
 
 const LABELS = ["Подписать", "Скачать", "Отправить", "Удалить"]
 
-/* «Выбрано» Figma фиксирует шириной 64px, остальные колонки — по контенту.
+/* Дизайн-чек от 07.09, замечание 4: «Не допускается перенос. Текст в 1
+   строку, ширина параметра динамическая». Ширину колонки «Выбрано» больше
+   не фиксируем: 64px из макета рвали «3 документа» на три строки.
+   Историческая заметка ниже — почему она вообще была.
    Каждое поле бара — своё свойство панели: Show Count, Show Sum,
    Show Write-Off (дизайн-чек Storybook (Аня Багрова) №14). */
-const INFO_COUNT = { label: "Выбрано", value: "3 документа", className: "w-16" }
+const INFO_COUNT = { label: "Выбрано", value: "3 документа" }
 const INFO_SUM = { label: "Сумма", value: "1 200 101,16 ₽" }
 const INFO_WRITE_OFF = { label: "Счёт списания", value: "40702810…1234" }
 const INFO_ITEMS = [INFO_COUNT, INFO_SUM, INFO_WRITE_OFF]
@@ -230,7 +233,7 @@ export const Examples: Story = {
           </div>
           <ButtonMenuBlack
             className="mt-auto"
-            info={[{ label: "Выбрано", value: "3 документа", className: "w-16" }]}
+            info={[{ label: "Выбрано", value: "3 документа" }]}
             onClose={() => {}}
           >
             {blackButtons(2)}
@@ -254,7 +257,7 @@ export const Examples: Story = {
                   Закрепление показано отдельной секцией ниже. */}
               <ButtonMenuBlack
                 pinned={false}
-                info={[{ label: "Выбрано", value: "3 документа", className: "w-16" }]}
+                info={[{ label: "Выбрано", value: "3 документа" }]}
                 onClose={() => {}}
               >
                 {blackButtons(count)}
@@ -288,7 +291,7 @@ export const Examples: Story = {
       >
         <div className="w-full">
           <ButtonMenuBlack
-            info={[{ label: "Выбрано", value: "3 документа", className: "w-16" }]}
+            info={[{ label: "Выбрано", value: "3 документа" }]}
             onClose={() => {}}
           >
             {blackButtons(3)}
@@ -302,7 +305,7 @@ export const Examples: Story = {
 
       <StorySection title="Без крестика">
         <div className="w-full">
-          <ButtonMenuBlack info={[{ label: "Выбрано", value: "3 документа", className: "w-16" }]}>
+          <ButtonMenuBlack info={[{ label: "Выбрано", value: "3 документа" }]}>
             {blackButtons(2)}
           </ButtonMenuBlack>
         </div>

@@ -26,7 +26,15 @@ function SandboxBlock({
     <section
       data-slot="sandbox-block"
       className={cn(
-        "flex w-full flex-col gap-8 overflow-hidden rounded-[16px] bg-[var(--white-101)]",
+        // ⚠️ `overflow-clip`, а не `overflow-hidden`. Дизайн-чек от 07.09,
+        // замечание 32: «У таблиц всегда должна закрепляться нижняя полоса
+        // горизонтальной прокрутки». Полоса `sticky`, а `overflow: hidden`
+        // делает блок ПРОКРУЧИВАЕМОЙ областью — липкий потомок начинает
+        // считаться от неё, а не от вьюпорта, и полоса замирала у нижней
+        // кромки блока (замерено: 733px ниже нижнего края экрана).
+        // `overflow: clip` подрезает по тому же радиусу, но области
+        // прокрутки не создаёт, и полоса снова липнет к экрану.
+        "flex w-full flex-col gap-8 overflow-clip rounded-[16px] bg-[var(--white-101)]",
         className
       )}
       style={{ padding, ...style }}

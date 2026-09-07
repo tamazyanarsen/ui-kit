@@ -20,7 +20,7 @@ describe("ErrorPage", () => {
   // наличие символов «4». Раньше здесь ожидался `getAllByText("4")`, что и
   // фиксировало неверную отрисовку шрифтом.
   it("renders the 404 illustration with two vector digits", () => {
-    const { container } = render(<ErrorPage title="Заголовок" code="404" />)
+    const { container } = render(<ErrorPage title="Заголовок" type="404" />)
     const illustration = container.querySelector('[data-slot="error-page-illustration"]')
     expect(illustration).toHaveAttribute("data-type", "404")
     expect(illustration?.querySelectorAll("svg")).toHaveLength(2)
@@ -28,7 +28,7 @@ describe("ErrorPage", () => {
   })
 
   it("renders the 403 illustration with a four and a three", () => {
-    const { container } = render(<ErrorPage title="Заголовок" code="403" />)
+    const { container } = render(<ErrorPage title="Заголовок" type="403" />)
     const illustration = container.querySelector('[data-slot="error-page-illustration"]')
     expect(illustration).toHaveAttribute("data-type", "403")
     expect(illustration?.querySelectorAll("svg")).toHaveLength(2)

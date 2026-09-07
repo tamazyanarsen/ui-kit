@@ -49,6 +49,14 @@ const meta = {
     title: { control: "text" },
     content: { control: "text" },
     direction: { control: "select", options: DIRECTIONS },
+    // Дизайн-чек от 07.09, замечание 18: «Тултипам нужно 2 режима ширины.
+    // Базовый 256px, альтернативный — динамический».
+    width: {
+      name: "Width",
+      control: "inline-radio",
+      options: ["base", "auto"],
+      description: "base — 256px, auto — по содержимому",
+    },
     showCross: { control: "boolean" },
     defaultOpen: { control: "boolean" },
     // Ниже md подсказка раскрывается как Bottom Sheet. Дизайн-чек №3 №19:
@@ -56,6 +64,7 @@ const meta = {
     viewport: viewportArgType,
   },
   args: {
+    width: "base",
     content:
       "Развёрнутый текст подсказки, который поясняет назначение элемента.",
     direction: "top-center",

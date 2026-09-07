@@ -24,8 +24,21 @@ import { ErrorPageIllustration } from "./illustration"
 // - `noCodeMascot` is a distinct illustration used whenever there's no
 //   403/404 code (confirmed against a separate anatomy example with no
 //   flanking numerals), not a fallback/placeholder for the zero one.
+/**
+ * Свойство `Type` компонент-сета Figma: 403, 404 или обобщённая картинка.
+ *
+ * Дизайн-чек от 07.09, замечание 14: «Не наглядное управление пропсом…
+ * Должно быть переключение как в Figma, выбор из списка или радио. Варианты
+ * — 403, 404, Image. Логику подмены цифр шрифтом — сохранить, она полезна».
+ * Раньше это была свободная строка `code?: string`, и панель истории
+ * предлагала вписать туда что угодно — а компонент всё равно понимал ровно
+ * три значения и молча сваливался в картинку на любом четвёртом.
+ */
+type ErrorPageType = "403" | "404" | "image"
+
 interface ErrorPageProps {
-  code?: string
+  /** Вариант страницы — см. {@link ErrorPageType}. */
+  type?: ErrorPageType
   title?: React.ReactNode
   description?: React.ReactNode
   buttonLabel?: React.ReactNode
@@ -34,14 +47,14 @@ interface ErrorPageProps {
 }
 
 function ErrorPage({
-  code,
+  type = "image",
   title,
   description,
   buttonLabel,
   onButtonClick,
   className,
 }: ErrorPageProps) {
-  const showCode = code === "403" || code === "404"
+  const showCode = type === "403" || type === "404"
   return (
     <div
       data-slot="error-page"
@@ -79,7 +92,7 @@ function ErrorPage({
           мелкой картинкой. Отступ 48px — `gap-[48px]` блока Box в мастере
           (нода 39222:9051). */}
       <ErrorPageIllustration
-        type={showCode ? (code as "403" | "404") : "image"}
+        type={showCode ? type : "image"}
         className="mt-12"
       />
     </div>
@@ -87,4 +100,4 @@ function ErrorPage({
 }
 
 export { ErrorPage }
-export type { ErrorPageProps }
+export type { ErrorPageProps, ErrorPageType }

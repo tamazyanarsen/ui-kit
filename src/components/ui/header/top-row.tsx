@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { LogOut, Mail, Menu, X } from "@/icons"
 import { Badge } from "@/components/ui/badge"
+import { Grid } from "@/components/ui/grid"
 
 import { DomRfLogo } from "./dom-rf-logo"
 import {
@@ -191,13 +192,19 @@ function SignOutPhone({ phoneNumber }: { phoneNumber: React.ReactNode }) {
   )
 }
 
-/** Обёртка полосы: фиксированные 64px, поля 40 и контент до 1800px. */
+/**
+ * Обёртка полосы: фиксированные 64px, подложка во всю ширину, контент — по
+ * сетке.
+ *
+ * Подложка тянется на весь `GridRoot`, а `Grid` внутри держит те же поля
+ * 40 и тот же максимум 1800, что и полоса страницы. Так дизайнер и
+ * формулирует правило: «хедер тянется на всю ширину, грид работает не на
+ * белую подложку хедера, а на контент внутри».
+ */
 function TopRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-16 w-full shrink-0 justify-center border-b border-[var(--header-border)] px-10">
-      <div className="flex min-w-0 max-w-[1800px] flex-1 items-center gap-3">
-        {children}
-      </div>
+    <div className="flex h-16 w-full shrink-0 border-b border-[var(--header-border)] bg-[var(--header-bg)]">
+      <Grid className="flex min-w-0 items-center gap-3">{children}</Grid>
     </div>
   )
 }

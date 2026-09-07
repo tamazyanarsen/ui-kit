@@ -30,7 +30,7 @@ function ButtonMenuDemo() {
                   pinned={false}
                   onClose={() => {}}
                   info={[
-                    { label: "Выбрано", value: "10", className: "w-16" },
+                    { label: "Выбрано", value: "10" },
                     { label: "На сумму", value: "1 847 540,00 ₽" },
                     { label: "Списания", value: "- 3 847 540 ₽" },
                   ]}

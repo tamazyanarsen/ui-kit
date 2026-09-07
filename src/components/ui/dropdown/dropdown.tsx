@@ -124,7 +124,18 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         ref={ref}
         data-slot="dropdown-item"
         className={cn(
-          "flex cursor-default flex-col gap-0.5 p-4 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-40 data-highlighted:bg-[var(--menu-item-bg-highlighted)]",
+          "flex cursor-pointer flex-col gap-0.5 p-4 outline-none transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-40",
+          // ⚠️ ДВА селектора подсветки, а не один. `data-highlighted` ставит
+          // примитив Base UI, когда строка лежит внутри его меню — этим
+          // живут Select, Combobox, меню «ещё». Но `DropdownItem` законно
+          // используется и сам по себе (так собрана вся витрина Dropdown), а
+          // там `data-highlighted` не появляется НИКОГДА, и строка выглядела
+          // мёртвой: дизайн-чек от 07.09, замечание 12 — «строки выпадающего
+          // списка не меняют цвет при ховере, должны, см. компонент Menu
+          // Item». Обычный `hover:` — та же половина правила, что у
+          // `menuItemRowClass` (см. components/ui/menu-item).
+          "hover:bg-[var(--menu-item-bg-highlighted)] data-highlighted:bg-[var(--menu-item-bg-highlighted)]",
+          "data-disabled:hover:bg-transparent",
           className
         )}
         {...props}

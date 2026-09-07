@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Divider } from "@/components/ui/divider"
+import { Grid } from "@/components/ui/grid"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 
 import { HeaderMenuPopup } from "./menu-popup"
@@ -146,12 +147,13 @@ function NavRow({
   return (
     <div
       data-slot="header-nav-row"
-      // Both header rows are a fixed 64px with 40px side padding, and the
-      // content is centred inside a 1800px-max box — measured off
-      // `Menu Header (ELK)` (70303:48974).
-      className="flex h-16 w-full shrink-0 justify-center border-b border-[var(--header-border)] px-10"
+      // Обе полосы шапки — ровно 64px, а контент стоит по общей сетке
+      // продукта (поля 40, максимум 1800) — мерено с `Menu Header (ELK)`
+      // (70303:48974). Ширину держит `Grid`, а не локальные `px-10` +
+      // `max-w-[1800px]`: см. комментарий в components/ui/grid/grid.tsx.
+      className="flex h-16 w-full shrink-0 border-b border-[var(--header-border)]"
     >
-      <div className="flex h-full min-w-0 max-w-[1800px] flex-1 items-center gap-8">
+      <Grid className="flex h-full min-w-0 items-center gap-8">
         <div className="flex shrink-0 items-center gap-2">
           {/* Кнопок в макете две и обе размера S: «Меню» (secondary-black,
               `icon / classic burger`) и «Создать» (primary, `icon / plus`). */}
@@ -204,28 +206,41 @@ function NavRow({
           {hiddenItems.length > 0 && <NavOverflow items={hiddenItems} />}
 
           {/* Off-screen measurement copy — see Switcher/Tabs' own comment on
-              why this needs to exist as an always-rendered duplicate row. */}
+              why this needs to exist as an always-rendered duplicate row.
+
+              ⚠️ Обёртка `inset-0 overflow-hidden` обязательна, а не для
+              красоты. Мерная копия шире ряда по определению (в ней ВСЕ
+              пункты, в том числе не поместившиеся), и хотя она абсолютная,
+              то есть вне потока, в ОБЛАСТЬ ПРОКРУТКИ документа она входит:
+              на 1100px шапка раздвигала страницу на лишние 23px, и продукт
+              ехал вбок даже там, где всё помещалось. Обёртка нулевой ширины
+              с обрезкой снимает вклад в scrollWidth, а замер не трогает —
+              `getBoundingClientRect` у обрезанного элемента всё тот же. */}
           <div
             aria-hidden="true"
-            data-slot="header-nav-measure"
-            className="pointer-events-none invisible absolute top-0 left-0 flex gap-8"
+            className="pointer-events-none invisible absolute inset-0 overflow-hidden"
           >
-            {items.map((item, index) => (
-              <div
-                key={item.value}
-                data-value={item.value}
-                ref={(el) => {
-                  itemRefs.current[index] = el
-                }}
-                className="flex shrink-0 items-center gap-1 text-p1-medium whitespace-nowrap"
-              >
-                {item.icon}
-                {item.label}
-              </div>
-            ))}
+            <div
+              data-slot="header-nav-measure"
+              className="absolute top-0 left-0 flex gap-8"
+            >
+              {items.map((item, index) => (
+                <div
+                  key={item.value}
+                  data-value={item.value}
+                  ref={(el) => {
+                    itemRefs.current[index] = el
+                  }}
+                  className="flex shrink-0 items-center gap-1 text-p1-medium whitespace-nowrap"
+                >
+                  {item.icon}
+                  {item.label}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </Grid>
     </div>
   )
 }

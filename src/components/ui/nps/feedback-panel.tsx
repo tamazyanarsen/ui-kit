@@ -32,6 +32,8 @@ interface FeedbackPanelProps {
   /** Раскрыта ли панель — то есть выставлена ли оценка. */
   open: boolean
   showDescription: boolean
+  /** Вопрос под звёздами — зависит от оценки (см. `RATING_QUESTION`). */
+  question?: React.ReactNode
   showChips: boolean
   chips: string[]
   /** Выбранный чип или `null`, если текст в поле с ним разошёлся. */
@@ -45,6 +47,7 @@ interface FeedbackPanelProps {
 function FeedbackPanel({
   open,
   showDescription,
+  question,
   showChips,
   chips,
   activeChip,
@@ -71,7 +74,7 @@ function FeedbackPanel({
                 staggerClass(open)
               )}
             >
-              Что можно улучшить?
+              {question}
             </p>
           )}
 

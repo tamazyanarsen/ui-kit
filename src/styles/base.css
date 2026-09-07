@@ -205,14 +205,56 @@
   }
 }
 
-@layer base {
-  /* Sticky table header — "Шапка (закрепляется всегда при достижении верха
-     вьюпорта, открепляется вместе с достижением низа блока данных)"
-     (Проектирование таблиц ЕЛК, node 70279:7616). Applied from the `<table>`
-     rather than per cell so that `<TableHeadCell>` doesn't have to thread a
-     flag through context just to add one declaration; the offset lets a page
-     with its own fixed site header park the row below it. */
-  table[data-sticky-header] thead th {
+/* Отступ полосы прокрутки от края поверхности (`<Scrollbar inset>`) —
+   дизайн-чек от 07.09, замечание 26: «Для выпадающих списков Scrollbar не
+   может вылезать за контур. Всегда у Scrollbar есть отступы… Для
+   скруглённых выпадающих списков отступ ещё больше».
+
+   ⚠️ Сделано ПРОЗРАЧНОЙ РАМКОЙ, а не паддингом, и это не стилистический
+   выбор. Нативная полоса живёт по внутреннему краю РАМКИ, а не паддинга:
+   `padding-right` отодвигает от полосы содержимое, а сама полоса остаётся
+   приклеенной к краю коробки — ровно это и попало в чек, где дорожка стояла
+   за белым прямоугольником списка. Прозрачная рамка сдвигает край коробки, и
+   полоса уезжает внутрь вместе с ним, показывая сквозь себя фон поверхности.
+
+   Приём нельзя заменить рамкой у самого бегунка
+   (`::-webkit-scrollbar-thumb`): дорожка шириной 4px, и рамка в 8 съедает её
+   целиком.
+
+   ⚠️ Объявлено ВНЕ `@layer` намеренно — по той же причине, что и правило
+   `:last-child` у строк списка выше: ширину рамки задают утилиты
+   (`border` у витрины), а они лежат в `@layer utilities` и бьют любое
+   правило из `@layer base` независимо от специфичности. Проверено:
+   внутри слоя рамка оставалась 1px и отступ не появлялся. */
+.themed-scrollbar[data-inset="dropdown"][data-orientation="vertical"] {
+  border-inline-end: 8px solid transparent;
+}
+.themed-scrollbar[data-inset="rounded"][data-orientation="vertical"] {
+  border-inline-end: 16px solid transparent;
+}
+.themed-scrollbar[data-inset="dropdown"][data-orientation="horizontal"] {
+  border-block-end: 8px solid transparent;
+}
+.themed-scrollbar[data-inset="rounded"][data-orientation="horizontal"] {
+  border-block-end: 16px solid transparent;
+}
+
+/* Sticky table header — "Шапка (закрепляется всегда при достижении верха
+   вьюпорта, открепляется вместе с достижением низа блока данных)"
+   (Проектирование таблиц ЕЛК, node 70279:7616). Applied from the `<table>`
+   rather than per cell so that `<TableHeadCell>` doesn't have to thread a
+   flag through context just to add one declaration; the offset lets a page
+   with its own fixed site header park the row below it.
+
+   ⚠️ ВНЕ `@layer` — и это не косметика, а сама причина, по которой правило
+   работает. У ячейки шапки стоит утилита `relative` (под ней рисуется
+   псевдоэлементом нижняя линия), а утилиты лежат в `@layer utilities` и
+   бьют любое правило из `@layer base` независимо от специфичности. Пока
+   правило жило в слое, `position` резолвился в `relative`, шапка не
+   липла вовсе, а `top: 64px` исправно вычислялся и никого не спасал —
+   замерено на песочном экране (дизайн-чек от 07.09, замечание 31: «Шапка у
+   таблиц всегда должна закрепляться»). */
+table[data-sticky-header] thead th {
     position: sticky;
     /* ⚠️ Липкая шапка таблицы ОБЯЗАНА читать занятый верх вьюпорта. Иначе
        строка заголовков липнет к нулю и уезжает под липкую шапку страницы —
@@ -224,7 +266,9 @@
        `--table-header-top` остаётся ручным перекрытием для случаев, где
        над таблицей стоит что-то ещё. */
     top: var(--table-header-top, var(--viewport-inset-top, 0px));
-  }
+}
+
+@layer base {
 
   /* Разлиновка таблицы (`<Table gridLines>` / `<DataTable gridLines>`).
      Сетка ячеек: 1px Grey 134 по правому краю каждой ячейки кроме последней
@@ -362,9 +406,16 @@
    работает только такая форма.
 
    Следствие: линию под последней строкой уже не вернуть обычной утилитой
-   снаружи — нужен `!important` (`className="!border-b-[…]"`). */
-[data-slot="item"]:last-child,
-[data-slot="item-information-field"]:last-child {
+   снаружи — нужен `!important` (`className="!border-b-[…]"`).
+
+   ⚠️ Исключение `:not([data-divider="on"])` — дизайн-чек от 07.09, замечание
+   20: «В Item не отрабатывает включение разделителя». Именно это правило и
+   мешало: в Playground строка одна, то есть всегда последняя, поэтому
+   включённый проп гасился здесь и контрол выглядел мёртвым. Теперь правило
+   списка действует только на строки, которые НЕ высказались о разделителе
+   сами (`divider === undefined`); явные `true`/`false` сильнее него. */
+[data-slot="item"]:last-child:not([data-divider="on"]),
+[data-slot="item-information-field"]:last-child:not([data-divider="on"]) {
   border-bottom-color: transparent;
 }
 

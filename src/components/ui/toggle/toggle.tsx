@@ -85,7 +85,9 @@ function Toggle({
           the reverse direction from Checkbox/Radio but the same underlying
           cause: the mobile Option Text line-height (20px) is shorter than
           the fixed 24px track and needs the nudge to stay centered. */}
-      <span className="flex flex-col pt-0.5 desktop:pt-0">
+      {/* Тумблер справа в мобильной форме — дизайн-чек от 07.09, замечания
+          9 и 25; механика и обоснование те же, что у Checkbox. */}
+      <span className="order-first flex flex-1 flex-col pt-0.5 desktop:order-none desktop:flex-none desktop:pt-0">
         {label && (
           <span
             className={cn(

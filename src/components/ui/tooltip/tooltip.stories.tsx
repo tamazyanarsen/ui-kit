@@ -32,6 +32,14 @@ const meta = {
     title: { control: "text", name: "Текст заголовка" },
     showCross: { control: "boolean", name: "Show Cross" },
     direction: { control: "select", options: DIRECTIONS },
+    // Дизайн-чек от 07.09, замечание 18: «Тултипам нужно 2 режима ширины.
+    // Базовый 256px, альтернативный — динамический».
+    width: {
+      name: "Width",
+      control: "inline-radio",
+      options: ["base", "auto"],
+      description: "base — 256px, auto — по содержимому",
+    },
     disabled: { control: "boolean" },
     // `children` is a React.ReactElement (the trigger) — no JSON value can
     // represent it; Storybook falls back to a raw editable tree of the
@@ -51,6 +59,7 @@ const meta = {
     },
   },
   args: {
+    width: "base",
     content: "Подсказка с пояснением",
     title: "Title",
     showTitle: false,

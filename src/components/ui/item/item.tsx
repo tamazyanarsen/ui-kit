@@ -34,6 +34,20 @@ interface ItemProps {
   thumbnail?: React.ReactNode
   subCategory?: boolean
   disabled?: boolean
+  /**
+   * Разделитель под строкой.
+   *
+   * Три состояния, а не два. `undefined` — «как в списке»: линия есть у
+   * всех строк, кроме последней (правило `:last-child` в styles/base.css —
+   * список у нас произвольный контейнер, и строка сама не знает, последняя
+   * ли она). `true` и `false` — явное решение вызывающего, и оно сильнее
+   * правила списка.
+   *
+   * Дизайн-чек от 07.09, замечание 20: «В Item не отрабатывает включение
+   * разделителя». Отрабатывало, но не было видно: в Playground строка одна,
+   * то есть всегда `:last-child`, и правило списка гасило линию быстрее,
+   * чем проп успевал её включить.
+   */
   divider?: boolean
   onClick?: () => void
 
@@ -87,7 +101,7 @@ function Item({
   thumbnail,
   subCategory = false,
   disabled = false,
-  divider = true,
+  divider,
   onClick,
   rightElement = "none",
   open = false,
@@ -121,6 +135,9 @@ function Item({
       onKeyDown={handleKeyDown}
       data-slot="item"
       data-disabled={disabled || undefined}
+      // Явное решение вызывающего — атрибутом: правило `:last-child` в
+      // styles/base.css гасит линию только у строк БЕЗ него (см. `divider`).
+      data-divider={divider === undefined ? undefined : divider ? "on" : "off"}
       className={cn(
         // 16 above the content, 15 below it, then the 1px divider — the row
         // is 80px tall for a Value+Comment either way. Figma's Divider Off
@@ -134,7 +151,9 @@ function Item({
         // note) — so 80px here, and the divider/hover fill still span the
         // full width because the padding is on the row itself.
         subCategory && "pl-20",
-        divider ? "border-[var(--item-divider)]" : "border-transparent",
+        divider === false
+          ? "border-transparent"
+          : "border-[var(--item-divider)]",
         "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
         "data-[disabled]:cursor-not-allowed",
         "focus-visible:focus-ring-inset",

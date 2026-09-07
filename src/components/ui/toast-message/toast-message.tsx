@@ -201,8 +201,24 @@ function Toaster() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed inset-x-4 top-[calc(var(--viewport-inset-top,0px)+1rem)] z-50 flex flex-col gap-6 desktop:inset-x-auto desktop:top-[calc(var(--viewport-inset-top,0px)+2rem)] desktop:right-10 desktop:w-[480px]"
+      // ⚠️ Колонка ОГРАНИЧЕНА высотой вьюпорта и складывается снизу вверх.
+      //
+      // Дизайн-чек от 07.09, замечание 21: «окно [опроса] складывает тосты в
+      // стопку и накрывает их, если во вьюпорте мало высоты. Заложить
+      // возможности складывания тостов и перекрытия». Раньше колонка росла
+      // без границы и на низком экране уезжала за его край — «сложить» её
+      // было нечем, а окно опроса вдобавок лежало на том же слое.
+      //
+      // `max-height` + `overflow-hidden` дают складывание: лишние карточки
+      // подрезаются вьюпортом, а не растягивают страницу. `justify-end` +
+      // обратный порядок оставляют на виду САМЫЕ СВЕЖИЕ — подрезается
+      // старое, а не новое. Слой берётся из общего порядка
+      // (styles/tokens-surfaces.css), поэтому «выше тостов» у опроса больше
+      // не случайность.
+      className="fixed inset-x-4 top-[calc(var(--viewport-inset-top,0px)+1rem)] z-(--z-toast) flex max-h-[calc(100vh-var(--viewport-inset-top,0px)-2rem)] flex-col-reverse justify-end gap-6 overflow-hidden desktop:inset-x-auto desktop:top-[calc(var(--viewport-inset-top,0px)+2rem)] desktop:right-10 desktop:max-h-[calc(100vh-var(--viewport-inset-top,0px)-4rem)] desktop:w-[480px]"
     >
+      {/* Порядок обратный (`flex-col-reverse`), поэтому в разметке список
+          идёт как есть, а на экране новые встают сверху. */}
       {toasts.map((toast) => (
         <ToastCard key={toast.id} toast={toast} onClose={() => close(toast.id)} />
       ))}

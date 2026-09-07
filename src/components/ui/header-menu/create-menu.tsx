@@ -1,6 +1,7 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Grid } from "@/components/ui/grid"
 
 // CreateMenu — «Раскрытое меню создания» (нода 70303:57990): панель, которая
 // раскрывается под шапкой по кнопке «Создать». Отличается от меню навигации
@@ -29,11 +30,11 @@ function CreateMenu({ items = [], className }: CreateMenuProps) {
     <div
       data-slot="header-create-menu"
       className={cn(
-        "flex w-full flex-col items-center overflow-hidden rounded-b-[32px] bg-[var(--header-bg)] px-10",
+        "flex w-full flex-col items-center overflow-hidden rounded-b-[32px] bg-[var(--header-bg)]",
         className
       )}
     >
-      <div className="flex w-full max-w-[1800px] flex-col items-start pt-4 pb-10">
+      <Grid className="flex flex-col items-start pt-4 pb-10">
         <div className="flex w-full flex-wrap content-start items-start gap-6">
           {items.map((item) => (
             <button
@@ -61,7 +62,7 @@ function CreateMenu({ items = [], className }: CreateMenuProps) {
             </button>
           ))}
         </div>
-      </div>
+      </Grid>
     </div>
   )
 }

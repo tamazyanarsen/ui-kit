@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { PaymentLogo, type PaymentSystem } from "@/components/ui/thumbnail"
 
 /**
- * CardPictogram — миниатюра банковской карты 48×34: платёжная система
+ * CardAccount — миниатюра банковской карты 48×34: платёжная система
  * сверху слева, окончание номера снизу справа.
  *
  * Дизайн-чек №15: «некорректное отображение пиктограммы бизнес-карты… не
@@ -18,8 +18,15 @@ import { PaymentLogo, type PaymentSystem } from "@/components/ui/thumbnail"
  * передавалось, поэтому на дизайн-чек она попала пустой. Теперь это
  * самостоятельный компонент со своей историей, а Card подключает его как
  * зависимость.
+ *
+ * Дизайн-чек от 07.09, замечания 2 и 7: «переименовать в card account, как
+ * в ДС» (был `CardPictogram`) и «сюда нужно централизованно пробрасывать
+ * компонент… не хватает иконок платёжных систем» — плашку счёта, собранную
+ * по месту, теперь подключают и `Card`, и витрина `Block Widget`, поэтому
+ * платёжная система появляется везде одинаково, а не только там, где её
+ * не забыли передать.
  */
-interface CardPictogramProps {
+interface CardAccountProps {
   /** Платёжная система — логотип в левом верхнем углу. */
   paymentSystem?: PaymentSystem
   /**
@@ -30,14 +37,14 @@ interface CardPictogramProps {
   className?: string
 }
 
-function CardPictogram({
+function CardAccount({
   paymentSystem = "mir",
   number,
   className,
-}: CardPictogramProps) {
+}: CardAccountProps) {
   return (
     <div
-      data-slot="card-pictogram"
+      data-slot="card-account"
       aria-hidden="true"
       className={cn(
         "relative h-[34px] w-12 shrink-0 overflow-hidden rounded-[4px] border border-white bg-[var(--card-thumb-bg)]",
@@ -58,5 +65,5 @@ function CardPictogram({
   )
 }
 
-export { CardPictogram }
-export type { CardPictogramProps }
+export { CardAccount }
+export type { CardAccountProps }

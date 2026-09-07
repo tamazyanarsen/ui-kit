@@ -12,6 +12,7 @@ import {
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
+import { CardAccount } from "@/components/ui/card-account"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Radio, RadioGroup } from "@/components/ui/radio"
 import { Tag } from "@/components/ui/tag"
@@ -76,14 +77,12 @@ function leadingNode(option: LeadingOption) {
   if (option === "Checkbox") return <Checkbox checked />
   if (option === "Card") {
     // `IB / card account` — мини-плашка счёта 48 × 34 с радиусом 4.
-    return (
-      <span
-        aria-hidden="true"
-        className="flex h-[34px] w-12 items-end justify-end rounded-[4px] bg-[var(--card-thumb-bg)] px-1 pb-1 text-p4-regular text-[var(--card-thumb-fg)]"
-      >
-        4135
-      </span>
-    )
+    //
+    // Дизайн-чек от 07.09, замечание 2: «сюда нужно централизованно
+    // пробрасывать компонент Card Pictogram… не хватает иконок платёжных
+    // систем». Плашка была собрана прямо здесь и поэтому приходила без
+    // логотипа платёжной системы — теперь это `CardAccount` кита.
+    return <CardAccount paymentSystem="mir" number="4135" />
   }
   return undefined
 }

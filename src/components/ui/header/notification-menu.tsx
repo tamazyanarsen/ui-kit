@@ -119,7 +119,10 @@ function NotificationMenu({
             with a 32px bottom padding — capped lower here (420px) since this
             kit's demo content is only two items, but the scroll/padding
             mechanics match. */}
-        <Scrollbar className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] pb-8">
+        <Scrollbar
+        inset="dropdown"
+        className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] pb-8"
+      >
           {items.map((item) => (
             <NotificationRow key={item.id} item={item} />
           ))}

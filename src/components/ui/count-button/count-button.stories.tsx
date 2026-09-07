@@ -4,12 +4,29 @@ import {
   PseudoBox,
   StatesMatrix,
   stateArgType,
+  viewportArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { CountButton, type CountButtonProps } from "./count-button"
 
-type PlaygroundArgs = CountButtonProps & { state?: PlaygroundState }
+/**
+ * Дизайн-чек от 07.09, замечание 11: «Для Count Button нужен вариант
+ * Mobile. Можно собрать из существующих компонентов».
+ *
+ * Собирать ничего не пришлось: мобильная форма у кнопки уже есть — размеры
+ * `Button` заданы парой «база + `desktop:`» (`default` — 40px на мобайле и
+ * 48 на десктопе, `lg` — 48 и 56), а счётчик `Badge` от формы не зависит.
+ * Не хватало именно УПРАВЛЕНИЯ: форму в ките выбирает `ViewportScope`, и
+ * его контрола в этой истории не было — проверить мобильный вид было
+ * нечем. Теперь он есть в Playground, а в матрице обе формы стоят рядом
+ * (`responsive`).
+ */
+type PlaygroundArgs = CountButtonProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Count Button",
@@ -35,6 +52,7 @@ const meta = {
     size: { control: "inline-radio", options: ["sm", "default", "lg"] },
     disabled: { control: "boolean" },
     state: stateArgType,
+    viewport: viewportArgType,
   },
   args: {
     children: "Уведомления",
@@ -43,6 +61,7 @@ const meta = {
     size: "default",
     disabled: false,
     state: "default" as PlaygroundState,
+    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -50,10 +69,12 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state}>
-      <CountButton {...args} />
-    </PseudoBox>
+  render: ({ state, viewport, ...args }) => (
+    <ViewportScope viewport={viewport}>
+      <PseudoBox state={state}>
+        <CountButton {...args} />
+      </PseudoBox>
+    </ViewportScope>
   ),
 }
 
@@ -62,6 +83,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<CountButtonProps>
+      responsive
       baseProps={{ children: "Уведомления", count: 3 }}
       columns={[
         { label: "secondary-grey", props: { variant: "secondary-grey" } },

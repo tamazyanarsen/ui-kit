@@ -3,7 +3,10 @@ import type { ComponentProps } from "react"
 
 import { PseudoBox, StatesMatrix, viewportArgType } from "@/stories/matrix"
 import type { Viewport } from "@/lib/viewport"
-import { ItemInformationField } from "@/components/ui/item-information-field"
+import {
+  ItemInformationField,
+  ItemInformationFieldGroup,
+} from "@/components/ui/item-information-field"
 
 import { CardBox } from "./card-box"
 
@@ -24,14 +27,17 @@ const ROWS = [
 
 function SampleFields({ count = 4 }: { count?: number }) {
   return (
-    <div className="flex flex-col gap-6">
+    // Дизайн-чек от 07.09, замечание 5: у полей Label Left зазор нулевой —
+    // отступы и линию несёт само поле. Здесь был `gap-6`, и между строками
+    // зияла пустая полоса. Правило теперь держит `ItemInformationFieldGroup`.
+    <ItemInformationFieldGroup>
       {Array.from({ length: count }, (_, index) => {
         const [label, value] = ROWS[index % ROWS.length]
         return (
           <ItemInformationField key={index} label={label} value={value} />
         )
       })}
-    </div>
+    </ItemInformationFieldGroup>
   )
 }
 
@@ -129,7 +135,9 @@ export const Matrix: Story = {
           props: {
             type: "small",
             maxHeight: 260,
-            showScrollbar: true,
+            // showScrollbar здесь НЕ форсится: строка прокручивается
+            // по-настоящему, а сторону разделителя решает положение
+            // прокрутки (дизайн-чек от 07.09, замечание 6).
             children: <SampleFields count={8} />,
           },
         },

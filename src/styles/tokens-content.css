@@ -165,6 +165,13 @@
   --ifield-value-fg: var(--grey-1514);
   --ifield-subtext-fg: var(--grey-284);
   --ifield-icon-fg: var(--grey-284);
+  /* Дизайн-чек от 07.09, замечание 19: «В Information Field оживить айки —
+     должны отрабатывать при наведении». Подсказка на ховере у них была и
+     раньше (Tooltip, задержка 400 мс), но сам значок никак не отзывался,
+     поэтому и читался как мёртвый. Пара Default/Hover берётся не с потолка:
+     это ровно та же пара, что уже описана у значка копирования этого же
+     компонента (Grey 284 → Grey 517). */
+  --ifield-icon-fg-hover: var(--grey-517);
   --ifield-divider: var(--divider);
   --ifield-success-fg: var(--mint-230);
   --ifield-error-fg: var(--red-418);

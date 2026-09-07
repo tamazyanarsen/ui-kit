@@ -8,7 +8,7 @@ import type { TagColor } from "@/components/ui/tag"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 // Дизайн-чек №15: пиктограмма карты больше не собирается здесь локально —
 // это отдельный компонент со своей историей, подключённый как зависимость.
-import { CardPictogram } from "@/components/ui/card-pictogram"
+import { CardAccount } from "@/components/ui/card-account"
 
 // Card — the "ELK / card" bank-card row (Figma node 42383:43897). Every text
 // block (title, subtitle, value) is single-line-only per the spec
@@ -84,7 +84,7 @@ function Card({
       )}
     >
       {showThumbnail && (
-        <CardPictogram number={thumbnailNumber} paymentSystem={paymentSystem} />
+        <CardAccount number={thumbnailNumber} paymentSystem={paymentSystem} />
       )}
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">

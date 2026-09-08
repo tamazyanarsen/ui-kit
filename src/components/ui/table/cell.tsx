@@ -126,7 +126,10 @@ function TableCell({
       style={{ ...style, ...pinned.style }}
       className={cn(
         cellPaddingYClass(type),
-        cellPaddingXClass(pin, type === "button" || type === "checkbox"),
+        cellPaddingXClass(
+          pin,
+          type === "button" || type === "checkbox" || type === "spacer"
+        ),
         // No rule between data rows. Verified at 1:1 against two independent
         // canonical renders (nodes 70279:7390 and 70279:10368): scanning an
         // empty column top-to-bottom finds exactly two #DEDEDE lines — the

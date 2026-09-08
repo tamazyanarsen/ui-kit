@@ -36,7 +36,13 @@ describe("Toast", () => {
 
     await user.click(screen.getByRole("button", { name: "Закрыть" }))
 
-    expect(screen.queryByRole("status")).not.toBeInTheDocument()
+    // Закрытие в два шага: карточка сперва помечается уходящей и доигрывает
+    // анимацию, и только потом снимается (дизайн-чек от 08.09, замечание 15).
+    expect(screen.getByRole("status")).toHaveAttribute("data-closing", "true")
+    await screen.findByRole("button", { name: "Показать тост" })
+    await vi.waitFor(() =>
+      expect(screen.queryByRole("status")).not.toBeInTheDocument()
+    )
   })
 
   it("renders the description and primary/secondary buttons", async () => {
@@ -72,21 +78,29 @@ describe("Toast", () => {
       await act(async () => {
         vi.advanceTimersByTime(1000)
       })
+      // Истёкший тост уходит анимированно, а не пропадает кадром.
+      expect(screen.getByRole("status")).toHaveAttribute("data-closing", "true")
+
+      await act(async () => {
+        vi.advanceTimersByTime(400)
+      })
 
       expect(screen.queryByRole("status")).not.toBeInTheDocument()
     })
 
-    it("caps the number of stacked toasts at the limit", () => {
+    /* Дизайн-чек от 08.09, замечание 14: «Нажал копирование несколько раз (7),
+       но тостов предельно возникает три… Предел нужно убрать». Раньше здесь
+       был обратный тест — «caps the number of stacked toasts at the limit». */
+    it("не ограничивает количество тостов и добавляет новые в конец", () => {
       function MultiHarness() {
         const toast = useToast()
         return (
           <button
             type="button"
             onClick={() => {
-              toast.add({ title: "Тост 1", timeout: 0 })
-              toast.add({ title: "Тост 2", timeout: 0 })
-              toast.add({ title: "Тост 3", timeout: 0 })
-              toast.add({ title: "Тост 4", timeout: 0 })
+              for (let index = 1; index <= 7; index += 1) {
+                toast.add({ title: `Тост ${index}`, timeout: 0 })
+              }
             }}
           >
             Показать все
@@ -94,7 +108,7 @@ describe("Toast", () => {
         )
       }
       render(
-        <ToastProvider limit={3}>
+        <ToastProvider>
           <MultiHarness />
           <Toaster />
         </ToastProvider>
@@ -104,7 +118,11 @@ describe("Toast", () => {
         screen.getByRole("button", { name: "Показать все" }).click()
       })
 
-      expect(screen.getAllByRole("status")).toHaveLength(3)
+      const shown = screen.getAllByRole("status")
+      expect(shown).toHaveLength(7)
+      // Новые — ниже: первый в разметке самый старый.
+      expect(shown[0]).toHaveTextContent("Тост 1")
+      expect(shown[6]).toHaveTextContent("Тост 7")
     })
   })
 })

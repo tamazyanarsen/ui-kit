@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button"
 import { ButtonMenu } from "@/components/ui/button-menu"
 import { Divider } from "@/components/ui/divider"
 import { Informer } from "@/components/ui/informer"
-import { ItemInformationField } from "@/components/ui/item-information-field"
+import {
+  ItemInformationField,
+  ItemInformationFieldGroup,
+} from "@/components/ui/item-information-field"
 import { TitleCard, TitleInformationText } from "@/components/ui/title"
 import { useToast } from "@/components/ui/toast-message"
 
@@ -83,7 +86,7 @@ function PlacementRequestScreen() {
               showCross={false}
             />
 
-            <div className="flex flex-col">
+            <ItemInformationFieldGroup>
               <ItemInformationField
                 label="Индикатив"
                 value="Ключевая ставка"
@@ -100,24 +103,26 @@ function PlacementRequestScreen() {
                 value="Ежемесячно"
                 divider
               />
-            </div>
+            </ItemInformationFieldGroup>
           </SandboxSection>
 
           <SandboxSection title="Счета продукта" gap={0}>
-            <ItemInformationField
-              label="Счёт подключения ЕСО"
-              value="40702 810 1 23456789456"
-              subText="Расчётный"
-              copyable
-              divider
-            />
-            <ItemInformationField
-              label="Счёт выплаты процентов"
-              value="40702 810 1 23456789456"
-              subText="Расчётный"
-              copyable
-              divider
-            />
+            <ItemInformationFieldGroup>
+              <ItemInformationField
+                label="Счёт подключения ЕСО"
+                value="40702 810 1 23456789456"
+                subText="Расчётный"
+                copyable
+                divider
+              />
+              <ItemInformationField
+                label="Счёт выплаты процентов"
+                value="40702 810 1 23456789456"
+                subText="Расчётный"
+                copyable
+                divider
+              />
+            </ItemInformationFieldGroup>
           </SandboxSection>
 
           <Informer
@@ -129,7 +134,9 @@ function PlacementRequestScreen() {
           />
         </SandboxBlock>
 
-        <SandboxBlock>
+        {/* Дизайн-чек от 08.09, замечание 12: «Реализовать закрепление блока».
+            Правило продукта, см. STICKY_BLOCK. */}
+        <SandboxBlock sticky>
           <SandboxSection title="Ежедневный свободный остаток" gap={16}>
             <p className="text-p2-regular text-[var(--grey-284)]">
               Индикатив — ключевая ставка ЦБ РФ

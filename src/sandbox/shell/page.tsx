@@ -143,7 +143,19 @@ function SandboxColumns({
   return (
     <GridRow data-slot="sandbox-columns" className={className} {...props}>
       {items.map((child, index) => (
-        <GridCol key={index} span={widths[index] ?? 12}>
+        // ⚠️ `self-stretch` — условие работы закреплённых блоков.
+        // `GridRow` ставит ряду `items-start`, и тогда высота колонки равна
+        // высоте её содержимого: липкому блоку внутри просто некуда ехать,
+        // `position: sticky` вычисляется и молча ничего не делает. Растянутая
+        // колонка получает высоту РЯДА, то есть соседней длинной колонки, —
+        // ровно ту дистанцию, которую и описывает «Механика прокрутки
+        // страницы (ЕЛК)» (см. STICKY_BLOCK). На нелипкие колонки это не
+        // влияет: блок внутри держит свою высоту сам.
+        <GridCol
+          key={index}
+          span={widths[index] ?? 12}
+          className="desktop:self-stretch"
+        >
           {child}
         </GridCol>
       ))}

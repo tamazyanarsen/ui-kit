@@ -5,7 +5,7 @@ import { TableCell } from "./cell"
 import type { DataTableProps } from "./data-table-props"
 import { fieldCellProps } from "./field-cell"
 import { TABLE_FIELD_TYPES } from "./field-types"
-import { MIN_COLUMN_WIDTH } from "./geometry"
+import { DEFAULT_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from "./geometry"
 import { TableHeadCell } from "./head-cell"
 import type { TablePin } from "./pin"
 import { Table, TableBody, TableHeader, TableRow } from "./table"
@@ -188,6 +188,25 @@ function DataTable<Row>({
       ? "left"
       : undefined
 
+  // ⚠️ ХВОСТОВОЙ ОСТАТОК ШИРИНЫ — отдельный пустой столбец.
+  //
+  // Дизайн-чек от 08.09, замечание 6: «В таблицах есть колонки, которые
+  // тянутся на остаток ширины… эту механику из всех таблиц продукта нужно
+  // полностью убрать». Появилась она не намеренно: при `table-layout: fixed`
+  // и `width: 100%` браузер раздаёт неразобранную ширину блока колонкам БЕЗ
+  // объявленной ширины, поэтому одна колонка без `width` съедала весь
+  // остаток (замерено на D7: «Операция» 329px против объявленных 180/200/180).
+  //
+  // Правило теперь такое: КАЖДАЯ содержательная колонка имеет ширину —
+  // объявленную или {@link DEFAULT_COLUMN_WIDTH}, — а остаток забирает этот
+  // столбец. Он пустой, без подписи и разделителя, и нужен ровно затем,
+  // чтобы линия под шапкой и заливка строки доходили до правого края блока.
+  // Когда колонки шире блока, он схлопывается в ноль и включается обычная
+  // горизонтальная прокрутка.
+  //
+  // Стоит ПЕРЕД правым закрепом: закреплённая ячейка остаётся в потоке на
+  // своём месте, и остаток справа от неё оторвал бы её от края.
+
   function handleRowClick(row: Row, key: string) {
     if (!onRowClick) return undefined
     return (event: React.MouseEvent<HTMLTableRowElement>) => {
@@ -238,12 +257,19 @@ function DataTable<Row>({
                   (field.resizable ?? resizable) &&
                   !TABLE_FIELD_TYPES[field.type ?? "text"].control
                 }
-                defaultWidth={field.width}
+                defaultWidth={
+                  field.width ??
+                  (TABLE_FIELD_TYPES[field.type ?? "text"].control
+                    ? undefined
+                    : DEFAULT_COLUMN_WIDTH)
+                }
                 minWidth={field.minWidth ?? MIN_COLUMN_WIDTH}
               >
                 {field.title}
               </TableHeadCell>
             ))}
+
+            <TableHeadCell type="spacer" />
 
             {/* «Филлер размещается над правым закреплённым блоком действий,
                 поскольку соответствующие ячейки строк не содержат общих
@@ -298,6 +324,8 @@ function DataTable<Row>({
                 />
               ))}
 
+              <TableCell type="spacer" />
+
               {extraActions && (
                 <TableCell type="button" pin="right" actions={rowActions(row)} />
               )}
@@ -332,6 +360,8 @@ function DataTable<Row>({
                   {...fieldCellProps(field, total.row)}
                 />
               ))}
+
+              <TableCell type="spacer" />
 
               {extraActions && <TableCell type="button" pin="right" />}
             </TableRow>

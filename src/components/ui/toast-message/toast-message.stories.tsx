@@ -5,6 +5,7 @@ import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ToastCard, ToastProvider, Toaster } from "./toast-message"
 import { useToast } from "./use-toast"
+import type { ToastBehavior } from "./use-toast"
 import type { ToastType } from "./variants"
 import { Button } from "@/components/ui/button"
 
@@ -32,6 +33,7 @@ interface PlaygroundArgs {
   showDescription?: boolean
   showCross?: boolean
   buttons: ToastButtons
+  behavior: ToastBehavior
   viewport?: Viewport
 }
 
@@ -42,6 +44,7 @@ function ToastLauncher({
   showDescription,
   showCross,
   buttons,
+  behavior,
   viewport,
 }: PlaygroundArgs) {
   const toast = useToast()
@@ -56,6 +59,7 @@ function ToastLauncher({
             title,
             description: showDescription ? description : undefined,
             showCross,
+            behavior,
             data: buttonData(buttons),
           })
         }
@@ -82,6 +86,17 @@ const meta = {
     description: { control: "text", name: "Текст описания" },
     showCross: { control: "boolean", name: "Show Cross" },
     buttons: { control: "select", options: ["none", "two", "black", "white"] },
+    /* Дизайн-чек от 08.09, замечание 15: два поведения тоста — «заведи два
+       поведения и пропс для разработчиков». Внешне они не отличаются, разница
+       видна только в момент ухода, поэтому смотреть надо по таймауту или по
+       крестику. */
+    behavior: {
+      control: "inline-radio",
+      options: ["collected", "transient"] satisfies ToastBehavior[],
+      name: "Судьба сообщения",
+      description:
+        "collected — остаётся в центре уведомлений и улетает туда; transient — отклик системы, гаснет на месте",
+    },
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
     viewport: viewportArgType,
@@ -93,6 +108,7 @@ const meta = {
     showDescription: false,
     showCross: true,
     buttons: "none",
+    behavior: "collected",
     viewport: "auto" as Viewport,
   },
   decorators: [

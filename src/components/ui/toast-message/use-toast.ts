@@ -9,6 +9,24 @@ interface ToastData {
   onSecondaryButtonClick?: () => void
 }
 
+/**
+ * Судьба тоста после закрытия — и, как следствие, то, КАК он исчезает.
+ *
+ * Дизайн-чек от 08.09, замечание 15: «В продукте есть 2 вида тостов, внешне и
+ * по статусной модели одно и то же, но судьба разная. Одни скапливаются в
+ * центре уведомлений, вторые нет. То есть может быть успешный тост в ЦУ,
+ * может быть просто отклик системы на копирование данных. Заведи два
+ * поведения и пропс для разработчиков».
+ *
+ * • `collected` — сообщение остаётся в центре уведомлений. Уходя, оно
+ *   УЛЕТАЕТ ТУДА: сжимается и смещается вверх-вправо, к значку колокольчика
+ *   в шапке. Пользователь видит, куда оно делось;
+ * • `transient` — отклик системы (скопировано, ссылка отправлена). Нигде не
+ *   остаётся, поэтому и улетать ему некуда: гаснет на месте, съезжая вправо
+ *   за край экрана.
+ */
+type ToastBehavior = "collected" | "transient"
+
 interface ToastOptions {
   type?: ToastType
   title: React.ReactNode
@@ -17,10 +35,15 @@ interface ToastOptions {
   showCross?: boolean
   timeout?: number
   data?: ToastData
+  /** Судьба сообщения — см. {@link ToastBehavior}. По умолчанию `collected`:
+   *  статусные сообщения продукта копятся в центре уведомлений. */
+  behavior?: ToastBehavior
 }
 
 interface ToastItem extends ToastOptions {
   id: string
+  /** Тост уже закрыт и доигрывает анимацию ухода. */
+  closing?: boolean
 }
 
 interface ToastContextValue {
@@ -40,4 +63,10 @@ function useToast() {
 }
 
 export { ToastContext, useToast }
-export type { ToastData, ToastOptions, ToastItem, ToastContextValue }
+export type {
+  ToastBehavior,
+  ToastData,
+  ToastOptions,
+  ToastItem,
+  ToastContextValue,
+}

@@ -3,12 +3,19 @@ import { useMemo, useState } from "react"
 import { Pencil } from "@/icons"
 import { BankCard } from "@/components/ui/bank-card"
 import { Button } from "@/components/ui/button"
+import {
+  ButtonMenuOverflow,
+  ButtonMenuOverflowItem,
+  ButtonMenuRow,
+} from "@/components/ui/button-menu"
 import { Filter } from "@/components/ui/filter"
 import { Input } from "@/components/ui/input"
-import { ItemInformationField } from "@/components/ui/item-information-field"
+import {
+  ItemInformationField,
+  ItemInformationFieldGroup,
+} from "@/components/ui/item-information-field"
 import { Pagination } from "@/components/ui/pagination"
 import { ProgressBar } from "@/components/ui/progress-bar"
-import { SelectionButton } from "@/components/ui/selection-button"
 import { DataTable, type TableSort } from "@/components/ui/table"
 import {
   TableTop,
@@ -88,8 +95,8 @@ function BusinessCardDetail() {
         />
       }
     >
-      <SandboxColumns widths={[4, 8]}>
-        <SandboxBlock>
+      <SandboxColumns widths={[5, 7]}>
+        <SandboxBlock sticky>
           <SandboxSection title="О карте" gap={24}>
             <BankCard
               skin="black-classic"
@@ -99,63 +106,75 @@ function BusinessCardDetail() {
               showBalance
             />
 
-            <div className="flex flex-col">
+            {/* Дизайн-чек от 08.09, замечание 7: «Использованы не те варианты
+                information field. Нужно в этом блоке использовать вариант
+                line». Line — это тип без собственных полей и без линии, поля
+                разводит контейнер на 16. */}
+            <ItemInformationFieldGroup type="label-line">
               <ItemInformationField
+                type="label-line"
                 label="Номер"
                 value="1234 56·· ···· 0835"
-                divider
               />
               <ItemInformationField
+                type="label-line"
                 label="Срок действия"
                 value="07 / 2030"
-                divider
               />
-            </div>
+            </ItemInformationFieldGroup>
 
-            <div className="flex flex-wrap items-center gap-4">
+            {/* Дизайн-чек от 08.09, замечание 3: ряд команд не переносится и
+                собран не Medium-кнопками. Это тот же механизм, что в нижней
+                панели, — не поместившиеся команды уходят в «ещё» последним
+                элементом ряда, а не встают второй строкой. */}
+            <ButtonMenuRow size="sm">
               <Button variant="secondary-grey">Экспорт операций</Button>
               <Button variant="secondary-grey">Перейти к счёту карты</Button>
-              <SelectionButton
-                items={[
-                  { text: "Переименовать" },
-                  { text: "Перевыпустить" },
-                  {
-                    text: "Заблокировать",
-                    onSelect: () =>
-                      toast.add({
-                        type: "attention",
-                        title: "Карта заблокирована",
-                        description: "Бизнес-карта Оплата расходов · 0835",
-                      }),
-                  },
-                  { text: "Закрыть карту" },
-                ]}
-              />
-            </div>
+              <ButtonMenuOverflow direction="down-left">
+                <ButtonMenuOverflowItem text="Переименовать" />
+                <ButtonMenuOverflowItem text="Перевыпустить" />
+                <ButtonMenuOverflowItem
+                  text="Заблокировать"
+                  onClick={() =>
+                    toast.add({
+                      type: "attention",
+                      title: "Карта заблокирована",
+                      description: "Бизнес-карта Оплата расходов · 0835",
+                    })
+                  }
+                />
+                <ButtonMenuOverflowItem text="Закрыть карту" />
+              </ButtonMenuOverflow>
+            </ButtonMenuRow>
           </SandboxSection>
         </SandboxBlock>
 
         <div className="flex flex-col gap-6">
           <SandboxBlock>
             <SandboxSection title="Основная информация" gap={0}>
-              <ItemInformationField
-                label="Счёт"
-                value="40702 810 7 00590062544"
-                subText="Карточный"
-                copyable
-                divider
-              />
-              <ItemInformationField
-                label="Тип карты"
-                value="MIR Classic Business"
-                subText="Персонализированная"
-                divider
-              />
-              <ItemInformationField
-                label="Держатель"
-                value="КОНСТАНТИНОПОЛЬСКИЙ КОНСТАНТИН КОНСТАНТИНОВИЧ"
-                divider
-              />
+              {/* Стопка, а не три поля подряд: правило «под последним полем
+                  разделителя нет» принадлежит группе (дизайн-чек от 08.09,
+                  замечание 2), см. ItemInformationFieldGroup. */}
+              <ItemInformationFieldGroup>
+                <ItemInformationField
+                  label="Счёт"
+                  value="40702 810 7 00590062544"
+                  subText="Карточный"
+                  copyable
+                  divider
+                />
+                <ItemInformationField
+                  label="Тип карты"
+                  value="MIR Classic Business"
+                  subText="Персонализированная"
+                  divider
+                />
+                <ItemInformationField
+                  label="Держатель"
+                  value="КОНСТАНТИНОПОЛЬСКИЙ КОНСТАНТИН КОНСТАНТИНОВИЧ"
+                  divider
+                />
+              </ItemInformationFieldGroup>
             </SandboxSection>
           </SandboxBlock>
 

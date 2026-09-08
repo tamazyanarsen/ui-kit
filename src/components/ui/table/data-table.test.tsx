@@ -53,7 +53,11 @@ describe("DataTable — построение ячеек по типу поля",
         rows={[{ amount: null }]}
       />
     )
-    const money = document.querySelectorAll('[data-slot="table-cell"]')
+    // Последняя ячейка строки — хвостовой остаток ширины (`type="spacer"`),
+    // он всегда пуст; нужная — предпоследняя.
+    const money = document.querySelectorAll(
+      '[data-slot="table-cell"]:not([data-type="spacer"])'
+    )
     expect(money[money.length - 1].textContent).toBe("—")
   })
 

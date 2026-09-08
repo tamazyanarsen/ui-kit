@@ -164,12 +164,23 @@ function CopyButton({
   // необработанное отклонение в консоли и тост «Скопировано в буфер
   // обмена» в тот момент, когда не скопировалось ничего. Поймано сплошным
   // прогоном историй: копирование в неактивном кадре отклонялось молча.
+  // `behavior: "transient"` — отклик системы, а не сообщение продукта: в
+  // центре уведомлений «Скопировано в буфер обмена» не остаётся, поэтому и
+  // улетать ему туда не следует (дизайн-чек от 08.09, замечание 15).
   async function handleCopy() {
     try {
       await navigator.clipboard?.writeText(copyValue)
-      toast.add({ type: "checked", title: "Скопировано в буфер обмена" })
+      toast.add({
+        type: "checked",
+        title: "Скопировано в буфер обмена",
+        behavior: "transient",
+      })
     } catch {
-      toast.add({ type: "error", title: "Не удалось скопировать" })
+      toast.add({
+        type: "error",
+        title: "Не удалось скопировать",
+        behavior: "transient",
+      })
     }
   }
 

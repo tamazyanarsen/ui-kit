@@ -50,6 +50,20 @@ function cellPaddingXClass(pin: TablePin | undefined, ownPadding: boolean) {
   return "px-2"
 }
 
+/**
+ * Ширина содержательной колонки по умолчанию.
+ *
+ * Дизайн-чек от 08.09, замечание 6: «В таблицах есть колонки, которые тянутся
+ * на остаток ширины. Эту механику из всех таблиц продукта нужно полностью
+ * убрать». Колонка без объявленной ширины при `table-layout: fixed` забирала
+ * весь остаток блока — теперь она получает эту ширину, а остаток уходит в
+ * хвостовой `spacer` (см. `DataTable`).
+ *
+ * 200 — не «на глаз»: столько же в эталонах у обычной текстовой колонки
+ * («Сумма» 200, «Дата операции» 180 в D7), это середина реального разброса.
+ */
+const DEFAULT_COLUMN_WIDTH = 200
+
 // Fixed widths for the control columns, straight off their Figma masters:
 // the Checkbox title cell is 48 wide (pl-8 + 24 + gap-15 + the 1px rule),
 // Collapse and Icon are 32 (px-8 around a 16px glyph), and Button/Filler are
@@ -76,6 +90,10 @@ const CONTROL_COLUMN_WIDTH: Partial<Record<TableHeadCellType, number>> = {
  */
 function headCellPaddingYClass(type: TableHeadCellType) {
   switch (type) {
+    // У хвостового остатка полей нет вовсе: его высоту задают соседи, а
+    // собственные отступы только помешали бы им.
+    case "spacer":
+      return "p-0"
     case "checkbox":
     case "filler":
       return "py-3"
@@ -100,7 +118,7 @@ function headCellPaddingXClass(
   pin: TablePin | undefined,
   hasDivider: boolean
 ) {
-  if (type === "button") return undefined // `p-2` задаёт горизонталь сам
+  if (type === "button" || type === "spacer") return undefined // поля задаёт `headCellPaddingYClass`
   if (pin) return cellPaddingXClass(pin, false)
   return hasDivider ? "pl-2 pr-[7px]" : "px-2"
 }
@@ -114,6 +132,8 @@ function headCellPaddingXClass(
  */
 function cellPaddingYClass(type: TableCellType) {
   switch (type) {
+    case "spacer":
+      return "p-0"
     case "checkbox":
       return "py-[14px] pl-2 pr-4"
     case "icon":
@@ -156,6 +176,7 @@ function isControlType(type: TableHeadCellType | TableCellType) {
 
 export {
   CONTROL_COLUMN_WIDTH,
+  DEFAULT_COLUMN_WIDTH,
   MIN_COLUMN_WIDTH,
   MIN_SCROLLABLE_REST,
   NESTING_INDENT,

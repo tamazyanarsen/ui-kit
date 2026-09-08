@@ -6,6 +6,7 @@ export {
   SandboxFieldRow,
   SandboxSection,
   SandboxSectionTitle,
+  STICKY_BLOCK,
 } from "./block"
 export type { SandboxBlockProps } from "./block"
 export { SandboxCompositionBar } from "./composition-bar"

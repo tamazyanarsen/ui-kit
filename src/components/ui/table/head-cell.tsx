@@ -113,6 +113,9 @@ function TableHeadCell({
 }: TableHeadCellProps) {
   const isSubtitle = type === "subtitle-left" || type === "subtitle-right"
   const isRight = type === "subtitle-right"
+  // Хвостовой остаток ширины — не колонка данных: ни подписи, ни ширины, ни
+  // высоты у него нет, он только доносит линию под шапкой до правого края.
+  const isSpacer = type === "spacer"
 
   // The hierarchy column is neither sortable nor resizable — see the
   // `collapsible` prop docs for the two spec lines that rule both out.
@@ -144,7 +147,8 @@ function TableHeadCell({
       data-slot="table-head-cell"
       data-type={type}
       data-pin={pin}
-      scope="col"
+      scope={isSpacer ? undefined : "col"}
+      aria-hidden={isSpacer || undefined}
       style={{ ...style, ...pinned.style, width: resolvedWidth }}
       className={cn(
         headCellPaddingYClass(type),

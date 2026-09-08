@@ -94,7 +94,17 @@ function TransferWidget() {
         className="min-w-0"
       />
 
-      <Button type="button" variant="primary" disabled={!canSubmit} onClick={handleSubmit}>
+      {/* Дизайн-чек от 08.09, замечание 3: «в продукте почти никогда не
+          используются кнопки Medium, кроме разве что модальных окон». У
+          кнопки размер по умолчанию как раз Medium, поэтому на экранах и в
+          виджетах он задаётся явно. */}
+      <Button
+        type="button"
+        variant="primary"
+        size="lg"
+        disabled={!canSubmit}
+        onClick={handleSubmit}
+      >
         Перевести
       </Button>
     </div>

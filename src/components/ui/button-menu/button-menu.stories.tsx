@@ -10,10 +10,7 @@ import {
 
 import { ButtonMenu } from "./root"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
-import type {
-  SelectionButtonDirection,
-  SelectionButtonSize,
-} from "@/components/ui/selection-button"
+import type { SelectionButtonDirection } from "@/components/ui/selection-button"
 import { Button } from "@/components/ui/button"
 
 /* Свойства унаследованы из компонент-сета «ELK / button menu» (нода
@@ -54,11 +51,19 @@ function menuButtons(type: MenuType, count: ButtonCount) {
   ))
 }
 
-function Overflow(props: {
+/* ⚠️ ФУНКЦИЯ, А НЕ КОМПОНЕНТ, и вызывается как `overflow(...)`, а не через
+   `<Overflow />`.
+
+   Панель узнаёт своё меню «ещё» по типу элемента (`node.type ===
+   ButtonMenuOverflow`), а `<Overflow />` — элемент типа `Overflow`, то есть
+   для панели это «что-то постороннее». Из-за обёртки в дизайн-чек от 08.09
+   попали сразу два дефекта: меню улетало к правому краю панели вместе с
+   прочим содержимым (замечание 8) и рядом появлялось ВТОРОЕ многоточие,
+   собранное панелью из спрятанных кнопок (замечание 9). */
+function overflow(props: {
   direction?: SelectionButtonDirection
-  size?: SelectionButtonSize
   showDropdown?: boolean
-}) {
+} = {}) {
   return (
     <ButtonMenuOverflow {...props}>
       <ButtonMenuOverflowItem text="Дублировать" description="Создать копию" />
@@ -88,7 +93,6 @@ interface PlaygroundArgs {
   buttons: ButtonCount
   overflow: boolean
   pinned: boolean
-  overflowSize: SelectionButtonSize
   overflowDirection: SelectionButtonDirection
   showDropdown: boolean
 }
@@ -119,14 +123,11 @@ const meta = {
       options: BUTTON_COUNTS,
       table: { category: "Pabel Of Buttons (Primary, ELK)" },
     },
-    overflowSize: {
-      ...optionsArgType<SelectionButtonSize>(
-        "Size",
-        { lg: "L", sm: "S" },
-        "inline-radio"
-      ),
-      ...SELECTION_BUTTON,
-    },
+    /* Контрола `Size` здесь нет намеренно — дизайн-чек от 08.09, замечание
+       10: «Size S для Button Menu — выдуман. Его не должно быть, панель
+       одноразмерная». В мастере (нода 41357:45664) вложенный
+       `ELK / selection button` нарисован 56×56, и другого размера у него нет;
+       размер триггера задаёт сам ряд под свои кнопки. */
     overflowDirection: {
       ...optionsArgType("Direction", DIRECTION_LABELS),
       ...SELECTION_BUTTON,
@@ -153,7 +154,6 @@ const meta = {
     buttons: 3,
     overflow: true,
     pinned: true,
-    overflowSize: "lg",
     overflowDirection: "top-right",
     showDropdown: true,
   },
@@ -166,9 +166,8 @@ export const Playground: Story = {
   render: ({
     type,
     buttons,
-    overflow,
+    overflow: withOverflow,
     pinned,
-    overflowSize,
     overflowDirection,
     showDropdown,
   }) => (
@@ -182,13 +181,8 @@ export const Playground: Story = {
       </div>
       <ButtonMenu pinned={pinned} className="mt-auto">
         {menuButtons(type, buttons)}
-        {overflow && (
-          <Overflow
-            size={overflowSize}
-            direction={overflowDirection}
-            showDropdown={showDropdown}
-          />
-        )}
+        {withOverflow &&
+          overflow({ direction: overflowDirection, showDropdown })}
       </ButtonMenu>
     </StoryContentArea>
   ),
@@ -271,14 +265,12 @@ export const Examples: Story = {
         <div className="w-full">
           <ButtonMenu>
             {menuButtons("With Primary", 3)}
-            <Overflow />
+            {overflow()}
           </ButtonMenu>
         </div>
       </StorySection>
 
-      <StorySection title="Только меню «ещё»">
-        <Overflow />
-      </StorySection>
+      <StorySection title="Только меню «ещё»">{overflow()}</StorySection>
     </StoryShowcase>
   ),
 }

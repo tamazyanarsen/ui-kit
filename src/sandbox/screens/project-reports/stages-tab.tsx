@@ -1,7 +1,10 @@
 import { useState } from "react"
 
 import { Item } from "@/components/ui/item"
-import { ItemInformationField } from "@/components/ui/item-information-field"
+import {
+  ItemInformationField,
+  ItemInformationFieldGroup,
+} from "@/components/ui/item-information-field"
 
 import { BarChart, LineChart, THEME_COLORS } from "../../charts"
 import {
@@ -152,7 +155,7 @@ function StagesTab() {
             <p className="text-p3-regular text-[var(--grey-284)]">
               На текущую дату
             </p>
-            <div className="flex flex-col">
+            <ItemInformationFieldGroup>
               {RESERVES.map((reserve) => (
                 <ItemInformationField
                   key={reserve.label}
@@ -161,7 +164,7 @@ function StagesTab() {
                   divider
                 />
               ))}
-            </div>
+            </ItemInformationFieldGroup>
           </SandboxSection>
         </SandboxBlock>
       </ReportSection>
@@ -178,7 +181,7 @@ function StagesTab() {
                 { name: "По актам, %", data: READINESS.acts, smooth: false },
               ]}
             />
-            <div className="flex flex-col">
+            <ItemInformationFieldGroup>
               {READINESS.totals.map((row) => (
                 <ItemInformationField
                   key={row.label}
@@ -188,7 +191,7 @@ function StagesTab() {
                   divider
                 />
               ))}
-            </div>
+            </ItemInformationFieldGroup>
           </SandboxSection>
         </SandboxBlock>
       </ReportSection>

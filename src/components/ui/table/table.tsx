@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 
 import { TableScrollContext, useHorizontalScrollState } from "./pin"
 import { TableScrollbar } from "./scrollbar"
+import { useBelowReserve } from "./use-below-reserve"
 
 // Table — "Проектирование таблиц ЕЛК" (node 70279:6891). Anatomy per spec: a
 // Title Cell row (the header, `<thead>`) and a Cell grid of data rows
@@ -90,6 +91,11 @@ function Table({
 
   const scrollState = useHorizontalScrollState(innerRef)
 
+  // Место под тем, что стоит в блоке НИЖЕ таблицы (пагинатор), — см.
+  // use-below-reserve.ts.
+  const rootRef = React.useRef<HTMLDivElement>(null)
+  useBelowReserve(rootRef, stickyHeader)
+
   return (
     <TableScrollContext.Provider value={scrollState}>
       {/* Обёртка нужна полосе прокрутки: она стоит РЯДОМ с прокручиваемым
@@ -107,6 +113,7 @@ function Table({
           ограничен коробкой РОДИТЕЛЯ, а родитель окна — эта самая обёртка,
           высота которой равна высоте окна. Ехать было бы некуда. */}
       <div
+        ref={rootRef}
         data-slot="table-root"
         className={cn(
           "group/table relative",
@@ -131,8 +138,12 @@ function Table({
             // резолвятся в `none` — окно оставалось безразмерным, а строки
             // вываливались за подрезанную обёртку. Обёртка же получает свою
             // высоту от окна сама.
+            // `--table-below` — место под пагинатором и всем, что стоит в
+            // блоке ниже таблицы (см. use-below-reserve.ts). Без него окно
+            // забирало всю свободную высоту, и пагинатор рисовался поверх
+            // последней строки (дизайн-чек от 08.09, замечание 11).
             stickyHeader &&
-              "max-h-[calc(100dvh-var(--viewport-inset-top,0px)-var(--viewport-inset-bottom,0px))]",
+              "max-h-[calc(100dvh-var(--viewport-inset-top,0px)-var(--viewport-inset-bottom,0px)-var(--table-below,0px))]",
             containerClassName
           )}
         >

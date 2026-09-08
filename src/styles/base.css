@@ -292,6 +292,13 @@ table[data-sticky-header] thead th {
     width: 1px;
     background: var(--table-divider);
   }
+  /* Хвостовой остаток ширины (`type="spacer"`, см. `DataTable`) — не колонка,
+     а добор до правого края блока. Поэтому линии ни у него самого, ни на
+     границе с ним нет: иначе разлиновка рисовала бы пустую клетку справа. */
+  table[data-grid-lines] tbody td[data-type="spacer"]::after,
+  table[data-grid-lines] tbody td:has(+ td[data-type="spacer"])::after {
+    content: none;
+  }
   table[data-grid-lines] tbody tr:not(:last-child) td::before {
     content: "";
     position: absolute;
@@ -431,6 +438,65 @@ table[data-sticky-header] thead th {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Уход тоста — двумя разными способами, по судьбе сообщения (дизайн-чек от
+   08.09, замечание 15: «Должны исчезать анимированно и что важно — двумя
+   разными способами»). Раньше карточка просто снималась из разметки и
+   пропадала одним кадром.
+
+   `collected` — сообщение остаётся в центре уведомлений и уходит ТУДА:
+   сжимается и смещается вверх-вправо, к колокольчику в шапке. Схлопывание
+   высоты в конце (`margin-bottom` под зазор колонки в 24) убирает прыжок
+   соседних карточек.
+
+   `transient` — отклик системы, который нигде не остаётся: просто уезжает
+   вправо за край и гаснет, без «полёта» и без намёка, что его где-то можно
+   найти. */
+@keyframes toast-out-collected {
+  /* ⚠️ `max-height` объявлен и в первом кадре: без него он стартует с `none`,
+     а от `none` браузер не интерполирует — карточка схлопывалась бы рывком.
+     320 заведомо больше самой высокой карточки, поэтому на вид ничего не
+     меняет. */
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+    max-height: 320px;
+  }
+  60% {
+    opacity: 0;
+    transform: translate(24px, -24px) scale(0.86);
+    max-height: 320px;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(24px, -24px) scale(0.86);
+    max-height: 0;
+    margin-bottom: -24px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@keyframes toast-out-transient {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 320px;
+  }
+  60% {
+    opacity: 0;
+    transform: translateX(48px);
+    max-height: 320px;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(48px);
+    max-height: 0;
+    margin-bottom: -24px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 

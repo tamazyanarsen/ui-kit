@@ -73,7 +73,19 @@ export function StorySection({
           <p className="text-p3-regular text-[#6D6D6D]">{description}</p>
         )}
       </div>
-      <div className={cn("flex flex-wrap items-start gap-4", className)}>
+      {/* ⚠️ `[&>*]:min-w-0` — иначе широкий образец распирает витрину.
+          У флекс-элемента `min-width` по умолчанию `auto`, то есть он не
+          сжимается ниже минимальной ширины СОДЕРЖИМОГО. Для таблицы это
+          сумма ширин колонок (с 08.09 они объявлены у каждой, см.
+          `DEFAULT_COLUMN_WIDTH`), и витрина уезжала на 627px вправо вместе
+          со страницей вместо того, чтобы включить собственную прокрутку
+          таблицы. Ровно тот же `min-w-0` стоит на колонке сетки продукта. */}
+      <div
+        className={cn(
+          "flex w-full flex-wrap items-start gap-4 [&>*]:min-w-0",
+          className
+        )}
+      >
         {children}
       </div>
     </section>

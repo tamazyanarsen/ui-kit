@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button"
 import { ButtonMenu } from "@/components/ui/button-menu"
 import { DataTable } from "@/components/ui/table"
 import { Divider } from "@/components/ui/divider"
-import { ItemInformationField } from "@/components/ui/item-information-field"
+import {
+  ItemInformationField,
+  ItemInformationFieldGroup,
+} from "@/components/ui/item-information-field"
 import { Tabs } from "@/components/ui/tabs"
 import { TitleCard } from "@/components/ui/title"
 import { useToast } from "@/components/ui/toast-message"
@@ -125,57 +128,61 @@ function CreditAgreementScreen() {
                   </Button>
                 }
               >
-                <ItemInformationField
-                  label="Дата"
-                  value="17.07.2027"
-                  divider
-                />
-                <ItemInformationField
-                  label="Сумма"
-                  value={money(5_000_000)}
-                  divider
-                />
+                <ItemInformationFieldGroup>
+                  <ItemInformationField
+                    label="Дата"
+                    value="17.07.2027"
+                    divider
+                  />
+                  <ItemInformationField
+                    label="Сумма"
+                    value={money(5_000_000)}
+                    divider
+                  />
+                </ItemInformationFieldGroup>
               </SandboxSection>
             </SandboxBlock>
 
             <SandboxBlock>
               <SandboxSection title="Параметры договора" gap={0}>
-                <ItemInformationField
-                  label="Кредитный продукт"
-                  value="ИЖС-подряд"
-                  divider
-                />
-                <ItemInformationField
-                  label="Дата заключения договора"
-                  value="05.03.2026"
-                  divider
-                />
-                <ItemInformationField
-                  label="Дата закрытия договора"
-                  value="05.03.2028"
-                  divider
-                />
-                <ItemInformationField
-                  label="Счёт зачисления"
-                  value="40702 810 7 00590062547"
-                  subText="Расчётный"
-                  copyable
-                  divider
-                />
-                <ItemInformationField
-                  label="Счёт списания процентов"
-                  value="40702 810 7 00590062547"
-                  subText="Расчётный"
-                  copyable
-                  divider
-                />
-                <ItemInformationField
-                  label="Счёт списания основного долга"
-                  value="40702 810 7 00590062548"
-                  subText="Залоговый"
-                  copyable
-                  divider
-                />
+                <ItemInformationFieldGroup>
+                  <ItemInformationField
+                    label="Кредитный продукт"
+                    value="ИЖС-подряд"
+                    divider
+                  />
+                  <ItemInformationField
+                    label="Дата заключения договора"
+                    value="05.03.2026"
+                    divider
+                  />
+                  <ItemInformationField
+                    label="Дата закрытия договора"
+                    value="05.03.2028"
+                    divider
+                  />
+                  <ItemInformationField
+                    label="Счёт зачисления"
+                    value="40702 810 7 00590062547"
+                    subText="Расчётный"
+                    copyable
+                    divider
+                  />
+                  <ItemInformationField
+                    label="Счёт списания процентов"
+                    value="40702 810 7 00590062547"
+                    subText="Расчётный"
+                    copyable
+                    divider
+                  />
+                  <ItemInformationField
+                    label="Счёт списания основного долга"
+                    value="40702 810 7 00590062548"
+                    subText="Залоговый"
+                    copyable
+                    divider
+                  />
+                </ItemInformationFieldGroup>
               </SandboxSection>
             </SandboxBlock>
           </div>

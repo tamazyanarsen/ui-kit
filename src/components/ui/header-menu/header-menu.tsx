@@ -164,5 +164,5 @@ function HeaderMenu({
   )
 }
 
-export { HeaderMenu }
+export { HeaderMenu, distribute as distributeMenuGroups }
 export type { HeaderMenuProps, HeaderMenuGroup, HeaderMenuLink }

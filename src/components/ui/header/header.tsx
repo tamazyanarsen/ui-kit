@@ -4,6 +4,7 @@ import { Settings } from "@/icons"
 import { cn } from "@/lib/utils"
 import { useViewportInsetTop } from "@/lib/use-viewport-inset-top"
 import { Button } from "@/components/ui/button"
+import { EmployeeMenuNav } from "@/components/ui/employee-menu"
 import {
   CreateMenu,
   FavouritesSettings,
@@ -28,6 +29,7 @@ import {
   SidebarToggle,
   SignOutPhone,
   TopRow,
+  TopRowDivider,
 } from "./top-row"
 
 // Header — "Шапка": the app's top nav bar. Per the spec's own two property
@@ -54,8 +56,16 @@ import {
 // «Добавлено» и «Остальные разделы». `navItems` остаётся только для
 // шапки без раскрытого меню.
 //
+// У СОТРУДНИКА то же избранное живёт в ВЕРХНЕЙ полосе, а не в нижнем ряду:
+// новое «Меню сотрудника на главном экране» (раздел 70396:22292) убирает
+// боковую панель совсем — разделы лежат карточками на главной
+// (`ui/employee-menu`), а закреплённые звездой уезжают в шапку. Признак этой
+// шапки — переданные `menuGroups` или включённое `onFavouritesChange`; без
+// них шапка сотрудника остаётся прежней, с гамбургером и парным `Sidebar`.
+//
 // Части шапки лежат рядом: верхняя полоса — `top-row.tsx`, нижний ряд с
-// навигацией — `nav-row.tsx`, раскрывающиеся панели — `menu-overlay.tsx`.
+// навигацией — `nav-row.tsx`, раскрывающиеся панели — `menu-overlay.tsx`,
+// полоса избранного сотрудника — `ui/employee-menu/employee-menu-nav.tsx`.
 
 type HeaderType = "client" | "employee" | "sign-out"
 type ClientHeaderType = "client" | "client-without-account" | "client-is-blocked"
@@ -173,17 +183,32 @@ function Header({
   const showCreate = type === "client" && clientHeaderType === "client"
   const favouritesEnabled = Boolean(onFavouritesChange)
 
+  // Закреплённые разделы одним списком. У клиента они уезжают в НИЖНИЙ ряд,
+  // у сотрудника — в верхнюю полосу (новое меню сотрудника, см.
+  // `ui/employee-menu`); список и его порядок при этом один и тот же.
+  const favouriteLinks = React.useMemo(
+    () => resolveFavouriteLinks(menuGroups, favourites),
+    [menuGroups, favourites]
+  )
+
   // Нижний ряд — это избранное, когда есть из чего его считать. Раньше
   // `navItems` и `favourites` были двумя независимыми списками, поэтому
   // звезда в раскрытом меню ничего не меняла в шапке.
   const resolvedNavItems: HeaderNavItem[] = React.useMemo(() => {
     if (menuGroups.length === 0) return navItems
-    return resolveFavouriteLinks(menuGroups, favourites).map((link) => ({
+    return favouriteLinks.map((link) => ({
       value: link.value,
       label: link.label,
       onClick: link.onClick,
     }))
-  }, [menuGroups, favourites, navItems])
+  }, [menuGroups, favouriteLinks, navItems])
+
+  // Шапка сотрудника нового меню: закреплённые разделы стоят прямо в
+  // верхней полосе, а гамбургера и парного `Sidebar` у неё нет. Признак —
+  // переданное меню или включённое избранное: старые вызовы, где у
+  // сотрудника ни того ни другого, работают ровно как раньше.
+  const employeeFavourites =
+    type === "employee" && (menuGroups.length > 0 || favouritesEnabled)
 
   React.useEffect(() => {
     if (!showNavRow) setOpenPanel(null)
@@ -228,14 +253,25 @@ function Header({
         className
       )}
     >
-      <TopRow>
+      <TopRow className={employeeFavourites ? "gap-6" : undefined}>
         {type === "employee" && showMenu && (
           <SidebarToggle open={sidebarOpen} onOpenChange={onSidebarOpenChange} />
         )}
 
         <Logo />
 
-        <div className="min-w-0 flex-1" />
+        {employeeFavourites ? (
+          <>
+            <TopRowDivider />
+            <EmployeeMenuNav
+              links={favouriteLinks}
+              activeLink={activeSection}
+              showHint={favouritesEnabled}
+            />
+          </>
+        ) : (
+          <div className="min-w-0 flex-1" />
+        )}
 
         {type === "client" && (
           <ClientActions
@@ -260,6 +296,7 @@ function Header({
             employeeName={employeeName}
             onSettingsClick={onOrgSettingsClick}
             onLogoutClick={() => setLogoutOpen(true)}
+            showDivider={employeeFavourites}
           />
         )}
 

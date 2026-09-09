@@ -1,7 +1,9 @@
 import * as React from "react"
 
 import { LogOut, Mail, Menu, X } from "@/icons"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Divider } from "@/components/ui/divider"
 import { Grid } from "@/components/ui/grid"
 
 import { DomRfLogo } from "./dom-rf-logo"
@@ -146,11 +148,21 @@ function EmployeeActions({
   employeeName,
   onSettingsClick,
   onLogoutClick,
+  showDivider = false,
 }: {
   notificationItems: NotificationMenuItem[]
   employeeName: React.ReactNode
   onSettingsClick?: () => void
   onLogoutClick: () => void
+  /**
+   * Разделитель между уведомлениями и подписью сотрудника.
+   *
+   * Есть только в шапке с закреплённым избранным (`Employee Header`, нода
+   * 70396:22367): там панель иконок и подпись — два разных блока по краям
+   * полосы навигации. У прежней шапки сотрудника, где ряда навигации нет
+   * вовсе, они стоят вплотную, и линии между ними в макете тоже нет.
+   */
+  showDivider?: boolean
 }) {
   return (
     <div className="flex shrink-0 items-center">
@@ -158,6 +170,7 @@ function EmployeeActions({
         items={notificationItems}
         unreadCount={notificationItems.length}
       />
+      {showDivider && <TopRowDivider />}
       <EmployeeUserMenu name={employeeName} onSettingsClick={onSettingsClick} />
       <button
         type="button"
@@ -201,10 +214,36 @@ function SignOutPhone({ phoneNumber }: { phoneNumber: React.ReactNode }) {
  * формулирует правило: «хедер тянется на всю ширину, грид работает не на
  * белую подложку хедера, а на контент внутри».
  */
-function TopRow({ children }: { children: React.ReactNode }) {
+function TopRow({
+  className,
+  children,
+}: {
+  /**
+   * Классы контентной полосы. Нужны ровно одному случаю — шапке сотрудника
+   * с закреплённым избранным, где интервал между блоками 24, а не 12
+   * (`Box` в ноде 70396:22367). Остальным шапкам менять его незачем: у них
+   * между логотипом и правым кластером стоит распорка, и интервал не виден.
+   */
+  className?: string
+  children: React.ReactNode
+}) {
   return (
     <div className="flex h-16 w-full shrink-0 border-b border-[var(--header-border)] bg-[var(--header-bg)]">
-      <Grid className="flex min-w-0 items-center gap-3">{children}</Grid>
+      <Grid className={cn("flex min-w-0 items-center gap-3", className)}>
+        {children}
+      </Grid>
+    </div>
+  )
+}
+
+/**
+ * Вертикальный разделитель верхней полосы: 1px во всю высоту минус 16px
+ * сверху и снизу — тот же `Divider Container`, что и в ряду навигации.
+ */
+function TopRowDivider() {
+  return (
+    <div className="flex h-16 shrink-0 items-center py-4">
+      <Divider orientation="vertical" />
     </div>
   )
 }
@@ -216,4 +255,5 @@ export {
   SidebarToggle,
   SignOutPhone,
   TopRow,
+  TopRowDivider,
 }

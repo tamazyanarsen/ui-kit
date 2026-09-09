@@ -167,3 +167,122 @@ export const CREATE_ITEMS: CreateMenuItem[] = [
   { value: "sbp-person", label: "Платёж по СБП физлицу", icon: <Sbp /> },
   { value: "qr", label: "QR-код на оплату", icon: <Sbp /> },
 ]
+
+// Демо-наполнение меню сотрудника — разделы, заголовки и порядок сняты с
+// кадров «Главная» раздела «Меню сотрудника на главном экране» (нода
+// 70396:22292) буква в букву.
+
+export const EMPLOYEE_MENU_GROUPS: HeaderMenuGroup[] = [
+  {
+    value: "main",
+    title: "Основное",
+    links: [
+      { value: "letters", label: "Письма" },
+      { value: "tasks", label: "Задачник" },
+      { value: "certificates", label: "Справки" },
+      { value: "payments", label: "Платежи" },
+    ],
+  },
+  {
+    value: "sbp",
+    title: "СБП",
+    links: [
+      { value: "sbp-payments", label: "Платежи СБП" },
+      { value: "sbp-qr", label: "QR-коды СБП" },
+    ],
+  },
+  {
+    value: "orders",
+    title: "Распоряжения",
+    links: [
+      { value: "orders", label: "Распоряжения" },
+      { value: "contracts", label: "Договоры" },
+    ],
+  },
+  {
+    value: "registries",
+    title: "Реестры данных",
+    links: [
+      { value: "persons", label: "Физлица" },
+      { value: "companies", label: "Юрлица" },
+      { value: "employees", label: "Сотрудники" },
+    ],
+  },
+  {
+    value: "savings",
+    title: "Сберегательные продукты",
+    links: [
+      { value: "deposits", label: "Депозиты" },
+      { value: "nso", label: "НСО" },
+      { value: "standard-rates", label: "Стандартные ставки" },
+      { value: "product-catalog", label: "Продуктовый каталог" },
+    ],
+  },
+  {
+    value: "administration",
+    title: "Администрирование",
+    links: [
+      { value: "elk-banners", label: "Баннеры меню ЕЛК" },
+      { value: "elk-help", label: "Страница «Помощь» ЕЛК" },
+    ],
+  },
+  {
+    value: "project-finance",
+    title: "Проектное финансирование",
+    links: [
+      { value: "pf-requests", label: "Заявки на ПФ" },
+      { value: "drawdown-requests", label: "Заявки на выборку" },
+      { value: "petitions", label: "Ходатайства" },
+    ],
+  },
+  {
+    value: "extra",
+    title: "Дополнительно",
+    links: [
+      { value: "salary-project", label: "Зарплатный проект" },
+      { value: "escrow-requests", label: "Заявки на эскроу" },
+      { value: "fraud", label: "FRAUD-мониторинг" },
+      { value: "suspensive", label: "Отлагательные" },
+      { value: "da-checklist", label: "Чеклист для ДА" },
+    ],
+  },
+  {
+    value: "credit-analytics",
+    title: "Кредитная аналитика",
+    links: [
+      { value: "ka-desktop", label: "Рабочий стол КА" },
+      { value: "ka-tasks", label: "Задачи КА" },
+      { value: "ka-deals", label: "Сделки КА" },
+      { value: "ka-calculations", label: "Расчёты КА" },
+      { value: "ka-hotline", label: "Горячая линия КА" },
+      { value: "ka-resources", label: "Полезные ресурсы КА" },
+      { value: "ka-knowledge", label: "База знаний КА 2.0" },
+      { value: "ka-reports", label: "Отчётность и аналитика" },
+      { value: "ka-dossier", label: "Электронное досье" },
+    ],
+  },
+]
+
+/**
+ * «Стартовый набор избранного у сотрудника» — комментарий макета (нода
+ * 70396:22582) перечисляет его по пунктам и по порядку: Письма, Справки,
+ * Платежи, Платежи СБП, Продуктовый каталог.
+ */
+export const EMPLOYEE_MENU_FAVOURITES = [
+  "letters",
+  "certificates",
+  "payments",
+  "sbp-payments",
+  "product-catalog",
+]
+
+/** Избранное кадра «Много избранного»: в полосу помещается не всё. */
+export const EMPLOYEE_MENU_FAVOURITES_MANY = [
+  ...EMPLOYEE_MENU_FAVOURITES,
+  "elk-help",
+  "fraud",
+  "suspensive",
+  "da-checklist",
+  "ka-desktop",
+  "ka-reports",
+]

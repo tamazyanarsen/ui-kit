@@ -1,5 +1,7 @@
 import type * as React from "react"
 
+import { ArrowBackChevron, ArrowNextChevron } from "@/icons"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -37,6 +39,13 @@ interface MenuBannerProps {
   buttonLabel?: React.ReactNode
   onButtonClick?: () => void
   color?: MenuBannerColor
+  /**
+   * Перелистывание — `Banner Switch Button` слева и справа (нода
+   * 70303:53219). Не заданы — стрелок нет вовсе: у одиночного баннера
+   * листать нечего.
+   */
+  onPrev?: () => void
+  onNext?: () => void
   className?: string
 }
 
@@ -46,6 +55,8 @@ function MenuBanner({
   buttonLabel,
   onButtonClick,
   color = "blue",
+  onPrev,
+  onNext,
   className,
 }: MenuBannerProps) {
   const style = COLOR_STYLES[color]
@@ -54,12 +65,22 @@ function MenuBanner({
     <div
       data-slot="menu-banner"
       data-color={color}
+      // ⚠️ `px-10` больше нет: сорок пикселей поля слева и справа — это НЕ
+      // паддинг карточки, а ширина кнопок перелистывания (32) плюс зазор
+      // ряда (8). Так собран мастер (нода 70303:58491), и без кнопок текст
+      // просто встал бы туда же — отсюда `px-10` в старой вёрстке. Как
+      // только кнопки появились, паддинг стал бы вторым отступом.
       className={cn(
-        "relative flex items-start gap-2 overflow-hidden rounded-[24px] px-10",
+        "group/banner relative flex items-start gap-2 overflow-hidden rounded-[24px]",
+        !onPrev && "pl-10",
+        !onNext && "pr-10",
         style.bg,
         className
       )}
     >
+      {onPrev && (
+        <BannerSwitchButton side="prev" onClick={onPrev} label="Предыдущий баннер" />
+      )}
       <div
         aria-hidden="true"
         className={cn(
@@ -87,7 +108,58 @@ function MenuBanner({
           </Button>
         )}
       </div>
+
+      {onNext && (
+        <BannerSwitchButton side="next" onClick={onNext} label="Следующий баннер" />
+      )}
     </div>
+  )
+}
+
+/**
+ * `Banner Switch Button` (нода 70303:53219) — стрелка перелистывания.
+ *
+ * Числа из мастера: коробка во всю высоту баннера, поля `pl-12 pr-4` у левой
+ * и `pl-4 pr-12` у правой, глиф 16 — то есть ровно 32px области нажатия от
+ * края, как и сказано в комментарии макета («область клика — во всю высоту,
+ * 32 пикселя от края баннера»).
+ *
+ * Видимость: «при наведении на баннер становятся видны элементы
+ * перелистывания». Гасится ПРОЗРАЧНОСТЬЮ, а не `hidden`, — иначе кнопка
+ * пропадала бы из обхода табом, и листать баннеры с клавиатуры стало бы
+ * нечем. По той же причине она проявляется и на своём фокусе, а не только
+ * на наведении на карточку.
+ *
+ * Цвет: Grey 284 в покое, Grey 1514 под курсором («при наведении на
+ * конкретную стрелку меняется её цвет на Grey 1514»).
+ */
+function BannerSwitchButton({
+  side,
+  onClick,
+  label,
+}: {
+  side: "prev" | "next"
+  onClick: () => void
+  label: string
+}) {
+  const Glyph = side === "prev" ? ArrowBackChevron : ArrowNextChevron
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      data-slot="menu-banner-switch"
+      data-side={side}
+      className={cn(
+        "relative z-10 flex shrink-0 cursor-pointer flex-col items-start justify-center self-stretch py-2 outline-none transition-[opacity,color]",
+        side === "prev" ? "pr-1 pl-3" : "pr-3 pl-1",
+        "text-[var(--menu-banner-switch-fg)] hover:text-[var(--menu-banner-switch-fg-hover)]",
+        "opacity-0 group-hover/banner:opacity-100 focus-visible:opacity-100 focus-visible:focus-ring-inset"
+      )}
+    >
+      <Glyph size={16} aria-hidden="true" className="size-4 shrink-0" />
+    </button>
   )
 }
 

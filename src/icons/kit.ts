@@ -23,6 +23,11 @@
 // и заведён (см. абзац выше). Меняется только источник глифа, имена, под
 // которыми компоненты его импортируют, остаются прежними.
 //
+// ⚠️ У `settings` замена сделана ИНАЧЕ — переписан сам файл `./settings`.
+// Дизайн-чек от 08.09, замечание 5: там лежала сплошная шестерёнка чужого
+// набора, а целевая — контурная (Library-Image, нода 70326:31945), и в ките
+// её не было вовсе. Псевдоним здесь поэтому обычный, а не переставленный.
+//
 // Пары, которые НЕ заменены и почему: `check` (в наборе ELK ближайшее — `ok`,
 // а это логотип Одноклассников), `search` (`zoom` — лупа с плюсом, то есть
 // «увеличить»), `clock` (`time` — песочные часы), `coins` (`money` —
@@ -76,7 +81,7 @@ export { Briefcase } from "./briefcase"
 export { UserCircle as CircleUser } from "./user-circle"
 export { Signout as LogOut } from "./signout"
 export { Wallet } from "./wallet"
-export { Settings2 as Settings } from "./settings-2"
+export { Settings } from "./settings"
 export { Sbp } from "./sbp"
 export { Coins } from "./coins"
 export { Alarm } from "./alarm"

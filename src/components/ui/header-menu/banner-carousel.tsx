@@ -14,11 +14,22 @@ import { MenuBanner, type MenuBannerProps } from "./menu-banner"
  *
  * Что здесь есть:
  *
+ *   • стрелки слева и справа, проявляющиеся при наведении на баннер, —
+ *     `Banner Switch Button` мастера (нода 70303:53219). Правило из
+ *     комментария макета «Наведение на баннеры и на элементы
+ *     перелистывания» (нода 70303:58492): «при наведении на баннер
+ *     становятся видны элементы перелистывания (стрелки слева и справа)…
+ *     область клика — во всю высоту, 32 пикселя от края баннера»;
  *   • лента из всех баннеров со сдвигом `translateX` — карточки ЕДУТ, а не
- *     подменяются; переключение точками анимируется тем же переходом;
+ *     подменяются; переключение стрелками и точками анимируется тем же
+ *     переходом;
  *   • автолистание, пока на карусель не навели курсор и не увели в неё фокус
  *     (иначе она уезжает из-под читающего);
  *   • уважение к `prefers-reduced-motion`: там ни движения, ни автолистания.
+ *
+ * Листание ЗАЦИКЛЕНО: с последнего баннера «вперёд» ведёт на первый. В макете
+ * стрелки нарисованы на всех кадрах одинаково — выключенного состояния у них
+ * нет, значит упереться в край нельзя.
  *
  * ⚠️ Интервал автолистания в макете не задан — 6 с выбраны нами: столько
  * хватает прочитать заголовок и подпись баннера (две строки плюс две), и это
@@ -52,6 +63,10 @@ function BannerCarousel({ banners }: BannerCarouselProps) {
 
   if (banners.length === 0) return null
 
+  const many = banners.length > 1
+  const go = (delta: number) =>
+    setIndex((prev) => (prev + delta + banners.length) % banners.length)
+
   return (
     <div
       data-slot="menu-banner-carousel"
@@ -84,12 +99,18 @@ function BannerCarousel({ banners }: BannerCarouselProps) {
               aria-hidden={position === index ? undefined : true}
               {...(position === index ? {} : { inert: "" })}
             >
-              <MenuBanner {...banner} />
+              <MenuBanner
+                {...banner}
+                // Стрелки только там, где есть что листать: у одиночного
+                // баннера кнопок в макете нет.
+                onPrev={many ? () => go(-1) : undefined}
+                onNext={many ? () => go(1) : undefined}
+              />
             </div>
           ))}
         </div>
       </div>
-      {banners.length > 1 && (
+      {many && (
         <BannerDots count={banners.length} active={index} onSelect={setIndex} />
       )}
     </div>

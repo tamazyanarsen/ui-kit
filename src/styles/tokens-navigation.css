@@ -143,6 +143,13 @@
   --header-menu-toggle-hover-bg: var(--grey-106);
   --header-divider: var(--divider);
   --header-check-fg: var(--check-mark-fg);
+
+  /* Стрелки перелистывания баннера (`Banner Switch Button`, нода
+     70303:53219). Цвета взяты из самих ассетов стрелок — `fill="#999999"` —
+     и из комментария макета: «при наведении на конкретную стрелку меняется
+     её цвет на Grey 1514». */
+  --menu-banner-switch-fg: var(--grey-284);
+  --menu-banner-switch-fg-hover: var(--grey-1514);
   --header-logout-fg: var(--red-418);
   --header-unread-dot: var(--red-418);
 

@@ -300,11 +300,21 @@
   border-inline-end: 16px solid transparent;
   border-block: 16px solid transparent;
 }
-/* Панель меню: скругление снизу 32, а полоса по макету отступает справа на
-   8 (нода 70303:53432). Отсюда разные величины по осям. */
+/* Панель раскрытого меню. Величины сняты с самих кадров адаптации (секция
+   70303:61224): у всех трёх `ELK / scrollbar` стоит на x = ширина−12 при
+   толщине 4 (то есть 8 справа), y = 8, а до низа панели остаётся 48.
+
+     1280×1304 — панель 1072, полоса y=8 h=1016 → низ 48
+     1280× 874 — панель  642, полоса y=8 h= 586 → низ 48
+     1536×1088 — панель  856, полоса y=8 h= 800 → низ 48
+
+   Сверху 8, снизу 48 — и это не опечатка макета: верх панели прямой и
+   упирается в шапку, а низ скруглён на 32, поэтому дорожке там нужен
+   больший зазор. */
 .themed-scrollbar[data-inset="panel"][data-orientation="vertical"] {
   border-inline-end: 8px solid transparent;
-  border-block: 32px solid transparent;
+  border-block-start: 8px solid transparent;
+  border-block-end: 48px solid transparent;
 }
 .themed-scrollbar[data-inset="dropdown"][data-orientation="horizontal"] {
   border-block-end: 8px solid transparent;
@@ -314,9 +324,12 @@
   border-block-end: 16px solid transparent;
   border-inline: 16px solid transparent;
 }
+/* Горизонтального варианта у панели меню в макете нет — значения
+   зеркальные, на случай если понадобится. */
 .themed-scrollbar[data-inset="panel"][data-orientation="horizontal"] {
   border-block-end: 8px solid transparent;
-  border-inline: 32px solid transparent;
+  border-inline-start: 8px solid transparent;
+  border-inline-end: 48px solid transparent;
 }
 
 /* Sticky table header — "Шапка (закрепляется всегда при достижении верха

@@ -70,7 +70,7 @@ export function StorySection({
       <div className="flex flex-col gap-1">
         <h3 className="text-p2-medium text-[#252628]">{title}</h3>
         {description && (
-          <p className="text-p3-regular text-[#6D6D6D]">{description}</p>
+          <p className="text-p3-medium text-[#6D6D6D]">{description}</p>
         )}
       </div>
       {/* ⚠️ `[&>*]:min-w-0` — иначе широкий образец распирает витрину.

@@ -163,7 +163,7 @@ function SingleMatrix<P>({
               {hasRowLabels && (
                 <th
                   scope="row"
-                  className="border-t border-[#DEDEDE] py-4 pr-6 text-left align-middle text-p3-medium font-normal whitespace-pre-line text-[#6D6D6D]"
+                  className="border-t border-[#DEDEDE] py-4 pr-6 text-left align-middle text-p3-medium whitespace-pre-line text-[#6D6D6D]"
                 >
                   {row.label}
                 </th>
@@ -199,7 +199,7 @@ function SingleMatrix<P>({
         </tbody>
       </table>
       {rowHeader != null && (
-        <p className="pt-4 text-p4-regular text-[#999999]">{rowHeader}</p>
+        <p className="pt-4 text-p4-medium text-[#999999]">{rowHeader}</p>
       )}
     </div>
   )

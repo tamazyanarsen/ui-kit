@@ -57,7 +57,7 @@ function CardAccount({
         className="absolute top-[3px] left-[3px]"
       />
       {number && (
-        <span className="absolute right-[3px] bottom-[3px] text-p4-regular text-[var(--card-thumb-fg)]">
+        <span className="absolute right-[3px] bottom-[3px] text-p4-medium text-[var(--card-thumb-fg)]">
           {number}
         </span>
       )}

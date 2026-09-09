@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
 
 import { ButtonMenuRow, isButton, isOverflow } from "./row"
+import { PINNED_CLASS, barShapeClass } from "./pinning"
 
-// Закрепление у нижней края — поведение по умолчанию, а не опция «на
+// Закрепление у нижнего края — поведение по умолчанию, а не опция «на
 // всякий случай»: в макете так и написано — «Панель всегда закреплена в
 // нижней части экрана» (Button Menu) и «Button Menu всегда закрепляется в
 // нижней части контентной области и занимает всю ширину» (Black).
@@ -16,7 +17,6 @@ import { ButtonMenuRow, isButton, isOverflow } from "./row"
 // `fixed` вырвал бы её из потока и как раз перекрыл бы. Из этого же
 // следует, что закрепление работает относительно прокручиваемого
 // контейнера: панель прижимается к низу контентной области, а не окна.
-const PINNED_CLASS = "sticky bottom-0 z-30"
 
 interface ButtonMenuProps extends React.ComponentProps<"div"> {
   /**
@@ -25,6 +25,12 @@ interface ButtonMenuProps extends React.ComponentProps<"div"> {
    * в потоке (например, внутри карточки).
    */
   pinned?: boolean
+  /**
+   * «Отлипшая» полоса — дизайн-чек от 08.09, замечание 9: в продукте такого
+   * состояния быть не должно, но пропс заведён на будущее. Полоса становится
+   * островом в потоке и получает скругления снизу, такие же как сверху.
+   */
+  detached?: boolean
 }
 
 // Pill-shaped inline toolbar. Pass `Button` instances as children — per the
@@ -42,7 +48,13 @@ interface ButtonMenuProps extends React.ComponentProps<"div"> {
 // уходят в меню «ещё» — своё, если вызывающий его не передал, или в конец
 // переданного, если передал. Сам механизм с 08.09 живёт в `ButtonMenuRow` и
 // переиспользуется рядами команд вне панели (дизайн-чек от 08.09, №3).
-function ButtonMenu({ pinned = true, className, children, ...props }: ButtonMenuProps) {
+function ButtonMenu({
+  pinned = true,
+  detached = false,
+  className,
+  children,
+  ...props
+}: ButtonMenuProps) {
   const nodes = React.Children.toArray(children)
   // Всё, что не кнопка и не меню «ещё», рисуется как есть и в замер не
   // входит: панель не берётся угадывать, что это и как оно сжимается.
@@ -52,7 +64,7 @@ function ButtonMenu({ pinned = true, className, children, ...props }: ButtonMenu
   // Та же публикация занятой высоты, что и у чёрной панели: всё, что липнет
   // к низу вьюпорта (полоса прокрутки таблицы), обязано вставать над ней.
   const ref = React.useRef<HTMLDivElement>(null)
-  useViewportInsetBottom(ref, pinned)
+  useViewportInsetBottom(ref, pinned && !detached)
 
   return (
     // Figma's live "ELK / button menu" master component (node 4244:20536,
@@ -72,10 +84,12 @@ function ButtonMenu({ pinned = true, className, children, ...props }: ButtonMenu
     <div
       ref={ref}
       data-slot="button-menu"
-      data-pinned={pinned || undefined}
+      data-pinned={(pinned && !detached) || undefined}
+      data-detached={detached || undefined}
       className={cn(
-        "flex w-full items-center gap-4 rounded-tl-[16px] rounded-tr-[16px] border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-8 py-4 shadow-universal",
-        pinned && PINNED_CLASS,
+        "flex w-full items-center gap-4 border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-8 py-4 shadow-universal",
+        barShapeClass({ detached, bordered: true }),
+        pinned && !detached && PINNED_CLASS,
         className
       )}
       {...props}

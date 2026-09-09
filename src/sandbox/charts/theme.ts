@@ -27,7 +27,11 @@ export const domrfTheme = {
   ],
   backgroundColor: 'transparent',
   textStyle: {
-    fontFamily: 'Inter, sans-serif',
+    // Гарнитура кита, а не Inter: подключённый echarts рисовал подписи
+    // системным Inter, то есть другим шрифтом, чем весь остальной экран
+    // (дизайн-чек от 08.09, замечание 17 — «прокинуть корневые правки в
+    // подключённый echarts»).
+    fontFamily: 'Object Sans, sans-serif',
     fontWeight: 500,
     fontSize: 12,
     color: THEME_COLORS.primary,
@@ -74,8 +78,28 @@ export const domrfTheme = {
     top: 58,
     bottom: 48,
   },
+  /* Легенда — компонент `Legend Element (ELK)` (нода 63582:16040):
+     маркер 16×4 со скруглением 1, зазор до подписи 6, подпись P2 Medium
+     (14/20/500) цветом Grey 1514, минимальная высота 32 и поле 4 сверху и
+     снизу, шаг между элементами 16.
+
+     Дизайн-чек от 08.09, замечание 17: «Неверный размер и начертание
+     элемента легенды». До правки подпись рисовалась 12-м кеглем серым
+     #999999 — то есть и размер, и цвет были не те. */
   legend: {
-    textStyle: { color: THEME_COLORS.secondary, verticalAlign: 'middle' },
+    textStyle: {
+      color: THEME_COLORS.primary,
+      fontFamily: 'Object Sans, sans-serif',
+      fontSize: 14,
+      lineHeight: 20,
+      fontWeight: 500,
+      verticalAlign: 'middle',
+      // echarts сам ставит 5px между маркером и подписью, макет просит 6.
+      padding: [0, 0, 0, 1],
+    },
+    icon: 'roundRect',
+    itemWidth: 16,
+    itemHeight: 4,
     bottom: 10,
     left: 'center',
     orient: 'horizontal',

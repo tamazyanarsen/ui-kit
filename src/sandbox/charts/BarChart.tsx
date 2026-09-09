@@ -93,7 +93,11 @@ export const BarChart: React.FC<BarChartProps> = ({
       data: s.data,
       stack: s.stack,
       barMaxWidth: barWidth,
-      borderRadius: [4, 4, 0, 0],
+      // Скруглений у столбцов нет — дизайн-чек от 08.09, замечание 14
+      // («убрать скругления у чартов»), целёвка — нода 63151:12856, где и
+      // вертикальные столбцы, и горизонтальные полосы нарисованы с прямыми
+      // углами.
+      borderRadius: 0,
     })),
     legend: {
       icon: SVG_ICONS.bar

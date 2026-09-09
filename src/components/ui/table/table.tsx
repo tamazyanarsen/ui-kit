@@ -152,7 +152,7 @@ function Table({
             data-sticky-header={stickyHeader || undefined}
             data-grid-lines={gridLines || undefined}
             className={cn(
-              "w-full border-separate border-spacing-0 bg-[var(--table-bg)] text-p2-regular text-[var(--table-fg)]",
+              "w-full border-separate border-spacing-0 bg-[var(--table-bg)] text-p2-medium text-[var(--table-fg)]",
               fixed && "table-fixed",
               className
             )}

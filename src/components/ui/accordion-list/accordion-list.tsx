@@ -235,7 +235,7 @@ function AccordionListItem({
         {children && (
           <AccordionPrimitive.Panel
             data-slot="accordion-list-panel"
-            className="h-(--accordion-panel-height) overflow-hidden text-p2-regular transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+            className="h-(--accordion-panel-height) overflow-hidden text-p2-medium transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
             {/* The master puts the content Slot exactly 24px below the
                 header (header ends at 60, Slot starts at 84) and runs it

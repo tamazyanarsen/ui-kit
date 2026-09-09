@@ -1,6 +1,7 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { withIconSize } from "@/lib/icon-size"
 import { Grid } from "@/components/ui/grid"
 
 // CreateMenu — «Раскрытое меню создания» (нода 70303:57990): панель, которая
@@ -46,7 +47,11 @@ function CreateMenu({ items = [], className }: CreateMenuProps) {
             >
               {item.icon && (
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--header-menu-tile-icon-bg)] p-3 text-[var(--header-icon-fg)] [&_svg]:size-6">
-                  {item.icon}
+                  {/* Слот плитки — всегда 24×24, поэтому и начертание берётся
+                      двадцатичетвёрочное. Раньше сюда приезжал шестнадцатый
+                      глиф и растягивался классом `[&_svg]:size-6` вместе со
+                      штрихом — дизайн-чек от 08.09, замечание 31. */}
+                  {withIconSize(item.icon, 24)}
                 </span>
               )}
               {/* Плитка без иконки в макете (нода 70303:61213) отдаёт всю

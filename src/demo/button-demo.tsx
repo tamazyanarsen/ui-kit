@@ -97,7 +97,7 @@ function ButtonDemo() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-p3-regular text-muted-foreground">
+          <p className="mt-4 text-p3-medium text-muted-foreground">
             Начиная с 768px (<code>md:</code>) M и L дополнительно увеличиваются в размерах
             (mobile-first, десктопная форма подключается на md:).
           </p>
@@ -121,7 +121,7 @@ function ButtonDemo() {
               Войти через Госуслуги
             </Button>
           </div>
-          <p className="mt-4 text-p3-regular text-muted-foreground">
+          <p className="mt-4 text-p3-medium text-muted-foreground">
             Фиксированный значок Госуслуг (упрощённая аппроксимация — см. комментарий в{" "}
             <code>gosuslugi-logo.tsx</code>, тот же подход, что и у платёжных логотипов в Thumbnail)
             — не заменяется пропом <code>icon</code>. Black/Border-White/White переиспользуют цвета

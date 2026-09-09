@@ -115,7 +115,8 @@ export const ComposedChart: React.FC<ComposedChartProps> = ({
       ...s,
       smooth: s.type === 'line' ? (s.smooth ?? true) : undefined,
       barMaxWidth: s.type === 'bar' ? barWidth : undefined,
-      borderRadius: s.type === 'bar' ? [4, 4, 0, 0] : undefined,
+      // Прямые углы — см. BarChart и замечание 14 дизайн-чека от 08.09.
+      borderRadius: s.type === 'bar' ? 0 : undefined,
       ...(s.type === 'line' && {
         symbol: 'circle',
       }),

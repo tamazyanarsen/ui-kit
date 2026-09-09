@@ -92,13 +92,13 @@ function CreditAgreementScreen() {
               <SandboxSection
                 title="Кредитная линия"
                 action={
-                  <span className="pt-2 text-p2-regular text-[var(--grey-284)]">
+                  <span className="pt-2 text-p2-medium text-[var(--grey-284)]">
                     Лимит {money(LINE.limit)}
                   </span>
                 }
                 gap={16}
               >
-                <p className="text-p2-regular text-[var(--grey-284)]">
+                <p className="text-p2-medium text-[var(--grey-284)]">
                   Возобновляемая
                 </p>
                 <SandboxCompositionBar
@@ -187,7 +187,9 @@ function CreditAgreementScreen() {
             </SandboxBlock>
           </div>
 
-          <SandboxBlock>
+          {/* Дизайн-чек от 08.09, замечание 15: «Правый блок должен
+              залипать… Применить правила как везде на залипающих блоках». */}
+          <SandboxBlock sticky>
             <SandboxSection title="Информация о задолженности" gap={16}>
               <ItemInformationField
                 type="label-top"

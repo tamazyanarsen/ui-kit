@@ -23,7 +23,7 @@ const twMerge = extendTailwindMerge<"focus-ring">({
         "text-p1-regular", "text-p1-medium", "text-p1-heavy",
         "text-p2-regular", "text-p2-medium", "text-p2-heavy",
         "text-p3-regular", "text-p3-medium",
-        "text-p4-regular",
+        "text-p4-regular", "text-p4-medium",
       ],
       // Same reasoning for the one custom @theme shadow key ("Universal
       // shadow" in Figma): unregistered, twMerge reads the bare word as a

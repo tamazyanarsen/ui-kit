@@ -1,3 +1,5 @@
+import { ProgressBar } from "@/components/ui/progress-bar"
+
 import { millions } from "../../shell"
 
 // Показатель отчёта: подпись, полоса и строка «значение — процент от плана».
@@ -7,9 +9,17 @@ import { millions } from "../../shell"
 // сборке: полоса шире карточки ломала бы сетку блока, а показатель «сверх
 // плана» и так читается числом.
 //
-// Это не `ProgressBar` кита: у того полоса 8px с закруглением, своя строка
-// статуса и цвет по диапазону. Здесь полоса 4px, цвет один на весь экран
-// (см. ниже) и подпись стоит НАД полосой, а не над ней и под ней.
+// ⚠️ Раньше здесь была СВОЯ полоса 4px — «ответвление» от кита. Дизайн-чек от
+// 08.09, замечание 22: «Некорректная толщина штриха Progress Bar. Взять
+// точную из компонента, а такое ответвление удалить». Взят вариант
+// `timeline` кита: у него ровно та же анатомия — подпись сверху, полоса,
+// строка «значение / описание», — и толщина 8px из мастера, а не подобранная
+// на глаз.
+//
+// `statusTimeline="process"` фиксирует цвет: штатное правило кита красит
+// полосу по диапазону (до 50 зелёная, дальше жёлтая, со 100 красная), а на
+// этом экране все показатели одного цвета — «выполнено столько-то», а не
+// «плохо/хорошо».
 
 interface ReportMetricProps {
   title: string
@@ -28,28 +38,18 @@ function ReportMetric({
   note = "от плана",
 }: ReportMetricProps) {
   return (
-    <div className="flex w-full flex-col gap-2">
-      <span className="text-p3-regular text-[var(--grey-284)]">{title}</span>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
-        <div
-          aria-hidden="true"
-          className="h-full bg-[var(--progress-step-fill)]"
-          style={{ width: `${Math.min(percent, 100)}%` }}
-        />
-      </div>
-      <div className="flex items-baseline justify-between gap-4">
-        <span className="text-p2-medium text-[var(--grey-1514)]">
-          {millions(value)}
-        </span>
-        <span className="text-p3-regular text-[var(--grey-284)]">
-          {percent.toLocaleString("ru-RU", {
-            minimumFractionDigits: 1,
-            maximumFractionDigits: 1,
-          })}
-          % {note}
-        </span>
-      </div>
-    </div>
+    <ProgressBar
+      variant="timeline"
+      statusTimeline="process"
+      title={title}
+      showDescription={false}
+      value={Math.min(percent, 100)}
+      subtitle={millions(value)}
+      statusDescription={`${percent.toLocaleString("ru-RU", {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      })}% ${note}`}
+    />
   )
 }
 

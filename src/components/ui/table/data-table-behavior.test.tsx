@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 import {
@@ -191,5 +191,49 @@ describe("DataTable — столбцы", () => {
 
     expect(last).toHaveAttribute("data-type", "button")
     expect(last).toHaveAttribute("data-pin", "right")
+  })
+})
+
+describe("DataTable — подсветка появившихся строк", () => {
+  // Дизайн-чек от 08.09, замечание 30: подсветка должна включаться сама, а не
+  // по пропу, который никто не передавал.
+  it("подсвечивает строку, которой не было в прошлом наборе", () => {
+    vi.useFakeTimers()
+    const rows = TEST_ROWS.map(flatRow)
+    const { rerender } = render(<DataTable fields={TEST_FIELDS} rows={rows} />)
+
+    // Первый набор не подсвечивается — иначе таблица вспыхивала бы целиком.
+    expect(document.querySelectorAll("tr[data-added]")).toHaveLength(0)
+
+    const fresh = { ...rows[0], id: "new", name: "Гамма" }
+    rerender(<DataTable fields={TEST_FIELDS} rows={[...rows, fresh]} />)
+
+    const added = document.querySelectorAll("tr[data-added]")
+    expect(added).toHaveLength(1)
+    expect(added[0]!.textContent).toContain("Гамма")
+
+    // Подсветка живёт 2000 ms и гаснет сама.
+    act(() => {
+      vi.advanceTimersByTime(2000)
+    })
+    expect(document.querySelectorAll("tr[data-added]")).toHaveLength(0)
+    vi.useRealTimers()
+  })
+
+  it("не включает автоопределение, если экран задал isRowAdded сам", () => {
+    const rows = TEST_ROWS.map(flatRow)
+    const { rerender } = render(
+      <DataTable fields={TEST_FIELDS} rows={rows} isRowAdded={() => false} />
+    )
+    const fresh = { ...rows[0], id: "new", name: "Гамма" }
+    rerender(
+      <DataTable
+        fields={TEST_FIELDS}
+        rows={[...rows, fresh]}
+        isRowAdded={() => false}
+      />
+    )
+
+    expect(document.querySelectorAll("tr[data-added]")).toHaveLength(0)
   })
 })

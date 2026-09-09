@@ -35,7 +35,7 @@ function AutocompleteItem({
       // only the popup container is rounded, items go edge-to-edge with no
       // radius of their own.
       className={cn(
-        "flex w-full cursor-default flex-col gap-0.5 p-4 text-p2-regular outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "flex w-full cursor-default flex-col gap-0.5 p-4 text-p2-medium outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       {...props}

@@ -130,7 +130,7 @@ function StepCard({
                 Tooltip/Hint, и по тем же правилам (см. variants.ts там). */}
             <TooltipPrimitive.Popup
               data-slot="step-tooltip"
-              className="relative min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+              className="relative min-h-10 max-w-[592px] rounded-lg bg-[var(--steps-tooltip-bg)] py-3 pr-3 pl-4 text-p3-medium text-[var(--steps-tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
               render={(popupProps, state) => (
                 <div {...popupProps}>
                   {disabledHint}

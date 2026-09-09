@@ -3,6 +3,7 @@ import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Icon as KitIcon, type IconName } from "@/components/ui/icon"
 
 import {
   ICON_COLOR,
@@ -21,6 +22,24 @@ import {
 // spec's minimal form is just icon + Title.
 interface InformerProps {
   icon?: InformerIcon
+  /**
+   * Любая иконка кита вместо пяти штатных — дизайн-чек от 08.09, замечание
+   * 12: «В информер добавить возможность проброса нестандартной иконки…
+   * доработать компонент и сделать там возможность ставить любую иконку из
+   * кита».
+   *
+   * Отдельным пропом, а не расширением `icon`: у штатных пяти вместе с
+   * глифом приезжает и цвет (красный «внимание», зелёная «галочка»), а
+   * произвольная иконка сама по себе ничего о статусе не сообщает — цвет ей
+   * задаётся `customIconColor`, по умолчанию тем же серым, что у
+   * `information`.
+   *
+   * Принимает имя из набора (молния в ките зовётся `"lghtning-fill"`) или
+   * готовый узел, если нужен нестандартный размер или своя обёртка.
+   */
+  customIcon?: IconName | React.ReactNode
+  /** Цвет произвольной иконки. Любое валидное значение CSS `color`. */
+  customIconColor?: string
   title: React.ReactNode
   date?: React.ReactNode
   description?: React.ReactNode
@@ -36,6 +55,8 @@ interface InformerProps {
 
 function Informer({
   icon = "attention-red",
+  customIcon,
+  customIconColor = "var(--informer-icon-grey)",
   title,
   date,
   description,
@@ -74,12 +95,34 @@ function Informer({
       style={{ backgroundColor: SOLID_BG[solid] }}
     >
       <div className="flex items-start gap-4">
-        <Icon
-          size={24}
-          aria-hidden="true"
-          className="size-6 shrink-0"
-          style={{ color: ICON_COLOR[icon] }}
-        />
+        {customIcon === undefined ? (
+          <Icon
+            size={24}
+            aria-hidden="true"
+            className="size-6 shrink-0"
+            style={{ color: ICON_COLOR[icon] }}
+          />
+        ) : typeof customIcon === "string" ? (
+          // `size={24}` — не то же самое, что `className="size-6"`: у части
+          // иконок кита 16 и 24 нарисованы отдельно, и масштабирование
+          // шестнадцатого до двадцати четырёх даёт слишком жирный штрих
+          // (дизайн-чек от 08.09, замечание 31).
+          <KitIcon
+            name={customIcon}
+            size={24}
+            aria-hidden="true"
+            className="size-6 shrink-0"
+            style={{ color: customIconColor }}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className="flex size-6 shrink-0 items-center justify-center"
+            style={{ color: customIconColor }}
+          >
+            {customIcon}
+          </span>
+        )}
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">

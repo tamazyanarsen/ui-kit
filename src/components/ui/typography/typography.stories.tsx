@@ -129,6 +129,17 @@ function TypographyPage() {
         <p className="mt-1 text-sm text-[#6D6D6D]">
           Шкала стилей из ui/typography (Desktop / Mobile), Regular 400 / Medium 500 / Heavy 800.
         </p>
+        {/* Дизайн-чек от 08.09, замечания 13 и 29. Правило висит прямо на
+            шкале, а не в отдельном документе: Regular тут по-прежнему
+            нарисован (он есть в мастере), и без этой оговорки следующая
+            вёрстка возьмёт его снова. */}
+        <p className="mt-2 max-w-[720px] rounded-lg bg-[#F8F8F8] px-3 py-2 text-sm text-[#252628]">
+          <b>Правило кита: Regular не использовать.</b> Целевое начертание
+          наборного текста — <b>Medium</b>. Единственное исключение —
+          подзаголовок ячейки таблицы (<code>table/cell-value</code>). Шкала
+          Regular остаётся в мастере и показана здесь для сверки, но в
+          компонентах и на экранах не применяется.
+        </p>
       </div>
       <div className="flex flex-col gap-12 lg:flex-row">
         <TypeTable mode="desktop" />

@@ -74,6 +74,7 @@ interface PlaygroundArgs {
   showWriteOff: boolean
   showClose: boolean
   pinned: boolean
+  detached: boolean
 }
 
 /** Поля информационного бара по трём переключателям панели свойств. */
@@ -154,6 +155,12 @@ const meta = {
         "«Button Menu всегда закрепляется в нижней части контентной области» — поэтому включено по умолчанию",
       control: "boolean",
     },
+    detached: {
+      name: "Отлипшая",
+      description:
+        "Дизайн-чек от 08.09, замечание 9: в продукте состояния быть не должно, пропс заведён на будущее — полоса становится островом и получает нижние скругления",
+      control: "boolean",
+    },
   },
   args: {
     buttons: 2,
@@ -167,6 +174,7 @@ const meta = {
     showWriteOff: true,
     showClose: true,
     pinned: true,
+    detached: false,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -179,6 +187,7 @@ export const Playground: Story = {
     overflow,
     showClose,
     pinned,
+    detached,
     showButton,
     selectAllCount,
     selectedCount,
@@ -187,13 +196,14 @@ export const Playground: Story = {
     <StoryContentArea height="h-72">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
-          <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+          <p key={index} className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
             Выделенная строка {index + 1}
           </p>
         ))}
       </div>
       <ButtonMenuBlack
         pinned={pinned}
+        detached={detached}
         className="mt-auto"
         info={infoBar(bar)}
         onClose={showClose ? () => {} : undefined}
@@ -226,7 +236,7 @@ export const Examples: Story = {
         <StoryContentArea height="h-72">
           <div className="flex flex-col gap-4 p-6">
             {Array.from({ length: 10 }, (_, index) => (
-              <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+              <p key={index} className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
                 Выделенная строка {index + 1}
               </p>
             ))}
@@ -249,7 +259,7 @@ export const Examples: Story = {
           {BUTTON_COUNTS.map((count) => (
             <div key={count} className="flex flex-col gap-1">
               {/* Имя значения — как в Figma, чтобы сверка шла один в один. */}
-              <span className="text-p3-regular text-[#999999]">
+              <span className="text-p3-medium text-[#999999]">
                 Button = {FIGMA_BUTTON_NAMES[count]}
               </span>
               {/* Витрина: панели стоят стопкой образцами, поэтому

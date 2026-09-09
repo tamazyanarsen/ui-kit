@@ -81,7 +81,7 @@ export const Examples: Story = {
         title="Правила"
         description={`Контент ${GRID_CONTENT_MIN}…${GRID_CONTENT_MAX} при полях ${GRID_MARGIN}. Ниже ${GRID_VIEWPORT_MIN} продукт не сжимается — появляется общая горизонтальная прокрутка; выше ${GRID_VIEWPORT_MAX} контент стоит на ${GRID_CONTENT_MAX}, а растут поля.`}
       >
-        <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-p2-regular text-[var(--header-fg)]">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-p2-medium text-[var(--header-fg)]">
           <dt className="text-p2-medium">Колонок</dt>
           <dd>{GRID_COLUMNS}</dd>
           <dt className="text-p2-medium">Желоб</dt>

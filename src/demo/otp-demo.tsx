@@ -38,7 +38,7 @@ function OtpDemo() {
               }
             />
           </div>
-          <p className="mt-4 text-p3-regular text-muted-foreground">
+          <p className="mt-4 text-p3-medium text-muted-foreground">
             Компонент — это модальное окно: Figma собирает{" "}
             <code>ELK / otp-code</code> как инстанс <code>ELK / Modal</code>,
             поэтому карточка рендерится через настоящий <code>Modal</code>{" "}

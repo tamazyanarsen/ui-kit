@@ -138,7 +138,7 @@ function PlacementRequestScreen() {
             Правило продукта, см. STICKY_BLOCK. */}
         <SandboxBlock sticky>
           <SandboxSection title="Ежедневный свободный остаток" gap={16}>
-            <p className="text-p2-regular text-[var(--grey-284)]">
+            <p className="text-p2-medium text-[var(--grey-284)]">
               Индикатив — ключевая ставка ЦБ РФ
             </p>
           </SandboxSection>
@@ -152,7 +152,7 @@ function PlacementRequestScreen() {
 
           <Divider />
 
-          <div className="flex flex-col gap-6 text-p3-regular text-[var(--grey-284)]">
+          <div className="flex flex-col gap-6 text-p1-medium text-[var(--grey-284)]">
             <p>
               * Указана справочная ставка на текущую дату. Сообщение с итоговой
               ставкой будет направлено в центр уведомлений не позднее, чем через

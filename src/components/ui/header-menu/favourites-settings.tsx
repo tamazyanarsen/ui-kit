@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Drag, Star } from "@/icons"
+import { Star } from "@/icons"
 
 import { Button } from "@/components/ui/button"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
@@ -10,6 +10,13 @@ import {
   ModalFooter,
   ModalTitle,
 } from "@/components/ui/modal"
+import {
+  SortableDropIndicator,
+  SortableHandle,
+  SortableList,
+  sortableRowClass,
+  useSortable,
+} from "@/components/ui/sortable"
 
 import type { HeaderMenuGroup, HeaderMenuLink } from "./header-menu"
 import {
@@ -54,33 +61,31 @@ function SettingsRow({
   link,
   favourite,
   onToggle,
-  draggable = false,
-  onDragStart,
-  onDragEnter,
-  onDragEnd,
-  onMoveBy,
+  sortable,
+  rowProps,
+  handleProps,
 }: {
   link: HeaderMenuLink
   favourite: boolean
   onToggle: () => void
-  draggable?: boolean
-  onDragStart?: () => void
-  onDragEnter?: () => void
-  onDragEnd?: () => void
-  onMoveBy?: (delta: number) => void
+  sortable?: boolean
+  rowProps?: Record<string, unknown>
+  handleProps?: Record<string, unknown>
 }) {
   return (
     <div
       data-slot="favourites-settings-row"
-      draggable={draggable || undefined}
-      onDragStart={onDragStart}
-      onDragEnter={onDragEnter}
-      onDragEnd={onDragEnd}
-      onDragOver={(event) => draggable && event.preventDefault()}
-      className={menuItemRowClass(
-        "hover:bg-[var(--menu-item-bg-highlighted)]",
-        "rounded-2xl"
+      // Заливка взятой строки и линия вставки — общие правила кита
+      // (`sortableRowClass`, дизайн-чек от 08.09 про целевой вид drag&drop).
+      // Ховер гасится на время перетаскивания: под курсором и так стоит
+      // линия, а вторая подсветка читалась бы как ещё одна цель.
+      className={sortableRowClass(
+        menuItemRowClass(
+          "not-data-dragging:hover:bg-[var(--menu-item-bg-highlighted)]",
+          "rounded-2xl"
+        )
       )}
+      {...rowProps}
     >
       <MenuItemContent
         leading={
@@ -95,28 +100,13 @@ function SettingsRow({
           </button>
         }
         trailing={
-          draggable ? (
-            // Ручка перетаскивания. Стрелки вверх/вниз — не украшение:
-            // нативный drag недоступен с клавиатуры, а порядок избранного
-            // задаётся только здесь.
-            <button
-              type="button"
-              aria-label={`Переместить «${
+          sortable ? (
+            <SortableHandle
+              label={`Переместить «${
                 typeof link.label === "string" ? link.label : link.value
               }»`}
-              onKeyDown={(event) => {
-                if (event.key === "ArrowUp") {
-                  event.preventDefault()
-                  onMoveBy?.(-1)
-                } else if (event.key === "ArrowDown") {
-                  event.preventDefault()
-                  onMoveBy?.(1)
-                }
-              }}
-              className="flex shrink-0 cursor-grab text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring active:cursor-grabbing"
-            >
-              <Drag size={24} aria-hidden="true" className="size-6 shrink-0" />
-            </button>
+              {...handleProps}
+            />
           ) : undefined
         }
       >
@@ -134,7 +124,6 @@ function FavouritesSettings({
   onSave,
 }: FavouritesSettingsProps) {
   const [draft, setDraft] = React.useState(favourites)
-  const dragFrom = React.useRef<number | null>(null)
 
   // Черновик пересобирается на каждое открытие: пока модалка закрыта,
   // избранное могло измениться звёздами в самом меню.
@@ -148,6 +137,11 @@ function FavouritesSettings({
   function move(from: number, to: number) {
     setDraft((prev) => moveFavourite(prev, from, to))
   }
+
+  const sortable = useSortable({
+    items: added.map((link) => ({ id: link.value })),
+    onReorder: move,
+  })
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
@@ -171,29 +165,20 @@ function FavouritesSettings({
                 Включайте разделы из списка ниже, чтобы добавить их в избранное
               </p>
             ) : (
-              <div className="flex flex-col">
-                {added.map((link, index) => (
+              <SortableList className="flex flex-col" {...sortable.listProps}>
+                {added.map((link) => (
                   <SettingsRow
                     key={link.value}
                     link={link}
                     favourite
                     onToggle={() => setDraft((prev) => toggleFavourite(prev, link.value))}
-                    draggable
-                    onDragStart={() => {
-                      dragFrom.current = index
-                    }}
-                    onDragEnter={() => {
-                      if (dragFrom.current === null || dragFrom.current === index) return
-                      move(dragFrom.current, index)
-                      dragFrom.current = index
-                    }}
-                    onDragEnd={() => {
-                      dragFrom.current = null
-                    }}
-                    onMoveBy={(delta) => move(index, index + delta)}
+                    sortable
+                    rowProps={sortable.itemProps(link.value)}
+                    handleProps={sortable.handleProps(link.value)}
                   />
                 ))}
-              </div>
+                <SortableDropIndicator indicator={sortable.indicator} />
+              </SortableList>
             )}
           </section>
 

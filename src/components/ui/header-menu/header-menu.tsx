@@ -1,16 +1,15 @@
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
 import { Grid } from "@/components/ui/grid"
+import { useMediaQuery } from "@/lib/use-media-query"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
 import {
-  BannerDots,
   PageGroup,
   type HeaderMenuGroup,
   type HeaderMenuLink,
 } from "./header-menu-parts"
-import { MenuBanner, type MenuBannerProps } from "./menu-banner"
+import { BannerCarousel } from "./banner-carousel"
+import type { MenuBannerProps } from "./menu-banner"
 
 // HeaderMenu — «Раскрытое меню навигации» (MENU DOCS, нода 70303:53431):
 // панель, которая раскрывается под шапкой по кнопке «Меню».
@@ -31,7 +30,17 @@ import { MenuBanner, type MenuBannerProps } from "./menu-banner"
 
 interface HeaderMenuProps {
   groups?: HeaderMenuGroup[]
-  /** Сколько колонок раскладывать: 1920 — четыре, 1280 — три. */
+  /**
+   * Сколько колонок раскладывать.
+   *
+   * По умолчанию НЕ фиксировано, а считается от ширины вьюпорта — дизайн-чек
+   * от 08.09, замечание 3: «На вьюпорте менее 1536px меню должно строиться в
+   * 3 столбца по 4 колонки грида». До правки здесь стояло жёсткое `4`, и на
+   * 1440 карточки ужимались в три колонки грида каждая.
+   *
+   * Явное значение перекрывает расчёт — им пользуются витрины, которым нужно
+   * показать обе раскладки рядом.
+   */
   columns?: 2 | 3 | 4
   /** Баннеры последней колонки. Больше одного — появляется переключатель. */
   banners?: MenuBannerProps[]
@@ -73,9 +82,12 @@ function distribute(groups: HeaderMenuGroup[], columns: number, offsets: number[
   return buckets
 }
 
+/** Порог из замечания 3: с него и выше — четыре колонки, ниже — три. */
+const WIDE_MENU_QUERY = "(min-width: 1536px)"
+
 function HeaderMenu({
   groups = [],
-  columns = 4,
+  columns: columnsProp,
   banners = [],
   favourites = [],
   onFavouriteToggle,
@@ -84,8 +96,9 @@ function HeaderMenu({
   maxHeight,
   className,
 }: HeaderMenuProps) {
-  const [bannerIndex, setBannerIndex] = React.useState(0)
-  const activeBanner = banners[Math.min(bannerIndex, banners.length - 1)]
+  const wide = useMediaQuery(WIDE_MENU_QUERY)
+  // Четыре колонки по три колонки грида (12/4) с 1536; ниже — три по четыре.
+  const columns = columnsProp ?? (wide ? 4 : 3)
 
   // Баннер занимает верх последней колонки, поэтому она стартует не с нуля
   // — иначе балансировка свалит в неё столько же карточек, сколько и в
@@ -107,17 +120,10 @@ function HeaderMenu({
           data-slot="header-menu-column"
           className={cn("flex flex-col gap-6 self-start", COLUMN_SPAN[columns])}
         >
-          {index === columns - 1 && activeBanner && (
-            <div className="flex w-full flex-col gap-2">
-              <MenuBanner {...activeBanner} />
-              {banners.length > 1 && (
-                <BannerDots
-                  count={banners.length}
-                  active={bannerIndex}
-                  onSelect={setBannerIndex}
-                />
-              )}
-            </div>
+          {index === columns - 1 && banners.length > 0 && (
+            // Карусель, а не один кадр: баннеры листаются сами и едут
+            // (дизайн-чек от 08.09, замечание 4).
+            <BannerCarousel banners={banners} />
           )}
           {bucket.map((group) => (
             <PageGroup
@@ -146,8 +152,11 @@ function HeaderMenu({
         grid
       ) : (
         // В макете у панели свой `ELK / scrollbar` с инсетом 8px справа
-        // (нода 70303:53432) — то же, что рисует Scrollbar кита.
-        <Scrollbar inset="dropdown" className="w-full" style={{ maxHeight }}>
+        // (нода 70303:53432) — то же, что рисует Scrollbar кита. Вариант
+        // `panel` добавляет к этим восьми ещё и отступ по вертикали в 32:
+        // низ панели скруглён на 32 и обрезан `overflow-hidden`, из-за чего
+        // дорожка теряла весь низ (дизайн-чек от 08.09, замечание 8).
+        <Scrollbar inset="panel" className="w-full" style={{ maxHeight }}>
           <div className="flex w-full justify-center">{grid}</div>
         </Scrollbar>
       )}

@@ -40,7 +40,11 @@ function SandboxCompositionBar({
   return (
     <div className={className}>
       <div className="flex w-full flex-col gap-4">
-        <div className="flex h-4 w-full overflow-hidden rounded-full">
+        {/* Углы прямые — дизайн-чек от 08.09, замечание 14 («убрать
+            скругления у чартов»). В целёвке `Horizontal Bars Stacked`
+            (нода 63703:18971) полоса нарисована без скруглений вообще,
+            включая внешние концы; здесь стояло `rounded-full`. */}
+        <div className="flex h-4 w-full overflow-hidden">
           {visible.map((segment, index) => (
             <div
               key={index}
@@ -53,12 +57,20 @@ function SandboxCompositionBar({
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-6 text-p3-regular text-[var(--grey-284)]">
+        {/* Легенда — `Legend Element (ELK)` (нода 63582:16040): маркер 16×4
+            со скруглением 1, зазор 6, подпись P2 Medium цветом Grey 1514,
+            шаг между элементами 16. Дизайн-чек от 08.09, замечание 17:
+            «Неверный размер и начертание элемента легенды» — здесь стояла
+            круглая точка 8px и подпись P3 серым. */}
+        <div className="flex flex-wrap items-center justify-center gap-4 text-p2-medium text-[var(--grey-1514)]">
           {visible.map((segment, index) => (
-            <span key={index} className="flex items-center gap-2">
+            <span
+              key={index}
+              className="flex min-h-8 items-center gap-1.5 py-1"
+            >
               <span
                 aria-hidden="true"
-                className="size-2 rounded-full"
+                className="h-1 w-4 shrink-0 rounded-[1px]"
                 style={{
                   backgroundColor:
                     segment.color ??

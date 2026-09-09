@@ -11,7 +11,7 @@ export function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-1.5 py-1 text-p3-regular text-muted-foreground", className)}
+      className={cn("px-1.5 py-1 text-p3-medium text-muted-foreground", className)}
       {...props}
     />
   )
@@ -53,7 +53,11 @@ export function SelectItem({
           <span className="pointer-events-none absolute right-4 flex size-4 items-center justify-center" />
         }
       >
-        <CheckIcon className="pointer-events-none" />
+        {/* Дизайн-чек от 08.09, замечание 19: галочка выбранного всегда
+            цветная — зелёная в зелёной теме, голубая в голубой. Своего цвета
+            у иконки не было вовсе, и она наследовала почти чёрный цвет
+            подписи строки. */}
+        <CheckIcon className="pointer-events-none text-[var(--check-mark-fg)]" />
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   )

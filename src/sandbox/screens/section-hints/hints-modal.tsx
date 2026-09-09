@@ -75,7 +75,7 @@ function SectionHintsModal({
                       type="button"
                       onClick={() => setActiveId(hint.id)}
                       className={cn(
-                        "w-full cursor-pointer rounded-[8px] px-4 py-3 text-left text-p2-regular text-[var(--grey-1514)] outline-none focus-visible:focus-ring",
+                        "w-full cursor-pointer rounded-[8px] px-4 py-3 text-left text-p2-medium text-[var(--grey-1514)] outline-none focus-visible:focus-ring",
                         hint.id === active?.id
                           ? "bg-[var(--grey-109)]"
                           : "hover:bg-[var(--grey-106)]"
@@ -98,7 +98,7 @@ function SectionHintsModal({
                   aria-hidden="true"
                   className="h-[224px] w-full rounded-[12px] border border-[var(--divider)]"
                 />
-                <p className="text-p2-regular text-[var(--grey-1514)]">
+                <p className="text-p2-medium text-[var(--grey-1514)]">
                   {active?.answer}
                 </p>
               </div>

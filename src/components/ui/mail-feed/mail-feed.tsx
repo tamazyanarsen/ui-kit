@@ -73,7 +73,7 @@ function MailFeed({
           </div>
         )}
         <span className="shrink-0 text-p3-medium text-[var(--mail-feed-fg)]">{id}</span>
-        <div className="flex min-w-0 flex-1 items-end justify-between gap-2 text-p3-regular">
+        <div className="flex min-w-0 flex-1 items-end justify-between gap-2 text-p3-medium">
           <span className="min-w-0 truncate font-medium text-[var(--mail-feed-fg)]">
             {sender}
           </span>
@@ -83,7 +83,7 @@ function MailFeed({
 
       <p className="w-full truncate text-p2-medium text-[var(--mail-feed-fg)]">{subject}</p>
 
-      <div className="flex w-full flex-col gap-1 text-p3-regular">
+      <div className="flex w-full flex-col gap-1 text-p3-medium">
         <span className="text-[var(--mail-feed-fg)]">{message}</span>
         {preview && <span className="line-clamp-1 text-[var(--mail-feed-meta-fg)]">{preview}</span>}
       </div>

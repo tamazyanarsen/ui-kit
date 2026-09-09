@@ -140,8 +140,13 @@ function InfoIcon({
 // label line: 26px down (27 for the large one, whose 24px glyph sits on a
 // 30px value line) — the same "+2px below the value's top" rule.
 const COPY_OFFSET: Record<FieldType, string> = {
-  "label-left": "mt-[26px] desktop:mt-[2px]",
-  "label-line": "mt-[26px] desktop:mt-[2px]",
+  // ⚠️ У «Label Left» и «Line» отступ ОДИН на оба брейкпоинта, и это прямое
+  // следствие правки по замечанию 1 (см. разметку ниже): значок переехал
+  // внутрь колонки значения, а там его точка отсчёта — верх самого значения,
+  // а не верх строки. Мобильные 26 были «20 подписи + 4 зазора + 2» и теперь
+  // отсчитывались бы второй раз, уводя значок под вторую строку.
+  "label-left": "mt-[2px]",
+  "label-line": "mt-[2px]",
   "label-top": "mt-[26px] desktop:mt-[30px]",
   "large-value": "mt-[27px] desktop:mt-[33px]",
 }
@@ -267,7 +272,11 @@ function ItemInformationField({
       data-type={type}
       data-divider={divider === undefined ? undefined : divider ? "on" : "off"}
       className={cn(
-        "flex items-start gap-4",
+        // Зазор нужен только стопочным типам: у них значок копирования —
+        // сосед всего блока. У «Label Left»/«Line» он внутри колонки значения
+        // и свой зазор берёт оттуда.
+        "flex items-start",
+        !sideBySide && "gap-4",
         // Only Label Left is a padded, ruled row; the other three are bare
         // content the container spaces out (16px) itself.
         type === "label-left" && "border-b pt-4 pb-[15px]",
@@ -302,23 +311,53 @@ function ItemInformationField({
         >
           {labelRow}
         </span>
+        {/* Колонка значения. У типов «Label Left» и «Line» значок копирования
+            живёт ВНУТРИ неё, а не рядом со всей строкой.
+
+            ⚠️ Это и есть правка по дизайн-чеку от 08.09, замечание 1
+            («Смещение левого края значений в information field из-за правого
+            элемента. Левый край значений постоянный»). Пока значок был
+            соседом группы «подпись + значение», он забирал ширину у ВСЕЙ
+            группы: колонка значения (`flex-1`) сжималась, и её левый край
+            уезжал — строки с копированием и без него не выстраивались в одну
+            вертикаль. В мастере (нода 70240:38672) структура другая:
+            `Content = [Label, Value]`, а `Value = [Text, Copy]`, то есть
+            значок отъедает место только у самого значения.
+
+            У «Label Top» и «Large Value» значок в мастере, наоборот, сосед
+            всего текстового блока (нода 70240:38705, `pt-30`) — там подпись
+            стоит НАД значением, и колонок нет вовсе, смещать нечего. */}
         <div
           className={cn(
-            // Value and Sub Text are 4px apart on mobile (2px under the
-            // large value) and flush on desktop — except Label Top, which
-            // keeps 4px there too.
-            "flex min-w-0 flex-col items-start gap-1",
-            large && "gap-0.5 desktop:gap-0",
-            sideBySide && "desktop:flex-1 desktop:gap-0",
-            type === "label-top" && "desktop:gap-1"
+            "flex min-w-0 items-start gap-4",
+            sideBySide && "desktop:flex-1"
           )}
         >
-          {valueRow}
-          {subTextRow}
+          <div
+            className={cn(
+              // Value and Sub Text are 4px apart on mobile (2px under the
+              // large value) and flush on desktop — except Label Top, which
+              // keeps 4px there too.
+              "flex min-w-0 flex-1 flex-col items-start gap-1",
+              large && "gap-0.5 desktop:gap-0",
+              sideBySide && "desktop:gap-0",
+              type === "label-top" && "desktop:gap-1"
+            )}
+          >
+            {valueRow}
+            {subTextRow}
+          </div>
+
+          {copyable && sideBySide && (
+            <CopyButton
+              copyValue={copyValue ?? (typeof value === "string" ? value : "")}
+              type={type}
+            />
+          )}
         </div>
       </div>
 
-      {copyable && (
+      {copyable && !sideBySide && (
         <CopyButton
           copyValue={copyValue ?? (typeof value === "string" ? value : "")}
           type={type}

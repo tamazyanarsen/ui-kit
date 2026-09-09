@@ -257,7 +257,7 @@ function HeaderDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3-regular text-muted-foreground">
+        <p className="mt-6 text-p3-medium text-muted-foreground">
           Header собирает: логотип, две кнопки нижнего ряда («Меню» и
           «Создать», каждая раскрывает свою панель из ui/header-menu),
           избранные разделы с overflow-в-«Ещё» (тот же механизм, что у

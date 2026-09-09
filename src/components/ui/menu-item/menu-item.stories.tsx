@@ -193,7 +193,7 @@ export const Examples: Story = {
         <p className="text-p2-medium text-[var(--btn-primary-fg)]">
           Ведущий и замыкающий элементы: чекбокс, иконка, миниатюра, счётчик
         </p>
-        <p className="text-p3-regular text-[var(--accordion-card-subtitle-fg)]">
+        <p className="text-p3-medium text-[var(--accordion-card-subtitle-fg)]">
           Дизайн-чек №21: ведущий элемент 24px совпадает по высоте с первой
           строкой текста (16/24), поэтому при `items-start` он выравнивается
           сам, без подкручивания отступами.

@@ -8,7 +8,12 @@ import { cn } from "@/lib/utils"
 // снятые с эталона 70371:24923: пункт 520 × 56, поле 16, радиус 8, значок
 // 24 с зазором 16, выбранный — Grey 109.
 
-type IconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>
+// Иконка кита: `size` выбирает НАЧЕРТАНИЕ (16 и 24 нарисованы отдельно), а
+// не масштаб. Слот здесь всегда 24, поэтому и просим двадцатичетвёрочное —
+// дизайн-чек от 08.09, замечания 28 и 31.
+type IconComponent = React.ComponentType<
+  React.SVGProps<SVGSVGElement> & { size?: 16 | 24 }
+>
 
 interface SectionMenuItem {
   value: string
@@ -40,6 +45,7 @@ function SectionMenu({ items, value, onValueChange }: SectionMenuProps) {
             )}
           >
             <Icon
+              size={24}
               aria-hidden="true"
               className="size-6 shrink-0 text-[var(--grey-1514)]"
             />

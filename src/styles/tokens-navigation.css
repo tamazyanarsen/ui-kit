@@ -142,7 +142,7 @@
   --header-logout-hover-bg: var(--grey-106);
   --header-menu-toggle-hover-bg: var(--grey-106);
   --header-divider: var(--divider);
-  --header-check-fg: var(--blue-254);
+  --header-check-fg: var(--check-mark-fg);
   --header-logout-fg: var(--red-418);
   --header-unread-dot: var(--red-418);
 

@@ -92,7 +92,7 @@ function GeneralTab() {
               </Button>
             }
           >
-            <p className="text-p3-regular text-[var(--grey-284)]">
+            <p className="text-p3-medium text-[var(--grey-284)]">
               Блок обновляется в реальном времени
             </p>
             <ItemInformationField
@@ -179,11 +179,11 @@ function GeneralTab() {
           <SandboxSection title="Продажи" gap={16}>
             <table className="w-full text-left">
               <thead>
-                <tr className="text-p3-regular text-[var(--grey-284)]">
-                  <th className="py-2 font-normal">Показатель</th>
-                  <th className="py-2 font-normal">Продано</th>
-                  <th className="py-2 font-normal">На сумму</th>
-                  <th className="py-2 font-normal">Средняя цена</th>
+                <tr className="text-p3-medium text-[var(--grey-284)]">
+                  <th className="py-2 font-medium">Показатель</th>
+                  <th className="py-2 font-medium">Продано</th>
+                  <th className="py-2 font-medium">На сумму</th>
+                  <th className="py-2 font-medium">Средняя цена</th>
                 </tr>
               </thead>
               <tbody>
@@ -192,14 +192,14 @@ function GeneralTab() {
                     key={row.id}
                     className="border-t border-[var(--divider)] align-top"
                   >
-                    <td className="py-4 text-p2-regular text-[var(--grey-1514)]">
+                    <td className="py-4 text-p2-medium text-[var(--grey-1514)]">
                       {row.metric}
                     </td>
                     <td className="py-4">
                       <span className="block text-p2-medium text-[var(--grey-1514)]">
                         {row.sold}
                       </span>
-                      <span className="block text-p3-regular text-[var(--grey-284)]">
+                      <span className="block text-p3-medium text-[var(--grey-284)]">
                         {row.soldPlan}
                       </span>
                     </td>
@@ -207,7 +207,7 @@ function GeneralTab() {
                       <span className="block text-p2-medium text-[var(--grey-1514)]">
                         {row.amount}
                       </span>
-                      <span className="block text-p3-regular text-[var(--grey-284)]">
+                      <span className="block text-p3-medium text-[var(--grey-284)]">
                         {row.amountPlan}
                       </span>
                     </td>
@@ -236,7 +236,7 @@ function FinancingBar({
 }) {
   return (
     <div className="flex w-full flex-col gap-4">
-      <span className="text-p2-regular text-[var(--grey-1514)]">{title}</span>
+      <span className="text-p2-medium text-[var(--grey-1514)]">{title}</span>
       <SandboxCompositionBar
         segments={parts.map((part) => ({
           label: `${part.label} ${Math.round((part.value / total) * 100)}% (${money(part.value)})`,

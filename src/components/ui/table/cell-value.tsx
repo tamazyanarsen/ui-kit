@@ -100,7 +100,15 @@ function TableCellValue({
           />
         </span>
         {/* Round-2 font-weight audit: confirmed Object Sans Regular against
-            get_design_context (node 10623:48132), not a gap. */}
+            get_design_context (node 10623:48132), not a gap.
+
+            ⚠️ ЕДИНСТВЕННОЕ место кита, где Regular остаётся. Дизайн-чек от
+            08.09, замечание 13: «Начертание Regular — нецелевое… Есть
+            несколько исключений типа подзаголовков table cell, в остальных
+            случаях не нужно использовать regular. Целёвка — Medium». Это и
+            есть тот самый подзаголовок ячейки. Всё остальное в ките с той же
+            правки переведено на Medium — не возвращать сюда Regular по
+            аналогии. */}
         {description && (
           <span
             ref={sub.ref}

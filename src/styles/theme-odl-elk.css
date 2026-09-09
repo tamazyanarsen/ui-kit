@@ -107,7 +107,8 @@
   /* #14B1D1 -> #699B12 per the replacement map (was #82BF00, i.e. the wrong
      step of the ramp — the check glyph uses the same accent as the header's
      links, which the As-is render shows at #699B12). */
-  --item-check-fg: var(--odl-green-333);
+  /* Галочка выбранного — единый токен кита (см. tokens-controls.css). */
+  --check-mark-fg: var(--odl-green-333);
 
   --file-item-loading-fg: var(--odl-green-289);
 
@@ -131,7 +132,6 @@
   --pagination-onclick-bg: var(--odl-green-123);
 
   --header-hover-fg: var(--odl-green-333);
-  --header-check-fg: var(--odl-green-333);
 
   /* --- Success green: #39C182 -> #82BF00 (измерено на Informer, Toast,
      Progress Bar и Tag в таблице As-is/To-be). Every token below holds the

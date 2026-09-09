@@ -223,7 +223,7 @@ function Banner({
                 <BannerDescription
                   description={description}
                   bullet={bullet}
-                  className="text-p2-regular"
+                  className="text-p2-medium"
                   itemGap="gap-1"
                 />
               )}

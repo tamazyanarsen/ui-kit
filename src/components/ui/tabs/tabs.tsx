@@ -8,6 +8,7 @@ import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useIsDesktop } from "@/lib/use-is-desktop"
+import { useActiveIndicator } from "@/lib/use-active-indicator"
 
 // Tabs — "Табы": underline-style tab bar. Value is a literal item count
 // (2–12) — that's a content constraint, not something this component
@@ -68,11 +69,19 @@ function TabButton({
   active,
   onClick,
   innerRef,
+  /**
+   * Активное подчёркивание рисует общий бегунок (см. `Tabs` ниже), а не сама
+   * вкладка: иначе двигать было бы нечего — линия просто перекрашивалась бы у
+   * двух разных узлов. Измерительной копии бегунок не нужен, поэтому там флаг
+   * остаётся выключенным и линия рисуется по-старому.
+   */
+  sharedUnderline = false,
 }: {
   item: TabItem
   active: boolean
   onClick?: () => void
   innerRef?: (el: HTMLButtonElement | null) => void
+  sharedUnderline?: boolean
 }) {
   return (
     <button
@@ -81,6 +90,7 @@ function TabButton({
       disabled={item.disabled}
       onClick={onClick}
       data-slot="tabs-item"
+      data-value={item.value}
       data-active={active || undefined}
       className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 outline-none focus-visible:focus-ring disabled:cursor-not-allowed"
     >
@@ -105,9 +115,12 @@ function TabButton({
         aria-hidden="true"
         className={cn(
           "h-1 w-full shrink-0 rounded-t-[4px] transition-colors",
-          active
+          active && !sharedUnderline
             ? "bg-[var(--tabs-underline-active)]"
-            : "bg-transparent group-hover:bg-[var(--tabs-underline-hover)] group-disabled:bg-transparent"
+            : "bg-transparent group-hover:bg-[var(--tabs-underline-hover)] group-disabled:bg-transparent",
+          // Под активной вкладкой серого ховера нет — там уже стоит бегунок,
+          // и подмешивать под него вторую линию незачем.
+          active && sharedUnderline && "group-hover:bg-transparent"
         )}
       />
     </button>
@@ -151,33 +164,68 @@ function Tabs({
   const hasOverflow = hiddenItems.length > 0
   const showOverflowTab = hasOverflow || showMore
 
+  const indicator = useActiveIndicator<HTMLDivElement>(activeValue, [
+    visibleCount,
+    sizeKey,
+    showOverflowTab,
+    items,
+  ])
+
   return (
     <div
       ref={containerRef}
       data-slot="tabs"
-      // ⚠️ Разделитель — ВНУТРЕННЯЯ тень, а не `border-bottom`. Разделитель
-      // 1px и линия активного таба 4px лежат в макете на одном месте: в
-      // Figma stroke фрейма не занимает layout, а `border` при
-      // `box-sizing: border-box` добавляет свой пиксель сверху. Замер до
-      // правки: обёртка 45 при табе 44 — то есть весь ряд разъезжался с
-      // соседними блоками на пиксель, и всё, что центрируется, вставало на
-      // полпикселя выше. Та же грабля, что с линией под шапкой таблицы.
       className={cn(
-        "relative flex items-center shadow-[inset_0_-1px_0_0_var(--tabs-border)]",
+        // ⚠️ Разделитель — ВНУТРЕННЯЯ тень, а не `border-bottom`. Разделитель
+        // 1px и линия активного таба 4px лежат в макете на одном месте: в
+        // Figma stroke фрейма не занимает layout, а `border` при
+        // `box-sizing: border-box` добавляет свой пиксель сверху. Замер до
+        // правки: обёртка 45 при табе 44 — то есть весь ряд разъезжался с
+        // соседними блоками на пиксель, и всё, что центрируется, вставало на
+        // полпикселя выше. Та же грабля, что с линией под шапкой таблицы.
+        //
+        // Дизайн-чек от 08.09, замечание 16: «Разделитель снизу вкладок не
+        // должен уходить дальше самих вкладок… Действует для Desktop, на
+        // мобилах свои правила, там не править». Поэтому на десктопе тень
+        // снимается с внешней коробки (она тянется на всю ширину блока —
+        // ей нужна ширина для замера переполнения) и переносится на
+        // внутренний ряд, который по ширине равен ряду вкладок.
+        "relative flex items-center shadow-[inset_0_-1px_0_0_var(--tabs-border)] desktop:shadow-none",
         className
       )}
-      style={{ gap: GAP[sizeKey] }}
     >
-      {visibleItems.map((item) => (
-        <TabButton
-          key={item.value}
-          item={item}
-          active={item.value === activeValue}
-          onClick={() => !item.disabled && setValue(item.value)}
-        />
-      ))}
+      <div
+        ref={indicator.rowRef}
+        data-slot="tabs-row"
+        className="relative flex items-center desktop:shadow-[inset_0_-1px_0_0_var(--tabs-border)]"
+        style={{ gap: GAP[sizeKey] }}
+      >
+        {visibleItems.map((item) => (
+          <TabButton
+            key={item.value}
+            item={item}
+            active={item.value === activeValue}
+            sharedUnderline
+            onClick={() => !item.disabled && setValue(item.value)}
+          />
+        ))}
 
-      {showOverflowTab && (
+        {/* Бегунок — общее подчёркивание активной вкладки (замечание 21).
+            Живёт в ряду один и переезжает, а не перекрашивается: за это
+            отвечает переход по `left`/`width`. Пока активная вкладка спрятана
+            за многоточием, показывать нечего. */}
+        <span
+          aria-hidden="true"
+          data-slot="tabs-indicator"
+          className={cn(
+            "pointer-events-none absolute bottom-0 h-1 rounded-t-[4px] bg-[var(--tabs-underline-active)]",
+            indicator.ready && "transition-[left,width] duration-200 ease-out",
+            !indicator.visible && "opacity-0"
+          )}
+          style={{ left: indicator.left, width: indicator.width }}
+        />
+
+        {showOverflowTab && (
         <MenuPrimitive.Root modal={false}>
           <MenuPrimitive.Trigger
             render={
@@ -197,7 +245,11 @@ function Tabs({
               />
             }
           >
-            <Ellipsis aria-hidden="true" className="size-4 desktop:size-6" />
+            <Ellipsis
+              size={isDesktop ? 24 : 16}
+              aria-hidden="true"
+              className="size-4 desktop:size-6"
+            />
             <span
               aria-hidden="true"
               className="h-1 w-full shrink-0 rounded-t-[4px] bg-transparent transition-colors group-hover:bg-[var(--tabs-underline-hover)]"
@@ -226,7 +278,8 @@ function Tabs({
             </MenuPrimitive.Positioner>
           </MenuPrimitive.Portal>
         </MenuPrimitive.Root>
-      )}
+        )}
+      </div>
 
       {/* Off-screen measurement copy — always renders every item (unlike
           the visible row, which drops items behind the overflow trigger)

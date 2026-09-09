@@ -70,7 +70,7 @@ function Swatch({ color }: { color: PaletteColor }) {
         className="h-16 w-full rounded-xl border border-[var(--divider)]"
         style={{ background: `var(--${color.name})` }}
       />
-      <div className="text-p3-regular leading-snug">
+      <div className="text-p3-medium leading-snug">
         {/* Крупно — имя CSS-переменной: теперь оно же и есть имя из Figma. */}
         <div className="text-p2-medium text-[var(--btn-primary-fg)]">--{color.name}</div>
         {color.figma ? (
@@ -126,7 +126,7 @@ function ColorsPage() {
     <div className="flex max-w-5xl flex-col gap-10 bg-[var(--modal-bg)] p-8">
       <div>
         <h1 className="text-h3 text-[var(--btn-primary-fg)]">Палитра цветов</h1>
-        <p className="mt-1 text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+        <p className="mt-1 text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
           Нижний слой токенов: имена переменных совпадают с именами набора Figma
           («Blue 223» → <code>--blue-223</code>). Вся семантика кита ссылается на эти
           переменные, поэтому здесь видно, сколько токенов держит каждый цвет.

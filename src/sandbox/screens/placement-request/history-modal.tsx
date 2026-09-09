@@ -82,17 +82,17 @@ function HistoryModal({ open, onOpenChange }: HistoryModalProps) {
                     {event.tag ? (
                       <Tag color={event.tag}>{event.label}</Tag>
                     ) : (
-                      <span className="text-p2-regular text-[var(--grey-1514)]">
+                      <span className="text-p2-medium text-[var(--grey-1514)]">
                         {event.label}
                       </span>
                     )}
-                    <span className="shrink-0 text-p3-regular text-[var(--grey-284)]">
+                    <span className="shrink-0 text-p3-medium text-[var(--grey-284)]">
                       {event.timestamp}
                     </span>
                   </div>
 
                   {event.signer && (
-                    <span className="flex items-center gap-2 text-p2-regular text-[var(--grey-1514)]">
+                    <span className="flex items-center gap-2 text-p2-medium text-[var(--grey-1514)]">
                       <CircleCheck
                         aria-hidden="true"
                         className="size-4 text-[var(--progress-green)]"

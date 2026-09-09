@@ -42,7 +42,27 @@ function useMask({
   const showAmountSuffix = mask === "amount" && Boolean(maskValue)
 
   React.useLayoutEffect(() => {
-    if (mask === "amount") setAmountWidth(measureRef.current?.offsetWidth)
+    if (mask !== "amount") return
+    setAmountWidth(measureRef.current?.offsetWidth)
+  }, [mask, maskValue])
+
+  // ⚠️ Повторный замер после загрузки гарнитуры. Первый проходит на
+  // подменном системном шрифте, и число выходит уже реального: поле берёт
+  // эту ширину, а когда приезжает Object Sans, текст в него не помещается и
+  // обрезается («90 000 0(₽» вместо «90 000 000 ₽»). Ловится только на
+  // первом показе поля с готовым значением — при вводе с клавиатуры шрифт
+  // давно загружен, поэтому дефект и переживал прошлые проверки.
+  React.useEffect(() => {
+    if (mask !== "amount") return
+    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
+    if (!fonts?.ready) return
+    let cancelled = false
+    fonts.ready.then(() => {
+      if (!cancelled) setAmountWidth(measureRef.current?.offsetWidth)
+    })
+    return () => {
+      cancelled = true
+    }
   }, [mask, maskValue])
 
   function handleAccept(next: string, _maskRef: unknown, event?: InputEvent) {

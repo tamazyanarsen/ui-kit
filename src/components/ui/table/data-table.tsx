@@ -16,6 +16,7 @@ import {
   resolveColumns,
 } from "./table-columns"
 import { flatten } from "./table-rows"
+import { useAddedRows } from "./use-added-rows"
 import { useTableExpansion } from "./use-table-expansion"
 import { useTableSelection } from "./use-table-selection"
 import { useTableSort } from "./use-table-sort"
@@ -132,6 +133,17 @@ function DataTable<Row>({
   const visibleRows = React.useMemo(
     () => flatten(sortedRows, childrenOf, keyOf, isExpanded),
     [sortedRows, childrenOf, keyOf, isExpanded]
+  )
+
+  // Появившиеся строки подсвечиваются САМИ — корневое правило таблиц
+  // (дизайн-чек от 08.09, замечание 30). `isRowAdded` остаётся ручным
+  // перекрытием: экран, который знает про «новизну» больше таблицы
+  // (например, отличает свою только что созданную заявку от чужой,
+  // приехавшей обновлением), решает сам, и автоопределение ему мешать не
+  // должно.
+  const autoAdded = useAddedRows(
+    React.useMemo(() => allRows.map((entry) => entry.key), [allRows]),
+    isRowAdded === undefined
   )
 
   const {
@@ -291,7 +303,7 @@ function DataTable<Row>({
               key={key}
               clickable={Boolean(onRowClick)}
               selected={selected.has(key)}
-              added={isRowAdded?.(row)}
+              added={isRowAdded ? isRowAdded(row) : autoAdded.has(key)}
               onClick={handleRowClick(row, key)}
             >
               {selectable && (

@@ -128,7 +128,7 @@ export function FileUploadDropzone({
         }}
       />
       <span className="flex items-center gap-2">
-        <CirclePlus aria-hidden="true" className={cn("size-6", CONTENT_COLOR[tone])} />
+        <CirclePlus size={24} aria-hidden="true" className={cn("size-6", CONTENT_COLOR[tone])} />
         <span className={cn("text-p2-medium desktop:text-p1-medium", CONTENT_COLOR[tone])}>
           {children ?? (
             <>
@@ -142,7 +142,7 @@ export function FileUploadDropzone({
         </span>
       </span>
       {subtitle && (
-        <span className={cn("text-p3-regular", SUBTITLE_COLOR[tone])}>
+        <span className={cn("text-p3-medium", SUBTITLE_COLOR[tone])}>
           {subtitle}
         </span>
       )}

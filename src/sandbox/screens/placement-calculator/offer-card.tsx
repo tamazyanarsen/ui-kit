@@ -45,7 +45,7 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
             </Tag>
           )}
           {approved && approved.amount > 0 && (
-            <span className="text-p2-regular text-[var(--grey-1514)]">
+            <span className="text-p2-medium text-[var(--grey-1514)]">
               {money(approved.amount)} на {approved.days} дней
             </span>
           )}
@@ -70,7 +70,7 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
       <div className="flex flex-col gap-1">
         <h4 className="text-h4 text-[var(--grey-1514)]">{offer.title}</h4>
         {offer.subtitle && (
-          <p className="text-p2-regular text-[var(--grey-284)]">
+          <p className="text-p2-medium text-[var(--grey-284)]">
             {offer.subtitle}
           </p>
         )}
@@ -78,7 +78,7 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
 
       <div className="flex flex-wrap gap-16">
         <div className="flex flex-col gap-1">
-          <span className="text-p2-regular text-[var(--grey-284)]">Ставка</span>
+          <span className="text-p2-medium text-[var(--grey-284)]">Ставка</span>
           <span className="flex items-center gap-2 text-h2 text-[var(--grey-1514)]">
             {percent(offer.rate, Number.isInteger(offer.rate) ? 0 : 2)}
             {offer.rateInfo && (
@@ -97,7 +97,7 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
 
         {!offer.incomeless && (
           <div className="flex flex-col gap-1">
-            <span className="text-p2-regular text-[var(--grey-284)]">
+            <span className="text-p2-medium text-[var(--grey-284)]">
               Предполагаемый доход
             </span>
             <span className="text-h2 text-[var(--grey-1514)]">
@@ -108,7 +108,7 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
       </div>
 
       {approved && (
-        <p className="text-p2-regular text-[var(--grey-284)]">
+        <p className="text-p2-medium text-[var(--grey-284)]">
           Предложение действует до {approved.until}
         </p>
       )}

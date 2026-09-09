@@ -20,7 +20,7 @@ function WeekdaysRow({ size = "desktop" }: { size?: GridSize }) {
         <span
           key={day}
           className={cn(
-            "flex h-8 items-center justify-center text-p3-regular text-[var(--calendar-muted-fg)]",
+            "flex h-8 items-center justify-center text-p3-medium text-[var(--calendar-muted-fg)]",
             CELL_WIDTH[size]
           )}
         >

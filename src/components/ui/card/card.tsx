@@ -94,7 +94,7 @@ function Card({
               {title}
             </span>
             {titleSuffix && (
-              <span className="shrink-0 font-normal text-[var(--card-meta-fg)]">
+              <span className="shrink-0 font-medium text-[var(--card-meta-fg)]">
                 • {titleSuffix}
               </span>
             )}

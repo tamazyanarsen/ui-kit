@@ -234,7 +234,7 @@ function CardBack({
       </div>
 
       <div className="flex flex-col gap-0.5">
-        <span className="w-full text-p4-regular text-white uppercase">
+        <span className="w-full text-p4-medium text-white uppercase">
           {cardholderName}
         </span>
         <span className="text-p3-medium text-[var(--bank-card-meta-fg)]">до {expiry}</span>

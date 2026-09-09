@@ -78,8 +78,11 @@ function PlacementCalculatorScreen() {
         />
       }
     >
-      <SandboxColumns widths={[4, 8]}>
-        <SandboxBlock>
+      {/* Дизайн-чек от 08.09, замечание 11: «Блок должен занимать 5 колонок
+          и залипать при прокрутке, как в деталке размещения средств». Было
+          4 колонки и без закрепления. */}
+      <SandboxColumns widths={[5, 7]}>
+        <SandboxBlock sticky>
           <SandboxSection title="Выбор условий" gap={16}>
             <div className="flex flex-wrap gap-2">
               <SandboxChipsToggle

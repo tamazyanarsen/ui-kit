@@ -8,6 +8,7 @@ import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
+import { useActiveIndicator } from "@/lib/use-active-indicator"
 
 // Switcher — "Cell Switcher / Переключатель": a segmented control (pill
 // container + a sliding active pill), as opposed to Tabs' underline style.
@@ -66,6 +67,12 @@ function SegmentButton({
   onClick,
   innerRef,
   className,
+  /**
+   * Заливку активного сегмента рисует общий бегунок (см. `Switcher` ниже) —
+   * ему и ехать. Измерительной копии бегунок не нужен, там флаг выключен и
+   * заливка остаётся на самом сегменте.
+   */
+  sharedFill = false,
 }: {
   item: SwitcherItem
   active: boolean
@@ -74,13 +81,22 @@ function SegmentButton({
   onClick?: () => void
   innerRef?: (el: HTMLButtonElement | null) => void
   className: string
+  sharedFill?: boolean
 }) {
-  const activeBg =
+  const activeFg =
     activeVariant === "black"
-      ? "data-active:bg-[var(--switcher-active-black-bg)] data-active:text-[var(--switcher-active-black-fg)]"
-      : greyBackground
-        ? "data-active:bg-[var(--switcher-active-bg)] data-active:text-[var(--switcher-fg)]"
-        : "data-active:bg-[var(--switcher-active-bg-on-white)] data-active:text-[var(--switcher-fg)]"
+      ? "data-active:text-[var(--switcher-active-black-fg)]"
+      : "data-active:text-[var(--switcher-fg)]"
+  const activeBg = sharedFill
+    ? activeFg
+    : cn(
+        activeVariant === "black"
+          ? "data-active:bg-[var(--switcher-active-black-bg)]"
+          : greyBackground
+            ? "data-active:bg-[var(--switcher-active-bg)]"
+            : "data-active:bg-[var(--switcher-active-bg-on-white)]",
+        activeFg
+      )
 
   return (
     <button
@@ -89,12 +105,15 @@ function SegmentButton({
       disabled={item.disabled}
       onClick={onClick}
       data-slot="switcher-item"
+      data-value={item.value}
       data-active={active || undefined}
       className={cn(
         // Weight lives in SEGMENT_PADDING's text-pN-medium (passed in via
         // `className` below), not here — kept separate since size and
         // weight ship together as one Figma-named style per size.
-        "flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
+        // `relative` — чтобы подпись лежала ПОВЕРХ бегунка: тот
+        // абсолютный и в потоке идёт после сегментов.
+        "relative flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
         activeBg,
         className
       )}
@@ -154,6 +173,22 @@ function Switcher({
   const hiddenItems = resolvedItems.slice(effectiveVisible)
   const hasOverflow = hiddenItems.length > 0
 
+  const indicator = useActiveIndicator<HTMLDivElement>(activeValue, [
+    effectiveVisible,
+    size,
+    hasOverflow,
+    resolvedItems,
+  ])
+
+  // Дизайн-чек от 08.09, замечание 21: «В свитчере ездит заливка». Цвет
+  // бегунка — ровно те же три варианта, что раньше стояли на самом сегменте.
+  const indicatorBg =
+    activeVariant === "black"
+      ? "bg-[var(--switcher-active-black-bg)]"
+      : greyBackground
+        ? "bg-[var(--switcher-active-bg)]"
+        : "bg-[var(--switcher-active-bg-on-white)]"
+
   return (
     <div
       ref={containerRef}
@@ -167,17 +202,39 @@ function Switcher({
         className
       )}
     >
-      {visibleItems.map((item) => (
-        <SegmentButton
-          key={item.value}
-          item={item}
-          active={item.value === activeValue}
-          greyBackground={greyBackground}
-          activeVariant={activeVariant}
-          onClick={() => !item.disabled && setValue(item.value)}
-          className={SEGMENT_PADDING[size]}
+      <div
+        ref={indicator.rowRef}
+        data-slot="switcher-row"
+        className={cn("relative flex items-center", GAP_CLASS[size])}
+      >
+        {/* Бегунок стоит ПЕРВЫМ, до сегментов: он без `z-index`, а подписи с
+            `relative` — значит в порядке отрисовки они и так окажутся выше.
+            Обратный порядок потребовал бы слоя у каждой подписи. */}
+        <span
+          aria-hidden="true"
+          data-slot="switcher-indicator"
+          className={cn(
+            "pointer-events-none absolute inset-y-0 rounded-[16px]",
+            indicatorBg,
+            indicator.ready && "transition-[left,width] duration-200 ease-out",
+            !indicator.visible && "opacity-0"
+          )}
+          style={{ left: indicator.left, width: indicator.width }}
         />
-      ))}
+
+        {visibleItems.map((item) => (
+          <SegmentButton
+            key={item.value}
+            item={item}
+            active={item.value === activeValue}
+            greyBackground={greyBackground}
+            activeVariant={activeVariant}
+            sharedFill
+            onClick={() => !item.disabled && setValue(item.value)}
+            className={SEGMENT_PADDING[size]}
+          />
+        ))}
+      </div>
 
       {hasOverflow && (
         <MenuPrimitive.Root modal={false}>

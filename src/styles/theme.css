@@ -69,9 +69,17 @@
        font-* class: a size-only class silently defaults to unset/Regular
        when someone forgets the weight utility, which is exactly the "Object
        Sans Regular where Figma wants Medium" bug class found during the
-       2026-08-04 font-weight audit. P4 only ever appears as Regular and
-       P3 never appears as Heavy in the spec, so those variants don't exist
-       here on purpose — don't add them without a literal Figma citation. */
+       2026-08-04 font-weight audit. P3 never appears as Heavy in the spec,
+       so этого варианта здесь нет намеренно — не добавлять без прямой
+       ссылки на Figma.
+
+       ⚠️ `p4-medium` — исключение из этого правила, и оно оговорено:
+       дизайн-чек от 08.09, замечание 13 — «Начертание Regular нецелевое… В
+       продукте почти нигде не используется, сделай корневую правку в ките и
+       правило в компонентах… Целёвка — Medium». В мастере P4 нарисован
+       только в Regular, но раз Regular из продукта уходит целиком, у
+       десятого кегля должна остаться хоть одна ступень. Метрики те же
+       (10/12), меняется только вес. */
     --text-p1-regular: 16px;
     --text-p1-regular--line-height: 24px;
     --text-p1-regular--font-weight: 400;
@@ -99,6 +107,9 @@
     --text-p4-regular: 10px;
     --text-p4-regular--line-height: 12px;
     --text-p4-regular--font-weight: 400;
+    --text-p4-medium: 10px;
+    --text-p4-medium--line-height: 12px;
+    --text-p4-medium--font-weight: 500;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

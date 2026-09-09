@@ -93,6 +93,7 @@ interface PlaygroundArgs {
   buttons: ButtonCount
   overflow: boolean
   pinned: boolean
+  detached: boolean
   overflowDirection: SelectionButtonDirection
   showDropdown: boolean
 }
@@ -142,6 +143,12 @@ const meta = {
         "«Панель всегда закреплена в нижней части экрана» — поэтому включено по умолчанию",
       control: "boolean",
     },
+    detached: {
+      name: "Отлипшая",
+      description:
+        "Дизайн-чек от 08.09, замечание 9: в продукте состояния быть не должно, пропс заведён на будущее — полоса становится островом и получает нижние скругления",
+      control: "boolean",
+    },
     overflow: {
       name: "Меню «ещё»",
       description:
@@ -154,6 +161,7 @@ const meta = {
     buttons: 3,
     overflow: true,
     pinned: true,
+    detached: false,
     overflowDirection: "top-right",
     showDropdown: true,
   },
@@ -168,18 +176,19 @@ export const Playground: Story = {
     buttons,
     overflow: withOverflow,
     pinned,
+    detached,
     overflowDirection,
     showDropdown,
   }) => (
     <StoryContentArea height="h-72">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
-          <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+          <p key={index} className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
             Строка таблицы {index + 1}
           </p>
         ))}
       </div>
-      <ButtonMenu pinned={pinned} className="mt-auto">
+      <ButtonMenu pinned={pinned} detached={detached} className="mt-auto">
         {menuButtons(type, buttons)}
         {withOverflow &&
           overflow({ direction: overflowDirection, showDropdown })}
@@ -196,7 +205,7 @@ function PinnedDemo({ pinned }: { pinned: boolean }) {
     <StoryContentArea height="h-80">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 12 }, (_, index) => (
-          <p key={index} className="text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+          <p key={index} className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
             Строка таблицы {index + 1}
           </p>
         ))}

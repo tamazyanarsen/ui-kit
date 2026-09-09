@@ -127,7 +127,9 @@ function BusinessCardDetail() {
                 собран не Medium-кнопками. Это тот же механизм, что в нижней
                 панели, — не поместившиеся команды уходят в «ещё» последним
                 элементом ряда, а не встают второй строкой. */}
-            <ButtonMenuRow size="sm">
+            {/* Дизайн-чек от 08.09, замечание 2: «Кнопки здесь должны быть
+                размера Large». Ряд был собран размером S. */}
+            <ButtonMenuRow size="lg">
               <Button variant="secondary-grey">Экспорт операций</Button>
               <Button variant="secondary-grey">Перейти к счёту карты</Button>
               <ButtonMenuOverflow direction="down-left">

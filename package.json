@@ -234,6 +234,10 @@
       "types": "./dist/components/ui/sidebar/index.d.ts",
       "import": "./dist/components/ui/sidebar/index.js"
     },
+    "./sortable": {
+      "types": "./dist/components/ui/sortable/index.d.ts",
+      "import": "./dist/components/ui/sortable/index.js"
+    },
     "./status-screen": {
       "types": "./dist/components/ui/status-screen/index.d.ts",
       "import": "./dist/components/ui/status-screen/index.js"

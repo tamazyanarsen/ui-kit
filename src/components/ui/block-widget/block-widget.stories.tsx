@@ -91,7 +91,7 @@ function leadingNode(option: LeadingOption) {
 function SlotStub({ height }: { height: number }) {
   return (
     <div
-      className="flex w-full items-center justify-center rounded-[8px] border border-dashed border-[var(--block-widget-border)] text-p3-regular text-[var(--block-widget-muted-fg)]"
+      className="flex w-full items-center justify-center rounded-[8px] border border-dashed border-[var(--block-widget-border)] text-p3-medium text-[var(--block-widget-muted-fg)]"
       style={{ height }}
     >
       Slot

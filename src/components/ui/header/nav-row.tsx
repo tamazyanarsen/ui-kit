@@ -151,7 +151,21 @@ function NavRow({
       // продукта (поля 40, максимум 1800) — мерено с `Menu Header (ELK)`
       // (70303:48974). Ширину держит `Grid`, а не локальные `px-10` +
       // `max-w-[1800px]`: см. комментарий в components/ui/grid/grid.tsx.
-      className="flex h-16 w-full shrink-0 border-b border-[var(--header-border)]"
+      // ⚠️ Нижняя граница гаснет, пока раскрыто меню или создание —
+      // дизайн-чек от 08.09, замечание 7: «Нижний разделитель хедера не
+      // должен быть виден при раскрытом меню или раскрытом создании». Панель
+      // приезжает вплотную под ряд, и линия читалась как её собственная
+      // верхняя кромка.
+      //
+      // Цвет гасится, а сама рамка остаётся: убери её — и ряд станет на
+      // пиксель ниже, то есть панель дёрнется вверх ровно в момент
+      // раскрытия. Тот же приём, что у последней строки списка в base.css.
+      className={cn(
+        "flex h-16 w-full shrink-0 border-b",
+        menuOpen || createOpen
+          ? "border-transparent"
+          : "border-[var(--header-border)]"
+      )}
     >
       <Grid className="flex h-full min-w-0 items-center gap-8">
         <div className="flex shrink-0 items-center gap-2">

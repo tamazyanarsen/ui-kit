@@ -71,7 +71,7 @@ function Badge({
         // two-digit counters 4px narrower than a 4px padding would and drops
         // the digits 1px below the geometric centre (they read as centred
         // because digits have no descenders).
-        "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-[2px] pt-[2px] text-p3-regular",
+        "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-[2px] pt-[2px] text-p3-medium",
         className
       )}
       style={{

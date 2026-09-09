@@ -59,7 +59,7 @@ function IconTile({ name }: { name: string }) {
       className="flex cursor-pointer flex-col items-center gap-3 rounded-xl border border-[var(--divider)] bg-[var(--modal-bg)] p-4 text-center transition-colors hover:border-[var(--input-border-hover)] hover:bg-[var(--card-bg)]"
     >
       <Icon name={name} size={24} className="text-[var(--btn-primary-fg)]" />
-      <span className="text-p4-regular text-[var(--accordion-card-subtitle-fg)]">
+      <span className="text-p4-medium text-[var(--accordion-card-subtitle-fg)]">
         {copied ? "Скопировано" : name}
       </span>
     </button>

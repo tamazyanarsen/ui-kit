@@ -31,7 +31,7 @@ function TrancheSummary({
     <SandboxBlock>
       <div className="flex flex-col gap-6">
         <SandboxSection gap={8} title="Первый транш">
-          <div className="flex flex-col text-p2-regular text-[var(--grey-284)]">
+          <div className="flex flex-col text-p2-medium text-[var(--grey-284)]">
             <span>По договору подряда {agreementLabel}</span>
             <span>Кредитный договор: {contractLabel}</span>
           </div>

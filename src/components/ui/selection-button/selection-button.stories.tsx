@@ -94,7 +94,7 @@ export const Examples: Story = {
           {DIRECTIONS.map((direction) => (
             <div key={direction} className="flex flex-col items-center gap-2">
               <SelectionButton items={ITEMS} direction={direction} />
-              <span className="text-p4-regular text-[#6D6D6D]">{direction}</span>
+              <span className="text-p4-medium text-[#6D6D6D]">{direction}</span>
             </div>
           ))}
         </div>

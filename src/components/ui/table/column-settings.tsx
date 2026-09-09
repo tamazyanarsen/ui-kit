@@ -1,12 +1,19 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { Drag, Search, Settings } from "@/icons"
+import { Search, Settings } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dropdown } from "@/components/ui/dropdown"
 import { Input } from "@/components/ui/input"
+import {
+  SortableDropIndicator,
+  SortableHandle,
+  SortableList,
+  sortableRowClass,
+  useSortable,
+} from "@/components/ui/sortable"
 
 // TableColumnSettings — "Управление столбцами" (node 70279:7092), the popup
 // behind the table top's "Настроить столбцы" button.
@@ -62,7 +69,6 @@ function TableColumnSettings({
   className,
 }: TableColumnSettingsProps) {
   const [query, setQuery] = React.useState("")
-  const [dragId, setDragId] = React.useState<string | null>(null)
 
   const normalized = query.trim().toLowerCase()
   const visibleRows = normalized
@@ -81,17 +87,29 @@ function TableColumnSettings({
 
   // Reorder is index-based on the full list, not the filtered view: dropping
   // onto a row while a search is active still has to land the dragged column
-  // at that row's real position.
-  function move(fromId: string, toId: string) {
-    if (fromId === toId) return
-    const from = columns.findIndex((column) => column.id === fromId)
-    const to = columns.findIndex((column) => column.id === toId)
-    if (from < 0 || to < 0) return
+  // at that row's real position. Хук отдаёт индексы в ВИДИМОМ списке —
+  // поэтому здесь они переводятся обратно в индексы `columns`.
+  function move(from: number, to: number) {
+    const fromId = visibleRows[from]?.id
+    const toId = visibleRows[to]?.id
+    if (!fromId || !toId || fromId === toId) return
+    const fromIndex = columns.findIndex((column) => column.id === fromId)
+    const toIndex = columns.findIndex((column) => column.id === toId)
+    if (fromIndex < 0 || toIndex < 0) return
     const next = [...columns]
-    const [moved] = next.splice(from, 1)
-    next.splice(to, 0, moved)
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
     onColumnsChange(next)
   }
+
+  const sortable = useSortable({
+    items: visibleRows.map((column) => ({
+      id: column.id,
+      locked: dragDisabled(column),
+    })),
+    onReorder: move,
+    disabled: !reorderable,
+  })
 
   const resolvedTrigger = trigger ?? (
     <Button variant="secondary-grey" size="sm" icon={Settings}>
@@ -133,25 +151,15 @@ function TableColumnSettings({
               />
             )}
 
-            <div className="themed-scrollbar max-h-[392px] overflow-y-auto">
+            <SortableList
+              className="themed-scrollbar max-h-[392px] overflow-y-auto"
+              {...sortable.listProps}
+            >
               {visibleRows.map((column) => (
                 <div
                   key={column.id}
                   data-slot="table-column-settings-row"
-                  data-dragging={column.id === dragId || undefined}
-                  draggable={reorderable && !dragDisabled(column)}
-                  onDragStart={() => setDragId(column.id)}
-                  onDragEnd={() => setDragId(null)}
-                  onDragOver={(event) => {
-                    if (!dragId) return
-                    event.preventDefault()
-                  }}
-                  onDrop={(event) => {
-                    if (!dragId) return
-                    event.preventDefault()
-                    move(dragId, column.id)
-                    setDragId(null)
-                  }}
+                  {...sortable.itemProps(column.id)}
                   // Переключает ВСЯ строка, а не только галочка: строка и
                   // галочка выражают одно действие, и мишень в 24×24 посреди
                   // строки 280×56 — это промах по площади в двадцать с лишним
@@ -163,8 +171,12 @@ function TableColumnSettings({
                       ? () => toggle(column.id)
                       : undefined
                   }
-                  className={cn(
-                    "flex items-center gap-4 bg-[var(--table-bg)] p-4 data-[dragging]:opacity-50",
+                  // Взятая строка красится в Active (Grey 124) — общий вид
+                  // перетаскивания по макету 42995:34194. Раньше здесь была
+                  // своя полупрозрачность, и то же действие в трёх списках
+                  // кита выглядело тремя разными способами.
+                  className={sortableRowClass(
+                    "flex items-center gap-4 bg-[var(--table-bg)] p-4",
                     hideable && !column.locked && "cursor-pointer"
                   )}
                 >
@@ -203,21 +215,19 @@ function TableColumnSettings({
                     {column.label}
                   </span>
                   {reorderable && (
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "shrink-0 text-[var(--table-description-fg)]",
-                        dragDisabled(column)
-                          ? "opacity-40"
-                          : "cursor-grab active:cursor-grabbing"
-                      )}
-                    >
-                      <Drag size={24} className="size-6" />
-                    </span>
+                    <SortableHandle
+                      label={`Переместить столбец «${String(column.label)}»`}
+                      disabled={dragDisabled(column)}
+                      // Клик по ручке не должен переключать видимость: строка
+                      // целиком — увеличенная площадь чекбокса (см. выше).
+                      onClick={(event) => event.stopPropagation()}
+                      {...sortable.handleProps(column.id)}
+                    />
                   )}
                 </div>
               ))}
-            </div>
+              <SortableDropIndicator indicator={sortable.indicator} />
+            </SortableList>
           </PopoverPrimitive.Popup>
         </PopoverPrimitive.Positioner>
       </PopoverPrimitive.Portal>

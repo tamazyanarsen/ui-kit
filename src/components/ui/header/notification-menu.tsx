@@ -34,7 +34,7 @@ interface NotificationMenuProps {
 }
 
 /** Подписи под заголовком выровнены по тексту, а не по точке-индикатору. */
-const META_LINE = "pl-3.5 text-p3-regular text-[var(--header-meta-fg)]"
+const META_LINE = "pl-3.5 text-p3-medium text-[var(--header-meta-fg)]"
 
 function NotificationRow({ item }: { item: NotificationMenuItem }) {
   return (
@@ -53,9 +53,9 @@ function NotificationRow({ item }: { item: NotificationMenuItem }) {
           )}
           <span
             className={cn(
-              "text-p2-regular",
+              "text-p2-medium",
               item.viewed
-                ? "font-normal text-[var(--header-meta-fg)]"
+                ? "text-[var(--header-meta-fg)]"
                 : "font-medium text-[var(--header-fg)]"
             )}
           >

@@ -16,6 +16,8 @@ import {
   SandboxSelect,
 } from "../../shell"
 
+import { useMediaQuery } from "@/lib/use-media-query"
+
 import { ReportContents } from "./contents"
 import { GENERAL_CONTENTS, GeneralTab } from "./general-tab"
 import { STAGES_CONTENTS, StagesTab } from "./stages-tab"
@@ -37,6 +39,9 @@ import { PROJECT } from "./data"
 // `Line`: без своего поля и без разделителя, интервал задаёт контейнер.
 
 function ProjectReportsScreen() {
+  // Порог из замечания 20 дизайн-чека от 08.09: с 1536 — две колонки грида,
+  // ниже — одна на всю ширину.
+  const wideLayout = useMediaQuery("(min-width: 1536px)")
   const [tab, setTab] = useState("general")
   const [project, setProject] = useState<string | null>("paveletskaya")
   const [from, setFrom] = useState<Date | null>(new Date(2025, 4, 1))
@@ -113,10 +118,19 @@ function ProjectReportsScreen() {
         showMore={false}
       />
 
-      <SandboxColumns widths={[4, 8]}>
-        <ReportContents entries={contents} />
-        {tab === "general" ? <GeneralTab /> : <StagesTab />}
-      </SandboxColumns>
+      {/* Дизайн-чек от 08.09, замечание 20: с 1536 оглавление и содержимое
+          делят место по колонкам грида, ниже — содержимое занимает всю
+          ширину, а ряда с пустой колонкой не возникает вовсе. */}
+      {wideLayout ? (
+        <SandboxColumns widths={[4, 8]}>
+          <ReportContents entries={contents} />
+          {tab === "general" ? <GeneralTab /> : <StagesTab />}
+        </SandboxColumns>
+      ) : tab === "general" ? (
+        <GeneralTab />
+      ) : (
+        <StagesTab />
+      )}
     </SandboxPage>
   )
 }

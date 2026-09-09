@@ -6,6 +6,7 @@ import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
 import { Button } from "@/components/ui/button"
 
 import { ButtonMenuOverflow } from "./overflow"
+import { PINNED_CLASS, barShapeClass } from "./pinning"
 
 // ButtonMenuBlack — "ELK / button menu (black)" (node 700:54288, v1.0.0).
 // Figma documents this as its own component, not a variant of the white
@@ -30,7 +31,6 @@ import { ButtonMenuOverflow } from "./overflow"
 // `fixed` вырвал бы её из потока и как раз перекрыл бы. Из этого же
 // следует, что закрепление работает относительно прокручиваемого
 // контейнера: панель прижимается к низу контентной области, а не окна.
-const PINNED_CLASS = "sticky bottom-0 z-30"
 
 interface ButtonMenuBlackInfoItem {
   label: React.ReactNode
@@ -61,6 +61,12 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
    * таблицы, и стоит там же.
    */
   pinned?: boolean
+  /**
+   * «Отлипшая» полоса — дизайн-чек от 08.09, замечание 9. В продукте такого
+   * состояния быть не должно, пропс заведён на будущее: полоса становится
+   * островом в потоке и получает нижние скругления, такие же как верхние.
+   */
+  detached?: boolean
 
   /**
    * `Show Button` — кнопка «Выбрать на всех страницах (N)» над полосой.
@@ -105,6 +111,7 @@ function ButtonMenuBlack({
   info,
   onClose,
   pinned = true,
+  detached = false,
   showSelectAllPages = true,
   selectAllPagesCount,
   selectedCount,
@@ -151,7 +158,7 @@ function ButtonMenuBlack({
   // полосу прокрутки от панели на 64 и подвешивали её в пустоте — поэтому
   // ref висит на ПАНЕЛИ, а не на внешнем узле.
   const ref = React.useRef<HTMLDivElement>(null)
-  useViewportInsetBottom(ref, pinned)
+  useViewportInsetBottom(ref, pinned && !detached)
 
   // Кнопка пропадает, когда выбрано всё, и возвращается, как только снята
   // хотя бы одна галка.
@@ -165,13 +172,15 @@ function ButtonMenuBlack({
     <div
       ref={ref}
       data-slot="button-menu-black"
-      data-pinned={pinned || undefined}
+      data-pinned={(pinned && !detached) || undefined}
+      data-detached={detached || undefined}
       className={cn(
-        "flex max-h-[72px] min-h-[72px] w-full items-center justify-between rounded-tl-[16px] rounded-tr-[16px] bg-[var(--button-menu-black-bg)] px-6 py-4",
+        "flex max-h-[72px] min-h-[72px] w-full items-center justify-between bg-[var(--button-menu-black-bg)] px-6 py-4",
+        barShapeClass({ detached }),
         // Приём указателя возвращается панели: внешний узел его не
         // принимает (см. ниже).
         withSelectAll && "pointer-events-auto",
-        pinned && !withSelectAll && PINNED_CLASS,
+        pinned && !detached && !withSelectAll && PINNED_CLASS,
         className
       )}
       {...props}
@@ -247,7 +256,7 @@ function ButtonMenuBlack({
       data-slot="button-menu-black-block"
       className={cn(
         "pointer-events-none flex w-full flex-col items-center gap-8",
-        pinned && PINNED_CLASS
+        pinned && !detached && PINNED_CLASS
       )}
     >
       <div className="pointer-events-auto w-fit">

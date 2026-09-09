@@ -43,7 +43,7 @@ function SampleFields({ count = 4 }: { count?: number }) {
 
 function SampleTable() {
   return (
-    <table className="w-full border-collapse text-p2-regular">
+    <table className="w-full border-collapse text-p2-medium">
       <tbody>
         {ROWS.slice(0, 4).map(([label, value]) => (
           <tr key={label} className="border-t border-[#DEDEDE]">

@@ -104,7 +104,17 @@ function Radio({
           Desktop). */}
       {/* Кружок справа в мобильной форме — дизайн-чек от 07.09, замечания
           9 и 25; механика и обоснование те же, что у Checkbox. */}
-      <span className="order-first flex flex-1 flex-col pt-0.5 desktop:order-none desktop:flex-none desktop:pt-0">
+      {/* ⚠️ `min-w-0 flex-1` на ОБОИХ брейкпоинтах, а не `desktop:flex-none`.
+          Дизайн-чек от 08.09, замечание 27: «Чекбокс должен упираться в блок…
+          Сейчас вышел за границу блока. Должен встраиваться и тексты должны
+          переноситься. Правку применить на всех подобных кейсах». С
+          `flex-none` текстовый блок брал ширину содержимого, и длинная подпись
+          («Отказаться от получения последнего транша финансирования по
+          договору подряда») вылезала за правый край блока вместо переноса.
+          `min-w-0` обязателен рядом с `flex-1`: у флекс-элемента
+          автоматический минимум — min-content, и без него перенос всё равно
+          не случился бы. */}
+      <span className="order-first flex min-w-0 flex-1 flex-col pt-0.5 desktop:order-none desktop:pt-0">
         {label && (
           <span className="text-p2-medium text-[var(--radio-label-fg)] desktop:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
             {label}

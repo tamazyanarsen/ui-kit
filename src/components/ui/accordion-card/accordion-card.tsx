@@ -95,7 +95,7 @@ function AccordionCard({
         {children && (
           <AccordionPrimitive.Panel
             data-slot="accordion-card-panel"
-            className="h-(--accordion-panel-height) overflow-hidden text-p2-regular transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+            className="h-(--accordion-panel-height) overflow-hidden text-p2-medium transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
             {/* Header/content divider — confirmed against get_design_context
                 literal output for the Open=True variants (both Default and

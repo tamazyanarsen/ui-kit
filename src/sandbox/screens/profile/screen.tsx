@@ -133,7 +133,7 @@ function ProfileScreen() {
                 <h4 className="text-h4 text-[var(--grey-1514)]">
                   Единственная подпись
                 </h4>
-                <p className="text-p2-regular text-[var(--grey-284)]">
+                <p className="text-p2-medium text-[var(--grey-284)]">
                   Тип вашей подписи определяется договором с банком. Вы можете
                   управлять типами подписи других пользователей вашей
                   организации — для этого перейдите на вкладку «Настройки
@@ -150,7 +150,7 @@ function ProfileScreen() {
                 <h4 className="text-h4 text-[var(--grey-1514)]">
                   Простая электронная подпись (ПЭП)
                 </h4>
-                <p className="text-p2-regular text-[var(--grey-284)]">
+                <p className="text-p2-medium text-[var(--grey-284)]">
                   Этим способом можно подписывать только операции до 1 млн.
                   Подписание происходит при помощи кода из СМС
                 </p>
@@ -193,7 +193,7 @@ function ProfileScreen() {
           <SandboxBlock>
             <div className="flex flex-col gap-2">
               <SandboxSectionTitle>Права подписи документов</SandboxSectionTitle>
-              <p className="text-p2-regular text-[var(--grey-284)]">
+              <p className="text-p2-medium text-[var(--grey-284)]">
                 Допустимые типы подписей для подписания документов в личном
                 кабинете. Данные настройки действуют для всех пользователей
                 организации
@@ -209,7 +209,7 @@ function ProfileScreen() {
                   className="grid items-center gap-6"
                   style={{ gridTemplateColumns: "352fr 752fr" }}
                 >
-                  <span className="text-p1-regular text-[var(--grey-1514)]">
+                  <span className="text-p1-medium text-[var(--grey-1514)]">
                     {right.label}
                   </span>
                   <SandboxSelect

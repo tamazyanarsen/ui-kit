@@ -58,7 +58,7 @@ function CardBoxDemo() {
           <RowLabel>Table — слот во всю ширину, без внутренних отступов</RowLabel>
           <div className="bg-[#F8F8F8] p-4">
             <CardBox type="table" title="Блок с таблицей">
-              <table className="w-full border-collapse text-p2-regular">
+              <table className="w-full border-collapse text-p2-medium">
                 <tbody>
                   {ROWS.map(([label, value]) => (
                     <tr key={label} className="border-t border-[#DEDEDE]">
@@ -72,7 +72,7 @@ function CardBoxDemo() {
           </div>
         </div>
 
-        <p className="mt-6 text-p3-regular text-muted-foreground">
+        <p className="mt-6 text-p3-medium text-muted-foreground">
           Отступы блока: 32px на десктопе и 16px на мобайле (у типа{" "}
           <code>table</code> шапка всегда 16px). У типа <code>small</code>{" "}
           высота ограничена 792px — при переполнении контент уходит под шапку,

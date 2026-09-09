@@ -64,7 +64,8 @@ const meta = {
     columns: {
       control: "inline-radio",
       options: [2, 3, 4],
-      description: "Ширина 1920 — четыре колонки, 1280 — три",
+      description:
+        "Явное перекрытие: сам компонент выбирает 4 колонки с 1536px и 3 ниже (дизайн-чек от 08.09, замечание 3)",
     },
     showFavourites: {
       control: "boolean",

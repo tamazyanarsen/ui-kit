@@ -2,7 +2,6 @@ import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { CalendarDays } from "@/icons"
 
-import { cn } from "@/lib/utils"
 import { formatDateRu, MONTHS_RU_FULL, parseDateRu } from "@/lib/calendar"
 import { Calendar } from "@/components/ui/calendar"
 import type { CalendarMode } from "@/components/ui/calendar"
@@ -11,14 +10,19 @@ import type { InputSize } from "@/components/ui/input"
 
 const ICON_SIZE = { sm: "size-3.5", lg: "size-4" } as const
 
-// Single-month Calendar renders at a fixed ~284px. The field is a
-// shrink-to-fit trigger (see below), so without a floor it can end up
-// visibly narrower than the dropdown sitting under it — give single/month/
-// year that width back as a min, not a hard size, so a wider
-// containerClassName from the consumer still wins. Range's own dropdown is
-// two months wide (~570px); matching that on the field would make it look
-// like an oversized fixed-size input, so it's left at its natural width.
-const SINGLE_PANEL_MIN_WIDTH = "min-w-[280px]"
+// ⚠️ Минимальной ширины у поля БОЛЬШЕ НЕТ — дизайн-чек от 08.09, замечание
+// 18: «Снять минимальную ширину с инпутов/селектов».
+//
+// Здесь стоял `min-w-[280px]` под шириной одномесячного календаря: поле —
+// сжимающийся триггер, и без пола оно выходило уже выпадающего списка под
+// ним. Плата за это оказалась дороже: в двухколоночной строке блока (замер
+// на «Отчётах по проектам» — колонка 199px при поле 280) пара полей просто
+// вылезала за правый край блока, и никакой класс снаружи это не лечил —
+// минимум бьёт `w-full`.
+//
+// Так что поле теперь честно берёт ширину контейнера, а выпадающий список
+// остаётся при своих 280 (`calendar-desktop`): список позиционируется
+// отдельно и шире поля быть вправе.
 
 const DEFAULT_LABEL: Record<CalendarMode, string> = {
   single: "Дата",
@@ -205,7 +209,18 @@ function DatePicker({
     // (e.g. Tailwind's space-y-*) would then pick up those guards as extra
     // items and visibly grow when the popover opens. This div keeps them
     // contained so DatePicker always presents as exactly one child.
-    <div className="w-fit">
+    // ⚠️ `w-full min-w-0`, а НЕ `w-fit`. Дизайн-чек от 08.09, замечание 18
+    // («снять минимальную ширину с инпутов/селектов») и 26 («строка полей
+    // должна упираться в правый край блока»): `w-fit` брал у поля ширину
+    // содержимого, то есть собственный размер `<input>` (~250px), и в
+    // двухколоночной строке блока поле вылезало за свою колонку — замер на
+    // «Отчётах по проектам» давал колонку 199 при поле 250.
+    //
+    // `min-w-0` обязателен рядом с `w-full`: у элемента сетки и флекса
+    // автоматический минимум — это min-content, и он один способен
+    // раздвинуть колонку, сколько бы `w-full` ни просил. Сам `Input` внутри
+    // и так `w-full`, так что теперь оба ведут себя одинаково.
+    <div className="w-full min-w-0">
       <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
         {/* The whole field is the trigger (not just the icon) — Base UI then
             recognizes clicks/focus on it as "inside", so they don't also
@@ -213,7 +228,7 @@ function DatePicker({
         <PopoverPrimitive.Trigger
           disabled={disabled}
           nativeButton={false}
-          render={<div ref={anchorRef} className="w-fit" />}
+          render={<div ref={anchorRef} className="w-full min-w-0" />}
         >
           {mode === "single" ? (
             <Input
@@ -227,7 +242,7 @@ function DatePicker({
               error={error}
               clearable={false}
               trailingIcon={icon}
-              containerClassName={cn(SINGLE_PANEL_MIN_WIDTH, containerClassName)}
+              containerClassName={containerClassName}
             />
           ) : (
             <Input
@@ -241,10 +256,7 @@ function DatePicker({
               error={error}
               clearable={false}
               trailingIcon={icon}
-              containerClassName={cn(
-                mode !== "range" && SINGLE_PANEL_MIN_WIDTH,
-                containerClassName
-              )}
+              containerClassName={containerClassName}
             />
           )}
         </PopoverPrimitive.Trigger>

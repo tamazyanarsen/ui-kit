@@ -54,10 +54,16 @@ function MenuOverlay({
       element.style.height = `${available}px`
 
       const footerBox = footerRef.current
-      // Марджины кнопки — 32 сверху (`pt-8`) и столько же снизу, чтобы она
-      // не липла к нижней кромке экрана.
+      // Марджины кнопки — 32 сверху и столько же снизу, чтобы она не липла
+      // к нижней кромке экрана.
+      //
+      // ⚠️ Прибавляется ТОЛЬКО нижние 32. Верхние уже входят в измеренную
+      // высоту: у коробки кнопки стоит `pt-8`, и `getBoundingClientRect()`
+      // возвращает 64 при кнопке в 32. Пока прибавлялись оба поля, снизу
+      // оставалось 64 вместо 32 — дизайн-чек от 08.09, замечание 6
+      // («Некорректный нижний паддинг после кнопки настройки избранного»).
       const reserved = footerBox
-        ? footerBox.getBoundingClientRect().height + 64
+        ? footerBox.getBoundingClientRect().height + 32
         : 0
       element.style.setProperty(
         "--menu-overlay-panel",

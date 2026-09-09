@@ -102,9 +102,21 @@ function SandboxPage({
         </div>
       )}
 
-      {/* Canvas → Grid. Хвост страницы 40 снизу, поле сетки — сверху 40. */}
+      {/* Canvas → Grid. Поле сетки сверху 40; хвост страницы снизу — только
+          когда полосы действий НЕТ.
+
+          ⚠️ Здесь и была причина замечания 9 дизайн-чека от 08.09 («отлипает
+          от края Button Menu»). Полоса закреплена через `position: sticky`,
+          то есть паркуется у низа СВОЕГО контейнера, а у контейнера снизу
+          стоял `py-10` — сорок пикселей, на которые полоса честно и
+          отлипала. В конструкторе Figma (нода 70371:36100) хвоста под
+          полосой нет вовсе: `Grid` 2095 = блоки 2007 + полоса 88, и низ
+          сетки совпадает с низом страницы. */}
       <div data-slot="sandbox-canvas" className="flex w-full flex-1">
-        <Grid data-slot="sandbox-grid" className="flex flex-col gap-8 py-10">
+        <Grid
+          data-slot="sandbox-grid"
+          className={cn("flex flex-col gap-8 pt-10", !bottomBar && "pb-10")}
+        >
           <div className="flex flex-col gap-6">
             {title}
             {additional}

@@ -142,7 +142,7 @@ function ButtonMenuDemo() {
             </div>
           </div>
         </div>
-        <p className="mt-4 text-p3-regular text-muted-foreground">
+        <p className="mt-4 text-p3-medium text-muted-foreground">
           Панель на всю ширину контейнера, кнопки прижаты слева (по мокапам
           использования в Figma) — прижимается к нижнему краю экрана/области
           контента. Primary-кнопка (если есть) всегда идёт первой/слева;

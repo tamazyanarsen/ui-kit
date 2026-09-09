@@ -17,6 +17,15 @@ import { SandboxBlock, SandboxSection } from "../../shell"
 //  3. Ниже 1536 блок содержания пропадает ЦЕЛИКОМ, содержимое занимает всю
 //     область — на узком окне колонка съедала бы больше, чем помогает.
 //
+// ⚠️ Правило 3 решается НЕ здесь. Раньше блок гасил себя сам классом
+// `hidden 2xl:block`, но колонка грида под ним оставалась: пролёт задан
+// инлайновым стилем и медиазапросом не отменяется. Получалась дыра в четыре
+// колонки слева, а содержимое справа так и не расширялось — дизайн-чек от
+// 08.09, замечание 20 («Блок содержания пропадает на экранах средних
+// размеров… контент справа на экранах менее 1536 должен занять всю ширину»).
+// Поэтому ряд целиком собирает экран (см. `screen.tsx`), а блок теперь просто
+// не умеет прятаться.
+//
 // Переход по оглавлению подводит карточку целиком на линию оглавления
 // (правило C7 документа): `scroll-margin-top` у секций, а не «прокрутить на
 // высоту шапки» руками.
@@ -68,7 +77,7 @@ function ReportContents({ entries }: ReportContentsProps) {
   }, [entries])
 
   return (
-    <div className="hidden 2xl:block" style={{ position: "sticky", top: STICKY_TOP }}>
+    <div style={{ position: "sticky", top: STICKY_TOP }}>
       <SandboxBlock>
         <SandboxSection title="Содержание раздела" gap={8}>
           <nav className="flex flex-col">
@@ -78,7 +87,7 @@ function ReportContents({ entries }: ReportContentsProps) {
                 href={`#${entry.id}`}
                 aria-current={entry.id === activeId ? "true" : undefined}
                 className={cn(
-                  "rounded-[8px] px-4 py-3 text-p2-regular text-[var(--grey-1514)] outline-none focus-visible:focus-ring",
+                  "rounded-[8px] px-4 py-3 text-p2-medium text-[var(--grey-1514)] outline-none focus-visible:focus-ring",
                   entry.id === activeId
                     ? "bg-[var(--grey-109)]"
                     : "hover:bg-[var(--grey-106)]"

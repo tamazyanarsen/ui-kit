@@ -104,7 +104,7 @@ function OtpInput({
       {error && (
         <p
           id={captionId}
-          className="mt-4 text-center text-p3-regular text-[var(--otp-error-fg)] desktop:mt-2"
+          className="mt-4 text-center text-p3-medium text-[var(--otp-error-fg)] desktop:mt-2"
         >
           {error}
         </p>

@@ -39,7 +39,7 @@ function IconTile({ name }: { name: string }) {
         <Icon name={name} size={16} />
         <Icon name={name} size={24} />
       </span>
-      <span className="text-p4-regular break-all text-[var(--accordion-card-subtitle-fg)]">
+      <span className="text-p4-medium break-all text-[var(--accordion-card-subtitle-fg)]">
         {copied ? "Скопировано" : name}
       </span>
     </button>
@@ -57,7 +57,7 @@ function IconsPage() {
     <div className="flex flex-col gap-6 bg-[var(--modal-bg)] p-8">
       <div>
         <h1 className="text-h3 text-[var(--btn-primary-fg)]">Иконки</h1>
-        <p className="mt-1 text-p2-regular text-[var(--accordion-card-subtitle-fg)]">
+        <p className="mt-1 text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
           Все {ICON_NAMES.length} иконок набора, каждая в двух размерах — 16 и
           24. Клик по плитке копирует вызов компонента. Цвет наследуется от
           text-color (currentColor) и задаётся через className. Список
@@ -72,7 +72,7 @@ function IconsPage() {
         placeholder="Поиск по имени — например «arrow» или «card»"
         className="h-12 w-full max-w-96 rounded-[16px] border border-[var(--input-border)] bg-[var(--input-bg)] px-4 text-p1-medium text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] focus:border-[var(--input-border-hover)]"
       />
-      <p className="-mt-3 text-p3-regular text-[var(--accordion-card-subtitle-fg)]">
+      <p className="-mt-3 text-p3-medium text-[var(--accordion-card-subtitle-fg)]">
         Показано: {shown.length}
       </p>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8">

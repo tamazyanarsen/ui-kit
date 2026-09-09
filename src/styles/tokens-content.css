@@ -140,7 +140,7 @@
      literal "icon / check" asset in the item's own Right Element component
      uses stroke="#14B1D1", the kit's usual accent-blue (same value as
      --header-check-fg / --nav-sidebar hover), not the pale surface tone. */
-  --item-check-fg: var(--blue-254);
+  --item-check-fg: var(--check-mark-fg);
   --item-right-text-fg: var(--mint-230);
   /* Round-2 audit: bg was #F4F4F4, fg was #999999 — both read directly off
      the literal thumbnail markup on the master "ELK / item" component:

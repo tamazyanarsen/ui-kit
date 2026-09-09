@@ -79,22 +79,22 @@ function StagesTab() {
       <ReportSection id="report-advances">
         <SandboxBlock>
           <SandboxSection title="Авансирование" gap={16}>
-            <p className="text-p3-regular text-[var(--grey-284)]">
+            <p className="text-p3-medium text-[var(--grey-284)]">
               На текущую дату
             </p>
             <table className="w-full text-left">
               <thead>
-                <tr className="text-p3-regular text-[var(--grey-284)]">
-                  <th className="w-[240px] py-2 font-normal">Тип контрагента</th>
-                  <th className="py-2 font-normal">Всего  авансы</th>
-                  <th className="py-2 font-normal">Отработанные</th>
-                  <th className="py-2 font-normal">Неотработанные</th>
+                <tr className="text-p3-medium text-[var(--grey-284)]">
+                  <th className="w-[240px] py-2 font-medium">Тип контрагента</th>
+                  <th className="py-2 font-medium">Всего  авансы</th>
+                  <th className="py-2 font-medium">Отработанные</th>
+                  <th className="py-2 font-medium">Неотработанные</th>
                 </tr>
               </thead>
               <tbody>
                 {ADVANCES.map((row) => (
                   <tr key={row.id} className="border-t border-[var(--divider)]">
-                    <td className="py-4 text-p2-regular text-[var(--grey-1514)]">
+                    <td className="py-4 text-p2-medium text-[var(--grey-1514)]">
                       {row.kind}
                     </td>
                     <AdvanceCell value={row.total} max={advanceMax} />
@@ -103,16 +103,16 @@ function StagesTab() {
                   </tr>
                 ))}
                 <tr className="border-t border-[var(--divider)]">
-                  <td className="py-4 text-p2-regular text-[var(--grey-1514)]">
+                  <td className="py-4 text-p2-medium text-[var(--grey-1514)]">
                     Всего
                   </td>
-                  <td className="py-4 text-p2-regular text-[var(--grey-1514)]">
+                  <td className="py-4 text-p2-medium text-[var(--grey-1514)]">
                     {millions(totals.total)}
                   </td>
-                  <td className="py-4 text-p2-regular text-[var(--grey-1514)]">
+                  <td className="py-4 text-p2-medium text-[var(--grey-1514)]">
                     {millions(totals.worked)}
                   </td>
-                  <td className="py-4 text-p2-regular text-[var(--grey-1514)]">
+                  <td className="py-4 text-p2-medium text-[var(--grey-1514)]">
                     {millions(totals.unworked)}
                   </td>
                 </tr>
@@ -125,7 +125,7 @@ function StagesTab() {
       <ReportSection id="report-payments">
         <SandboxBlock>
           <SandboxSection title="Платежи топ-10 контрагентам, млн ₽" gap={16}>
-            <p className="text-p3-regular text-[var(--grey-284)]">
+            <p className="text-p3-medium text-[var(--grey-284)]">
               На текущую дату
             </p>
             <BarChart
@@ -152,7 +152,7 @@ function StagesTab() {
       <ReportSection id="report-reserves">
         <SandboxBlock>
           <SandboxSection title="Резервы" gap={16}>
-            <p className="text-p3-regular text-[var(--grey-284)]">
+            <p className="text-p3-medium text-[var(--grey-284)]">
               На текущую дату
             </p>
             <ItemInformationFieldGroup>
@@ -224,7 +224,7 @@ function AdvanceCell({ value, max }: { value: number; max: number }) {
         <div className="h-4 w-full">
           {value > 0 && (
             <div
-              className="flex h-full items-center justify-center rounded-[2px] px-2 text-p3-regular text-[var(--grey-1514)]"
+              className="flex h-full items-center justify-center rounded-[2px] px-2 text-p3-medium text-[var(--grey-1514)]"
               style={{
                 width: `${Math.max((value / max) * 100, 12)}%`,
                 backgroundColor: THEME_COLORS.blue,
@@ -235,7 +235,7 @@ function AdvanceCell({ value, max }: { value: number; max: number }) {
           )}
         </div>
         {value === 0 && (
-          <span className="text-p2-regular text-[var(--grey-1514)]">
+          <span className="text-p2-medium text-[var(--grey-1514)]">
             {millions(value)}
           </span>
         )}

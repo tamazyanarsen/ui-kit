@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { StatesMatrix, viewportArgType } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
+import { ICON_NAMES } from "@/components/ui/icon"
+
 import { Informer, type InformerProps } from "./informer"
 import type { InformerIcon } from "./variants"
 
@@ -31,6 +33,15 @@ const meta = {
   // leaving one unset falls back to a generic "Set object" JSON editor.
   argTypes: {
     icon: { control: "select", options: ICONS },
+    // Дизайн-чек от 08.09, замечание 12: произвольная иконка кита. Контрол
+    // с пустым значением в начале списка — иначе штатные пять икон стали бы
+    // недостижимы, а по умолчанию информер должен показывать именно их.
+    customIcon: {
+      name: "Произвольная иконка",
+      control: "select",
+      options: ["", ...ICON_NAMES],
+    },
+    customIconColor: { name: "Цвет произвольной иконки", control: "color" },
     solid: { control: "inline-radio", options: ["white", "grey"] },
     title: { control: "text" },
     date: { control: "text" },
@@ -48,6 +59,7 @@ const meta = {
   },
   args: {
     icon: "attention-red",
+    customIcon: "",
     solid: "white",
     title: "Требуется подпись",
     date: "24.12.2022",
@@ -71,11 +83,16 @@ export const Playground: Story = {
     showAdditionalButton,
     additionalButtonLabel,
     viewport,
+    customIcon,
     ...args
   }) => (
     <ViewportScope viewport={viewport}>
     <Informer
       {...args}
+      // Пустая строка контрола означает «штатная иконка», а не «иконка без
+      // имени»: `undefined` — единственное значение, при котором компонент
+      // берёт `icon`.
+      customIcon={customIcon || undefined}
       mainButtonLabel={showMainButton ? mainButtonLabel : undefined}
       additionalButtonLabel={showAdditionalButton ? additionalButtonLabel : undefined}
     />

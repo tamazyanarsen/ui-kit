@@ -95,6 +95,63 @@
   html {
     @apply font-sans;
     }
+
+  /* Курсор-рука у всего интерактивного — дизайн-чек от 08.09, замечание 10:
+     «Должен превращаться для всех интерактивных элементов, правка корневая на
+     весь кит».
+
+     Почему правило понадобилось вообще: preflight Tailwind v4 намеренно
+     вернул кнопкам браузерный `cursor: default` (в v3 он ставил `pointer`).
+     То есть КАЖДАЯ кнопка кита оказалась без руки, и лечить это по одному
+     компоненту — семьдесят с лишним точек правки и гарантированный пропуск в
+     следующем новом.
+
+     Якорь — роли и типы, а не классы: у кита кнопка бывает и `<button>`, и
+     `render`-подстановкой Base UI на `<div role="button">`, и ссылкой. Роль
+     же есть у всех, потому что без неё элемент недоступен с клавиатуры.
+
+     `label` берётся только с флажком или радио внутри: у подписи к текстовому
+     полю рука неуместна — клик туда ставит каретку, а не переключает.
+
+     ⚠️ Внутри `@layer base` СОЗНАТЕЛЬНО, вопреки привычке кита объявлять
+     сквозные правила вне слоёв. Здесь нужно ровно обратное: утилита
+     (`cursor-not-allowed` у выключенного, `cursor-col-resize` у ручки
+     колонки, `cursor-grab` у ручки перетаскивания) обязана бить это правило,
+     а из слоя она бьёт его всегда. Порядок импорта гарантирует победу над
+     preflight: `base.css` подключается после `tailwindcss`, специфичность у
+     обоих правил одинаковая, выигрывает последнее. */
+  a[href],
+  summary,
+  button:not(:disabled),
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="range"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  input[type="button"]:not(:disabled),
+  label:has(> input[type="checkbox"], > input[type="radio"]),
+  [role="button"],
+  [role="link"],
+  [role="tab"],
+  [role="option"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="switch"] {
+    cursor: pointer;
+  }
+
+  /* Выключенное руку не показывает — даже если разметка осталась той же.
+     Отдельным правилом после основного: у ролей нет `:disabled`, состояние
+     они выражают атрибутом. */
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: default;
+  }
 }
 
 /* Themed scrollbar (ui/scrollbar) — applied by the `Scrollbar` component.
@@ -217,6 +274,15 @@
    за белым прямоугольником списка. Прозрачная рамка сдвигает край коробки, и
    полоса уезжает внутрь вместе с ним, показывая сквозь себя фон поверхности.
 
+   ⚠️ Отступ теперь двусторонний: не только поперёк полосы, но и по ЕЁ ОСИ
+   (`border-block` у вертикальной, `border-inline` у горизонтальной).
+   Дизайн-чек от 08.09, замечание 8: «Прокрутка не должна прятаться за
+   скруглением. Правка корневая, проверить везде». Поперечного отступа мало:
+   дорожка тянется во всю высоту окна прокрутки, то есть упирается ровно в
+   скруглённый угол поверхности и срезается им — на панели меню (радиус 32)
+   у полосы пропадал весь низ. Рамка по оси укорачивает саму дорожку, и она
+   заканчивается ДО закругления.
+
    Приём нельзя заменить рамкой у самого бегунка
    (`::-webkit-scrollbar-thumb`): дорожка шириной 4px, и рамка в 8 съедает её
    целиком.
@@ -228,15 +294,29 @@
    внутри слоя рамка оставалась 1px и отступ не появлялся. */
 .themed-scrollbar[data-inset="dropdown"][data-orientation="vertical"] {
   border-inline-end: 8px solid transparent;
+  border-block: 8px solid transparent;
 }
 .themed-scrollbar[data-inset="rounded"][data-orientation="vertical"] {
   border-inline-end: 16px solid transparent;
+  border-block: 16px solid transparent;
+}
+/* Панель меню: скругление снизу 32, а полоса по макету отступает справа на
+   8 (нода 70303:53432). Отсюда разные величины по осям. */
+.themed-scrollbar[data-inset="panel"][data-orientation="vertical"] {
+  border-inline-end: 8px solid transparent;
+  border-block: 32px solid transparent;
 }
 .themed-scrollbar[data-inset="dropdown"][data-orientation="horizontal"] {
   border-block-end: 8px solid transparent;
+  border-inline: 8px solid transparent;
 }
 .themed-scrollbar[data-inset="rounded"][data-orientation="horizontal"] {
   border-block-end: 16px solid transparent;
+  border-inline: 16px solid transparent;
+}
+.themed-scrollbar[data-inset="panel"][data-orientation="horizontal"] {
+  border-block-end: 8px solid transparent;
+  border-inline: 32px solid transparent;
 }
 
 /* Sticky table header — "Шапка (закрепляется всегда при достижении верха

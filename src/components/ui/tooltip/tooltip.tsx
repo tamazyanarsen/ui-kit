@@ -103,7 +103,7 @@ function Tooltip({
               className={cn(
                 // Раскладка та же, что у Hint: текстовая колонка и крестик —
                 // соседи в одной строке (gap-2), а не «иконка над текстом».
-                "relative flex items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-regular text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+                "relative flex items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-medium text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
                 TOOLTIP_WIDTH[width],
                 className
               )}

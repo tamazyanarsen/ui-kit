@@ -121,7 +121,7 @@ function ConfirmModal({
             />
           )}
           {longBody ? (
-            <div className="flex flex-col gap-4 text-p2-regular text-[#6D6D6D]">
+            <div className="flex flex-col gap-4 text-p2-medium text-[#6D6D6D]">
               {Array.from({ length: 20 }, (_, i) => (
                 <p key={i}>
                   Пункт соглашения {i + 1}. Раздел, поясняющий условия
@@ -130,7 +130,7 @@ function ConfirmModal({
               ))}
             </div>
           ) : (
-            <p className="text-p2-regular text-[#6D6D6D]">
+            <p className="text-p2-medium text-[#6D6D6D]">
               Виртуальная карта •• 4482 привязана к 2 подпискам. После удаления
               платежи по ним перестанут проходить.
             </p>

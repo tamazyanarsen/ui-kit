@@ -12,7 +12,7 @@ import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 import { SKIN_LABELS, type BankCardSkin } from "./variants"
 
 const SKINS = Object.keys(SKIN_LABELS) as BankCardSkin[]
-const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "visa", "unionpay"]
+const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const CONTENT = { table: { category: "Контент" } }
 

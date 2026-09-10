@@ -29,7 +29,13 @@ function filterTablePillClass({
   disabled = false,
 }: { selected?: boolean; disabled?: boolean } = {}) {
   return cn(
-    "inline-flex max-w-64 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p2-medium whitespace-nowrap transition-colors",
+    // ⚠️ `min-w-20` — не догадка, а «Правила отступов» из доки компонента
+    // (нода 15693:35370, файл-копия): «минимальная ширина — 80 px,
+    // максимальная ширина — 256 px. Если название не умещается в
+    // максимальную ширину, то оно скрывается в многоточие». Дизайн-чек
+    // «Storybook 3», замечание 8: без нижней границы короткая подпись («Тип»)
+    // давала пилюлю уже 80, и ряд фильтров рассыпался по ширинам.
+    "inline-flex max-w-64 min-w-20 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p2-medium whitespace-nowrap transition-colors",
     disabled
       ? // «Disabled гасит ВСЁ» — сквозное правило проекта. В ките у
         // выключенного чипа гаснет подпись (#C8C8CB), а шеврон остаётся

@@ -48,7 +48,7 @@ const TYPE_LABEL: Partial<Record<ThumbnailType, string>> = {
 }
 
 type PlaygroundArgs = ThumbnailProps & { viewport?: Viewport }
-const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
+const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const meta = {
   title: "Компоненты/Thumbnail",

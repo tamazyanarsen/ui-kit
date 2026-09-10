@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import { useState } from "react"
+
 import { StorySection, StoryShowcase, optionsArgType } from "@/stories/matrix"
 import { cn } from "@/lib/utils"
-import { Divider } from "@/components/ui/divider"
 import { Scrollbar } from "@/components/ui/scrollbar"
-import { Button } from "@/components/ui/button"
 
 import {
   Dropdown,
@@ -12,6 +12,8 @@ import {
   DropdownItem,
   type DropdownSize,
 } from "./dropdown"
+import { DropdownFooter, DropdownFooterButton } from "./dropdown-footer"
+import { DropdownHelp, DropdownSearch } from "./dropdown-search"
 
 /**
  * Dropdown — поверхность выпадающего списка, которую Figma документирует
@@ -56,6 +58,9 @@ interface PlaygroundArgs {
   size: DropdownSize
   value: number
   add: AddValue
+  showSearch: boolean
+  showTextHelp: boolean
+  showList: boolean
   showDescription: boolean
   maxHeight: number
 }
@@ -66,28 +71,19 @@ const SIZE_LABELS: Record<DropdownSize, string> = {
   "mobile-bottom-sheet": "Mobile Bottom Sheet",
 }
 
-/* Панель действий — тот же `ELK / button` в footer'е, что у Combobox:
-   «Сбросить» слева, основное действие справа, разделённые вертикальным
-   `ELK / divider`, вплотную к нижним углам поверхности. */
+/* Панель действий — свойство `Add` компонент-сета. Кнопки плоские и во всю
+   ширину панели, а не пилюли `Button`: замер варианта Desktop даёт ячейку 56
+   с полями 32/16, подписью P1 Medium и разделителями Grey 134 (дизайн-чек
+   «Storybook 3», замечание 7). */
 function Footer({ add }: { add: AddValue }) {
   if (add === "None") return null
   return (
-    <>
-      <Divider />
-      <div className="flex items-stretch">
-        {add === "Two Buttons" && (
-          <>
-            <Button variant="secondary-white" size="lg" className="min-w-0 flex-1 rounded-none">
-              Сбросить
-            </Button>
-            <Divider orientation="vertical" />
-          </>
-        )}
-        <Button variant="secondary-white" size="lg" className="min-w-0 flex-1 rounded-none">
-          Выбрать
-        </Button>
-      </div>
-    </>
+    <DropdownFooter>
+      {add === "Two Buttons" && (
+        <DropdownFooterButton>Сбросить</DropdownFooterButton>
+      )}
+      <DropdownFooterButton>Выбрать</DropdownFooterButton>
+    </DropdownFooter>
   )
 }
 
@@ -95,9 +91,13 @@ function DropdownDemo({
   size = "desktop",
   value = 5,
   add = "None",
+  showSearch = false,
+  showTextHelp = false,
+  showList = true,
   showDescription = true,
   maxHeight = 0,
 }: Partial<PlaygroundArgs>) {
+  const [query, setQuery] = useState("")
   const items = ITEMS.slice(0, value)
   const list = items.map((item) => (
     <DropdownItem
@@ -111,14 +111,23 @@ function DropdownDemo({
   const surface = (
     <Dropdown size={size} className={cn("overflow-hidden", !mobile && "w-96")}>
       {mobile && <DropdownHeader title="Выберите раздел" />}
-      {maxHeight > 0 ? (
-        // У длинного списка появляется собственный ELK / scrollbar.
-        <Scrollbar inset="dropdown" style={{ maxHeight }}>
-          {list}
-        </Scrollbar>
-      ) : (
-        <div className={cn(mobile && "min-h-0 flex-1 overflow-y-auto")}>{list}</div>
+      {showSearch && (
+        <DropdownSearch
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onClear={() => setQuery("")}
+        />
       )}
+      {showTextHelp && <DropdownHelp>Начните вводить параметры поиска</DropdownHelp>}
+      {showList &&
+        (maxHeight > 0 ? (
+          // У длинного списка появляется собственный ELK / scrollbar.
+          <Scrollbar inset="dropdown" style={{ maxHeight }}>
+            {list}
+          </Scrollbar>
+        ) : (
+          <div className={cn(mobile && "min-h-0 flex-1 overflow-y-auto")}>{list}</div>
+        ))}
       <Footer add={add} />
     </Dropdown>
   )
@@ -161,6 +170,22 @@ const meta = {
       options: ADD,
       description: "Панель действий снизу: нет, одна кнопка или две",
     },
+    showSearch: {
+      control: "boolean",
+      name: "Show Search",
+      description: "Строка поиска сверху: 56, глиф 24, нижний разделитель",
+    },
+    showTextHelp: {
+      control: "boolean",
+      name: "Show Text Help",
+      description:
+        "Подсказка под поиском — по спецификации поля поиска стоит на месте списка, пока не введены три символа",
+    },
+    showList: {
+      control: "boolean",
+      name: "Show List",
+      description: "Сам список строк",
+    },
     showDescription: {
       control: "boolean",
       name: "Описание в строке",
@@ -174,7 +199,10 @@ const meta = {
   args: {
     size: "desktop",
     value: 5,
-    add: "None",
+    add: "Two Buttons",
+    showSearch: true,
+    showTextHelp: false,
+    showList: true,
     showDescription: true,
     maxHeight: 0,
   },
@@ -204,6 +232,16 @@ export const Examples: Story = {
         <div className="flex items-start gap-6">
           <DropdownDemo value={3} add="One Button" showDescription={false} />
           <DropdownDemo value={3} add="Two Buttons" showDescription={false} />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Show Search + Show Text Help"
+        description="Строка поиска — часть самого списка: 56 в высоту, глиф 24, нижний разделитель Grey 134 и никакой собственной коробки. Подсказка занимает место списка, пока в поиск не ввели три символа."
+      >
+        <div className="flex items-start gap-6">
+          <DropdownDemo value={4} showSearch showDescription={false} />
+          <DropdownDemo value={0} showSearch showTextHelp showList={false} />
         </div>
       </StorySection>
 

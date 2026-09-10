@@ -5,6 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 import { TableCollapseToggle, collapseLabel } from "./collapse-toggle"
 import {
+  EDGE_PADDING_CLASS,
+  edgeColumnWidth,
   hasColumnDivider,
   headCellPaddingXClass,
   headCellPaddingYClass,
@@ -85,6 +87,11 @@ interface TableHeadCellProps
   /** "Минимальная ширина столбцов — 48px." */
   minWidth?: number
   pin?: TablePin
+  /**
+   * Первая ячейка шапки — забирает поле строки (см. `ROW_EDGE_PADDING`):
+   * левое поле 16 вместо 8, объявленная ширина колонки на 8 больше.
+   */
+  edge?: boolean
 }
 
 function TableHeadCell({
@@ -108,6 +115,7 @@ function TableHeadCell({
   onWidthChange,
   minWidth,
   pin,
+  edge = false,
   style,
   ...props
 }: TableHeadCellProps) {
@@ -149,10 +157,16 @@ function TableHeadCell({
       data-pin={pin}
       scope={isSpacer ? undefined : "col"}
       aria-hidden={isSpacer || undefined}
-      style={{ ...style, ...pinned.style, width: resolvedWidth }}
+      style={{
+        ...style,
+        ...pinned.style,
+        width: edgeColumnWidth(resolvedWidth, edge),
+      }}
       className={cn(
         headCellPaddingYClass(type),
         headCellPaddingXClass(type, pin, divider),
+        // См. `ROW_EDGE_PADDING`: поле строки живёт в первой ячейке.
+        edge && EDGE_PADDING_CLASS,
         // Высота ячейки шапки в ките ФИКСИРОВАНА 48 — содержимое обрезается,
         // а не растягивает шапку (подпись усекается многоточием, см.
         // `TableHeadCellTitle`). Без явной высоты длинное название в одном

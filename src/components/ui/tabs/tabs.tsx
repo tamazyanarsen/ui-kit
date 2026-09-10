@@ -3,12 +3,14 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
+
+import { TabButton } from "./tab-button"
+import type { TabItem, TabsSize } from "./types"
 
 // Tabs — "Табы": underline-style tab bar. Value is a literal item count
 // (2–12) — that's a content constraint, not something this component
@@ -28,23 +30,17 @@ import { useActiveIndicator } from "@/lib/use-active-indicator"
 // "Text / Text" popup — but the trigger itself is custom-styled here since
 // Tabs' own anatomy calls for a plain inline ellipsis, not ButtonMenu's
 // bordered secondary-grey button.
-// Дизайн-чек 3/3 №11: «Таба с иконкой быть не может, только с бейджем или
-// статусом, отдельно одной иконкой без текста есть только таб more». Поэтому
-// у вкладки нет слота `icon` — оформление задаётся только `badge`/`status`, а
-// единственная иконка в компоненте — многоточие у таба «Ещё» ниже.
-interface TabItem {
-  value: string
-  label: React.ReactNode
-  badge?: number
-  status?: boolean
-  disabled?: boolean
-}
-
 interface TabsProps {
   items: TabItem[]
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
+  /**
+   * `Size` компонент-сета — см. `TabsSize`. Умолчание `auto`: размер следует
+   * за вьюпортом. `medium` нужен там, где лента разделов «мобильного»
+   * размера стоит на десктопе, — внутри `Table Top`.
+   */
+  size?: TabsSize
   /**
    * `Show More` компонент-сета — показывать таб «…».
    *
@@ -64,79 +60,21 @@ interface TabsProps {
 const GAP = { desktop: 32, mobile: 24 }
 const ELLIPSIS_RESERVED = { desktop: 44, mobile: 32 }
 
-function TabButton({
-  item,
-  active,
-  onClick,
-  innerRef,
-  /**
-   * Активное подчёркивание рисует общий бегунок (см. `Tabs` ниже), а не сама
-   * вкладка: иначе двигать было бы нечего — линия просто перекрашивалась бы у
-   * двух разных узлов. Измерительной копии бегунок не нужен, поэтому там флаг
-   * остаётся выключенным и линия рисуется по-старому.
-   */
-  sharedUnderline = false,
-}: {
-  item: TabItem
-  active: boolean
-  onClick?: () => void
-  innerRef?: (el: HTMLButtonElement | null) => void
-  sharedUnderline?: boolean
-}) {
-  return (
-    <button
-      ref={innerRef}
-      type="button"
-      disabled={item.disabled}
-      onClick={onClick}
-      data-slot="tabs-item"
-      data-value={item.value}
-      data-active={active || undefined}
-      className="group flex shrink-0 cursor-pointer flex-col items-center gap-4 outline-none focus-visible:focus-ring disabled:cursor-not-allowed"
-    >
-      <span
-        className={cn(
-          // Weight lives in TEXT_SIZE's text-pN-medium below, not here.
-          "flex items-center whitespace-nowrap transition-colors",
-          item.badge !== undefined ? "gap-2" : "gap-1",
-          "text-[var(--tabs-fg)] group-hover:text-[var(--tabs-fg)]",
-          "group-data-active:text-[var(--tabs-fg-active)]",
-          "group-disabled:text-[var(--tabs-fg-disabled)]",
-          "text-p2-medium desktop:text-p1-medium"
-        )}
-      >
-        {item.label}
-        {item.badge !== undefined && (
-          <Badge type="counter" value={item.badge} color="black" disabled={!active} />
-        )}
-        {item.status && <Badge type="point" color="red" disabled={item.disabled} />}
-      </span>
-      <span
-        aria-hidden="true"
-        className={cn(
-          "h-1 w-full shrink-0 rounded-t-[4px] transition-colors",
-          active && !sharedUnderline
-            ? "bg-[var(--tabs-underline-active)]"
-            : "bg-transparent group-hover:bg-[var(--tabs-underline-hover)] group-disabled:bg-transparent",
-          // Под активной вкладкой серого ховера нет — там уже стоит бегунок,
-          // и подмешивать под него вторую линию незачем.
-          active && sharedUnderline && "group-hover:bg-transparent"
-        )}
-      />
-    </button>
-  )
-}
-
 function Tabs({
   items,
   value,
   defaultValue,
   onValueChange,
+  size = "auto",
   showMore = true,
   className,
 }: TabsProps) {
   const isDesktop = useIsDesktop()
-  const sizeKey = isDesktop ? "desktop" : "mobile"
+  // `medium` держит «мобильные» числа и на десктопе, поэтому ключ размера
+  // считается ДО вьюпорта, а не после: иначе десктопная ветка перебивала бы
+  // закреплённый размер и в замере переполнения, и в CSS.
+  const medium = size === "medium"
+  const sizeKey = isDesktop && !medium ? "desktop" : "mobile"
   const [internalValue, setInternalValue] = React.useState(
     defaultValue ?? items[0]?.value
   )
@@ -191,13 +129,19 @@ function Tabs({
         // ей нужна ширина для замера переполнения) и переносится на
         // внутренний ряд, который по ширине равен ряду вкладок.
         "relative flex items-center shadow-[inset_0_-1px_0_0_var(--tabs-border)] desktop:shadow-none",
+        // У `medium` десктопной ветки нет: разделитель всегда на внутреннем
+        // ряду, иначе он тянулся бы во всю ширину блока.
+        medium && "shadow-none",
         className
       )}
     >
       <div
         ref={indicator.rowRef}
         data-slot="tabs-row"
-        className="relative flex items-center desktop:shadow-[inset_0_-1px_0_0_var(--tabs-border)]"
+        className={cn(
+          "relative flex items-center desktop:shadow-[inset_0_-1px_0_0_var(--tabs-border)]",
+          medium && "shadow-[inset_0_-1px_0_0_var(--tabs-border)]"
+        )}
         style={{ gap: GAP[sizeKey] }}
       >
         {visibleItems.map((item) => (
@@ -205,6 +149,7 @@ function Tabs({
             key={item.value}
             item={item}
             active={item.value === activeValue}
+            medium={medium}
             sharedUnderline
             onClick={() => !item.disabled && setValue(item.value)}
           />
@@ -241,14 +186,20 @@ function Tabs({
                 // Figma pads it 2px and widens the gap to 18px to keep the
                 // trigger the full 40px — otherwise its underline floats
                 // above the bar's bottom border.
-                className="group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none focus-visible:focus-ring desktop:gap-4 desktop:pt-0"
+                className={cn(
+                  "group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none focus-visible:focus-ring",
+                  // Варианты `desktop:` при закреплённом размере не
+                  // подмешиваются вовсе: медиазапрос перебил бы флаг, а не
+                  // наоборот — `twMerge` разные префиксы не схлопывает.
+                  !medium && "desktop:gap-4 desktop:pt-0"
+                )}
               />
             }
           >
             <Ellipsis
-              size={isDesktop ? 24 : 16}
+              size={sizeKey === "desktop" ? 24 : 16}
               aria-hidden="true"
-              className="size-4 desktop:size-6"
+              className={cn("size-4", !medium && "desktop:size-6")}
             />
             <span
               aria-hidden="true"
@@ -295,6 +246,7 @@ function Tabs({
             key={item.value}
             item={item}
             active={item.value === activeValue}
+            medium={medium}
             innerRef={(el) => {
               itemRefs.current[index] = el
             }}
@@ -306,4 +258,4 @@ function Tabs({
 }
 
 export { Tabs }
-export type { TabsProps, TabItem }
+export type { TabsProps, TabItem, TabsSize }

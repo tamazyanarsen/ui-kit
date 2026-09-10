@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
-import { Ellipsis } from "@/icons"
+import { ChevronDown, ChevronUp, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -56,6 +56,39 @@ const SELECTION_BUTTON_PLACEMENT: Record<
 
 function stopPropagation(event: React.SyntheticEvent) {
   event.stopPropagation()
+}
+
+/**
+ * Шеврон для текстового триггера: вниз в покое, вверх пока список раскрыт.
+ *
+ * Дизайн-чек «Storybook 3», замечание 14: «обрати внимание, что в состоянии
+ * Active — иконка icon / arrow up chevron. В Default — икона icon / arrow
+ * down chevron». Подставляется в `Button` как обычный `icon`, поэтому
+ * принимает те же пропсы, что и глиф кита.
+ *
+ * ⚠️ Переключение — КЛАССАМИ, а не состоянием. Триггер отдаётся снаружи
+ * готовым элементом, и открытость списка до него не доходит; зато Base UI
+ * ставит `data-popup-open` прямо на кнопку, а у самой кнопки в корне объявлен
+ * `group/button`. Так один и тот же элемент оказывается и группой, и
+ * носителем признака — правило `group-data-popup-open/button:` попадает по
+ * потомкам, то есть по обоим глифам.
+ */
+function SelectionButtonChevron({
+  className,
+  ...props
+}: React.SVGProps<SVGSVGElement> & { size?: 16 | 24 }) {
+  return (
+    <>
+      <ChevronDown
+        {...props}
+        className={cn("group-data-popup-open/button:hidden", className)}
+      />
+      <ChevronUp
+        {...props}
+        className={cn("hidden group-data-popup-open/button:block", className)}
+      />
+    </>
+  )
 }
 
 function SelectionButton({
@@ -116,5 +149,5 @@ function SelectionButton({
   )
 }
 
-export { SelectionButton, SELECTION_BUTTON_PLACEMENT }
+export { SelectionButton, SelectionButtonChevron, SELECTION_BUTTON_PLACEMENT }
 export type { SelectionButtonProps, SelectionButtonItem }

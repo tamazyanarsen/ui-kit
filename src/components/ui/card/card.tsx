@@ -78,13 +78,29 @@ function Card({
           : undefined
       }
       className={cn(
-        "flex min-h-20 items-center gap-6 rounded-[12px] bg-[var(--card-bg)] p-6 transition-colors",
+        // ⚠️ Выключка по ВЕРХУ, а не по центру. Дизайн-чек «Storybook 3»,
+        // замечание 11: «проверить и скорректировать расположение кнопки в
+        // Card». Замер анатомии (54297:12790 → инстанс 54297:12955, карточка
+        // 1200×100 с полем 24): блок `Container` стоит на y=24, блок `Button`
+        // — тоже на y=24 и ростом 52, то есть кнопка прижата к верхней кромке
+        // содержимого. По центру карточки (y=34) её ставило `items-center`, и
+        // с подписью пользователя она уезжала на 10px вниз относительно
+        // заголовка, к которому относится.
+        //
+        // Из всей строки по центру стоит только плашка карты: `Card` в сете —
+        // y=32 при росте 36 в карточке 100, то есть ровно середина. Отсюда
+        // `self-center` на ней ниже.
+        "flex min-h-20 items-start gap-6 rounded-[12px] bg-[var(--card-bg)] p-6 transition-colors",
         clickable && "cursor-pointer hover:bg-[var(--card-bg-hover)]",
         className
       )}
     >
       {showThumbnail && (
-        <CardAccount number={thumbnailNumber} paymentSystem={paymentSystem} />
+        <CardAccount
+          number={thumbnailNumber}
+          paymentSystem={paymentSystem}
+          className="self-center"
+        />
       )}
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">

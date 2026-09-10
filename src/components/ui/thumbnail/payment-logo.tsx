@@ -13,7 +13,6 @@ import type { PaymentSystem } from "./variants"
 const MIR_TEXT_SIZE = { sm: "text-[6px]", md: "text-[10px]", lg: "text-[17px]" }
 const MASTERCARD_BOX = { sm: "h-2.5 w-4", md: "h-4 w-6", lg: "h-[26px] w-[39px]" }
 const MASTERCARD_CIRCLE = { sm: "size-2.5", md: "size-4", lg: "size-[26px]" }
-const UNIONPAY_TEXT_SIZE = { sm: "text-[5px]", md: "text-[9px]", lg: "text-[15px]" }
 const VISA_TEXT_SIZE = { sm: "text-[6px]", md: "text-xs", lg: "text-[20px]" }
 
 function PaymentLogo({
@@ -27,13 +26,20 @@ function PaymentLogo({
   size?: "sm" | "md" | "lg"
   className?: string
 }) {
-  if (system === "mir") {
+  // Дизайн-чек «Storybook 3», замечание 9: у знака «МИР» два начертания —
+  // фирменное зелёное и белое. Белым он стоит на тёмной миниатюре
+  // бизнес-карты; раньше на её месте был UnionPay, которого в продукте нет.
+  if (system === "mir" || system === "mir-white") {
     return (
       <span
         className={cn(
           MIR_TEXT_SIZE[size],
           "font-extrabold tracking-tight",
-          disabled ? "text-white/70" : "text-[#5CC862]",
+          disabled
+            ? "text-white/70"
+            : system === "mir-white"
+              ? "text-white"
+              : "text-[#5CC862]",
           className
         )}
       >
@@ -59,21 +65,6 @@ function PaymentLogo({
             disabled ? "bg-white/50" : "bg-[#F79E1B]"
           )}
         />
-      </span>
-    )
-  }
-
-  if (system === "unionpay") {
-    return (
-      <span
-        className={cn(
-          UNIONPAY_TEXT_SIZE[size],
-          "font-extrabold tracking-tighter",
-          disabled ? "text-white/70" : "text-white",
-          className
-        )}
-      >
-        UnionPay
       </span>
     )
   }

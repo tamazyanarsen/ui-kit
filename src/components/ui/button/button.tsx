@@ -8,6 +8,19 @@ import { useIsDesktop } from "@/lib/use-is-desktop"
 
 import { GosuslugiLogo } from "./gosuslugi-logo"
 
+// ⚠️ У каждого типа рядом с `enabled:active:` стоит `enabled:data-popup-open:`
+// с ТЕМ ЖЕ цветом.
+//
+// Дизайн-чек «Storybook 3», замечание 6: «при выборе действия со строкой
+// состояние кнопки selection button должно быть Active по компоненту button».
+// Пока список раскрыт, кнопка остаётся нажатой — иначе связь «этот список
+// принадлежит этой кнопке» держится только положением всплывашки, а курсор к
+// этому моменту уже ушёл с кнопки на список, и даже ховер с неё снят.
+//
+// Атрибут ставит Base UI на любой триггер всплывающего элемента, поэтому
+// правило действует для всех кнопок-триггеров кита разом (Selection Button,
+// «Скачать», меню шапки), а не только у таблицы. `active:` при этом остаётся:
+// это разные события — «палец на кнопке» и «список раскрыт».
 const buttonVariants = cva(
   // Weight now lives in each size variant's text-pN-medium suffix below
   // (all Medium, per Figma), not here — a separate font-medium class here
@@ -17,30 +30,30 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] enabled:hover:bg-[var(--btn-primary-bg-hover)] enabled:active:bg-[var(--btn-primary-bg-active)]",
+          "bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] enabled:hover:bg-[var(--btn-primary-bg-hover)] enabled:active:bg-[var(--btn-primary-bg-active)] enabled:data-popup-open:bg-[var(--btn-primary-bg-active)]",
         "secondary-black":
-          "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)]",
+          "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-grey":
-          "bg-[var(--btn-secondary-grey-bg)] text-[var(--btn-secondary-grey-fg)] enabled:hover:bg-[var(--btn-secondary-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-grey-bg-active)]",
+          "bg-[var(--btn-secondary-grey-bg)] text-[var(--btn-secondary-grey-fg)] enabled:hover:bg-[var(--btn-secondary-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-grey-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-grey-bg-active)]",
         "secondary-white":
-          "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)]",
+          "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-outline":
-          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)]",
+          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)]",
         destructive:
-          "bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)]",
+          "bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)] enabled:data-popup-open:bg-[var(--btn-destructive-bg-active)]",
         // "Secondary Logo" Types (ui/button/button.png) — always paired
         // with the fixed Госуслуги glyph (see GosuslugiLogo below), never a
         // swappable icon. Black/Border-White/White pixel-match their plain
         // secondary-* counterparts exactly, so they reuse the same tokens;
         // only Grey introduces a genuinely new color.
         "secondary-logo-black":
-          "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)]",
+          "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-logo-border-white":
-          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)]",
+          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)]",
         "secondary-logo-white":
-          "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)]",
+          "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-logo-grey":
-          "bg-[var(--btn-secondary-logo-grey-bg)] text-[var(--btn-secondary-logo-grey-fg)] enabled:hover:bg-[var(--btn-secondary-logo-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-logo-grey-bg-active)]",
+          "bg-[var(--btn-secondary-logo-grey-bg)] text-[var(--btn-secondary-logo-grey-fg)] enabled:hover:bg-[var(--btn-secondary-logo-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-logo-grey-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-logo-grey-bg-active)]",
       },
       size: {
         // Mobile-first: unprefixed classes are the mobile form, `desktop:` switches

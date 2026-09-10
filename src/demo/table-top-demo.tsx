@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
-import { ChevronDown, Search, Settings as Settings2, X } from "@/icons"
+import { ChevronDown, ChevronUp, Search, Settings as Settings2, X } from "@/icons"
 
 import {
   TableTop,
@@ -13,7 +13,6 @@ import { Tabs, type TabItem } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Filter } from "@/components/ui/filter"
 import { Button } from "@/components/ui/button"
-import { CountButton } from "@/components/ui/count-button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import {
@@ -101,12 +100,24 @@ function TableTopFilterSettingExample() {
           </Button>
         }
       />
-      <Tabs items={TABS} value={tab} onValueChange={setTab} />
+      {/* Дизайн-чек «Storybook 3», замечание 4: лента разделов в шапке
+          таблицы — «мобильного» размера и на десктопе; 4 сверху добирают блок
+          до 44. */}
+      <Tabs
+        items={TABS}
+        size="medium"
+        className="pt-1"
+        value={tab}
+        onValueChange={setTab}
+      />
       <TableTopToolbar>
         {/* Figma's search field is a fixed 260px column inside the filter
             row; Input's own root is always w-full, so the width lives on a
-            wrapper. */}
-        <div className="w-[260px]">
+            wrapper.
+
+            Дизайн-чек «Storybook 3», замечание 3: до фильтров 16 — зазор
+            строки 8 плюс собственные 8 у обёртки поиска (268 = 260 + 8). */}
+        <div className="w-[268px] pr-2">
           <Input
             size="sm"
             iconLeft={<Search aria-hidden="true" />}
@@ -123,19 +134,20 @@ function TableTopFilterSettingExample() {
             onValueChange={setManager}
           />
         )}
-        {/* "Ещё фильтры" is an `ELK / count button` in the spec — the counter
-            is a corner badge on the button, dark rather than red here. */}
-        <CountButton
+        {/* Дизайн-чек «Storybook 3», замечание 2: шеврон следует за
+            состоянием (вниз — свёрнуто, вверх — раскрыто), а количество
+            скрытых фильтров пишется в подписи через двоеточие, без чёрного
+            углового счётчика. Поэтому здесь обычная `Button`, а не
+            `CountButton`. */}
+        <Button
           variant="secondary-grey"
           size="sm"
-          icon={ChevronDown}
+          icon={moreOpen ? ChevronUp : ChevronDown}
           iconPosition="left"
-          count={appliedCount}
-          countColor="black"
           onClick={() => setMoreOpen((v) => !v)}
         >
-          {moreOpen ? "Скрыть фильтры" : "Ещё фильтры"}
-        </CountButton>
+          {moreOpen ? "Скрыть фильтры" : "Ещё фильтры: 1"}
+        </Button>
         {appliedCount > 0 && (
           <Button
             variant="secondary-grey"

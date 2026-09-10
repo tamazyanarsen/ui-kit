@@ -33,7 +33,7 @@ function BankCardDemo() {
         <div className="mt-8 flex flex-col gap-2">
           <RowLabel>Платёжные системы</RowLabel>
           <div className="flex flex-wrap gap-6">
-            {(["mir", "mastercard", "visa", "unionpay"] as PaymentSystem[]).map((system) => (
+            {(["mir", "mir-white", "mastercard", "visa"] as PaymentSystem[]).map((system) => (
               <BankCard key={system} skin="black-classic" paymentSystem={system} />
             ))}
           </div>

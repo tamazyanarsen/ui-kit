@@ -203,7 +203,12 @@ function DetailsArrow({
         // `motion-safe`: `prefers-reduced-motion` гасит и плавную прокрутку
         // ленты (см. scrollToNeighbour), и проявление самой стрелки.
         "absolute top-1/2 z-10 -translate-y-1/2 motion-safe:animate-in motion-safe:fade-in",
-        direction === "left" ? "left-0" : "right-0"
+        // Дизайн-чек «Storybook 3», замечание 1: «скорректировать отступ
+        // кнопки до края элемента, поправить и правую, и левую». Обе стрелки
+        // стояли вплотную к кромке ленты (`left-0`/`right-0`) — замер по
+        // скриншоту чека это подтвердил (левая на 835 при кромке 832, правая
+        // на 1800 при кромке 1804 в пикселях снимка). Отступ — китовые 8.
+        direction === "left" ? "left-2" : "right-2"
       )}
     />
   )

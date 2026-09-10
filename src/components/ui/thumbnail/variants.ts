@@ -28,7 +28,19 @@ export type ThumbnailType =
   | "alert"
   | "alert-red"
 
-export type PaymentSystem = "mir" | "mastercard" | "unionpay" | "visa"
+/**
+ * Платёжная система на плашке карты.
+ *
+ * Дизайн-чек «Storybook 3», замечание 9: «заменить в card account "unionpay"
+ * на "МИР" с белой иконкой». UnionPay из набора убран целиком, а не только в
+ * одной витрине: перечисление у плашки карты одно на весь кит (Card Account,
+ * Thumbnail, Bank Card), и оставить отвергнутое значение в двух местах из
+ * трёх — значит развести их между собой.
+ *
+ * `mir-white` — тот же знак «МИР», но белым: так он нарисован на тёмной
+ * миниатюре бизнес-карты (макет D-10923, 14002:113942).
+ */
+export type PaymentSystem = "mir" | "mir-white" | "mastercard" | "visa"
 
 export const CARD_TYPES = new Set<ThumbnailType>(["card", "sticker", "picture"])
 

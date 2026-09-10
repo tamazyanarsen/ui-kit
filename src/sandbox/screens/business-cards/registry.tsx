@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { ChevronDown, Plus, X } from "@/icons"
+import { X } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { DataTable, TableBlock } from "@/components/ui/table"
@@ -93,7 +93,9 @@ function BusinessCardsRegistry() {
           title="Бизнес-карты"
           helpLabel={null}
           actions={
-            <Button variant="primary" size="sm" icon={Plus} iconPosition="left">
+            /* Дизайн-чек «Storybook 3», замечание 12: «убрать иконку в
+               кнопке "Выпустить карту"» — в макете это подпись без глифа. */
+            <Button variant="primary" size="sm">
               Выпустить карту
             </Button>
           }
@@ -115,11 +117,17 @@ function BusinessCardsRegistry() {
         {section === "cards" ? (
           <>
             <TableTop>
+              {/* Дизайн-чек «Storybook 3», замечание 4: лента разделов ВНУТРИ
+                  шапки таблицы — «мобильного» размера и на десктопе (лента
+                  40, зазор 24, подпись P2 Medium), а 4 сверху добирают блок
+                  до 44. Страничные табы выше остаются обычными. */}
               <Tabs
                 items={[
                   { value: "active", label: "Действующие" },
                   { value: "closed", label: "Закрытые" },
                 ]}
+                size="medium"
+                className="pt-1"
                 showMore={false}
                 value={scope}
                 onValueChange={(next) => {
@@ -167,16 +175,9 @@ function BusinessCardsRegistry() {
                     />
                   </>
                 }
-                actions={
-                  <Button
-                    variant="secondary-grey"
-                    size="sm"
-                    icon={ChevronDown}
-                    iconPosition="right"
-                  >
-                    Скачать
-                  </Button>
-                }
+                /* Дизайн-чек «Storybook 3», замечание 12: «убрать кнопку
+                   "Скачать"». В макете реестра (14002:113930) справа в строке
+                   итогов пусто — выгрузки у реестра карт нет. */
               />
             </TableTop>
 

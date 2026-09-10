@@ -11,6 +11,36 @@ import type { TableCellType, TableHeadCellType } from "./types"
 /** «Минимальная ширина столбцов — 48px.» */
 const MIN_COLUMN_WIDTH = 48
 
+/**
+ * Поле СТРОКИ — 8px поверх собственного поля ячейки.
+ *
+ * Дизайн-чек «Storybook 3», замечание 5: «в table-header и table-row от края
+ * таблицы до первой ячейки есть дополнительный отступ в 8 px. Правило не
+ * действует [для] закреп[а] столбца с правой стороны (pinned)». То же самое
+ * записано в пакете дизайнера: «у строки поле 8 + ячейка 8 — обе ветки встают
+ * в 16 от края».
+ *
+ * ⚠️ Поле у `<tr>` не выразить — padding у строки таблицы не работает вовсе.
+ * Поэтому оно переезжает в ПЕРВУЮ ячейку: её левое поле становится 16, а
+ * объявленная ширина растёт на те же 8 ({@link edgeColumnWidth}). Без второй
+ * половины правки служебная колонка с фиксированной шириной (чекбокс — 48)
+ * получила бы поля 16+16 при коробке 24 и вылезла бы в соседнюю.
+ *
+ * Заливку строки это не задевает: поле лежит ВНУТРИ ячейки, а фон `<tr>`
+ * красит всю её коробку — правило кита «состояния с заливкой идут без
+ * отступов» остаётся в силе.
+ */
+const ROW_EDGE_PADDING = 8
+
+/** Левое поле первой ячейки: собственные 8 ячейки + {@link ROW_EDGE_PADDING}. */
+const EDGE_PADDING_CLASS = "pl-4"
+
+/** Ширина первой колонки с учётом поля строки. */
+function edgeColumnWidth(width: number | undefined, edge: boolean) {
+  if (!edge || width === undefined) return width
+  return width + ROW_EDGE_PADDING
+}
+
 /** «С каждым уровнем вложенности контент сдвигвается вправо на 16px». */
 const NESTING_INDENT = 16
 
@@ -177,9 +207,12 @@ function isControlType(type: TableHeadCellType | TableCellType) {
 export {
   CONTROL_COLUMN_WIDTH,
   DEFAULT_COLUMN_WIDTH,
+  EDGE_PADDING_CLASS,
   MIN_COLUMN_WIDTH,
   MIN_SCROLLABLE_REST,
   NESTING_INDENT,
+  ROW_EDGE_PADDING,
+  edgeColumnWidth,
   cellPaddingXClass,
   cellPaddingYClass,
   hasColumnDivider,

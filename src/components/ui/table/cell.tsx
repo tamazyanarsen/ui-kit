@@ -11,6 +11,7 @@ import {
 import { TableCellTag, TableCellValue, type TableSignTone } from "./cell-value"
 import { TableCollapseToggle, collapseLabel } from "./collapse-toggle"
 import {
+  EDGE_PADDING_CLASS,
   NESTING_INDENT,
   cellPaddingXClass,
   cellPaddingYClass,
@@ -76,6 +77,12 @@ interface TableCellProps
    */
   unitVariants?: string[]
   pin?: TablePin
+  /**
+   * Первая ячейка строки — забирает поле строки (см. `ROW_EDGE_PADDING`):
+   * левое поле 16 вместо 8. Правый край поля не получает: «правый закреп
+   * дополнительных отступов не получает».
+   */
+  edge?: boolean
 }
 
 function TableCell({
@@ -101,6 +108,7 @@ function TableCell({
   unit,
   unitVariants,
   pin,
+  edge = false,
   style,
   ...props
 }: TableCellProps) {
@@ -130,6 +138,10 @@ function TableCell({
           pin,
           type === "button" || type === "checkbox" || type === "spacer"
         ),
+        // Печатается ПОСЛЕ базовых полей: Tailwind сортирует `pl-*` после
+        // `px-*`, поэтому одиночная сторона перебивает пару, а `pl-2` от
+        // `pl-4` отличит уже `twMerge`.
+        edge && EDGE_PADDING_CLASS,
         // No rule between data rows. Verified at 1:1 against two independent
         // canonical renders (nodes 70279:7390 and 70279:10368): scanning an
         // empty column top-to-bottom finds exactly two #DEDEDE lines — the

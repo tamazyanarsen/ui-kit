@@ -1,9 +1,12 @@
 import { useState } from "react"
 
-import { Apps, Building, Info, Mail, Pencil, User, Users } from "@/icons"
+import { Apps, Company, Info, Mail, Pencil, User, Users } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { ButtonMenu } from "@/components/ui/button-menu"
-import { SelectionButton } from "@/components/ui/selection-button"
+import {
+  SelectionButton,
+  SelectionButtonChevron,
+} from "@/components/ui/selection-button"
 import { Tag } from "@/components/ui/tag"
 import { TitleRegistry } from "@/components/ui/title"
 import { useToast } from "@/components/ui/toast-message"
@@ -38,7 +41,12 @@ import { SectionMenu } from "./section-menu"
 
 const GENERAL_SECTIONS = [
   { value: "personal", label: "Личные данные", icon: User },
-  { value: "organizations", label: "Мои организации", icon: Building },
+  // Дизайн-чек «Storybook 3», замечание 13: «заменить иконку у "Мои
+  // организации" согласно макетам». Стоял `icon / building` — башня с окнами,
+  // то есть ЗДАНИЕ. Организация в наборе ALL ICONS рисуется своим глифом
+  // `icon / company` (кейс с двумя полосами), им же помечена организация в
+  // шапке приложения.
+  { value: "organizations", label: "Мои организации", icon: Company },
 ]
 
 const ORG_SECTIONS = [
@@ -65,37 +73,51 @@ function ProfileScreen() {
     <SandboxPage
       activeSection="profile"
       title={<TitleRegistry title="Профиль и настройки" helpLabel={null} />}
+      /* Дизайн-чек «Storybook 3», замечание 15, два пункта:
+
+         1. «Скорректировать button menu по ширине правого блока» — полоса
+            завёрнута в тот же ряд `4 / 8`, что и содержимое, с пустой левой
+            колонкой, и больше не тянется во всю ширину страницы.
+         2. «Button menu появляется только в момент изменений… в блоке "Права
+            подписи документов"». Раньше полоса висела всегда, а кнопки в ней
+            просто были выключены — экран постоянно показывал орган
+            управления, которым нельзя воспользоваться. Теперь до первой
+            правки полосы нет вовсе, и гасить кнопки внутри уже не нужно:
+            пустой она не бывает. */
       bottomBar={
-        <ButtonMenu>
-          <Button
-            variant="primary"
-            disabled={!dirty}
-            onClick={() => {
-              setDirty(false)
-              toast.add({
-                type: "checked",
-                title: "Права подписи сохранены",
-                description: "Настройки действуют для всех пользователей",
-              })
-            }}
-          >
-            Подписать и сохранить
-          </Button>
-          <Button
-            variant="secondary-grey"
-            disabled={!dirty}
-            onClick={() => {
-              setRights(
-                Object.fromEntries(
-                  SIGNATURE_RIGHTS.map((right) => [right.key, right.type])
-                )
-              )
-              setDirty(false)
-            }}
-          >
-            Сбросить изменения
-          </Button>
-        </ButtonMenu>
+        dirty ? (
+          <SandboxColumns widths={[4, 8]}>
+            <div />
+            <ButtonMenu>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setDirty(false)
+                  toast.add({
+                    type: "checked",
+                    title: "Права подписи сохранены",
+                    description: "Настройки действуют для всех пользователей",
+                  })
+                }}
+              >
+                Подписать и сохранить
+              </Button>
+              <Button
+                variant="secondary-grey"
+                onClick={() => {
+                  setRights(
+                    Object.fromEntries(
+                      SIGNATURE_RIGHTS.map((right) => [right.key, right.type])
+                    )
+                  )
+                  setDirty(false)
+                }}
+              >
+                Сбросить изменения
+              </Button>
+            </ButtonMenu>
+          </SandboxColumns>
+        ) : undefined
       }
     >
       <SandboxColumns widths={[4, 8]}>
@@ -159,9 +181,20 @@ function ProfileScreen() {
                     вариантов 32 × 32 / 56 × 56. Инстанс в макете
                     переопределён, поэтому здесь триггером выступает обычная
                     кнопка с подписью. */}
+                {/* Дизайн-чек «Storybook 3», замечание 14: «добавить иконку
+                    в кнопку "Заменить подпись" согласно макетам… в состоянии
+                    Active — иконка icon / arrow up chevron. В Default —
+                    icon / arrow down chevron». Глиф переключает сам
+                    `SelectionButtonChevron`, а заливку Active кнопка берёт из
+                    своего же типа по `data-popup-open` (см. Button). */}
                 <SelectionButton
                   trigger={
-                    <Button variant="primary" size="sm">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={SelectionButtonChevron}
+                      iconPosition="right"
+                    >
                       Заменить подпись
                     </Button>
                   }

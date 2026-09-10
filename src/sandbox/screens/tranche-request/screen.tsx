@@ -30,7 +30,14 @@ import {
   parseAmount,
 } from "../../shell"
 
-import { AGREEMENTS, CONTRACTS, ISSUE_DATE, MAX_FIRST, MAX_LAST } from "./data"
+import {
+  AGREEMENTS,
+  CONTRACTS,
+  CONTRACT_INFO,
+  ISSUE_DATE,
+  MAX_FIRST,
+  MAX_LAST,
+} from "./data"
 import { TrancheAdditionalBlock } from "./additional-block"
 import { TrancheParamsBlock } from "./params-block"
 import { TrancheSummary } from "./summary"
@@ -177,25 +184,30 @@ function TrancheRequestScreen() {
               <AccordionListItem
                 title="Информация о договоре подряда"
                 titleAs="h3"
+                // В макете (70408:6246) у заголовка стоит `icon / arrow up
+                // chevron`, то есть блок раскрыт: сведения о договоре —
+                // основание для суммы транша, и прятать их за нажатием
+                // незачем.
+                defaultOpen
               >
                 {/* Дизайн-чек от 07.09, замечание 5: у Label Left зазор
-                    нулевой — был `gap-4`. */}
+                    нулевой — был `gap-4`.
+
+                    Дизайн-чек «Storybook 3», замечание 16: состав блока —
+                    из макета (70408:6246), семь строк. Свои три (Подрядчик /
+                    Стоимость работ / Срок выполнения работ) убраны: таких
+                    строк в макете нет. */}
                 <ItemInformationFieldGroup>
-                  <ItemInformationField
-                    type="label-left"
-                    label="Подрядчик"
-                    value="ООО «Северострой»"
-                  />
-                  <ItemInformationField
-                    type="label-left"
-                    label="Стоимость работ по договору"
-                    value={money(48_000_000)}
-                  />
-                  <ItemInformationField
-                    type="label-left"
-                    label="Срок выполнения работ"
-                    value="12.09.2022 — 30.09.2026"
-                  />
+                  {CONTRACT_INFO.map((field) => (
+                    <ItemInformationField
+                      key={field.label}
+                      type="label-left"
+                      label={field.label}
+                      labelInfo={field.labelInfo}
+                      value={field.value}
+                      subText={field.subText}
+                    />
+                  ))}
                 </ItemInformationFieldGroup>
               </AccordionListItem>
             </AccordionList>

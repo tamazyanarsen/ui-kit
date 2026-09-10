@@ -62,6 +62,14 @@ const meta = {
       description: "Оформление вкладки: только текст, со счётчиком или со статусом",
     },
     showMore: { control: "boolean" },
+    // Дизайн-чек «Storybook 3», замечание 4: у ленты появился закреплённый
+    // «средний» размер — тот, которым шапка таблицы пользуется на десктопе.
+    size: {
+      control: "inline-radio",
+      options: ["auto", "medium"],
+      description:
+        "auto — размер по вьюпорту (Desktop/Mobile); medium — «мобильные» числа на любом экране (лента 40, зазор 24, подпись P2 Medium): так лента устроена внутри Table Top",
+    },
     defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
     // v1.2.0 мастера убрала свойство размера в пользу пары Desktop/Mobile —
     // теперь она выбирается контролом (дизайн-чек №3 №19), а не вьюпортом.
@@ -71,6 +79,7 @@ const meta = {
     items: ITEMS,
     itemsCount: 5,
     figmaType: "Text",
+    size: "auto",
     showMore: false,
     defaultValue: "all",
     viewport: "auto",

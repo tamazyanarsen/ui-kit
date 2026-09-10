@@ -56,8 +56,13 @@ function CardAccount({
         size="sm"
         className="absolute top-[3px] left-[3px]"
       />
+      {/* Дизайн-чек «Storybook 3», замечание 10: окончание номера — P4
+          **Regular** (10/12, вес 400), а не Medium. Снято с самого узла
+          `IB / card account` (54276:9378): единственный текст в нём —
+          `Object_Sans:Regular`, «Desktop. Параграф/P4 Regular». Разница в
+          одном шаге веса, на 10 пикселях её видно только рядом с эталоном. */}
       {number && (
-        <span className="absolute right-[3px] bottom-[3px] text-p4-medium text-[var(--card-thumb-fg)]">
+        <span className="absolute right-[3px] bottom-[3px] text-p4-regular text-[var(--card-thumb-fg)]">
           {number}
         </span>
       )}

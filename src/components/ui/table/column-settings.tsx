@@ -1,12 +1,11 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { Search, Settings } from "@/icons"
+import { Settings } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Dropdown } from "@/components/ui/dropdown"
-import { Input } from "@/components/ui/input"
+import { Dropdown, DropdownSearch } from "@/components/ui/dropdown"
 import {
   SortableDropIndicator,
   SortableHandle,
@@ -138,15 +137,20 @@ function TableColumnSettings({
             {/* The search field is flush: Figma's "Поля таблицы" frame (node
                 70279:7098) is 280 wide with `ELK / input` at (0,0) sized
                 280×56 — an L input, full-bleed, with the row list starting
-                immediately at y=56 and no padding of its own. */}
+                immediately at y=56 and no padding of its own.
+
+                Дизайн-чек «Storybook 3», замечание 7: «поправить вид поля
+                поиска для настройки столбцов, опираясь на вид dropdown».
+                Здесь стоял настоящий `Input size="lg"` — с рамкой, радиусом и
+                плавающей подписью, то есть поле ВНУТРИ списка. В сете это
+                строка самого списка: 56, глиф 24, нижний разделитель и больше
+                ничего. Она теперь живёт в компоненте `Dropdown`
+                ({@link DropdownSearch}) и переиспользуется отсюда. */}
             {searchable && (
-              <Input
-                size="lg"
-                label={searchPlaceholder}
-                iconLeft={<Search aria-hidden="true" className="size-4" />}
+              <DropdownSearch
+                placeholder={searchPlaceholder}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                clearable
                 onClear={() => setQuery("")}
               />
             )}

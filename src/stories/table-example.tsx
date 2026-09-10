@@ -145,6 +145,7 @@ function TableExample({
               {selectable && (
                 <TableCell
                   type="checkbox"
+                  edge
                   pin={leftPin}
                   checked={selected.has(row.id)}
                   onCheckedChange={() =>
@@ -153,6 +154,9 @@ function TableExample({
                 />
               )}
               <TableCell
+                // Поле строки (+8 слева) забирает ПЕРВАЯ ячейка — здесь это
+                // «Код», когда колонки выбора нет.
+                edge={!selectable}
                 pin={leftPin}
                 level={nested ? row.level : 0}
                 expandable={

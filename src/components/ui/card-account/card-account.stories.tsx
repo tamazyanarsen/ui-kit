@@ -5,7 +5,7 @@ import type { PaymentSystem } from "@/components/ui/thumbnail"
 
 import { CardAccount, type CardAccountProps } from "./card-account"
 
-const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
+const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const meta = {
   title: "Компоненты/Card Account",

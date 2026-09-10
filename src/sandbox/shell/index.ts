@@ -11,6 +11,7 @@ export {
 export type { SandboxBlockProps } from "./block"
 export { SandboxCompositionBar } from "./composition-bar"
 export type {
+  CompositionLegendMarker,
   CompositionSegment,
   SandboxCompositionBarProps,
 } from "./composition-bar"

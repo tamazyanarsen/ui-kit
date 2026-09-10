@@ -139,7 +139,18 @@ function RangeInput({
                 // Round-2 audit fix: track thickness was h-1 (4px); the
                 // Line asset in every state (687:18395 etc.) is a literal
                 // 3px-tall rect.
-                "relative h-[3px] w-full rounded-full bg-[var(--range-input-track-bg)]"
+                //
+                // ⚠️ У дорожки НЕТ собственной заливки. Дизайн-чек
+                // «Storybook 3», замечание 17: «скорректируй вид незаполненной
+                // части, согласно компоненту». Профиль пикселей по мастеру
+                // (14342:39163, состояние Default): под ползунком слева идёт
+                // полоса 3px #2FCEEF, а справа от ползунка — чистый белый, и
+                // единственная линия там это НИЖНЯЯ ГРАНИЦА самой коробки,
+                // 1px #C8C8CB. То есть незаполненная часть не рисуется вовсе:
+                // её роль играет граница поля, на которой дорожка и лежит.
+                // Раньше здесь стояла заливка `--range-input-track-bg` —
+                // серая полоса 3px поверх границы, вдвое толще нужного.
+                "relative h-[3px] w-full rounded-full"
               )}
             >
               <SliderPrimitive.Indicator

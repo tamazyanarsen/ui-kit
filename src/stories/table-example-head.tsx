@@ -39,6 +39,7 @@ function TableExampleHead({
         {selectable && (
           <TableHeadCell
             type="checkbox"
+            edge
             pin={leftPin}
             checked={allSelected}
             indeterminate={someSelected}
@@ -47,6 +48,8 @@ function TableExampleHead({
         )}
         <TableHeadCell
           type="subtitle-left"
+          // Поле строки (+8 слева) забирает ПЕРВАЯ ячейка.
+          edge={!selectable}
           pin={leftPin}
           collapsible={nested}
           expanded={anyExpanded}

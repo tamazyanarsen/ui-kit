@@ -41,7 +41,7 @@ type PlaygroundArgs = CardProps & {
 
 const CONTENT = { table: { category: "Контент" } }
 
-const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
+const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const meta = {
   title: "Компоненты/Card",

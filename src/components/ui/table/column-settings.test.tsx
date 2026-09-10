@@ -119,7 +119,10 @@ describe("TableColumnSettings", () => {
     )
 
     await user.click(screen.getByRole("button", { name: "Настроить столбцы" }))
-    await user.type(screen.getByRole("textbox"), "сум")
+    // `searchbox`, а не `textbox`: строка поиска переехала в компонент
+    // `Dropdown` (дизайн-чек «Storybook 3», замечание 7), и поле там
+    // объявлено `type="search"` — у него своя роль.
+    await user.type(screen.getByRole("searchbox"), "сум")
 
     expect(screen.getByText("Сумма")).toBeInTheDocument()
     expect(screen.queryByText("Номер платежа")).not.toBeInTheDocument()

@@ -243,6 +243,7 @@ function DataTable<Row>({
             {selectable && (
               <TableHeadCell
                 type="checkbox"
+                edge
                 pin={selectionPin}
                 checked={allSelected}
                 indeterminate={someSelected}
@@ -254,6 +255,9 @@ function DataTable<Row>({
               <TableHeadCell
                 key={field.key}
                 type={headCellType(field, headMenu)}
+                // Поле строки забирает ПЕРВАЯ ячейка — ею колонка становится
+                // только без колонки выбора (дизайн-чек «Storybook 3» №5).
+                edge={!selectable && field.key === columns[0]?.key}
                 pin={field.pin}
                 icon={field.headIcon}
                 menu={field.type === "actions" ? headMenu : undefined}
@@ -309,6 +313,7 @@ function DataTable<Row>({
               {selectable && (
                 <TableCell
                   type="checkbox"
+                  edge
                   pin={selectionPin}
                   checked={selected.has(key)}
                   onCheckedChange={
@@ -322,6 +327,7 @@ function DataTable<Row>({
               {columns.map((field) => (
                 <TableCell
                   key={field.key}
+                  edge={!selectable && field.key === columns[0]?.key}
                   pin={field.pin}
                   unitVariants={unitVariants[field.key]}
                   {...fieldCellProps(field, row)}
@@ -357,6 +363,7 @@ function DataTable<Row>({
             <TableRow data-slot="table-total-row">
               <TableCell
                 type="text"
+                edge
                 pin={totalLeadingPin}
                 colSpan={totalLeadingSpan}
                 className="font-medium"

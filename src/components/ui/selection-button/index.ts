@@ -1,4 +1,4 @@
-export { SelectionButton } from "./selection-button"
+export { SelectionButton, SelectionButtonChevron } from "./selection-button"
 export type {
   SelectionButtonProps,
   SelectionButtonItem,

@@ -23,13 +23,30 @@ const DEFAULT_COLORS = [
   THEME_COLORS.yellow,
 ]
 
+/**
+ * `Type` элемента легенды (`Legend Element (ELK)`, нода 63582:16039).
+ *
+ * `line` — маркер-черта 16×4 (`Type=Line`, 63582:16040), `point` — кружок 8
+ * (`Type=Point`, 63582:16124). Остальное у них одинаково: зазор 6, коробка
+ * min-h 32 с полем 4 по вертикали, подпись P2 Medium Grey 1514.
+ */
+type CompositionLegendMarker = "line" | "point"
+
 interface SandboxCompositionBarProps {
   segments: CompositionSegment[]
+  /**
+   * Вид маркера легенды. Умолчание — `line`: так собрана целёвка
+   * `Horizontal Bars Stacked`. Дизайн-чек «Storybook 3», замечание 18:
+   * «измени вид легенды у графика согласно макетам, а именно на вид Point» —
+   * на «Подаче заявки на транш» стоит именно кружок.
+   */
+  legendMarker?: CompositionLegendMarker
   className?: string
 }
 
 function SandboxCompositionBar({
   segments,
+  legendMarker = "line",
   className,
 }: SandboxCompositionBarProps) {
   const visible = segments.filter((segment) => segment.value > 0)
@@ -70,7 +87,11 @@ function SandboxCompositionBar({
             >
               <span
                 aria-hidden="true"
-                className="h-1 w-4 shrink-0 rounded-[1px]"
+                className={
+                  legendMarker === "point"
+                    ? "size-2 shrink-0 rounded-full"
+                    : "h-1 w-4 shrink-0 rounded-[1px]"
+                }
                 style={{
                   backgroundColor:
                     segment.color ??
@@ -87,4 +108,8 @@ function SandboxCompositionBar({
 }
 
 export { SandboxCompositionBar }
-export type { CompositionSegment, SandboxCompositionBarProps }
+export type {
+  CompositionLegendMarker,
+  CompositionSegment,
+  SandboxCompositionBarProps,
+}

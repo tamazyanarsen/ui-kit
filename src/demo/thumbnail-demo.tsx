@@ -8,7 +8,7 @@ import {
 
 import { RowLabel } from "./shared"
 
-const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mastercard", "unionpay", "visa"]
+const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const CARD_FORM_TYPES: { type: ThumbnailType; label: string }[] = [
   { type: "card", label: "Card" },
@@ -122,8 +122,9 @@ function ThumbnailDemo() {
           Card-типы (Card/Sticker/SBP Card/SBP Card account/More) — тёмная
           плитка с платёжной системой; статусные типы (Check/Question/
           Clock/Alert/Alert Red) — плитка с тинтом соответствующего цвета
-          из токенов Tag/Informer. Платёжные логотипы (МИР/MasterCard/
-          UnionPay/Visa) — упрощённые аппроксимации, не настоящие бренд-ассеты.
+          из токенов Tag/Informer. Платёжные логотипы (МИР зелёный и белый/
+          MasterCard/Visa) — упрощённые аппроксимации, не настоящие
+          бренд-ассеты.
         </p>
       </AccordionPanel>
     </AccordionItem>

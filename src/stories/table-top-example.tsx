@@ -2,7 +2,7 @@ import { useState } from "react"
 
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
-import { ChevronDown, Search, Settings as Settings2, X } from "@/icons"
+import { ChevronDown, ChevronUp, Search, Settings as Settings2, X } from "@/icons"
 
 import {
   TableTop,
@@ -16,7 +16,6 @@ import { Tabs, type TabItem } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Filter } from "@/components/ui/filter"
 import { Button } from "@/components/ui/button"
-import { CountButton } from "@/components/ui/count-button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -147,6 +146,7 @@ function FullExample({
   // так же, как в макете.
   const chips = CHIP_LABELS.slice(0, chipsCount)
   const visibleChips = moreOpen ? chips : chips.slice(0, 1)
+  const hiddenCount = chips.length - visibleChips.length
   const appliedCount = Object.values(values).filter(Boolean).length
 
   // `Type=Setting` — справа кнопки управления таблицей, `Type=Select` — поле
@@ -194,7 +194,21 @@ function FullExample({
           }
         />
       )}
-      {showTab && <Tabs items={TABS} value={tab} onValueChange={setTab} />}
+      {/* Дизайн-чек «Storybook 3», замечание 4: «проверить и скорректировать
+          размер Tabs». Лента разделов в шапке таблицы — «мобильного» размера
+          и на десктопе: лента 40, зазор 24, подпись P2 Medium (в сете это
+          `Size=Mobile`, хотя таблица десктопная; блок 44 получается из
+          `padding-top: 4` у обёртки). Раньше здесь стояла десктопная лента:
+          16/24 и зазор 32. */}
+      {showTab && (
+        <Tabs
+          items={TABS}
+          size="medium"
+          value={tab}
+          onValueChange={setTab}
+          className="pt-1"
+        />
+      )}
       {/* Дизайн-чек 3/3 №24: «при отключении контрола show Filters кнопка
           "Ещё фильтры" должна тоже скрываться». Раньше под флагом были только
           сами чипы, а CountButton и «Сбросить фильтры» стояли снаружи и
@@ -204,9 +218,15 @@ function FullExample({
         <TableTopToolbar>
           {/* Figma's search field is a fixed 260px column inside the filter
               row; Input's own root is always w-full, so the width lives on a
-              wrapper. */}
+              wrapper.
+
+              Дизайн-чек «Storybook 3», замечание 3: «расстояние между полем
+              поиска и фильтрами — 16 px». Общий зазор строки — 8, а недостающие
+              8 приносит САМА обёртка поиска: в макете она 268 = поле 260 +
+              `padding-right: 8`. Ширить зазор всей строки нельзя — между
+              фильтрами он остаётся 8. */}
           {showSearch && (
-            <div className="w-[260px]">
+            <div className="w-[268px] pr-2">
               <Input
                 size="sm"
                 iconLeft={<Search aria-hidden="true" />}
@@ -226,20 +246,31 @@ function FullExample({
               }
             />
           ))}
-          {/* "Ещё фильтры" — `Show Last Chips` в макете; это `ELK / count
-              button`, счётчик рисуется угловым бейджем, тёмным, а не красным. */}
+          {/* "Ещё фильтры" — `Show Last Chips` в макете.
+              Дизайн-чек «Storybook 3», замечание 2, два пункта:
+
+              1. Шеврон следует за состоянием: свёрнуто — вниз, раскрыто —
+                 вверх. Раньше он всегда смотрел вниз, и «Скрыть фильтры»
+                 показывала стрелку «раскрыть».
+              2. Количество скрытых фильтров пишется В ПОДПИСИ через
+                 двоеточие, а не угловым чёрным счётчиком. Поэтому здесь
+                 обычная `Button`, а не `CountButton`: угловой бейдж —
+                 собственный признак `ELK / count button`, и оставлять
+                 компонент, у которого этот бейдж погашен, незачем. */}
           {showLastChips && (
-            <CountButton
+            <Button
               variant="secondary-grey"
               size="sm"
-              icon={ChevronDown}
+              icon={moreOpen ? ChevronUp : ChevronDown}
               iconPosition="left"
-              count={appliedCount}
-              countColor="black"
               onClick={() => setMoreOpen((v) => !v)}
             >
-              {moreOpen ? "Скрыть фильтры" : "Ещё фильтры"}
-            </CountButton>
+              {moreOpen
+                ? "Скрыть фильтры"
+                : hiddenCount > 0
+                  ? `Ещё фильтры: ${hiddenCount}`
+                  : "Ещё фильтры"}
+            </Button>
           )}
           {showCleanFilter && appliedCount > 0 && (
             <Button

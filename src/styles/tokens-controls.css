@@ -93,6 +93,10 @@
      the track across Default/Hover/Disabled/Error screenshots (all at the
      same coordinates, right of the thumb) — consistently #C8C8CB
      (grey-166), never the lighter #EFEFEF. */
+  /* ⚠️ Токен больше НИКТО не красит. Дизайн-чек «Storybook 3», замечание 17:
+     незаполненной части у дорожки нет — её роль играет нижняя граница поля
+     (--range-input-border). Оставлен как запись цвета на случай, если
+     незаполненную часть когда-нибудь вернут; красить им дорожку не нужно. */
   --range-input-track-bg: var(--grey-166);
   /* Thumb pill color — pixel-sampled #80E3FF (base/blue-223) in every
      enabled state screenshot (Default/Hover/Focused all identical); this is

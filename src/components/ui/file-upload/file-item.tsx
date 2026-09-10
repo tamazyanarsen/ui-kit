@@ -1,5 +1,12 @@
 import type * as React from "react"
-import { CircleAlert, Ellipsis, FileIcon, LoaderCircle, X } from "@/icons"
+import {
+  CircleAlert,
+  Download,
+  Ellipsis,
+  FileIcon,
+  LoaderCircle,
+  X,
+} from "@/icons"
 
 import { cn } from "@/lib/utils"
 
@@ -74,6 +81,14 @@ export function FileListItem({
     : error
       ? "text-[var(--file-item-error-fg)]"
       : "text-[var(--file-item-icon-fg)]"
+
+  // Значок свойства `Show Edit` зависит от размера, и это не описка макета:
+  // у L (и Desktop, и Mobile — ноды 16029:58063 и 16029:58080) стоит
+  // `icon / more`, то есть меню действий над файлом, а у S (16029:58723 и
+  // 16029:58865) — `icon / download`. Дизайн-чек «Сторибук Ч.2», замечание 2
+  // («должна быть иконка more») снят с L-строки, но распространять его на S
+  // нельзя: там эталон рисует именно стрелку.
+  const EditGlyph = small ? Download : Ellipsis
 
   // Вторая строка: у загрузки это всегда «Загрузка», у ошибки — текст
   // ошибки под свойством `Show Text Error`, в остальном — описание под
@@ -172,17 +187,13 @@ export function FileListItem({
 
       <span className="flex shrink-0 items-center gap-4">
         {showEdit && (
-          // Дизайн-чек «Сторибук Ч.2», замечание 2: «Files: неверная иконка,
-          // должна быть иконка more». Здесь стояла стрелка загрузки, а в
-          // макете у свойства `Show Edit` — `icon / more` (многоточие),
-          // то есть меню действий над файлом, а не повторная загрузка.
           <button
             type="button"
-            aria-label="Действия с файлом"
+            aria-label={small ? "Скачать файл" : "Действия с файлом"}
             onClick={onRetry}
             className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
           >
-            <Ellipsis aria-hidden="true" className="size-4" />
+            <EditGlyph aria-hidden="true" className="size-4" />
           </button>
         )}
         {showCross && (

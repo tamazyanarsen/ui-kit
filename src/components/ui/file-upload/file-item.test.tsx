@@ -29,9 +29,9 @@ describe("FileListItem", () => {
     expect(screen.getByText("Файл повреждён")).toBeInTheDocument()
   })
 
-  // Дизайн-чек «Сторибук Ч.2», замечание 2: у `Show Edit` иконка `more`,
-  // то есть меню действий с файлом, а не повторная загрузка — вместе с
-  // рисунком поменялась и подпись кнопки.
+  // Дизайн-чек «Сторибук Ч.2», замечание 2: у `Show Edit` размера L иконка
+  // `more`, то есть меню действий с файлом, а не повторная загрузка — вместе
+  // с рисунком поменялась и подпись кнопки.
   it("calls onRetry and onRemove from their respective buttons", async () => {
     const user = userEvent.setup()
     const onRetry = vi.fn()
@@ -45,6 +45,18 @@ describe("FileListItem", () => {
 
     expect(onRetry).toHaveBeenCalledTimes(1)
     expect(onRemove).toHaveBeenCalledTimes(1)
+  })
+
+  // У размера S эталон рисует не `more`, а `download` (ноды 16029:58723 и
+  // 16029:58865) — глобальная замена значка сломала бы именно этот случай.
+  it("keeps the download glyph at size S", () => {
+    render(<FileListItem name="Договор.pdf" size="s" />)
+    expect(
+      screen.getByRole("button", { name: "Скачать файл" })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Действия с файлом" })
+    ).not.toBeInTheDocument()
   })
 
   it("hides the retry/remove buttons when disabled via showEdit/showCross", () => {

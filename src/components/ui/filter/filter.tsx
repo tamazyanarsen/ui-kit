@@ -5,7 +5,7 @@ import { ComboboxFooter } from "@/components/ui/combobox"
 import { Dropdown } from "@/components/ui/dropdown"
 import { Input } from "@/components/ui/input"
 
-import { FilterTrigger } from "./filter-trigger"
+import { FilterTrigger, type FilterType } from "./filter-trigger"
 
 // Filter — "Фильтр": a Select-like dropdown trigger (ui/chips/chips,
 // filter@2x.png) whose popup is a single value field + Сбросить/Применить
@@ -15,32 +15,30 @@ import { FilterTrigger } from "./filter-trigger"
 // a value, popup closed; click clears without reopening) per chips-filter's
 // own "Варианты — поведение Select" row.
 //
-// Видов вызова у фильтра два, и оба есть в макетах:
-//
-//   • `table-filter` — пилюля `ELK / filter-table` (нода 1303:99241): серая
-//     #F4F4F4 с шевроном, пока пусто, и тёмная #012F42 с крестиком, когда
-//     значение выбрано. Это ВИД ПО УМОЛЧАНИЮ;
-//   • `chips` — коробка chips-filter.
+// Элемент вызова у фильтра ОДИН — пилюля `ELK / filter-table` (нода
+// 1303:99241): серая #F4F4F4, пока пусто, и тёмная #012F42 с крестиком,
+// когда значение выбрано.
 //
 // Дизайн-чек от 07.09, замечание 17: «Не тот элемент вызова фильтра. В
 // компоненте Filter по умолчанию используется не Chips, а Table Filter».
-// Раньше умолчанием была коробка, а пилюля включалась пропом `chip` — то
-// есть каждый реестр в песочнице обязан был не забыть его передать, и
-// витрина фильтра показывала не тот вид, который в продукте основной.
+// Дизайн-чек «Сторибук Ч.2» от 10.09, замечание 5, довёл это до конца:
+// «Нужно разделить компоненты filter и chips на разные, компонент chips уже
+// есть, необходимо перенести эти свойства к нему». Поэтому второй вид
+// (коробка chips-filter) и его заливка `background` из фильтра убраны — все
+// пять значений `Type` компонент-сета `ELK / chips, filter` живут в `Chips`.
 //
 // Внешний вид триггера целиком живёт в `filter-trigger.tsx`; здесь —
 // состояние значения и попап с полем ввода.
 interface FilterProps {
   label: React.ReactNode
-  icon?: React.ReactNode
-  background?: "white" | "grey"
+  /** Свойство `Type` — см. {@link FilterType}. */
+  type?: FilterType
+  /** Число в плашке у типа `counter`. */
   count?: number
   disabled?: boolean
   value?: string | null
   defaultValue?: string | null
   onValueChange?: (value: string | null) => void
-  /** Вид элемента вызова — см. комментарий выше. */
-  variant?: "table-filter" | "chips"
   open?: boolean
   onOpenChange?: (open: boolean) => void
   placeholder?: string
@@ -49,14 +47,12 @@ interface FilterProps {
 
 function Filter({
   label,
-  icon,
-  background = "white",
+  type = "select",
   count,
   disabled = false,
   value,
   defaultValue = null,
   onValueChange,
-  variant = "table-filter",
   open: openProp,
   onOpenChange,
   placeholder = "Введите значение",
@@ -126,14 +122,11 @@ function Filter({
       >
         <FilterTrigger
           label={label}
-          icon={icon}
-          background={background}
+          type={type}
           count={count}
           disabled={disabled}
-          asChip={variant === "table-filter"}
-          chipChecked={variant === "table-filter" && hasValue}
+          checked={hasValue}
           open={open}
-          hasValue={hasValue}
           activeValue={activeValue}
           onClear={handleClear}
           anchorRef={anchorRef}

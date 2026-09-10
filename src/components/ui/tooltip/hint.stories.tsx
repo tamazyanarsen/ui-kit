@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
-import { ViewportScope, type Viewport } from "@/lib/viewport"
+import {
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
+import { ViewportScope } from "@/lib/viewport"
 
 import { Hint, type HintProps } from "./hint"
 import type { TooltipDirection } from "./variants"
@@ -18,20 +23,77 @@ const DIRECTIONS: TooltipDirection[] = [
   "right",
 ]
 
-type PlaygroundArgs = HintProps & { viewport?: Viewport }
+/* Панель «Свойства компонента» компонент-сета `ELK / tooltip & hint`
+   (таблица 11756:9183 на канвасе Tooltip & Hint 675:9540):
+
+     Direction   Left, Right, Top Center, Top Left, Top Right,
+                 Down Center, Down Left, Down Right, Mobile
+     Show Cross  True, False
+     Show Title  True, False
+
+   Дизайн-чек «Сторибук Ч.2» от 10.09.2026, замечание 7.
+
+   ⚠️ `Mobile` — значение той же оси Direction, а не отдельный контрол формы:
+   ниже 768 подсказка разворачивается в Bottom Sheet (символ 11756:8112), и
+   направления у неё уже нет. Поэтому прежний контрол `viewport` из панели
+   убран, а мобильную форму включает сам список. */
+const DIRECTION_LABELS = {
+  left: "Left",
+  right: "Right",
+  "top-center": "Top Center",
+  "top-left": "Top Left",
+  "top-right": "Top Right",
+  "down-center": "Down Center",
+  "down-left": "Down Left",
+  "down-right": "Down Right",
+  mobile: "Mobile",
+} as const
+
+type DirectionArg = keyof typeof DIRECTION_LABELS
+
+/* Ось Direction шире пропа `direction` на значение `Mobile`, поэтому в
+   аргументах истории она отдельным ключом, а сам проп из панели убран. */
+type PlaygroundArgs = HintProps & {
+  figmaDirection?: DirectionArg
+  showTitle?: boolean
+}
+
+const CONTENT = { table: { category: "Контент" } }
+/** Пропы кита сверх таблицы свойств Figma — чтобы они не мешались наверху. */
+const EXTRA = { table: { category: "Дополнительно" } }
 
 const meta = {
   title: "Компоненты/Hint",
   component: Hint,
   parameters: { layout: "centered" },
   argTypes: {
-    // `children` is a React.ReactElement (the trigger) — no JSON value can
-    // represent it; Storybook falls back to a raw editable tree of the
-    // element's internals ($$typeof/type/props/_owner/_store), which looks
-    // like a working control but can't meaningfully be edited. Map a
-    // friendly choice between two real trigger elements instead (same
-    // technique as Button's `icon`).
+    figmaDirection: optionsArgType("Direction", DIRECTION_LABELS),
+    direction: { table: { disable: true } },
+    showCross: toggleArgType("Show Cross"),
+    showTitle: toggleArgType("Show Title"),
+    title: {
+      control: "text",
+      if: { arg: "showTitle", truthy: true },
+      ...CONTENT,
+    },
+    content: { control: "text", ...CONTENT },
+    // Дизайн-чек от 07.09, замечание 18: «Тултипам нужно 2 режима ширины.
+    // Базовый 256px, альтернативный — динамический». В таблице свойств
+    // макета этого нет, поэтому проп живёт отдельной категорией.
+    width: {
+      name: "Width",
+      control: "inline-radio",
+      options: ["base", "auto"],
+      description: "base — 256px, auto — по содержимому",
+      ...EXTRA,
+    },
+    defaultOpen: { name: "Раскрыта", control: "boolean", ...EXTRA },
+    // Управляемый двойник `defaultOpen` — в панели он не нужен.
+    open: { table: { disable: true } },
+    // `children` — это React-узел (кнопка-триггер), контролом его не набрать;
+    // выбор из двух готовых кнопок, как у `icon` у Button.
     children: {
+      name: "Триггер",
       control: {
         type: "select",
         labels: { grey: "Button (Grey)", primary: "Button (Primary)" },
@@ -41,36 +103,18 @@ const meta = {
         grey: <Button variant="secondary-grey">Открыть подсказку</Button>,
         primary: <Button variant="primary">Открыть подсказку</Button>,
       },
+      ...EXTRA,
     },
-    // `title`/`content` are typed `React.ReactNode` (broad, to allow markup
-    // in principle) but are always plain strings in practice — with no arg
-    // set, Storybook's auto-inferred control for the broad type falls back
-    // to a "Set object" placeholder instead of a text box.
-    title: { control: "text" },
-    content: { control: "text" },
-    direction: { control: "select", options: DIRECTIONS },
-    // Дизайн-чек от 07.09, замечание 18: «Тултипам нужно 2 режима ширины.
-    // Базовый 256px, альтернативный — динамический».
-    width: {
-      name: "Width",
-      control: "inline-radio",
-      options: ["base", "auto"],
-      description: "base — 256px, auto — по содержимому",
-    },
-    showCross: { control: "boolean" },
-    defaultOpen: { control: "boolean" },
-    // Ниже md подсказка раскрывается как Bottom Sheet. Дизайн-чек №3 №19:
-    // это выбирается контролом, а не пиннингом вьюпорта.
-    viewport: viewportArgType,
   },
   args: {
-    width: "base",
+    figmaDirection: "top-center" as DirectionArg,
+    showCross: true,
+    showTitle: false,
+    title: "Заголовок подсказки",
     content:
       "Развёрнутый текст подсказки, который поясняет назначение элемента.",
-    direction: "top-center",
-    showCross: true,
+    width: "base",
     children: <Button variant="secondary-grey">Открыть подсказку</Button>,
-    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -78,18 +122,27 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ viewport, ...args }) => (
-    <ViewportScope viewport={viewport}>
-      <Hint {...args} />
-    </ViewportScope>
-  ),
+  render: ({ figmaDirection, showTitle, title, ...args }) => {
+    const mobile = figmaDirection === "mobile"
+    return (
+      <ViewportScope viewport={mobile ? "mobile" : "desktop"}>
+        <Hint
+          {...args}
+          // У мобильной формы направления нет — это Bottom Sheet.
+          direction={
+            mobile ? "top-center" : (figmaDirection as TooltipDirection)
+          }
+          title={showTitle ? title : undefined}
+        />
+      </ViewportScope>
+    )
+  },
 }
 
 /* Hint is a click-opened, portalled popup, so its variants are laid out as
-   live triggers rather than a grid of static cells. Below `md` it becomes a
-   Modal bottom sheet with a "Понятно" button (per the master's
-   Direction=Mobile symbol) — контрол `viewport` в Playground показывает эту
-   форму без изменения ширины окна. */
+   live triggers rather than a grid of static cells. Мобильную форму (Bottom
+   Sheet с кнопкой «Понятно») показывает значение `Mobile` оси Direction в
+   Playground. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

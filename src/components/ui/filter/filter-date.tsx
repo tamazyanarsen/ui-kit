@@ -34,8 +34,6 @@ interface FilterDateProps {
   defaultValue?: [Date | null, Date | null]
   onValueChange?: (value: [Date | null, Date | null]) => void
   presets?: FilterDatePreset[]
-  chip?: boolean
-  background?: "white" | "grey"
   disabled?: boolean
   className?: string
 }
@@ -60,8 +58,6 @@ function FilterDate({
   defaultValue = EMPTY,
   onValueChange,
   presets = [],
-  chip = false,
-  background = "white",
   disabled = false,
   className,
 }: FilterDateProps) {
@@ -98,8 +94,6 @@ function FilterDate({
       valueLabel={valueLabel}
       active={active}
       onClear={() => commit(EMPTY)}
-      chip={chip}
-      background={background}
       disabled={disabled}
       open={open}
       onOpenChange={setOpen}

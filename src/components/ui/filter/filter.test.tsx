@@ -14,11 +14,15 @@ describe("Filter", () => {
     const user = userEvent.setup()
     render(<Filter label="Статус" placeholder="Введите статус" />)
 
-    expect(screen.queryByPlaceholderText("Введите статус")).not.toBeInTheDocument()
+    expect(
+      screen.queryByPlaceholderText("Введите статус")
+    ).not.toBeInTheDocument()
 
     await user.click(screen.getByText("Статус"))
 
-    expect(await screen.findByPlaceholderText("Введите статус")).toBeInTheDocument()
+    expect(
+      await screen.findByPlaceholderText("Введите статус")
+    ).toBeInTheDocument()
   })
 
   it("applies a typed value and calls onValueChange", async () => {
@@ -54,15 +58,14 @@ describe("Filter", () => {
     render(
       <Filter
         label="Статус"
-        variant="chips"
         defaultValue="Оплачен"
         onValueChange={onValueChange}
       />
     )
 
-    // Коробка chips-filter показывает подпись, а не значение (в отличие от
-    // вида `table-filter`, который с этого чека стал умолчанием).
-    await user.click(screen.getByText("Статус"))
+    // Выбранный фильтр показывает значение вместо подписи — вида-коробки у
+    // него больше нет (дизайн-чек «Сторибук Ч.2», замечание 5).
+    await user.click(screen.getByText("Оплачен"))
     await user.click(await screen.findByRole("button", { name: "Сбросить" }))
 
     // "При нажатии на кнопку «Сбросить» фильтр закрывается."
@@ -73,7 +76,13 @@ describe("Filter", () => {
   it("shows a clear (X) button once it has a value, and clears without reopening", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
-    render(<Filter label="Статус" defaultValue="Оплачен" onValueChange={onValueChange} />)
+    render(
+      <Filter
+        label="Статус"
+        defaultValue="Оплачен"
+        onValueChange={onValueChange}
+      />
+    )
 
     await user.click(screen.getByRole("button", { name: "Сбросить фильтр" }))
 
@@ -88,7 +97,7 @@ describe("Filter", () => {
   })
 
   it("shows a count badge when count is given", () => {
-    render(<Filter label="Статус" count={3} />)
+    render(<Filter label="Статус" type="counter" count={3} />)
     expect(screen.getByText("3")).toBeInTheDocument()
   })
 
@@ -98,6 +107,8 @@ describe("Filter", () => {
 
     await user.click(screen.getByText("Статус"))
 
-    expect(screen.queryByPlaceholderText("Введите статус")).not.toBeInTheDocument()
+    expect(
+      screen.queryByPlaceholderText("Введите статус")
+    ).not.toBeInTheDocument()
   })
 })

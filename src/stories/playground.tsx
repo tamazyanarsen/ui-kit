@@ -68,11 +68,12 @@ export type PlaygroundState =
   | "pressed"
   | "active"
   | "focus"
-  /* Disabled и Loading — настоящие пропы, а не псевдоклассы: в оси State
-     они есть у части компонентов, поэтому значения объявлены здесь, а
+  /* Disabled, Loading и Error — настоящие пропы, а не псевдоклассы: в оси
+     State они есть у части компонентов, поэтому значения объявлены здесь, а
      раскладывает их в пропы сама история. */
   | "disabled"
   | "loading"
+  | "error"
 
 export const PLAYGROUND_STATES: PlaygroundState[] = [
   "default",
@@ -89,6 +90,7 @@ const PLAYGROUND_STATE_CLASS: Record<PlaygroundState, string | undefined> = {
   focus: "pseudo-focus-visible-all",
   disabled: undefined,
   loading: undefined,
+  error: undefined,
 }
 
 export function PseudoBox({

@@ -1,5 +1,4 @@
 import * as React from "react"
-import { CircleHelp as Circle } from "@/icons"
 
 import { Filter } from "@/components/ui/filter"
 import {
@@ -54,19 +53,19 @@ function FilterDemo() {
       <AccordionTrigger>Filter</AccordionTrigger>
       <AccordionPanel>
         <div className="flex flex-col gap-2">
-          <RowLabel>Фон — White / Grey</RowLabel>
+          <RowLabel>Type — Text / Select / Counter</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" background="white" />
-            <Filter label="Filter" background="grey" />
+            <Filter label="Filter" type="text" />
+            <Filter label="Filter" type="select" />
+            <Filter label="Filter" type="counter" count={3} />
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <RowLabel>Опциональные элементы — Icon / Badge</RowLabel>
+          <RowLabel>Counter — плашка со счётчиком</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" icon={<Circle aria-hidden="true" />} />
-            <Filter label="Filter" count={3} />
-            <Filter label="Filter" icon={<Circle aria-hidden="true" />} count={3} />
+            <Filter label="Filter" type="counter" count={3} />
+            <Filter label="Filter" type="counter" count={12} />
           </div>
         </div>
 
@@ -85,26 +84,25 @@ function FilterDemo() {
           <RowLabel>Disabled</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
             <Filter label="Filter" disabled />
-            <Filter label="Filter" icon={<Circle aria-hidden="true" />} disabled />
+            <Filter label="Filter" type="counter" count={3} disabled />
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
           <RowLabel>
-            Использование в таблице (ui/filter-table) — применённое
-            значение сворачивается в тёмный чипс с крестиком
+            Использование в таблице (ui/filter-table) — применённое значение
+            сворачивается в тёмный чипс с крестиком
           </RowLabel>
           <FilterTableExample />
         </div>
 
         <p className="mt-6 text-p3-medium text-muted-foreground">
-          Filter — Select-подобный триггер: клик открывает попап с полем
-          ввода и футером «Сбросить» / «Применить». Применённое значение
-          показывается вместо шеврона крестиком (X), клик по нему сбрасывает
-          фильтр напрямую, не открывая попап. Проп <code>chip</code>{" "}
-          включает вид из ui/filter-table — компактный тёмный чипс с
-          применённым значением, как это используется в фильтр-баре над
-          таблицей.
+          Filter — Select-подобный триггер: клик открывает попап с полем ввода и
+          футером «Сбросить» / «Применить». Применённое значение показывается
+          вместо шеврона крестиком (X), клик по нему сбрасывает фильтр напрямую,
+          не открывая попап. Проп <code>chip</code> включает вид из
+          ui/filter-table — компактный тёмный чипс с применённым значением, как
+          это используется в фильтр-баре над таблицей.
         </p>
       </AccordionPanel>
     </AccordionItem>

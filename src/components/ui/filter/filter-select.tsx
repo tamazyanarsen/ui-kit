@@ -50,8 +50,6 @@ interface FilterSelectProps {
   onValueChange?: (value: string[]) => void
   searchable?: boolean
   searchPlaceholder?: string
-  chip?: boolean
-  background?: "white" | "grey"
   disabled?: boolean
   className?: string
 }
@@ -67,8 +65,6 @@ function FilterSelect({
   onValueChange,
   searchable = true,
   searchPlaceholder = "Поиск",
-  chip = false,
-  background = "white",
   disabled = false,
   className,
 }: FilterSelectProps) {
@@ -166,8 +162,6 @@ function FilterSelect({
       }
       active={active}
       onClear={() => commit([])}
-      chip={chip}
-      background={background}
       disabled={disabled}
       open={open}
       onOpenChange={setOpen}

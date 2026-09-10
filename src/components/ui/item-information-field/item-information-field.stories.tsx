@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import {
@@ -11,71 +16,118 @@ import {
 } from "./item-information-field"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 
-const TYPES: FieldType[] = ["label-left", "label-line", "label-top", "large-value"]
-const STATUSES: FieldStatus[] = [
-  "default",
-  "success",
-  "error",
-  "attention",
-  "information",
-]
+/* Панель «Свойства компонента» компонент-сета `ELK / item.information field`
+   (таблица 70240:38965 на канвасе Item 11159:9039):
 
-type PlaygroundArgs = ItemInformationFieldProps & { viewport?: Viewport }
+     Size              Desktop, Mobile
+     Type              Label Left, Label Top, Large Value, Line
+     Show Sub Text     True, False
+     Show Divider      True, False
+     Value Status      Default, Success, Error, Attention, Information
+     Sub Title Status  Default, Success, Error, Attention, Information
+     Show Information  True, False
+     Show Icon         True, False
+
+   Дизайн-чек «Сторибук Ч.2» от 10.09.2026, замечание 8: панель не совпадала
+   с этим списком — половина свойств была включена не переключателем, а тем,
+   что в текстовое поле что-то вписали.
+
+   `Show Information` — это значок «i» у подписи и у значения (пропы
+   `labelInfo`/`valueInfo`), `Show Icon` — значок копирования (`copyable`). */
+const TYPE_LABELS: Record<FieldType, string> = {
+  "label-left": "Label Left",
+  "label-top": "Label Top",
+  "large-value": "Large Value",
+  "label-line": "Line",
+}
+
+const TYPES = Object.keys(TYPE_LABELS) as FieldType[]
+
+const STATUS_LABELS: Record<FieldStatus, string> = {
+  default: "Default",
+  success: "Success",
+  error: "Error",
+  attention: "Attention",
+  information: "Information",
+}
+
+const STATUSES = Object.keys(STATUS_LABELS) as FieldStatus[]
+
+type SubTextStatus = Exclude<FieldStatus, "information">
+
+const SUB_STATUS_LABELS: Record<SubTextStatus, string> = {
+  default: "Default",
+  success: "Success",
+  error: "Error",
+  attention: "Attention",
+}
+
+type PlaygroundArgs = ItemInformationFieldProps & {
+  viewport?: Viewport
+  showSubText?: boolean
+  showInformation?: boolean
+}
+
+const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   title: "Компоненты/Information Field",
   component: ItemInformationField,
   parameters: { layout: "padded" },
   argTypes: {
-    type: { control: "inline-radio", options: TYPES },
-    label: { control: "text" },
-    value: { control: "text" },
-    // `subText`/`labelInfo`/`valueInfo` are `React.ReactNode` but every
-    // usage is a plain string — without this, leaving one unset falls back
-    // to a generic "Set object" JSON editor.
-    subText: { control: "text" },
-    // The two info glyphs are driven by *content*, not by a flag: a
-    // non-empty labelInfo/valueInfo is what renders the 16px "i" next to the
-    // label / value, and its text is the tooltip. Both ship with a default
-    // so the icon variant is visible in the Playground without having to
-    // guess that typing here turns it on — clear the field to hide it.
-    labelInfo: { control: "text" },
-    valueInfo: { control: "text" },
-    copyable: { control: "boolean" },
-    // What lands in the clipboard when the copy glyph is pressed; falls back
-    // to `value` when unset.
-    copyValue: { control: "text" },
-    divider: { control: "boolean" },
-    valueStatus: { control: "select", options: STATUSES },
-    // `subTextStatus` is `Exclude<FieldStatus, "information">` — react-docgen
-    // can't resolve a computed utility type into an enum the way it does the
-    // plain `FieldStatus` alias (`valueStatus` already gets a select
-    // automatically), so it falls back to the same generic "Set object"
-    // editor. Pin the real (narrower) option list explicitly instead.
+    viewport: sizeArgType,
+    type: optionsArgType("Type", TYPE_LABELS),
+    showSubText: toggleArgType("Show Sub Text"),
+    divider: toggleArgType("Show Divider"),
+    valueStatus: optionsArgType("Value Status", STATUS_LABELS),
     subTextStatus: {
-      control: "select",
-      options: ["default", "success", "error", "attention"] satisfies Exclude<
-        FieldStatus,
-        "information"
-      >[],
+      ...optionsArgType("Sub Title Status", SUB_STATUS_LABELS),
+      if: { arg: "showSubText", truthy: true },
     },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
+    showInformation: toggleArgType(
+      "Show Information",
+      "Значок «i» у подписи и у значения — текст подсказки задаётся полями ниже"
+    ),
+    copyable: toggleArgType("Show Icon", "Значок копирования значения"),
+    label: { control: "text", ...CONTENT },
+    value: { control: "text", ...CONTENT },
+    subText: {
+      control: "text",
+      if: { arg: "showSubText", truthy: true },
+      ...CONTENT,
+    },
+    labelInfo: {
+      control: "text",
+      if: { arg: "showInformation", truthy: true },
+      ...CONTENT,
+    },
+    valueInfo: {
+      control: "text",
+      if: { arg: "showInformation", truthy: true },
+      ...CONTENT,
+    },
+    // Что попадёт в буфер обмена; без значения копируется `value`.
+    copyValue: {
+      control: "text",
+      if: { arg: "copyable", truthy: true },
+      ...CONTENT,
+    },
   },
   args: {
-    type: "label-left",
+    viewport: "desktop" as Viewport,
+    type: "label-left" as FieldType,
+    showSubText: true,
+    divider: true,
+    valueStatus: "default" as FieldStatus,
+    subTextStatus: "default" as SubTextStatus,
+    showInformation: true,
+    copyable: true,
     label: "ИНН",
     value: "7710140123",
     subText: "Подтверждён",
     labelInfo: "Идентификационный номер налогоплательщика",
     valueInfo: "Значение получено из ЕГРЮЛ",
-    copyable: true,
     copyValue: "7710140123",
-    divider: true,
-    valueStatus: "default",
-    subTextStatus: "default",
-    viewport: "auto" as Viewport,
   },
   decorators: [
     (Story) => (
@@ -91,9 +143,14 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ viewport, ...args }) => (
+  render: ({ viewport, showSubText, showInformation, ...args }) => (
     <ViewportScope viewport={viewport}>
-      <ItemInformationField {...args} />
+      <ItemInformationField
+        {...args}
+        subText={showSubText ? args.subText : undefined}
+        labelInfo={showInformation ? args.labelInfo : undefined}
+        valueInfo={showInformation ? args.valueInfo : undefined}
+      />
     </ViewportScope>
   ),
 }
@@ -111,13 +168,19 @@ export const Matrix: Story = {
         columnGroups={[
           {
             label: "Type",
-            columns: TYPES.map((type) => ({ label: type, props: { type } })),
+            columns: TYPES.map((type) => ({
+              label: TYPE_LABELS[type],
+              props: { type },
+            })),
           },
         ]}
         rows={[
           { label: "Default", props: {} },
           { label: "+ подпись", props: { subText: "Subtext" } },
-          { label: "+ копирование", props: { copyable: true, copyValue: "Value" } },
+          {
+            label: "+ копирование",
+            props: { copyable: true, copyValue: "Value" },
+          },
           {
             label: "+ иконки инфо",
             props: { labelInfo: "О поле", valueInfo: "О значении" },
@@ -137,7 +200,7 @@ export const Matrix: Story = {
           {
             label: "Value status",
             columns: STATUSES.map((valueStatus) => ({
-              label: valueStatus,
+              label: STATUS_LABELS[valueStatus],
               props: { valueStatus },
             })),
           },

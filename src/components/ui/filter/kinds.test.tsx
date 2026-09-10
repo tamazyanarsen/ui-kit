@@ -26,7 +26,11 @@ describe("FilterSelect — вид «Множественный выбор»", ()
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(
-      <FilterSelect label="Статус" options={OPTIONS} onValueChange={onValueChange} />
+      <FilterSelect
+        label="Статус"
+        options={OPTIONS}
+        onValueChange={onValueChange}
+      />
     )
 
     await user.click(screen.getByText("Статус"))
@@ -44,16 +48,18 @@ describe("FilterSelect — вид «Множественный выбор»", ()
   // подписи, а не плашка Badge.
   it("shows one value by name and several as «Подпись: N»", async () => {
     const { rerender } = render(
-      <FilterSelect label="Статус" options={OPTIONS} value={["a"]} chip />
+      <FilterSelect label="Статус" options={OPTIONS} value={["a"]} />
     )
     expect(screen.getByText("Исполнен")).toBeInTheDocument()
 
     rerender(
-      <FilterSelect label="Статус" options={OPTIONS} value={["a", "b"]} chip />
+      <FilterSelect label="Статус" options={OPTIONS} value={["a", "b"]} />
     )
     const chip = screen.getByText("Статус: 2")
     expect(chip).toBeInTheDocument()
-    expect(chip.closest("[data-slot]")?.querySelector("[data-slot='badge']")).toBeNull()
+    expect(
+      chip.closest("[data-slot]")?.querySelector("[data-slot='badge']")
+    ).toBeNull()
   })
 
   // "Поиск срабатывает по всем уровням вложенности списка — как выбираемым,
@@ -87,7 +93,8 @@ describe("FilterSelect — вид «Множественный выбор»", ()
         onValueChange={onValueChange}
       />
     )
-    await user.click(screen.getByText("Статус"))
+    // Пилюля с выбранным значением показывает его, а не подпись.
+    await user.click(screen.getByText("Исполнен"))
     await user.click(screen.getByRole("button", { name: "Сбросить" }))
 
     expect(onValueChange).toHaveBeenCalledWith([])
@@ -107,7 +114,7 @@ describe("FilterRange — фильтр сумм и количеств", () => {
   })
 
   it("reports which half is filled", () => {
-    render(<FilterRange label="Сумма" value={{ from: "100", to: "" }} chip />)
+    render(<FilterRange label="Сумма" value={{ from: "100", to: "" }} />)
     expect(screen.getByText("От 100")).toBeInTheDocument()
   })
 })
@@ -116,7 +123,9 @@ describe("FilterBoolean — булев фильтр", () => {
   it("toggles without any dropdown", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
-    render(<FilterBoolean label="Ненулевой баланс" onValueChange={onValueChange} />)
+    render(
+      <FilterBoolean label="Ненулевой баланс" onValueChange={onValueChange} />
+    )
 
     const pill = screen.getByRole("button", { name: "Ненулевой баланс" })
     expect(pill).toHaveAttribute("aria-pressed", "false")

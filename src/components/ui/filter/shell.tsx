@@ -23,15 +23,17 @@ import { Dropdown } from "@/components/ui/dropdown"
 
 const ICON_SIZE = "size-4"
 
+// Дизайн-чек «Сторибук Ч.2» от 10.09.2026, замечание 5: коробка chips-filter
+// из фильтра убрана целиком — элемент вызова у всех видов фильтра один и тот
+// же, пилюля `ELK / filter-table`. Свойства коробки (`Type` со значениями
+// Filter White/Grey/Subtitle) реализует компонент `Chips`, и дублировать их
+// здесь больше нельзя.
 interface FilterShellProps {
   label: React.ReactNode
   /** Text shown in place of the label once the filter is applied. */
   valueLabel?: React.ReactNode
-  icon?: React.ReactNode
-  background?: "white" | "grey"
   count?: number
   disabled?: boolean
-  chip?: boolean
   active?: boolean
   onClear?: () => void
   open: boolean
@@ -45,11 +47,8 @@ interface FilterShellProps {
 function FilterShell({
   label,
   valueLabel,
-  icon,
-  background = "white",
   count,
   disabled = false,
-  chip = false,
   active = false,
   onClear,
   open,
@@ -59,25 +58,6 @@ function FilterShell({
   className,
 }: FilterShellProps) {
   const anchorRef = React.useRef<HTMLDivElement>(null)
-  const asChip = chip
-  const chipChecked = chip && active
-
-  let triggerToneClass: string
-  if (asChip) {
-    triggerToneClass = cn(
-      "border-transparent",
-      filterTablePillClass({ selected: chipChecked, disabled })
-    )
-  } else if (disabled) {
-    triggerToneClass = "border-transparent bg-[var(--filter-disabled-bg)]"
-  } else {
-    triggerToneClass = cn(
-      open ? "border-[var(--filter-active-border)]" : "border-transparent",
-      background === "grey"
-        ? "bg-[var(--filter-grey-bg)] hover:bg-[var(--filter-grey-bg-hover)]"
-        : "bg-[var(--filter-white-bg)] hover:bg-[var(--filter-white-bg-hover)]"
-    )
-  }
 
   function renderTriggerAction() {
     if (active && onClear) {
@@ -91,14 +71,7 @@ function FilterShell({
             event.stopPropagation()
             onClear()
           }}
-          className={cn(
-            "outline-none focus-visible:focus-ring",
-            disabled
-              ? "text-[var(--filter-disabled-fg)]"
-              : asChip
-                ? "text-current"
-                : "text-[var(--filter-icon-fg)]"
-          )}
+          className="text-current outline-none focus-visible:focus-ring"
         >
           <X aria-hidden="true" className={ICON_SIZE} />
         </button>
@@ -108,15 +81,7 @@ function FilterShell({
     return (
       <Chevron
         aria-hidden="true"
-        className={cn(
-          ICON_SIZE,
-          "shrink-0",
-          disabled
-            ? "text-[var(--filter-disabled-fg)]"
-            : asChip
-              ? "text-current"
-              : "text-[var(--filter-icon-fg)]"
-        )}
+        className={cn(ICON_SIZE, "shrink-0 text-current")}
       />
     )
   }
@@ -134,45 +99,30 @@ function FilterShell({
             <div
               ref={anchorRef}
               data-slot="filter"
+              data-checked={active || undefined}
               data-disabled={disabled || undefined}
               className={cn(
-                "group/filter inline-flex w-fit max-w-64 cursor-pointer flex-col items-start gap-0 border-2 whitespace-nowrap px-4 py-1.5 outline-none transition-colors select-none not-data-popup-open:focus-visible:focus-ring data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
-                asChip ? "min-w-20" : "min-w-20 rounded-[8px]",
-                triggerToneClass,
+                "group/filter w-fit min-w-20 cursor-pointer outline-none select-none not-data-popup-open:focus-visible:focus-ring data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+                filterTablePillClass({ selected: active, disabled }),
                 className
               )}
             />
           }
         >
           <span className="flex w-full min-w-0 items-center gap-2">
-            {icon && !asChip && (
-              <span
-                aria-hidden="true"
-                className={cn(ICON_SIZE, "shrink-0 text-[var(--filter-icon-fg)]")}
-              >
-                {icon}
-              </span>
-            )}
             <span
               className={cn(
-                "min-w-0 truncate text-p2-medium",
-                !asChip && "desktop:text-p1-medium",
-                asChip
-                  ? chipChecked
-                    ? undefined
-                    : "flex-1 text-center"
-                  : disabled
-                    ? "text-[var(--filter-disabled-fg)]"
-                    : "text-[var(--filter-fg)]"
+                "min-w-0 truncate",
+                !active && "flex-1 text-center"
               )}
             >
-              {chipChecked && valueLabel !== undefined ? valueLabel : label}
+              {active && valueLabel !== undefined ? valueLabel : label}
             </span>
             {count !== undefined && (
               <Badge
                 type="counter"
                 value={count}
-                color={asChip ? "dark-grey" : "light-grey"}
+                color="dark-grey"
                 disabled={disabled}
               />
             )}

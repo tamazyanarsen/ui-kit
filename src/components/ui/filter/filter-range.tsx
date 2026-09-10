@@ -25,8 +25,6 @@ interface FilterRangeProps {
   error?: React.ReactNode
   /** Currency form: "в маске полей ввода добавляется инпут". */
   suffix?: React.ReactNode
-  chip?: boolean
-  background?: "white" | "grey"
   disabled?: boolean
   className?: string
 }
@@ -42,8 +40,6 @@ function FilterRange({
   onValueChange,
   error,
   suffix,
-  chip = false,
-  background = "white",
   disabled = false,
   className,
 }: FilterRangeProps) {
@@ -67,13 +63,14 @@ function FilterRange({
   const active = filled(applied) > 0
   // "Выбрано одно значение ОТ" / "ДО" / "Выбран диапазон" — the chip reports
   // whichever half is filled.
-  const valueLabel = applied.from && applied.to
-    ? `${applied.from} – ${applied.to}`
-    : applied.from
-      ? `${fromLabel} ${applied.from}`
-      : applied.to
-        ? `${toLabel} ${applied.to}`
-        : undefined
+  const valueLabel =
+    applied.from && applied.to
+      ? `${applied.from} – ${applied.to}`
+      : applied.from
+        ? `${fromLabel} ${applied.from}`
+        : applied.to
+          ? `${toLabel} ${applied.to}`
+          : undefined
 
   return (
     <FilterShell
@@ -81,8 +78,6 @@ function FilterRange({
       valueLabel={valueLabel}
       active={active}
       onClear={() => commit(EMPTY)}
-      chip={chip}
-      background={background}
       disabled={disabled}
       open={open}
       onOpenChange={setOpen}

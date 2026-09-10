@@ -1,75 +1,119 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
-import { ICON_NAMES } from "@/components/ui/icon"
-
 import { Informer, type InformerProps } from "./informer"
-import type { InformerIcon } from "./variants"
+import type { InformerIcon, InformerSolid } from "./variants"
 
-const ICONS: InformerIcon[] = [
-  "attention-red",
-  "attention-yellow",
-  "check",
-  "information",
-  "clock",
-]
+/* Панель «Свойства компонента» компонент-сета `ELK / informer`
+   (таблица 70240:35839 на канвасе Message 666:20):
 
-/* Переключатели видимости кнопок живут в истории, а не в компоненте: сами
-   пропсы — это подписи, а не флаги (дизайн-чек №27). */
-type PlaygroundArgs = InformerProps & {
-  showMainButton?: boolean
-  showAdditionalButton?: boolean
-  viewport?: Viewport
+     Size              Desktop, Mobile
+     Add               None, One Button (Main), One Button (Additional),
+                       Two Buttons
+     Solid             White, Grey
+     Show Date         True, False
+     Show Description  True, False
+     Show Cross        True, False
+     Type Icon         Attention (Red), Attention (Yellow), Check (Green),
+                       Information (Grey), Clock (Yellow)
+
+   Дизайн-чек «Сторибук Ч.2» от 10.09.2026:
+
+   • замечание 9 — «Нужно убрать контрол с выбором произвольной иконки».
+     Контролы `Произвольная иконка` и `Цвет произвольной иконки` из панели
+     убраны: в макете иконка — закрытый список из пяти значений. Сам проп
+     `customIcon` у компонента ОСТАВЛЕН: его добавили по замечанию 12
+     дизайн-чека от 08.09 («сделать возможность ставить любую иконку из
+     кита»), и продуктовый код на него уже может опираться — из витрины ушёл
+     только способ им играть;
+   • замечание 10 — не хватало `Show Date` и `Show Description`.
+
+   `Add` вместо двух прежних переключателей кнопок: это одно свойство макета,
+   и все четыре его значения — комбинации тех же двух кнопок. Замечание 27
+   прошлого чека («кнопки включаются переключателем, а не тем, что у них
+   стёрли подпись») этим тоже закрыто. */
+const ICON_LABELS: Record<InformerIcon, string> = {
+  "attention-red": "Attention (Red)",
+  "attention-yellow": "Attention (Yellow)",
+  check: "Check (Green)",
+  information: "Information (Grey)",
+  clock: "Clock (Yellow)",
 }
+
+const ICONS = Object.keys(ICON_LABELS) as InformerIcon[]
+
+const SOLID_LABELS: Record<InformerSolid, string> = {
+  white: "White",
+  grey: "Grey",
+}
+
+const ADD_LABELS = {
+  none: "None",
+  main: "One Button (Main)",
+  additional: "One Button (Additional)",
+  both: "Two Buttons",
+} as const
+
+type Add = keyof typeof ADD_LABELS
+
+type PlaygroundArgs = InformerProps & {
+  viewport?: Viewport
+  add?: Add
+  showDate?: boolean
+  showDescription?: boolean
+}
+
+const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   title: "Компоненты/Informer",
   component: Informer,
   parameters: { layout: "padded" },
-  // `description`/`mainButtonLabel`/`additionalButtonLabel` are all
-  // `React.ReactNode` but every usage is a plain string — without this,
-  // leaving one unset falls back to a generic "Set object" JSON editor.
   argTypes: {
-    icon: { control: "select", options: ICONS },
-    // Дизайн-чек от 08.09, замечание 12: произвольная иконка кита. Контрол
-    // с пустым значением в начале списка — иначе штатные пять икон стали бы
-    // недостижимы, а по умолчанию информер должен показывать именно их.
-    customIcon: {
-      name: "Произвольная иконка",
-      control: "select",
-      options: ["", ...ICON_NAMES],
+    viewport: sizeArgType,
+    add: optionsArgType("Add", ADD_LABELS),
+    solid: optionsArgType("Solid", SOLID_LABELS),
+    showDate: toggleArgType("Show Date"),
+    showDescription: toggleArgType("Show Description"),
+    showCross: toggleArgType("Show Cross"),
+    icon: optionsArgType("Type Icon", ICON_LABELS),
+    title: { control: "text", ...CONTENT },
+    date: {
+      control: "text",
+      if: { arg: "showDate", truthy: true },
+      ...CONTENT,
     },
-    customIconColor: { name: "Цвет произвольной иконки", control: "color" },
-    solid: { control: "inline-radio", options: ["white", "grey"] },
-    title: { control: "text" },
-    date: { control: "text" },
-    description: { control: "text" },
-    // Дизайн-чек №27: кнопки включаются булевыми переключателями, а не тем,
-    // что у них стёрли подпись.
-    showMainButton: { name: "Основная кнопка", control: "boolean" },
-    mainButtonLabel: { control: "text" },
-    showAdditionalButton: { name: "Дополнительная кнопка", control: "boolean" },
-    additionalButtonLabel: { control: "text" },
-    showCross: { control: "boolean" },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
+    description: {
+      control: "text",
+      if: { arg: "showDescription", truthy: true },
+      ...CONTENT,
+    },
+    mainButtonLabel: { control: "text", ...CONTENT },
+    additionalButtonLabel: { control: "text", ...CONTENT },
+    // Замечание 9: произвольная иконка остаётся пропом, но не контролом.
+    customIcon: { table: { disable: true } },
+    customIconColor: { table: { disable: true } },
   },
   args: {
-    icon: "attention-red",
-    customIcon: "",
-    solid: "white",
+    viewport: "desktop" as Viewport,
+    add: "both" as Add,
+    solid: "white" as InformerSolid,
+    showDate: true,
+    showDescription: true,
+    showCross: true,
+    icon: "attention-red" as InformerIcon,
     title: "Требуется подпись",
     date: "24.12.2022",
     description: "Документ ожидает вашей подписи для продолжения работы",
-    showCross: true,
-    showMainButton: true,
     mainButtonLabel: "Подписать",
-    showAdditionalButton: true,
     additionalButtonLabel: "Отложить",
-    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -78,24 +122,28 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: ({
-    showMainButton,
-    mainButtonLabel,
-    showAdditionalButton,
-    additionalButtonLabel,
     viewport,
-    customIcon,
+    add = "both",
+    showDate,
+    showDescription,
+    mainButtonLabel,
+    additionalButtonLabel,
     ...args
   }) => (
     <ViewportScope viewport={viewport}>
-    <Informer
-      {...args}
-      // Пустая строка контрола означает «штатная иконка», а не «иконка без
-      // имени»: `undefined` — единственное значение, при котором компонент
-      // берёт `icon`.
-      customIcon={customIcon || undefined}
-      mainButtonLabel={showMainButton ? mainButtonLabel : undefined}
-      additionalButtonLabel={showAdditionalButton ? additionalButtonLabel : undefined}
-    />
+      <Informer
+        {...args}
+        date={showDate ? args.date : undefined}
+        description={showDescription ? args.description : undefined}
+        mainButtonLabel={
+          add === "main" || add === "both" ? mainButtonLabel : undefined
+        }
+        additionalButtonLabel={
+          add === "additional" || add === "both"
+            ? additionalButtonLabel
+            : undefined
+        }
+      />
     </ViewportScope>
   ),
 }
@@ -114,19 +162,22 @@ export const Matrix: Story = {
       }}
       columnGroups={[
         {
-          label: "Solid: White",
-          columns: ICONS.map((icon) => ({ label: icon, props: { icon } })),
+          label: "Type Icon",
+          columns: ICONS.map((icon) => ({
+            label: ICON_LABELS[icon],
+            props: { icon },
+          })),
         },
       ]}
       rows={[
         { label: "Default", props: {} },
-        { label: "Без крестика", props: { showCross: false } },
+        { label: "Show Cross: False", props: { showCross: false } },
         {
-          label: "Только заголовок",
+          label: "Show Date / Description: False",
           props: { date: undefined, description: undefined },
         },
         {
-          label: "С кнопками",
+          label: "Add: Two Buttons",
           props: {
             mainButtonLabel: "Подписать",
             additionalButtonLabel: "Отложить",

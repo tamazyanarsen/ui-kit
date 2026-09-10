@@ -1,5 +1,5 @@
 import type * as React from "react"
-import { CircleAlert, Download, FileIcon, LoaderCircle, X } from "@/icons"
+import { CircleAlert, Ellipsis, FileIcon, LoaderCircle, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
@@ -28,6 +28,18 @@ interface FileListItemProps extends Omit<React.ComponentProps<"div">, "id"> {
   size?: FileItemSize
   state?: FileItemState
   errorText?: React.ReactNode
+  /**
+   * `Show Description` таблицы свойств (нода 16029:57807) — вторая строка
+   * с размером и датой. Дизайн-чек «Сторибук Ч.2», замечание 3: в панели
+   * свойств её не было вовсе, хотя в макете это отдельное свойство.
+   */
+  showDescription?: boolean
+  /**
+   * `Show Text Error` — «если компонент находится в состоянии Error, то
+   * можно включить или отключить текст ошибки» (там же). На остальные
+   * состояния не влияет.
+   */
+  showErrorText?: boolean
   showEdit?: boolean
   showCross?: boolean
   onRetry?: () => void
@@ -41,6 +53,8 @@ export function FileListItem({
   size = "l",
   state = "default",
   errorText = "Text about error here",
+  showDescription = true,
+  showErrorText = true,
   showEdit = true,
   showCross = true,
   onRetry,
@@ -60,6 +74,15 @@ export function FileListItem({
     : error
       ? "text-[var(--file-item-error-fg)]"
       : "text-[var(--file-item-icon-fg)]"
+
+  // Вторая строка: у загрузки это всегда «Загрузка», у ошибки — текст
+  // ошибки под свойством `Show Text Error`, в остальном — описание под
+  // `Show Description`. `null` означает «строки нет вовсе», а не пустая:
+  // иначе под именем оставался бы её межстрочный интервал.
+  let secondLine: React.ReactNode = null
+  if (loading) secondLine = "Загрузка"
+  else if (error) secondLine = showErrorText ? errorText : null
+  else if (showDescription) secondLine = meta
 
   return (
     <div
@@ -88,13 +111,19 @@ export function FileListItem({
         <Glyph
           size={16}
           aria-hidden="true"
-          className={cn("size-4 shrink-0", loading && "animate-spin", glyphColor)}
+          className={cn(
+            "size-4 shrink-0",
+            loading && "animate-spin",
+            glyphColor
+          )}
         />
       ) : (
         <span
           className={cn(
             "flex size-10 shrink-0 items-center justify-center rounded-[8px] desktop:size-12",
-            error ? "bg-[var(--file-item-error-bg)]" : "bg-[var(--file-item-icon-bg)]"
+            error
+              ? "bg-[var(--file-item-error-bg)]"
+              : "bg-[var(--file-item-icon-bg)]"
           )}
         >
           {/* All three fill the 48px thumbnail tile at 24px, so they take the
@@ -126,28 +155,34 @@ export function FileListItem({
         >
           {name}
         </span>
-        <span
-          className={cn(
-            "truncate",
-            small ? "text-p4-medium" : "text-p3-medium",
-            error
-              ? "text-[var(--file-item-error-fg)]"
-              : "text-[var(--file-item-meta-fg)]"
-          )}
-        >
-          {loading ? "Загрузка" : error ? errorText : meta}
-        </span>
+        {secondLine != null && (
+          <span
+            className={cn(
+              "truncate",
+              small ? "text-p4-medium" : "text-p3-medium",
+              error
+                ? "text-[var(--file-item-error-fg)]"
+                : "text-[var(--file-item-meta-fg)]"
+            )}
+          >
+            {secondLine}
+          </span>
+        )}
       </span>
 
       <span className="flex shrink-0 items-center gap-4">
         {showEdit && (
+          // Дизайн-чек «Сторибук Ч.2», замечание 2: «Files: неверная иконка,
+          // должна быть иконка more». Здесь стояла стрелка загрузки, а в
+          // макете у свойства `Show Edit` — `icon / more` (многоточие),
+          // то есть меню действий над файлом, а не повторная загрузка.
           <button
             type="button"
-            aria-label="Загрузить заново"
+            aria-label="Действия с файлом"
             onClick={onRetry}
             className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
           >
-            <Download aria-hidden="true" className="size-4" />
+            <Ellipsis aria-hidden="true" className="size-4" />
           </button>
         )}
         {showCross && (

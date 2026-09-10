@@ -37,6 +37,7 @@ const FIGMA_STATE_LABELS: Record<PlaygroundState, string> = {
   focus: "Focus",
   disabled: "Disabled",
   loading: "Loading",
+  error: "Error",
 }
 
 /**
@@ -48,16 +49,25 @@ const FIGMA_STATE_LABELS: Record<PlaygroundState, string> = {
  * поэтому история отдаёт один контрол, а раскладывает его `render`.
  *
  * @param states значения оси ровно в том порядке, в каком они в Figma
+ * @param labels переопределения подписей: одно и то же состояние в разных
+ *   компонент-сетах подписано по-разному (у `ELK / files` загрузка названа
+ *   `Load`, а не `Loading`), а подпись обязана совпадать с таблицей свойств
  */
-export function stateArgTypeOf(states: PlaygroundState[]) {
+export function stateArgTypeOf(
+  states: PlaygroundState[],
+  labels?: Partial<Record<PlaygroundState, string>>
+) {
   return {
     name: "State",
     description:
-      "Свойство State компонента в Figma. Hover/Active/Focus эмулируются аддоном pseudo-states, Disabled/Loading — настоящие пропы",
+      "Свойство State компонента в Figma. Hover/Active/Focus эмулируются аддоном pseudo-states, Disabled/Loading/Error — настоящие пропы",
     control: {
       type: "inline-radio" as const,
       labels: Object.fromEntries(
-        states.map((state) => [state, FIGMA_STATE_LABELS[state]])
+        states.map((state) => [
+          state,
+          labels?.[state] ?? FIGMA_STATE_LABELS[state],
+        ])
       ),
     },
     options: states,

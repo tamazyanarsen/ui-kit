@@ -29,13 +29,18 @@ describe("FileListItem", () => {
     expect(screen.getByText("Файл повреждён")).toBeInTheDocument()
   })
 
+  // Дизайн-чек «Сторибук Ч.2», замечание 2: у `Show Edit` иконка `more`,
+  // то есть меню действий с файлом, а не повторная загрузка — вместе с
+  // рисунком поменялась и подпись кнопки.
   it("calls onRetry and onRemove from their respective buttons", async () => {
     const user = userEvent.setup()
     const onRetry = vi.fn()
     const onRemove = vi.fn()
-    render(<FileListItem name="Договор.pdf" onRetry={onRetry} onRemove={onRemove} />)
+    render(
+      <FileListItem name="Договор.pdf" onRetry={onRetry} onRemove={onRemove} />
+    )
 
-    await user.click(screen.getByRole("button", { name: "Загрузить заново" }))
+    await user.click(screen.getByRole("button", { name: "Действия с файлом" }))
     await user.click(screen.getByRole("button", { name: "Удалить файл" }))
 
     expect(onRetry).toHaveBeenCalledTimes(1)
@@ -43,7 +48,9 @@ describe("FileListItem", () => {
   })
 
   it("hides the retry/remove buttons when disabled via showEdit/showCross", () => {
-    render(<FileListItem name="Договор.pdf" showEdit={false} showCross={false} />)
+    render(
+      <FileListItem name="Договор.pdf" showEdit={false} showCross={false} />
+    )
     expect(screen.queryByRole("button")).not.toBeInTheDocument()
   })
 })

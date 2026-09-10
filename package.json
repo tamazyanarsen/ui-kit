@@ -106,6 +106,10 @@
       "types": "./dist/components/ui/dropdown/index.d.ts",
       "import": "./dist/components/ui/dropdown/index.js"
     },
+    "./employee-menu": {
+      "types": "./dist/components/ui/employee-menu/index.d.ts",
+      "import": "./dist/components/ui/employee-menu/index.js"
+    },
     "./empty-search": {
       "types": "./dist/components/ui/empty-search/index.d.ts",
       "import": "./dist/components/ui/empty-search/index.js"

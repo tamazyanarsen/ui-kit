@@ -53,6 +53,12 @@ interface SandboxPageProps {
   bottomBar?: React.ReactNode
   /** Зазор между блоками: 24 по умолчанию, на части экранов 32. */
   blockGap?: 24 | 32
+  /**
+   * Зазор между заголовком, дополнительным элементом и блоками. 24 в
+   * конструкторе песочных экранов, но у «Помощи» (70400:30488) эти три узла
+   * стоят через 32 — и заголовок→табы, и табы→контент.
+   */
+  sectionGap?: 24 | 32
   children?: React.ReactNode
   className?: string
 }
@@ -64,6 +70,7 @@ function SandboxPage({
   notifications,
   bottomBar,
   blockGap = 24,
+  sectionGap = 24,
   children,
   className,
 }: SandboxPageProps) {
@@ -117,7 +124,7 @@ function SandboxPage({
           data-slot="sandbox-grid"
           className={cn("flex flex-col gap-8 pt-10", !bottomBar && "pb-10")}
         >
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col" style={{ gap: sectionGap }}>
             {title}
             {additional}
             {children != null && (

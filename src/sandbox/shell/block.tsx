@@ -49,35 +49,38 @@ interface SandboxBlockProps extends React.ComponentProps<"section"> {
   sticky?: boolean
 }
 
-function SandboxBlock({
-  padding = 32,
-  sticky = false,
-  className,
-  style,
-  ...props
-}: SandboxBlockProps) {
-  return (
-    <section
-      data-slot="sandbox-block"
-      data-sticky={sticky || undefined}
-      className={cn(
-        // ⚠️ `overflow-clip`, а не `overflow-hidden`. Дизайн-чек от 07.09,
-        // замечание 32: «У таблиц всегда должна закрепляться нижняя полоса
-        // горизонтальной прокрутки». Полоса `sticky`, а `overflow: hidden`
-        // делает блок ПРОКРУЧИВАЕМОЙ областью — липкий потомок начинает
-        // считаться от неё, а не от вьюпорта, и полоса замирала у нижней
-        // кромки блока (замерено: 733px ниже нижнего края экрана).
-        // `overflow: clip` подрезает по тому же радиусу, но области
-        // прокрутки не создаёт, и полоса снова липнет к экрану.
-        "flex w-full flex-col gap-8 overflow-clip rounded-[16px] bg-[var(--white-101)]",
-        sticky && STICKY_BLOCK,
-        className
-      )}
-      style={{ padding, ...style }}
-      {...props}
-    />
-  )
-}
+// forwardRef, потому что под React 18 обычный компонент проп `ref` молча
+// теряет, а «Помощи» узел блока нужен: остров с разделами меряет свой
+// собственный верх, чтобы дотянуться высотой ровно до низа экрана.
+const SandboxBlock = React.forwardRef<HTMLElement, SandboxBlockProps>(
+  function SandboxBlock(
+    { padding = 32, sticky = false, className, style, ...props },
+    ref
+  ) {
+    return (
+      <section
+        ref={ref}
+        data-slot="sandbox-block"
+        data-sticky={sticky || undefined}
+        className={cn(
+          // ⚠️ `overflow-clip`, а не `overflow-hidden`. Дизайн-чек от 07.09,
+          // замечание 32: «У таблиц всегда должна закрепляться нижняя полоса
+          // горизонтальной прокрутки». Полоса `sticky`, а `overflow: hidden`
+          // делает блок ПРОКРУЧИВАЕМОЙ областью — липкий потомок начинает
+          // считаться от неё, а не от вьюпорта, и полоса замирала у нижней
+          // кромки блока (замерено: 733px ниже нижнего края экрана).
+          // `overflow: clip` подрезает по тому же радиусу, но области
+          // прокрутки не создаёт, и полоса снова липнет к экрану.
+          "flex w-full flex-col gap-8 overflow-clip rounded-[16px] bg-[var(--white-101)]",
+          sticky && STICKY_BLOCK,
+          className
+        )}
+        style={{ padding, ...style }}
+        {...props}
+      />
+    )
+  }
+)
 
 /**
  * Заголовок группы внутри блока — H3 24/32. В эталонах это отдельный

@@ -1,11 +1,13 @@
+import * as React from "react"
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  optionsArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
@@ -52,7 +54,8 @@ interface DemoSelectProps {
   mask?: SelectMask
   label?: string
   placeholder?: string
-  error?: string
+  /** `true` — состояние ошибки без текста (Show Text Error = False). */
+  error?: React.ReactNode
   comment?: string
   defaultValue?: string | null
   clearable?: boolean
@@ -148,9 +151,42 @@ function DemoSelect({
   )
 }
 
-type PlaygroundArgs = DemoSelectProps & {
+/* Панель повторяет «Свойства компонента» `ELK / select` (компонент-сет
+   687:9278, таблица 29750:54028): Size / State / Type / Add /
+   Show Text Error.
+
+   `Size` в Figma — одно свойство с четырьмя значениями: размер (L/S) и форма
+   (Desktop/Mobile) там не разъезжаются, в коде это `size` + <ViewportScope>.
+   `State=Active` — раскрытый список (в коде проп `open`).
+
+   Свойства `Black Theme`, `Mask Comment` и `Mask Error` из таблицы сюда не
+   переносим: осей с такими именами у компонент-сета в доступной копии файла
+   нет, а тёмной темы у Select в ките нет вовсе. */
+const SIZE_LABELS = {
+  "lg-desktop": "L / Desktop",
+  "sm-desktop": "S / Desktop",
+  "lg-mobile": "L / Mobile",
+  "sm-mobile": "S / Mobile",
+} as const
+type FigmaSize = keyof typeof SIZE_LABELS
+
+const TYPE_LABELS = {
+  Empty: "Empty",
+  Fill: "Filled",
+  Lock: "Locked",
+} as const
+
+const ADD_LABELS = { none: "None", error: "Error", comment: "Comment" } as const
+type FigmaAdd = keyof typeof ADD_LABELS
+
+type PlaygroundArgs = Omit<DemoSelectProps, "size" | "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
+  figmaSize?: FigmaSize
+  figmaType?: "Empty" | "Fill" | "Lock"
+  add?: FigmaAdd
+  errorText?: string
+  showErrorText?: boolean
 }
 
 const meta = {
@@ -163,33 +199,45 @@ const meta = {
   // modules, so most of this wrapper's props silently get NO Controls row at
   // all. Declare every one of them explicitly instead.
   argTypes: {
-    size: { control: "inline-radio", options: ["lg", "sm"] },
-    mask: { control: "select", options: SELECT_MASKS, name: "Маска" },
-    label: { control: "text" },
-    placeholder: { control: "text" },
-    error: { control: "text" },
-    comment: { control: "text" },
+    figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS),
+    // Active в Figma — раскрытый список, Disabled — настоящий проп.
+    state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
+    figmaType: optionsArgType("Type", TYPE_LABELS, "inline-radio"),
+    add: optionsArgType<FigmaAdd>("Add", ADD_LABELS, "inline-radio"),
+    showErrorText: toggleArgType("Show Text Error"),
+    /* Дизайн-чек 3/3 №21: «не хватает контролов для выбора маски». Свойства
+       компонент-сета у этого списка нет — в макете (65732:19613) содержимое
+       триггера набрано отдельными мастерами, поэтому контрол свой. */
+    mask: {
+      control: "select",
+      options: SELECT_MASKS,
+      name: "Маска содержимого",
+      table: { category: "Контент" },
+    },
+    label: { control: "text", table: { category: "Контент" } },
+    placeholder: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
+    clearable: { control: "boolean", table: { category: "Контент" } },
     defaultValue: { table: { disable: true } },
-    clearable: { control: "boolean" },
-    disabled: { control: "boolean" },
-    readOnly: { control: "boolean" },
-    open: { control: "boolean" },
-    state: stateArgType,
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
-    // панели истории, а не изменением размера вьюпорта.
-    viewport: viewportArgType,
+    // Значения осей Type и State — отдельных контролов у них нет.
+    disabled: { table: { disable: true } },
+    readOnly: { table: { disable: true } },
+    open: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    size: "lg",
+    figmaSize: "lg-desktop" as FigmaSize,
+    state: "default" as PlaygroundState,
+    figmaType: "Fill" as const,
+    add: "none" as FigmaAdd,
+    showErrorText: true,
     mask: "Fill",
     label: "Label",
     comment: "Comment",
+    errorText: "Text about error here",
     clearable: true,
-    disabled: false,
-    readOnly: false,
-    open: false,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -197,11 +245,44 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, viewport, ...args }) => (
-    <PseudoBox state={state} viewport={viewport} className="w-80">
-      <DemoSelect {...args} />
-    </PseudoBox>
-  ),
+  render: ({
+    state,
+    figmaSize = "lg-desktop",
+    figmaType = "Fill",
+    add = "none",
+    errorText,
+    showErrorText,
+    comment,
+    mask,
+    ...args
+  }) => {
+    const [size, viewport] = figmaSize.split("-") as [
+      NonNullable<DemoSelectProps["size"]>,
+      Viewport,
+    ]
+    return (
+      <PseudoBox state={state} viewport={viewport} className="w-80">
+        <DemoSelect
+          {...args}
+          size={size}
+          // Ось Type задаёт наполнение триггера, а «Маска содержимого» —
+          // его раскладку; Empty/Lock из Type побеждают, иначе контрол Type
+          // выглядел бы мёртвым при выбранной маске с логотипом.
+          mask={figmaType === "Fill" ? mask : figmaType}
+          open={state === "active"}
+          disabled={state === "disabled"}
+          comment={add === "comment" ? comment : undefined}
+          error={
+            add === "error"
+              ? showErrorText
+                ? errorText || true
+                : true
+              : undefined
+          }
+        />
+      </PseudoBox>
+    )
+  },
 }
 
 export const Matrix: Story = {

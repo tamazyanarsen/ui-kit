@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 
@@ -34,19 +35,15 @@ const meta = {
   component: FilterTable,
   parameters: { layout: "centered" },
   argTypes: {
-    children: { control: "text" },
+    // Панель по осям компонент-сета 1303:99241: State / Checked / Counter
+    // (плюс Select, которого у этого мастера в коде нет — см. выше).
+    state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
+    disabled: { table: { disable: true } },
     selected: { control: "boolean", name: "Checked" },
-    showCounter: {
-      control: "boolean",
-      name: "Counter",
-      description:
-        "Плашка со счётчиком. По умолчанию выключена — в продукте выбранный чип называет выбранное текстом подписи",
-    },
-    count: {
-      control: { type: "number", min: 0, max: 99 },
-      name: "Counter: значение",
-      if: { arg: "showCounter", truthy: true },
-    },
+    showCounter: toggleArgType(
+      "Counter",
+      "Плашка со счётчиком. По умолчанию выключена — в продукте выбранный чип называет выбранное текстом подписи"
+    ),
     showClose: {
       control: "boolean",
       name: "Крестик",
@@ -54,17 +51,23 @@ const meta = {
         "Снятие выбора крестиком. Есть только у выбранного чипа: у подсказки NPS выбор снимается правкой текста, а не крестом",
       if: { arg: "selected", truthy: true },
     },
-    disabled: { control: "boolean", name: "State: Disabled" },
-    state: stateArgType,
+    children: { control: "text", table: { category: "Контент" } },
+    count: {
+      control: { type: "number", min: 0, max: 99 },
+      name: "Значение счётчика",
+      if: { arg: "showCounter", truthy: true },
+      table: { category: "Контент" },
+    },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок осей компонент-сета. */
   args: {
-    children: "Оплачен",
+    state: "default" as PlaygroundState,
     selected: false,
     showCounter: true,
-    count: 12,
     showClose: true,
-    disabled: false,
-    state: "default" as PlaygroundState,
+    children: "Оплачен",
+    count: 12,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -74,7 +77,7 @@ type Story = StoryObj<PlaygroundArgs>
 export const Playground: Story = {
   render: ({ state, ...args }) => (
     <PseudoBox state={state}>
-      <FilterTable {...args} />
+      <FilterTable {...args} disabled={state === "disabled"} />
     </PseudoBox>
   ),
 }

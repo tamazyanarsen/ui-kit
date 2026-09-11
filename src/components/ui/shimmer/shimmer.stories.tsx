@@ -12,7 +12,11 @@ const meta = {
   component: Shimmer,
   parameters: { layout: "padded" },
   argTypes: {
-    shape: { control: "inline-radio", options: ["square", "circle"] },
+    shape: {
+      name: "Shape",
+      control: { type: "inline-radio", labels: { square: "Square", circle: "Circle" } },
+      options: ["square", "circle"],
+    },
     className: { control: "text" },
   },
   args: { shape: "square", className: "h-6 w-64" },

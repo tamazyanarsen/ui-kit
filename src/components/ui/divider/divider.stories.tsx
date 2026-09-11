@@ -21,7 +21,11 @@ const meta = {
   parameters: { layout: "padded" },
   argTypes: {
     orientation: {
-      control: "inline-radio",
+      name: "Orientation",
+      control: {
+        type: "inline-radio",
+        labels: { horizontal: "Horizontal", vertical: "Vertical" },
+      },
       options: ["horizontal", "vertical"],
       description: "Горизонтальная линия во всю ширину или вертикальная во всю высоту",
     },

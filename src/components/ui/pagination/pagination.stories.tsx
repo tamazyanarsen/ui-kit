@@ -23,28 +23,28 @@ const meta = {
     // которого не хватало, чтобы проверить случай «всё уместилось на одной
     // странице».
     size: { name: "Size", control: "inline-radio", options: ["L", "M"] },
-    page: { control: { type: "number", min: 1 } },
+    // Дизайн-чек №4 №6: контрол «Page» — по имени элемента «Page (ELK)»
+    // (14679:36012), у которого свойство Value = 1 – 7 / Begin / Middle /
+    // End. В коде раскладка блока номеров считается из текущей и общей
+    // страницы, поэтому здесь два числа, а не один список.
+    page: { name: "Page", control: { type: "number", min: 1 } },
     totalPages: { control: { type: "number", min: 1 } },
-    pageSize: { control: "number" },
     pageCount: {
       name: "Page Count",
       control: { type: "inline-radio", labels: orderedOptionLabels(PAGE_COUNTS) },
       options: PAGE_COUNTS,
     },
-    // Дизайн-чек №4 №6: контрол называется «Page» — по имени элемента
-    // «Page (ELK)» (свойство «Show All Page» в таблице свойств).
     // Дизайн-чек от 07.09, замечание 24: «В Paginator заложить вариант,
     // когда страниц слева не видно… поддержать возможность и вывести в
-    // управление стори Playground». Возможность была (`showPages`), а вот
-    // прочитать её по одному слову «Page» в панели было нельзя — имя
-    // контрола менять нельзя (оно из таблицы свойств Figma), поэтому
-    // добавлено пояснение.
+    // управление стори Playground». В таблице свойств (29998:35419) это
+    // отдельная строка «Show All Page», ею контрол и назван.
     showPages: {
-      name: "Page",
+      name: "Show All Page",
       control: "boolean",
       description:
         "Блок номеров страниц слева. Выключается, когда выдача пуста: пагинатор остаётся, но показывает только выбор числа записей справа",
     },
+    pageSize: { control: "number", table: { category: "Контент" } },
     // Дизайн-чек №4 №8: className — не свойство компонента из макета.
     className: { table: { disable: true } },
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели

@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import {
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Banner, type BannerProps } from "./banner"
@@ -17,7 +22,6 @@ import type { BannerColor, BannerSize } from "./variants"
  * В коде размеры называются desktop / compact / mobile — «desktop big» и
  * «desktop small» соответственно.
  */
-const SIZES: BannerSize[] = ["desktop", "compact", "mobile"]
 const COLORS: BannerColor[] = ["black", "pink", "green", "blue"]
 
 type PlaygroundArgs = BannerProps & { viewport?: Viewport }
@@ -26,42 +30,53 @@ const meta = {
   title: "Компоненты/Banner",
   component: Banner,
   parameters: { layout: "padded" },
+  /* `size` в мастере (694:121318) — одно свойство с тремя значениями, и
+     мобильное среди них: отдельной оси Desktop/Mobile у баннера нет,
+     поэтому контрол `viewport` не нужен — форму задаёт сам размер. */
   argTypes: {
-    size: {
+    size: optionsArgType<BannerSize>(
+      "size",
+      {
+        desktop: "desktop big",
+        compact: "desktop small",
+        mobile: "mobile",
+      },
+      "inline-radio"
+    ),
+    color: {
       control: "inline-radio",
-      options: SIZES,
-      description: "desktop = «desktop big», compact = «desktop small»",
-    },
-    color: { control: "inline-radio", options: COLORS },
-    title: { control: "text" },
-    description: { control: "text" },
-    bullet: { control: "boolean", description: "Описание списком с маркерами" },
-    image: {
-      control: "boolean",
+      options: COLORS,
       description:
-        "В десктопной версии изображение есть всегда, в мобильной может отсутствовать",
+        "В макете это не свойство варианта, а отдельные секции «Colored banner» / «Black banner»",
     },
-    imageSrc: { control: "text" },
-    imageAlt: { control: "text" },
-    ctaLabel: { control: "text", description: "Пустая подпись — кнопки нет" },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
+    image: toggleArgType(
+      "Show Image",
+      "В десктопной версии изображение есть всегда, в мобильной может отсутствовать"
+    ),
+    bullet: toggleArgType("Bullet", "Описание списком с маркерами"),
+    title: { control: "text", table: { category: "Контент" } },
+    description: { control: "text", table: { category: "Контент" } },
+    imageSrc: { control: "text", table: { category: "Контент" } },
+    imageAlt: { control: "text", table: { category: "Контент" } },
+    ctaLabel: {
+      control: "text",
+      description: "Пустая подпись — кнопки нет",
+      table: { category: "Контент" },
+    },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook. */
   args: {
     size: "desktop",
     color: "black",
+    image: true,
+    bullet: false,
     title: "Заголовок баннера",
     description: "Короткое пояснение под заголовком",
-    bullet: false,
-    image: true,
     ctaLabel: "Подробнее",
-    viewport: "auto" as Viewport,
   },
-  // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
-  // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
-  // для всех историй файла — в матрицах она не мешает: там форму задаёт
-  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  // Обёртка осталась для историй, которые всё же выставляют `viewport`
+  // явно (например, мобильные примеры): скоуп форсирует форму, не трогая
+  // размер вьюпорта.
   decorators: [
     (Story, context) => (
       <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>

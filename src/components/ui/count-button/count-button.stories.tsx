@@ -3,8 +3,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  optionsArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
@@ -23,9 +24,41 @@ import { CountButton, type CountButtonProps } from "./count-button"
  * нечем. Теперь он есть в Playground, а в матрице обе формы стоят рядом
  * (`responsive`).
  */
-type PlaygroundArgs = CountButtonProps & {
+/* Мастер `ELK / count button` (34:17381) — обёртка над `ELK / button` с
+   единственным собственным свойством `Show Count`; размер, состояние и тип
+   он наследует от вложенной кнопки, а цвет счётчика — от вложенного
+   `ELK / badge`. Панель собрана в том же порядке. */
+const SIZE_LABELS = {
+  "lg-desktop": "L / Desktop",
+  "default-desktop": "M / Desktop",
+  "sm-desktop": "S / Desktop",
+  "lg-mobile": "L / Mobile",
+  "default-mobile": "M / Mobile",
+  "sm-mobile": "S / Mobile",
+} as const
+type FigmaSize = keyof typeof SIZE_LABELS
+
+const TYPE_LABELS = {
+  primary: "Primary (Blue)",
+  "secondary-black": "Secondary (Dark Blue)",
+  "secondary-grey": "Secondary (Grey)",
+  "secondary-white": "Secondary (White)",
+  "secondary-outline": "· с обводкой (White)",
+} as const
+
+const COUNT_COLOR_LABELS = {
+  red: "Red",
+  black: "Black",
+  "contra-red": "Contra-Red",
+  "dark-grey": "Dark-Grey",
+  "light-grey": "Light-Grey",
+} as const
+
+type PlaygroundArgs = Omit<CountButtonProps, "size"> & {
   state?: PlaygroundState
   viewport?: Viewport
+  figmaSize?: FigmaSize
+  showCount?: boolean
 }
 
 const meta = {
@@ -33,35 +66,32 @@ const meta = {
   component: CountButton,
   parameters: { layout: "centered" },
   argTypes: {
-    children: { control: "text" },
-    count: { control: { type: "number", min: 0, max: 999 } },
+    figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS),
+    state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
+    variant: optionsArgType("Type", TYPE_LABELS),
+    showCount: toggleArgType("Show Count"),
     countColor: {
-      control: "select",
-      options: ["red", "contra-red", "dark-grey", "light-grey", "black"],
+      ...optionsArgType("Color", COUNT_COLOR_LABELS),
+      table: { category: "ELK / badge" },
     },
-    variant: {
-      control: "select",
-      options: [
-        "primary",
-        "secondary-black",
-        "secondary-grey",
-        "secondary-white",
-        "secondary-outline",
-      ],
+    count: {
+      control: { type: "number", min: 0, max: 999 },
+      table: { category: "ELK / badge" },
     },
-    size: { control: "inline-radio", options: ["sm", "default", "lg"] },
-    disabled: { control: "boolean" },
-    state: stateArgType,
-    viewport: viewportArgType,
+    children: { control: "text", table: { category: "Контент" } },
+    // Значения осей Size и State — отдельных контролов у них нет.
+    disabled: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок свойств мастера. */
   args: {
-    children: "Уведомления",
-    count: 3,
-    variant: "secondary-grey",
-    size: "default",
-    disabled: false,
+    figmaSize: "default-desktop" as FigmaSize,
     state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
+    variant: "secondary-grey",
+    showCount: true,
+    countColor: "red",
+    count: 3,
+    children: "Уведомления",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -69,13 +99,24 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, viewport, ...args }) => (
-    <ViewportScope viewport={viewport}>
-      <PseudoBox state={state}>
-        <CountButton {...args} />
-      </PseudoBox>
-    </ViewportScope>
-  ),
+  render: ({ state, figmaSize = "default-desktop", showCount, ...args }) => {
+    const [size, viewport] = figmaSize.split("-") as [
+      NonNullable<CountButtonProps["size"]>,
+      Viewport,
+    ]
+    return (
+      <ViewportScope viewport={viewport}>
+        <PseudoBox state={state}>
+          <CountButton
+            {...args}
+            size={size}
+            count={showCount ? args.count : undefined}
+            disabled={state === "disabled"}
+          />
+        </PseudoBox>
+      </ViewportScope>
+    )
+  },
 }
 
 export const Matrix: Story = {

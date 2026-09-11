@@ -1,7 +1,7 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import { StorySection, StoryShowcase, sizeArgType } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 import { MENU_FAVOURITES, MENU_GROUPS } from "@/stories/menu-fixtures"
 import { Button } from "@/components/ui/button"
@@ -64,14 +64,15 @@ const meta = {
     },
     openByDefault: { control: "boolean", description: "Модалка открыта сразу" },
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
+    // истории, а не изменением ширины вьюпорта. В Figma это свойство `Size`
+    // модалки, в которую упакована настройка избранного.
+    viewport: sizeArgType,
   },
   args: {
+    viewport: "desktop" as Viewport,
     favouriteCount: MENU_FAVOURITES.length,
     groupCount: MENU_GROUPS.length,
     openByDefault: true,
-    viewport: "auto" as Viewport,
   },
   // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
   // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая

@@ -32,19 +32,26 @@ const meta = {
   component: MailFeed,
   parameters: { layout: "padded" },
   argTypes: {
-    state: { control: "inline-radio", options: STATES },
+    /* В мастере `ELK / mail` ось состояния так и называется — `Property 1`
+       (Figma не переименовали), поэтому контрол назван по панели. */
+    state: {
+      name: "Property 1",
+      control: "inline-radio",
+      options: STATES,
+      description: "Состояние письма: Default / New / Used / Error",
+    },
     // У `ELK / mail` два разных свойства: `Property 1` — это наш `state`
     // (Default/New/Used/Error), а `Hover` — отдельное булево. Пропом его не
     // выставить, поэтому эмулируем псевдосостоянием.
     hover: { control: "boolean", name: "Hover" },
-    id: { control: "text" },
-    sender: { control: "text" },
-    date: { control: "text" },
-    subject: { control: "text" },
-    message: { control: "text" },
-    preview: { control: "text" },
-    showCheckbox: { control: "boolean" },
-    checked: { control: "boolean" },
+    showCheckbox: { control: "boolean", name: "Show Checkbox" },
+    checked: { control: "boolean", name: "Checked" },
+    id: { control: "text", table: { category: "Контент" } },
+    sender: { control: "text", table: { category: "Контент" } },
+    date: { control: "text", table: { category: "Контент" } },
+    subject: { control: "text", table: { category: "Контент" } },
+    message: { control: "text", table: { category: "Контент" } },
+    preview: { control: "text", table: { category: "Контент" } },
   },
   args: { ...ROW_PROPS, state: "default", showCheckbox: false },
 } satisfies Meta<PlaygroundArgs>

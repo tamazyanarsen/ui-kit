@@ -29,18 +29,27 @@ const meta = {
   // подписи кнопок переименованы — `primaryLabel`/`secondaryLabel` не давали
   // понять, что это тексты основной и второстепенной кнопки.
   argTypes: {
-    status: { control: "select", options: STATUSES },
-    title: { control: "text", name: "Заголовок" },
+    status: { name: "Status", control: "select", options: STATUSES },
     showSubtitle: { control: "boolean", name: "Show Subtitle" },
-    subtitle: { control: "text", name: "Текст подзаголовка" },
     showButtons: { control: "boolean", name: "Show Buttons" },
-    primaryButtonLabel: { control: "text", name: "Текст основной кнопки" },
+    title: { control: "text", name: "Заголовок", table: { category: "Контент" } },
+    subtitle: {
+      control: "text",
+      name: "Текст подзаголовка",
+      table: { category: "Контент" },
+    },
+    primaryButtonLabel: {
+      control: "text",
+      name: "Текст основной кнопки",
+      table: { category: "Контент" },
+    },
     // Пропсы типизированы как React.ReactNode, но во всех сценариях это
     // обычные строки — контрол закреплён текстовым, иначе Storybook
     // подставляет JSON-редактор «Set object».
     secondaryButtonLabel: {
       control: "text",
       name: "Текст второстепенной кнопки",
+      table: { category: "Контент" },
     },
   },
   args: {

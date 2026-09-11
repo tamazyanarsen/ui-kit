@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, optionsArgType, toggleArgType } from "@/stories/matrix"
 
 import { TopFixedMessage, type TopFixedMessageProps } from "./top-fixed-message"
 
+/* Панель повторяет свойства компонент-сета `ELK / top fixed message`
+   (5701:22192): Type со значениями «Red (Error)» и «Blue (System)» — ровно
+   теми подписями, что видит дизайнер в правой панели, — плюс булевы слоты
+   мастера. */
 const meta = {
   title: "Компоненты/Top Fixed Message",
   component: TopFixedMessage,
@@ -12,20 +16,26 @@ const meta = {
   // — pin a text control so leaving it unset doesn't fall back to
   // Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
-    type: { control: "inline-radio", options: ["blue", "red"] },
-    text: { control: "text" },
-    buttonLabel: { control: "text" },
-    showIcon: { control: "boolean" },
-    showButton: { control: "boolean" },
-    showIconClose: { control: "boolean" },
+    type: optionsArgType(
+      "Type",
+      { red: "Red (Error)", blue: "Blue (System)" },
+      "inline-radio"
+    ),
+    showIcon: toggleArgType("Show Icon"),
+    showButton: toggleArgType("Show Button"),
+    showIconClose: toggleArgType("Show Icon Close"),
+    text: { control: "text", table: { category: "Контент" } },
+    buttonLabel: { control: "text", table: { category: "Контент" } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок свойств мастера. */
   args: {
     type: "blue",
-    text: "Плановые технические работы с 02:00 до 04:00 мск",
     showIcon: true,
     showButton: false,
-    buttonLabel: "Подробнее",
     showIconClose: true,
+    text: "Плановые технические работы с 02:00 до 04:00 мск",
+    buttonLabel: "Подробнее",
   },
 } satisfies Meta<TopFixedMessageProps>
 

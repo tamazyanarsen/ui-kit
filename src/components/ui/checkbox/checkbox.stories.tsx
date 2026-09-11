@@ -4,8 +4,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
@@ -17,14 +18,19 @@ import { Checkbox, type CheckboxProps } from "./checkbox"
      "Current variant" panel of `ELK / checkbox`.
    - Matrix — the full State × Type table the spec sheet draws.
 
-   `size` (Large/Desktop vs Medium/Mobile in Figma) — контрол `viewport`.
-   Компонент по-прежнему переключается сам по ширине окна («auto»), но
-   форму можно форсировать, не трогая вьюпорт: дизайн-чек №3 №19, «пропс на
+   Панель Playground собрана по «Свойствам компонента» `ELK / checkbox`
+   (компонент-сет 600:8876, таблица 1242:100003): Size / State / Checked /
+   Partial / Error / Show Text / Show Comment. `size` (Desktop/Mobile в
+   Figma) — это `viewport` + <ViewportScope>: дизайн-чек №3 №19, «пропс на
    мобайл должен быть в панели стори». */
 
-type PlaygroundArgs = CheckboxProps & {
+type PlaygroundArgs = Omit<CheckboxProps, "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
+  error?: boolean
+  errorText?: string
+  showText?: boolean
+  showComment?: boolean
 }
 
 const meta = {
@@ -32,27 +38,35 @@ const meta = {
   component: Checkbox,
   parameters: { layout: "centered" },
   argTypes: {
+    viewport: sizeArgType,
+    // Disabled в Figma — значение оси State, отдельного контрола у него нет.
+    state: stateArgTypeOf(["default", "hover", "disabled"]),
+    disabled: { table: { disable: true } },
+    checked: { control: "boolean", name: "Checked" },
+    indeterminate: { control: "boolean", name: "Partial" },
+    error: { control: "boolean", name: "Error" },
+    showText: toggleArgType("Show Text"),
+    showComment: toggleArgType("Show Comment"),
     // `label`/`comment`/`error` are all `React.ReactNode` but every usage
     // here is a plain string — without this, leaving one unset falls back to
     // a generic "Set object" JSON editor.
-    label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
-    checked: { control: "boolean" },
-    indeterminate: { control: "boolean" },
-    disabled: { control: "boolean" },
-    state: stateArgType,
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
-    // панели истории, а не изменением размера вьюпорта.
-    viewport: viewportArgType,
+    label: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
+    checked: false,
+    indeterminate: false,
+    error: false,
+    showText: true,
+    showComment: true,
     label: "Согласен с условиями договора",
     comment: "Договор комплексного банковского обслуживания",
-    indeterminate: false,
-    disabled: false,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
+    errorText: "Text about error here",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -66,6 +80,12 @@ function Controlled({
   state,
   viewport,
   checked,
+  label,
+  comment,
+  error,
+  errorText,
+  showText,
+  showComment,
   ...props
 }: PlaygroundArgs) {
   const [internal, setInternal] = useState(false)
@@ -73,6 +93,10 @@ function Controlled({
     <PseudoBox state={state} viewport={viewport}>
       <Checkbox
         {...props}
+        label={showText ? label : undefined}
+        comment={showComment ? comment : undefined}
+        error={error ? errorText : undefined}
+        disabled={state === "disabled"}
         checked={checked ?? internal}
         onCheckedChange={setInternal}
       />

@@ -221,6 +221,7 @@ export type { PlaygroundState } from "./playground"
 export {
   optionsArgType,
   sizeArgType,
+  sizeArgTypeOf,
   stateArgTypeOf,
   toggleArgType,
 } from "./figma-props"

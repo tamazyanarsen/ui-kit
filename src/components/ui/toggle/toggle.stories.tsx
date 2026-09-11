@@ -4,8 +4,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  sizeArgTypeOf,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
@@ -19,41 +20,51 @@ type PlaygroundArgs = Omit<ToggleProps, "error"> & {
   // переключаются отдельными тоглами, а не наличием текста в поле ввода.
   error?: boolean
   errorText?: string
+  showText?: boolean
   showErrorText?: boolean
   showComment?: boolean
 }
 
+/* Панель повторяет «Свойства компонента» `ELK / toggle` (компонент-сет
+   2606:28161, таблица 1242:99673): Size / State / Checked / Error /
+   Show Text / Show Text Error / Show Comment — ровно те же имена и значения,
+   что видит дизайнер в правой панели Figma при настройке инстанса. */
 const meta = {
   title: "Компоненты/Toggle",
   component: Toggle,
   parameters: { layout: "centered" },
   argTypes: {
-    label: { control: "text" },
-    checked: { control: "boolean" },
-    disabled: { control: "boolean" },
+    // В Figma размер и форма — одно свойство Size с двумя значениями;
+    // в коде это `viewport` + <ViewportScope>, «auto» в панели Figma нет.
+    viewport: sizeArgTypeOf({
+      desktop: "L / Desktop",
+      mobile: "M / Mobile",
+    }),
+    // Disabled в Figma — значение оси State, отдельного контрола у него нет.
+    state: stateArgTypeOf(["default", "hover", "disabled"]),
+    disabled: { table: { disable: true } },
+    checked: { control: "boolean", name: "Checked" },
     error: { control: "boolean", name: "Error" },
-    showErrorText: { control: "boolean", name: "Show Error Text" },
-    errorText: { control: "text", name: "Текст ошибки" },
-    showComment: { control: "boolean", name: "Show Comment" },
-    comment: { control: "text", name: "Текст комментария" },
-    state: stateArgType,
-    // Дизайн-чек №3 №7: «Некорректные пропсы (не соответствуют фигме).
-    // Например, нет возможности настроить mobile». В Figma у компонента
-    // есть свойство Size=Desktop/Mobile (666:9029), поэтому в панели
-    // истории оно тоже должно быть — а не переключением вьюпорта.
-    viewport: viewportArgType,
+    showText: toggleArgType("Show Text"),
+    showErrorText: toggleArgType("Show Text Error"),
+    showComment: toggleArgType("Show Comment"),
+    label: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    label: "Согласен с условиями договора",
-    comment: "Договор комплексного банковского обслуживания",
-    showComment: true,
-    checked: false,
-    disabled: false,
-    error: false,
-    errorText: "Text about error here",
-    showErrorText: true,
+    viewport: "desktop" as Viewport,
     state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
+    checked: false,
+    error: false,
+    showText: true,
+    showErrorText: true,
+    showComment: true,
+    label: "Согласен с условиями договора",
+    errorText: "Text about error here",
+    comment: "Договор комплексного банковского обслуживания",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -66,9 +77,11 @@ function Controlled({
   checked,
   error,
   errorText,
+  showText,
   showErrorText,
   showComment,
   comment,
+  label,
   ...props
 }: PlaygroundArgs) {
   const [internal, setInternal] = useState(false)
@@ -77,10 +90,12 @@ function Controlled({
       <PseudoBox state={state}>
         <Toggle
           {...props}
+          label={showText ? label : undefined}
           // Дизайн-чек 3/3 №7: комментарий и ошибка выводятся вместе,
           // включение ошибки комментарий не гасит (макет 1242:99741).
           comment={showComment ? comment : undefined}
           error={error ? (showErrorText ? errorText || true : true) : undefined}
+          disabled={state === "disabled"}
           checked={checked ?? internal}
           onCheckedChange={setInternal}
         />

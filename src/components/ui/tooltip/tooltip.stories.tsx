@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import {
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 
 import { Tooltip, type TooltipProps } from "./tooltip"
 import type { TooltipDirection } from "./variants"
@@ -24,14 +29,27 @@ const meta = {
   component: Tooltip,
   parameters: { layout: "centered" },
   argTypes: {
-    content: { control: "text" },
+    /* Свойство `Direction` компонент-сета `ELK / tooltip & hint`
+       (687:25263) — подписи ровно как в правой панели Figma. Девятое
+       значение сета, `Mobile`, — это боттом-шит: он живёт в истории Hint,
+       потому что в коде это подменённая форма, а не направление. */
+    direction: optionsArgType<TooltipDirection>("Direction", {
+      left: "Left",
+      right: "Right",
+      "top-center": "Top Center",
+      "top-left": "Top Left",
+      "top-right": "Top Right",
+      "down-center": "Down Center",
+      "down-left": "Down Left",
+      "down-right": "Down Right",
+    }),
     // Дизайн-чек 3/3 №5: Show Title / Show Cross — свойства компонент-сета
     // `ELK / tooltip & hint` (11756:8037 / 11756:8039), поэтому они должны
     // переключаться из панели, а не быть зашиты.
-    showTitle: { control: "boolean", name: "Show Title" },
-    title: { control: "text", name: "Текст заголовка" },
-    showCross: { control: "boolean", name: "Show Cross" },
-    direction: { control: "select", options: DIRECTIONS },
+    showTitle: toggleArgType("Show Title"),
+    showCross: toggleArgType("Show Cross"),
+    content: { control: "text", table: { category: "Контент" } },
+    title: { control: "text", table: { category: "Контент" } },
     // Дизайн-чек от 07.09, замечание 18: «Тултипам нужно 2 режима ширины.
     // Базовый 256px, альтернативный — динамический».
     width: {
@@ -58,14 +76,16 @@ const meta = {
       },
     },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    width: "base",
-    content: "Подсказка с пояснением",
-    title: "Title",
+    direction: "top-center",
     showTitle: false,
     showCross: false,
-    direction: "top-center",
+    width: "base",
     disabled: false,
+    title: "Title",
+    content: "Подсказка с пояснением",
     children: <Button variant="secondary-grey">Наведите курсор</Button>,
   },
 } satisfies Meta<PlaygroundArgs>

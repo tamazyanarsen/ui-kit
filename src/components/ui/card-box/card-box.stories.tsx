@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { PseudoBox, StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import type { Viewport } from "@/lib/viewport"
 import {
   ItemInformationField,
@@ -60,33 +66,38 @@ const meta = {
   title: "Компоненты/Card Box",
   component: CardBox,
   parameters: { layout: "padded" },
+  /* Панель повторяет «Свойства компонента» `ELK / card-box` (компонент-сет
+     70333:11271, таблица 70333:11363): Size / Type — плюс булевы слоты
+     мастера. */
   argTypes: {
-    viewport: viewportArgType,
-    type: {
-      control: "inline-radio",
-      options: ["large", "small", "table"],
-      description:
-        "Тип блока: large — заголовок и контент в одной колонке; small — шапка отдельно, контент скроллится под ней; table — слот во всю ширину",
-    },
-    title: { control: "text" },
-    showTitle: { control: "boolean" },
+    viewport: sizeArgType,
+    type: optionsArgType(
+      "Type",
+      { large: "Large", small: "Small", table: "Table" },
+      "inline-radio"
+    ),
+    showTitle: toggleArgType("Show Title"),
     showScrollbar: {
+      name: "Show Scrollbar",
       control: "inline-radio",
       options: [undefined, true, false],
       description:
         "Разделители «контент не поместился» у типа small. По умолчанию (пусто) считаются сами по положению скролла",
     },
+    title: { control: "text", table: { category: "Контент" } },
     maxHeight: {
       control: { type: "number" },
       description: "Ограничение высоты для small, по умолчанию 792px",
+      table: { category: "Контент" },
     },
     children: { control: false },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook. */
   args: {
-    viewport: "auto" as Viewport,
+    viewport: "desktop" as Viewport,
     type: "large",
-    title: "Title",
     showTitle: true,
+    title: "Title",
     maxHeight: 280,
   },
 } satisfies Meta<PlaygroundArgs>

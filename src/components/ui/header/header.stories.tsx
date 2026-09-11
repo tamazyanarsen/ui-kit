@@ -129,10 +129,34 @@ const meta = {
   component: HeaderDemo,
   parameters: { layout: "fullscreen" },
   argTypes: {
-    type: { control: "inline-radio", options: ["client", "employee", "sign-out"] },
+    /* `Type` компонент-сета `ELK / header` (70303:48760) — четыре значения.
+       В коде они разложены на пару `type` + `clientHeaderType`, поэтому
+       контролов два: первый повторяет ось макета, второй показывает
+       клиентские подтипы, которых в оси нет (у кита их на один больше). */
+    type: {
+      name: "Type",
+      control: {
+        type: "inline-radio",
+        labels: {
+          client: "Client",
+          employee: "Employee",
+          "sign-out": "Sign Out",
+        },
+      },
+      options: ["client", "employee", "sign-out"],
+    },
     clientHeaderType: {
-      control: "inline-radio",
-      options: ["client", "client-without-account", "client-is-blocked"],
+      name: "Type: Client",
+      control: {
+        type: "inline-radio",
+        labels: {
+          client: "Client",
+          "client-is-blocked": "Client Is Blocked",
+          "client-without-account": "· Client Without Account",
+        },
+      },
+      options: ["client", "client-is-blocked", "client-without-account"],
+      if: { arg: "type", eq: "client" },
     },
     activeSection: {
       control: "select",

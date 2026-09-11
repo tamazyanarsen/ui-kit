@@ -4,7 +4,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
+  optionsArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 
@@ -21,27 +23,40 @@ const meta = {
   title: "Компоненты/Date Picker",
   component: DatePicker,
   parameters: { layout: "centered" },
+  /* Своего мастера у Date Picker нет: в Figma это `ELK / input` с
+     выпадающим `ELK / calendar` (7415:58521), поэтому имена свойств взяты
+     оттуда — Size у поля, Type у календаря. Значения `Type` — из
+     вложенного сета `Calendar (Desktop, ELK)` (7415:53000). */
   argTypes: {
-    state: stateArgType,
+    size: optionsArgType<InputSize>(
+      "Size",
+      { lg: "L", sm: "S" },
+      "inline-radio"
+    ),
+    // Disabled в Figma — значение оси State, Hover/Focused — псевдоклассы.
+    state: stateArgTypeOf(["default", "hover", "focus", "disabled"], {
+      focus: "Focused",
+    }),
     // `mode`/`size` are plain string unions imported from other modules
     // (`CalendarMode`, `InputSize`) — react-docgen can't resolve an imported
     // type alias into an enum here, so both fall back to a generic
     // "Set object" JSON editor. Pin the real option lists explicitly
     // instead, same fix as Badge's `color`.
-    mode: {
-      control: "inline-radio",
-      options: ["single", "range", "month", "year"] satisfies CalendarMode[],
-    },
-    size: { control: "inline-radio", options: ["lg", "sm"] satisfies InputSize[] },
+    mode: optionsArgType<CalendarMode>(
+      "Type",
+      { single: "Day", range: "Range", month: "Month", year: "Year" },
+      "inline-radio"
+    ),
+    // The popup's "Сбросить / Применить" row.
+    footer: toggleArgType("Show Buttons"),
     // `label`/`comment`/`error` are `React.ReactNode` but every usage is a
     // plain string — without this, leaving one unset falls back to the same
     // generic "Set object" editor.
-    label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
-    disabled: { control: "boolean" },
-    // The popup's "Сбросить / Применить" row.
-    footer: { control: "boolean" },
+    label: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    error: { control: "text", table: { category: "Контент" } },
+    // Значение оси State — отдельного контрола у него нет.
+    disabled: { table: { disable: true } },
     // `value`/`rangeValue`/`monthValue`/`yearValue` are owned by each
     // story's own local-state wrapper — never meant to be driven by the
     // Controls panel. Same landmine verified live on Calendar's matching
@@ -52,13 +67,13 @@ const meta = {
     monthValue: { control: false },
     yearValue: { control: false },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook. */
   args: {
+    size: "lg",
     state: "default" as PlaygroundState,
     mode: "single",
-    size: "lg",
-    label: "Дата",
-    disabled: false,
     footer: true,
+    label: "Дата",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -96,7 +111,7 @@ export const Playground: Story = {
   render: ({ state, ...args }) => (
     <div className="w-80">
       <PseudoBox state={state} className="w-full">
-        <Demo {...args} />
+        <Demo {...args} disabled={state === "disabled"} />
       </PseudoBox>
     </div>
   ),

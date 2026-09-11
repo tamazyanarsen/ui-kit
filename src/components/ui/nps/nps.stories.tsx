@@ -28,7 +28,6 @@ const meta = {
   // so an unset value doesn't fall back to Storybook's "Set object"
   // placeholder.
   argTypes: {
-    title: { control: "text" },
     estimateType: {
       name: "Estimate Type",
       control: { type: "select", labels: orderedOptionLabels(ESTIMATE_TYPES) },
@@ -37,9 +36,8 @@ const meta = {
     // Оценка задаётся контролом «Estimate Type» — сырые пропы скрыты.
     value: { table: { disable: true } },
     defaultValue: { table: { disable: true } },
-    comment: { control: "text" },
     chips: { table: { disable: true } },
-    showDescription: { control: "boolean" },
+    showDescription: { control: "boolean", name: "Show Description" },
     showChips: {
       name: "Show Chips",
       // `none` показываем как «None» — ровно как в таблице свойств.
@@ -50,6 +48,8 @@ const meta = {
       options: SHOW_CHIPS,
     },
     submitted: { control: "boolean" },
+    title: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
     // Дизайн-чек от 07.09, замечания 21 и 22.
     floating: {
       name: "Плавающее окно",

@@ -3,61 +3,99 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  optionsArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
 
 import { Textarea, type TextareaProps } from "./textarea"
 
-type PlaygroundArgs = TextareaProps & {
+/* Панель повторяет «Свойства компонента» `ELK / text-area` (компонент-сет
+   137:2618, таблица 1246:205583): Size / State / Type / Add /
+   Show Error Text / Scrollbar. */
+const TYPE_LABELS = {
+  empty: "Empty",
+  filled: "Filled",
+  locked: "Locked",
+} as const
+type FigmaType = keyof typeof TYPE_LABELS
+
+const ADD_LABELS = {
+  none: "None",
+  error: "Error",
+  comment: "Comment",
+} as const
+type FigmaAdd = keyof typeof ADD_LABELS
+
+type PlaygroundArgs = Omit<TextareaProps, "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
+  figmaType?: FigmaType
+  add?: FigmaAdd
+  errorText?: string
+  showErrorText?: boolean
+  scrollbar?: boolean
 }
 
 const meta = {
   title: "Компоненты/Text Area",
   component: Textarea,
   parameters: { layout: "padded" },
-  // comment/error are typed React.ReactNode but every usage here is a plain
-  // string — pin text controls so leaving one unset doesn't fall back to
-  // Storybook's "Set object" JSON-editor placeholder. `rows` is a genuine
-  // native `number` prop (inherited via `React.ComponentProps<"textarea">`),
-  // but docgen loses the primitive type across that extends chain and falls
-  // back to the same placeholder — pin it too.
   argTypes: {
-    label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
-    placeholder: { control: "text" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
+    // панели истории, а не изменением размера вьюпорта.
+    viewport: sizeArgType,
+    // Disabled в Figma — значение оси State, Hover/Focused — псевдоклассы.
+    state: stateArgTypeOf(["default", "hover", "focus", "disabled"], {
+      focus: "Focused",
+    }),
+    figmaType: optionsArgType<FigmaType>("Type", TYPE_LABELS, "inline-radio"),
+    add: optionsArgType<FigmaAdd>("Add", ADD_LABELS, "inline-radio"),
+    showErrorText: toggleArgType("Show Error Text"),
+    // В Figma `Scrollbar` — отдельное свойство, потому что полоса нарисована
+    // вложенным инстансом. В коде она появляется сама, когда текст не влез,
+    // поэтому контрол подставляет заведомо длинное значение.
+    scrollbar: toggleArgType(
+      "Scrollbar",
+      "Заполнить поле текстом, который не помещается, — чтобы показать полосу прокрутки"
+    ),
+    // Дизайн-чек 3/3 №19: тогл иконки «i» в строке комментария. В панели
+    // Figma его нет — иконка там нарисована слоем внутри строки Comment.
+    showCommentIcon: { control: "boolean", name: "Show Comment Icon" },
+    label: { control: "text", table: { category: "Контент" } },
+    placeholder: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
+    lockedHint: { control: "text", table: { category: "Контент" } },
+    commentHint: { control: "text", table: { category: "Контент" } },
     // Дизайн-чек №3 №3: «Разбивка по числу строк в компоненте не нужна и не
     // должна быть предусмотрена, компонент имеет нужные размеры в фигме».
     // `rows` остаётся нативным атрибутом textarea, но контролом его больше
     // не выставляем: высоту задаёт мастер (98px Mobile / 112px Desktop).
     rows: { table: { disable: true } },
-    locked: { control: "boolean", name: "Lock Input" },
-    lockedHint: { control: "text", name: "Причина блокировки" },
-    // Дизайн-чек 3/3 №19: тогл иконки «i» в строке комментария.
-    showCommentIcon: { control: "boolean", name: "Show Comment Icon" },
-    commentHint: { control: "text", name: "Текст по клику на «i»" },
-    disabled: { control: "boolean" },
-    state: stateArgType,
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
-    // панели истории, а не изменением размера вьюпорта.
-    viewport: viewportArgType,
+    // Значения осей Type и State — отдельных контролов у них нет.
+    locked: { table: { disable: true } },
+    disabled: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
+    figmaType: "empty" as FigmaType,
+    add: "none" as FigmaAdd,
+    showErrorText: true,
+    scrollbar: false,
+    showCommentIcon: false,
     label: "Label",
     placeholder: "Placeholder",
     comment: "Comment",
-    locked: false,
+    errorText: "Text about error here",
     lockedHint: "Поле заполняется автоматически и не редактируется",
-    showCommentIcon: false,
     commentHint: "Дополнительная информация по полю",
-    disabled: false,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -66,22 +104,51 @@ type Story = StoryObj<PlaygroundArgs>
 
 /* Дизайн-чек 3/3 №18: у Lock Input в спеке (52140:162555) написано «всегда
    заполнено» — пустое заблокированное поле состояния не показывает. Поэтому
-   при включённом `locked` в Playground подставляется текст; `key` заставляет
-   поле перемонтироваться, иначе неуправляемая textarea сохранила бы старое
+   при Type=Locked в Playground подставляется текст; `key` заставляет поле
+   перемонтироваться, иначе неуправляемая textarea сохранила бы старое
    значение при переключении контрола. */
 const LOCKED_VALUE =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna"
 
+const OVERFLOW_VALUE = [LOCKED_VALUE, LOCKED_VALUE, LOCKED_VALUE].join(" ")
+
 export const Playground: Story = {
-  render: ({ state, viewport, ...args }) => (
-    <PseudoBox state={state} viewport={viewport} className="w-96">
-      <Textarea
-        key={args.locked ? "locked" : "editable"}
-        {...args}
-        defaultValue={args.locked ? LOCKED_VALUE : undefined}
-      />
-    </PseudoBox>
-  ),
+  render: ({
+    state,
+    viewport,
+    figmaType = "empty",
+    add = "none",
+    errorText,
+    showErrorText,
+    scrollbar,
+    comment,
+    ...args
+  }) => {
+    const value = scrollbar
+      ? OVERFLOW_VALUE
+      : figmaType === "empty"
+        ? undefined
+        : LOCKED_VALUE
+    return (
+      <PseudoBox state={state} viewport={viewport} className="w-96">
+        <Textarea
+          key={`${figmaType}-${scrollbar}`}
+          {...args}
+          defaultValue={value}
+          locked={figmaType === "locked"}
+          disabled={state === "disabled"}
+          comment={add === "comment" ? comment : undefined}
+          error={
+            add === "error"
+              ? showErrorText
+                ? errorText || true
+                : true
+              : undefined
+          }
+        />
+      </PseudoBox>
+    )
+  },
 }
 
 /* Дизайн-чек №3 №3: «Матрица textarea не совпадает с figma. Нужна

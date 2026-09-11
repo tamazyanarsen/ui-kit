@@ -1,6 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { PseudoBox, StatesMatrix, iconArgType, stateArgType, type PlaygroundState } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  iconArgType,
+  optionsArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  type PlaygroundState,
+} from "@/stories/matrix"
+import type { Viewport } from "@/lib/viewport"
 import { Check } from "@/icons"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -50,8 +59,9 @@ interface PlaygroundArgs {
   label: string
   leading: React.ReactNode
   showCheck: boolean
-  disabled: boolean
+  disabled?: boolean
   state?: PlaygroundState
+  viewport?: Viewport
 }
 
 function Row({
@@ -100,37 +110,56 @@ const meta = {
   // компонента на "Menu point"» — так называется компонент-сет в Figma.
   title: "Компоненты/Menu Point",
   parameters: { layout: "padded" },
+  /* Панель повторяет свойства компонент-сета `Menu Point (ELK)`
+     (5877:18233): Size / State / Type / Style. Два значения Style мастера —
+     `Product / Put In` и `Product / Put Out` — у кита пары не имеют, это
+     отдельная карточка продукта, а не пункт меню. */
   argTypes: {
+    viewport: sizeArgType,
+    state: stateArgTypeOf(["default", "hover", "disabled"]),
+    level: optionsArgType<1 | 2 | 3 | 4>("Type", {
+      1: "Level 1",
+      2: "Level 2",
+      3: "Level 3",
+      4: "Level 4",
+    }, "inline-radio"),
     figmaStyle: {
       name: "Style",
       control: "inline-radio",
       options: STYLES,
       description: "Свойство Style компонент-сета Menu Point (ELK)",
     },
-    level: {
-      name: "Type",
-      control: "inline-radio",
-      options: [1, 2, 3, 4],
-      description:
-        "Свойство Type компонент-сета — уровень вложенности. Отличается левым полем: 16 px на уровень",
-    },
-    text: { control: "text", description: "Основной текст, P1 Medium" },
-    description: { control: "text", description: "Строка под основным текстом (Style=Extended)" },
-    label: { control: "text", description: "Подпись НАД основным текстом (Style=Title)" },
-    leading: iconArgType("Ведущий элемент: иконка. Чекбокс и миниатюра — в примерах"),
     showCheck: { control: "boolean", name: "Галочка выбора" },
-    disabled: { control: "boolean", name: "State: Disabled" },
-    state: stateArgType,
+    leading: iconArgType("Ведущий элемент: иконка. Чекбокс и миниатюра — в примерах"),
+    text: {
+      control: "text",
+      description: "Основной текст, P1 Medium",
+      table: { category: "Контент" },
+    },
+    description: {
+      control: "text",
+      description: "Строка под основным текстом (Style=Extended)",
+      table: { category: "Контент" },
+    },
+    label: {
+      control: "text",
+      description: "Подпись НАД основным текстом (Style=Title)",
+      table: { category: "Контент" },
+    },
+    // Значение оси State — отдельного контрола у него нет.
+    disabled: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок свойств мастера. */
   args: {
-    figmaStyle: "Extended",
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
     level: 1,
+    figmaStyle: "Extended",
+    showCheck: false,
     text: "Название пункта",
     description: "Пояснение под названием",
     label: "Подпись сверху",
-    showCheck: false,
-    disabled: false,
-    state: "default" as PlaygroundState,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -138,12 +167,12 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
+  render: ({ state, viewport, ...args }) => (
     // Строка живёт внутри выпадающего списка и на его фоне — на голом
     // холсте её края и подсветка не читаются.
     <Dropdown className="w-96 overflow-hidden">
-      <PseudoBox state={state} className="w-full">
-        <Row {...args} />
+      <PseudoBox state={state} viewport={viewport} className="w-full">
+        <Row {...args} disabled={state === "disabled"} />
       </PseudoBox>
     </Dropdown>
   ),

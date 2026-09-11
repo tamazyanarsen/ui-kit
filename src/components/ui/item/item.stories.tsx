@@ -1,7 +1,13 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
+  type PlaygroundState,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Item, type ItemProps, type RightElementType } from "./item"
@@ -47,6 +53,7 @@ type PlaygroundArgs = ItemProps & {
   conclusion?: boolean
   showComment?: boolean
   showRightElement?: boolean
+  state?: PlaygroundState
   viewport?: Viewport
 }
 
@@ -59,6 +66,14 @@ const meta = {
   // "None"/"Default" choice to `undefined`/`true` instead of disabling
   // the control (same technique as Button's `icon`).
   argTypes: {
+    /* Порядок и имена — как в таблице «Свойства компонента» (31877:15804):
+       State / Type / Conclusion / Sub Category / Show Comment /
+       Show Right Element / Show Divider. */
+    // У самого сета `ELK / item` оси Size нет: Desktop и Mobile разведены
+    // отдельными мастерами вложенных элементов (`Right Element (Desktop,
+    // ELK)`), поэтому форма всё равно должна переключаться контролом.
+    viewport: sizeArgType,
+    state: stateArgTypeOf(["default", "disabled"]),
     // Type в Figma — это наличие тумбнейла: Value (без) / Thumbneil (с).
     figmaType: {
       name: "Type",
@@ -74,60 +89,67 @@ const meta = {
       description: "Строка Text над значением",
       control: "boolean",
     },
-    showComment: { name: "Comment", control: "boolean" },
-    showRightElement: { name: "Right Element", control: "boolean" },
-    // `text`/`comment`/`informationText`/`rightText` are all `React.ReactNode`
-    // but every usage is a plain string — without this, leaving one unset
-    // falls back to a generic "Set object" JSON editor.
-    text: { control: "text" },
-    value: { control: "text" },
-    comment: { control: "text" },
-    informationText: { control: "text" },
-    rightText: { control: "text" },
-    commentColor: {
-      name: "Text Color",
-      control: "inline-radio",
-      options: ["grey", "red", "yellow"],
-    },
+    subCategory: { name: "Sub Сategory", control: "boolean" },
+    showComment: toggleArgType("Show Comment"),
+    showRightElement: toggleArgType("Show Right Element"),
+    divider: toggleArgType("Show Divider"),
+    // Вложенные сеты мастера: «Right Element (Desktop, ELK)» (31845:85324)
+    // и «Comment (Desktop, ELK)» (31845:85310) — своими категориями, как в
+    // Figma они показаны отдельными блоками свойств вложенного инстанса.
     rightElement: {
-      name: "Right Element / Type",
+      name: "Type",
       control: "select",
       options: RIGHT_ELEMENTS,
+      table: { category: "Right Element (ELK)" },
     },
     open: {
       name: "Раскрыта",
       control: "boolean",
       description:
         "Панель, которую раскрывает строка, сейчас открыта (Right Element = select): шеврон смотрит вверх и выставляется aria-expanded",
+      table: { category: "Right Element (ELK)" },
     },
-    subCategory: { name: "Sub Сategory", control: "boolean" },
-    divider: { control: "boolean" },
-    disabled: { name: "State: Disabled", control: "boolean" },
     // Only meaningful for rightElement="toggle" / "checkbox". The Playground
     // keeps them clickable through its own state, but setting the control
     // pins the value (same pattern as Checkbox's `checked`).
-    toggleChecked: { control: "boolean" },
-    checkboxChecked: { control: "boolean" },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile — контрол, а не вьюпорт.
-    viewport: viewportArgType,
+    toggleChecked: { control: "boolean", table: { category: "Right Element (ELK)" } },
+    checkboxChecked: { control: "boolean", table: { category: "Right Element (ELK)" } },
+    rightText: { control: "text", table: { category: "Right Element (ELK)" } },
+    commentColor: {
+      name: "Text Color",
+      control: "inline-radio",
+      options: ["grey", "red", "yellow"],
+      table: { category: "Comment (ELK)" },
+    },
+    // `text`/`comment`/`informationText`/`rightText` are all `React.ReactNode`
+    // but every usage is a plain string — without this, leaving one unset
+    // falls back to a generic "Set object" JSON editor.
+    text: { control: "text", table: { category: "Контент" } },
+    value: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    informationText: { control: "text", table: { category: "Контент" } },
+    // Значение оси State — отдельного контрола у него нет.
+    disabled: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
+    viewport: "desktop",
+    state: "default" as PlaygroundState,
     figmaType: "Value",
     conclusion: true,
+    subCategory: false,
+    showComment: true,
+    showRightElement: true,
+    divider: true,
+    rightElement: "navigation",
+    open: false,
+    rightText: "+1,5%",
+    commentColor: "grey",
     text: "Тип операции",
     value: "Перевод между счетами",
-    rightElement: "navigation",
-    showRightElement: true,
-    open: false,
-    subCategory: false,
-    disabled: false,
-    showComment: true,
     comment: "Comment",
-    commentColor: "grey",
     informationText: "Дополнительная информация об операции",
-    rightText: "+1,5%",
-    divider: true,
-    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -144,11 +166,13 @@ export const Playground: Story = {
     comment,
     rightElement,
     viewport,
+    state,
     ...args
   }) => (
     <ViewportScope viewport={viewport}>
       <InteractiveItem
         {...args}
+        disabled={state === "disabled"}
         thumbnail={figmaType === "Thumbneil" ? true : undefined}
         text={conclusion ? text : undefined}
         comment={showComment ? comment : undefined}

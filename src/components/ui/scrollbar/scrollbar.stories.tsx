@@ -13,7 +13,14 @@ const meta = {
   component: Scrollbar,
   parameters: { layout: "padded" },
   argTypes: {
-    orientation: { control: "inline-radio", options: ["vertical", "horizontal"] },
+    orientation: {
+      name: "Orientation",
+      control: {
+        type: "inline-radio",
+        labels: { vertical: "Vertical", horizontal: "Horizontal" },
+      },
+      options: ["vertical", "horizontal"],
+    },
     // Дизайн-чек от 07.09, замечание 26: «Для выпадающих списков Scrollbar
     // не может вылезать за контур. Всегда у Scrollbar есть отступы… для
     // скруглённых выпадающих списков отступ ещё больше».

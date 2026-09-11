@@ -17,17 +17,28 @@ import type { PlaygroundState } from "./playground"
  * видит `Size: Desktop`.
  */
 
-/** `Size (Desktop / Mobile)` — в коде это `viewport` + `<ViewportScope>`. */
-export const sizeArgType = {
-  name: "Size",
-  description:
-    "Свойство Size компонента в Figma. Форму задаёт ViewportScope, а не ширина окна",
-  control: {
-    type: "inline-radio" as const,
-    labels: { desktop: "Desktop", mobile: "Mobile" },
-  },
-  options: ["desktop", "mobile"] satisfies Viewport[],
+/**
+ * `Size (…)` — в коде это `viewport` + `<ViewportScope>`.
+ *
+ * Подписи значений в разных компонент-сетах разные: у Checkbox это
+ * `Desktop / Mobile`, у Toggle — `L / Desktop` и `M / Mobile`. Подпись обязана
+ * совпадать с панелью Figma, поэтому её можно переопределить.
+ */
+export function sizeArgTypeOf(labels: Record<"desktop" | "mobile", string>) {
+  return {
+    name: "Size",
+    description:
+      "Свойство Size компонента в Figma. Форму задаёт ViewportScope, а не ширина окна",
+    control: { type: "inline-radio" as const, labels },
+    options: ["desktop", "mobile"] satisfies Viewport[],
+  }
 }
+
+/** `Size (Desktop / Mobile)` — самый частый случай. */
+export const sizeArgType = sizeArgTypeOf({
+  desktop: "Desktop",
+  mobile: "Mobile",
+})
 
 const FIGMA_STATE_LABELS: Record<PlaygroundState, string> = {
   default: "Default",

@@ -11,7 +11,9 @@ import type { BadgeColor } from "@/components/ui/badge"
 // counter height, so this is just the two composed rather than a new
 // visual system. Per spec: only one Count Button per button group.
 interface CountButtonProps extends ButtonProps {
-  count: number
+  /** Значение счётчика. `undefined` — плашки нет вовсе: это свойство
+   *  `Show Count = False` мастера `ELK / count button` (34:17381). */
+  count?: number
   /** Badge color. Red is the master's own (`ELK / count button`); Table Top's
    * "Ещё фильтры" instance overrides it to `black`, so it is a prop rather
    * than a constant. */
@@ -29,12 +31,14 @@ function CountButton({
       <Button className={className} {...props} />
       {/* The badge overhangs the button by 4px on each side (Figma's
           `right-[-4px] top-[-4px]`), not 8. */}
-      <Badge
-        type="counter"
-        value={count}
-        color={countColor}
-        className="absolute -top-1 -right-1"
-      />
+      {count !== undefined && (
+        <Badge
+          type="counter"
+          value={count}
+          color={countColor}
+          className="absolute -top-1 -right-1"
+        />
+      )}
     </span>
   )
 }

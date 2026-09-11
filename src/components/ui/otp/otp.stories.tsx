@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 
-import { StatesMatrix, StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  StorySection,
+  StoryShowcase,
+  sizeArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { OtpConfirmCard } from "./confirm-card"
@@ -25,26 +30,36 @@ const meta = {
   parameters: { layout: "centered" },
   // The card is a dialog (Figma composes it from ELK / Modal), so the
   // Playground opens it outright instead of relying on a trigger click.
+  /* Панель повторяет свойства компонент-сета `ELK / otp-code`
+     (694:112669): у него единственная ось `Size` (Desktop / Mobile), а
+     состояния поля — у вложенного `Input Code (Desktop/Mobile)`
+     (11490:14320): Default / Focused / Filled / Error / Send Password. В
+     коде это внутреннее поведение формы, поэтому контролов у них нет.
+
+     Порядок ключей здесь задаёт порядок строк в панели Storybook. */
   args: {
-    phone: "+7 900 000-00-00",
+    viewport: "desktop" as Viewport,
     defaultOpen: true,
     length: 6,
     resendSeconds: 60,
     title: "Подтвердите контактные данные",
-    viewport: "auto" as Viewport,
+    phone: "+7 900 000-00-00",
   },
   // title/subtitle/error are typed React.ReactNode but every usage is a
   // plain string — pin text controls so leaving one unset doesn't fall back
   // to Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
-    title: { control: "text" },
-    subtitle: { control: "text" },
-    error: { control: "text" },
-    phone: { control: "text" },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: sizeArgType,
+    defaultOpen: { control: "boolean" },
     length: { control: { type: "number", min: 4, max: 8 } },
     resendSeconds: { control: "number" },
-    defaultOpen: { control: "boolean" },
-    defaultValue: { control: "text" },
+    title: { control: "text", table: { category: "Контент" } },
+    subtitle: { control: "text", table: { category: "Контент" } },
+    error: { control: "text", table: { category: "Контент" } },
+    phone: { control: "text", table: { category: "Контент" } },
+    defaultValue: { control: "text", table: { category: "Контент" } },
     // `trigger` takes a JSX element instance — no JSON value can build one,
     // so map a friendly choice to a real element (same technique as
     // Button's `icon`). "None" leaves the card opened by `defaultOpen`.
@@ -56,9 +71,6 @@ const meta = {
         button: <button type="button">Подтвердить контакты</button>,
       },
     },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
   },
   // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
   // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая

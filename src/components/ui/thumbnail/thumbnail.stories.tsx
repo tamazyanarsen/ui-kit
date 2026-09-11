@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  stateArgTypeOf,
+  type PlaygroundState,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ICON_NAMES } from "@/components/ui/icon"
@@ -47,40 +52,90 @@ const TYPE_LABEL: Partial<Record<ThumbnailType, string>> = {
   "alert-red": "Alert (Red)",
 }
 
-type PlaygroundArgs = ThumbnailProps & { viewport?: Viewport }
+/* `Size` в Figma — одно свойство с тремя значениями: размер и форма там не
+   разъезжаются, в коде это пара `size` + <ViewportScope>. */
+const SIZE_LABELS = {
+  "l-desktop": "L / Desktop",
+  "m-desktop": "M / Desktop",
+  "l-mobile": "L-M / Mobile",
+} as const
+type FigmaSize = keyof typeof SIZE_LABELS
+
+const SIZE_PROPS: Record<FigmaSize, { size: "l" | "m"; viewport: Viewport }> = {
+  "l-desktop": { size: "l", viewport: "desktop" },
+  "m-desktop": { size: "m", viewport: "desktop" },
+  "l-mobile": { size: "l", viewport: "mobile" },
+}
+
+/* Значения `Type` — ровно девять из мастера, в его же порядке. Два
+   последних значения кита пары в сете не имеют (они есть на канвасе
+   отдельными кадрами «Thumbnail Question» / «Thumbnail Clock»), поэтому
+   помечены точкой — так же, как «лишние» значения у Button. */
+const TYPE_LABELS: Record<ThumbnailType, string> = {
+  icon: "Icon",
+  card: "Card",
+  sticker: "Sticker",
+  "sbp-card": "SBP Card",
+  "sbp-card-account": "SBP Card Account",
+  picture: "Image",
+  check: "Check (Green)",
+  alert: "Attention (Yellow)",
+  "alert-red": "Alert (Red)",
+  question: "· Question",
+  clock: "· Clock",
+}
+
+type PlaygroundArgs = Omit<ThumbnailProps, "size"> & {
+  viewport?: Viewport
+  figmaSize?: FigmaSize
+  state?: PlaygroundState
+}
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const meta = {
   title: "Компоненты/Thumbnail",
   component: Thumbnail,
   parameters: { layout: "centered" },
+  /* Панель повторяет «Свойства компонента» `ELK / thumbnail` (компонент-сет
+     687:29204, таблица 7203:102402): Size / State / Type — плюс вложенные
+     инстансы `Payment System (ELK)` и `ELK / badge` своими категориями. */
   argTypes: {
-    type: { control: "select", options: [...CARD_TYPES, ...ICON_TYPES] },
-    size: { control: "inline-radio", options: ["l", "m"] },
-    paymentSystem: { control: "select", options: PAYMENT_SYSTEMS },
-    last4: { control: "text" },
-    count: { control: { type: "number", min: 0, max: 99 } },
-    showDot: { control: "boolean" },
-    disabled: { control: "boolean" },
-    src: { control: "text" },
-    alt: { control: "text" },
+    figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS, "inline-radio"),
+    state: stateArgTypeOf(["default", "disabled"]),
+    type: optionsArgType<ThumbnailType>("Type", TYPE_LABELS),
+    paymentSystem: {
+      name: "Payment System",
+      control: "select",
+      options: PAYMENT_SYSTEMS,
+      table: { category: "Payment System (ELK)" },
+    },
+    count: {
+      control: { type: "number", min: 0, max: 99 },
+      table: { category: "ELK / badge" },
+    },
+    showDot: { name: "Point", control: "boolean", table: { category: "ELK / badge" } },
     // Instance swap внутри плитки `Type=Icon`.
     icon: {
       control: "select",
       options: ICON_NAMES,
       description: "Глиф для типа Icon (в Figma — instance swap)",
+      table: { category: "Контент" },
     },
-    // Size=L / Desktop против L-M / Mobile — контрол, а не ширина окна.
-    viewport: viewportArgType,
+    last4: { control: "text", table: { category: "Контент" } },
+    src: { control: "text", table: { category: "Контент" } },
+    alt: { control: "text", table: { category: "Контент" } },
+    // Значение оси State — отдельного контрола у него нет.
+    disabled: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
+    figmaSize: "l-desktop" as FigmaSize,
+    state: "default" as PlaygroundState,
     type: "card",
-    size: "l",
     paymentSystem: "mir",
     showDot: false,
-    disabled: false,
     icon: "ellipsis",
-    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -88,11 +143,14 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ viewport, ...args }) => (
-    <ViewportScope viewport={viewport}>
-      <Thumbnail {...args} />
-    </ViewportScope>
-  ),
+  render: ({ figmaSize = "l-desktop", state, ...args }) => {
+    const { size, viewport } = SIZE_PROPS[figmaSize]
+    return (
+      <ViewportScope viewport={viewport}>
+        <Thumbnail {...args} size={size} disabled={state === "disabled"} />
+      </ViewportScope>
+    )
+  },
 }
 
 export const Matrix: Story = {

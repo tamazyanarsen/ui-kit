@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix } from "@/stories/matrix"
+import { StatesMatrix, toggleArgType } from "@/stories/matrix"
 
 import { Steps, type Step, type StepsProps } from "./steps"
 import type { StepState, StepStatus } from "./variants"
@@ -62,29 +62,39 @@ const meta = {
   title: "Компоненты/Steps",
   component: Steps,
   parameters: { layout: "padded" },
+  /* Панель повторяет «Свойства компонента» `ELK / steps` (компонент-сет
+     5582:8590, таблица 5609:33617): Steps / Show Left Fade / Show Right
+     Fade / State / Steps Status. Свойство `Steps` в мастере названо с
+     опечаткой («Spets») — здесь оно под именем из таблицы. */
   argTypes: {
     stepsCount: {
-      name: "Количество шагов",
+      name: "Steps",
       control: "select",
       options: STEP_COUNTS,
+      description:
+        "Число шагов. В макете значений шесть (2 — 7); 1 и 8 добавлены киту, чтобы проверить вырожденный случай и переполнение ленты",
     },
-    steps: { table: { disable: true } },
+    showLeftFade: toggleArgType("Show Left Fade"),
+    showRightFade: toggleArgType("Show Right Fade"),
     currentState: {
       name: "State",
       control: "inline-radio",
       options: STEP_STATES,
+      description: "Свойство State вложенного сета Steps (ELK) — у текущего шага",
     },
     currentStatus: {
-      name: "Type",
+      name: "Steps Status",
       control: "inline-radio",
       options: STEP_STATUSES,
+      description: "Свойство Type вложенного сета Steps Status (ELK)",
     },
-    showLeftFade: { control: "boolean" },
-    showRightFade: { control: "boolean" },
+    steps: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    steps: BASE_STEPS,
     stepsCount: 8,
+    steps: BASE_STEPS,
     currentState: "default",
     currentStatus: "none",
     // Включены по умолчанию: на 8 шагах лента заведомо не помещается,

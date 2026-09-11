@@ -29,10 +29,10 @@ const meta = {
       description:
         "Вариант страницы. 403 и 404 рисуют крупные цифры с маскотом вместо нуля, Image — обобщённую иллюстрацию без цифр",
     },
-    title: { control: "text" },
-    description: { control: "text" },
-    showButton: { name: "Кнопка", control: "boolean" },
-    buttonLabel: { control: "text" },
+    showButton: { name: "Show Button", control: "boolean" },
+    title: { control: "text", table: { category: "Контент" } },
+    description: { control: "text", table: { category: "Контент" } },
+    buttonLabel: { control: "text", table: { category: "Контент" } },
   },
   args: {
     type: "404",

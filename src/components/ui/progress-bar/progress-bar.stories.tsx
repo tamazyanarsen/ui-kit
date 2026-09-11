@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { PseudoBox, StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  PseudoBox,
+  StatesMatrix,
+  optionsArgType,
+  sizeArgType,
+} from "@/stories/matrix"
 import type { Viewport } from "@/lib/viewport"
 
 import { ProgressBar, type ProgressBarProps } from "./progress-bar"
@@ -12,7 +17,21 @@ import type {
 
 /* Ось `Size` (Desktop | Mobile) в макете есть, но пропом не выставляется —
    её даёт общий контрол `viewport`. */
-type PlaygroundArgs = ProgressBarProps & { viewport?: Viewport }
+type PlaygroundArgs = Omit<ProgressBarProps, "variant" | "totalSteps"> & {
+  viewport?: Viewport
+  /** Свойство `Steps` компонент-сета: 2 — 10 либо `Timeline`. */
+  steps?: number | "timeline"
+}
+
+/* `Steps` — одно свойство мастера (70333:1940) с одиннадцатью значениями:
+   число шагов либо «Timeline». В коде это пара `variant` + `totalSteps`,
+   поэтому контрол один, а раскладывает его `render`. */
+const STEPS_LABELS: Record<string, string> = {
+  ...Object.fromEntries(
+    Array.from({ length: 9 }, (_, i) => [String(i + 2), String(i + 2)])
+  ),
+  timeline: "Timeline",
+}
 
 const STATUSES: ProgressBarStatus[] = [
   "default",
@@ -47,8 +66,8 @@ const meta = {
   // every usage is a plain string — pin text controls so leaving one unset
   // doesn't fall back to Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
-    viewport: viewportArgType,
-    variant: { control: "inline-radio", options: ["step", "timeline"] },
+    viewport: sizeArgType,
+    steps: optionsArgType("Steps", STEPS_LABELS),
     title: { control: "text", table: { category: "Top" } },
     description: { control: "text", table: { category: "Top" } },
     showDescription: { control: "boolean", table: { category: "Top" } },
@@ -61,10 +80,6 @@ const meta = {
       control: "inline-radio",
       options: STATUS_TIMELINE,
       table: { category: "Timeline" },
-    },
-    totalSteps: {
-      control: { type: "number", min: 2, max: 10 },
-      table: { category: "Steps" },
     },
     currentStep: {
       control: { type: "number", min: 1, max: 10 },
@@ -86,9 +101,11 @@ const meta = {
     // Дизайн-чек №4 №8: className — не свойство компонента из макета.
     className: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    viewport: "auto" as Viewport,
-    variant: "timeline",
+    viewport: "desktop" as Viewport,
+    steps: "timeline",
     title: "Title",
     description: "Description",
     showDescription: true,
@@ -99,7 +116,6 @@ const meta = {
     statusDescription: "Description",
     value: 50,
     statusTimeline: "process",
-    totalSteps: 4,
     currentStep: 2,
     status: "default",
   },
@@ -109,9 +125,13 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ viewport, ...args }) => (
+  render: ({ viewport, steps = "timeline", ...args }) => (
     <PseudoBox viewport={viewport} className="w-full">
-      <ProgressBar {...args} />
+      <ProgressBar
+        {...args}
+        variant={steps === "timeline" ? "timeline" : "step"}
+        totalSteps={steps === "timeline" ? undefined : Number(steps)}
+      />
     </PseudoBox>
   ),
 }

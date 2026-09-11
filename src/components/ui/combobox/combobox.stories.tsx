@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, StorySection, StoryShowcase, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  sizeArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Combobox } from "./root"
@@ -158,22 +164,33 @@ const meta = {
   // `DocumentsMultiSelect` is declared locally in this file rather than
   // imported from a component module, so react-docgen-typescript doesn't
   // extract its props — declare every control explicitly.
+  /* Отдельного мастера у Combobox в Figma нет: это `ELK / select`
+     (687:9278) с выпадающим списком из `Menu Point (ELK)` и чекбоксами,
+     поэтому имена свойств взяты у Select — Size / Type / Add. */
   argTypes: {
-    size: { control: "inline-radio", options: ["lg", "sm"] },
-    label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
-    max: { control: { type: "number", min: 1, max: 5 } },
-    disabled: { control: "boolean" },
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
+    viewport: sizeArgType,
+    size: optionsArgType("Size (L / S)", { lg: "L", sm: "S" }, "inline-radio"),
+    disabled: { control: "boolean", name: "State: Disabled" },
+    label: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    error: { control: "text", table: { category: "Контент" } },
+    max: {
+      control: { type: "number", min: 1, max: 5 },
+      table: { category: "Контент" },
+    },
   },
-  args: { size: "lg", label: "Название", disabled: false, viewport: "auto" as Viewport },
+  args: {
+    viewport: "desktop" as Viewport,
+    size: "lg",
+    disabled: false,
+    label: "Название",
+  },
   // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
   // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
   // для всех историй файла — в матрицах она не мешает: там форму задаёт
-  // сама матрица (`responsive`), а этот скоуп остаётся в «auto».
+  // сама матрица (`responsive`), а этот скоуп остаётся неопределённым.
   decorators: [
     (Story, context) => (
       <ViewportScope viewport={(context.args as { viewport?: Viewport }).viewport}>

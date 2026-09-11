@@ -104,18 +104,33 @@ const meta = {
   // `DemoSidebar` is declared locally in this file rather than imported from
   // a component module, so react-docgen-typescript doesn't extract its props
   // — declare every control explicitly.
+  /* Панель повторяет свойства мастеров с канваса Header (666:17):
+     у `ELK / sidebar` (1607:59687) единственная ось `Open`, число пунктов —
+     свойство `Value` вложенного `Sidebar Menu (ELK)` (3715:40685), а
+     состояние и раскрытая группа — оси `Sidebar Item (ELK)` (2314:30680):
+     State и Show Text. */
   argTypes: {
     // `Open` в макете: развёрнутая панель показывает подписи, свёрнутая —
     // только иконки (`Show Text=Icon` против `Text`).
     defaultOpen: { control: "boolean", name: "Open" },
     itemsCount: {
-      name: "Value (пунктов)",
+      name: "Value",
       control: { type: "range", min: 2, max: ITEM_POOL.length, step: 1 },
+      description: "Свойство Value вложенного сета Sidebar Menu (ELK): 2 — 10",
     },
-    activeItem: { control: "boolean", name: "State: Active" },
-    expandGroup: { control: "boolean", name: "Show Text: Select (раскрытая группа)" },
+    activeItem: {
+      control: "boolean",
+      name: "State: Active",
+      table: { category: "Sidebar Item (ELK)" },
+    },
+    expandGroup: {
+      control: "boolean",
+      name: "Show Text: Select",
+      description: "Раскрытая группа — третье значение оси Show Text",
+      table: { category: "Sidebar Item (ELK)" },
+    },
   },
-  args: { defaultOpen: true, activeItem: true, expandGroup: false, itemsCount: 4 },
+  args: { defaultOpen: true, itemsCount: 4, activeItem: true, expandGroup: false },
 } satisfies Meta<DemoSidebarProps>
 
 export default meta

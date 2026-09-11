@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
+  stateArgTypeOf,
   type PlaygroundState,
 } from "@/stories/matrix"
 
@@ -19,6 +19,8 @@ const meta = {
   component: UpButton,
   parameters: { layout: "padded" },
   argTypes: {
+    // Единственное свойство мастера (компонент-сет 34:15225).
+    state: stateArgTypeOf(["default", "hover", "active"]),
     threshold: { control: "number" },
     hidden: { control: "boolean" },
     // scrollContainer is a React.RefObject<HTMLElement> — no JSON value can
@@ -26,7 +28,6 @@ const meta = {
     // plain {} that silently falls back to `window` (same non-representable
     // class as Button's icon/iconPosition, already fixed there).
     scrollContainer: { control: false },
-    state: stateArgType,
   },
   // threshold=-1 keeps it visible immediately in the story canvas — real
   // usage only shows it once the page has scrolled past the threshold.

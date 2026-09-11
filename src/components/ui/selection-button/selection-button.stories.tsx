@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import {
+  StorySection,
+  StoryShowcase,
+  optionsArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 
 import {
   SelectionButton,
@@ -28,20 +33,31 @@ type ItemCount = (typeof ITEM_COUNTS)[number]
 
 type PlaygroundArgs = SelectionButtonProps & { itemsCount?: ItemCount }
 
+/* Панель повторяет «Свойства компонента» `ELK / selection button`
+   (компонент-сет 17827:39199, таблица 17851:45073): Size / Show Dropdown /
+   Direction — те же имена и подписи, что в правой панели Figma. */
 const meta = {
   title: "Компоненты/Selection Button",
   component: SelectionButton,
   parameters: { layout: "centered" },
   argTypes: {
-    size: { control: "inline-radio", options: ["lg", "sm"] },
-    direction: { control: "select", options: DIRECTIONS },
-    showDropdown: { control: "boolean" },
-    triggerLabel: { control: "text" },
-    modal: { control: "boolean" },
+    size: optionsArgType("Size", { lg: "L", sm: "S" }, "inline-radio"),
+    showDropdown: toggleArgType("Show Dropdown"),
+    direction: optionsArgType<SelectionButtonDirection>("Direction", {
+      "top-left": "Top Left",
+      "top-right": "Top Right",
+      "down-left": "Down Left",
+      "down-right": "Down Right",
+    }),
+    // Ниже — то, чего в панели Figma нет: пункты меню там нарисованы
+    // вложенными инстансами `Menu Point (ELK)`, а не свойствами сета.
+    triggerLabel: { control: "text", table: { category: "Контент" } },
+    modal: { control: "boolean", table: { category: "Контент" } },
     itemsCount: {
       name: "Количество пунктов",
       control: "select",
       options: ITEM_COUNTS,
+      table: { category: "Контент" },
     },
     items: { table: { disable: true } },
     // `trigger` takes a JSX element instance — map a friendly "Default
@@ -59,7 +75,15 @@ const meta = {
       },
     },
   },
-  args: { items: ITEMS, itemsCount: 3, size: "lg" },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
+  args: {
+    size: "lg",
+    showDropdown: true,
+    direction: "down-right",
+    items: ITEMS,
+    itemsCount: 3,
+  },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta

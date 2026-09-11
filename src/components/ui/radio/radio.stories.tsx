@@ -4,8 +4,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
@@ -28,40 +29,50 @@ type PlaygroundArgs = Omit<RadioProps, "error"> & {
   // три независимых тогла (Error / Show Comment из свойств `ELK / radio`).
   error?: boolean
   errorText?: string
+  showText?: boolean
   showErrorText?: boolean
   showComment?: boolean
 }
 
+/* Панель повторяет «Свойства компонента» `ELK / radio` (компонент-сет
+   600:8772, таблица 1242:99827): Size / State / Checked / Error / Show Text /
+   Show Comment. Строку Partial из таблицы сюда не переносим — у сета такой
+   оси нет, она попала в документацию копипастой из Checkbox. */
 const meta = {
   title: "Компоненты/Radio",
   component: Radio,
   parameters: { layout: "centered" },
   argTypes: {
-    label: { control: "text" },
-    checked: { control: "boolean", name: "Checked" },
-    disabled: { control: "boolean" },
-    error: { control: "boolean", name: "Error" },
-    showErrorText: { control: "boolean", name: "Show Error Text" },
-    errorText: { control: "text", name: "Текст ошибки" },
-    showComment: { control: "boolean", name: "Show Comment" },
-    comment: { control: "text", name: "Текст комментария" },
-    state: stateArgType,
     // Size=Desktop/Mobile — свойство компонент-сета в Figma, поэтому форма
     // выбирается контролом, а не шириной вьюпорта (дизайн-чек №3 №19).
-    viewport: viewportArgType,
+    viewport: sizeArgType,
+    // Disabled в Figma — значение оси State, отдельного контрола у него нет.
+    state: stateArgTypeOf(["default", "hover", "disabled"]),
+    disabled: { table: { disable: true } },
+    checked: { control: "boolean", name: "Checked" },
+    error: { control: "boolean", name: "Error" },
+    showText: toggleArgType("Show Text"),
+    showErrorText: toggleArgType("Show Text Error"),
+    showComment: toggleArgType("Show Comment"),
+    label: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    value: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
+    checked: false,
+    error: false,
+    showText: true,
+    showErrorText: true,
+    showComment: true,
     value: "a",
     label: "Согласен с условиями договора",
-    comment: "Договор комплексного банковского обслуживания",
-    showComment: true,
-    checked: false,
-    disabled: false,
-    error: false,
     errorText: "Text about error here",
-    showErrorText: true,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
+    comment: "Договор комплексного банковского обслуживания",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -77,9 +88,11 @@ function Controlled({
   viewport,
   error,
   errorText,
+  showText,
   showErrorText,
   showComment,
   comment,
+  label,
   ...props
 }: PlaygroundArgs) {
   const [value, setValue] = useState<unknown>(null)
@@ -96,6 +109,8 @@ function Controlled({
         <PseudoBox state={state}>
           <Radio
             {...props}
+            label={showText ? label : undefined}
+            disabled={state === "disabled"}
             comment={showComment ? comment : undefined}
             // `true` — состояние ошибки без текста: обводка краснеет,
             // подпись остаётся комментарием (см. radio.tsx).

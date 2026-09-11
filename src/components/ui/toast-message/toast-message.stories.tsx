@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ToastCard, ToastProvider, Toaster } from "./toast-message"
@@ -79,13 +84,32 @@ const meta = {
   // (react-docgen-typescript) only reliably extracts props from component
   // modules, so none of this wrapper's props got a Controls row at all.
   // Declare them explicitly so they're actually reachable.
+  /* Панель повторяет свойства компонент-сета `ELK / toast message`
+     (774:134168): Size / Type — плюс булевы слоты мастера и вложенный сет
+     «Buttons (Desktop, ELK)» (38301:6197) со своим Type. */
   argTypes: {
-    type: { control: "select", options: TYPES },
-    title: { control: "text" },
-    showDescription: { control: "boolean", name: "Show Description" },
-    description: { control: "text", name: "Текст описания" },
-    showCross: { control: "boolean", name: "Show Cross" },
-    buttons: { control: "select", options: ["none", "two", "black", "white"] },
+    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
+    // истории, а не изменением ширины вьюпорта.
+    viewport: sizeArgType,
+    type: optionsArgType<ToastType>("Type", {
+      checked: "Checked",
+      attention: "Attention",
+      error: "Error",
+      information: "Information",
+    }),
+    showDescription: toggleArgType("Show Description"),
+    showCross: toggleArgType("Show Cross"),
+    buttons: {
+      ...optionsArgType<ToastButtons>("Type", {
+        none: "None",
+        two: "Two Buttons",
+        black: "Black Button",
+        white: "White Button",
+      }),
+      table: { category: "Buttons (ELK)" },
+    },
+    title: { control: "text", table: { category: "Контент" } },
+    description: { control: "text", table: { category: "Контент" } },
     /* Дизайн-чек от 08.09, замечание 15: два поведения тоста — «заведи два
        поведения и пропс для разработчиков». Внешне они не отличаются, разница
        видна только в момент ухода, поэтому смотреть надо по таймауту или по
@@ -97,19 +121,18 @@ const meta = {
       description:
         "collected — остаётся в центре уведомлений и улетает туда; transient — отклик системы, гаснет на месте",
     },
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
-    // истории, а не изменением ширины вьюпорта.
-    viewport: viewportArgType,
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок свойств мастера. */
   args: {
+    viewport: "desktop" as Viewport,
     type: "checked",
-    title: "Скопировано в буфер обмена",
-    description: "Ссылка на документ сохранена",
     showDescription: false,
     showCross: true,
     buttons: "none",
     behavior: "collected",
-    viewport: "auto" as Viewport,
+    title: "Скопировано в буфер обмена",
+    description: "Ссылка на документ сохранена",
   },
   decorators: [
     (Story, context) => (

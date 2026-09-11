@@ -1,7 +1,12 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StatesMatrix, viewportArgType } from "@/stories/matrix"
+import {
+  StatesMatrix,
+  optionsArgType,
+  sizeArgType,
+  toggleArgType,
+} from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Tabs, type TabsProps } from "./tabs"
@@ -12,13 +17,27 @@ const ITEMS = [
   { value: "closed", label: "Закрытые", disabled: true },
   { value: "errors", label: "Ошибки", status: true },
   { value: "inbox", label: "Входящие", badge: 3 },
+  { value: "drafts", label: "Черновики" },
+  { value: "sent", label: "Отправленные" },
+  { value: "archive", label: "Архив" },
+  { value: "trash", label: "Корзина" },
+  { value: "spam", label: "Спам" },
+  { value: "flagged", label: "Важные" },
+  { value: "muted", label: "Отключённые" },
 ]
 
 /* Дизайн-чек №17: количество вкладок переключается списком, а не правкой
    JSON-массива в контролах. Пул подобран так, чтобы по мере роста включались
-   и вспомогательные признаки вкладки (disabled, статус, счётчик). */
-const TAB_COUNTS = [1, 2, 3, 4, 5] as const
+   и вспомогательные признаки вкладки (disabled, статус, счётчик).
+
+   В Figma это свойство `Volume` компонент-сета `ELK / tabs` (70240:42086)
+   со значениями 2 — 12, поэтому и список здесь такой же. */
+const TAB_COUNTS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
 type TabCount = (typeof TAB_COUNTS)[number]
+
+const TAB_COUNT_LABELS = Object.fromEntries(
+  TAB_COUNTS.map((count) => [count, String(count)])
+) as Record<TabCount, string>
 
 /* `Type` — свойство компонент-сета `Tabs (ELK)`: Text, Badge, Status.
    Раньше оно жило только в пуле — счётчик и статус появлялись сами собой на
@@ -48,12 +67,16 @@ const meta = {
   title: "Компоненты/Tabs",
   component: Tabs,
   parameters: { layout: "padded" },
+  /* Панель повторяет «Свойства компонента» `ELK / tabs` (компонент-сет
+     70240:42086, таблица 70240:41960): Size / Volume / Show More. Свойство
+     `Type` — у вложенного сета `Tabs (ELK)` (70240:42346), поэтому оно
+     здесь же, следом. */
   argTypes: {
-    itemsCount: {
-      name: "Количество вкладок",
-      control: "select",
-      options: TAB_COUNTS,
-    },
+    // v1.2.0 мастера убрала свойство размера в пользу пары Desktop/Mobile —
+    // теперь она выбирается контролом (дизайн-чек №3 №19), а не вьюпортом.
+    viewport: sizeArgType,
+    itemsCount: optionsArgType<TabCount>("Volume", TAB_COUNT_LABELS),
+    showMore: toggleArgType("Show More"),
     items: { table: { disable: true } },
     figmaType: {
       name: "Type",
@@ -61,7 +84,6 @@ const meta = {
       options: TAB_TYPES,
       description: "Оформление вкладки: только текст, со счётчиком или со статусом",
     },
-    showMore: { control: "boolean" },
     // Дизайн-чек «Storybook 3», замечание 4: у ленты появился закреплённый
     // «средний» размер — тот, которым шапка таблицы пользуется на десктопе.
     size: {
@@ -70,19 +92,22 @@ const meta = {
       description:
         "auto — размер по вьюпорту (Desktop/Mobile); medium — «мобильные» числа на любом экране (лента 40, зазор 24, подпись P2 Medium): так лента устроена внутри Table Top",
     },
-    defaultValue: { control: "select", options: ITEMS.map((i) => i.value) },
-    // v1.2.0 мастера убрала свойство размера в пользу пары Desktop/Mobile —
-    // теперь она выбирается контролом (дизайн-чек №3 №19), а не вьюпортом.
-    viewport: viewportArgType,
+    defaultValue: {
+      control: "select",
+      options: ITEMS.map((i) => i.value),
+      table: { category: "Контент" },
+    },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    items: ITEMS,
+    viewport: "desktop",
     itemsCount: 5,
+    showMore: false,
     figmaType: "Text",
     size: "auto",
-    showMore: false,
+    items: ITEMS,
     defaultValue: "all",
-    viewport: "auto",
   },
 } satisfies Meta<PlaygroundArgs>
 

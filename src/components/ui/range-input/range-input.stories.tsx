@@ -4,8 +4,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  optionsArgType,
+  sizeArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
@@ -31,76 +33,108 @@ const FORMAT_PRESETS = {
 type ScalePreset = keyof typeof SCALE_PRESETS
 type FormatPreset = keyof typeof FORMAT_PRESETS
 
-/* `State` — ось компонент-сета `ELK / range input` (Default, Hover,
-   Focused, Disabled, Error). Disabled и Error задаются пропами, а hover и
-   фокус пропом не выставить — их даёт общий контрол `state`, как у
-   остальных полей ввода кита. */
+/* Панель повторяет «Свойства компонента» `ELK / range input` (компонент-сет
+   687:18338, таблица 31984:19733): Size / State / Show Comment /
+   Show Indicator / Range Line.
+
+   `State` — ось компонент-сета (Default, Hover, Focused, Disabled, Error):
+   Disabled и Error задаются пропами, а hover и фокус пропом не выставить —
+   их даёт общий контрол `state`, как у остальных полей ввода кита.
+   `Range Line` в Figma — три положения ползунка, в коде это просто значение. */
+const RANGE_LINE_LABELS = {
+  beginning: "Beginning",
+  middle: "Middle",
+  end: "The End",
+} as const
+type RangeLine = keyof typeof RANGE_LINE_LABELS
+
+const RANGE_LINE_FRACTION: Record<RangeLine, number> = {
+  beginning: 0,
+  middle: 0.5,
+  end: 1,
+}
+
 type PlaygroundArgs = Omit<RangeInputProps, "error"> & {
   scalePreset?: ScalePreset
   formatPreset?: FormatPreset
   state?: PlaygroundState
   viewport?: Viewport
-  // Дизайн-чек 3/3 №3: состояние ошибки, её текст и комментарий —
-  // три независимых тогла, а не наличие текста в поле ввода.
-  error?: boolean
+  rangeLine?: RangeLine
+  // Дизайн-чек 3/3 №3: текст ошибки и комментарий — независимые тоглы, а
+  // не наличие текста в поле ввода. Само состояние ошибки — значение State.
   errorText?: string
   showErrorText?: boolean
   showComment?: boolean
+  showIndicator?: boolean
 }
 
 const meta = {
   title: "Компоненты/Range Input",
   component: RangeInput,
   parameters: { layout: "padded" },
-  // comment/error are typed React.ReactNode but every usage is a plain
-  // string — pin text controls so leaving one unset doesn't fall back to
-  // Storybook's "Set object" JSON-editor placeholder.
   argTypes: {
-    label: { control: "text" },
-    error: { control: "boolean", name: "Error" },
-    showErrorText: { control: "boolean", name: "Show Error Text" },
-    errorText: { control: "text", name: "Текст ошибки" },
-    showComment: { control: "boolean", name: "Show Comment" },
-    comment: { control: "text", name: "Текст комментария" },
-    min: { control: "number" },
-    max: { control: "number" },
-    step: { control: "number" },
-    disabled: { control: "boolean" },
-    state: stateArgType,
     // Дизайн-чек №3 №19: «Пропс на мобайл должен быть в панели стори, не
     // по изменению размера вьюпорта».
-    viewport: viewportArgType,
-    // Captions under the track (Figma's "Шкала"); «Без шкалы» их прячет.
+    viewport: sizeArgType,
+    state: stateArgTypeOf(
+      ["default", "hover", "focus", "disabled", "error"],
+      { focus: "Focused" }
+    ),
+    disabled: { table: { disable: true } },
+    showComment: toggleArgType("Show Comment"),
+    // «Индикатор» — подписи под дорожкой (в макете это шкала min/max).
+    showIndicator: toggleArgType("Show Indicator"),
+    rangeLine: optionsArgType<RangeLine>(
+      "Range Line",
+      RANGE_LINE_LABELS,
+      "inline-radio"
+    ),
+    showErrorText: toggleArgType("Show Error Text"),
+    // comment/error are typed React.ReactNode but every usage is a plain
+    // string — pin text controls so leaving one unset doesn't fall back to
+    // Storybook's "Set object" JSON-editor placeholder.
+    label: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
+    // Captions under the track (Figma's "Шкала"); за показ отвечает
+    // Show Indicator, а этот список — что именно на ней написано.
     scalePreset: {
-      name: "Шкала",
+      name: "Значения шкалы",
       control: "select",
       options: Object.keys(SCALE_PRESETS),
+      table: { category: "Контент" },
     },
     // Intl.NumberFormat options for the value bubble, e.g. currency.
     formatPreset: {
       name: "Формат значения",
       control: "select",
       options: Object.keys(FORMAT_PRESETS),
+      table: { category: "Контент" },
     },
+    min: { control: "number", table: { category: "Контент" } },
+    max: { control: "number", table: { category: "Контент" } },
+    step: { control: "number", table: { category: "Контент" } },
     scaleLabels: { table: { disable: true } },
     format: { table: { disable: true } },
+    defaultValue: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
+    showComment: true,
+    showIndicator: true,
+    rangeLine: "middle" as RangeLine,
+    showErrorText: true,
     label: "Label",
+    comment: "Comment",
+    errorText: "Text about error here",
+    scalePreset: "0 — 50 — 100",
+    formatPreset: "Без форматирования",
     min: 0,
     max: 100,
     step: 1,
-    defaultValue: 50,
-    disabled: false,
-    scalePreset: "0 — 50 — 100",
-    formatPreset: "Без форматирования",
-    comment: "Comment",
-    showComment: true,
-    error: false,
-    errorText: "Text about error here",
-    showErrorText: true,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -126,25 +160,42 @@ export const Playground: Story = {
     formatPreset,
     state,
     viewport,
-    error,
+    rangeLine = "middle",
     errorText,
     showErrorText,
     showComment,
+    showIndicator,
     comment,
+    min = 0,
+    max = 100,
     ...args
-  }) => (
-    <PseudoBox state={state} viewport={viewport} className="w-full">
-      <Controlled
-        {...args}
-        comment={showComment ? comment : undefined}
-        // `true` — состояние ошибки без текста: шкала краснеет, подпись
-        // остаётся комментарием (см. range-input.tsx).
-        error={error ? (showErrorText ? errorText || true : true) : undefined}
-        scaleLabels={SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]}
-        format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
-      />
-    </PseudoBox>
-  ),
+  }) => {
+    const error = state === "error"
+    return (
+      <PseudoBox state={state} viewport={viewport} className="w-full">
+        <Controlled
+          {...args}
+          min={min}
+          max={max}
+          // `key` — иначе Controlled сохранит прежнее значение и контрол
+          // Range Line будет выглядеть мёртвым (см. дизайн-чек про default*).
+          key={rangeLine}
+          defaultValue={min + (max - min) * RANGE_LINE_FRACTION[rangeLine]}
+          disabled={state === "disabled"}
+          comment={showComment ? comment : undefined}
+          // `true` — состояние ошибки без текста: шкала краснеет, подпись
+          // остаётся комментарием (см. range-input.tsx).
+          error={error ? (showErrorText ? errorText || true : true) : undefined}
+          scaleLabels={
+            showIndicator
+              ? SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]
+              : undefined
+          }
+          format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
+        />
+      </PseudoBox>
+    )
+  },
 }
 
 export const Matrix: Story = {

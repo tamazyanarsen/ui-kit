@@ -5,8 +5,9 @@ import {
   PseudoBox,
   iconArgType,
   StatesMatrix,
-  stateArgType,
-  viewportArgType,
+  optionsArgType,
+  stateArgTypeOf,
+  toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
@@ -14,9 +15,45 @@ import { type Viewport } from "@/lib/viewport"
 import { Input, type InputProps } from "./input"
 import type { MaskName } from "./mask"
 
-type PlaygroundArgs = InputProps & {
+/* Панель повторяет «Свойства компонента» `ELK / input` (компонент-сет
+   70303:80291, таблица 70303:79879): Size / State / Type / Add /
+   Show Error Text / Mask.
+
+   `Size` в Figma — одно свойство с четырьмя значениями: размер (L/S) и форма
+   (Desktop/Mobile) там не разъезжаются, в коде это пара `size` +
+   <ViewportScope>. `Type` (Empty / Filled / Locked) и `Add` (None / Comment /
+   Error) в коде тоже собираются из нескольких пропов, поэтому контрол один,
+   а раскладывает его `render`. */
+const SIZE_LABELS = {
+  "lg-desktop": "L / Desktop",
+  "lg-mobile": "L / Mobile",
+  "sm-desktop": "S / Desktop",
+  "sm-mobile": "S / Mobile",
+} as const
+type FigmaSize = keyof typeof SIZE_LABELS
+
+const TYPE_LABELS = {
+  empty: "Empty",
+  filled: "Filled",
+  locked: "Locked",
+} as const
+type FigmaType = keyof typeof TYPE_LABELS
+
+const ADD_LABELS = {
+  none: "None",
+  comment: "Comment",
+  error: "Error",
+} as const
+type FigmaAdd = keyof typeof ADD_LABELS
+
+type PlaygroundArgs = Omit<InputProps, "size" | "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
+  figmaSize?: FigmaSize
+  figmaType?: FigmaType
+  add?: FigmaAdd
+  errorText?: string
+  showErrorText?: boolean
 }
 
 const meta = {
@@ -24,30 +61,20 @@ const meta = {
   component: Input,
   parameters: { layout: "padded" },
   argTypes: {
-    size: { control: "inline-radio", options: ["lg", "sm"] },
-    // `iconLeft`/`trailingIcon` — готовые JSX-узлы, значением из контрола
-    // их не набрать. В Figma это instance swap, поэтому контрол даёт весь
-    // набор кита, а не пару заготовленных вариантов (см. iconArgType).
-    iconLeft: iconArgType("Иконка слева от значения"),
-    trailingIcon: iconArgType("Иконка справа, перед крестиком очистки"),
-    // `label`/`comment`/`error` are `React.ReactNode` but every usage is a
-    // plain string — without this, leaving one unset falls back to a
-    // generic "Set object" JSON editor.
-    label: { control: "text" },
-    comment: { control: "text" },
-    error: { control: "text" },
-    lockedHint: { control: "text" },
-    placeholder: { control: "text" },
-    locked: { control: "boolean" },
-    clearable: { control: "boolean" },
-    loading: { control: "boolean" },
-    disabled: { control: "boolean" },
-    type: { control: "select", options: ["text", "password", "number"] },
+    figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS),
+    // Disabled в Figma — значение оси State, а Hover/Focused — псевдоклассы.
+    state: stateArgTypeOf(["default", "hover", "focus", "disabled"], {
+      focus: "Focused",
+    }),
+    figmaType: optionsArgType<FigmaType>("Type", TYPE_LABELS, "inline-radio"),
+    add: optionsArgType<FigmaAdd>("Add", ADD_LABELS, "inline-radio"),
+    showErrorText: toggleArgType("Show Error Text"),
     // `mask` is a plain string union (`MaskName`, imported from ./mask) —
     // react-docgen can't resolve an imported type alias into an enum, so
     // it falls back to the same generic "Set object" editor. Pin the real
     // option list explicitly instead, same fix as Badge's `color`.
     mask: {
+      name: "Mask",
       control: "select",
       options: [
         "phone",
@@ -63,33 +90,89 @@ const meta = {
         "time",
       ] satisfies MaskName[],
     },
-    state: stateArgType,
-    // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в
-    // панели истории, а не изменением размера вьюпорта.
-    viewport: viewportArgType,
+    // Ниже — то, чего в панели Figma нет: у макета иконки и очистка живут
+    // отдельными вложенными инстансами, а не свойствами компонент-сета.
+    // `iconLeft`/`trailingIcon` — готовые JSX-узлы, значением из контрола
+    // их не набрать. В Figma это instance swap, поэтому контрол даёт весь
+    // набор кита, а не пару заготовленных вариантов (см. iconArgType).
+    iconLeft: iconArgType("Иконка слева от значения"),
+    trailingIcon: iconArgType("Иконка справа, перед крестиком очистки"),
+    clearable: { control: "boolean" },
+    loading: { control: "boolean" },
+    type: { control: "select", options: ["text", "password", "number"] },
+    // `label`/`comment`/`error` are `React.ReactNode` but every usage is a
+    // plain string — without this, leaving one unset falls back to a
+    // generic "Set object" JSON editor.
+    label: { control: "text", table: { category: "Контент" } },
+    placeholder: { control: "text", table: { category: "Контент" } },
+    comment: { control: "text", table: { category: "Контент" } },
+    errorText: { control: "text", table: { category: "Контент" } },
+    lockedHint: { control: "text", table: { category: "Контент" } },
+    // Значения осей Type и State — отдельных контролов у них нет.
+    locked: { table: { disable: true } },
+    disabled: { table: { disable: true } },
   },
+  /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
+     на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    label: "Label",
-    placeholder: "Placeholder",
-    size: "lg",
-    locked: false,
+    figmaSize: "lg-desktop" as FigmaSize,
+    state: "default" as PlaygroundState,
+    figmaType: "empty" as FigmaType,
+    add: "none" as FigmaAdd,
+    showErrorText: true,
     clearable: false,
     loading: false,
-    disabled: false,
-    state: "default" as PlaygroundState,
-    viewport: "auto" as Viewport,
+    label: "Label",
+    placeholder: "Placeholder",
+    comment: "Comment",
+    errorText: "Text about error here",
+    lockedHint: "Поле заполняется автоматически и не редактируется",
   },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
+const FILLED_VALUE = "Value"
+
 export const Playground: Story = {
-  render: ({ state, viewport, ...args }) => (
-    <PseudoBox state={state} viewport={viewport} className="w-80">
-      <Input {...args} />
-    </PseudoBox>
-  ),
+  render: ({
+    state,
+    figmaSize = "lg-desktop",
+    figmaType = "empty",
+    add = "none",
+    errorText,
+    showErrorText,
+    comment,
+    ...args
+  }) => {
+    const [size, viewport] = figmaSize.split("-") as [
+      NonNullable<InputProps["size"]>,
+      Viewport,
+    ]
+    return (
+      <PseudoBox state={state} viewport={viewport} className="w-80">
+        <Input
+          // Поле неуправляемое: без `key` переключение Type не сбрасывает
+          // уже набранное значение и «Empty» остаётся заполненным.
+          key={figmaType}
+          {...args}
+          size={size}
+          defaultValue={figmaType === "empty" ? undefined : FILLED_VALUE}
+          locked={figmaType === "locked"}
+          disabled={state === "disabled"}
+          comment={add === "comment" ? comment : undefined}
+          error={
+            add === "error"
+              ? showErrorText
+                ? errorText || true
+                : true
+              : undefined
+          }
+        />
+      </PseudoBox>
+    )
+  },
 }
 
 export const Matrix: Story = {

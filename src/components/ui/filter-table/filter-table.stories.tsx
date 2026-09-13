@@ -3,10 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
+  sizeArgType,
   stateArgTypeOf,
   toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { type Viewport } from "@/lib/viewport"
 
 import { FilterTable, type FilterTableProps } from "./filter-table"
 
@@ -15,10 +17,15 @@ import { FilterTable, type FilterTableProps } from "./filter-table"
  * Истории у него не было, хотя это отдельный компонент-сет со своей
  * матрицей:
  *
+ *   Size     Desktop | Mobile
  *   State    Default | Hover | Active | Disabled
  *   Checked  False (серая подсказка) | True (тёмный выбранный фильтр)
  *   Counter  False | True
  *   Select   False | True — шеврон справа
+ *
+ * `Size` (обновление сета 70422:5119) — это `viewport` + <ViewportScope>:
+ * мобильная форма отличается только подписью (12/16 против 14/20), из-за
+ * чего пилюля становится 28 px в высоту вместо 32.
  *
  * `Select` в контролах нет: шеврон рисует не сам filter-table, а Filter в
  * режиме `chip`, который его оборачивает.
@@ -28,15 +35,19 @@ import { FilterTable, type FilterTableProps } from "./filter-table"
  * продукте выбранный чип называет выбранное («Действующий», «Статус: 3»)
  * обычным текстом подписи: по шаблону фон вокруг цифры тот же, что и у чипа.
  */
-type PlaygroundArgs = FilterTableProps & { state?: PlaygroundState }
+type PlaygroundArgs = FilterTableProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Filter Table",
   component: FilterTable,
   parameters: { layout: "centered" },
   argTypes: {
-    // Панель по осям компонент-сета 1303:99241: State / Checked / Counter
-    // (плюс Select, которого у этого мастера в коде нет — см. выше).
+    // Панель по осям компонент-сета 70422:5119: Size / State / Checked /
+    // Counter (плюс Select, которого у этого мастера в коде нет — см. выше).
+    viewport: sizeArgType,
     state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
     disabled: { table: { disable: true } },
     selected: { control: "boolean", name: "Checked" },
@@ -62,6 +73,7 @@ const meta = {
   /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
      на него не влияет), поэтому он повторяет порядок осей компонент-сета. */
   args: {
+    viewport: "desktop" as Viewport,
     state: "default" as PlaygroundState,
     selected: false,
     showCounter: true,
@@ -75,8 +87,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <PseudoBox state={state}>
+  render: ({ state, viewport, ...args }) => (
+    <PseudoBox state={state} viewport={viewport}>
       <FilterTable {...args} disabled={state === "disabled"} />
     </PseudoBox>
   ),
@@ -87,6 +99,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <StatesMatrix<FilterTableProps>
+      responsive
       baseProps={{ children: "Оплачен" }}
       columns={[
         { label: "Checked=False", props: {} },

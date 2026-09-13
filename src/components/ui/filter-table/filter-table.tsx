@@ -4,7 +4,7 @@ import { X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
-// "ELK / filter-table" (node 1303:99241, v1.0.0) — the compact pill used
+// "ELK / filter-table" (сет 70422:5119, v1.0.1 — бывш. 1303:99241) — the compact pill used
 // both as a tappable suggestion (NPS's reply chips) and as a selected table
 // filter. Figma models the two looks as one component with a `Checked`
 // property, so they live together here rather than as two lookalikes.
@@ -35,7 +35,17 @@ function filterTablePillClass({
     // максимальную ширину, то оно скрывается в многоточие». Дизайн-чек
     // «Storybook 3», замечание 8: без нижней границы короткая подпись («Тип»)
     // давала пилюлю уже 80, и ряд фильтров рассыпался по ширинам.
-    "inline-flex max-w-64 min-w-20 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p2-medium whitespace-nowrap transition-colors",
+    // ⚠️ Мобильная адаптация (сет 70422:5119, v1.0.1): у пилюли меняется
+    // ТОЛЬКО типографика подписи — P2 Medium Mobile (12/16) против
+    // десктопного P2 Medium (14/20). Коробка одна и та же на обеих формах:
+    // px-16/py-6, радиус 16, зазор 8, крестик и шеврон по 16, плашка
+    // счётчика 16 — сверено по `get_design_context` мобильных и десктопных
+    // символов (70422:5123 против 70422:5120, 70422:5202, 70422:5171).
+    // Отсюда и разница высот: 28 px на мобайле против 32 на десктопе — она
+    // выходит сама из line-height, отдельной высоты задавать не надо.
+    // В ките 12/16 Medium — это ключ `p3`, см. таблицу масштаба: мобильный
+    // P2 и десктопный P3 совпадают по числам.
+    "inline-flex max-w-64 min-w-20 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p3-medium whitespace-nowrap transition-colors desktop:text-p2-medium",
     disabled
       ? // «Disabled гасит ВСЁ» — сквозное правило проекта. В ките у
         // выключенного чипа гаснет подпись (#C8C8CB), а шеврон остаётся

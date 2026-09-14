@@ -42,6 +42,26 @@ export type ThumbnailType =
  */
 export type PaymentSystem = "mir" | "mir-white" | "mastercard" | "visa"
 
+/**
+ * Заливка квадрата у плитки с иконкой (`Type=Icon`).
+ *
+ * Дизайн-чек от 13.09, замечание 5: «Добавить версию Thumbnail с белым фоном
+ * квадрата. В ДС такая версия приедет позже, пока просто добавить её в кит.
+ * Отличаться будет только цвет фона».
+ *
+ * Отдельная ось, а не ещё один `Type`: тип задаёт, ЧТО на плитке (карта,
+ * стикер, картинка, статус), и белая заливка ни одному из них не подходит —
+ * у карточных она чёрная, потому что это сама карта, у статусных подкрашена
+ * статусом. Свободна она ровно у `Icon`, и меняется там действительно только
+ * фон: глиф, размер и радиус те же.
+ */
+export type ThumbnailBackground = "grey" | "white"
+
+export const THUMBNAIL_ICON_BG: Record<ThumbnailBackground, string> = {
+  grey: "var(--tag-grey-secondary-bg)",
+  white: "var(--white-101)",
+}
+
 export const CARD_TYPES = new Set<ThumbnailType>(["card", "sticker", "picture"])
 
 export const SBP_TYPES = new Set<ThumbnailType>(["sbp-card", "sbp-card-account"])

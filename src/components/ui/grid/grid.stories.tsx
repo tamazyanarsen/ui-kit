@@ -6,6 +6,7 @@ import { StorySection, StoryShowcase } from "@/stories/matrix"
 import {
   Grid,
   GridCol,
+  GridGuides,
   GridRoot,
   GridRow,
   GRID_COLUMNS,
@@ -15,6 +16,7 @@ import {
   GRID_MARGIN,
   GRID_VIEWPORT_MAX,
   GRID_VIEWPORT_MIN,
+  GRID_VIEWPORT_WIDE,
 } from "./grid"
 
 /**
@@ -31,7 +33,11 @@ import {
  * поведение, а не дефект витрины.
  */
 const meta = {
-  title: "Компоненты/Grid",
+  // Дизайн-чек от 13.09, замечание 12: «Перенести компонент Grid в рут
+  // PREVIEW» (он же, по замечанию 13, «Атомы»). Сетка — не компонент в ряду
+  // с кнопкой и полем, а правило, по которому они раскладываются, и стоять
+  // ей рядом с цветами, типографикой и иконками.
+  title: "Атомы/.Grid",
   component: Grid,
   parameters: { layout: "fullscreen" },
   argTypes: {
@@ -72,6 +78,54 @@ export const Playground: Story = {
   ),
 }
 
+/**
+ * Живые числа раскладки — что именно происходит при смене ширины окна.
+ *
+ * Меряет НАСТОЯЩИЕ узлы (`GridGuides`), а не считает по формуле: формула и
+ * так написана в правилах выше, а витрина должна показывать, что раскладка
+ * ей следует. Расхождение видно сразу.
+ */
+function ColumnsProbe() {
+  const [state, setState] = React.useState<{
+    viewport: number
+    content: number
+    column: number
+  }>()
+
+  React.useEffect(() => {
+    const read = () => {
+      const guide = document.querySelector<HTMLElement>('[data-slot="grid-guide"]')
+      const strip = guide?.closest<HTMLElement>('[data-slot="grid"]')
+      if (!guide || !strip) return
+      setState({
+        viewport: Math.round(window.innerWidth),
+        content: Math.round(strip.getBoundingClientRect().width),
+        column: Math.round(guide.getBoundingClientRect().width),
+      })
+    }
+    read()
+    window.addEventListener("resize", read)
+    return () => window.removeEventListener("resize", read)
+  }, [])
+
+  if (!state) return null
+
+  const beyond =
+    state.viewport < GRID_VIEWPORT_MIN
+      ? "продукт прокручивается"
+      : state.viewport >= GRID_VIEWPORT_MAX
+        ? "растут поля"
+        : "растут колонки"
+
+  return (
+    <p className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
+      Вьюпорт {state.viewport}px · полоса {state.content}px · колонка{" "}
+      {state.column}px · {beyond}
+      {state.viewport >= GRID_VIEWPORT_WIDE && " · порог 1536 пройден"}
+    </p>
+  )
+}
+
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { controls: { disable: true } },
@@ -94,9 +148,21 @@ export const Examples: Story = {
           </dd>
           <dt className="text-p2-medium">Пороги вьюпорта</dt>
           <dd>
-            {GRID_VIEWPORT_MIN} / {GRID_VIEWPORT_MAX}px
+            {GRID_VIEWPORT_MIN} / {GRID_VIEWPORT_WIDE} / {GRID_VIEWPORT_MAX}px
           </dd>
         </dl>
+      </StorySection>
+
+      <StorySection
+        title="Колонки вживую"
+        description={`Двенадцать настоящих колонок той же раскладкой, что и у GridRow. Потяните окно: между ${GRID_VIEWPORT_MIN} и ${GRID_VIEWPORT_MAX} растут колонки, выше ${GRID_VIEWPORT_MAX} — поля, ниже ${GRID_VIEWPORT_MIN} появляется общая прокрутка продукта. На ${GRID_VIEWPORT_WIDE} разделу разрешено перестроить содержимое — полосы это не касается.`}
+      >
+        <GridRoot className="w-full overflow-hidden rounded-[16px] bg-[var(--modal-bg)] py-6">
+          <Grid>
+            <GridGuides className="min-h-40" />
+          </Grid>
+        </GridRoot>
+        <ColumnsProbe />
       </StorySection>
 
       <StorySection

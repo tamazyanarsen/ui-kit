@@ -1,6 +1,6 @@
 import { ChevronDown, Search, X } from "@/icons"
 import { Button } from "@/components/ui/button"
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Input } from "@/components/ui/input"
 import { TableColumnSettings, type TableColumn } from "@/components/ui/table"
 import {
@@ -58,7 +58,7 @@ function LettersTableHeader({
           />
         </div>
         {CHIPS.map((label) => (
-          <Filter
+          <FilterTableSelect
             key={label}
             label={label}
             value={chips[label] ?? null}

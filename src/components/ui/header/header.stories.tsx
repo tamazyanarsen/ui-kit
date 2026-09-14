@@ -167,9 +167,7 @@ const meta = {
     contactPerson: { control: "text" },
     employeeName: { control: "text" },
     phoneNumber: { control: "text" },
-    showMenu: { control: "boolean" },
     showOrgSettings: { control: "boolean" },
-    sidebarOpen: { control: "boolean" },
     favouriteCount: {
       control: { type: "range", min: 0, max: MENU_FAVOURITES.length, step: 1 },
       description:
@@ -219,10 +217,8 @@ const meta = {
     messageCount: 3,
     contactPerson: "Константинопольский К. К.",
     showOrgSettings: true,
-    sidebarOpen: false,
     employeeName: "Константинопольский К. К.",
     phoneNumber: "8 800 700-87-83",
-    showMenu: true,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -292,7 +288,7 @@ export const Examples: Story = {
 
       <StorySection title="Сотрудник банка">
         <div className="w-full">
-          <HeaderDemo type="employee" showMenu employeeName="Константинопольский К. К." />
+          <HeaderDemo type="employee" employeeName="Константинопольский К. К." />
         </div>
       </StorySection>
 

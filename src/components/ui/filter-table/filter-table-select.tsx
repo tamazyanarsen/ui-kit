@@ -5,10 +5,10 @@ import { ComboboxFooter } from "@/components/ui/combobox"
 import { Dropdown } from "@/components/ui/dropdown"
 import { Input } from "@/components/ui/input"
 
-import { FilterTrigger, type FilterType } from "./filter-trigger"
+import { FilterTrigger, type FilterType } from "./select-trigger"
 
-// Filter — "Фильтр": a Select-like dropdown trigger (ui/chips/chips,
-// filter@2x.png) whose popup is a single value field + Сбросить/Применить
+// FilterTableSelect — «Фильтр таблицы» с выпадающим списком: a Select-like
+// dropdown trigger whose popup is a single value field + Сбросить/Применить
 // footer (ui/filter-table/filter-table@2x.png's "Взаимодействие с
 // фильтром" mockup — reusing ComboboxFooter verbatim, it's the exact same
 // two-button layout). Chevron-down (closed) -> chevron-up (open) -> X (has
@@ -27,9 +27,13 @@ import { FilterTrigger, type FilterType } from "./filter-trigger"
 // (коробка chips-filter) и его заливка `background` из фильтра убраны — все
 // пять значений `Type` компонент-сета `ELK / chips, filter` живут в `Chips`.
 //
-// Внешний вид триггера целиком живёт в `filter-trigger.tsx`; здесь —
+// Внешний вид триггера целиком живёт в `select-trigger.tsx`; здесь —
 // состояние значения и попап с полем ввода.
-interface FilterProps {
+//
+// Дизайн-чек от 13.09, замечание 6: компонент назывался `Filter` и стоял в
+// витрине отдельной папкой рядом с `Filter Table`, хотя рисует ровно ту же
+// пилюлю. Своей витрины у него больше нет — см. `./index.ts`.
+interface FilterTableSelectProps {
   label: React.ReactNode
   /** Свойство `Type` — см. {@link FilterType}. */
   type?: FilterType
@@ -45,7 +49,7 @@ interface FilterProps {
   className?: string
 }
 
-function Filter({
+function FilterTableSelect({
   label,
   type = "select",
   count,
@@ -57,7 +61,7 @@ function Filter({
   onOpenChange,
   placeholder = "Введите значение",
   className,
-}: FilterProps) {
+}: FilterTableSelectProps) {
   const [internalOpen, setInternalOpen] = React.useState(false)
   const open = openProp !== undefined ? openProp : internalOpen
 
@@ -182,5 +186,5 @@ function Filter({
   )
 }
 
-export { Filter }
-export type { FilterProps }
+export { FilterTableSelect }
+export type { FilterTableSelectProps }

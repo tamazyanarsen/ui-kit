@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { LogOut, Mail, Menu, X } from "@/icons"
+import { LogOut, Mail } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Divider } from "@/components/ui/divider"
@@ -31,26 +31,9 @@ function Logo() {
   )
 }
 
-/** Гамбургер, парный к отдельному Sidebar (Show Menu у шапки сотрудника). */
-function SidebarToggle({
-  open,
-  onOpenChange,
-}: {
-  open: boolean
-  onOpenChange?: (open: boolean) => void
-}) {
-  const Glyph = open ? X : Menu
-  return (
-    <button
-      type="button"
-      aria-label={open ? "Закрыть меню" : "Открыть меню"}
-      onClick={() => onOpenChange?.(!open)}
-      className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--header-meta-fg)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--header-menu-toggle-hover-bg)]"
-    >
-      <Glyph size={24} aria-hidden="true" className="size-6" />
-    </button>
-  )
-}
+/* Дизайн-чек от 13.09, замечание 7: гамбургер шапки сотрудника («Show Menu»,
+   парный к отдельному `Sidebar`) удалён. Меню сотрудника — это главный экран
+   `EmployeeMenu`, а не выезжающая панель из шапки. */
 
 function MessagesButton({
   count,
@@ -252,7 +235,6 @@ export {
   ClientActions,
   EmployeeActions,
   Logo,
-  SidebarToggle,
   SignOutPhone,
   TopRow,
   TopRowDivider,

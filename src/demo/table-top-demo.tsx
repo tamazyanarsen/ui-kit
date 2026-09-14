@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table-top"
 import { Tabs, type TabItem } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
@@ -126,9 +126,9 @@ function TableTopFilterSettingExample() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Filter label="Статус" value={status} onValueChange={setStatus} />
+        <FilterTableSelect label="Статус" value={status} onValueChange={setStatus} />
         {moreOpen && (
-          <Filter
+          <FilterTableSelect
             label="Менеджер"
             value={manager}
             onValueChange={setManager}
@@ -226,7 +226,7 @@ function TableTopDemo() {
       <AccordionPanel>
         <div className="flex flex-col gap-2">
           <RowLabel>
-            Полная сборка — Title + Button, Tabs, поиск + Filter(chip) +
+            Полная сборка — Title + Button, Tabs, поиск + фильтры +
             «Ещё фильтры»/«Сбросить фильтры», строка «Выбрано фильтров /
             Результатов» + Скачать / Настроить столбцы
           </RowLabel>

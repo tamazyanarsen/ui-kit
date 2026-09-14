@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 import {
@@ -73,17 +73,26 @@ describe("Header", () => {
     await user.click(screen.getByRole("button", { name: "Меню" }))
     expect(screen.getByText("Платежи и операции")).toBeInTheDocument()
 
+    // ⚠️ `waitFor`, а не мгновенная проверка: у панели появился уход («fade
+    // down», дизайн-чек от 13.09, замечание 17), и закрытая панель держится в
+    // разметке ровно столько, сколько играет анимация.
     await user.click(screen.getByRole("button", { name: "Создать" }))
-    expect(screen.queryByText("Платежи и операции")).not.toBeInTheDocument()
     expect(screen.getByText("Платёж по реквизитам")).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByText("Платежи и операции")).not.toBeInTheDocument()
+    )
 
     await user.click(screen.getByRole("button", { name: "Создать" }))
-    expect(screen.queryByText("Платёж по реквизитам")).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByText("Платёж по реквизитам")).not.toBeInTheDocument()
+    )
   })
 
-  it("renders the hamburger and a standalone logout button for Employee", () => {
-    render(<Header type="employee" showMenu employeeName="Иванов И. И." />)
-    expect(screen.getByRole("button", { name: "Открыть меню" })).toBeInTheDocument()
+  // Дизайн-чек от 13.09, замечание 7: бургера в шапке сотрудника больше нет —
+  // меню ему заменяет главный экран (`EmployeeMenu`).
+  it("renders a standalone logout button and no hamburger for Employee", () => {
+    render(<Header type="employee" employeeName="Иванов И. И." />)
+    expect(screen.queryByRole("button", { name: "Открыть меню" })).toBeNull()
     expect(screen.getByRole("button", { name: "Выйти" })).toBeInTheDocument()
     expect(screen.getByText("Иванов И. И.")).toBeInTheDocument()
   })

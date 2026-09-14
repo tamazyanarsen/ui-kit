@@ -2,17 +2,17 @@ import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
-import { Filter } from "./filter"
+import { FilterTableSelect } from "./filter-table-select"
 
-describe("Filter", () => {
+describe("FilterTableSelect", () => {
   it("renders the label", () => {
-    render(<Filter label="Статус" />)
+    render(<FilterTableSelect label="Статус" />)
     expect(screen.getByText("Статус")).toBeInTheDocument()
   })
 
   it("opens the popup on click, showing the value input", async () => {
     const user = userEvent.setup()
-    render(<Filter label="Статус" placeholder="Введите статус" />)
+    render(<FilterTableSelect label="Статус" placeholder="Введите статус" />)
 
     expect(
       screen.queryByPlaceholderText("Введите статус")
@@ -28,7 +28,7 @@ describe("Filter", () => {
   it("applies a typed value and calls onValueChange", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
-    render(<Filter label="Статус" onValueChange={onValueChange} />)
+    render(<FilterTableSelect label="Статус" onValueChange={onValueChange} />)
 
     await user.click(screen.getByText("Статус"))
     await user.type(await screen.findByRole("textbox"), "Оплачен")
@@ -41,7 +41,7 @@ describe("Filter", () => {
 
   it("labels Apply without a count while nothing is entered", async () => {
     const user = userEvent.setup()
-    render(<Filter label="Статус" />)
+    render(<FilterTableSelect label="Статус" />)
 
     await user.click(screen.getByText("Статус"))
 
@@ -56,7 +56,7 @@ describe("Filter", () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(
-      <Filter
+      <FilterTableSelect
         label="Статус"
         defaultValue="Оплачен"
         onValueChange={onValueChange}
@@ -77,7 +77,7 @@ describe("Filter", () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
     render(
-      <Filter
+      <FilterTableSelect
         label="Статус"
         defaultValue="Оплачен"
         onValueChange={onValueChange}
@@ -91,19 +91,19 @@ describe("Filter", () => {
   })
 
   it("renders the applied value as a dark table-filter pill when set", () => {
-    render(<Filter label="Статус" defaultValue="Оплачен" />)
+    render(<FilterTableSelect label="Статус" defaultValue="Оплачен" />)
     expect(screen.getByText("Оплачен")).toBeInTheDocument()
     expect(screen.queryByText("Статус")).not.toBeInTheDocument()
   })
 
   it("shows a count badge when count is given", () => {
-    render(<Filter label="Статус" type="counter" count={3} />)
+    render(<FilterTableSelect label="Статус" type="counter" count={3} />)
     expect(screen.getByText("3")).toBeInTheDocument()
   })
 
   it("does not open when disabled", async () => {
     const user = userEvent.setup()
-    render(<Filter label="Статус" disabled placeholder="Введите статус" />)
+    render(<FilterTableSelect label="Статус" disabled placeholder="Введите статус" />)
 
     await user.click(screen.getByText("Статус"))
 

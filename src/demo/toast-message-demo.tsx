@@ -76,10 +76,10 @@ function ToastMessageDemo() {
           Two Buttons / Black Button / White Button) опциональны — задаются
           через <code>description</code> и <code>data</code> в{" "}
           <code>toast.add()</code>; без них остаётся минимальная форма
-          (иконка + Title + крестик). Автозакрытие — 8000мс (
-          <code>ToastProvider timeout</code>), до 3 одновременно видимых
-          (<code>limit</code>). На мобильном вьюпорт переезжает к верхнему
-          краю с отступом 16px по бокам.
+          (иконка + Title + крестик). Автозакрытие — 4000мс (
+          <code>ToastProvider timeout</code>), и отсчёт стоит, пока курсор
+          в области уведомлений. Предела количеству нет. На мобильном
+          вьюпорт переезжает к верхнему краю с отступом 16px по бокам.
         </p>
       </AccordionPanel>
     </AccordionItem>

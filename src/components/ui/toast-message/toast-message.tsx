@@ -5,13 +5,16 @@ import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Button } from "@/components/ui/button"
 
 import { TOAST_BG, TOAST_BORDER, TOAST_ICON, TOAST_ICON_COLOR } from "./variants"
-import { ToastContext, useToast, type ToastItem, type ToastOptions } from "./use-toast"
+import { ToastProvider } from "./provider"
+import { useToast, type ToastItem } from "./use-toast"
 import { CloseCross } from "@/components/ui/close-cross"
 
 // Toast Message — "Всплывающее уведомление". Shows a notification
-// noticeably without blocking the user's work; auto-dismisses after 8s
-// (the spec's own timing). `data` carries the two optional buttons (Type
-// (Button): Two Buttons / Black Button / White Button).
+// noticeably without blocking the user's work; auto-dismisses after 4s
+// (дизайн-чек от 13.09, замечание 20). `data` carries the two optional
+// buttons (Type (Button): Two Buttons / Black Button / White Button).
+//
+// Очередь, таймеры и пауза по наведению живут в `./provider`.
 //
 // Hand-rolled state (Context + useState + timers) rather than Base UI's
 // own Toast primitive: that primitive's store (`useToastManager`) never
@@ -21,94 +24,6 @@ import { CloseCross } from "@/components/ui/close-cross"
 // mistake on this component's part. Everything else in this kit that
 // leans on Base UI (Menu, Popover, Tooltip, Accordion, Dialog, ...) works
 // fine; this is scoped to Toast specifically.
-
-/**
- * Сколько длится уход тоста. Держится в паре с длительностью анимаций
- * `toast-out-*` в styles/base.css: узел снимается ПОСЛЕ того, как анимация
- * доиграла, иначе он просто пропадал бы кадром.
- */
-const EXIT_DURATION = 260
-
-// ToastProvider — 8s default timeout per the spec ("Время отображения
-// всплывающего сообщения 8 сек").
-//
-// ⚠️ Предела количеству НЕТ. Дизайн-чек от 08.09, замечание 14: «Нажал
-// копирование несколько раз (7), но тостов предельно возникает три. Такого
-// быть не должно, новые просто должны продолжать появляться ниже. Предел
-// нужно убрать». Раньше здесь стоял `limit = 3` и `.slice(0, limit)`, то есть
-// четвёртое нажатие молча выбрасывало сообщение. Колонка и без предела не
-// растянет страницу: она ограничена высотой вьюпорта и подрезает СТАРЫЕ
-// карточки сверху (см. `Toaster`).
-function ToastProvider({
-  timeout = 8000,
-  children,
-}: {
-  timeout?: number
-  children: React.ReactNode
-}) {
-  const [toasts, setToasts] = React.useState<ToastItem[]>([])
-  const timers = React.useRef(new Map<string, number>())
-
-  const forget = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
-    const timer = timers.current.get(id)
-    if (timer !== undefined) {
-      window.clearTimeout(timer)
-      timers.current.delete(id)
-    }
-  }, [])
-
-  // Закрытие идёт в два шага: сначала карточка помечается уходящей и
-  // доигрывает свою анимацию, и только потом снимается. Одним шагом она
-  // исчезала кадром — дизайн-чек от 08.09, замечание 15.
-  const close = React.useCallback(
-    (id: string) => {
-      let alreadyClosing = false
-      setToasts((prev) =>
-        prev.map((toast) => {
-          if (toast.id !== id) return toast
-          alreadyClosing = Boolean(toast.closing)
-          return { ...toast, closing: true }
-        })
-      )
-      if (alreadyClosing) return
-      const timer = window.setTimeout(() => forget(id), EXIT_DURATION)
-      timers.current.set(id, timer)
-    },
-    [forget]
-  )
-
-  const add = React.useCallback(
-    (options: ToastOptions) => {
-      const id = `toast-${Math.random().toString(36).slice(2, 10)}`
-      const duration = options.timeout ?? timeout
-      // В КОНЕЦ: «новые просто должны продолжать появляться ниже».
-      setToasts((prev) => [...prev, { ...options, id }])
-      if (duration > 0) {
-        const timer = window.setTimeout(() => close(id), duration)
-        timers.current.set(id, timer)
-      }
-      return id
-    },
-    [timeout, close]
-  )
-
-  React.useEffect(() => {
-    const timerMap = timers.current
-    return () => {
-      timerMap.forEach((timer) => window.clearTimeout(timer))
-    }
-  }, [])
-
-  const value = React.useMemo(
-    () => ({ toasts, add, close }),
-    [toasts, add, close]
-  )
-
-  return (
-    <ToastContext.Provider value={value}>{children}</ToastContext.Provider>
-  )
-}
 
 function ToastCard({
   toast,
@@ -135,13 +50,19 @@ function ToastCard({
       role="status"
       // Size=Mobile is a 328px card with 16px padding and a 16px close
       // cross; Size=Desktop is 480px with 24px padding and a 24px cross.
+      // Появление общее у всех, уход — по судьбе сообщения. Числа и кадры —
+      // в styles/base.css, длительности в tokens-motion.css.
       className={cn(
         "w-full min-w-[320px] shrink-0 rounded-[16px] p-4 shadow-universal desktop:p-6",
-        toast.closing
-          ? behavior === "collected"
-            ? "animate-[toast-out-collected_260ms_cubic-bezier(0.4,0,1,1)_forwards]"
-            : "animate-[toast-out-transient_260ms_cubic-bezier(0.4,0,1,1)_forwards]"
-          : "animate-in fade-in-0 slide-in-from-right-4"
+        "motion-safe:animate-[toast-in_var(--duration-overlay)_var(--ease-out)_both]",
+        toast.closing &&
+          (behavior === "collected"
+            ? "motion-safe:animate-[toast-out-collected_var(--duration-overlay)_var(--ease-out)_forwards]"
+            : "motion-safe:animate-[toast-out-transient_var(--duration-overlay)_var(--ease-out)_forwards]"),
+        // При выключенном движении карточка всё равно должна пропадать, иначе
+        // она зависнет на экране навсегда: анимации не играют, а снятие узла
+        // произойдёт по таймеру.
+        toast.closing && "motion-reduce:opacity-0"
       )}
       style={{
         backgroundColor: TOAST_BG[type],
@@ -243,12 +164,22 @@ function ToastCard({
 // мобильный / 32 десктопный) прибавляется к нему, а не заменяет: без
 // закреплённой шапки переменная равна нулю и поведение прежнее.
 function Toaster() {
-  const { toasts, close } = useToast()
+  const { toasts, close, pause, resume } = useToast()
 
   return (
     <div
       aria-live="polite"
       aria-atomic="false"
+      // «По ховеру на область уведомлений (включая отступы между) — пауза по
+      // времени жизни на все уведомления» (дизайн-чек от 13.09, замечание
+      // 20). Обработчики висят на колонке, а сама она указателя не принимает
+      // (`pointer-events-none`) — иначе её невидимая коробка во всю высоту
+      // экрана перехватывала бы клики по странице. Приём возвращают строки, и
+      // зазоры между ними закрывает псевдоэлемент строки (см. `ToastRow`).
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onFocusCapture={pause}
+      onBlurCapture={resume}
       // ⚠️ Колонка ОГРАНИЧЕНА высотой вьюпорта и складывается сверху вниз.
       //
       // Дизайн-чек от 07.09, замечание 21: «окно [опроса] складывает тосты в
@@ -272,12 +203,82 @@ function Toaster() {
       // срезал её по бокам. `clip` с `overflow-clip-margin` подрезает по той
       // же коробке, но с запасом под тень, и, в отличие от `hidden`, не
       // делает колонку областью прокрутки.
-      className="fixed inset-x-4 top-[calc(var(--viewport-inset-top,0px)+1rem)] z-(--z-toast) flex max-h-[calc(100vh-var(--viewport-inset-top,0px)-2rem)] flex-col justify-end gap-6 overflow-clip [overflow-clip-margin:24px] desktop:inset-x-auto desktop:top-[calc(var(--viewport-inset-top,0px)+2rem)] desktop:right-10 desktop:max-h-[calc(100vh-var(--viewport-inset-top,0px)-4rem)] desktop:w-[480px]"
+      //
+      // ⚠️ `overflow-clip` заменён на `clip-path`, и вот почему.
+      //
+      // Подрезка нужна СВЕРХУ (складывание стопки, дизайн-чек от 08.09,
+      // замечание 13 — с запасом под тень), но мешает СПРАВА: уходящий
+      // «отклик системы» уезжает на 520 px за габарит колонки (дизайн-чек от
+      // 13.09, замечание 20), и `overflow` съедал бы весь полёт. Одним
+      // свойством разные поля по сторонам задаёт только `clip-path`:
+      // 560 px запаса справа под полёт, 24 по низу и слева под тень, а сверху
+      // отрицательное поле ровно в тот отступ, с которым колонка стоит от
+      // шапки (16 / 32). Из-за него «информирующий» тост, уходящий вверх на
+      // 200 px, виден до самой кромки шапки и там пропадает — то есть уходит
+      // ПОД ШАПКУ, как и написано в документации, хотя лежит слоем выше неё
+      // (`--z-toast` 50 против `z-40` у шапки).
+      //
+      // ⚠️ Правый отступ — ПО СЕТКЕ, а не фиксированные 40 px. «Финальная
+      // позиция с отступом от правого края 40 px по сетке страницы»
+      // (замечание 20): до 1880 поле сетки и есть 40, а выше контент стоит на
+      // 1800 и растут поля — колонка обязана ехать вместе с ним, иначе на
+      // широком экране тост отрывается от содержимого страницы. Выражение то
+      // же, которым меряет себя полоса: половина того, что осталось от
+      // ширины за вычетом контентной полосы.
+      className="pointer-events-none fixed inset-x-4 top-[calc(var(--viewport-inset-top,0px)+1rem)] z-(--z-toast) flex max-h-[calc(100vh-var(--viewport-inset-top,0px)-2rem)] flex-col justify-end gap-6 [clip-path:inset(-1rem_-560px_-1.5rem_-1.5rem)] desktop:inset-x-auto desktop:top-[calc(var(--viewport-inset-top,0px)+2rem)] desktop:right-[calc((100%-var(--grid-content-width))/2)] desktop:max-h-[calc(100vh-var(--viewport-inset-top,0px)-4rem)] desktop:w-[480px] desktop:[clip-path:inset(-2rem_-560px_-1.5rem_-1.5rem)]"
     >
       {/* Порядок прямой: первый в списке — самый старый, он же выше всех. */}
       {toasts.map((toast) => (
-        <ToastCard key={toast.id} toast={toast} onClose={() => close(toast.id)} />
+        <ToastRow key={toast.id} closing={Boolean(toast.closing)}>
+          <ToastCard toast={toast} onClose={() => close(toast.id)} />
+        </ToastRow>
       ))}
+    </div>
+  )
+}
+
+/**
+ * Строка колонки: держит место под карточку и отдаёт его соседям, когда
+ * карточка уходит.
+ *
+ * «При уходе/закрытии уведомления последующее занимает его место. Одинаковое
+ * время исчезновения независимо от высоты. Время сдвига совпадает с временем
+ * исчезновения» — дизайн-чек от 13.09, замечание 20.
+ *
+ * Механика — `grid-template-rows: 1fr → 0fr`. Ровно этим она и отличается от
+ * прежней (схлопывание `max-height` внутри кадров ухода): переход всегда
+ * длится заданные 300 ms, какой бы высоты ни была карточка, тогда как путь от
+ * общего потолка 320 px низкая карточка проходила «вхолостую».
+ *
+ * ⚠️ Внутренний узел НЕ режет переполнение. Обычно у этого приёма стоит
+ * `overflow: hidden`, но здесь он срезал бы и тень карточки, и её полёт на
+ * 520 px вправо. Видимое переполнение схлопывающейся строки не мешает:
+ * карточка в этот момент уже улетает и гаснет.
+ *
+ * `-mb-6` съедает зазор колонки (24) — без него на месте ушедшей карточки
+ * оставался бы пустой интервал.
+ *
+ * Псевдоэлемент `after` закрывает этот самый зазор для НАВЕДЕНИЯ: без него
+ * курсор, идущий между карточками, ронял бы паузу и время жизни дёргалось бы.
+ */
+function ToastRow({
+  closing,
+  children,
+}: {
+  closing: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      data-slot="toast-row"
+      data-closing={closing || undefined}
+      className={cn(
+        "pointer-events-auto relative grid transition-all duration-300 ease-out",
+        "after:absolute after:inset-x-0 after:top-full after:h-6 after:content-['']",
+        closing ? "-mb-6 grid-rows-[0fr]" : "grid-rows-[1fr]"
+      )}
+    >
+      <div className="min-h-0">{children}</div>
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { ChevronDown, ChevronUp, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
-import { filterTablePillClass } from "@/components/ui/filter-table"
+import { filterTablePillClass } from "./filter-table"
 import { Badge } from "@/components/ui/badge"
 import { Dropdown } from "@/components/ui/dropdown"
 

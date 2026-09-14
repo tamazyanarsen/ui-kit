@@ -4,10 +4,11 @@ import { PseudoBox, StatesMatrix, sizeArgType, toggleArgType } from "@/stories/m
 import { type Viewport } from "@/lib/viewport"
 import { IssueItem, type IssueStatus } from "@/components/ui/issue-item"
 
-import { IssueList, type IssueListProps } from "./issue-list"
+import { ListOfErrors, type ListOfErrorsProps } from "./list-of-errors"
 
 /**
- * Issue List — список проблем (`Errors List (ELK)`): разделитель во всю
+ * List of Errors — список проблем (бывш. Issue List; переименован по
+ * дизайн-чеку от 13.09, замечание 9). Разделитель во всю
  * ширину + зазор 23 + коробка строк с зазором 8. Высоты сета сходятся один
  * в один: 48 / 80 / 112 при одной, двух и трёх строках.
  *
@@ -30,7 +31,7 @@ const ISSUES: { status: IssueStatus; text: string }[] = [
   { status: "info", text: "Заявка будет рассмотрена в течение двух рабочих дней" },
 ]
 
-type PlaygroundArgs = IssueListProps & {
+type PlaygroundArgs = ListOfErrorsProps & {
   viewport?: Viewport
   count?: number
 }
@@ -44,8 +45,8 @@ function issues(count: number) {
 }
 
 const meta = {
-  title: "Компоненты/Issue List",
-  component: IssueList,
+  title: "Компоненты/List of Errors",
+  component: ListOfErrors,
   parameters: { layout: "padded" },
   argTypes: {
     viewport: sizeArgType,
@@ -75,7 +76,7 @@ export const Playground: Story = {
   render: ({ viewport, count = 3, ...args }) => (
     <PseudoBox viewport={viewport}>
       <div className="w-full max-w-[880px]">
-        <IssueList {...args}>{issues(count)}</IssueList>
+        <ListOfErrors {...args}>{issues(count)}</ListOfErrors>
       </div>
     </PseudoBox>
   ),
@@ -99,7 +100,7 @@ export const Matrix: Story = {
         ]}
         render={({ count = 1, showDivider }) => (
           <div className="w-[320px]">
-            <IssueList showDivider={showDivider}>{issues(count)}</IssueList>
+            <ListOfErrors showDivider={showDivider}>{issues(count)}</ListOfErrors>
           </div>
         )}
       />
@@ -112,11 +113,11 @@ export const Matrix: Story = {
         rows={[{ label: "Ошибки → предупреждения", props: {} }]}
         render={() => (
           <div className="flex w-[440px] flex-col gap-6">
-            <IssueList>{issues(2)}</IssueList>
-            <IssueList>
+            <ListOfErrors>{issues(2)}</ListOfErrors>
+            <ListOfErrors>
               <IssueItem status="attention">{ISSUES[2].text}</IssueItem>
               <IssueItem status="info">{ISSUES[4].text}</IssueItem>
-            </IssueList>
+            </ListOfErrors>
           </div>
         )}
       />

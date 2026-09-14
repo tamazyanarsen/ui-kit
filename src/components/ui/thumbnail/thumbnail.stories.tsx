@@ -11,7 +11,11 @@ import { ViewportScope, type Viewport } from "@/lib/viewport"
 import { ICON_NAMES } from "@/components/ui/icon"
 
 import { Thumbnail, type ThumbnailProps } from "./thumbnail"
-import type { PaymentSystem, ThumbnailType } from "./variants"
+import type {
+  PaymentSystem,
+  ThumbnailBackground,
+  ThumbnailType,
+} from "./variants"
 
 /* Дизайн-чек №3 №4: «Некорректные нейминги в матрице thumbnail. Это не
    more, это вариант с иконкой. Матрицу взять из figma».
@@ -103,6 +107,15 @@ const meta = {
     figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS, "inline-radio"),
     state: stateArgTypeOf(["default", "disabled"]),
     type: optionsArgType<ThumbnailType>("Type", TYPE_LABELS),
+    /* Дизайн-чек от 13.09, замечание 5: «Добавить версию Thumbnail с белым
+       фоном квадрата… Отличаться будет только цвет фона». В ДС свойства ещё
+       нет, поэтому в таблице свойств оно не значится — но в панели должно
+       быть, иначе белая версия из витрины недостижима. */
+    background: optionsArgType<ThumbnailBackground>(
+      "Фон квадрата",
+      { grey: "Серый", white: "Белый" },
+      "inline-radio"
+    ),
     paymentSystem: {
       name: "Payment System",
       control: "select",
@@ -136,6 +149,7 @@ const meta = {
     paymentSystem: "mir",
     showDot: false,
     icon: "ellipsis",
+    background: "grey",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -177,6 +191,24 @@ export const Matrix: Story = {
           { label: "С точкой", props: { showDot: true } },
           // Disabled is a flat opacity-50 over the whole tile, not a
           // background swap.
+          { label: "Disabled", props: { disabled: true } },
+        ]}
+        render={(props) => <Thumbnail {...props} />}
+      />
+      <StatesMatrix<ThumbnailProps>
+        baseProps={{ type: "icon" }}
+        columnGroups={[
+          {
+            label: "Фон квадрата (Type = Icon)",
+            columns: (["grey", "white"] as const).map((background) => ({
+              label: background === "grey" ? "Серый" : "Белый",
+              props: { background },
+            })),
+          },
+        ]}
+        rows={[
+          { label: "L (default)", props: { size: "l" } },
+          { label: "M", props: { size: "m" } },
           { label: "Disabled", props: { disabled: true } },
         ]}
         render={(props) => <Thumbnail {...props} />}

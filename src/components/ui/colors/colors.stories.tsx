@@ -152,7 +152,7 @@ function ColorsPage() {
 }
 
 const meta = {
-  title: "Preview/.Colors",
+  title: "Атомы/.Colors",
   parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof ColorsPage>
 

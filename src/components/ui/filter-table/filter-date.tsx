@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { ComboboxFooter } from "@/components/ui/combobox"
-import { filterTablePillClass } from "@/components/ui/filter-table"
+import { filterTablePillClass } from "./filter-table"
 import { Input } from "@/components/ui/input"
 
 import { FilterShell, filterApplyLabel } from "./shell"

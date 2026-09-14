@@ -2,9 +2,15 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
+import { ViewportScope } from "@/lib/viewport"
 
 import { ButtonMenuRow, isButton, isOverflow } from "./row"
 import { PINNED_CLASS, barShapeClass } from "./pinning"
+import {
+  BAR_PLACEMENT_CLASS,
+  barPlacementStyle,
+  type ButtonMenuPlacement,
+} from "./placement"
 
 // Закрепление у нижнего края — поведение по умолчанию, а не опция «на
 // всякий случай»: в макете так и написано — «Панель всегда закреплена в
@@ -31,6 +37,13 @@ interface ButtonMenuProps extends React.ComponentProps<"div"> {
    * островом в потоке и получает скругления снизу, такие же как сверху.
    */
   detached?: boolean
+  /**
+   * Размещение на сетке: во всю полосу (12 колонок), слева или справа.
+   * Дизайн-чек от 13.09, замечание 19 — см. `./placement`.
+   */
+  placement?: ButtonMenuPlacement
+  /** Сколько колонок занимает панель при размещении слева/справа, 1…12. */
+  span?: number
 }
 
 // Pill-shaped inline toolbar. Pass `Button` instances as children — per the
@@ -51,7 +64,10 @@ interface ButtonMenuProps extends React.ComponentProps<"div"> {
 function ButtonMenu({
   pinned = true,
   detached = false,
+  placement = "full",
+  span = 12,
   className,
+  style,
   children,
   ...props
 }: ButtonMenuProps) {
@@ -67,38 +83,54 @@ function ButtonMenu({
   useViewportInsetBottom(ref, pinned && !detached)
 
   return (
-    // Figma's live "ELK / button menu" master component (node 4244:20536,
-    // v2.0.0) confirms design-check #5's original reading: this is a
-    // bottom-anchored bar, not a floating pill — top corners rounded only,
-    // border on the top/left/right only (no bottom border/radius, since
-    // that edge sits flush against the viewport/container bottom), plus a
-    // specific drop shadow (offset 0/4, blur 12, #8B99A9 @ 24%). The stale
-    // static preview asset that justified the old fully-rounded/no-border
-    // treatment predates this; trust the live component over it.
+    // ⚠️ Панель ВСЕГДА в десктопной форме.
     //
-    // Full width, not content-hugging: the "Использование в макете" mockups
-    // show the bar always spanning the full content width, buttons hugging
-    // left with the white background filling the rest — not a fixed-width
-    // island (confirmed against the mockups, not just the isolated
-    // component preview).
-    <div
-      ref={ref}
-      data-slot="button-menu"
-      data-pinned={(pinned && !detached) || undefined}
-      data-detached={detached || undefined}
-      className={cn(
-        "flex w-full items-center gap-4 border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-8 py-4 shadow-universal",
-        barShapeClass({ detached, bordered: true }),
-        pinned && !detached && PINNED_CLASS,
-        className
-      )}
-      {...props}
-    >
-      {/* Мерная зона — только ряд кнопок: `extras` в неё не входят, иначе
-          панель считала бы их место свободным. */}
-      <ButtonMenuRow size="lg">{row}</ButtonMenuRow>
-      {extras}
-    </div>
+    // Дизайн-чек от 13.09, замечание 2: «У панели вообще не должно быть
+    // мобайл-версии или уменьшенной версии. Она не должна менять размеры,
+    // должна просто следовать сетке». Своих `desktop:` у полосы нет — её
+    // размер менялся через кнопки внутри (`ELK / button` на мобиле 48, на
+    // десктопе 56), поэтому и чинится это не здесь, а скоупом на всё
+    // поддерево: `ViewportScope` ставит `data-viewport="desktop"`, и вариант
+    // `desktop:` включается при любой ширине окна (см. src/styles/variants.css).
+    //
+    // Обёртка — `display: contents`, в раскладке не участвует, поэтому липкий
+    // низ и место в потоке остаются за самой полосой.
+    <ViewportScope viewport="desktop">
+      {/* Figma's live "ELK / button menu" master component (node 4244:20536,
+          v2.0.0) confirms design-check #5's original reading: this is a
+          bottom-anchored bar, not a floating pill — top corners rounded only,
+          border on the top/left/right only (no bottom border/radius, since
+          that edge sits flush against the viewport/container bottom), plus a
+          specific drop shadow (offset 0/4, blur 12, #8B99A9 @ 24%). The stale
+          static preview asset that justified the old fully-rounded/no-border
+          treatment predates this; trust the live component over it.
+
+          Ширину задаёт размещение на сетке: по умолчанию вся полоса, что и
+          показывают макеты «Использование в макете» (кнопки жмутся влево,
+          белая заливка добирает остаток), но 12 колонок перестали быть
+          единственной возможностью — см. `./placement`. */}
+      <div
+        ref={ref}
+        data-slot="button-menu"
+        data-pinned={(pinned && !detached) || undefined}
+        data-detached={detached || undefined}
+        data-placement={placement}
+        className={cn(
+          "flex items-center gap-4 border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-8 py-4 shadow-universal",
+          BAR_PLACEMENT_CLASS[placement],
+          barShapeClass({ detached, bordered: true }),
+          pinned && !detached && PINNED_CLASS,
+          className
+        )}
+        style={{ ...barPlacementStyle(placement, span), ...style }}
+        {...props}
+      >
+        {/* Мерная зона — только ряд кнопок: `extras` в неё не входят, иначе
+            панель считала бы их место свободным. */}
+        <ButtonMenuRow size="lg">{row}</ButtonMenuRow>
+        {extras}
+      </div>
+    </ViewportScope>
   )
 }
 

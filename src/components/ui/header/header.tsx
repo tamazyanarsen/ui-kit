@@ -26,7 +26,6 @@ import {
   ClientActions,
   EmployeeActions,
   Logo,
-  SidebarToggle,
   SignOutPhone,
   TopRow,
   TopRowDivider,
@@ -40,11 +39,15 @@ import {
 // renders — a blocked client loses the nav row, action buttons and the
 // icon cluster entirely (just logo + org switcher), an account-less client
 // keeps a reduced nav but loses the "Создать" button, matching the spec's
-// own "Меню клиента без расчётных счетов" callout. `showMenu` is the
-// hamburger that pairs with a separate Sidebar component for Employee
-// layouts (Show Menu: True/False in the spec) — it toggles the paired
-// Sidebar's own open state, so this component only renders the icon and
-// reports the click, it doesn't own a Sidebar itself.
+// own "Меню клиента без расчётных счетов" callout.
+//
+// ⚠️ У шапки СОТРУДНИКА бургера нет. Дизайн-чек от 13.09, замечание 7: «В
+// шапке кабинета сотрудника удалить бургер-меню. У сотрудника не будет
+// полноценного меню из шапки, у них в качестве меню выступает главный экран,
+// который уже реализован в данном ките» (`EmployeeMenu`). Вместе с кнопкой
+// ушли и пропы `showMenu` / `sidebarOpen` / `onSidebarOpenChange`: других
+// потребителей у них не было, а оставленные «на будущее» они снова позвали
+// бы `Sidebar` в шапку.
 //
 // Избранное — один список, а не два. Пункты нижнего ряда и звёзды в
 // раскрытом меню — это одно и то же состояние: как только передан
@@ -108,9 +111,6 @@ interface HeaderProps {
   showOrgSettings?: boolean
   onOrgSettingsClick?: () => void
   employeeName?: React.ReactNode
-  showMenu?: boolean
-  sidebarOpen?: boolean
-  onSidebarOpenChange?: (open: boolean) => void
   onLogout?: () => void
   phoneNumber?: React.ReactNode
   /**
@@ -161,9 +161,6 @@ function Header({
   showOrgSettings = true,
   onOrgSettingsClick,
   employeeName,
-  showMenu = false,
-  sidebarOpen = false,
-  onSidebarOpenChange,
   onLogout,
   phoneNumber,
   pinned = false,
@@ -254,10 +251,6 @@ function Header({
       )}
     >
       <TopRow className={employeeFavourites ? "gap-6" : undefined}>
-        {type === "employee" && showMenu && (
-          <SidebarToggle open={sidebarOpen} onOpenChange={onSidebarOpenChange} />
-        )}
-
         <Logo />
 
         {employeeFavourites ? (
@@ -329,54 +322,59 @@ function Header({
             favouritesEnabled={favouritesEnabled}
           />
 
-        {openPanel === "menu" && (
-          <MenuOverlay
-            onClose={() => setOpenPanel(null)}
-            footer={
-              favouritesEnabled && (
-                <Button
-                  variant="secondary-white"
-                  size="sm"
-                  icon={Settings}
-                  onClick={() => setFavouritesSettingsOpen(true)}
-                >
-                  Настроить избранное
-                </Button>
-              )
+        {/* ⚠️ Панели рисуются ВСЕГДА, а раскрытость передаётся пропом.
+            Дизайн-чек от 13.09, замечание 17: у панели появился уход («fade
+            down»), а анимировать уход у снятого из разметки узла нечем —
+            решение о снятии теперь принимает сам `MenuOverlay`, отодвигая его
+            на длительность анимации. */}
+        <MenuOverlay
+          open={openPanel === "menu"}
+          onClose={() => setOpenPanel(null)}
+          footer={
+            favouritesEnabled && (
+              <Button
+                variant="secondary-white"
+                size="sm"
+                icon={Settings}
+                onClick={() => setFavouritesSettingsOpen(true)}
+              >
+                Настроить избранное
+              </Button>
+            )
+          }
+        >
+          <HeaderMenu
+            groups={menuGroups}
+            banners={menuBanners}
+            favourites={favourites}
+            activeLink={activeSection}
+            // Звезда работает сразу, без «Сохранить»: подсказка пустого
+            // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
+            // его сюда». Новый раздел встаёт в конец ряда.
+            onFavouriteToggle={
+              onFavouritesChange &&
+              ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
             }
-          >
-            <HeaderMenu
-              groups={menuGroups}
-              banners={menuBanners}
-              favourites={favourites}
-              activeLink={activeSection}
-              // Звезда работает сразу, без «Сохранить»: подсказка пустого
-              // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
-              // его сюда». Новый раздел встаёт в конец ряда.
-              onFavouriteToggle={
-                onFavouritesChange &&
-                ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
-              }
-              showFavourites={favouritesEnabled}
-              // «Оверлей занимает всё доступное место по высоте, кроме кнопки
-              // настройки избранного и её марджинов. И внутри оверлея
-              // появляется своя прокрутка» — дизайн-чек от 08.09, замечание 1.
-              //
-              // Величину считает сам оверлей (`--menu-overlay-panel`): она
-              // зависит и от того, сколько шапки осталось на экране, и от
-              // высоты кнопки. Прежняя константа «100vh − 14rem» держалась
-              // на том, что шапка всегда 128, а это перестало быть правдой,
-              // когда закрепляться стал только нижний ряд.
-              maxHeight="var(--menu-overlay-panel, calc(100vh - 14rem))"
-            />
-          </MenuOverlay>
-        )}
+            showFavourites={favouritesEnabled}
+            // «Оверлей занимает всё доступное место по высоте, кроме кнопки
+            // настройки избранного и её марджинов. И внутри оверлея
+            // появляется своя прокрутка» — дизайн-чек от 08.09, замечание 1.
+            //
+            // Величину считает сам оверлей (`--menu-overlay-panel`): она
+            // зависит и от того, сколько шапки осталось на экране, и от
+            // высоты кнопки. Прежняя константа «100vh − 14rem» держалась
+            // на том, что шапка всегда 128, а это перестало быть правдой,
+            // когда закрепляться стал только нижний ряд.
+            maxHeight="var(--menu-overlay-panel, calc(100vh - 14rem))"
+          />
+        </MenuOverlay>
 
-        {openPanel === "create" && (
-          <MenuOverlay onClose={() => setOpenPanel(null)}>
-            <CreateMenu items={createItems} />
-          </MenuOverlay>
-        )}
+        <MenuOverlay
+          open={openPanel === "create"}
+          onClose={() => setOpenPanel(null)}
+        >
+          <CreateMenu items={createItems} />
+        </MenuOverlay>
         </div>
       )}
 

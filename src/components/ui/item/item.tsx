@@ -13,6 +13,29 @@ import { RightElement, type RightElementType } from "./right-element"
 //
 // Правый элемент со всеми его видами и зонами нажатия — в
 // `right-element.tsx`.
+//
+// ⚠️ МОБИЛЬНАЯ ФОРМА СОБРАНА НЕ ПО МАСТЕРУ. Дизайн-чек от 13.09, замечание 4:
+// «Переработать размеры текстов и размеры компонента Item для варианта
+// Mobile. Пока в нужном ките нет варианта Mobile, он появится позже. Взять за
+// основу его копию из другого кита — оттуда унаследовать только размеры
+// текстов, но подобрать аналоги из нашего кита».
+//
+// Файл-референс (`GY9cLlAZGVPY3S9Qod3psF`, нода 35250:94921) по MCP не
+// открывается — прав на него нет. Поэтому мобильная форма собрана по
+// СКВОЗНОМУ правилу кита, которое в нём уже действует у Toast, Informer,
+// Input и Filter Table: на мобиле каждый текст опускается на одну ступень
+// шкалы, а вложенные элементы берут свои мобильные формы сами (через
+// `ViewportScope`, см. src/lib/viewport.tsx).
+//
+//   подпись  P2 Medium 14/20 → P3 Medium 12/16
+//   значение P1 Medium 16/24 → P2 Medium 14/20
+//   коммент  P2 Medium 14/20 → P3 Medium 12/16
+//   плашка   48 → 40 (ровно как `Thumbnail` размера L)
+//   отступ подкатегории 80 → 64
+//
+// Высоту строки при этом никто не задаёт числом — она выходит из кегля сама,
+// как и у Filter Table. Когда мобильный мастер приедет в ДС, эти числа надо
+// перемерить по нему.
 
 type CommentColor = "grey" | "red" | "yellow"
 
@@ -86,7 +109,9 @@ function DefaultThumbnail() {
     // ни в ту, ни в другую сторону — только по скачанному вектору.
     <span
       aria-hidden="true"
-      className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)]"
+      // Размер — ровно как у `Thumbnail` размера L: 40 на мобиле, 48 на
+      // десктопе (`size-10 desktop:size-12`), глиф 24 на обеих формах.
+      className="flex size-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--item-thumbnail-bg)] text-[var(--item-thumbnail-fg)] desktop:size-12"
     >
       <Ellipsis size={24} className="size-6" />
     </span>
@@ -144,13 +169,13 @@ function Item({
         // variant keeps the same 15px gap and a transparent 1px line rather
         // than collapsing, so the border here is always present and only
         // changes colour; otherwise a list's last row would be 1px shorter.
-        "flex w-full cursor-pointer items-center gap-6 border-b px-4 pt-4 pb-[15px] text-left outline-none transition-colors",
+        "flex w-full cursor-pointer items-center gap-4 border-b px-4 pt-3 pb-[11px] text-left outline-none transition-colors desktop:gap-6 desktop:pt-4 desktop:pb-[15px]",
         // Sub Category indents the *content* by 64px relative to a normal
         // row (Figma puts `pl-[64px]` on the Box of `Сategory=True`, on top
         // of the row's own 16px side padding from the "Боковые отступы"
         // note) — so 80px here, and the divider/hover fill still span the
         // full width because the padding is on the row itself.
-        subCategory && "pl-20",
+        subCategory && "pl-16 desktop:pl-20",
         divider === false
           ? "border-transparent"
           : "border-[var(--item-divider)]",
@@ -180,21 +205,31 @@ function Item({
         <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 self-stretch">
           <span className="flex min-w-0 flex-col">
             {text && (
-              <span className={cn("truncate text-p2-medium", valueColor)}>
+              <span
+                className={cn(
+                  "truncate text-p3-medium desktop:text-p2-medium",
+                  valueColor
+                )}
+              >
                 {text}
               </span>
             )}
             {/* Value wraps up to 3 lines, Comment up to 5 — the spec's own
                 "Максимальное количество строк" note; single-line `truncate`
                 cut long titles that Figma shows wrapping. */}
-            <span className={cn("line-clamp-3 text-p1-medium", valueColor)}>
+            <span
+              className={cn(
+                "line-clamp-3 text-p2-medium desktop:text-p1-medium",
+                valueColor
+              )}
+            >
               {value}
             </span>
           </span>
           {comment && (
             <span
               className={cn(
-                "line-clamp-5 text-p2-medium",
+                "line-clamp-5 text-p3-medium desktop:text-p2-medium",
                 disabled ? DISABLED_FG : COMMENT_COLOR[commentColor]
               )}
             >

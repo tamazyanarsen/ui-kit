@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { DataTable, TableBlock } from "@/components/ui/table"
 import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Pagination } from "@/components/ui/pagination"
 import {
   TableTop,
@@ -137,7 +137,7 @@ function BusinessCardsRegistry() {
               />
               <TableTopToolbar>
                 {CHIPS.map((label) => (
-                  <Filter
+                  <FilterTableSelect
                     key={label}
                     label={label}
                     value={chips[label] ?? null}

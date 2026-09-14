@@ -73,6 +73,27 @@ export function getMaskPlaceholder(name: MaskName): string {
   return PLACEHOLDERS[name]
 }
 
+/**
+ * Прогнать сырое значение через маску — ровно то, что покажет поле.
+ *
+ * Нужно там, где значение приходит СНАРУЖИ (`value`/`defaultValue`), а не с
+ * клавиатуры: `onAccept` на такое не срабатывает, и всё, что считает по
+ * значению (замер ширины числа у маски суммы), считало бы по сырой строке.
+ * Дизайн-чек от 13.09, замечание 1: «30000000» уже 92px, а показанное
+ * «30 000 000» — 100px, и знак «₽» вставал ровно на последнюю цифру.
+ */
+export function formatWithMask(name: MaskName, raw: string): string {
+  if (!raw) return raw
+  try {
+    return IMask.pipe(
+      raw,
+      getImaskProps(name) as Parameters<typeof IMask.pipe>[1]
+    )
+  } catch {
+    return raw
+  }
+}
+
 // Props to spread onto react-imask's <IMaskInput mask={...} />. Amount only
 // masks the number itself (imask's MaskedNumber — correct thousand-grouping
 // and caret handling); the "₽" is rendered by Input as a separate fixed

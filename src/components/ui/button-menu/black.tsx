@@ -3,10 +3,16 @@ import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
+import { ViewportScope } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
 
 import { ButtonMenuOverflow } from "./overflow"
 import { PINNED_CLASS, barShapeClass } from "./pinning"
+import {
+  BAR_PLACEMENT_CLASS,
+  barPlacementStyle,
+  type ButtonMenuPlacement,
+} from "./placement"
 
 // ButtonMenuBlack — "ELK / button menu (black)" (node 700:54288, v1.0.0).
 // Figma documents this as its own component, not a variant of the white
@@ -67,6 +73,13 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
    * островом в потоке и получает нижние скругления, такие же как верхние.
    */
   detached?: boolean
+  /**
+   * Размещение на сетке: во всю полосу (12 колонок), слева или справа.
+   * Дизайн-чек от 13.09, замечание 19 — см. `./placement`.
+   */
+  placement?: ButtonMenuPlacement
+  /** Сколько колонок занимает панель при размещении слева/справа, 1…12. */
+  span?: number
 
   /**
    * `Show Button` — кнопка «Выбрать на всех страницах (N)» над полосой.
@@ -112,11 +125,14 @@ function ButtonMenuBlack({
   onClose,
   pinned = true,
   detached = false,
+  placement = "full",
+  span = 12,
   showSelectAllPages = true,
   selectAllPagesCount,
   selectedCount,
   onSelectAllPages,
   children,
+  style,
   ...props
 }: ButtonMenuBlackProps) {
   // Same reasoning as ButtonMenu's own sizing pass: the spec draws every
@@ -168,14 +184,23 @@ function ButtonMenuBlack({
     selectedCount >= selectAllPagesCount
   const withSelectAll = showSelectAllPages && !!onSelectAllPages && !allSelected
 
+  // Размещение на сетке вешается на САМЫЙ ВНЕШНИЙ узел — на панель, когда она
+  // возвращается одна, и на блок «кнопка + панель», когда он есть. Иначе
+  // кнопка «Выбрать на всех страницах» центрировалась бы по всей полосе, а
+  // панель под ней стояла бы в своих шести колонках.
+  const outerPlacementClass = BAR_PLACEMENT_CLASS[placement]
+  const outerPlacementStyle = barPlacementStyle(placement, span)
+
   const panel = (
     <div
       ref={ref}
       data-slot="button-menu-black"
       data-pinned={(pinned && !detached) || undefined}
       data-detached={detached || undefined}
+      data-placement={placement}
       className={cn(
-        "flex max-h-[72px] min-h-[72px] w-full items-center justify-between bg-[var(--button-menu-black-bg)] px-6 py-4",
+        "flex max-h-[72px] min-h-[72px] items-center justify-between bg-[var(--button-menu-black-bg)] px-6 py-4",
+        withSelectAll ? "w-full" : outerPlacementClass,
         barShapeClass({ detached }),
         // Приём указателя возвращается панели: внешний узел его не
         // принимает (см. ниже).
@@ -183,6 +208,9 @@ function ButtonMenuBlack({
         pinned && !detached && !withSelectAll && PINNED_CLASS,
         className
       )}
+      style={
+        withSelectAll ? style : { ...outerPlacementStyle, ...style }
+      }
       {...props}
     >
       <div
@@ -234,10 +262,19 @@ function ButtonMenuBlack({
     </div>
   )
 
-  if (!withSelectAll) return panel
+  // ⚠️ Панель ВСЕГДА в десктопной форме — дизайн-чек от 13.09, замечание 2:
+  // «У панели вообще не должно быть мобайл-версии или уменьшенной версии. Она
+  // не должна менять размеры, должна просто следовать сетке». Своих
+  // `desktop:` у чёрной полосы нет, но они есть у кнопок внутри (`ELK /
+  // button` размера S меняет кегль 12 → 14), поэтому форму фиксирует скоуп на
+  // всё поддерево. Обёртка — `display: contents`, в раскладке не участвует.
+  if (!withSelectAll) {
+    return <ViewportScope viewport="desktop">{panel}</ViewportScope>
+  }
 
   return (
-    // ⚠️ Прозрачный зазор ловил указатель. Блок занимает всю ширину и 136
+    <ViewportScope viewport="desktop">
+    {/* ⚠️ Прозрачный зазор ловил указатель. Блок занимает всю ширину и 136
     // высоты, а нарисовано в нём двое — панель и кнопка; курсор до липкой
     // полосы прокрутки таблицы, которая живёт в зазоре, не доезжал, таблица
     // теряла наведение, полоса гасла на подходе.
@@ -248,16 +285,19 @@ function ButtonMenuBlack({
     // Проверяется не глазами, а попаданием в точку: что лежит под центром
     // дорожки прокрутки (`document.elementFromPoint`).
     //
-    // Место в потоке страницы при этом держится за ВЕСЬ блок (136, а не
-    // 72) — иначе контент уезжает под кнопку. Это две разные величины, и
-    // путать их нельзя: занятый низ вьюпорта публикует панель (см. ref
-    // выше), а место в потоке занимает этот узел.
+        Место в потоке страницы при этом держится за ВЕСЬ блок (136, а не
+        72) — иначе контент уезжает под кнопку. Это две разные величины, и
+        путать их нельзя: занятый низ вьюпорта публикует панель (см. ref
+        выше), а место в потоке занимает этот узел. */}
     <div
       data-slot="button-menu-black-block"
+      data-placement={placement}
       className={cn(
-        "pointer-events-none flex w-full flex-col items-center gap-8",
+        "pointer-events-none flex flex-col items-center gap-8",
+        outerPlacementClass,
         pinned && !detached && PINNED_CLASS
       )}
+      style={outerPlacementStyle}
     >
       <div className="pointer-events-auto w-fit">
         {/* Кнопка — не «таблетка» со своей заливкой, а инстанс кнопки кита
@@ -277,6 +317,7 @@ function ButtonMenuBlack({
       </div>
       {panel}
     </div>
+    </ViewportScope>
   )
 }
 

@@ -75,7 +75,17 @@ const inputFieldVariants = cva(
   // показывает фокус собственной рамкой (состояние Focused кита), а у
   // заблокированного рамка своя и на фокус не меняется — без кольца
   // невозможно понять, где ты вообще находишься.
-  "peer min-w-0 flex-1 bg-transparent text-[var(--input-fg)] outline-none placeholder:text-[var(--input-label-fg)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--input-fg-disabled)] aria-disabled:focus-visible:focus-ring",
+  // ⚠️ `text-ellipsis` + `focus:text-clip` — дизайн-чек от 13.09, замечание
+  // 14: «Непоместившиеся символы обрезаются грубо… Должны уходить в
+  // многоточие. В состоянии фокуса, конечно, многоточие не нужно».
+  //
+  // Многоточие у поля ввода работает ровно так: браузер рисует его, только
+  // пока поле НЕ в фокусе (в фокусе там каретка, и текст надо прокручивать, а
+  // не подрезать). `focus:text-clip` пишет это правило явно, а не полагается
+  // на умолчание браузера, — иначе поведение зависело бы от движка.
+  //
+  // Один класс закрывает и `Input`, и `Autocomplete`: поле у них общее.
+  "peer min-w-0 flex-1 overflow-hidden bg-transparent text-ellipsis whitespace-nowrap text-[var(--input-fg)] outline-none focus:text-clip placeholder:text-[var(--input-label-fg)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--input-fg-disabled)] aria-disabled:focus-visible:focus-ring",
   {
     variants: {
       size: FIELD_TEXT_SIZE,

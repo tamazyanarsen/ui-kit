@@ -148,8 +148,12 @@ function FavouritesSettings({
       <ModalContent size="m">
         {/* `Modal Top` у этой модалки — вариант без заголовка (пустой холдер
             48px), поэтому ModalHeader не используется, а заголовок стоит
-            первым в теле и прокручивается вместе с содержимым. */}
-        <ModalBody className="flex flex-col gap-8 desktop:pt-12">
+            первым в теле и прокручивается вместе с содержимым. Сам холдер
+            рисует `ModalContent`: дизайн-чек от 13.09, замечание 15 — под
+            белую полосу контент уходит, и как только хоть что-то ушло,
+            появляется серый разделитель (верхняя грань `ModalBody`). Свой
+            `desktop:pt-12` тут больше не нужен — полоса его и заменяет. */}
+        <ModalBody className="flex flex-col gap-8">
           <ModalTitle className="text-h2-mobile desktop:text-h2">
             Настройка избранного
           </ModalTitle>

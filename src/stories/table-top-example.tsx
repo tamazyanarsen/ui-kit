@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table-top"
 import { Tabs, type TabItem } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
@@ -237,7 +237,7 @@ function FullExample({
             </div>
           )}
           {visibleChips.map((label) => (
-            <Filter
+            <FilterTableSelect
               key={label}
               label={label}
               value={values[label] ?? null}

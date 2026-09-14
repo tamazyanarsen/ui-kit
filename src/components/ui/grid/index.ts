@@ -1,6 +1,7 @@
 export {
   Grid,
   GridCol,
+  GridGuides,
   GridRoot,
   GridRow,
   GRID_COLUMNS,
@@ -10,5 +11,7 @@ export {
   GRID_MARGIN,
   GRID_VIEWPORT_MAX,
   GRID_VIEWPORT_MIN,
+  GRID_VIEWPORT_WIDE,
+  gridSpanWidth,
 } from "./grid"
 export type { GridColProps, GridProps } from "./grid"

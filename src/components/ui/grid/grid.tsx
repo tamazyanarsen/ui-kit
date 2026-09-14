@@ -40,6 +40,15 @@ const GRID_CONTENT_MAX = 1800
 const GRID_VIEWPORT_MIN = GRID_CONTENT_MIN + GRID_MARGIN * 2
 /** Выше этой ширины растут поля, а не контент. */
 const GRID_VIEWPORT_MAX = GRID_CONTENT_MAX + GRID_MARGIN * 2
+/**
+ * Порог перестроения содержимого раздела — вариант `wide:` в Tailwind.
+ *
+ * Дизайн-чек от 13.09, замечание 3. Полосы он не касается: ширина контента
+ * на нём меняется непрерывно, а раздел сам решает, разложить ли ряд иначе.
+ * Поэтому `Grid` его нигде не применяет — число живёт здесь, чтобы витрина
+ * и раздел брали его из одного места. Само правило — в `tokens-grid.css`.
+ */
+const GRID_VIEWPORT_WIDE = 1536
 
 /**
  * Корень продукта: задаёт минимальную ширину, ниже которой появляется общая
@@ -148,9 +157,75 @@ function GridCol({ span = GRID_COLUMNS, className, style, ...props }: GridColPro
   )
 }
 
+/**
+ * Ширина пролёта в N колонок — как CSS-выражение, а не число.
+ *
+ * Нужна тем, кто раскладывается ПО сетке, но грид-элементом не является:
+ * нижняя панель действий липнет к низу своего контейнера и стоит в обычном
+ * потоке, `grid-column` для неё не работает вовсе (дизайн-чек от 13.09,
+ * замечание 19: «Button Menu и Button Menu Black должны уметь занимать не все
+ * 12 колонок грида»).
+ *
+ * `100%` считается от родителя, в который выражение подставлено, поэтому
+ * ставить его надо на полосе (`Grid`) — тогда и колонка получится та же, что
+ * у `GridRow` рядом. Формула ровно та же, что и у грида: 12 колонок и 11
+ * желобов делят полосу, N колонок забирают N долей и N−1 желобов.
+ */
+function gridSpanWidth(span: number): string {
+  const width = Math.min(Math.max(Math.round(span), 1), GRID_COLUMNS)
+  if (width === GRID_COLUMNS) return "100%"
+  return `calc((100% - ${GRID_COLUMNS - 1} * var(--grid-gutter)) / ${GRID_COLUMNS} * ${width} + var(--grid-gutter) * ${width - 1})`
+}
+
+/**
+ * Подсказка сетки — 12 залитых колонок.
+ *
+ * Дизайн-чек от 13.09, замечание 12: «добавить в него видимый показ колонок
+ * (например, в сером цвете на белом). Чтобы можно было наглядно видеть, как
+ * колонки изменяются при смене ширины вьюпорта».
+ *
+ * Колонки настоящие: это тот же `grid-cols-12` с тем же желобом, что и у
+ * `GridRow`, а не нарисованные полоски. Поэтому подсказка не «похожа» на
+ * сетку, а МЕРЯЕТ её — ошибка в раскладке видна сразу, и числа на витрине
+ * снимаются прямо с этих узлов.
+ *
+ * Ниже десктопной ширины колонок нет вовсе (`GridRow` там складывается в
+ * столбец), и подсказка честно показывает одну полосу: 12 колонок по 128 на
+ * мобиле не живут.
+ */
+function GridGuides({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      aria-hidden="true"
+      data-slot="grid-guides"
+      className={cn(
+        "pointer-events-none grid w-full min-h-16 grid-cols-1 gap-[var(--grid-gutter)]",
+        "desktop:grid-cols-12",
+        className
+      )}
+      {...props}
+    >
+      {Array.from({ length: GRID_COLUMNS }, (_, index) => (
+        <span
+          key={index}
+          data-slot="grid-guide"
+          className={cn(
+            "h-full rounded-[4px] bg-[var(--grid-guide-bg)]",
+            // Мобильная форма — ОДНА полоса, а не двенадцать друг под другом:
+            // столбец из дюжины пустых плашек ничего не показывает, кроме
+            // того, что колонок здесь нет. Остальные просто выключены.
+            index > 0 && "hidden desktop:block"
+          )}
+        />
+      ))}
+    </div>
+  )
+}
+
 export {
   Grid,
   GridCol,
+  GridGuides,
   GridRoot,
   GridRow,
   GRID_COLUMNS,
@@ -160,5 +235,7 @@ export {
   GRID_MARGIN,
   GRID_VIEWPORT_MAX,
   GRID_VIEWPORT_MIN,
+  GRID_VIEWPORT_WIDE,
+  gridSpanWidth,
 }
 export type { GridColProps, GridProps }

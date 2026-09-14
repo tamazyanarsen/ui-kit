@@ -1,6 +1,8 @@
 import * as React from "react"
 
+import { cn } from "@/lib/utils"
 import { usePageScrollLock } from "@/lib/use-page-scroll-lock"
+import { usePresence } from "@/lib/use-presence"
 
 /**
  * Минимум между кнопкой «Настроить избранное» и нижней кромкой экрана. При
@@ -8,6 +10,16 @@ import { usePageScrollLock } from "@/lib/use-page-scroll-lock"
  * собственную прокрутку (нода 70303:61266).
  */
 const FOOTER_BOTTOM_INSET = 40
+
+/**
+ * Длительность ухода — ровно та же, что в `--duration-panel-out`.
+ *
+ * Дублируется числом, потому что снятие узла из разметки считает JS, а кадры
+ * играет CSS. Синхронность держится комментарием, а не вычислением: читать
+ * `getComputedStyle` ради 160 мс значило бы делать замер на каждом закрытии
+ * меню.
+ */
+const EXIT_MS = 160
 
 /**
  * Раскрытая панель под шапкой: затемнение на всю оставшуюся высоту экрана
@@ -23,18 +35,30 @@ const FOOTER_BOTTOM_INSET = 40
  * выкатывала из-под него и панель, и кнопку.
  */
 function MenuOverlay({
+  open,
   children,
   footer,
   onClose,
 }: {
+  /**
+   * Раскрыта ли панель.
+   *
+   * Пропом, а не условным рендером на стороне шапки: пока играет уход, узел
+   * обязан оставаться в разметке (дизайн-чек от 13.09, замечание 17).
+   */
+  open: boolean
   children: React.ReactNode
   footer?: React.ReactNode
   onClose: () => void
 }) {
   const ref = React.useRef<HTMLDivElement>(null)
   const footerRef = React.useRef<HTMLDivElement>(null)
+  const { present, state } = usePresence(open, EXIT_MS)
 
-  usePageScrollLock(true)
+  // Прокрутка запирается только на раскрытой панели: во время ухода она уже
+  // не нужна, а держать её лишние 160 мс — значит дёргать полосу прокрутки на
+  // каждом закрытии меню.
+  usePageScrollLock(open)
 
   // Высота — «до низа экрана», и посчитать её в CSS нечем.
   //
@@ -54,11 +78,18 @@ function MenuOverlay({
   // ровно по той же причине, по которой не берётся константой высота шапки.
   React.useLayoutEffect(() => {
     const element = ref.current
-    if (!element) return
+    if (!element || !present) return
 
     const measure = () => {
       const { top } = element.getBoundingClientRect()
-      const available = Math.max(0, window.innerHeight - top)
+      // ⚠️ `Math.ceil`, а не сырое число. Дизайн-чек от 13.09, замечание 18:
+      // «Видна 1-пиксельная горизонтальная не затемнённая полоса». `top`
+      // дробный (шапка липкая, страница прокручена на пол-пикселя), высота
+      // получалась дробной, и нижняя кромка затемнения при округлении не
+      // доезжала до низа экрана — между ней и краем оставался просвет.
+      // Вверх округляем сознательно: лишний пиксель уходит за экран, а
+      // страница в это время всё равно заблокирована (см. usePageScrollLock).
+      const available = Math.max(0, Math.ceil(window.innerHeight - top))
       element.style.height = `${available}px`
 
       const footerBox = footerRef.current
@@ -100,13 +131,23 @@ function MenuOverlay({
       window.removeEventListener("scroll", measure, { capture: true })
       window.removeEventListener("resize", measure)
     }
-  }, [footer])
+  }, [footer, present])
+
+  if (!present) return null
 
   return (
     <div
       ref={ref}
       data-slot="header-menu-overlay"
-      className="absolute inset-x-0 top-full z-40"
+      data-state={state}
+      className={cn(
+        "group/overlay absolute inset-x-0 top-full z-40",
+        // Уходящая панель указателя не принимает. Пока играет её уход, на
+        // экране две панели (закрывающаяся и открывающаяся — меню и «Создать»
+        // подменяют друг друга), и клик в эти 160 мс доставался бы той, что
+        // уже не нужна.
+        state === "closed" && "pointer-events-none"
+      )}
     >
       <button
         type="button"
@@ -114,9 +155,29 @@ function MenuOverlay({
         onClick={onClose}
         // Тот же `--modal-backdrop`/70, что и у модалки: пиксельная проба
         // макета даёт ровно это значение (см. комментарий в styles/tokens-forms.css).
-        className="absolute inset-0 cursor-default bg-[var(--modal-backdrop)]/70"
+        //
+        // `-bottom-px` — вторая половина правки по замечанию 18: округления
+        // вверх достаточно, пока `innerHeight` целый, но при масштабе
+        // браузера 110 %/125 % дробным становится и он. Свеситься на пиксель
+        // ниже экрана дешевле, чем ловить каждую комбинацию масштабов: под
+        // экраном этого пикселя не видно, а просвета больше не бывает.
+        className={cn(
+          "absolute inset-x-0 top-0 -bottom-px cursor-default bg-[var(--modal-backdrop)]/70",
+          // Затемнение только гаснет и проявляется — никуда не едет.
+          "motion-safe:animate-[menu-backdrop-in_var(--duration-panel)_var(--ease-out)_both]",
+          "motion-safe:group-data-[state=closed]/overlay:animate-[menu-backdrop-out_var(--duration-panel-out)_var(--ease-out)_both]"
+        )}
       />
-      <div className="relative">
+      {/* «fade up» на появление и «fade down» на уход — дизайн-чек от 13.09,
+          замечание 17. Едет только этот узел: панель вместе с кнопкой
+          «Настроить избранное», но НЕ затемнение под ними. */}
+      <div
+        className={cn(
+          "relative",
+          "motion-safe:animate-[menu-panel-in_var(--duration-panel)_var(--ease-out)_both]",
+          "motion-safe:group-data-[state=closed]/overlay:animate-[menu-panel-out_var(--duration-panel-out)_var(--ease-out)_both]"
+        )}
+      >
         {children}
         {footer && (
           <div ref={footerRef} className="flex justify-center pt-8">

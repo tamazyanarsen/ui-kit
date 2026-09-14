@@ -50,6 +50,13 @@ interface ToastContextValue {
   toasts: ToastItem[]
   add: (options: ToastOptions) => string
   close: (id: string) => void
+  /**
+   * Остановить время жизни ВСЕХ сообщений — курсор вошёл в область
+   * уведомлений (дизайн-чек от 13.09, замечание 20).
+   */
+  pause: () => void
+  /** Продолжить отсчёт с остатка. */
+  resume: () => void
 }
 
 const ToastContext = React.createContext<ToastContextValue | null>(null)

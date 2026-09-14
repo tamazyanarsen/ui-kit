@@ -49,18 +49,112 @@ interface MenuBannerProps {
   className?: string
 }
 
-function MenuBanner({
+/**
+ * Заливка карточки — цвет плюс размытое пятно, одним слоем.
+ *
+ * Отдельным слоем, а не классами на самой карточке, ради дизайн-чека от
+ * 13.09, замечание 16: «Сама цветная плашка при смене баннера ездить не
+ * должна. Ездить должен только контент внутри». Плашка при листании стоит на
+ * месте, значит смену цвета ей приходится не переезжать, а ПЕРЕТЕКАТЬ — и
+ * перетекать должно всё разом.
+ *
+ * Почему слоями с прозрачностью, а не `transition-colors` по одному узлу:
+ * цвет фона так перетёк бы, а пятно — нет. Оно нарисовано градиентом, а
+ * градиентные остановки в CSS не интерполируются (без `@property` их вообще
+ * нельзя анимировать). Два слоя с `opacity` снимают вопрос целиком: обе
+ * заливки меняются одним переходом и всегда согласованно.
+ */
+function MenuBannerSkin({
+  color,
+  active = true,
+}: {
+  color: MenuBannerColor
+  active?: boolean
+}) {
+  const style = COLOR_STYLES[color]
+
+  return (
+    <div
+      aria-hidden="true"
+      data-slot="menu-banner-skin"
+      data-color={color}
+      data-active={active || undefined}
+      className={cn(
+        "pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out",
+        style.bg,
+        active ? "opacity-100" : "opacity-0"
+      )}
+    >
+      <div
+        className={cn(
+          "absolute top-[calc(50%+140px)] left-[calc(50%+70.5px)] size-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-linear-to-r to-white blur-[64px]",
+          style.glow
+        )}
+      />
+    </div>
+  )
+}
+
+/** Текстовая часть карточки — то единственное, что при листании едет. */
+function MenuBannerContent({
   title,
   subtitle,
   buttonLabel,
   onButtonClick,
+}: Pick<
+  MenuBannerProps,
+  "title" | "subtitle" | "buttonLabel" | "onButtonClick"
+>) {
+  return (
+    <div
+      data-slot="menu-banner-content"
+      className="relative flex h-60 w-full flex-col gap-6 py-10"
+    >
+      {/* Тексты переносятся, а не обрезаются в одну строку: в макете
+          (нода 70303:58477) заголовки баннеров занимают до двух строк, а
+          `overflow-hidden` стоит только страховкой — карточка ровно 240px
+          и рассчитана на 2 + 2 строки. */}
+      <div className="flex w-full flex-col gap-2 overflow-hidden text-[var(--header-fg)]">
+        <p className="w-full text-h4">{title}</p>
+        {subtitle && <p className="w-full text-p2-medium">{subtitle}</p>}
+      </div>
+      {buttonLabel && (
+        <Button
+          variant="secondary-black"
+          size="sm"
+          className="w-fit"
+          onClick={onButtonClick}
+        >
+          {buttonLabel}
+        </Button>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Сама плашка — коробка, скругления, заливка и стрелки.
+ *
+ * Именно она СТОИТ НА МЕСТЕ при листании (замечание 16), поэтому карусель
+ * собирает её сама и кладёт внутрь ленту из `MenuBannerContent`, а одиночный
+ * баннер (`MenuBanner` ниже) — тот же кадр с единственным содержимым.
+ */
+function MenuBannerPlate({
   color = "blue",
   onPrev,
   onNext,
   className,
-}: MenuBannerProps) {
-  const style = COLOR_STYLES[color]
-
+  children,
+  skin,
+}: {
+  color?: MenuBannerColor
+  onPrev?: () => void
+  onNext?: () => void
+  className?: string
+  children: React.ReactNode
+  /** Заливка. Не передана — рисуется одна, по `color`. */
+  skin?: React.ReactNode
+}) {
   return (
     <div
       data-slot="menu-banner"
@@ -74,45 +168,47 @@ function MenuBanner({
         "group/banner relative flex items-start gap-2 overflow-hidden rounded-[24px]",
         !onPrev && "pl-10",
         !onNext && "pr-10",
-        style.bg,
         className
       )}
     >
+      {skin ?? <MenuBannerSkin color={color} />}
       {onPrev && (
         <BannerSwitchButton side="prev" onClick={onPrev} label="Предыдущий баннер" />
       )}
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute top-[calc(50%+140px)] left-[calc(50%+70.5px)] size-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-linear-to-r to-white blur-[64px]",
-          style.glow
-        )}
-      />
-      <div className="relative flex h-60 min-w-0 flex-1 flex-col gap-6 py-10">
-        {/* Тексты переносятся, а не обрезаются в одну строку: в макете
-            (нода 70303:58477) заголовки баннеров занимают до двух строк, а
-            `overflow-hidden` стоит только страховкой — карточка ровно 240px
-            и рассчитана на 2 + 2 строки. */}
-        <div className="flex w-full flex-col gap-2 overflow-hidden text-[var(--header-fg)]">
-          <p className="w-full text-h4">{title}</p>
-          {subtitle && <p className="w-full text-p2-medium">{subtitle}</p>}
-        </div>
-        {buttonLabel && (
-          <Button
-            variant="secondary-black"
-            size="sm"
-            className="w-fit"
-            onClick={onButtonClick}
-          >
-            {buttonLabel}
-          </Button>
-        )}
-      </div>
-
+      {children}
       {onNext && (
         <BannerSwitchButton side="next" onClick={onNext} label="Следующий баннер" />
       )}
     </div>
+  )
+}
+
+function MenuBanner({
+  title,
+  subtitle,
+  buttonLabel,
+  onButtonClick,
+  color = "blue",
+  onPrev,
+  onNext,
+  className,
+}: MenuBannerProps) {
+  return (
+    <MenuBannerPlate
+      color={color}
+      onPrev={onPrev}
+      onNext={onNext}
+      className={className}
+    >
+      <div className="relative min-w-0 flex-1">
+        <MenuBannerContent
+          title={title}
+          subtitle={subtitle}
+          buttonLabel={buttonLabel}
+          onButtonClick={onButtonClick}
+        />
+      </div>
+    </MenuBannerPlate>
   )
 }
 
@@ -163,5 +259,5 @@ function BannerSwitchButton({
   )
 }
 
-export { MenuBanner }
+export { MenuBanner, MenuBannerContent, MenuBannerPlate, MenuBannerSkin }
 export type { MenuBannerProps, MenuBannerColor }

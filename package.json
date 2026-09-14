@@ -126,10 +126,6 @@
       "types": "./dist/components/ui/file-upload/index.d.ts",
       "import": "./dist/components/ui/file-upload/index.js"
     },
-    "./filter": {
-      "types": "./dist/components/ui/filter/index.d.ts",
-      "import": "./dist/components/ui/filter/index.js"
-    },
     "./filter-table": {
       "types": "./dist/components/ui/filter-table/index.d.ts",
       "import": "./dist/components/ui/filter-table/index.js"
@@ -162,10 +158,6 @@
       "types": "./dist/components/ui/issue-item/index.d.ts",
       "import": "./dist/components/ui/issue-item/index.js"
     },
-    "./issue-list": {
-      "types": "./dist/components/ui/issue-list/index.d.ts",
-      "import": "./dist/components/ui/issue-list/index.js"
-    },
     "./item": {
       "types": "./dist/components/ui/item/index.d.ts",
       "import": "./dist/components/ui/item/index.js"
@@ -173,6 +165,10 @@
     "./item-information-field": {
       "types": "./dist/components/ui/item-information-field/index.d.ts",
       "import": "./dist/components/ui/item-information-field/index.js"
+    },
+    "./list-of-errors": {
+      "types": "./dist/components/ui/list-of-errors/index.d.ts",
+      "import": "./dist/components/ui/list-of-errors/index.js"
     },
     "./loader": {
       "types": "./dist/components/ui/loader/index.d.ts",

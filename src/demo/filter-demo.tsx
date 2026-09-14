@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import {
   AccordionItem,
   AccordionTrigger,
@@ -22,8 +22,8 @@ function FilterTableExample() {
   return (
     <div className="rounded-lg border border-[#DEDEDE] p-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Filter label="Статус" value={status} onValueChange={setStatus} />
-        <Filter label="Сумма" value={amount} onValueChange={setAmount} />
+        <FilterTableSelect label="Статус" value={status} onValueChange={setStatus} />
+        <FilterTableSelect label="Сумма" value={amount} onValueChange={setAmount} />
       </div>
       <table className="mt-4 w-full text-left text-p2-medium">
         <thead>
@@ -50,22 +50,22 @@ function FilterTableExample() {
 function FilterDemo() {
   return (
     <AccordionItem value="filter">
-      <AccordionTrigger>Filter</AccordionTrigger>
+      <AccordionTrigger>Filter Table</AccordionTrigger>
       <AccordionPanel>
         <div className="flex flex-col gap-2">
           <RowLabel>Type — Text / Select / Counter</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" type="text" />
-            <Filter label="Filter" type="select" />
-            <Filter label="Filter" type="counter" count={3} />
+            <FilterTableSelect label="Фильтр" type="text" />
+            <FilterTableSelect label="Фильтр" type="select" />
+            <FilterTableSelect label="Фильтр" type="counter" count={3} />
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
           <RowLabel>Counter — плашка со счётчиком</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" type="counter" count={3} />
-            <Filter label="Filter" type="counter" count={12} />
+            <FilterTableSelect label="Фильтр" type="counter" count={3} />
+            <FilterTableSelect label="Фильтр" type="counter" count={12} />
           </div>
         </div>
 
@@ -75,16 +75,16 @@ function FilterDemo() {
             сбрасывает без открытия попапа)
           </RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" defaultValue={null} />
-            <Filter label="Filter" defaultValue="Значение" />
+            <FilterTableSelect label="Фильтр" defaultValue={null} />
+            <FilterTableSelect label="Фильтр" defaultValue="Значение" />
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
           <RowLabel>Disabled</RowLabel>
           <div className="flex flex-wrap items-center gap-3">
-            <Filter label="Filter" disabled />
-            <Filter label="Filter" type="counter" count={3} disabled />
+            <FilterTableSelect label="Фильтр" disabled />
+            <FilterTableSelect label="Фильтр" type="counter" count={3} disabled />
           </div>
         </div>
 
@@ -97,7 +97,7 @@ function FilterDemo() {
         </div>
 
         <p className="mt-6 text-p3-medium text-muted-foreground">
-          Filter — Select-подобный триггер: клик открывает попап с полем ввода и
+          FilterTableSelect — Select-подобный триггер: клик открывает попап с полем ввода и
           футером «Сбросить» / «Применить». Применённое значение показывается
           вместо шеврона крестиком (X), клик по нему сбрасывает фильтр напрямую,
           не открывая попап. Проп <code>chip</code> включает вид из

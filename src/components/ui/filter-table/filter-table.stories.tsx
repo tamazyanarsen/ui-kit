@@ -11,6 +11,7 @@ import {
 import { type Viewport } from "@/lib/viewport"
 
 import { FilterTable, type FilterTableProps } from "./filter-table"
+import { FilterTableSelect } from "./filter-table-select"
 
 /**
  * FilterTable — «ELK / filter-table» с канваса Filter, Chips (666:15).
@@ -27,8 +28,8 @@ import { FilterTable, type FilterTableProps } from "./filter-table"
  * мобильная форма отличается только подписью (12/16 против 14/20), из-за
  * чего пилюля становится 28 px в высоту вместо 32.
  *
- * `Select` в контролах нет: шеврон рисует не сам filter-table, а Filter в
- * режиме `chip`, который его оборачивает.
+ * `Select` в контролах нет: шеврон рисует не сам filter-table, а
+ * `FilterTableSelect`, который его оборачивает.
  *
  * ⚠️ `Counter` рисуется только вместе с `showCounter`, и **по умолчанию он
  * выключен** — отступление от кита. Вариант сета с плашкой существует, но в
@@ -118,5 +119,24 @@ export const Matrix: Story = {
       ]}
       render={(props) => <FilterTable {...props} />}
     />
+  ),
+}
+
+/* Дизайн-чек от 13.09, замечание 6: «Удалить компонент Filter… У нас есть
+   только компонент Filter-table». Отдельной папки `Filter` в витрине больше
+   нет — её содержимое здесь, потому что рисовала она ту же самую пилюлю.
+
+   Попап портальный, поэтому в матрицу он не помещается: каждая раскрытая
+   ячейка перекрывала бы соседнюю. Отсюда своя история. */
+export const Opened: Story = {
+  name: "Раскрытый фильтр",
+  parameters: { layout: "padded", controls: { disable: true } },
+  render: () => (
+    <div className="flex h-96 items-start gap-4">
+      <FilterTableSelect label="Статус" open />
+      <FilterTableSelect label="Сумма" type="text" />
+      <FilterTableSelect label="Период" type="counter" count={3} />
+      <FilterTableSelect label="Тип" defaultValue="Оплачен" />
+    </div>
   ),
 }

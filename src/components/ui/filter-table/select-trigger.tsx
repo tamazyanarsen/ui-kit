@@ -4,7 +4,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { ChevronDown, ChevronUp, X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { filterTablePillClass } from "@/components/ui/filter-table"
+import { filterTablePillClass } from "./filter-table"
 
 const ICON_SIZE = "size-4"
 

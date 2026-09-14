@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Button } from "@/components/ui/button"
 import { CardBox } from "@/components/ui/card-box"
 import { EmptySearchResults } from "@/components/ui/empty-search"
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Table, TableHeader, TableBody, TableRow, TableHeadCell, TableCell } from "@/components/ui/table"
 import { Pagination } from "@/components/ui/pagination"
 import {
@@ -84,7 +84,7 @@ function OperationsDashboard() {
           }
         />
         <TableTopToolbar>
-          <Filter
+          <FilterTableSelect
             label="Статус"
             value={status}
             onValueChange={(next) => {

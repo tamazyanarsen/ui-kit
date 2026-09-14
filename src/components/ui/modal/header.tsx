@@ -22,6 +22,35 @@ function ModalHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Пустой холдер шапки — вариант `Modal Top: None`.
+ *
+ * Дизайн-чек от 13.09, замечание 15: «Не хватает белой полосы с серым
+ * разделителем, когда модалка не в верхнем положении. Разделитель стандартно
+ * виден тогда, когда под белую полосу ушла хотя бы какая-то часть контента.
+ * По сути это тоже должно быть стандартное модальное окно».
+ *
+ * До этого при `Top: None` шапки не было ВООБЩЕ, и прокрученный контент
+ * упирался в скруглённую кромку карточки: ни полосы, под которую он уходит,
+ * ни линии, которая об этом сообщает (линию `ModalBody` рисует своей верхней
+ * гранью, но рисовать её было не под чем). Холдер эту полосу и возвращает —
+ * ровно тот «пустой холдер 48px», который в макете и стоит.
+ *
+ * Мобильная высота больше десктопной не по прихоти: на мобиле крестик стоит
+ * ВНУТРИ листа (top-5, кнопка 32 → занято 52px), а на десктопе он вынесен за
+ * карточку. Без этих 52 контент при `Top: None` начинался прямо под крестиком.
+ */
+function ModalTopHolder({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="modal-top-holder"
+      aria-hidden="true"
+      className={cn("h-[52px] shrink-0 desktop:h-12", className)}
+      {...props}
+    />
+  )
+}
+
 function ModalTitle({
   className,
   ...props
@@ -56,4 +85,4 @@ function ModalDescription({
   )
 }
 
-export { ModalHeader, ModalTitle, ModalDescription }
+export { ModalHeader, ModalTopHolder, ModalTitle, ModalDescription }

@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { filterTablePillClass } from "@/components/ui/filter-table"
+import { filterTablePillClass } from "./filter-table"
 
 // FilterBoolean — «Булев фильтр» (node 70295:22807).
 //

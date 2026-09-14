@@ -74,7 +74,14 @@ export { PlusCircleAdd as CirclePlus } from "./plus-circle-add"
 export { Star } from "./star"
 export { ImageIcon, ImageIcon as Image } from "./image"
 export { Calendar as CalendarDays } from "./calendar"
-export { Burger as Menu } from "./burger"
+// Дизайн-чек от 13.09, замечание 10: «Некорректная иконка бургера. Везде в
+// ките централизованно заменить на правильную иконку — classic-burger. Она
+// уже есть в ките». `icon / burger` — это «лесенка» с полосами разной длины
+// (14/12/10 в шестнадцатом кегле), у `icon / classic burger` все три по 14.
+// Замена ровно здесь и есть «централизованно»: `Menu` импортируют и шапка,
+// и ряд навигации, и меню сотрудника, и ни одному из них знать про источник
+// глифа не нужно.
+export { ClassicBurger as Menu } from "./classic-burger"
 export { Mail } from "./mail"
 export { Bell } from "./bell"
 export { Briefcase } from "./briefcase"

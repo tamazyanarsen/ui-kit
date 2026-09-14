@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { useState } from "react"
 
-import { Icon, ICON_NAMES } from "@/components/ui/icon"
+import { Icon, ICON_NAMES, type IconProps } from "@/components/ui/icon"
 
 /**
  * Превью набора иконок.
@@ -84,14 +84,54 @@ function IconsPage() {
   )
 }
 
+/* Дизайн-чек от 13.09, замечание 11: «Витрина иконок показана дважды
+   избыточно. Есть папки .Icons и Icon. Удалить ту, которая архитектурно не
+   нужна. Предпочтительно оставить ту, что в руте PREVIEW».
+
+   Осталась эта — она полнее (оба начертания на каждой плитке и поиск по
+   пятистам именам). `Компоненты/Icon` удалён целиком, а его единственная
+   незаменимая часть — панель со свойствами — переехала сюда `Playground`'ом:
+   иначе `filled` (заполненная звезда) не выбирался бы нигде. Сам компонент
+   `Icon` при этом никуда не делся, из витрины ушла только его копия. */
 const meta = {
-  title: "Preview/.Icons",
+  title: "Атомы/.Icons",
+  component: Icon,
   parameters: { layout: "fullscreen" },
-} satisfies Meta<typeof IconsPage>
+  argTypes: {
+    name: {
+      control: "select",
+      options: ICON_NAMES,
+      description: "Иконка из набора кита",
+    },
+    size: {
+      control: "inline-radio",
+      options: [16, 24],
+      description:
+        "Начертание: часть иконок Figma рисует под 16 и 24 отдельно, а не масштабирует",
+    },
+    filled: {
+      control: "boolean",
+      description: "Только для star — заполненная звезда вместо контурной",
+    },
+    className: { control: "text" },
+  },
+  args: {
+    name: "check",
+    size: 24,
+    filled: false,
+    className: "text-[var(--btn-primary-bg-active)]",
+  },
+} satisfies Meta<IconProps>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<IconProps>
+
+export const Playground: Story = {
+  parameters: { layout: "centered" },
+}
 
 export const AllIcons: Story = {
+  name: "Весь набор",
+  parameters: { controls: { disable: true } },
   render: () => <IconsPage />,
 }

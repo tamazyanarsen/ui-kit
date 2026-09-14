@@ -36,6 +36,37 @@ interface NotificationMenuProps {
 /** Подписи под заголовком выровнены по тексту, а не по точке-индикатору. */
 const META_LINE = "pl-3.5 text-p3-medium text-[var(--header-meta-fg)]"
 
+/**
+ * Подсветка колокольчика, когда счётчик вырос.
+ *
+ * Дизайн-чек от 13.09, замечание 20, «Точное описание из документации»:
+ * «Меняется счетчик на колокольчике. Подсветка кнопки колокольчика на 1
+ * секунду (Grey 114)» — это то, что происходит, когда информирующий тост
+ * уходит в центр уведомлений.
+ *
+ * ⚠️ Правило локальное, а не проброшенное из тостов. Подсветку можно было
+ * завести пропом и звать из провайдера тостов, но тогда шапка обязана была бы
+ * стоять внутри `ToastProvider` и знать про него, а центр уведомлений
+ * наполняется приложением, а не китом. Смотреть на СВОЙ счётчик надёжнее:
+ * подсветка срабатывает от любого прироста — и от тоста, и от опроса сервера,
+ * и от чужой вкладки. Уменьшение счётчика (прочитали) ничего не подсвечивает.
+ */
+function useCounterHighlight(count: number, ms = 1000) {
+  const [highlighted, setHighlighted] = React.useState(false)
+  const previous = React.useRef(count)
+
+  React.useEffect(() => {
+    const grew = count > previous.current
+    previous.current = count
+    if (!grew) return
+    setHighlighted(true)
+    const timer = window.setTimeout(() => setHighlighted(false), ms)
+    return () => window.clearTimeout(timer)
+  }, [count, ms])
+
+  return highlighted
+}
+
 function NotificationRow({ item }: { item: NotificationMenuItem }) {
   return (
     <MenuPrimitive.Item
@@ -80,6 +111,8 @@ function NotificationMenu({
   unreadCount = 0,
   className,
 }: NotificationMenuProps) {
+  const highlighted = useCounterHighlight(unreadCount)
+
   return (
     <MenuPrimitive.Root modal={false}>
       <MenuPrimitive.Trigger
@@ -88,7 +121,14 @@ function NotificationMenu({
             type="button"
             aria-label="Уведомления"
             data-slot="notification-menu-trigger"
-            className={cn(HEADER_ICON_TILE_ACCENT, className)}
+            data-highlighted={highlighted || undefined}
+            className={cn(
+              HEADER_ICON_TILE_ACCENT,
+              // Grey 114 из документации; держится секунду и гаснет плавно.
+              "transition-colors duration-300 ease-out",
+              highlighted && "bg-[var(--header-notification-highlight-bg)]",
+              className
+            )}
           />
         }
       >

@@ -2,9 +2,13 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "@/icons"
 
+import * as React from "react"
+
 import { cn } from "@/lib/utils"
 import { useViewportAttr } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
+
+import { ModalHeader, ModalTopHolder } from "./header"
 
 const modalPopupVariants = cva(
   // Mobile-first: unprefixed classes are the mobile bottom-sheet form,
@@ -58,6 +62,19 @@ function ModalContent({
   // руками, иначе форсированный mobile не дойдёт до вариантов `desktop:`.
   const viewport = useViewportAttr()
 
+  // ⚠️ Узнавание по ТИПУ ребёнка, а не по пропу. Дизайн-чек от 13.09,
+  // замечание 15: белая полоса сверху нужна КАЖДОЙ модалке, а не той, которой
+  // её попросили. Просить её пропом значило бы, что про полосу забудут ровно
+  // там же, где забыли шапку.
+  //
+  // Обратная сторона приёма (см. `ButtonMenuRow`): обёртка вокруг
+  // `ModalHeader` ломает разбор молча — шапка будет, а холдер встанет вторым.
+  // Поэтому `ModalHeader` передаётся прямым ребёнком `ModalContent`, без
+  // собственных обёрток.
+  const hasHeader = React.Children.toArray(children).some(
+    (node) => React.isValidElement(node) && node.type === ModalHeader
+  )
+
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Backdrop
@@ -71,6 +88,7 @@ function ModalContent({
         {...props}
       >
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[inherit]">
+          {!hasHeader && <ModalTopHolder />}
           {children}
         </div>
         {showClose && (

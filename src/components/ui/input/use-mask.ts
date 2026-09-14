@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { getMaskPlaceholder, type MaskName } from "./mask"
+import { formatWithMask, getMaskPlaceholder, type MaskName } from "./mask"
 
 /**
  * Состояние поля под маской.
@@ -25,16 +25,25 @@ function useMask({
   defaultValue?: React.ComponentProps<"input">["defaultValue"]
   onChange?: React.ChangeEventHandler<HTMLInputElement>
 }) {
-  const [maskValue, setMaskValue] = React.useState(() =>
-    String(value ?? defaultValue ?? "")
-  )
+  // ⚠️ Значение, пришедшее СНАРУЖИ, кладётся в состояние уже отформатированным
+  // маской. С клавиатуры маску накладывает сам imask и отдаёт готовую строку в
+  // `onAccept`, а на `value`/`defaultValue` он её не зовёт — поле показывало
+  // «30 000 000», а состояние держало «30000000». На состоянии висит замер
+  // ширины числа, поэтому поле получалось на два пробела уже показанного
+  // текста и знак «₽» садился на последнюю цифру (дизайн-чек от 13.09, №1).
+  const [maskValue, setMaskValue] = React.useState(() => {
+    const raw = String(value ?? defaultValue ?? "")
+    return mask ? formatWithMask(mask, raw) : raw
+  })
 
   // Re-syncs when a *controlled* value changes from outside (e.g. a date
   // picker pushing in the day the user just clicked in the calendar).
   // Skipped for uncontrolled usage (defaultValue only) so typing isn't
   // fought on every render.
   React.useEffect(() => {
-    if (mask && value !== undefined) setMaskValue(String(value))
+    if (mask && value !== undefined) {
+      setMaskValue(formatWithMask(mask, String(value)))
+    }
   }, [mask, value])
 
   const measureRef = React.useRef<HTMLSpanElement>(null)

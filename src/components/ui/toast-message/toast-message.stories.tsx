@@ -155,7 +155,7 @@ export const Playground: Story = {}
 
 /* The matrix renders `ToastCard` directly rather than firing `toast.add()`
    for every cell — going through the provider would stack them in one corner
-   on an 8s timer instead of laying them out. */
+   on a 4s timer instead of laying them out. */
 interface Cell {
   type: ToastType
   description?: string

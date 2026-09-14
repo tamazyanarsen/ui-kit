@@ -57,7 +57,11 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
             // `[&::-webkit-search-cancel-button]:hidden` — у типа `search`
             // свой крестик, и рядом с нашим он был бы вторым органом
             // управления тем же полем.
-            "min-w-0 flex-1 bg-transparent text-p1-medium text-[var(--menu-item-fg)] outline-none placeholder:text-[var(--menu-item-description-fg)] [&::-webkit-search-cancel-button]:hidden",
+            // Многоточие у непоместившегося текста — то же правило, что и у
+            // `Input` (дизайн-чек от 13.09, замечание 14): «правка
+            // распространяется на Input, Select и другие подобные
+            // компоненты», а в фокусе многоточия нет.
+            "min-w-0 flex-1 overflow-hidden bg-transparent text-p1-medium text-ellipsis whitespace-nowrap text-[var(--menu-item-fg)] outline-none focus:text-clip placeholder:text-[var(--menu-item-description-fg)] [&::-webkit-search-cancel-button]:hidden",
             className
           )}
           {...props}

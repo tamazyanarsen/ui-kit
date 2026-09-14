@@ -21,7 +21,8 @@ import { Badge } from "@/components/ui/badge"
 
 /** The pill's own visual, split out from the component because the two real
  * call sites cannot share one element type: NPS's suggestion is itself the
- * button, while Filter's chip is a Popover trigger that *nests* a reset
+ * button, while `FilterTableSelect`'s chip is a Popover trigger that *nests*
+ * a reset
  * button, and nested <button>s are invalid HTML. Sharing the classes keeps
  * one source of truth for the geometry/colours either way. */
 function filterTablePillClass({

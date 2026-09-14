@@ -8,7 +8,7 @@ import {
   ButtonMenuOverflowItem,
   ButtonMenuRow,
 } from "@/components/ui/button-menu"
-import { Filter } from "@/components/ui/filter"
+import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Input } from "@/components/ui/input"
 import {
   ItemInformationField,
@@ -232,7 +232,7 @@ function BusinessCardDetail() {
                   />
                 </div>
                 {CHIPS.map((label) => (
-                  <Filter
+                  <FilterTableSelect
                     key={label}
                     label={label}
                     value={chips[label] ?? null}

@@ -9,6 +9,7 @@ import {
 } from "@/stories/matrix"
 
 import { ButtonMenuBlack } from "./black"
+import type { ButtonMenuPlacement } from "./placement"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
 import { Button } from "@/components/ui/button"
 
@@ -62,7 +63,19 @@ const INFO_SUM = { label: "Сумма", value: "1 200 101,16 ₽" }
 const INFO_WRITE_OFF = { label: "Счёт списания", value: "40702810…1234" }
 const INFO_ITEMS = [INFO_COUNT, INFO_SUM, INFO_WRITE_OFF]
 
+/* Дизайн-чек от 13.09, замечание 19 — те же три размещения, что и у белой
+   панели (см. `./placement`). */
+const PLACEMENT_LABELS: Record<ButtonMenuPlacement, string> = {
+  full: "Полная ширина",
+  left: "Слева",
+  right: "Справа",
+}
+
+const SPANS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
+
 interface PlaygroundArgs {
+  placement: ButtonMenuPlacement
+  span: number
   buttons: ButtonCount
   showButton: boolean
   selectAllCount: number
@@ -149,6 +162,18 @@ const meta = {
       control: "boolean",
     },
     showClose: { name: "Крестик", control: "boolean" },
+    placement: {
+      ...optionsArgType("Размещение", PLACEMENT_LABELS),
+      description:
+        "Полоса занимает все 12 колонок сетки или прижимается к левому/правому краю на заданное число колонок",
+    },
+    span: {
+      name: "Колонок",
+      description:
+        "Сколько колонок занимает полоса при размещении слева или справа (при полной ширине не действует)",
+      control: "select",
+      options: SPANS,
+    },
     pinned: {
       name: "Закреплена снизу",
       description:
@@ -175,6 +200,8 @@ const meta = {
     showClose: true,
     pinned: true,
     detached: false,
+    placement: "full",
+    span: 6,
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -191,6 +218,8 @@ export const Playground: Story = {
     showButton,
     selectAllCount,
     selectedCount,
+    placement,
+    span,
     ...bar
   }) => (
     <StoryContentArea height="h-72">
@@ -204,6 +233,8 @@ export const Playground: Story = {
       <ButtonMenuBlack
         pinned={pinned}
         detached={detached}
+        placement={placement}
+        span={span}
         className="mt-auto"
         info={infoBar(bar)}
         onClose={showClose ? () => {} : undefined}
@@ -310,6 +341,27 @@ export const Examples: Story = {
               <ButtonMenuOverflowItem text="Архивировать" />
             </ButtonMenuOverflow>
           </ButtonMenuBlack>
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Размещение на сетке"
+        description="Полная ширина — 12 колонок. Слева и справа полоса занимает заданное число колонок той же сетки, что и контент вокруг."
+      >
+        <div className="flex w-full flex-col gap-4">
+          {(["full", "left", "right"] as const).map((placement) => (
+            <ButtonMenuBlack
+              key={placement}
+              pinned={false}
+              placement={placement}
+              span={6}
+              showSelectAllPages={false}
+              info={[{ label: "Выбрано", value: "3 документа" }]}
+              onClose={() => {}}
+            >
+              {blackButtons(2)}
+            </ButtonMenuBlack>
+          ))}
         </div>
       </StorySection>
 

@@ -9,6 +9,7 @@ import {
 } from "@/stories/matrix"
 
 import { ButtonMenu } from "./root"
+import type { ButtonMenuPlacement } from "./placement"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
 import type { SelectionButtonDirection } from "@/components/ui/selection-button"
 import { Button } from "@/components/ui/button"
@@ -88,12 +89,26 @@ const DIRECTION_LABELS: Record<SelectionButtonDirection, string> = {
   "down-left": "Down Left",
 }
 
+/* Дизайн-чек от 13.09, замечание 19: «Button Menu и Button Menu Black должны
+   уметь занимать не все 12 колонок грида. Им нужны свойства размещения:
+   слева (регулируется количество занимаемых колонок), справа (регулируется
+   количество занимаемых колонок), полная ширина (12 колонок)». */
+const PLACEMENT_LABELS: Record<ButtonMenuPlacement, string> = {
+  full: "Полная ширина",
+  left: "Слева",
+  right: "Справа",
+}
+
+const SPANS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
+
 interface PlaygroundArgs {
   type: MenuType
   buttons: ButtonCount
   overflow: boolean
   pinned: boolean
   detached: boolean
+  placement: ButtonMenuPlacement
+  span: number
   overflowDirection: SelectionButtonDirection
   showDropdown: boolean
 }
@@ -149,6 +164,18 @@ const meta = {
         "Дизайн-чек от 08.09, замечание 9: в продукте состояния быть не должно, пропс заведён на будущее — полоса становится островом и получает нижние скругления",
       control: "boolean",
     },
+    placement: {
+      ...optionsArgType("Размещение", PLACEMENT_LABELS),
+      description:
+        "Полоса занимает все 12 колонок сетки или прижимается к левому/правому краю на заданное число колонок",
+    },
+    span: {
+      name: "Колонок",
+      description:
+        "Сколько колонок занимает полоса при размещении слева или справа (при полной ширине не действует)",
+      control: "select",
+      options: SPANS,
+    },
     overflow: {
       name: "Меню «ещё»",
       description:
@@ -162,6 +189,8 @@ const meta = {
     overflow: true,
     pinned: true,
     detached: false,
+    placement: "full",
+    span: 6,
     overflowDirection: "top-right",
     showDropdown: true,
   },
@@ -177,6 +206,8 @@ export const Playground: Story = {
     overflow: withOverflow,
     pinned,
     detached,
+    placement,
+    span,
     overflowDirection,
     showDropdown,
   }) => (
@@ -188,7 +219,13 @@ export const Playground: Story = {
           </p>
         ))}
       </div>
-      <ButtonMenu pinned={pinned} detached={detached} className="mt-auto">
+      <ButtonMenu
+        pinned={pinned}
+        detached={detached}
+        placement={placement}
+        span={span}
+        className="mt-auto"
+      >
         {menuButtons(type, buttons)}
         {withOverflow &&
           overflow({ direction: overflowDirection, showDropdown })}
@@ -275,6 +312,23 @@ export const Examples: Story = {
           <ButtonMenu>
             {menuButtons("With Primary", 3)}
             {overflow()}
+          </ButtonMenu>
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Размещение на сетке"
+        description="Полная ширина — 12 колонок. Слева и справа полоса занимает заданное число колонок той же сетки, что и контент вокруг."
+      >
+        <div className="flex w-full flex-col gap-4">
+          <ButtonMenu pinned={false} placement="full">
+            {menuButtons("With Primary", 2)}
+          </ButtonMenu>
+          <ButtonMenu pinned={false} placement="left" span={6}>
+            {menuButtons("With Primary", 2)}
+          </ButtonMenu>
+          <ButtonMenu pinned={false} placement="right" span={6}>
+            {menuButtons("With Primary", 2)}
           </ButtonMenu>
         </div>
       </StorySection>

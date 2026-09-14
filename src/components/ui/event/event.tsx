@@ -97,16 +97,28 @@ function Event({
     <div data-slot="event" data-step={step} className={cn("flex gap-2", className)}>
       <div className="flex w-2 shrink-0 flex-col items-center">
         {lineAbove && (
+          // Дизайн-чек от 13.09, замечание 8: «Event — слишком низко стоит
+          // круг в версии без коннектора». Отрезок был `h-2` (8px), и вместе
+          // со своим зазором 5px он опускал круг на 13px, тогда как без
+          // отрезка круг стоит на 8px. То есть «слишком низко» было у всех
+          // шагов, КРОМЕ First, — а заметно это на строке «Без коннектора»
+          // (`Type=End`), где сверху отрезок есть, а снизу нет.
+          //
+          // Отрезок = 3px: столько и написано в «Step Event (ELK)» (обрубок
+          // коннектора), и ровно с ним 3 + 5 сходятся в те же 8px. Теперь
+          // круг стоит на середине строки заголовка при любом шаге: тег 22 →
+          // (22 − 8) / 2 = 7, текст 24 → (24 − 8) / 2 = 8.
           <span
             aria-hidden="true"
-            className="h-2 w-px shrink-0 rounded-b-[4px] bg-[var(--event-connector)]"
+            className="h-[3px] w-px shrink-0 rounded-b-[4px] bg-[var(--event-connector)]"
           />
         )}
         <span
           aria-hidden="true"
-          // The dot sits 8px down (a 3px connector stub plus the column's own
-          // 5px gap in "Step Event (ELK)"), and the stripe below it starts
-          // another 5px lower with a 4px rounded top.
+          // Круг опущен на 8px от верха строки — это середина высоты текста
+          // заголовка (24) и практически середина тега (22). Стоящий выше
+          // обрубок коннектора занимает 3 из этих 8, поэтому собственный
+          // отступ круга там 5.
           className={cn(
             "size-2 shrink-0 rounded-full bg-[var(--event-connector)]",
             lineAbove ? "mt-[5px]" : "mt-2"

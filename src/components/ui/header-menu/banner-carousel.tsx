@@ -1,7 +1,12 @@
 import * as React from "react"
 
 import { BannerDots } from "./header-menu-parts"
-import { MenuBanner, type MenuBannerProps } from "./menu-banner"
+import {
+  MenuBannerContent,
+  MenuBannerPlate,
+  MenuBannerSkin,
+  type MenuBannerProps,
+} from "./menu-banner"
 
 /**
  * Карусель баннеров в раскрытом меню.
@@ -76,40 +81,62 @@ function BannerCarousel({ banners }: BannerCarouselProps) {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="w-full overflow-hidden rounded-[24px]">
-        <div
-          data-slot="menu-banner-track"
-          className="flex w-full"
-          style={{
-            transform: `translateX(-${index * 100}%)`,
-            transition: reducedMotion
-              ? undefined
-              : `transform ${SLIDE_MS}ms ease-out`,
-          }}
-        >
-          {banners.map((banner, position) => (
-            <div
-              key={position}
-              // `shrink-0 basis-full` — каждая карточка ровно в ширину окна
-              // ленты. Без `shrink-0` флекс ужал бы все три в одну ширину, и
-              // ехать было бы нечему.
-              className="w-full shrink-0 basis-full"
-              // Уехавшие карточки прячутся от чтения с экрана и от таба:
-              // визуально их нет, а кнопка внутри осталась бы фокусируемой.
-              aria-hidden={position === index ? undefined : true}
-              {...(position === index ? {} : { inert: "" })}
-            >
-              <MenuBanner
-                {...banner}
-                // Стрелки только там, где есть что листать: у одиночного
-                // баннера кнопок в макете нет.
-                onPrev={many ? () => go(-1) : undefined}
-                onNext={many ? () => go(1) : undefined}
-              />
-            </div>
-          ))}
+      {/* ⚠️ Плашка стоит НА МЕСТЕ, едет только содержимое.
+          Дизайн-чек от 13.09, замечание 16: «Сама цветная плашка при смене
+          баннера ездить не должна. Ездить должен только контент внутри».
+          Раньше лента везла карточки целиком — вместе с заливкой, стрелками
+          и скруглениями, — и вся плашка уезжала за кадр.
+
+          Теперь снаружи один кадр (`MenuBannerPlate`): его заливка
+          перетекает прозрачностью между слоями `MenuBannerSkin`, а лента
+          внутри двигает только текстовые блоки. Стрелки тоже принадлежат
+          кадру, поэтому больше не уезжают вместе со слайдом. */}
+      <MenuBannerPlate
+        color={banners[index]?.color ?? "blue"}
+        onPrev={many ? () => go(-1) : undefined}
+        onNext={many ? () => go(1) : undefined}
+        skin={banners.map((banner, position) => (
+          <MenuBannerSkin
+            key={position}
+            color={banner.color ?? "blue"}
+            active={position === index}
+          />
+        ))}
+      >
+        <div className="relative min-w-0 flex-1 overflow-hidden">
+          <div
+            data-slot="menu-banner-track"
+            className="flex w-full"
+            style={{
+              transform: `translateX(-${index * 100}%)`,
+              transition: reducedMotion
+                ? undefined
+                : `transform ${SLIDE_MS}ms ease-out`,
+            }}
+          >
+            {banners.map((banner, position) => (
+              <div
+                key={position}
+                // `shrink-0 basis-full` — каждый блок ровно в ширину окна
+                // ленты. Без `shrink-0` флекс ужал бы все три в одну ширину, и
+                // ехать было бы нечему.
+                className="w-full shrink-0 basis-full"
+                // Уехавшие блоки прячутся от чтения с экрана и от таба:
+                // визуально их нет, а кнопка внутри осталась бы фокусируемой.
+                aria-hidden={position === index ? undefined : true}
+                {...(position === index ? {} : { inert: "" })}
+              >
+                <MenuBannerContent
+                  title={banner.title}
+                  subtitle={banner.subtitle}
+                  buttonLabel={banner.buttonLabel}
+                  onButtonClick={banner.onButtonClick}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </MenuBannerPlate>
       {many && (
         <BannerDots count={banners.length} active={index} onSelect={setIndex} />
       )}

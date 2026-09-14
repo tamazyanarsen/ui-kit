@@ -18,7 +18,9 @@ import {
   ICON_STATUS_STYLE,
   isIconStatusType,
   SBP_TYPES,
+  THUMBNAIL_ICON_BG,
   type PaymentSystem,
+  type ThumbnailBackground,
   type ThumbnailSize,
   type ThumbnailType,
 } from "./variants"
@@ -46,6 +48,11 @@ interface ThumbnailProps {
    * ошибочное имя варианта `more` (дизайн-чек №3 №4).
    */
   icon?: IconName | React.ReactNode
+  /**
+   * Заливка квадрата у `type="icon"` — серая (по умолчанию) или белая.
+   * Дизайн-чек от 13.09, замечание 5; подробности — в `./variants`.
+   */
+  background?: ThumbnailBackground
   disabled?: boolean
   paymentSystem?: PaymentSystem
   last4?: string
@@ -60,6 +67,7 @@ function Thumbnail({
   type = "card",
   size = "l",
   icon = "ellipsis",
+  background = "grey",
   disabled = false,
   paymentSystem = "mir",
   last4,
@@ -95,7 +103,7 @@ function Thumbnail({
   if (isCardFamily) {
     bg = "var(--tag-black-bg)"
   } else if (isIconTile) {
-    bg = "var(--tag-grey-secondary-bg)"
+    bg = THUMBNAIL_ICON_BG[background]
   } else if (isIconStatus) {
     bg = ICON_STATUS_STYLE[type].bg
   }
@@ -107,6 +115,7 @@ function Thumbnail({
       data-slot="thumbnail"
       data-type={type}
       data-size={size}
+      data-background={isIconTile ? background : undefined}
       data-disabled={disabled || undefined}
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center overflow-visible rounded-[8px]",

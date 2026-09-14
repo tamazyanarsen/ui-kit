@@ -132,7 +132,6 @@ function ClientHeaderExample({
 
 function HeaderDemo() {
   const [narrowOrgId, setNarrowOrgId] = useState(ORGS_FEW[1].id)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [favourites, setFavourites] = useState(MENU_FAVOURITES)
   const { add } = useToast()
 
@@ -210,13 +209,10 @@ function HeaderDemo() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <RowLabel>Employee — гамбургер + профиль + отдельная кнопка выхода</RowLabel>
+            <RowLabel>Employee — профиль + отдельная кнопка выхода (бургера нет)</RowLabel>
             <div className="overflow-hidden rounded-2xl border border-[var(--header-border)]">
               <Header
                 type="employee"
-                showMenu
-                sidebarOpen={sidebarOpen}
-                onSidebarOpenChange={setSidebarOpen}
                 employeeName="Константинопольский К. К."
                 notificationItems={NOTIFICATIONS}
               />

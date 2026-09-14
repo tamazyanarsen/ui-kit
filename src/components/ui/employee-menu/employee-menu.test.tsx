@@ -133,7 +133,7 @@ describe("Header type=employee с меню", () => {
 
   it("прежняя шапка сотрудника без меню полосы избранного не заводит", () => {
     const { container } = render(
-      <Header type="employee" employeeName="Константинопольский К. К." showMenu />
+      <Header type="employee" employeeName="Константинопольский К. К." />
     )
 
     expect(

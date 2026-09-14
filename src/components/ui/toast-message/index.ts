@@ -1,4 +1,5 @@
-export { ToastProvider, Toaster } from "./toast-message"
+export { Toaster } from "./toast-message"
+export { ToastProvider, TOAST_EXIT_MS, TOAST_TIMEOUT } from "./provider"
 export { useToast } from "./use-toast"
-export type { ToastData, ToastOptions } from "./use-toast"
+export type { ToastBehavior, ToastData, ToastOptions } from "./use-toast"
 export type { ToastType } from "./variants"

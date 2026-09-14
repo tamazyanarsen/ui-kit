@@ -150,7 +150,7 @@ function TypographyPage() {
 }
 
 const meta = {
-  title: "Preview/.Typography",
+  title: "Атомы/.Typography",
   parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof TypographyPage>
 

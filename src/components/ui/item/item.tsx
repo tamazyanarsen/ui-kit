@@ -14,28 +14,33 @@ import { RightElement, type RightElementType } from "./right-element"
 // Правый элемент со всеми его видами и зонами нажатия — в
 // `right-element.tsx`.
 //
-// ⚠️ МОБИЛЬНАЯ ФОРМА СОБРАНА НЕ ПО МАСТЕРУ. Дизайн-чек от 13.09, замечание 4:
-// «Переработать размеры текстов и размеры компонента Item для варианта
-// Mobile. Пока в нужном ките нет варианта Mobile, он появится позже. Взять за
-// основу его копию из другого кита — оттуда унаследовать только размеры
-// текстов, но подобрать аналоги из нашего кита».
+// ⚠️ МОБИЛЬНАЯ ФОРМА — ПО ЧУЖОМУ КИТУ, И ЭТО СОЗНАТЕЛЬНО. Дизайн-чек от
+// 13.09, замечание 4: «Переработать размеры текстов и размеры компонента Item
+// для варианта Mobile. Пока в нужном ките нет варианта Mobile, он появится
+// позже. Взять за основу его копию из другого кита — оттуда унаследовать
+// ТОЛЬКО размеры текстов, но подобрать аналоги из нашего кита. Аналогично по
+// вложенным элементам — переключить на Mobile-версии».
 //
-// Файл-референс (`GY9cLlAZGVPY3S9Qod3psF`, нода 35250:94921) по MCP не
-// открывается — прав на него нет. Поэтому мобильная форма собрана по
-// СКВОЗНОМУ правилу кита, которое в нём уже действует у Toast, Informer,
-// Input и Filter Table: на мобиле каждый текст опускается на одну ступень
-// шкалы, а вложенные элементы берут свои мобильные формы сами (через
-// `ViewportScope`, см. src/lib/viewport.tsx).
+// Референс — сет `IB / item` (70427:8441, v1.2.1, Release 58.13), временно
+// скопированный заказчиком в доступный файл: символы 70427:8463 (Mobile) и
+// 70427:8442 (Desktop) того же сочетания свойств. Сравнение двух его размеров
+// и есть источник дельты:
 //
-//   подпись  P2 Medium 14/20 → P3 Medium 12/16
-//   значение P1 Medium 16/24 → P2 Medium 14/20
-//   коммент  P2 Medium 14/20 → P3 Medium 12/16
-//   плашка   48 → 40 (ровно как `Thumbnail` размера L)
-//   отступ подкатегории 80 → 64
+//   подпись   P2 Medium 14/20 → P3 Medium 12/16   (`Description`)
+//   значение  P1 Medium 16/24 → P2 Medium 14/20   (`Text`)
+//   коммент   12/16 на ОБОИХ размерах у IB; у нас десктоп 14/20 из своего
+//             мастера, поэтому мобильный — 12/16
+//   плашка    48 → 40 (`IB / thumbnail` мобильный — ровно 40 с глифом 24,
+//             то есть наш `Thumbnail` размера L и есть аналог)
+//   подкатегория  собственный отступ 64 → 56, то есть от края 80 → 72
 //
-// Высоту строки при этом никто не задаёт числом — она выходит из кегля сама,
-// как и у Filter Table. Когда мобильный мастер приедет в ДС, эти числа надо
-// перемерить по нему.
+// ⚠️ Коробка строки на мобиле НЕ МЕНЯЕТСЯ, и это проверено, а не допущено:
+// у обоих размеров `IB / item` одинаковые pt 16, зазор до разделителя 15,
+// зазор до правого элемента 24, зазор плашка → текст 16 и поля 16. Разница
+// высот (96 против 88) выходит из одного только кегля. Первый проход этого
+// не знал и ужал поля и зазоры «по аналогии» — числа были выдуманы.
+//
+// Когда мобильный мастер приедет в саму ДС, перемерить по нему.
 
 type CommentColor = "grey" | "red" | "yellow"
 
@@ -169,13 +174,16 @@ function Item({
         // variant keeps the same 15px gap and a transparent 1px line rather
         // than collapsing, so the border here is always present and only
         // changes colour; otherwise a list's last row would be 1px shorter.
-        "flex w-full cursor-pointer items-center gap-4 border-b px-4 pt-3 pb-[11px] text-left outline-none transition-colors desktop:gap-6 desktop:pt-4 desktop:pb-[15px]",
+        "flex w-full cursor-pointer items-center gap-6 border-b px-4 pt-4 pb-[15px] text-left outline-none transition-colors",
         // Sub Category indents the *content* by 64px relative to a normal
         // row (Figma puts `pl-[64px]` on the Box of `Сategory=True`, on top
         // of the row's own 16px side padding from the "Боковые отступы"
         // note) — so 80px here, and the divider/hover fill still span the
         // full width because the padding is on the row itself.
-        subCategory && "pl-16 desktop:pl-20",
+        // 72 на мобиле против 80 на десктопе: собственный отступ
+        // подкатегории в `IB / item` — 56 и 64 соответственно, поля строки
+        // (16) одни и те же.
+        subCategory && "pl-[72px] desktop:pl-20",
         divider === false
           ? "border-transparent"
           : "border-[var(--item-divider)]",

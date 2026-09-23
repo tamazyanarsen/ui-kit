@@ -289,7 +289,11 @@
      theme was still showing the old value. #EDF6FC is also exactly
      --tag-blue-secondary-bg, i.e. the kit's one pale blue surface. */
   --top-fixed-message-blue-bg: var(--dark-blue-109);
-  --top-fixed-message-blue-icon: var(--dark-blue-322);
+  /* Был --dark-blue-322 (#5B90E0) — а это «выведенный» оттенок палитры, не
+     снятый с макета. Значок обоих символов мастера 70441:14927 (Desktop
+     70441:14948 и Mobile 70441:14941) залит #2487CA, то есть Status/Dark
+     blue 389. Замерено на самих SVG-ассетах `icon / alert`, а не на глаз. */
+  --top-fixed-message-blue-icon: var(--dark-blue-389);
   --top-fixed-message-red-bg: var(--red-117);
   --top-fixed-message-red-icon: var(--red-418);
 }

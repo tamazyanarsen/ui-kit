@@ -2,6 +2,7 @@ import * as React from "react"
 import { CircleAlert, X } from "@/icons"
 
 import { TopFixedMessage } from "@/components/ui/top-fixed-message"
+import { ViewportScope } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
 import {
   Modal,
@@ -149,6 +150,30 @@ function TopFixedMessageDemo() {
           </div>
 
           <div className="space-y-2">
+            <RowLabel>
+              Size: Mobile — значок 16, текст с переносом, кнопки вторым
+              рядом, закрытие кнопкой «Закрыть» вместо крестика
+            </RowLabel>
+            <ViewportScope viewport="mobile">
+              <div className="w-[360px] space-y-4">
+                <TopFixedMessage
+                  type="red"
+                  text="У вас истекает срок действия полномочий в некоторых организациях"
+                  showButton
+                  buttonLabel="Подробнее"
+                />
+                <TopFixedMessage
+                  type="blue"
+                  text="Notification Text Example"
+                  showIconClose={false}
+                  showButton
+                  buttonLabel="Подробнее"
+                />
+              </div>
+            </ViewportScope>
+          </div>
+
+          <div className="space-y-2">
             <RowLabel>Закрываемое сообщение</RowLabel>
             {visible ? (
               <TopFixedMessage
@@ -180,7 +205,9 @@ function TopFixedMessageDemo() {
           контентом (не position:fixed). Текст не ограничен по количеству
           символов (рекомендуемая длина — не более 100), при переполнении
           обрезается многоточием — полный текст показывается в тултипе при
-          наведении.
+          наведении. На мобильной форме (ось <code>Size</code> сета) текст
+          переносится, а не обрезается, и закрытие переезжает с крестика на
+          кнопку «Закрыть».
         </p>
       </AccordionPanel>
     </AccordionItem>

@@ -2,55 +2,36 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
   StoryContentArea,
-  StorySection,
-  StoryShowcase,
   optionsArgType,
   toggleArgType,
 } from "@/stories/matrix"
 
 import { ButtonMenuBlack } from "./black"
+import {
+  ButtonMenuBlackExamples,
+  FIGMA_BUTTON_LABELS,
+  INFO_COUNT,
+  INFO_ITEMS,
+  INFO_SUM,
+  INFO_WRITE_OFF,
+  blackButtons,
+  type ButtonCount,
+} from "@/stories/button-menu-black-fixtures"
 import type { ButtonMenuPlacement } from "./placement"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
-import { Button } from "@/components/ui/button"
 
 /* Дизайн-чек №13: «в дизайн-системе на самом деле button-menu и
    button-menu-black это два отдельных компонента. Каждому из них нужна
    отдельная матрица переключений и отдельная матрица полных отображений».
    Раньше чёрная панель была одной секцией внутри историй Button Menu.
 
-   Свойства унаследованы из компонент-сета «ELK / button menu (black)»
-   (нода 700:54288):
+   Свойства унаследованы из компонент-сета «ELK / button menu (black)»:
 
      Button = None | One | Tho | Three | Four
 
    Плюс информационный бар: «элементы информационного бара, располагающегося
    в правой части панели, можно при необходимости частично или полностью
-   отключить» (нода 4008:30588) — отсюда переключатель количества полей. */
-const BUTTON_COUNTS = [0, 1, 2, 3, 4] as const
-type ButtonCount = (typeof BUTTON_COUNTS)[number]
-
-/* ⚠️ «Tho» — опечатка самого кита в значении «Two». Не исправлена
-   намеренно: имя значения здесь должно совпадать с панелью «Свойства
-   компонента» посимвольно, иначе сверка со списком свойств перестаёт быть
-   один в один. Чинить это надо в Figma, а не у себя. */
-const FIGMA_BUTTON_NAMES: Record<ButtonCount, string> = {
-  0: "None",
-  1: "One",
-  2: "Tho",
-  3: "Three",
-  4: "Four",
-}
-
-/* Подписи контрола — как в замечании дизайн-чека: «Button (1/2/3/4)». */
-const FIGMA_BUTTON_LABELS: Record<ButtonCount, string> = {
-  0: "None",
-  1: "1",
-  2: "2",
-  3: "3",
-  4: "4",
-}
-
-const LABELS = ["Подписать", "Скачать", "Отправить", "Удалить"]
+   отключить» — отсюда переключатель количества полей. */
 
 /* Дизайн-чек от 07.09, замечание 4: «Не допускается перенос. Текст в 1
    строку, ширина параметра динамическая». Ширину колонки «Выбрано» больше
@@ -58,10 +39,6 @@ const LABELS = ["Подписать", "Скачать", "Отправить", "�
    Историческая заметка ниже — почему она вообще была.
    Каждое поле бара — своё свойство панели: Show Count, Show Sum,
    Show Write-Off (дизайн-чек Storybook (Аня Багрова) №14). */
-const INFO_COUNT = { label: "Выбрано", value: "3 документа" }
-const INFO_SUM = { label: "Сумма", value: "1 200 101,16 ₽" }
-const INFO_WRITE_OFF = { label: "Счёт списания", value: "40702810…1234" }
-const INFO_ITEMS = [INFO_COUNT, INFO_SUM, INFO_WRITE_OFF]
 
 /* Дизайн-чек от 13.09, замечание 19 — те же три размещения, что и у белой
    панели (см. `./placement`). */
@@ -110,11 +87,6 @@ function infoBar({
    видит только прямых детей. Компонент-обёртка спрятала бы кнопки на уровень
    глубже — и они остались бы брендовыми, как и было в дизайн-чеке. Массив
    React.Children.map разворачивает, поэтому так всё работает. */
-function blackButtons(count: ButtonCount) {
-  // Вариант намеренно не передаётся: ButtonMenuBlack форсит secondary-white
-  // для всех кнопок (дизайн-чек №12).
-  return LABELS.slice(0, count).map((label) => <Button key={label}>{label}</Button>)
-}
 
 const meta = {
   title: "Компоненты/Button Menu Black",
@@ -258,120 +230,5 @@ export const Playground: Story = {
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },
-  render: () => (
-    <StoryShowcase>
-      <StorySection
-        title="Закреплена снизу (по умолчанию)"
-        description="Панель подменяет собой белую, пока выделены строки таблицы, и стоит там же — у нижнего края контентной области."
-      >
-        <StoryContentArea height="h-72">
-          <div className="flex flex-col gap-4 p-6">
-            {Array.from({ length: 10 }, (_, index) => (
-              <p key={index} className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
-                Выделенная строка {index + 1}
-              </p>
-            ))}
-          </div>
-          <ButtonMenuBlack
-            className="mt-auto"
-            info={[{ label: "Выбрано", value: "3 документа" }]}
-            onClose={() => {}}
-          >
-            {blackButtons(2)}
-          </ButtonMenuBlack>
-        </StoryContentArea>
-      </StorySection>
-
-      <StorySection
-        title="Свойство Button — от None до Four"
-        description="Кнопки на тёмной панели всегда белые: брендового акцента здесь нет."
-      >
-        <div className="flex w-full flex-col gap-4">
-          {BUTTON_COUNTS.map((count) => (
-            <div key={count} className="flex flex-col gap-1">
-              {/* Имя значения — как в Figma, чтобы сверка шла один в один. */}
-              <span className="text-p3-medium text-[#999999]">
-                Button = {FIGMA_BUTTON_NAMES[count]}
-              </span>
-              {/* Витрина: панели стоят стопкой образцами, поэтому
-                  закрепление выключено — иначе все прилипли бы к низу разом.
-                  Закрепление показано отдельной секцией ниже. */}
-              <ButtonMenuBlack
-                pinned={false}
-                info={[{ label: "Выбрано", value: "3 документа" }]}
-                onClose={() => {}}
-              >
-                {blackButtons(count)}
-              </ButtonMenuBlack>
-            </div>
-          ))}
-        </div>
-      </StorySection>
-
-      <StorySection
-        title="Информационный бар"
-        description="Поля бара можно отключить частично или полностью."
-      >
-        <div className="flex w-full flex-col gap-4">
-          {([3, 2, 1, 0] as const).map((fields) => (
-            <ButtonMenuBlack
-              pinned={false}
-              key={fields}
-              info={INFO_ITEMS.slice(0, fields)}
-              onClose={() => {}}
-            >
-              {blackButtons(2)}
-            </ButtonMenuBlack>
-          ))}
-        </div>
-      </StorySection>
-
-      <StorySection
-        title="С меню «ещё»"
-        description="Когда действий больше трёх, лишнее уходит в More."
-      >
-        <div className="w-full">
-          <ButtonMenuBlack
-            info={[{ label: "Выбрано", value: "3 документа" }]}
-            onClose={() => {}}
-          >
-            {blackButtons(3)}
-            <ButtonMenuOverflow>
-              <ButtonMenuOverflowItem text="Отправить по почте" />
-              <ButtonMenuOverflowItem text="Архивировать" />
-            </ButtonMenuOverflow>
-          </ButtonMenuBlack>
-        </div>
-      </StorySection>
-
-      <StorySection
-        title="Размещение на сетке"
-        description="Полная ширина — 12 колонок. Слева и справа полоса занимает заданное число колонок той же сетки, что и контент вокруг."
-      >
-        <div className="flex w-full flex-col gap-4">
-          {(["full", "left", "right"] as const).map((placement) => (
-            <ButtonMenuBlack
-              key={placement}
-              pinned={false}
-              placement={placement}
-              span={6}
-              showSelectAllPages={false}
-              info={[{ label: "Выбрано", value: "3 документа" }]}
-              onClose={() => {}}
-            >
-              {blackButtons(2)}
-            </ButtonMenuBlack>
-          ))}
-        </div>
-      </StorySection>
-
-      <StorySection title="Без крестика">
-        <div className="w-full">
-          <ButtonMenuBlack info={[{ label: "Выбрано", value: "3 документа" }]}>
-            {blackButtons(2)}
-          </ButtonMenuBlack>
-        </div>
-      </StorySection>
-    </StoryShowcase>
-  ),
+  render: () => <ButtonMenuBlackExamples />,
 }

@@ -10,6 +10,12 @@
 // Требует ImageMagick 7 в PATH (`magick`). Отдельной npm-зависимости
 // (sharp) не заводим — magick уже есть в окружении и умеет оба формата.
 //
+// В репозитории PNG не хранятся: раз WebP хватает всем поддерживаемым
+// браузерам, исходник после пережатия только весит (2.6 МБ на 18 файлов).
+// Поэтому порядок такой: выгрузить PNG из Figma в нужную папку
+// `src/assets/`, прогнать скрипт, удалить PNG. Старые исходники, если
+// понадобятся, лежат в истории git.
+//
 // Запуск: node scripts/convert-illustrations.mjs [--force]
 import { execFileSync } from "node:child_process"
 import { existsSync, readdirSync, statSync } from "node:fs"

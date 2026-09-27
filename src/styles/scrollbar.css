@@ -1,0 +1,116 @@
+/* Полоса прокрутки в стиле кита: правила `.themed-scrollbar` и отступы
+   `<Scrollbar inset>`. Вынесено из base.css — там это была треть файла.
+
+   ⚠️ Порядок импорта в index.css значим: файл идёт сразу после base.css,
+   потому что часть правил объявлена ВНЕ `@layer` и рассчитывает победить
+   утилиты по порядку, а не по специфичности. */
+
+@layer base {
+  /* Стандартные `scrollbar-width`/`scrollbar-color` объявляются ТОЛЬКО там,
+     где нет `::-webkit-scrollbar` (то есть в Firefox). В Chromium любое
+     ненулевое значение этих свойств переключает браузер на собственную
+     отрисовку полосы и ПОЛНОСТЬЮ отключает вебкитовые псевдоэлементы: с
+     ними полоса выходила 10px со стрелками вместо макетных 4px (замер на
+     card-box: `offsetWidth - clientWidth` = 10 при `width: 4px` ниже).
+     Firefox своего попиксельного контроля не имеет, поэтому там остаётся
+     пресет `thin` — он один на обе оси, отсюда и оговорка выше про 4/8px. */
+  @supports not selector(::-webkit-scrollbar) {
+    .themed-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+    }
+  }
+  /* Одно правило на базовый `::-webkit-scrollbar`, а не два на `:vertical`/
+     `:horizontal`: во-первых, `width` и так относится только к вертикальной
+     полосе, а `height` — только к горизонтальной; во-вторых (и это важнее)
+     Chromium включает кастомную отрисовку полосы, только если объявлен САМ
+     `::-webkit-scrollbar` — с одними лишь `:vertical`/`:horizontal`
+     правилами он рисовал системную полосу 15px. */
+  .themed-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 8px;
+  }
+  /* Кнопок-стрелок в макете нет — на Windows Chromium они рисуются по
+     умолчанию и съедают концы полосы. */
+  .themed-scrollbar::-webkit-scrollbar-button {
+    display: none;
+  }
+  .themed-scrollbar::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-bg);
+    border-radius: 9999px;
+  }
+  .themed-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-bg);
+    border-radius: 9999px;
+  }
+}
+
+/* Отступ полосы прокрутки от края поверхности (`<Scrollbar inset>`) —
+   дизайн-чек от 07.09, замечание 26: «Для выпадающих списков Scrollbar не
+   может вылезать за контур. Всегда у Scrollbar есть отступы… Для
+   скруглённых выпадающих списков отступ ещё больше».
+
+   ⚠️ Сделано ПРОЗРАЧНОЙ РАМКОЙ, а не паддингом, и это не стилистический
+   выбор. Нативная полоса живёт по внутреннему краю РАМКИ, а не паддинга:
+   `padding-right` отодвигает от полосы содержимое, а сама полоса остаётся
+   приклеенной к краю коробки — ровно это и попало в чек, где дорожка стояла
+   за белым прямоугольником списка. Прозрачная рамка сдвигает край коробки, и
+   полоса уезжает внутрь вместе с ним, показывая сквозь себя фон поверхности.
+
+   ⚠️ Отступ теперь двусторонний: не только поперёк полосы, но и по ЕЁ ОСИ
+   (`border-block` у вертикальной, `border-inline` у горизонтальной).
+   Дизайн-чек от 08.09, замечание 8: «Прокрутка не должна прятаться за
+   скруглением. Правка корневая, проверить везде». Поперечного отступа мало:
+   дорожка тянется во всю высоту окна прокрутки, то есть упирается ровно в
+   скруглённый угол поверхности и срезается им — на панели меню (радиус 32)
+   у полосы пропадал весь низ. Рамка по оси укорачивает саму дорожку, и она
+   заканчивается ДО закругления.
+
+   Приём нельзя заменить рамкой у самого бегунка
+   (`::-webkit-scrollbar-thumb`): дорожка шириной 4px, и рамка в 8 съедает её
+   целиком.
+
+   ⚠️ Объявлено ВНЕ `@layer` намеренно — по той же причине, что и правило
+   `:last-child` у строк списка выше: ширину рамки задают утилиты
+   (`border` у витрины), а они лежат в `@layer utilities` и бьют любое
+   правило из `@layer base` независимо от специфичности. Проверено:
+   внутри слоя рамка оставалась 1px и отступ не появлялся. */
+.themed-scrollbar[data-inset="dropdown"][data-orientation="vertical"] {
+  border-inline-end: 8px solid transparent;
+  border-block: 8px solid transparent;
+}
+.themed-scrollbar[data-inset="rounded"][data-orientation="vertical"] {
+  border-inline-end: 16px solid transparent;
+  border-block: 16px solid transparent;
+}
+/* Панель раскрытого меню. Величины сняты с самих кадров адаптации (секция
+   ): у всех трёх `ELK / scrollbar` стоит на x = ширина−12 при
+   толщине 4 (то есть 8 справа), y = 8, а до низа панели остаётся 48.
+
+     1280×1304 — панель 1072, полоса y=8 h=1016 → низ 48
+     1280× 874 — панель  642, полоса y=8 h= 586 → низ 48
+     1536×1088 — панель  856, полоса y=8 h= 800 → низ 48
+
+   Сверху 8, снизу 48 — и это не опечатка макета: верх панели прямой и
+   упирается в шапку, а низ скруглён на 32, поэтому дорожке там нужен
+   больший зазор. */
+.themed-scrollbar[data-inset="panel"][data-orientation="vertical"] {
+  border-inline-end: 8px solid transparent;
+  border-block-start: 8px solid transparent;
+  border-block-end: 48px solid transparent;
+}
+.themed-scrollbar[data-inset="dropdown"][data-orientation="horizontal"] {
+  border-block-end: 8px solid transparent;
+  border-inline: 8px solid transparent;
+}
+.themed-scrollbar[data-inset="rounded"][data-orientation="horizontal"] {
+  border-block-end: 16px solid transparent;
+  border-inline: 16px solid transparent;
+}
+/* Горизонтального варианта у панели меню в макете нет — значения
+   зеркальные, на случай если понадобится. */
+.themed-scrollbar[data-inset="panel"][data-orientation="horizontal"] {
+  border-block-end: 8px solid transparent;
+  border-inline-start: 8px solid transparent;
+  border-inline-end: 48px solid transparent;
+}

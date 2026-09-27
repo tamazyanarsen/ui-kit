@@ -14,6 +14,13 @@
 @import "./styles/variants.css";
 @import "./styles/theme.css";
 @import "./styles/base.css";
+/* Четыре файла ниже — разделы, выделенные из base.css: он вырос до 658
+   строк, из которых 314 кода. Порядок их импорта ЗНАЧИМ и повторяет прежний
+   порядок внутри одного файла: часть правил объявлена вне `@layer` и
+   рассчитывает победить утилиты по порядку, а не по специфичности. */
+@import "./styles/scrollbar.css";
+@import "./styles/table-rules.css";
+@import "./styles/component-rules.css";
 @import "./styles/palette.css";
 
 @import "./styles/tokens-motion.css";

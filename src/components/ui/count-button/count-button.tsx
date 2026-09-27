@@ -3,20 +3,21 @@ import type { ButtonProps } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { BadgeColor } from "@/components/ui/badge"
 
-// Count Button — "Кнопка с индикатором уведомлений": any Button (anatomy
-// and states are the same as Button's own, per ui/button-count/count
-// button.png) with a small counter badge pinned to its top-right corner.
-// Badge already implements the exact display rule from that spec
-// ("от 1 до 99 — без изменений, от 100 и более — 99+") and the 16px
-// counter height, so this is just the two composed rather than a new
-// visual system. Per spec: only one Count Button per button group.
+// Count Button — «Кнопка с индикатором уведомлений»: любая Button
+// (анатомия и состояния те же, что у самой Button, так сказано в макете) с
+// маленьким значком-счётчиком, приколотым к правому верхнему углу. Badge
+// уже реализует точно то правило показа, что записано в этом макете («от 1
+// до 99 — без изменений, от 100 и более — 99+»), и высоту счётчика 16px,
+// поэтому здесь просто композиция двух компонентов, а не новая визуальная
+// система. По макету: в одной группе кнопок Count Button может быть только
+// одна.
 interface CountButtonProps extends ButtonProps {
   /** Значение счётчика. `undefined` — плашки нет вовсе: это свойство
-   *  `Show Count = False` мастера `ELK / count button` (34:17381). */
+   *  `Show Count = False` мастера `ELK / count button`. */
   count?: number
-  /** Badge color. Red is the master's own (`ELK / count button`); Table Top's
-   * "Ещё фильтры" instance overrides it to `black`, so it is a prop rather
-   * than a constant. */
+  /** Цвет значка. Красный — собственный цвет мастера
+   * (`ELK / count button`), но инстанс «Ещё фильтры» в Table Top
+   * переопределяет его на `black`, поэтому это пропс, а не константа. */
   countColor?: BadgeColor
 }
 
@@ -27,10 +28,10 @@ function CountButton({
   ...props
 }: CountButtonProps) {
   return (
-    <span className="relative inline-flex">
+    <span data-slot="count-button" className="relative inline-flex">
       <Button className={className} {...props} />
-      {/* The badge overhangs the button by 4px on each side (Figma's
-          `right-[-4px] top-[-4px]`), not 8. */}
+      {/* Значок свисает за кнопку на 4px с каждой стороны (в макете это
+          `right-[-4px] top-[-4px]`), а не на 8. */}
       {count !== undefined && (
         <Badge
           type="counter"

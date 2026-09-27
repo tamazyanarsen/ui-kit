@@ -62,10 +62,12 @@ export function CalendarDesktop({
     mode === "single" ? (d: Date) => isSameDay(d, value) : () => false
 
   return (
-    // Design-check #11/#12: min 280px per the Figma component — w-fit alone
-    // let the Month/Year picker views (just a 3-column grid of short labels)
-    // shrink well under that.
+    // Дизайн-чек, замечания 11 и 12: минимум 280px по компоненту макета —
+    // один лишь w-fit позволял видам выбора месяца и года (а это просто
+    // сетка из трёх колонок с короткими подписями) ужиматься заметно
+    // меньше.
     <div
+      data-slot="calendar"
       className={cn(
         "w-fit min-w-[280px] overflow-hidden rounded-[16px] bg-white shadow-universal",
         className
@@ -271,8 +273,9 @@ function RangeBody({
   const months = [focus, next]
 
   return (
-    // Design-check #10: no vertical divider between the two month grids —
-    // ui/calendar/calendar@2x-1.png's own Range anatomy runs them together.
+    // Дизайн-чек, замечание 10: вертикального разделителя между двумя
+    // сетками месяцев нет — в собственной анатомии Range в макете они идут
+    // вплотную.
     <div className="flex">
       {months.map((m, i) => (
         <div key={i}>

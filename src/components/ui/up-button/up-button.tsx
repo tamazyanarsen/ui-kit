@@ -4,13 +4,14 @@ import { ChevronUp } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-// Up Button — "Кнопка наверх": anatomy is Button's own Icon/Small form
-// (secondary-white, 32px circle — size-8 rounded-2xl is an exact circle),
-// per ui/button-up/up button.png's own "аналогична Button + Анатомия +
-// Small" note. Per spec: appears bottom-right once the page has scrolled,
-// hides again while a floating element (modal/sheet/etc) is open —
-// `scrollContainer` targets that scroll source (defaults to window),
-// `hidden` lets a consumer force it away for the floating-element case.
+// Up Button — «Кнопка наверх»: по анатомии это собственная форма Button
+// Icon/Small (secondary-white, круг 32px — size-8 с rounded-2xl даёт точный
+// круг), по примечанию самого макета «аналогична Button + Анатомия +
+// Small». По макету: появляется внизу справа, когда страницу прокрутили, и
+// прячется, пока открыт плавающий элемент (модальное окно, шторка и
+// прочее). `scrollContainer` указывает на источник прокрутки (по умолчанию
+// окно), а `hidden` позволяет потребителю принудительно убрать кнопку для
+// случая с плавающим элементом.
 interface UpButtonProps {
   scrollContainer?: React.RefObject<HTMLElement | null>
   threshold?: number
@@ -52,16 +53,18 @@ function UpButton({
   return (
     <Button
       type="button"
+      data-slot="up-button"
       variant="secondary-white"
       size="sm"
       iconPosition="only"
       icon={ChevronUp}
       aria-label="Наверх"
       onClick={handleClick}
-      // The master (`ELK / up button`, node 34:15225) carries the kit's named
-      // "Universal shadow" effect — 0/4/12 of #8B99A93D — not a bespoke
-      // black one. Figma exports it as a `drop-shadow` filter, whose CSS blur
-      // is half the Figma radius, which is why the raw export reads 6px.
+      // Мастер (`ELK / up button`) несёт именованный эффект кита
+      // «Universal shadow» — 0/4/12 цвета #8B99A93D, — а не какую-то свою
+      // чёрную тень. Макет выгружает её фильтром `drop-shadow`, у которого
+      // размытие в CSS вдвое меньше радиуса в макете, поэтому в сырой
+      // выгрузке и читается 6px.
       className={cn(
         "fixed right-6 bottom-6 z-40 shadow-[var(--shadow-universal)]",
         className

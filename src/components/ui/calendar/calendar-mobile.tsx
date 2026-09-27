@@ -66,9 +66,10 @@ function CalendarMobile({
   onSelectDay,
   disabledDate,
 }: CalendarMobileProps) {
-  // Infinite-forward scroll + a jump-to-year picker reached by tapping the
-  // nav label, instead of a one-way "back 12" button that could strand you
-  // with no way back to today. Sheet-only — the popover paginates instead.
+  // Бесконечная прокрутка вперёд плюс переход к выбору года по нажатию на
+  // подпись в навигации — вместо односторонней кнопки «назад на 12»,
+  // которая могла оставить пользователя без пути обратно к сегодняшнему
+  // дню. Только для шторки: поповер вместо этого листает страницами.
   const sheetScrollRef = React.useRef<HTMLDivElement>(null)
   const monthsInfinite = useInfiniteCount(sheetScrollRef, 6, 6)
   const yearsInfinite = useInfiniteCount(sheetScrollRef, 3, 3)
@@ -94,10 +95,10 @@ function CalendarMobile({
     decadesInfinite.reset()
   }
 
-  // The header nav and the scrollable body below it each switch between
-  // three entirely different states (jump-to-year picker / year mode /
-  // month|day mode) — early returns instead of a nested ternary chain, one
-  // state per branch.
+  // И навигация в шапке, и прокручиваемое тело под ней переключаются между
+  // тремя совершенно разными состояниями (выбор года для перехода, режим
+  // года, режим месяца или дня), поэтому здесь ранние возвраты, а не
+  // цепочка вложенных тернарных операторов: по состоянию на ветку.
   function renderHeaderNav() {
     if (jumpOpen) {
       return (
@@ -196,12 +197,14 @@ function CalendarMobile({
   }
 
   return (
-    // Figma: "Календарь открывается в Bottom Sheet на весь экран, без
-    // скруглений" — full-screen, no rounded corners. This component renders
-    // only its own content (per CalendarProps.layout's doc comment); the
-    // page hosts it inside its actual bottom-sheet/modal primitive, so here
-    // that just means no radius and no max-width cap of its own.
+    // По макету: «Календарь открывается в Bottom Sheet на весь экран, без
+    // скруглений». Этот компонент рисует только собственное содержимое (см.
+    // комментарий к CalendarProps.layout), а страница размещает его внутри
+    // своего настоящего примитива нижней шторки или модального окна.
+    // Поэтому здесь это означает лишь отсутствие радиуса и отсутствие
+    // собственного ограничения максимальной ширины.
     <div
+      data-slot="calendar"
       className={cn(
         "flex h-full w-full flex-col overflow-hidden bg-white shadow-universal",
         className
@@ -209,9 +212,9 @@ function CalendarMobile({
     >
       <SheetHeader title={title} onClose={onClose} />
       {renderHeaderNav()}
-      {/* Figma's real mobile mock stacks repeated month sections with a
-          24px gap ("Calendar" wrapper, gap-[24px]) — applied uniformly to
-          the month/year/decade lists here. */}
+      {/* Настоящий мобильный макет складывает повторяющиеся секции
+          месяцев с зазором 24px (обёртка «Calendar», gap-[24px]); здесь это
+          применено единообразно к спискам месяцев, лет и десятилетий. */}
       <Scrollbar ref={sheetScrollRef} className="flex flex-1 flex-col gap-6">
         {renderSheetBody()}
       </Scrollbar>

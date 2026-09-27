@@ -1,7 +1,6 @@
 import * as React from "react"
-// The thumb uses Figma's dedicated small-arrow glyphs (nodes 21461:49447/
-// 21461:49448), not the regular chevrons — see icons/arrow-right-small.tsx
-// for why they are not interchangeable.
+// У ползунка свои маленькие стрелки из макета, а не обычные шевроны — см.
+// icons/arrow-right-small.tsx о том, почему они не взаимозаменяемы.
 import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
@@ -21,11 +20,11 @@ interface RangeInputOwnProps {
 type RangeInputProps = Omit<SliderPrimitive.Root.Props<number>, "children"> &
   RangeInputOwnProps
 
-// Single-thumb slider styled as an Input-like bordered box: Label + formatted
-// Value stacked on top, track along the bottom. Unlike Checkbox/Radio, error
-// state does NOT recolor the box border (that stays --range-input-border,
-// matching Input's convention) — only the track/thumb accent and the caption
-// text turn red.
+// Ползунок с одной ручкой, оформленный как поле в рамке по образцу Input:
+// сверху подпись и отформатированное значение, снизу дорожка. В отличие от
+// Checkbox и Radio, состояние ошибки НЕ перекрашивает рамку коробки (она
+// остаётся --range-input-border, по конвенции Input) — краснеют только
+// акцент дорожки с ползунком и текст подписи.
 function RangeInput({
   className,
   label,
@@ -47,28 +46,33 @@ function RangeInput({
   const copyWithoutSeparators = useCopyWithoutSeparators(GROUP_SPACES)
 
   return (
-    // Round-2 audit fix: outer gap was gap-1.5 (6px); the root component
-    // frame in Figma (e.g. 687:18395) is a flex-col with a uniform
-    // gap-[4px] between Range/Indicators/Comment.
+    // Исправление второго прохода: внешний зазор стоял gap-1.5 (6px), а
+    // корневой кадр компонента в макете — это flex-col с одинаковым
+    // gap-[4px] между Range, Indicators и Comment.
     <div className={cn("flex w-full flex-col gap-1", className)}>
       <SliderPrimitive.Root
         data-slot="range-input"
         disabled={disabled}
         format={format}
+        // Ошибку видно не только глазами: без `aria-invalid` скринридер
+        // объявляет ползунок обычным, сколько бы красного вокруг ни
+        // нарисовали.
+        aria-invalid={invalid || undefined}
         {...props}
       >
         <div
           data-slot="range-input-box"
           className={cn(
-            // Fixed box height (55px desktop / 47px mobile, measured from the
-            // rect in ui/range input/range Input.svg) — practically identical
-            // to Input's own L convention (h-12/desktop:h-14). An earlier version
-            // let padding + oversized Value text drive an auto height, which
-            // ballooned the box to ~86px; don't repeat that.
-            // Round-2 audit fix: horizontal/top padding was desktop:px-5 desktop:pt-2.5
-            // (20px/10px) on desktop — get_design_context on both the
-            // Desktop and Mobile Default symbols (687:18395, 14378:41564)
-            // shows px-[16px] on both breakpoints.
+            // Фиксированная высота коробки (55px на десктопе и 47px на
+            // мобильном, снято с прямоугольника в векторе макета) —
+            // практически совпадает с собственной конвенцией L у Input
+            // (h-12 и desktop:h-14). В прежней версии высоту определяли
+            // отступы плюс завышенный кегль Value, и коробка раздувалась до
+            // ~86px; повторять это не надо.
+            // Исправление второго прохода: горизонтальный и верхний отступы
+            // стояли desktop:px-5 desktop:pt-2.5 (20px и 10px) на десктопе,
+            // а у символов Default и на Desktop, и на Mobile стоит
+            // px-[16px] на обоих брейкпоинтах.
             //
             // Дизайн-чек №3 №19: «Наезд полосы на текст… в узком
             // представлении активизируется вариант mobile, и он собран не
@@ -111,9 +115,9 @@ function RangeInput({
             data-slot="range-input-value"
             {...copyWithoutSeparators}
             className={cn(
-              // Figma's desktop symbol (687:18395) gives Label = P3 Medium
-              // 12/16 and Value = P1 Medium 16/24. Both were `leading-tight`
-              // before, i.e. 15px and 17.5px — off the scale entirely.
+              // Десктопный символ в макете задаёт Label = P3 Medium 12/16
+              // и Value = P1 Medium 16/24. Раньше у обоих стоял
+              // `leading-tight`, то есть 15px и 17.5px — мимо шкалы вовсе.
               "text-p2-medium text-[var(--range-input-value-fg)] desktop:text-p1-medium",
               disabled && "!text-[var(--range-input-value-fg-disabled)]"
             )}
@@ -124,11 +128,12 @@ function RangeInput({
               formattedValues.map(formatSignSpacing).join(" – ")
             }
           </SliderPrimitive.Value>
-          {/* Track sits ON the box's bottom border, not inside the padding —
-              confirmed by pixel-cropping the anatomy raster: the thumb pill
-              visibly straddles the border, half in/half out. Control is
-              absolutely positioned at bottom-0 and shifted down by half its
-              own height to center the track line on the border. */}
+          {/* Дорожка лежит НА нижней рамке коробки, а не внутри отступов —
+              подтверждено вырезкой из растра анатомии: таблетка ползунка
+              заметно сидит верхом на рамке, половина внутри, половина
+              снаружи. Control спозиционирован абсолютно по bottom-0 и
+              сдвинут вниз на половину собственной высоты, чтобы линия
+              дорожки пришлась ровно по центру рамки. */}
           <SliderPrimitive.Control
             data-slot="range-input-control"
             className="absolute inset-x-4 bottom-0 flex h-4 translate-y-1/2 items-center desktop:h-5"
@@ -136,15 +141,15 @@ function RangeInput({
             <SliderPrimitive.Track
               data-slot="range-input-track"
               className={cn(
-                // Round-2 audit fix: track thickness was h-1 (4px); the
-                // Line asset in every state (687:18395 etc.) is a literal
-                // 3px-tall rect.
+                // Исправление второго прохода: толщина дорожки стояла h-1
+                // (4px), а ассет Line во всех состояниях — литеральный
+                // прямоугольник высотой 3px.
                 //
                 // ⚠️ У дорожки НЕТ собственной заливки. Дизайн-чек
                 // «Storybook 3», замечание 17: «скорректируй вид незаполненной
                 // части, согласно компоненту». Профиль пикселей по мастеру
-                // (14342:39163, состояние Default): под ползунком слева идёт
-                // полоса 3px #2FCEEF, а справа от ползунка — чистый белый, и
+                // (состояние Default): под ползунком слева идёт полоса 3px
+                // #2FCEEF, а справа от ползунка — чистый белый, и
                 // единственная линия там это НИЖНЯЯ ГРАНИЦА самой коробки,
                 // 1px #C8C8CB. То есть незаполненная часть не рисуется вовсе:
                 // её роль играет граница поля, на которой дорожка и лежит.
@@ -156,12 +161,12 @@ function RangeInput({
               <SliderPrimitive.Indicator
                 data-slot="range-input-indicator"
                 className={cn(
-                  // Round-2 audit fix: pixel-sampling the Default/Hover/
-                  // Focused screenshots shows the filled portion of the
-                  // track (this Indicator) is a constant #2FCEEF, distinct
-                  // from the thumb's #80E3FF — it was previously sharing
-                  // --range-input-accent with the thumb, which pixel
-                  // evidence disproves. See --range-input-indicator-bg.
+                  // Исправление второго прохода: пипетка по скриншотам
+                  // Default, Hover и Focused показывает, что заполненная
+                  // часть дорожки (этот Indicator) неизменно #2FCEEF и
+                  // отличается от #80E3FF у ползунка. Раньше она делила с
+                  // ползунком --range-input-accent, и замер это
+                  // опровергает. См. --range-input-indicator-bg.
                   "absolute h-full rounded-full bg-[var(--range-input-indicator-bg)]",
                   disabled && "!bg-[var(--range-input-accent-disabled)]",
                   invalid && "!bg-[var(--range-input-accent-error)]"
@@ -170,34 +175,35 @@ function RangeInput({
               <SliderPrimitive.Thumb
                 data-slot="range-input-thumb"
                 className={cn(
-                  // No gap between the two arrows and a literal 12px radius,
-                  // both straight off the Box layer of the Range Line symbols
-                  // (mobile 21775:15468 — 32×16, no padding; desktop
-                  // 21461:49446 — px-4/py-2 giving 40×20). `gap-0.5` squeezed
-                  // the 16px icon boxes, and `rounded-full` resolved to 8px
-                  // on mobile / 10px on desktop instead of 12px.
+                  // Между двумя стрелками зазора нет, а радиус — литеральные
+                  // 12px; и то и другое снято прямо со слоя Box у символов
+                  // Range Line (мобильный — 32×16 без отступов, десктопный —
+                  // px-4/py-2, что даёт 40×20). `gap-0.5` сжимал коробки
+                  // значков по 16px, а `rounded-full` разрешался в 8px на
+                  // мобильном и 10px на десктопе вместо 12px.
                   "top-1/2 flex h-4 w-8 -translate-y-1/2 items-center justify-center rounded-[12px] bg-[var(--range-input-accent)] outline-none transition-colors select-none desktop:h-5 desktop:w-10",
-                  // Round-2 audit fix: dropped the :hover recolor to
-                  // --range-input-accent-hover — pixel-sampling the whole-
-                  // box Hover state screenshot (14342:39910) shows the
-                  // thumb staying #80E3FF; that darker blue belongs to the
-                  // indicator permanently, not the thumb on hover (see
-                  // Indicator above).
+                  // Исправление второго прохода: убрана перекраска по
+                  // наведению в --range-input-accent-hover. Пипетка по
+                  // скриншоту состояния Hover всей коробки показывает, что
+                  // ползунок остаётся #80E3FF; более тёмный синий постоянно
+                  // принадлежит индикатору, а не ползунку при наведении
+                  // (см. Indicator выше).
                   "focus-visible:focus-ring",
                   disabled && "!bg-[var(--range-input-accent-disabled)]",
                   invalid && "!bg-[var(--range-input-accent-error)]"
                 )}
               >
-                {/* size-4: Figma places each small arrow in its own 16px
-                    box (the glyph itself is 5.5×9 inside it). The old
-                    size-2.5 shrank a regular chevron to 10px, which landed
-                    both narrower and shorter than the spec. */}
+                {/* size-4: в макете каждая маленькая стрелка лежит в своей
+                    коробке 16px (сам глиф внутри неё 5.5×9). Прежний
+                    size-2.5 ужимал обычный шеврон до 10px, и он выходил и
+                    уже, и ниже, чем в макете. */}
                 <ArrowLeftSmall
                   className={cn(
                     "size-4 text-[var(--range-input-thumb-icon-fg)]",
-                    // Round-2 audit fix: Disabled symbol's chevron SVGs are
-                    // fill="white", but disabled previously fell through to
-                    // the default dark icon color.
+                    // Исправление второго прохода: у символа Disabled в SVG
+                    // стрелок стоит fill="white", а выключенное состояние
+                    // раньше проваливалось в тёмный цвет значка по
+                    // умолчанию.
                     disabled && "text-[var(--range-input-thumb-icon-fg-disabled)]",
                     invalid && "text-[var(--range-input-thumb-icon-fg-error)]"
                   )}
@@ -215,13 +221,13 @@ function RangeInput({
         </div>
       </SliderPrimitive.Root>
 
-      {/* Round-2 audit fix: this used to be one wrapper div with px-1
-          (4px); the Figma "Indicators" and "Comment" rows (e.g.
-          43253:13680, 17156:6575) both use px-[16px] to align with the
-          box's own inner padding, and Indicators additionally carries its
-          own pt-[8px] on top of the parent's gap-4 that Comment doesn't
-          have — split into two siblings so each row's padding matches its
-          own Figma counterpart independently. */}
+      {/* Исправление второго прохода: раньше это была одна обёртка div с
+          px-1 (4px). В макете ряды «Indicators» и «Comment» оба используют
+          px-[16px], чтобы встать по внутренним отступам самой коробки, а у
+          Indicators вдобавок есть собственный pt-[8px] поверх родительского
+          gap-4, которого у Comment нет. Разделено на два соседних узла,
+          чтобы отступы каждого ряда совпадали со своим оригиналом
+          независимо. */}
       {scaleLabels && scaleLabels.length > 0 && (
         <div className="flex items-center justify-between px-4 pt-2 text-p3-medium text-[var(--range-input-scale-fg)]">
           {scaleLabels.map((scaleLabel, index) => (

@@ -3,21 +3,23 @@ import { CirclePlus } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
-// FileUploadDropzone — Drag & Drop target. States: default, hover (drag
-// over — fills with Grey 100 per spec), disabled, error.
+// FileUploadDropzone — цель для перетаскивания файлов. Состояния: обычное,
+// наведение (файл тащат над зоной — по макету заливается Grey 100),
+// выключенное и ошибка.
 
 type DropzoneTone = "disabled" | "error" | "default"
 
-// Icon and main text share the same three colors; the subtitle's
-// disabled/default tokens differ from them (its own dedicated subtitle-fg
-// tokens), but error still reuses the same border-error token as the rest.
+// Значок и основной текст делят одни и те же три цвета; у подзаголовка
+// токены выключенного и обычного состояний свои собственные, а вот ошибка
+// всё равно переиспользует тот же токен border-error, что и остальные.
 const CONTENT_COLOR: Record<DropzoneTone, string> = {
   disabled: "text-[var(--file-upload-fg-disabled)]",
   error: "text-[var(--file-upload-border-error)]",
   default: "text-[var(--file-upload-fg)]",
 }
-// Error only recolors the icon/title (CONTENT_COLOR) — the subtitle stays
-// its normal grey even in the error state, per the live Figma component.
+// Ошибка перекрашивает только значок и заголовок (CONTENT_COLOR):
+// подзаголовок и в состоянии ошибки остаётся обычным серым — так в живом
+// компоненте макета.
 const SUBTITLE_COLOR: Record<DropzoneTone, string> = {
   disabled: "text-[var(--file-upload-subtitle-fg-disabled)]",
   error: "text-[var(--file-upload-subtitle-fg)]",
@@ -57,7 +59,7 @@ export function FileUploadDropzone({
 
   let containerToneClass: string
   if (disabled) {
-    // Заливка та же, что и в Default: у `State=Disabled` (16029:58001)
+    // Заливка та же, что и в Default: у `State=Disabled`
     // меняются только рамка и текст.
     containerToneClass =
       "cursor-not-allowed border-[var(--file-upload-border-disabled)] bg-[var(--file-upload-bg)]"
@@ -66,9 +68,9 @@ export function FileUploadDropzone({
       "cursor-pointer border-[var(--file-upload-border-error)] bg-[var(--file-upload-bg)]"
   } else {
     // На наведении меняется ЗАЛИВКА, а не рамка: у `Size=Desktop,
-    // State=Hover` (нода 16029:57996) появляется фон grey-106 #F8F8F8, а
-    // пунктирная рамка остаётся тем же grey-284, что и в Default (нода
-    // 16029:57991). Раньше здесь висел `hover:border-*` на тот же самый
+    // State=Hover` появляется фон grey-106 #F8F8F8, а
+    // пунктирная рамка остаётся тем же grey-284, что и в Default.
+    // Раньше здесь висел `hover:border-*` на тот же самый
     // цвет — то есть наведение не давало вообще никакой реакции.
     // Перетаскивание файла показывает то же состояние, что и наведение.
     containerToneClass = cn(
@@ -82,15 +84,17 @@ export function FileUploadDropzone({
       data-slot="file-upload-dropzone"
       data-disabled={disabled || undefined}
       aria-disabled={disabled || undefined}
-      // Design-check #22: measured against ui/file-upload/file-upload-1.svg
-      // at native scale (icon top edge sits exactly 24px below the card's
-      // own top edge — py-6 already matched). What was actually off is the
-      // layout: the spec puts the icon inline with the title on one row,
-      // not stacked above it, with the subtitle on its own row below.
+      // Дизайн-чек, замечание 22: замерено по вектору макета в
+      // натуральном масштабе (верхний край значка стоит ровно на 24px ниже
+      // верхнего края самой карточки — py-6 и так совпадал). На деле не
+      // совпадала раскладка: макет ставит значок в одну строку с
+      // заголовком, а не над ним, а подзаголовок выносит в свою строку
+      // ниже.
       className={cn(
-        // `p-6` and `gap-2`: the master (16029:57969) is a uniform 24px box
-        // with 8px between the "Перетащите или загрузите файлы" row and the
-        // format hint — the 16px sides and 4px gap were tighter than the spec.
+        // `p-6` и `gap-2`: мастер — это равномерная коробка 24px с
+        // зазором 8px между строкой «Перетащите или загрузите файлы» и
+        // подсказкой о форматах; прежние 16px по бокам и зазор 4px были
+        // теснее макета.
         "relative flex w-full flex-col items-center gap-2 rounded-[24px] border border-dashed p-6 text-center transition-colors",
         containerToneClass,
         className
@@ -119,6 +123,9 @@ export function FileUploadDropzone({
         multiple={multiple}
         accept={accept}
         disabled={disabled}
+        // Ошибку видно не только глазами: без `aria-invalid` скринридер
+        // объявляет поле обычным, сколько бы красного вокруг ни нарисовали.
+        aria-invalid={error || undefined}
         className="sr-only"
         onChange={(event) => {
           if (event.target.files && event.target.files.length > 0) {
@@ -133,9 +140,9 @@ export function FileUploadDropzone({
           {children ?? (
             <>
               {"Перетащите или "}
-              {/* Figma underlines this half of the label with the "Ссылка/"
-                  decoration — from-font thickness, ink-skipping off (node
-                  I16029:57763;16029:57994) — which is what `text-link` is. */}
+              {/* Эту половину подписи макет подчёркивает оформлением
+                  «Ссылка/» — толщина from-font, пропуск засечек выключен,
+                  — а это и есть `text-link`. */}
               <span className="text-link">загрузите файлы</span>
             </>
           )}

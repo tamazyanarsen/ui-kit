@@ -28,8 +28,9 @@ function DropdownListExample() {
   )
 }
 
-// Table usage (ui/scrollbar) — 16px inset from left/right/bottom, thicker
-// (8px) track since horizontal scroll is more common in wide tables.
+// Применение в таблице (ui/scrollbar) — отступ 16px слева, справа и снизу,
+// дорожка толще (8px), потому что в широких таблицах горизонтальная
+// прокрутка встречается чаще.
 function TableScrollExample() {
   return (
     <Scrollbar

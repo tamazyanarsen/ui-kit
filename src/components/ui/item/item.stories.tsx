@@ -16,7 +16,7 @@ import { Item, type ItemProps, type RightElementType } from "./item"
    таковому в Figma… необходимо привести атрибуты в Storybook в соответствие
    с тем, как это оформлено в Figma, чтобы можно было проверять компоненты».
 
-   Компонент-сет «ELK / item» (нода 31845:82730) объявляет ровно пять
+   Компонент-сет «ELK / item» объявляет ровно пять
    свойств, и все они теперь есть в контролах под своими именами:
 
      State        = Default | Disabled            → `disabled`
@@ -26,11 +26,11 @@ import { Item, type ItemProps, type RightElementType } from "./item"
      Text Color   = Grey | Red | Yellow           → `commentColor`
 
    Плюс два булевых слота самого мастера — `showComment` и
-   `showRightElement` — и вложенный сет «Right Element (Desktop, ELK)»
-   (нода 31845:85324) со своими семью значениями.
+   `showRightElement` — и вложенный сет «Right Element (Desktop, ELK)» со
+   своими семью значениями.
 
    Заодно исправлено имя: наш `accordion` — это Figma-шный `Select`
-   (нода 31845:85333 рисует ровно `icon / arrow down chevron`), так что
+   (он рисует ровно `icon / arrow down chevron`), так что
    значение переименовано, чтобы список совпадал с макетом. `none` —
    единственное добавленное сверх Figma значение: в макете правый элемент
    выключается отдельным булевым слотом, а у нас это его же список. */
@@ -61,12 +61,12 @@ const meta = {
   title: "Компоненты/Item",
   component: Item,
   parameters: { layout: "padded" },
-  // `thumbnail` holds a JSX element (or the sentinel `true`, which renders
-  // the component's own built-in `DefaultThumbnail`) — map a friendly
-  // "None"/"Default" choice to `undefined`/`true` instead of disabling
-  // the control (same technique as Button's `icon`).
+  // `thumbnail` держит JSX-элемент (или значение-маркер `true`, при котором
+  // рисуется встроенный в компонент `DefaultThumbnail`), поэтому понятный
+  // выбор «None» и «Default» отображается в `undefined` и `true`, а не
+  // контрол выключается (тот же приём, что и с `icon` у Button).
   argTypes: {
-    /* Порядок и имена — как в таблице «Свойства компонента» (31877:15804):
+    /* Порядок и имена — как в таблице «Свойства компонента»:
        State / Type / Conclusion / Sub Category / Show Comment /
        Show Right Element / Show Divider. */
     // У самого сета `ELK / item` оси Size нет: Desktop и Mobile разведены
@@ -83,7 +83,7 @@ const meta = {
     },
     thumbnail: { table: { disable: true } },
     // Сonclusion=True добавляет строку Text над Value (P2 Medium над P1
-    // Medium) — сверено на нодах 31845:82731 (True) и 31845:85106 (False).
+    // Medium) — сверено на символах True и False.
     conclusion: {
       name: "Сonclusion",
       description: "Строка Text над значением",
@@ -93,8 +93,8 @@ const meta = {
     showComment: toggleArgType("Show Comment"),
     showRightElement: toggleArgType("Show Right Element"),
     divider: toggleArgType("Show Divider"),
-    // Вложенные сеты мастера: «Right Element (Desktop, ELK)» (31845:85324)
-    // и «Comment (Desktop, ELK)» (31845:85310) — своими категориями, как в
+    // Вложенные сеты мастера: «Right Element (Desktop, ELK)»
+    // и «Comment (Desktop, ELK)» — своими категориями, как в
     // Figma они показаны отдельными блоками свойств вложенного инстанса.
     rightElement: {
       name: "Type",
@@ -109,9 +109,10 @@ const meta = {
         "Панель, которую раскрывает строка, сейчас открыта (Right Element = select): шеврон смотрит вверх и выставляется aria-expanded",
       table: { category: "Right Element (ELK)" },
     },
-    // Only meaningful for rightElement="toggle" / "checkbox". The Playground
-    // keeps them clickable through its own state, but setting the control
-    // pins the value (same pattern as Checkbox's `checked`).
+    // Имеет смысл только при rightElement="toggle" и "checkbox".
+    // Playground оставляет их кликабельными через собственное состояние, но
+    // заданный контрол закрепляет значение (та же схема, что и с `checked`
+    // у Checkbox).
     toggleChecked: { control: "boolean", table: { category: "Right Element (ELK)" } },
     checkboxChecked: { control: "boolean", table: { category: "Right Element (ELK)" } },
     rightText: { control: "text", table: { category: "Right Element (ELK)" } },
@@ -121,9 +122,10 @@ const meta = {
       options: ["grey", "red", "yellow"],
       table: { category: "Comment (ELK)" },
     },
-    // `text`/`comment`/`informationText`/`rightText` are all `React.ReactNode`
-    // but every usage is a plain string — without this, leaving one unset
-    // falls back to a generic "Set object" JSON editor.
+    // `text`, `comment`, `informationText` и `rightText` объявлены как
+    // `React.ReactNode`, но везде используются обычными строками. Без этого
+    // незаданное значение откатывается на универсальный JSON-редактор
+    // «Set object».
     text: { control: "text", table: { category: "Контент" } },
     value: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
@@ -182,8 +184,9 @@ export const Playground: Story = {
   ),
 }
 
-// Keeps the toggle/checkbox right-elements clickable, while still letting
-// the `toggleChecked`/`checkboxChecked` controls pin a value when set.
+// Оставляет правые элементы toggle и checkbox кликабельными, но при этом
+// позволяет контролам `toggleChecked` и `checkboxChecked` закрепить
+// значение, когда они заданы.
 function InteractiveItem({ toggleChecked, checkboxChecked, ...props }: ItemProps) {
   const [toggle, setToggle] = useState(true)
   const [checkbox, setCheckbox] = useState(false)
@@ -203,7 +206,7 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <div className="flex flex-col gap-2">
-      {/* Right Element is Figma's own variant axis. */}
+      {/* Right Element — собственная ось вариантов в макете. */}
       <StatesMatrix<ItemProps>
         stretch
         cellClassName="min-w-[280px]"
@@ -233,8 +236,8 @@ export const Matrix: Story = {
         render={(props) => <InteractiveItem {...props} />}
       />
 
-      {/* Comment colour and the value-only form are independent of the
-          right element. */}
+      {/* Цвет комментария и форма «только значение» не зависят от правого
+          элемента. */}
       <StatesMatrix<ItemProps>
         stretch
         cellClassName="min-w-[320px]"
@@ -246,11 +249,12 @@ export const Matrix: Story = {
         ]}
         rows={[
           { label: "С заголовком", props: {} },
-          // Value-only: the row collapses to a single line.
+          // Только значение: строка схлопывается в одну.
           { label: "Только значение", props: { text: undefined } },
           {
-            // The spec's "Максимальное количество строк" rule: Value wraps
-            // to at most 3 lines and Comment to 5, both elided after that.
+            // Правило «Максимальное количество строк» из макета: значение
+            // переносится максимум на 3 строки, комментарий — на 5, дальше
+            // оба обрезаются многоточием.
             label: "Длинный текст\n(3 / 5 строк)",
             props: {
               value:

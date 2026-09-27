@@ -7,19 +7,21 @@ import { filterTablePillClass } from "./filter-table"
 import { Badge } from "@/components/ui/badge"
 import { Dropdown } from "@/components/ui/dropdown"
 
-// FilterShell — the chip trigger + popup that every filter kind shares.
+// FilterShell — триггер-чип и всплывающее окно, общие для всех видов
+// фильтра.
 //
-// "Фильтрация (ЕЛК)" (node 70295:22565) defines one trigger and several
-// dropdown kinds hanging off it (Множественный выбор / Date / Сумма /
-// Search / Булев). The trigger's rules are common to all of them:
+// «Фильтрация (ЕЛК)» описывает один триггер и несколько видов выпадающего
+// окна, которые к нему подвешиваются (Множественный выбор / Date / Сумма /
+// Search / Булев). Правила триггера у всех общие:
 //
-//   • "Минимальная ширина — 80 px, максимальная ширина — 256 px. Если
+//   • «Минимальная ширина — 80 px, максимальная ширина — 256 px. Если
 //     название не умещается в максимальную ширину, то оно скрывается в
-//     многоточие."
-//   • "Кнопки в фильтрах не блокируются" — Reset/Apply are always live.
+//     многоточие».
+//   • «Кнопки в фильтрах не блокируются» — «Сбросить» и «Применить» всегда
+//     живые.
 //
-// Only the popup body and its width change per kind, so those are the two
-// things this shell takes from the caller.
+// По видам меняются только тело всплывающего окна и его ширина — именно эти
+// две вещи оболочка и берёт у вызывающего кода.
 
 const ICON_SIZE = "size-4"
 
@@ -30,7 +32,7 @@ const ICON_SIZE = "size-4"
 // здесь больше нельзя.
 interface FilterShellProps {
   label: React.ReactNode
-  /** Text shown in place of the label once the filter is applied. */
+  /** Текст, который показывается вместо подписи, когда фильтр применён. */
   valueLabel?: React.ReactNode
   count?: number
   disabled?: boolean
@@ -38,7 +40,7 @@ interface FilterShellProps {
   onClear?: () => void
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Popup width in px — 384 for most kinds, 560 for Date. */
+  /** Ширина всплывающего окна в пикселях — 384 для большинства видов, 560 для даты. */
   width?: number
   children?: React.ReactNode
   className?: string
@@ -153,8 +155,9 @@ function FilterShell({
   )
 }
 
-/** "Если выбранно несколько значений, то пишем количество в кнопке –
- * «Применить: 1»" — one shared label so every kind words it identically. */
+/** «Если выбранно несколько значений, то пишем количество в кнопке –
+ * «Применить: 1»» — одна общая подпись, чтобы все виды фильтра
+ * формулировали её одинаково. */
 function filterApplyLabel(count: number) {
   return count > 0 ? `Применить: ${count}` : "Применить"
 }

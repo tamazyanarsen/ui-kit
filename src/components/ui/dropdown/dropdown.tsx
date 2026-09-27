@@ -3,21 +3,23 @@ import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
-// Dropdown — the popup surface Figma documents as its own separate,
-// reusable component (Select's own canvas lists three distinct property
-// tables: Select, Menu Point, and Dropdown — "Больше информации о
-// выпадающем списке вы можете найти в разделе Select, Dropdown" is a
-// cross-reference between components, not just a shared look). Every
-// floating option/action list in this kit — Select, Combobox, Autocomplete,
-// Button Menu's "..." overflow, Selection Button — renders through this one
-// component via each primitive's own `render` prop, instead of each one
-// re-deriving its own popup chrome from a shared className string.
+// Dropdown — всплывающая поверхность, которую макет описывает как
+// отдельный переиспользуемый компонент (на канвасе самого Select лежат три
+// разные таблицы свойств: Select, Menu Point и Dropdown, а фраза «Больше
+// информации о выпадающем списке вы можете найти в разделе Select,
+// Dropdown» — это перекрёстная ссылка между компонентами, а не просто общий
+// внешний вид). Все плавающие списки опций и действий в ките — Select,
+// Combobox, Autocomplete, перекрытие «...» у Button Menu, Selection Button —
+// рисуются через этот один компонент, подставляясь в `render` каждого
+// примитива, вместо того чтобы каждый заново выводил обрамление всплывающего
+// окна из общей строки классов.
 //
-// forwardRef is required, not optional: Base UI's `render` prop forwards a
-// ref to the element it swaps in (for floating-ui positioning/focus
-// management) — a plain function component here silently drops that ref.
+// forwardRef здесь обязателен, а не желателен: пропс `render` в Base UI
+// пробрасывает ref в элемент, который подставляет (для позиционирования
+// floating-ui и работы с фокусом), и обычный функциональный компонент этот
+// ref молча потеряет.
 /**
- * Свойство `Size` компонент-сета `ELK / dropdown` (5739:16497).
+ * Свойство `Size` компонент-сета `ELK / dropdown`.
  *
  * Дизайн-чек Storybook (Аня Багрова) №27: «отсутствует вариант Mobile». В
  * макете их два и они отличаются не только шириной: Mobile Full Screen —
@@ -96,10 +98,11 @@ interface DropdownItemProps extends React.ComponentProps<"div"> {
   description?: React.ReactNode
 }
 
-// The "Menu Point" item variant used by the action-list consumers above —
-// title + optional description, highlighted on hover/focus. Select's own
-// SelectItem has a different, checkbox-driven look (see select/item.tsx)
-// and stays separate; this is specifically the plain action-row variant.
+// Вариант строки «Menu Point», которым пользуются списки действий выше:
+// заголовок плюс необязательное описание, подсветка по наведению и фокусу.
+// У собственного SelectItem другой вид, построенный вокруг флажка (см.
+// select/item.tsx), и он остаётся отдельным; здесь именно простая строка
+// действия.
 //
 // Дизайн-чек №21: типографика и цвета здесь те же, что у общей строки меню
 // (`@/components/ui/menu-item`) — P1 Medium на основной текст, P3 Medium на
@@ -108,15 +111,15 @@ interface DropdownItemProps extends React.ComponentProps<"div"> {
 // ряд «контрол + текст». Новые строки с чекбоксом или иконкой собирайте на
 // `MenuItemContent`, как это делает Combobox.
 //
-// Flush, un-rounded p-4 row with a flat --menu-item-bg-highlighted (#F8F8F8)
-// hover fill — confirmed
-// against the literal "Menu Point (ELK)" markup inside the canonical
-// "ELK / dropdown" component (node 5739:16568) and the "Уровень 2" hover
-// state on the Select/Dropdown usage canvas (node 29750:55882): items are
-// edge-to-edge `p-[16px]` with no border-radius of their own, the same
-// #F8F8F8 highlighted-row color Select/Combobox's own items use — only the
-// Dropdown container itself is rounded, and clips the flush top/bottom rows
-// to follow its corners (see the `overflow-hidden` each consumer adds).
+// Строка идёт от края до края, без собственных скруглений, с отступом p-4 и
+// плоской заливкой подсветки --menu-item-bg-highlighted (#F8F8F8). Сверено
+// с литеральной разметкой «Menu Point (ELK)» внутри канонического компонента
+// «ELK / dropdown» и с состоянием наведения «Уровень 2» на канвасе
+// использования Select/Dropdown: пункты идут `p-[16px]` во всю ширину и без
+// своего радиуса, с тем же цветом подсвеченной строки #F8F8F8, что и у
+// пунктов Select и Combobox. Скруглён только сам контейнер Dropdown, и он же
+// подрезает верхнюю и нижнюю строки по своим углам (см. `overflow-hidden`,
+// который добавляет каждый потребитель).
 const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
   function DropdownItem({ className, text, description, children, ...props }, ref) {
     return (

@@ -18,8 +18,9 @@ export type ProgressBarStatusLine =
   | "subtitle"
   | "description"
 
-// Subtitle ("Value") text color per the "Статусы" spec section — same 5
-// options for both variants, independent of the bar's own fill color.
+// Цвет текста подзаголовка («Value») по разделу макета «Статусы» — те же
+// пять вариантов для обоих вариантов компонента, независимо от цвета
+// заливки самой полосы.
 export const STATUS_FG: Record<ProgressBarStatus, string> = {
   default: "var(--progress-title-fg)",
   success: "var(--progress-green)",
@@ -28,11 +29,12 @@ export const STATUS_FG: Record<ProgressBarStatus, string> = {
   information: "var(--progress-meta-fg)",
 }
 
-// Timeline fill color per "Диапазон применения цвета": 0% stays the bare
-// track color, (0,50) green, [50,100) amber, 100 red — `statusTimeline`
-// overrides the automatic pick when passed explicitly. Process (#2FCEEF,
-// pixel-sampled from Status=Process, 70333:2283) is the neutral blue used
-// «если нет необходимости в использовании статусного цвета».
+// Цвет заливки timeline по разделу «Диапазон применения цвета»: на 0%
+// остаётся чистый цвет дорожки, в интервале (0,50) зелёный, на [50,100)
+// янтарный, на 100 красный. Переданный явно `statusTimeline` перекрывает
+// автоматический выбор. Process (#2FCEEF, снят пипеткой со Status=Process)
+// — нейтральный синий, который берут «если нет необходимости в
+// использовании статусного цвета».
 export const TIMELINE_FG: Record<ProgressBarStatusTimeline, string> = {
   process: "var(--progress-step-fill)",
   success: "var(--progress-green)",

@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils"
 
 import { RightElement, type RightElementType } from "./right-element"
 
-// Item — "Элемент": a content row, always interactive (per the spec's own
-// description: clicking it selects from a list, opens a bottom sheet, or
-// navigates). Two anatomy shapes stack via `text`: Value alone, or
-// Text+Value+Comment. `subCategory` is the spec's "Sub Category" property —
-// a 2nd-nesting-level row gets extra left indent.
+// Item — «Элемент»: строка содержимого, всегда интерактивная (по
+// собственному описанию макета: клик по ней выбирает пункт из списка,
+// открывает нижнюю шторку или ведёт на другой экран). Две формы анатомии
+// переключаются через `text`: только значение либо
+// текст + значение + комментарий. `subCategory` — это свойство макета «Sub
+// Category»: строка второго уровня вложенности получает дополнительный
+// отступ слева.
 //
 // Правый элемент со всеми его видами и зонами нажатия — в
 // `right-element.tsx`.
@@ -21,10 +23,9 @@ import { RightElement, type RightElementType } from "./right-element"
 // ТОЛЬКО размеры текстов, но подобрать аналоги из нашего кита. Аналогично по
 // вложенным элементам — переключить на Mobile-версии».
 //
-// Референс — сет `IB / item` (70427:8441, v1.2.1, Release 58.13), временно
-// скопированный заказчиком в доступный файл: символы 70427:8463 (Mobile) и
-// 70427:8442 (Desktop) того же сочетания свойств. Сравнение двух его размеров
-// и есть источник дельты:
+// Референс — сет `IB / item` (v1.2.1, Release 58.13), временно скопированный
+// заказчиком в доступный файл: символы Mobile и Desktop того же сочетания
+// свойств. Сравнение двух его размеров и есть источник дельты:
 //
 //   подпись   P2 Medium 14/20 → P3 Medium 12/16   (`Description`)
 //   значение  P1 Medium 16/24 → P2 Medium 14/20   (`Text`)
@@ -100,13 +101,14 @@ interface ItemProps {
 
 function DefaultThumbnail() {
   return (
-    // Design-check #35: square with a capped radius, like the kit's own
-    // `Thumbnail` component (ui/thumbnail) — was a small rounded-full
-    // circle, which doesn't match that convention.
+    // Дизайн-чек, замечание 35: квадрат с ограниченным радиусом, как у
+    // собственного компонента `Thumbnail` кита (ui/thumbnail). Раньше здесь
+    // стоял маленький кружок rounded-full, который этой конвенции не
+    // отвечает.
     //
     // ⚠️ Глиф заглушки — `icon / more` (многоточие), и менять его на
     // `comment` НЕ НУЖНО. Проверено вектором: ассет мастера
-    // (`ELK / thumbnail` внутри 31845:82855) — это ровно три точки.
+    // (`ELK / thumbnail`) — это ровно три точки.
     //
     // Замечание «значок в рекомендациях: message → comment» относится не к
     // умолчанию компонента, а к КОНКРЕТНОЙ строке на экране отчётов, где
@@ -169,17 +171,19 @@ function Item({
       // styles/base.css гасит линию только у строк БЕЗ него (см. `divider`).
       data-divider={divider === undefined ? undefined : divider ? "on" : "off"}
       className={cn(
-        // 16 above the content, 15 below it, then the 1px divider — the row
-        // is 80px tall for a Value+Comment either way. Figma's Divider Off
-        // variant keeps the same 15px gap and a transparent 1px line rather
-        // than collapsing, so the border here is always present and only
-        // changes colour; otherwise a list's last row would be 1px shorter.
+        // 16 над содержимым, 15 под ним, затем разделитель 1px — строка с
+        // значением и комментарием так или иначе высотой 80px. Вариант
+        // макета с выключенным разделителем сохраняет тот же зазор 15px и
+        // прозрачную линию 1px, а не схлопывается, поэтому рамка здесь
+        // присутствует всегда и лишь меняет цвет: иначе последняя строка
+        // списка была бы на 1px короче.
         "flex w-full cursor-pointer items-center gap-6 border-b px-4 pt-4 pb-[15px] text-left outline-none transition-colors",
-        // Sub Category indents the *content* by 64px relative to a normal
-        // row (Figma puts `pl-[64px]` on the Box of `Сategory=True`, on top
-        // of the row's own 16px side padding from the "Боковые отступы"
-        // note) — so 80px here, and the divider/hover fill still span the
-        // full width because the padding is on the row itself.
+        // Sub Category отодвигает *содержимое* на 64px относительно
+        // обычной строки (в макете на коробке варианта `Сategory=True`
+        // стоит `pl-[64px]` поверх собственных боковых отступов строки в
+        // 16px из примечания «Боковые отступы»), то есть здесь получается
+        // 80px. Разделитель и заливка наведения при этом по-прежнему идут во
+        // всю ширину, потому что отступ стоит на самой строке.
         // 72 на мобиле против 80 на десктопе: собственный отступ
         // подкатегории в `IB / item` — 56 и 64 соответственно, поля строки
         // (16) одни и те же.
@@ -206,7 +210,7 @@ function Item({
         )}
 
         {/* ⚠️ Прижата к верху ПЛАШКА, а текст остаётся по центру: в мастере
-            (31845:82859) колонка содержимого — `self-stretch justify-center`.
+            колонка содержимого — `self-stretch justify-center`.
             Разница видна только у короткого содержимого: рядом с плашкой 48
             однострочное значение 24 должно стоять по её центру, а не по
             верхней кромке. */}
@@ -222,9 +226,10 @@ function Item({
                 {text}
               </span>
             )}
-            {/* Value wraps up to 3 lines, Comment up to 5 — the spec's own
-                "Максимальное количество строк" note; single-line `truncate`
-                cut long titles that Figma shows wrapping. */}
+            {/* Значение переносится максимум на 3 строки, комментарий — на
+                5, по примечанию макета «Максимальное количество строк».
+                Однострочный `truncate` обрезал длинные заголовки, которые в
+                макете показаны с переносом. */}
             <span
               className={cn(
                 "line-clamp-3 text-p2-medium desktop:text-p1-medium",

@@ -1,9 +1,10 @@
 import type { IconProps } from "./types"
 
 interface ChevronsUpDownProps extends IconProps {
-  /** Which chevron is highlighted — Figma's `table-sort` states. `"none"`
-   * (Default) leaves both chevrons muted; `"asc"`/`"desc"` darken the up/down
-   * one respectively, which is how a sorted column is marked. */
+  /** Какой шеврон подсвечен — состояния `table-sort` из макета. `"none"`
+   * (Default) оставляет оба шеврона приглушёнными, `"asc"` и `"desc"`
+   * чернят верхний и нижний соответственно: так помечается столбец, по
+   * которому идёт сортировка. */
   sort?: "none" | "asc" | "desc"
 }
 

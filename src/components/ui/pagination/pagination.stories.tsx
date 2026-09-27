@@ -9,7 +9,7 @@ import { PAGE_COUNTS, Pagination, type PaginationProps } from "./pagination"
 
 /* Дизайн-чек №17: набор вариантов «записей на странице» — готовые пресеты,
    а не JSON-массив в контролах. Дизайн-чек №4 №7: пресетов ровно два — по
-   значениям `Value` элемента «Page Count (ELK)» (нода 14679:38986). */
+   значениям `Value` элемента «Page Count (ELK)». */
 
 type PlaygroundArgs = PaginationProps & { viewport?: Viewport }
 
@@ -23,8 +23,8 @@ const meta = {
     // которого не хватало, чтобы проверить случай «всё уместилось на одной
     // странице».
     size: { name: "Size", control: "inline-radio", options: ["L", "M"] },
-    // Дизайн-чек №4 №6: контрол «Page» — по имени элемента «Page (ELK)»
-    // (14679:36012), у которого свойство Value = 1 – 7 / Begin / Middle /
+    // Дизайн-чек №4 №6: контрол «Page» — по имени элемента «Page (ELK)»,
+    // у которого свойство Value = 1 – 7 / Begin / Middle /
     // End. В коде раскладка блока номеров считается из текущей и общей
     // страницы, поэтому здесь два числа, а не один список.
     page: { name: "Page", control: { type: "number", min: 1 } },
@@ -36,7 +36,7 @@ const meta = {
     },
     // Дизайн-чек от 07.09, замечание 24: «В Paginator заложить вариант,
     // когда страниц слева не видно… поддержать возможность и вывести в
-    // управление стори Playground». В таблице свойств (29998:35419) это
+    // управление стори Playground». В таблице свойств это
     // отдельная строка «Show All Page», ею контрол и назван.
     showPages: {
       name: "Show All Page",
@@ -80,8 +80,9 @@ function Controlled({ page, pageSize, ...props }: PaginationProps) {
 }
 
 export const Playground: Story = {
-  // Remount on every arg change so the `page`/`pageSize` controls actually
-  // move the (otherwise internally-owned) state.
+  // Перемонтируем на каждое изменение аргументов, чтобы контролы `page` и
+  // `pageSize` действительно двигали состояние, которым иначе владеет сам
+  // компонент.
   render: ({ viewport, ...args }) => (
     <ViewportScope viewport={viewport}>
       <Controlled
@@ -114,7 +115,7 @@ export const Matrix: Story = {
         },
         // «Если все записи отображаются на одной странице, в правой части
         // пагинатора должен оставаться только один активный элемент —
-        // текущая страница» (нода 30021:39016).
+        // текущая страница».
         { label: "Одна страница", props: { page: 1, totalPages: 1 } },
         // «В случае, если система возвращает пустое значение, пагинатор
         // также отображается, но отображается только правая часть (с

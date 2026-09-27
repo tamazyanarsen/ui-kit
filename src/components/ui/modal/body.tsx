@@ -4,16 +4,17 @@ import { cn } from "@/lib/utils"
 import { useScrollEdges } from "@/lib/use-scroll-edges"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
-// Scrollable content area. A divider only appears on the edge where content
-// is actually hidden by scrolling (top once scrolled down, bottom while not
-// yet at the end) — never on both edges when everything fits. Само правило
-// живёт в `useScrollEdges`: у Notification оно ровно такое же.
+// Прокручиваемая область содержимого. Разделитель появляется только у того
+// края, за которым прокрутка действительно скрывает содержимое (сверху —
+// когда уже прокрутили вниз, снизу — пока не дошли до конца) и никогда у
+// обоих краёв сразу, если всё помещается. Само правило живёт в
+// `useScrollEdges`: у Notification оно ровно такое же.
 //
-// The scroll region is the kit's own Scrollbar, not a bare overflow-y-auto:
-// Figma's Modal canvas places an `ELK / scrollbar` instance inside every
-// modal body (29 of them, e.g. node 0:1151 — 4px wide, 8px inset from the
-// right/top, hidden until the content actually overflows), which is exactly
-// what Scrollbar's themed 4px vertical track provides.
+// Областью прокрутки служит собственный Scrollbar кита, а не голый
+// overflow-y-auto: канвас Modal в макете кладёт инстанс `ELK / scrollbar`
+// внутрь каждого тела окна (их там 29; шириной 4px, с отступом 8px справа и
+// сверху, скрытый до того, как содержимое действительно переполнится), а
+// это ровно то, что даёт вертикальная дорожка 4px у Scrollbar.
 function ModalBody({ className, children, ...props }: React.ComponentProps<"div">) {
   const { ref, scrolledFromTop, scrolledToEnd, update } =
     useScrollEdges<HTMLDivElement>([children])

@@ -12,7 +12,7 @@ import { Informer, type InformerProps } from "./informer"
 import type { InformerIcon, InformerSolid } from "./variants"
 
 /* Панель «Свойства компонента» компонент-сета `ELK / informer`
-   (таблица 70240:35839 на канвасе Message 666:20):
+   (таблица на канвасе Message):
 
      Size              Desktop, Mobile
      Add               None, One Button (Main), One Button (Additional),

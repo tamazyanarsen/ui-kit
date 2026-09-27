@@ -2,48 +2,24 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Divider — Figma ships this as its own named, versioned component
-// ("ELK / divider", node 58890:9260, v1.0.0): a 1px line filled with
-// grey-134 #DEDEDE, used both as a horizontal rule between rows and as the
-// vertical split between paired footer actions (Calendar's and the
-// Dropdown's "Сбросить | Применить" bars both instantiate it).
+// Divider — макет поставляет это отдельным именованным версионированным
+// компонентом («ELK / divider», v1.0.0): линия 1px, залитая grey-134
+// #DEDEDE, которая служит и горизонтальной чертой между строками, и
+// вертикальным разделением парных действий в подвале (её инстансы стоят и в
+// полосе «Сбросить | Применить» у Calendar, и у Dropdown).
 //
-// The kit had no counterpart — every consumer re-derived the same line,
-// which is how `SelectSeparator` ended up on the generic shadcn `--border`
-// (oklch(0.922 0 0) ≈ #E5E5E5) instead of the ELK grey. Route new dividers
-// through this component so the value stays in one place.
-//
-// Правило, ради которого компонент вообще заводится: **везде, где в макете
-// виден серый разделитель — это он.** Не локальная линия и не `border` по
-// месту.
-//
-// Главная ценность при этом не в компоненте, а в ЦЕНТРАЛИЗАЦИИ ЦВЕТА: до
-// него шестнадцать компонентных токенов брали серый каждый сам по себе, и
-// цвет линии всего кита нельзя было поменять одной правкой. Теперь все они
-// ссылаются на `--divider` (styles/tokens-forms.css).
-//
-// Не переведены и не должны быть: обводки фигур (белый тег, карточка тоста)
-// и кромка боковой панели — это края, а не разделители.
-//
-// Отступов у компонента нет вовсе — их держит вызывающий. Норма для стопки
-// информационных полей: от содержимого поля до линии 16, от линии до
-// следующего поля 16, зазор между самими полями 0.
-//
-// ⚠️ Грабля: `InformationField` рисует СОБСТВЕННУЮ линию только при типе
-// `Label Left`. Внешний `Divider` законен у типа `Line` и даёт двойную
-// линию у `Label Left`.
-//
-// Note: a divider drawn as a *border* on a neighbouring element (Modal's
-// scroll-edge rules, Notification's `divide-y`) legitimately stays a border
-// — this component is for the standalone 1px element Figma draws as its own
-// "Devider" node.
+// В ките пары ей не было — каждый потребитель выводил ту же линию заново, и
+// именно так `SelectSeparator` оказался на общем токене `--border` из shadcn
+// (oklch(0.922 0 0) ≈ #E5E5E5) вместо серого ЕЛК. Новые разделители ведите
+// через этот компонент, чтобы значение оставалось в одном месте.
 interface DividerProps extends React.ComponentProps<"hr"> {
   orientation?: "horizontal" | "vertical"
 }
 
-// forwardRef so Base UI primitives can swap this in via their `render` prop
-// (SelectSeparator does) — they forward a ref to the element they render,
-// and a plain function component would drop it.
+// forwardRef нужен, чтобы примитивы Base UI могли подставить этот
+// компонент через свой пропс `render` (так делает SelectSeparator): они
+// пробрасывают ref в элемент, который рисуют, а обычный функциональный
+// компонент его потерял бы.
 const Divider = React.forwardRef<HTMLHRElement, DividerProps>(function Divider(
   { orientation = "horizontal", className, ...props },
   ref

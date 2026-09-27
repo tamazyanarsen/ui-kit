@@ -8,14 +8,15 @@ import { Scrollbar } from "@/components/ui/scrollbar"
 
 import { HEADER_ICON_TILE_ACCENT, HeaderMenuPopup } from "./menu-popup"
 
-// Notification dropdown — the bell icon's own popup content. Deliberately
-// not built on the shared Notification component (src/components/ui/
-// notification): that component's own spec is flagged "Actual old" and its
-// item shape (title, then a bold sum line, then status/description lines)
-// doesn't match this dropdown's row ("Название" + a right-aligned status/
-// amount on the same line, then org, timestamp, description) — forcing one
-// onto the other would either misrender or require changing a component
-// this task isn't scoped to touch.
+// Выпадающий список уведомлений — собственное содержимое всплывающего окна
+// у значка колокольчика. Намеренно не построен на общем компоненте
+// Notification (src/components/ui/notification): его собственный макет
+// помечен «Actual old», а устройство строки там (заголовок, затем жирная
+// строка суммы, затем строки статуса и описания) не совпадает со строкой
+// этого списка («Название» и прижатые вправо статус или сумма в той же
+// строке, затем организация, отметка времени и описание). Натягивание
+// одного на другое либо рисовалось бы неправильно, либо потребовало бы
+// менять компонент, трогать который в эту задачу не входит.
 interface NotificationMenuItem {
   id: string
   title: React.ReactNode
@@ -155,10 +156,11 @@ function NotificationMenu({
         <p className="border-b border-[var(--header-divider)] px-4 py-3 text-p1-medium text-[var(--header-fg)]">
           Уведомления
         </p>
-        {/* Spec: fixed 584px height once content reaches it, then scrolls,
-            with a 32px bottom padding — capped lower here (420px) since this
-            kit's demo content is only two items, but the scroll/padding
-            mechanics match. */}
+        {/* По макету: фиксированная высота 584px, когда содержимое до неё
+            дорастает, дальше прокрутка, и нижний отступ 32px. Здесь
+            ограничение ниже (420px), потому что демонстрационного
+            содержимого в ките всего два пункта, но механика прокрутки и
+            отступа та же. */}
         <Scrollbar
         inset="dropdown"
         className="flex max-h-[420px] flex-col divide-y divide-[var(--header-divider)] pb-8"

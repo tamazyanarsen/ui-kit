@@ -18,8 +18,7 @@ import { cn } from "@/lib/utils"
  * чекбокса, отчего текст стоял выше галочки. Отсюда и замечание.
  *
  * Метрики взяты из компонент-сета «Menu Point (ELK)», вариант
- * `Size=Desktop, State=Default, Type=Level 1, Style=Text` (нода
- * 28080:55911):
+ * `Size=Desktop, State=Default, Type=Level 1, Style=Text`:
  *
  *   строка      flex, gap 8, items-start, padding 16 со всех сторон
  *   ведущий     своя колонка `items-center` + pr-8 (итого 16 до текста)
@@ -40,7 +39,7 @@ const MENU_ITEM_ROW_CLASS =
  *
  * Значения макета — Level 1…4, и отличаются они только левым полем: Level 1
  * это обычные `p-16`, дальше поле растёт на 16 за уровень (`Level 2` —
- * `pl-[32px] pr-[16px] py-[16px]`, нода 28080:55756). Правое поле и
+ * `pl-[32px] pr-[16px] py-[16px]`). Правое поле и
  * вертикальные не меняются.
  */
 type MenuItemLevel = 1 | 2 | 3 | 4

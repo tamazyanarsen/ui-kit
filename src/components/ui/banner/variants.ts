@@ -1,15 +1,15 @@
 import { cva } from "class-variance-authority"
 
-// Banner tokens. Gradient stops measured directly from ui/banner/banners.svg
-// (Figma export) — rgb(37,38,40)=#252628, rgb(255,201,181)=#FFC9B5,
-// rgb(163,213,98)=#A3D562, rgb(154,195,255)=#9AC3FF, rgb(248,248,248)=#F8F8F8,
-// all exact design-token colors. Each size has its own gradient angles (the
-// spec redraws the same 4-color stack at a different angle per aspect
-// ratio); layer ORDER (dark -> pink -> green -> blue, each color revealing
-// itself + everything beneath it) is kept consistent across sizes even
-// though a couple of raw instances in the file swap green/blue — that
-// swap isn't a deliberate variant, just inconsistent duplication between
-// separately-authored instances.
+// Токены Banner. Точки градиента сняты прямо с вектора макета —
+// rgb(37,38,40)=#252628, rgb(255,201,181)=#FFC9B5, rgb(163,213,98)=#A3D562,
+// rgb(154,195,255)=#9AC3FF, rgb(248,248,248)=#F8F8F8, — и все это точные
+// цвета дизайн-токенов. У каждого размера свои углы градиента (макет
+// перерисовывает ту же стопку из четырёх цветов под своим углом для каждого
+// соотношения сторон), а вот ПОРЯДОК слоёв (тёмный → розовый → зелёный →
+// синий, где каждый цвет проявляет себя и всё, что под ним) выдержан
+// одинаково для всех размеров, хотя пара отдельных инстансов в файле меняет
+// зелёный и синий местами. Эта перестановка — не намеренный вариант, а
+// разнобой между инстансами, которые рисовали порознь.
 export type BannerSize = "desktop" | "compact" | "mobile"
 export type BannerColor = "black" | "pink" | "green" | "blue"
 
@@ -59,9 +59,9 @@ export function bannerBackgroundImage(size: BannerSize, color: BannerColor) {
   return stack.join(", ")
 }
 
-// Colored (pink/green/blue) backgrounds are pale, so only the "black"
-// variant needs light text — matches the four color-row instances in the
-// "Colored banner" spec section exactly.
+// Цветные фоны (розовый, зелёный, синий) бледные, поэтому светлый текст
+// нужен только варианту «black» — в точности как в четырёх цветовых строках
+// инстансов из раздела «Colored banner» макета.
 export function bannerForegroundClassName(color: BannerColor) {
   return color === "black"
     ? "text-[var(--banner-fg-inverse)]"

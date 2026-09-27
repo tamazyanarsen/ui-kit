@@ -84,9 +84,9 @@ describe("Autocomplete", () => {
     await user.type(field, "Apple")
     await user.click(await screen.findByText("Apple"))
 
-    // Clear only renders once something is actually selected (Base UI's
-    // single-selection Combobox.Clear is keyed off the committed value, not
-    // the raw input text).
+    // Кнопка очистки рисуется только тогда, когда что-то действительно
+    // выбрано: Combobox.Clear из Base UI при одиночном выборе смотрит на
+    // подтверждённое значение, а не на сырой текст в поле.
     await user.click(screen.getByRole("button", { name: "Очистить поле" }))
 
     expect(onValueChange).toHaveBeenLastCalledWith(null)
@@ -94,9 +94,9 @@ describe("Autocomplete", () => {
   })
 })
 
-// Match highlighting. Exercised through the helper rather than through
-// AutocompleteItem, which is a Base UI Combobox.Item and only renders inside
-// a combobox root.
+// Подсветка совпадений. Проверяется через помощник, а не через
+// AutocompleteItem: тот является Combobox.Item из Base UI и рисуется только
+// внутри корня combobox.
 describe("highlightMatch", () => {
   function renderNodes(node: React.ReactNode) {
     return render(<div data-testid="out">{node}</div>)

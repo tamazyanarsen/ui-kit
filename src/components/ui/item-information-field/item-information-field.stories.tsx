@@ -17,7 +17,7 @@ import {
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
 
 /* Панель «Свойства компонента» компонент-сета `ELK / item.information field`
-   (таблица 70240:38965 на канвасе Item 11159:9039):
+   (таблица на канвасе Item):
 
      Size              Desktop, Mobile
      Type              Label Left, Label Top, Large Value, Line
@@ -185,8 +185,8 @@ export const Matrix: Story = {
             label: "+ иконки инфо",
             props: { labelInfo: "О поле", valueInfo: "О значении" },
           },
-          // Only Label Left carries the divider; the others are bare content
-          // the container spaces itself.
+          // Разделитель несёт только Label Left; остальные — голое
+          // содержимое, которое контейнер разводит сам.
           { label: "+ разделитель", props: { divider: true } },
         ]}
         render={(props) => <ItemInformationField {...props} />}

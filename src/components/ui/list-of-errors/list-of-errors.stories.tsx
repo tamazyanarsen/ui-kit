@@ -7,7 +7,7 @@ import { IssueItem, type IssueStatus } from "@/components/ui/issue-item"
 import { ListOfErrors, type ListOfErrorsProps } from "./list-of-errors"
 
 /**
- * List of Errors — список проблем (`ELK / list-errors`, сет 70427:3561,
+ * List of Errors — список проблем (`ELK / list-errors`,
  * Version 1.0.0, Release 68.34; бывш. Issue List — переименован по
  * дизайн-чеку от 13.09, замечание 9).
  *

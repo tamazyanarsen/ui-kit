@@ -1,8 +1,10 @@
-// The anatomy sheet's icon is a thin-stroke 24×24 glyph, thinner than this
-// kit's own bold filled 16×16 icon set, but only the kit's own Figma-sourced
-// icons may be used project-wide (no lucide-react) — so this reuses
-// CircleAlert/CircleCheck/Clock/Info same as everywhere else, accepting the
-// slightly bolder weight over pulling in a non-Figma icon set.
+// Значок на листе анатомии — это тонкоштриховой глиф 24×24, тоньше, чем
+// собственный жирный залитый набор значков 16×16 у этого кита, но по всему
+// проекту разрешено использовать только собственные значки кита,
+// происходящие из макета (никакого lucide-react). Поэтому здесь
+// переиспользуются CircleAlert, CircleCheck, Clock и Info, как и везде, — и
+// чуть большая жирность принимается как плата за отказ от постороннего
+// набора значков.
 import { CircleAlert, CircleCheck, Clock, Info } from "@/icons"
 
 export type InformerIcon =

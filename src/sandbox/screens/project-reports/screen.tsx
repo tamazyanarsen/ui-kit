@@ -23,8 +23,8 @@ import { GENERAL_CONTENTS, GeneralTab } from "./general-tab"
 import { STAGES_CONTENTS, StagesTab } from "./stages-tab"
 import { PROJECT } from "./data"
 
-// D12. «Отчёты по проектам» — эталоны 70371:25361 («Общая информация») и
-// 70371:25591 («Очереди строительства»).
+// D12. «Отчёты по проектам» — эталоны «Общая информация» и «Очереди
+// строительства».
 //
 // ⚠️ Вкладки экрана переключает `cell switcher` (`Switcher` кита), а НЕ
 // компонент `Tabs`: в эталоне это 504 × 56 на белом фоне с обводкой Grey

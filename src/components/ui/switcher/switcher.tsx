@@ -10,22 +10,24 @@ import { Dropdown } from "@/components/ui/dropdown"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
 
-// Switcher — "Cell Switcher / Переключатель": a segmented control (pill
-// container + a sliding active pill), as opposed to Tabs' underline style.
-// Same usage split as Tabs: Large for a 1st-level switcher, Medium for a
-// 2nd-level one — the spec's "Elements" matrix additionally labels these
-// two sizes "Desktop"/"Mobile" (its own top matrix on the same page still
-// says Large/Medium, so this reads as an added usage-context label, not a
-// renamed prop). `greyBackground` is the spec's own "Grey Background"
-// property — Grey Solid (true, active segment goes white) vs White Solid
-// (false, white container needs a border + a grey active segment for
-// contrast). `activeVariant="black"` is the separate "Active Black" variant
-// (a dark active pill, independent of the container background).
+// Switcher — «Cell Switcher / Переключатель»: сегментированный контрол
+// (контейнер-таблетка плюс скользящая активная таблетка), в
+// противоположность Tabs с их подчёркиванием. Разделение по применению то
+// же, что у Tabs: Large для переключателя первого уровня, Medium для
+// второго. В матрице «Elements» макета эти два размера дополнительно
+// подписаны «Desktop» и «Mobile» (верхняя матрица на той же странице
+// по-прежнему говорит Large/Medium, поэтому это читается как добавленная
+// подпись контекста применения, а не переименование пропса).
+// `greyBackground` — это собственное свойство макета «Grey Background»:
+// Grey Solid (true, активный сегмент становится белым) против White Solid
+// (false, белому контейнеру нужны рамка и серый активный сегмент для
+// контраста). `activeVariant="black"` — отдельный вариант «Active Black»
+// (тёмная активная таблетка, независимо от фона контейнера).
 //
-// Overflow behaves identically to Tabs (same "Show More" property, same
-// dropdown-of-hidden-items mockup in the spec) — see tabs.tsx's own comment
-// for why the trigger is hand-styled here rather than reusing
-// ButtonMenuOverflow's trigger outright.
+// Перекрытие ведёт себя ровно как у Tabs (то же свойство «Show More», тот
+// же макет выпадающего списка скрытых пунктов) — почему триггер здесь
+// оформлен вручную, а не переиспользует триггер ButtonMenuOverflow
+// целиком, см. в комментарии tabs.tsx.
 interface SwitcherItem {
   value: string
   label: React.ReactNode
@@ -108,9 +110,10 @@ function SegmentButton({
       data-value={item.value}
       data-active={active || undefined}
       className={cn(
-        // Weight lives in SEGMENT_PADDING's text-pN-medium (passed in via
-        // `className` below), not here — kept separate since size and
-        // weight ship together as one Figma-named style per size.
+        // Насыщенность живёт в text-pN-medium внутри SEGMENT_PADDING (она
+        // приходит ниже через `className`), а не здесь: размер и
+        // насыщенность идут вместе одним именованным стилем макета на
+        // каждый размер.
         // `relative` — чтобы подпись лежала ПОВЕРХ бегунка: тот
         // абсолютный и в потоке идёт после сегментов.
         "relative flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
@@ -154,9 +157,9 @@ function Switcher({
     onValueChange?.(next)
   }
 
-  // A whole-switcher `disabled` (per the spec's own "Disabled" example,
-  // which greys out every segment at once) layers on top of any item's own
-  // `disabled` rather than replacing it.
+  // `disabled` на всём переключателе (по собственному примеру «Disabled» в
+  // макете, где разом гаснут все сегменты) накладывается поверх
+  // собственного `disabled` каждого пункта, а не заменяет его.
   const resolvedItems = disabled ? items.map((item) => ({ ...item, disabled: true })) : items
 
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
@@ -275,9 +278,9 @@ function Switcher({
         </MenuPrimitive.Root>
       )}
 
-      {/* Off-screen measurement copy — see tabs.tsx's own comment; same
-          reasoning applies here (items hidden behind the overflow trigger
-          would otherwise report 0 width on the next recompute). */}
+      {/* Закадровая копия для замеров — см. комментарий в tabs.tsx, здесь
+          рассуждение то же: пункты, спрятанные за триггером перекрытия,
+          иначе сообщили бы нулевую ширину при следующем пересчёте. */}
       <div
         aria-hidden="true"
         className="pointer-events-none invisible absolute top-0 left-0 flex"

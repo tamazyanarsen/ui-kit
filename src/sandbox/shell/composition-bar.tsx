@@ -24,10 +24,10 @@ const DEFAULT_COLORS = [
 ]
 
 /**
- * `Type` элемента легенды (`Legend Element (ELK)`, нода 63582:16039).
+ * `Type` элемента легенды (`Legend Element (ELK)`).
  *
- * `line` — маркер-черта 16×4 (`Type=Line`, 63582:16040), `point` — кружок 8
- * (`Type=Point`, 63582:16124). Остальное у них одинаково: зазор 6, коробка
+ * `line` — маркер-черта 16×4 (`Type=Line`), `point` — кружок 8
+ * (`Type=Point`). Остальное у них одинаково: зазор 6, коробка
  * min-h 32 с полем 4 по вертикали, подпись P2 Medium Grey 1514.
  */
 type CompositionLegendMarker = "line" | "point"
@@ -59,7 +59,7 @@ function SandboxCompositionBar({
       <div className="flex w-full flex-col gap-4">
         {/* Углы прямые — дизайн-чек от 08.09, замечание 14 («убрать
             скругления у чартов»). В целёвке `Horizontal Bars Stacked`
-            (нода 63703:18971) полоса нарисована без скруглений вообще,
+            полоса нарисована без скруглений вообще,
             включая внешние концы; здесь стояло `rounded-full`. */}
         <div className="flex h-4 w-full overflow-hidden">
           {visible.map((segment, index) => (
@@ -74,7 +74,7 @@ function SandboxCompositionBar({
           ))}
         </div>
 
-        {/* Легенда — `Legend Element (ELK)` (нода 63582:16040): маркер 16×4
+        {/* Легенда — `Legend Element (ELK)`: маркер 16×4
             со скруглением 1, зазор 6, подпись P2 Medium цветом Grey 1514,
             шаг между элементами 16. Дизайн-чек от 08.09, замечание 17:
             «Неверный размер и начертание элемента легенды» — здесь стояла

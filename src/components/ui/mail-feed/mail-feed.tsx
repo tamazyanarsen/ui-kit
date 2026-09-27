@@ -12,13 +12,13 @@ const STATE_BG: Record<MailFeedState, string> = {
   error: "var(--mail-feed-error-bg)",
 }
 
-// MailFeed — "Письмо" (список входящих): a single message row in a mail
-// list. `state` is the message's own status (Default/New — unread/Used —
-// read/Error — a failed/problem message), independent of `checked`/
-// `onCheckedChange` which is the row's bulk-select checkbox. Message/
-// preview text is always two lines (message truncates to 1 line via
-// `line-clamp-1`, matching the spec's own fixed-height anatomy) regardless
-// of state.
+// MailFeed — «Письмо» (список входящих): одна строка сообщения в списке
+// почты. `state` — это собственный статус сообщения (Default; New —
+// непрочитанное; Used — прочитанное; Error — сбойное или проблемное), и он
+// не связан с `checked` и `onCheckedChange`, которые относятся к флажку
+// массового выбора строки. Текст сообщения и превью всегда занимают две
+// строки (само сообщение обрезается до одной через `line-clamp-1`, как в
+// анатомии макета с фиксированной высотой) независимо от состояния.
 interface MailFeedProps {
   id: React.ReactNode
   sender: React.ReactNode

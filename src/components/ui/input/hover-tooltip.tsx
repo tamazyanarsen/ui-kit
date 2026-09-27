@@ -3,16 +3,16 @@ import * as React from "react"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Tooltip } from "@/components/ui/tooltip"
 
-// Figma's Input canvas (666:12) documents two hover-Tooltip behaviours for
-// the field, both rendered through the kit's real `ELK / tooltip & hint`
-// component rather than a native `title`:
-//   * a Lock Input explains *why* it can't be edited ("При наведении
-//     отображается Tooltip с информацией о причине невозможности
-//     редактирования поля") — the reason comes in via `lockedHint`;
-//   * a value too long for the box is shown in full ("Если текст в поле не
-//     помещается по длине, его можно увидеть полностью во всплывающей
-//     подсказке (Tooltip) при наведении курсора мыши"), explicitly marked
-//     "только для Desktop", hence the desktop check.
+// Канвас Input в макете описывает два поведения подсказки по наведению для
+// поля, и оба рисуются настоящим компонентом кита
+// `ELK / tooltip & hint`, а не нативным `title`:
+//   * заблокированное поле объясняет, *почему* его нельзя править («При
+//     наведении отображается Tooltip с информацией о причине невозможности
+//     редактирования поля») — причина приходит через `lockedHint`;
+//   * значение, не поместившееся в коробку, показывается целиком («Если
+//     текст в поле не помещается по длине, его можно увидеть полностью во
+//     всплывающей подсказке (Tooltip) при наведении курсора мыши») — с
+//     явной пометкой «только для Desktop», отсюда и проверка на десктоп.
 
 /**
  * Значение, не поместившееся в поле, — или `null`, пока оно помещается.
@@ -30,16 +30,18 @@ function useOverflowValue(
     const el = inputRef.current
     if (!el) return
     const check = () => {
-      // +1px guard: sub-pixel text metrics make scrollWidth exceed
-      // clientWidth by a fraction on values that actually fit.
+      // Защита в +1px: субпиксельные метрики текста делают scrollWidth
+      // больше clientWidth на доли пикселя даже у значений, которые
+      // помещаются.
       setOverflowValue(el.scrollWidth > el.clientWidth + 1 ? el.value : null)
     }
     check()
     const observer = new ResizeObserver(check)
     observer.observe(el)
-    // The deps below only cover controlled/masked fields; an uncontrolled
-    // input changes its value without re-rendering, so the element's own
-    // input event is what keeps the check honest while typing.
+    // Зависимости ниже покрывают только управляемые поля и поля с маской, а
+    // неуправляемое поле меняет значение без повторной отрисовки, поэтому
+    // честной проверку во время набора держит собственное событие input у
+    // элемента.
     el.addEventListener("input", check)
     return () => {
       observer.disconnect()
@@ -76,7 +78,7 @@ function useHoverTooltip({
  * значение переросло ширину, — фокус и каретка терялись бы посреди набора.
  *
  * "top-center" = стрелка вверх / пузырь под полем, как у подсказок,
- * привязанных под полями на канвасе Input (47463:17131).
+ * привязанных под полями на канвасе Input.
  */
 function FieldTooltip({
   content,

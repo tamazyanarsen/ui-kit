@@ -14,7 +14,7 @@ import { FilterTable, type FilterTableProps } from "./filter-table"
 import { FilterTableSelect } from "./filter-table-select"
 
 /**
- * FilterTable — «ELK / filter-table» с канваса Filter, Chips (666:15).
+ * FilterTable — «ELK / filter-table» с канваса Filter, Chips.
  * Истории у него не было, хотя это отдельный компонент-сет со своей
  * матрицей:
  *
@@ -24,7 +24,7 @@ import { FilterTableSelect } from "./filter-table-select"
  *   Counter  False | True
  *   Select   False | True — шеврон справа
  *
- * `Size` (обновление сета 70422:5119) — это `viewport` + <ViewportScope>:
+ * `Size` (из обновления сета) — это `viewport` + <ViewportScope>:
  * мобильная форма отличается только подписью (12/16 против 14/20), из-за
  * чего пилюля становится 28 px в высоту вместо 32.
  *
@@ -46,7 +46,7 @@ const meta = {
   component: FilterTable,
   parameters: { layout: "centered" },
   argTypes: {
-    // Панель по осям компонент-сета 70422:5119: Size / State / Checked /
+    // Панель по осям компонент: Size / State / Checked /
     // Counter (плюс Select, которого у этого мастера в коде нет — см. выше).
     viewport: sizeArgType,
     state: stateArgTypeOf(["default", "hover", "active", "disabled"]),

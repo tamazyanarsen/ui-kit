@@ -11,12 +11,13 @@ import {
 
 import { statusColor, type StepState, type StepStatus } from "./variants"
 
-// Steps — the "Steps / Компонент" wizard-progress row. Each item combines a
-// `state` (Default / Active — cyan ring — / Disabled — dimmed, locked
-// cursor, optional hover hint) with an independent `status` (None / Filled
-// / Error — only Error gets its own color, the other two share the same
-// muted grey per the spec). Card content ("Description") is single-line
-// only per the spec's own constraint note.
+// Steps — ряд «Steps / Компонент», показывающий ход по шагам. Каждый пункт
+// сочетает `state` (Default; Active — голубое кольцо; Disabled —
+// приглушённый, с курсором запрета и необязательной подсказкой по
+// наведению) с независимым `status` (None, Filled, Error), причём свой цвет
+// по макету получает только Error, а остальные два делят один приглушённый
+// серый. Содержимое карточки («Description») по собственному ограничению
+// макета строго однострочное.
 //
 // Дизайн-чек 3/3 №15: «при нажатии на кнопки Left и Right Fade блок с
 // шагами не прокручивается в нужную сторону». Раньше `onClickLeft`/

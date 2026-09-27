@@ -32,8 +32,9 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <div className="flex flex-col gap-2">
-      {/* The spec's own "Текст"/"Фигура" split is usage guidance for which
-          `shape` + sizing to reach for, not two separate components. */}
+      {/* Собственное разделение макета на «Текст» и «Фигуру» — это
+          указание, какой `shape` и какие размеры выбирать, а не два
+          отдельных компонента. */}
       <StatesMatrix<ShimmerProps>
         columns={[
           { label: "square", props: { shape: "square" } },

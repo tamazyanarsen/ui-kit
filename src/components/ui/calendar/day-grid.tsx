@@ -10,9 +10,9 @@ const CELL_WIDTH: Record<GridSize, string> = {
   mobile: "w-12",
 }
 
-/** Desktop day cells are 36px wide with a 14px card gutter and 0px gap down
- * to the day grid; mobile cells are 48px wide with a 12px gutter and an 8px
- * gap down to the day grid. */
+/** Десктопные ячейки дней шириной 36px с полем карточки 14px и нулевым
+ * зазором вниз до сетки дней; мобильные — шириной 48px с полем 12px и
+ * зазором 8px вниз до сетки дней. */
 function WeekdaysRow({ size = "desktop" }: { size?: GridSize }) {
   return (
     <div className={cn("flex", size === "mobile" ? "px-3 pb-2" : "px-3.5")}>
@@ -39,13 +39,14 @@ interface DayGridProps {
   isRangeStart?: (date: Date) => boolean
   isRangeEnd?: (date: Date) => boolean
   isRangeMiddle?: (date: Date) => boolean
-  /** Figma's "Disabled" day state — e.g. dates outside a min/max range.
-   * Disabled days render muted and can't be clicked or focused. */
+  /** Состояние дня «Disabled» из макета — например, даты вне диапазона
+   * min/max. Выключенные дни рисуются приглушённо, их нельзя ни нажать, ни
+   * взять в фокус. */
   isDisabled?: (date: Date) => boolean
   onSelectDay: (date: Date) => void
-  /** See WeekdaysRow — desktop cells are 36px/8px-row-gap/14px-gutter;
-   * mobile cells are 48px/24px-row-gap/12px-gutter (Figma's Date grid gap
-   * is `8px 0px` on desktop vs `24px 0px` on mobile). */
+  /** См. WeekdaysRow: у десктопных ячеек 36px, зазор строк 8px и поле
+   * 14px; у мобильных — 48px, зазор строк 24px и поле 12px (зазор сетки дат
+   * в макете это `8px 0px` на десктопе против `24px 0px` на мобильном). */
   size?: GridSize
 }
 

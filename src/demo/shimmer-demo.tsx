@@ -7,9 +7,10 @@ import {
 
 import { RowLabel } from "./shared"
 
-// Mirrors the spec's "Рис. 3. Подробный вариант Shimmer" — an offer card
-// where each real element (title, description line, tag pill, rate value)
-// is replaced by exactly one shimmer block sized to match it.
+// Повторяет «Рис. 3. Подробный вариант Shimmer» из макета: карточка
+// предложения, где каждый настоящий элемент (заголовок, строка описания,
+// таблетка тега, значение ставки) заменён ровно одним блоком скелетона
+// подходящего размера.
 function OfferCardSkeleton() {
   return (
     <div className="flex flex-col gap-3 rounded-2xl border p-4">

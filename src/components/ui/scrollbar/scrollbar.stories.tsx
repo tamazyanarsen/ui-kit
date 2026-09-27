@@ -66,9 +66,9 @@ export const Playground: Story = {
     ),
 }
 
-/* The thumb only exists while the content overflows, and it has to be
-   scrolled to be seen — so both orientations are shown as live, scrollable
-   panes rather than static matrix cells. */
+/* Бегунок существует только пока содержимое не помещается, и чтобы его
+   увидеть, надо прокрутить, — поэтому обе ориентации показаны живыми
+   прокручиваемыми панелями, а не статичными ячейками матрицы. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

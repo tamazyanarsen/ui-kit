@@ -1,11 +1,12 @@
 import type { IconProps } from "./types"
 
-// Figma's `icon / more` — two independent drawings, not one scaled:
+// `icon / more` из макета — два независимых рисунка, а не один в двух
+// размерах:
 //
-//   16px: three r=1.5 dots on a 14×3 strip placed at (1, 6.5) inside the box
-//         (node I16029:57773;16029:58070 в `ELK / files`).
+//   16px: три точки r=1.5 на полосе 14 × 3 в точке (1, 6.5) внутри
+//         коробки (в `ELK / files`).
 //   24px: три r=2 точки с шагом 8 — центры на 4, 12 и 20 при cy 12 (ассет
-//         плашки `ELK / thumbnail` внутри `ELK / item`, 31845:82858).
+//         плашки `ELK / thumbnail` внутри `ELK / item`).
 //
 // ⚠️ 24-я ступень нужна по-настоящему: у 16-го рисунка точки r=1.5 с шагом
 // 5,5, и при растяжении до 24 они выходят r=2,25 с шагом 8,25 — толще и

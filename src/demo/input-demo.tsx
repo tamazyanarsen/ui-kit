@@ -23,8 +23,9 @@ const DIGIT_MASKS: { mask: MaskName; label: string }[] = [
   { mask: "time", label: "Время" },
 ]
 
-// Input only has two size tokens (no M) — L is mobile-first responsive
-// (48px -> 56px at md:), S is fixed at 32px on both breakpoints.
+// У Input всего два размерных токена (M нет): L адаптивный, сначала
+// мобильный (48px → 56px на md:), а S зафиксирован на 32px на обоих
+// брейкпоинтах.
 const INPUT_SIZES = [
   { key: "sm", label: "S" },
   { key: "lg", label: "L" },

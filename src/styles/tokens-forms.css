@@ -35,24 +35,24 @@
   --btn-destructive-bg-active: var(--red-182);
   --btn-destructive-fg: var(--white-101);
 
-  /* Secondary Logo (Grey) — the one "Secondary Logo" Type from
-     ui/button/button.png that doesn't reuse an existing secondary-*
-     color (Black/Border-White/White map onto secondary-black/-outline/
-     -white exactly, pixel-confirmed). Base pixel-sampled from the spec's
-     own swatch (#494C4B); hover/active follow the same lighten-on-
-     interaction progression already used by secondary-black. */
+  /* Secondary Logo (Grey) — единственный тип «Secondary Logo» в макете
+     кнопки, который не переиспользует уже существующий цвет secondary-*
+     (Black, Border-White и White ложатся на secondary-black, -outline и
+     -white точно, проверено попиксельно). База снята пипеткой с образца в
+     макете (#494C4B); наведение и нажатие идут тем же шагом осветления при
+     взаимодействии, что уже принят для secondary-black. */
   --btn-secondary-logo-grey-bg: var(--grey-868);
   --btn-secondary-logo-grey-bg-hover: var(--grey-645);
   --btn-secondary-logo-grey-bg-active: var(--grey-493);
   --btn-secondary-logo-grey-fg: var(--white-101);
 
-  /* Shared muted treatment for disabled + loading (identical across all variants in the spec) */
+  /* Общее приглушённое оформление для выключенного состояния и загрузки (в макете одинаково для всех вариантов) */
   --btn-muted-bg: var(--grey-114);
   --btn-muted-fg: var(--grey-166);
   --btn-muted-border: var(--grey-166);
 
-  /* Loader (компонент-сет "icon / loader", нода 70326:21335 на странице
-     ALL ICONS, раздел "24. Loaders").
+  /* Loader (компонент-сет "icon / loader" на странице ALL ICONS,
+     раздел "24. Loaders").
      Дизайн-чек №8: лоудер НЕ зависит ни от типа кнопки, ни от статусных
      цветов. Раньше кнопка красила спиннер в свой --btn-accent, из-за чего в
      матрице было шесть разных лоудеров.
@@ -68,8 +68,8 @@
   --loader-warning-fg: var(--yellow-167);
   --loader-white-fg: var(--white-101);
 
-  /* Input component tokens. Values measured directly from ui/input.svg
-     (Figma export) and confirmed against the L/Desktop reference render. */
+  /* Токены компонента Input. Значения сняты прямо с вектора из макета и
+     подтверждены по эталонному рендеру L/Desktop. */
   --input-bg: var(--white-101);
   --input-bg-disabled: var(--grey-114);
   --input-border: var(--grey-166);
@@ -83,44 +83,44 @@
   --input-label-fg: var(--grey-284);
   --input-icon-fg: var(--grey-1514);
 
-  /* Round-2 audit fix: was #6D6D6D. get_design_context on the live ELK/input
-     Comment/Error symbols (215:6570, 215:6676, and the S/Mobile variants
-     215:6684/215:6680) all give a literal text-[color:var(--base/grey-284,
-     #999)] for the caption <p> — same tone as --input-label-fg, not a
-     darker grey. Textarea and Autocomplete's field caption reuse this same
-     token (not re-verified against their own Figma nodes this pass, but
-     both are documented elsewhere as matching Input's box treatment
-     exactly, so the correction should carry over correctly). */
+  /* Исправление второго прохода: стояло #6D6D6D. У живых символов
+     ELK/input с Comment и Error (и у вариантов S/Mobile) подпись <p>
+     литерально получает text-[color:var(--base/grey-284, #999)] — тот же
+     тон, что у --input-label-fg, а не более тёмный серый. Подпись поля у
+     Textarea и Autocomplete переиспользует этот же токен: в этом проходе по
+     их собственным узлам не пересверялось, но оба в других местах описаны
+     как точно повторяющие оформление коробки Input, так что исправление
+     переносится корректно. */
   --input-caption-fg: var(--grey-284);
   --input-caption-error-fg: var(--red-418);
 
-  /* Textarea reuses the Input palette above almost entirely (verified
-     against ui/textarea/*.svg — bg, bg-disabled, border, border-disabled,
-     border-error and border-error-hover all matched exactly). Only the
-     non-error hover/focus border color actually differs from Input's
-     (#6D6D6D, not --input-border-hover's #999999), so it gets its own
-     token rather than a whole parallel --textarea-* namespace. */
+  /* Textarea почти полностью переиспользует палитру Input выше (сверено по
+     вектору: bg, bg-disabled, border, border-disabled, border-error и
+     border-error-hover совпали точно). От Input реально отличается только
+     цвет рамки при наведении и фокусе вне состояния ошибки (#6D6D6D, а не
+     #999999 из --input-border-hover), поэтому заведён один свой токен, а не
+     целое параллельное пространство имён --textarea-*. */
   --textarea-border-hover: var(--grey-517);
 
-  /* Round-2 audit: get_design_context + pixel-sampled screenshots of the
-     live ELK/text-area Disabled/Filled and Disabled+Locked symbols
-     (137:2616, 11282:15677) show the typed VALUE text and the lock icon
-     both going to their own greys when disabled — #6D6D6D (grey-517) for
-     the text, #999999 for the icon — neither of which matches
-     --input-fg-disabled (#C8C8CB). Textarea's small 12px label does NOT
-     recolor on disabled at all (stays --input-label-fg #999999 in every
-     Disabled symbol checked), unlike what the component previously did.
-     Since --input-fg-disabled is shared with Input (unverified this pass),
-     Textarea gets its own disabled tokens rather than changing the shared
-     one. */
+  /* Второй проход: разбор и пипетка по живым символам ELK/text-area
+     Disabled/Filled и Disabled+Locked показывают, что в выключенном
+     состоянии введённый ТЕКСТ и значок замка уходят каждый в свой серый —
+     #6D6D6D (grey-517) у текста и #999999 у значка, — и ни один из них не
+     совпадает с --input-fg-disabled (#C8C8CB). Маленькая подпись 12px у
+     Textarea в выключенном состоянии НЕ перекрашивается вовсе (во всех
+     проверенных символах Disabled остаётся --input-label-fg #999999), а
+     компонент раньше делал иначе. Поскольку --input-fg-disabled общий с
+     Input (в этом проходе не пересверялся), Textarea получает собственные
+     токены выключенного состояния, а не меняет общий. */
   --textarea-fg-disabled: var(--grey-517);
   --textarea-icon-fg-disabled: var(--grey-284);
 
-  /* OTP code tokens. Values measured directly from ui/otp code/*.svg
-     (exact vector rects/paths, not pixel-sampled PNGs). The confirm/resend
-     buttons need no tokens of their own — they map 1:1 onto existing
-     Button variants (primary/secondary-black, muted-disabled) and colors
-     matched exactly, so the card just reuses `Button`. */
+  /* Токены OTP-кода. Значения сняты прямо с вектора макета (точные
+     прямоугольники и пути, а не пипетка по растру). Кнопкам подтверждения и
+     повторной отправки свои токены не нужны: они один в один ложатся на
+     существующие варианты Button (primary, secondary-black,
+     muted-disabled), цвета совпали точно, поэтому карточка просто
+     переиспользует `Button`. */
   --otp-fg: var(--grey-1514);
   --otp-placeholder-fg: var(--grey-284);
   --otp-underline: var(--grey-284);
@@ -128,17 +128,18 @@
   --otp-title-fg: var(--grey-1514);
   --otp-subtitle-fg: var(--grey-517);
 
-  /* Modal tokens. Values measured directly from ui/modal/modal-1.svg
-     (exact vector rects). Footer buttons and the close icon button need no
-     tokens of their own — they map 1:1 onto existing Button variants
-     (primary/secondary-grey) and sizes, so Modal just reuses `Button`. */
+  /* Токены Modal. Значения сняты прямо с вектора макета (точные
+     прямоугольники). Кнопкам в подвале и кнопке-крестику свои токены не
+     нужны: они один в один ложатся на существующие варианты Button
+     (primary и secondary-grey) и их размеры, поэтому Modal просто
+     переиспользует `Button`. */
   --modal-bg: var(--white-101);
   --modal-radius: 32px;
   --modal-backdrop: var(--grey-1593);
-  /* The single grey-134 line Figma ships as "ELK / divider" (58890:9260).
-     The per-component --*-divider tokens below all resolve to this same
-     value; new dividers should use the shared Divider component instead of
-     adding another one. */
+  /* Единственная линия grey-134, которую макет поставляет как
+     «ELK / divider». Все покомпонентные токены --*-divider ниже
+     разрешаются в это же значение; новые разделители следует делать общим
+     компонентом Divider, а не заводить ещё один токен. */
   --divider: var(--grey-134);
   /* Кольцо фокуса — одно на весь кит: 2px сплошной Dark blue 389 с отступом
      2 (`.focus-ring`, см. base.css). Раньше каждый компонент рисовал
@@ -180,8 +181,9 @@
   --calendar-range-bg: var(--grey-109);
   --calendar-divider: var(--divider);
 
-  /* Select trigger tokens. Same palette as Input (identical box treatment
-     in the Figma spec) — kept in its own namespace so it can diverge later. */
+  /* Токены триггера Select. Палитра та же, что у Input (в макете коробка
+     оформлена одинаково), но держится в своём пространстве имён, чтобы
+     позже могла разойтись. */
   --select-bg: var(--white-101);
   --select-bg-disabled: var(--grey-114);
   --select-border: var(--grey-166);
@@ -195,14 +197,14 @@
   --select-label-fg: var(--grey-284);
   --select-icon-fg: var(--grey-1514);
 
-  /* Round-2 audit fix: was #6D6D6D (copied from Input's own caption grey,
-     see the Tabs comment further down which cites that old value as a
-     "confirmed" match) — get_design_context on the actual "ELK / select"
-     Comment/Error variants (canvas 666:11) shows the default caption fill
-     as base/grey-284 #999, same tone as --select-label-fg, not Input's
-     darker grey. Tabs/Empty Search hardcode their own #6D6D6D/#999999
-     literals rather than referencing this var, so this correction is
-     scoped to Select/Combobox/Autocomplete only. */
+  /* Исправление второго прохода: стояло #6D6D6D — скопированный серый
+     подписи у самого Input (см. комментарий Tabs ниже, где это старое
+     значение названо «подтверждённым» совпадением). На самих вариантах
+     «ELK / select» с Comment и Error заливка подписи по умолчанию —
+     base/grey-284 #999, тот же тон, что у --select-label-fg, а не более
+     тёмный серый Input. Tabs и Empty Search держат свои литералы #6D6D6D и
+     #999999, а не ссылаются на эту переменную, поэтому исправление
+     затрагивает только Select, Combobox и Autocomplete. */
   --select-caption-fg: var(--grey-284);
   --select-caption-error-fg: var(--red-418);
 }

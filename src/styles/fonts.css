@@ -1,13 +1,14 @@
 /* Фирменная гарнитура. Подключается первой: на неё ссылается
    `--font-sans` в `theme.css`. */
 
-/* Object Sans — company brand typeface (see ui/changecolor rebrand docs).
-   Only Regular/Medium/Heavy + their Slanted (italic) counterparts exist as
-   static weights (400/500/800); there's no 600/700 cut. Tailwind's
-   font-semibold/font-bold utilities (used across the kit) still resolve
-   correctly without fake-bold synthesis: per the CSS Fonts font-weight
-   matching algorithm, a request for 600 or 700 searches upward first and
-   lands on the nearest registered face, Heavy (800), automatically. */
+/* Object Sans — фирменная гарнитура компании (см. документы по
+   ребрендингу). Статических начертаний всего три — Regular, Medium, Heavy —
+   плюс их наклонные (Slanted) пары, то есть 400/500/800; резов 600 и 700
+   не существует. Утилиты Tailwind font-semibold и font-bold, которые
+   используются по всему киту, всё равно разрешаются правильно и без
+   синтетического жирного: по алгоритму подбора font-weight из спецификации
+   CSS Fonts запрос 600 или 700 сначала ищет вверх и автоматически попадает
+   на ближайшее зарегистрированное начертание — Heavy (800). */
 @font-face {
     font-family: 'Object Sans';
     src: url('../assets/Object Sans/ObjectSans-Regular.woff2') format('woff2');

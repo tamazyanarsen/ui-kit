@@ -44,9 +44,9 @@ const meta = {
     // Плитка отводит глифу коробку 24px, поэтому контрол отдаёт 24-е
     // начертание набора, а не растянутое 16-е (дизайн-чек №28).
     icon: iconArgType("Иконка в плитке; «без иконки» — плитка не рисуется", 24),
-    // `description`/`buttonLabel` are `React.ReactNode` but every usage is a
-    // plain string — without this, leaving one unset falls back to a generic
-    // "Set object" JSON editor.
+    // `description` и `buttonLabel` объявлены как `React.ReactNode`, но
+    // везде используются обычными строками. Без этого незаданное значение
+    // откатывается на универсальный JSON-редактор «Set object».
     title: { control: "text", ...CONTENT },
     description: { control: "text", ...CONTENT },
     // Дизайн-чек №27: кнопка включается булевым свойством, а её вид —

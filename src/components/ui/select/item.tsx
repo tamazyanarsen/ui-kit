@@ -25,20 +25,23 @@ export function SelectItem({
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
-      // Round-2 audit: matches the literal "Menu Point (ELK), Type=Level 1,
-      // Style=Text" instances sampled directly off canvas 666:11 (both the
-      // standalone component and concrete usages inside real "ELK /
-      // dropdown" instances) — p-[16px] all sides (not py-2/pr-8/pl-3), no
-      // independent corner radius (pixel-sampled: item hover fills to a
-      // hard square corner, rounding only comes from the popup's own clip),
-      // 16px/500 text color var(--select-fg) (was inheriting shadcn's
-      // near-black text-popover-foreground instead of the spec's #252628 —
-      // the same class of bug this whole audit pass exists to catch), and
-      // #F8F8F8 highlighted background instead of the generic --accent
-      // token. Also swapped `focus:` for `data-highlighted:` — Base UI's
-      // own SelectItemDataAttributes only defines highlighted/selected/
-      // disabled, not a real DOM-focus hook, so `focus:` here never matched
-      // Figma's hover treatment via keyboard navigation.
+      // Второй проход: совпадает с литеральными инстансами «Menu Point
+      // (ELK), Type=Level 1, Style=Text», снятыми прямо с канваса — и с
+      // самостоятельного компонента, и с конкретных применений внутри
+      // настоящих инстансов «ELK / dropdown». А именно: p-[16px] со всех
+      // сторон (а не py-2/pr-8/pl-3), собственного радиуса углов нет
+      // (снято пипеткой: заливка наведения у пункта доходит до жёсткого
+      // прямого угла, скругление приходит только от обрезки самим
+      // всплывающим окном), текст 16px насыщенности 500 цветом
+      // var(--select-fg) (раньше наследовался почти-чёрный
+      // text-popover-foreground из shadcn вместо #252628 из макета — тот же
+      // класс ошибок, ради ловли которых и затеян весь этот проход), и фон
+      // подсветки #F8F8F8 вместо общего токена --accent. Заодно `focus:`
+      // заменён на `data-highlighted:`: собственные
+      // SelectItemDataAttributes у Base UI определяют только highlighted,
+      // selected и disabled, но не настоящий хук фокуса DOM, поэтому
+      // `focus:` здесь никогда не совпадал с оформлением наведения из
+      // макета при навигации с клавиатуры.
       className={cn(
         "relative flex w-full cursor-default items-center gap-2 py-4 pr-12 pl-4 text-p1-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
@@ -68,10 +71,10 @@ export function SelectSeparator({
   ...props
 }: SelectPrimitive.Separator.Props) {
   return (
-    // Renders the shared Divider (Figma's "ELK / divider", grey-134
-    // #DEDEDE). This used to be `bg-border` — the generic shadcn token,
-    // oklch(0.922 0 0) ≈ #E5E5E5 — which is a different grey from every
-    // other separator in the kit.
+    // Рисует общий Divider («ELK / divider» из макета, grey-134 #DEDEDE).
+    // Раньше здесь стоял `bg-border` — общий токен shadcn,
+    // oklch(0.922 0 0) ≈ #E5E5E5, — а это другой серый, отличный от всех
+    // прочих разделителей кита.
     <SelectPrimitive.Separator
       data-slot="select-separator"
       render={<Divider className={cn("pointer-events-none -mx-1 my-1", className)} />}

@@ -10,19 +10,20 @@ import {
 
 import { cn } from "@/lib/utils"
 
-// FileListItem — a single uploaded/uploading file row. Icon + name (+
-// tooltip via `title` for truncated names) + meta line (size/date, or
-// "Загрузка" while loading, or the error text) + optional retry/remove
-// actions (Show Edit / Show Cross in the spec's property table).
+// FileListItem — строка одного загруженного или загружаемого файла. Значок
+// плюс имя (с подсказкой через `title` для обрезанных имён) плюс строка
+// сведений (размер и дата, либо «Загрузка» во время загрузки, либо текст
+// ошибки) плюс необязательные действия повтора и удаления (Show Edit и
+// Show Cross в таблице свойств макета).
 
 type FileItemState = "default" | "loading" | "disabled" | "error"
 
 /**
- * `Size` компонент-сета `ELK / files` (нода 16029:58062): L и S, каждый со
+ * `Size` компонент-сета `ELK / files`: L и S, каждый со
  * своей парой Desktop/Mobile. Раньше был только L, хотя в макете это
  * основная ось компонента.
  *
- * Разница снята с `Size=S / Desktop` (нода 16029:58723): вместо плитки с
+ * Разница снята с `Size=S / Desktop`: вместо плитки с
  * иконкой 48px — голая иконка документа 16px, имя P3 Medium (12/16) вместо
  * P1 Medium, подпись P4 Regular (10/12) вместо P3 Medium, высота строки 28
  * вместо 48.
@@ -36,7 +37,7 @@ interface FileListItemProps extends Omit<React.ComponentProps<"div">, "id"> {
   state?: FileItemState
   errorText?: React.ReactNode
   /**
-   * `Show Description` таблицы свойств (нода 16029:57807) — вторая строка
+   * `Show Description` таблицы свойств — вторая строка
    * с размером и датой. Дизайн-чек «Сторибук Ч.2», замечание 3: в панели
    * свойств её не было вовсе, хотя в макете это отдельное свойство.
    */
@@ -83,9 +84,9 @@ export function FileListItem({
       : "text-[var(--file-item-icon-fg)]"
 
   // Значок свойства `Show Edit` зависит от размера, и это не описка макета:
-  // у L (и Desktop, и Mobile — ноды 16029:58063 и 16029:58080) стоит
-  // `icon / more`, то есть меню действий над файлом, а у S (16029:58723 и
-  // 16029:58865) — `icon / download`. Дизайн-чек «Сторибук Ч.2», замечание 2
+  // у L стоит
+  // `icon / more`, то есть меню действий над файлом, а у S —
+  // `icon / download`. Дизайн-чек «Сторибук Ч.2», замечание 2
   // («должна быть иконка more») снят с L-строки, но распространять его на S
   // нельзя: там эталон рисует именно стрелку.
   const EditGlyph = small ? Download : Ellipsis
@@ -105,19 +106,21 @@ export function FileListItem({
       data-size={size}
       data-disabled={disabled || undefined}
       className={cn(
-        // The row is exactly its 48px thumbnail tall and reserves 16px on
-        // the right for the trailing icons — `ELK / files` (16029:58062) is
-        // `flex gap-16 items-center pr-16` with no vertical padding of its
-        // own; spacing between rows belongs to the list that stacks them.
+        // Строка ровно той же высоты, что её миниатюра 48px, и резервирует
+        // 16px справа под замыкающие значки: `ELK / files` — это
+        // `flex gap-16 items-center pr-16` без собственных вертикальных
+        // отступов. Расстояние между строками принадлежит списку, который
+        // их складывает.
         "flex w-full items-center gap-4 pr-4 text-p2-medium",
         disabled && "pointer-events-none opacity-50",
         className
       )}
       {...props}
     >
-      {/* Design-check #23 revisited: the live "ELK / files" component shows
-          a 48px thumbnail box (not 32px) with an always-present neutral
-          fill, not just on error.
+      {/* Пересмотр замечания 23 дизайн-чека: живой компонент
+          «ELK / files» показывает коробку миниатюры 48px (а не 32px) с
+          нейтральной заливкой, которая есть всегда, а не только при
+          ошибке.
           Размер зависит от брейкпоинта: в анатомии File Upload строка
           `ELK / files` — 48px с миниатюрой 48 в `L / Desktop` и 40px с
           миниатюрой 40 в `M / Mobile` (маркеры spaceVertical: x=48/h=48
@@ -141,9 +144,9 @@ export function FileListItem({
               : "bg-[var(--file-item-icon-bg)]"
           )}
         >
-          {/* All three fill the 48px thumbnail tile at 24px, so they take the
-              24px drawings (Figma's `icon / document` inside ELK / files'
-              tile, node 16029:61127). */}
+          {/* Все три заполняют плитку миниатюры 48px значком 24px,
+              поэтому берут 24-пиксельные рисунки (`icon / document` из
+              макета внутри плитки ELK / files). */}
           <Glyph
             size={glyphSize}
             aria-hidden="true"

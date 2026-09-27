@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
  *
  * Дизайн-чек Storybook 2 (от Notification до Loader) №6: сет пересобран по
  * мастеру со страницы ALL ICONS (раздел «24. Loaders», компонент-сет
- * `icon / loader` 70326:21335). Там две оси:
+ * `icon / loader`). Там две оси:
  *
  *   Size   16х16 | 24х24 | 40х40
  *   Color  Green | Yellow | White

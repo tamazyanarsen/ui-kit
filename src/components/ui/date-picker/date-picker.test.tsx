@@ -7,10 +7,11 @@ import { DatePicker } from "./date-picker"
 
 const JAN_2024 = new Date(2024, 0, 15)
 
-// DatePicker is controlled: it only renders the date a consumer feeds back
-// through `value`. A wrapper with real state mirrors how a real page would
-// wire it, matching this kit's own convention for testing controlled
-// components (see feedback on Select/Calendar demos).
+// DatePicker управляемый: он рисует только ту дату, которую потребитель
+// вернул ему через `value`. Обёртка с настоящим состоянием повторяет то,
+// как это подключила бы настоящая страница, и соответствует конвенции этого
+// кита для тестирования управляемых компонентов (см. замечания по демо
+// Select и Calendar).
 function ControlledSingle({ onChange }: { onChange: (date: Date) => void }) {
   const [value, setValue] = useState<Date | null>(JAN_2024)
   return (
@@ -66,8 +67,9 @@ describe("DatePicker", () => {
 
   it("renders the single-mode field as a masked date input", () => {
     render(<DatePicker />)
-    // Manual typing goes through Input's own `mask="date"` (react-imask)
-    // integration — covered by input.test.tsx, not re-tested here.
+    // Ручной ввод идёт через собственную интеграцию Input с `mask="date"`
+    // (react-imask) — она покрыта в input.test.tsx и здесь повторно не
+    // проверяется.
     expect(screen.getByLabelText("Дата")).toHaveAttribute("placeholder", "ДД.ММ.ГГГГ")
   })
 })

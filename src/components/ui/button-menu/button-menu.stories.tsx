@@ -14,9 +14,8 @@ import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
 import type { SelectionButtonDirection } from "@/components/ui/selection-button"
 import { Button } from "@/components/ui/button"
 
-/* Свойства унаследованы из компонент-сета «ELK / button menu» (нода
-   4244:20536) и его под-компонентов «Pabel Of Buttons (Primary/Secondary,
-   ELK)» (41357:38739 / 41357:45337):
+/* Свойства унаследованы из компонент-сета «ELK / button menu» и его
+   под-компонентов «Pabel Of Buttons (Primary/Secondary, ELK)»:
 
      Type            = With Primary | Only Secondary
      Number Of Buttons = 1 | 2 | 3 | 4
@@ -115,15 +114,15 @@ interface PlaygroundArgs {
 
 const meta = {
   title: "Компоненты/Button Menu",
-  // No `component:` — ButtonMenu takes only `children`, so the Playground's
-  // controls are synthetic (which buttons to put in the bar) and would not
-  // typecheck against the real prop type.
+  // `component:` не задан: ButtonMenu принимает только `children`, поэтому
+  // контролы Playground синтетические (какие кнопки положить в панель) и по
+  // типам с настоящим типом пропсов не сошлись бы.
   //
-  // ButtonMenu is a full-width, bottom-anchored bar (not a floating w-fit
-  // pill — see root.tsx's design-check #5 note), so it's shown inside a
-  // scrollable stand-in for its usual content area (`StoryContentArea`)
-  // rather than Storybook's bare canvas — otherwise there is nothing for
-  // `sticky bottom-0` to stick to.
+  // ButtonMenu — это панель во всю ширину, прижатая к низу (а не плавающая
+  // таблетка w-fit, см. примечание к дизайн-чеку, замечание 5, в
+  // root.tsx), поэтому она показана внутри прокручиваемой замены своей
+  // обычной контентной области (`StoryContentArea`), а не на голом холсте
+  // Storybook: иначе `sticky bottom-0` не к чему прилипать.
   parameters: { layout: "padded" },
   argTypes: {
     type: {
@@ -141,7 +140,7 @@ const meta = {
     },
     /* Контрола `Size` здесь нет намеренно — дизайн-чек от 08.09, замечание
        10: «Size S для Button Menu — выдуман. Его не должно быть, панель
-       одноразмерная». В мастере (нода 41357:45664) вложенный
+       одноразмерная». В мастере вложенный
        `ELK / selection button` нарисован 56×56, и другого размера у него нет;
        размер триггера задаёт сам ряд под свои кнопки. */
     overflowDirection: {
@@ -258,9 +257,9 @@ function PinnedDemo({ pinned }: { pinned: boolean }) {
 }
 
 
-/* ButtonMenu is a composition (a bar plus whatever buttons the page puts in
-   it), so there is no prop grid to enumerate — Figma's page shows the same
-   handful of arrangements instead. */
+/* ButtonMenu — это композиция (панель плюс те кнопки, которые положит в неё
+   страница), поэтому перечислять сетку пропсов не из чего: страница макета
+   вместо этого показывает те же несколько сборок. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

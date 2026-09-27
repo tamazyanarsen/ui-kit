@@ -6,7 +6,7 @@ import { orderedOptionLabels } from "@/stories/options"
 import { Nps, type NpsEstimateType, type NpsProps, type NpsShowChips } from "./nps"
 
 /* Дизайн-чек №4 №11: контрол оценки называется «Estimate Type» и выбирается
-   из None, 1–5 — по элементу «Estimate (ELK)» (нода 70326:40173).
+   из None, 1–5 — по элементу «Estimate (ELK)».
    Дизайн-чек №4 №12: отдельного `defaultValue` в контролах нет — оценка
    задаётся одним этим контролом (история пересоздаётся, чтобы звёзды
    оставались кликабельными). */
@@ -14,7 +14,7 @@ const ESTIMATE_TYPES = ["None", 1, 2, 3, 4, 5] as const
 type EstimateType = (typeof ESTIMATE_TYPES)[number]
 
 /* Дизайн-чек №4 №13: «Show Chips» — тоже None, 1–5: сколько предлагаемых
-   ответов показать (таблица свойств, нода 70326:40017). */
+   ответов показать (таблица свойств компонента). */
 const SHOW_CHIPS: NpsShowChips[] = ["none", 1, 2, 3, 4, 5]
 
 type PlaygroundArgs = NpsProps & { estimateType?: EstimateType }
@@ -23,10 +23,10 @@ const meta = {
   title: "Компоненты/NPS",
   component: Nps,
   parameters: { layout: "centered" },
-  // `title` is typed React.ReactNode but every real usage (including the
-  // component's own runtime default) is a plain string — pin a text control
-  // so an unset value doesn't fall back to Storybook's "Set object"
-  // placeholder.
+  // `title` объявлен как React.ReactNode, но всякое реальное использование
+  // (включая собственное умолчание компонента во время выполнения) — это
+  // обычная строка: закрепляем текстовый контрол, чтобы незаданное значение
+  // не откатывалось на заглушку «Set object» в Storybook.
   argTypes: {
     estimateType: {
       name: "Estimate Type",
@@ -101,7 +101,7 @@ export const Matrix: Story = {
         { label: "Estimate Type: None", props: {} },
         { label: "Estimate Type: 4", props: { defaultValue: 4 } },
         { label: "Estimate Type: 2", props: { defaultValue: 2 } },
-        // Both follow-up blocks are independently switchable.
+        // Оба блока продолжения включаются независимо.
         { label: "Show Chips: none", props: { defaultValue: 3, showChips: "none" } },
         { label: "Show Chips: 2", props: { defaultValue: 3, showChips: 2 } },
         {

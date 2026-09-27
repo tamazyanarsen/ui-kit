@@ -6,17 +6,18 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
 
-// SelectionButton — "Кнопка выбора": a trigger paired with a Select/Dropdown
-// -style popup list, used to hide overflow functionality that doesn't fit
-// the visible UI. Per the spec, the trigger and the list are configured
-// independently ("настройки кнопки указаны в разделе Button, а настройки
-// списка — в этом разделе"): the default trigger is just `Button` sized by
-// `size` (L = 56px icon-lg, S = 32px icon-sm, both `secondary-white`), but
-// any trigger element can be passed in (e.g. a labeled Button with a
-// trailing chevron, as shown in the "Использование в макете" example).
-// `direction` is the popup's open corner relative to the trigger — the spec
-// names it by which way the list expands (e.g. "Top Right" = expands
-// up-and-right, so the trigger sits at the list's bottom-left corner).
+// SelectionButton — «Кнопка выбора»: триггер в паре со всплывающим
+// списком в стиле Select или Dropdown, которым прячут не поместившуюся в
+// видимый интерфейс функциональность. По макету триггер и список
+// настраиваются независимо («настройки кнопки указаны в разделе Button, а
+// настройки списка — в этом разделе»): триггер по умолчанию — это просто
+// `Button` нужного размера (L — это icon-lg 56px, S — icon-sm 32px, оба
+// `secondary-white`), но передать можно любой элемент триггера (например,
+// Button с подписью и замыкающим шевроном, как в примере «Использование в
+// макете»). `direction` — это угол раскрытия всплывающего окна
+// относительно триггера; макет называет его по направлению, в котором
+// раскрывается список (например, «Top Right» — раскрывается вверх и
+// вправо, то есть триггер стоит в левом нижнем углу списка).
 export type SelectionButtonSize = "lg" | "sm"
 export type SelectionButtonDirection =
   | "top-left"

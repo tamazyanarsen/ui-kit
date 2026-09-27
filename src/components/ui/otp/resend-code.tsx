@@ -3,12 +3,13 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-// ResendCode — countdown pill ("Отправить повторно через N сек.") that
-// swaps to a real, clickable secondary-black Button once the countdown
-// reaches 0. The pill is a plain non-interactive div, not a disabled
-// Button — Button's disabled state forces the muted gray treatment, but
-// the spec's countdown pill keeps full white/dark-text contrast the whole
-// time (it's a status readout, not a disabled control).
+// ResendCode — таблетка отсчёта («Отправить повторно через N сек.»),
+// которая по достижении нуля превращается в настоящую нажимаемую кнопку
+// secondary-black. Сама таблетка — обычный неинтерактивный div, а не
+// выключенная Button: выключенное состояние Button навязывает приглушённое
+// серое оформление, тогда как таблетка отсчёта в макете всё время держит
+// полный контраст «белое с тёмным текстом» (это показание статуса, а не
+// выключенный контрол).
 interface ResendCodeProps {
   seconds?: number
   onResend?: () => void

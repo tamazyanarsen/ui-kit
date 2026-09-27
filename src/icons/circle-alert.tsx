@@ -1,10 +1,10 @@
 import type { IconProps } from "./types"
 
-// 24px drawing is Figma's `icon / alert`, e.g. inside Empty Page's 48px tile
-// (node 4109:25377). It fills the whole 24 box and is optically corrected
-// rather than scaled: a 2px ring with a stem spanning y 5→15 (41.7% of the
-// height), where the 16px drawing below has a proportionally heavier ring
-// and a much shorter y 4→9 stem.
+// Рисунок 24px — `icon / alert` из макета, например внутри плитки 48px у
+// Empty Page. Он занимает всю коробку 24 и оптически исправлен, а не
+// отмасштабирован: кольцо 2px и ножка от y 5 до 15 (41,7% высоты), тогда
+// как у рисунка 16px ниже кольцо пропорционально толще, а ножка намного
+// короче — от y 4 до 9.
 export function CircleAlert({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (

@@ -2,13 +2,15 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Scrollbar — "Скролл": themed vertical/horizontal scrollbar styling for any
-// overflowing container (dropdown lists, tables, modal bodies). Per the
-// spec, thickness genuinely differs by axis — 4px vertical, 8px horizontal
-// ("Горизонтальный скролл ... имеет большую толщину") — handled by the
-// `.themed-scrollbar` CSS class (styles/base.css) via WebKit's `:vertical`/
-// `:horizontal` scrollbar pseudo-classes, with `scrollbar-width: thin` as
-// Firefox's best-available (axis-uniform) fallback.
+// Scrollbar — «Скролл»: оформление вертикальной и горизонтальной полосы
+// прокрутки в стиле кита для любого контейнера с переполнением (списки
+// выпадающих меню, таблицы, тела модальных окон). По макету толщина
+// действительно зависит от оси — 4px по вертикали и 8px по горизонтали
+// («Горизонтальный скролл ... имеет большую толщину»), — и это делает
+// CSS-класс `.themed-scrollbar` (styles/base.css) через псевдоклассы
+// `:vertical` и `:horizontal` у полосы в WebKit, а для Firefox запасным
+// вариантом идёт `scrollbar-width: thin` (одинаковый для обеих осей —
+// лучшее, что там есть).
 //
 // Отступ полосы от края поверхности компонент теперь УМЕЕТ САМ (проп
 // `inset`). Раньше это считалось задачей вызывающего — «пусть добавит
@@ -29,7 +31,7 @@ interface ScrollbarProps extends React.ComponentProps<"div"> {
    *   • `panel` — 8px справа, 8px сверху и 48px снизу: панель раскрытого
    *     меню упирается верхом в шапку, а низ у неё скруглён на 32, и дорожка
    *     обязана заканчиваться ДО закругления. Числа сняты с кадров адаптации
-   *     (секция 70303:61224), а не подобраны (дизайн-чек от 08.09,
+   *     (раздел «Адаптация»), а не подобраны (дизайн-чек от 08.09,
    *     замечание 8).
    *
    * ⚠️ Отступ теперь ставится и вдоль оси полосы, а не только поперёк:
@@ -39,10 +41,11 @@ interface ScrollbarProps extends React.ComponentProps<"div"> {
   inset?: "none" | "dropdown" | "rounded" | "panel"
 }
 
-// forwardRef because consumers need the scrolling node itself, not just its
-// styling — ModalBody, for one, reads scrollTop/scrollHeight off it to decide
-// which edge divider to show. Under React 18 a plain function component here
-// would drop the ref outright (see the same constraint on Button/Dropdown).
+// forwardRef нужен потому, что потребителям требуется сам прокручиваемый
+// узел, а не только его оформление: ModalBody, например, читает с него
+// scrollTop и scrollHeight, чтобы решить, какой краевой разделитель
+// показать. На React 18 обычный функциональный компонент здесь потерял бы
+// ref совсем (то же ограничение см. у Button и Dropdown).
 const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
   function Scrollbar(
     { orientation = "vertical", inset = "none", className, ...props },

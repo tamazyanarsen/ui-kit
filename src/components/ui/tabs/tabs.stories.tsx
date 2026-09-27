@@ -30,8 +30,8 @@ const ITEMS = [
    JSON-массива в контролах. Пул подобран так, чтобы по мере роста включались
    и вспомогательные признаки вкладки (disabled, статус, счётчик).
 
-   В Figma это свойство `Volume` компонент-сета `ELK / tabs` (70240:42086)
-   со значениями 2 — 12, поэтому и список здесь такой же. */
+   В Figma это свойство `Volume` компонент-сета `ELK / tabs` со значениями
+   2 — 12, поэтому и список здесь такой же. */
 const TAB_COUNTS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
 type TabCount = (typeof TAB_COUNTS)[number]
 
@@ -67,10 +67,9 @@ const meta = {
   title: "Компоненты/Tabs",
   component: Tabs,
   parameters: { layout: "padded" },
-  /* Панель повторяет «Свойства компонента» `ELK / tabs` (компонент-сет
-     70240:42086, таблица 70240:41960): Size / Volume / Show More. Свойство
-     `Type` — у вложенного сета `Tabs (ELK)` (70240:42346), поэтому оно
-     здесь же, следом. */
+  /* Панель повторяет «Свойства компонента» `ELK / tabs`: Size / Volume /
+     Show More. Свойство `Type` — у вложенного сета `Tabs (ELK)`, поэтому
+     оно здесь же, следом. */
   argTypes: {
     // v1.2.0 мастера убрала свойство размера в пользу пары Desktop/Mobile —
     // теперь она выбирается контролом (дизайн-чек №3 №19), а не вьюпортом.
@@ -122,9 +121,9 @@ function Controlled(args: TabsProps) {
 }
 
 export const Playground: Story = {
-  // Remount when the pinned value or the tab count changes so the
-  // `defaultValue` control actually moves the (otherwise internally-owned)
-  // selection.
+  // Перемонтируем при изменении закреплённого значения или количества
+  // вкладок, чтобы контрол `defaultValue` действительно двигал выбор,
+  // которым иначе владеет сам компонент.
   render: ({ itemsCount = 5, figmaType = "Text", viewport, ...args }) => {
     const items = decorate(ITEMS.slice(0, itemsCount), figmaType)
     const defaultValue = items.some((i) => i.value === args.defaultValue)
@@ -150,9 +149,9 @@ export const Matrix: Story = {
     <StatesMatrix<TabsProps>
       stretch
       cellClassName="min-w-[420px]"
-      // v1.2.0 of the master dropped the Large/Medium level property for a
-      // responsive Desktop/Mobile pair (44px bar / 32px gaps / 16-24 labels
-      // vs 40/24/14-20). Обе формы рисуются рядом — дизайн-чек №3 №18.
+      // В v1.2.0 мастер отказался от свойства уровня Large/Medium в пользу
+      // адаптивной пары Desktop/Mobile (полоса 44px, зазоры 32px, подписи
+      // 16-24 против 40/24/14-20). Обе формы рисуются рядом — дизайн-чек №3 №18.
       responsive
       columns={[{ label: "Tabs" }]}
       rows={[

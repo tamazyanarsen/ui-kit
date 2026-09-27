@@ -25,9 +25,9 @@ type PlaygroundArgs = Omit<ToggleProps, "error"> & {
   showComment?: boolean
 }
 
-/* Панель повторяет «Свойства компонента» `ELK / toggle` (компонент-сет
-   2606:28161, таблица 1242:99673): Size / State / Checked / Error /
-   Show Text / Show Text Error / Show Comment — ровно те же имена и значения,
+/* Панель повторяет «Свойства компонента» `ELK / toggle`: Size / State /
+   Checked / Error / Show Text / Show Text Error / Show Comment — ровно те
+   же имена и значения,
    что видит дизайнер в правой панели Figma при настройке инстанса. */
 const meta = {
   title: "Компоненты/Toggle",
@@ -92,7 +92,7 @@ function Controlled({
           {...props}
           label={showText ? label : undefined}
           // Дизайн-чек 3/3 №7: комментарий и ошибка выводятся вместе,
-          // включение ошибки комментарий не гасит (макет 1242:99741).
+          // включение ошибки комментарий не гасит (так в макете).
           comment={showComment ? comment : undefined}
           error={error ? (showErrorText ? errorText || true : true) : undefined}
           disabled={state === "disabled"}

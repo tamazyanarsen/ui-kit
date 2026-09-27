@@ -47,8 +47,8 @@ describe("FileListItem", () => {
     expect(onRemove).toHaveBeenCalledTimes(1)
   })
 
-  // У размера S эталон рисует не `more`, а `download` (ноды 16029:58723 и
-  // 16029:58865) — глобальная замена значка сломала бы именно этот случай.
+  // У размера S эталон рисует не `more`, а `download` — глобальная замена
+  // значка сломала бы именно этот случай.
   it("keeps the download glyph at size S", () => {
     render(<FileListItem name="Договор.pdf" size="s" />)
     expect(

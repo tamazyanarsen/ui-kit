@@ -24,9 +24,9 @@ const meta = {
   component: DatePicker,
   parameters: { layout: "centered" },
   /* Своего мастера у Date Picker нет: в Figma это `ELK / input` с
-     выпадающим `ELK / calendar` (7415:58521), поэтому имена свойств взяты
-     оттуда — Size у поля, Type у календаря. Значения `Type` — из
-     вложенного сета `Calendar (Desktop, ELK)` (7415:53000). */
+     выпадающим `ELK / calendar`, поэтому имена свойств взяты оттуда —
+     Size у поля, Type у календаря. Значения `Type` — из вложенного сета
+     `Calendar (Desktop, ELK)`. */
   argTypes: {
     size: optionsArgType<InputSize>(
       "Size",
@@ -37,11 +37,12 @@ const meta = {
     state: stateArgTypeOf(["default", "hover", "focus", "disabled"], {
       focus: "Focused",
     }),
-    // `mode`/`size` are plain string unions imported from other modules
-    // (`CalendarMode`, `InputSize`) — react-docgen can't resolve an imported
-    // type alias into an enum here, so both fall back to a generic
-    // "Set object" JSON editor. Pin the real option lists explicitly
-    // instead, same fix as Badge's `color`.
+    // `mode` и `size` — это обычные строковые объединения, импортированные
+    // из других модулей (`CalendarMode` и `InputSize`), а react-docgen не
+    // умеет разрешить импортированный псевдоним типа в перечисление,
+    // поэтому оба откатываются на универсальный JSON-редактор «Set object».
+    // Вместо этого списки значений заданы явно — та же правка, что и с
+    // `color` у Badge.
     mode: optionsArgType<CalendarMode>(
       "Type",
       { single: "Day", range: "Range", month: "Month", year: "Year" },
@@ -49,19 +50,20 @@ const meta = {
     ),
     // The popup's "Сбросить / Применить" row.
     footer: toggleArgType("Show Buttons"),
-    // `label`/`comment`/`error` are `React.ReactNode` but every usage is a
-    // plain string — without this, leaving one unset falls back to the same
-    // generic "Set object" editor.
+    // `label`, `comment` и `error` объявлены как `React.ReactNode`, но
+    // везде используются обычными строками. Без этого незаданное значение
+    // откатывается на тот же универсальный редактор «Set object».
     label: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
     error: { control: "text", table: { category: "Контент" } },
     // Значение оси State — отдельного контрола у него нет.
     disabled: { table: { disable: true } },
-    // `value`/`rangeValue`/`monthValue`/`yearValue` are owned by each
-    // story's own local-state wrapper — never meant to be driven by the
-    // Controls panel. Same landmine verified live on Calendar's matching
-    // props (setting one via the JSON editor crashes the story, since it
-    // produces a plain object instead of a real Date instance).
+    // `value`, `rangeValue`, `monthValue` и `yearValue` принадлежат
+    // собственной обёртке локального состояния каждой стори и панелью
+    // Controls управляться не должны. Те же грабли проверены вживую на
+    // одноимённых пропсах Calendar: установка значения через JSON-редактор
+    // роняет стори, потому что он выдаёт обычный объект, а не настоящий
+    // экземпляр Date.
     value: { control: false },
     rangeValue: { control: false },
     monthValue: { control: false },
@@ -80,8 +82,9 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-// `value`/`onChange` are fixed by this demo's own local state — every other
-// control (label, comment, error, disabled, size, …) is still forwarded.
+// `value` и `onChange` зафиксированы собственным локальным состоянием
+// этого демо; все остальные контролы (label, comment, error, disabled,
+// size и прочие) по-прежнему пробрасываются.
 function ControlledSingle(props: Omit<DatePickerProps, "value" | "onChange">) {
   const [value, setValue] = useState<Date | null>(new Date(2024, 0, 15))
   return <DatePicker value={value} onChange={setValue} {...props} />

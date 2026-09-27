@@ -1,12 +1,12 @@
 import type * as React from "react"
 
-// ДОМ.РФ Банк — the real logo mark + wordmark, provided whole as
-// ui/logo_dom.svg (unlike Button's GosuslugiLogo, which is a geometric
-// stand-in built because no exact asset existed — this one was supplied
-// directly for this project's own product, so it's traced as-is rather
-// than approximated). Fixed two-tone artwork (navy + white), not a
-// `currentColor` glyph, so it lives next to Header rather than in the
-// generic `src/icons` barrel.
+// ДОМ.РФ Банк — настоящий знак вместе с надписью, предоставленный целиком
+// отдельным SVG-ассетом (в отличие от GosuslugiLogo у Button, который
+// сделан геометрической заменой, потому что точного ассета не было: этот
+// передали прямо для продукта этого проекта, поэтому он обведён как есть, а
+// не приближён). Графика фиксированная двухцветная (тёмно-синий плюс
+// белый), а не глиф на `currentColor`, поэтому она живёт рядом с Header, а
+// не в общем бочонке `src/icons`.
 function DomRfLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 95 32" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>

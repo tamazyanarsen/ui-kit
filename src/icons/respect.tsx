@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / respect — 18. Other, набор ALL ICONS (канвас 70326:26).
+// icon / respect — 18. Other, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Respect({ size = 16, ...props }: IconProps) {
   if (size === 24) {

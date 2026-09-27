@@ -42,10 +42,11 @@ const STATUS_COLORS: Record<TagStatusColor, { main: TagStyle; secondary: TagStyl
       border: "var(--tag-blue-bg)",
     },
   },
-  // Draft/grey is the one status color whose secondary isn't a tint of
-  // itself — spec shows it as a plain white chip with a grey border
-  // instead, matching the other "outline" signs rather than green/orange/
-  // red/blue's tinted-background pattern.
+  // Чернового (серого) цвета это единственный статус, у которого вторичный
+  // вид не является оттенком самого себя: макет показывает его обычным белым
+  // чипом с серой рамкой, и это ближе к остальным «обводочным» признакам,
+  // чем к схеме с подкрашенным фоном у зелёного, оранжевого, красного и
+  // синего.
   grey: {
     main: { bg: "var(--tag-grey-bg)", fg: "var(--tag-grey-fg)" },
     secondary: {
@@ -56,8 +57,9 @@ const STATUS_COLORS: Record<TagStatusColor, { main: TagStyle; secondary: TagStyl
   },
 }
 
-// Sign colors (Признаки) have a single fixed look — spec shows no
-// secondary/outline variant for them, unlike the status colors.
+// У цветов признаков (Признаки) один зафиксированный вид: вторичного или
+// обводочного варианта макет для них не показывает, в отличие от цветов
+// статусов.
 const SIGN_COLORS: Record<TagSignColor, TagStyle> = {
   black: { bg: "var(--tag-black-bg)", fg: "var(--tag-black-fg)" },
   white: { bg: "var(--tag-white-bg)", fg: "var(--tag-white-fg)", border: "var(--tag-white-border)" },

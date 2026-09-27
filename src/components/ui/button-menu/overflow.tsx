@@ -10,12 +10,12 @@ import {
   type SelectionButtonSize,
 } from "@/components/ui/selection-button/selection-button"
 
-// The "..." overflow trigger + its dropdown menu. Per the spec this is the
-// same Dropdown component as Select ("Больше информации о выпадающем списке
-// вы можете найти в разделе Select, Dropdown") — built on Menu instead of
-// Select since items fire actions rather than set a value, but rendering
-// the actual shared Dropdown/DropdownItem components (via Base UI's `render`
-// prop) instead of just borrowing their className.
+// Триггер перекрытия «...» и его выпадающее меню. По макету это тот же
+// компонент Dropdown, что и у Select («Больше информации о выпадающем
+// списке вы можете найти в разделе Select, Dropdown»), построенный на Menu
+// вместо Select, потому что пункты вызывают действия, а не задают значение,
+// — но рисующий настоящие общие компоненты Dropdown и DropdownItem (через
+// пропс `render` в Base UI), а не просто занимающий их className.
 interface ButtonMenuOverflowProps
   extends Omit<MenuPrimitive.Root.Props, "children"> {
   children?: React.ReactNode
@@ -38,7 +38,7 @@ interface ButtonMenuOverflowProps
    *
    * ⚠️ Свойством компонента это НЕ является. Дизайн-чек от 08.09, замечание
    * 10: «Size S для Button Menu — выдуман. Его не должно быть, панель
-   * одноразмерная». Проверено по мастеру (нода 41357:45664): вложенный
+   * одноразмерная». Проверено по мастеру: вложенный
    * `ELK / selection button` в панели нарисован 56×56 и другого размера не
    * имеет. Значение `sm` осталось только для ряда команд внутри карточки и
    * для чёрной панели, где 32px — размер её собственных кнопок.

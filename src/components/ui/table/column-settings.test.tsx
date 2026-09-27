@@ -92,8 +92,8 @@ describe("TableColumnSettings", () => {
     expect(onColumnsChange).not.toHaveBeenCalled()
   })
 
-  // "Скрытие столбцов не сбрасывает их положение" — a locked column is
-  // always shown and its checkbox can't be cleared.
+  // «Скрытие столбцов не сбрасывает их положение» — закреплённая колонка
+  // показывается всегда, и её флажок нельзя снять.
   it("locks the mandatory columns", async () => {
     const user = userEvent.setup()
     render(
@@ -102,9 +102,10 @@ describe("TableColumnSettings", () => {
 
     await user.click(screen.getByRole("button", { name: "Настроить столбцы" }))
 
-    // Base UI's Checkbox renders a `role="checkbox"` span, so the disabled
-    // state lands on `aria-disabled`/`data-disabled` rather than the DOM
-    // `disabled` property `toBeDisabled()` looks for.
+    // Checkbox из Base UI рисует span с `role="checkbox"`, поэтому
+    // выключенное состояние оказывается в `aria-disabled` и
+    // `data-disabled`, а не в свойстве DOM `disabled`, которое ищет
+    // `toBeDisabled()`.
     const checkbox = screen.getByRole("checkbox", {
       name: "Показывать столбец «Статус»",
     })

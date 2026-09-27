@@ -22,9 +22,10 @@ import { GosuslugiLogo } from "./gosuslugi-logo"
 // «Скачать», меню шапки), а не только у таблицы. `active:` при этом остаётся:
 // это разные события — «палец на кнопке» и «список раскрыт».
 const buttonVariants = cva(
-  // Weight now lives in each size variant's text-pN-medium suffix below
-  // (all Medium, per Figma), not here — a separate font-medium class here
-  // would just double up with the compound class's own baked-in weight.
+  // Насыщенность теперь живёт в суффиксе text-pN-medium у каждого
+  // размерного варианта ниже (все Medium, как в макете), а не здесь:
+  // отдельный класс font-medium тут лишь продублировал бы насыщенность,
+  // уже зашитую в составной класс.
   "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding whitespace-nowrap transition-all outline-none select-none focus-visible:focus-ring active:not-aria-[haspopup]:translate-y-px disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] disabled:!border-transparent [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
@@ -41,11 +42,11 @@ const buttonVariants = cva(
           "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)]",
         destructive:
           "bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)] enabled:data-popup-open:bg-[var(--btn-destructive-bg-active)]",
-        // "Secondary Logo" Types (ui/button/button.png) — always paired
-        // with the fixed Госуслуги glyph (see GosuslugiLogo below), never a
-        // swappable icon. Black/Border-White/White pixel-match their plain
-        // secondary-* counterparts exactly, so they reuse the same tokens;
-        // only Grey introduces a genuinely new color.
+        // Типы «Secondary Logo» всегда идут в паре с фиксированным глифом
+        // Госуслуг (см. GosuslugiLogo ниже), а не со сменным значком.
+        // Black, Border-White и White попиксельно совпадают со своими
+        // обычными парами secondary-*, поэтому берут те же токены; новый
+        // цвет вводит только Grey.
         "secondary-logo-black":
           "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-logo-border-white":
@@ -56,31 +57,32 @@ const buttonVariants = cva(
           "bg-[var(--btn-secondary-logo-grey-bg)] text-[var(--btn-secondary-logo-grey-fg)] enabled:hover:bg-[var(--btn-secondary-logo-grey-bg-hover)] enabled:active:bg-[var(--btn-secondary-logo-grey-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-logo-grey-bg-active)]",
       },
       size: {
-        // Mobile-first: unprefixed classes are the mobile form, `desktop:` switches
-        // to the desktop form at the 768px breakpoint. Radii use literal
-        // px values (not rounded-xl/2xl) because the button's Figma spec
-        // (16px, 12px only for M-mobile) doesn't line up with the kit's
-        // shared --radius multiplier scale used by cards/inputs/etc.
+        // Сначала мобильный: классы без префикса — мобильная форма,
+        // `desktop:` переключает на десктопную на брейкпоинте 768px.
+        // Радиусы заданы литеральными px (а не rounded-xl/2xl), потому что
+        // макет кнопки (16px, и 12px только у M-mobile) не ложится на общую
+        // множительную шкалу --radius, по которой живут карточки, поля и
+        // прочее.
         //
-        // Round-2 audit fix: horizontal padding was off at every size (a
-        // systematic +1px vs Figma's literal `get_design_context` values
-        // for the "ELK / button" master, node 32:9064, plus `default`
-        // mobile was off by a lot more — px-17 there looked like a stray
-        // copy of `sm`'s value rather than the real 24px). Figma also
-        // gives the icon-adjacent (has-icon) padding as a genuinely
-        // different pair of numbers per side, not just the icon side —
-        // and `default` and `lg`-mobile turn out to share identical
-        // padding with each other/with `sm` at points where Figma's own
-        // instances happen to match, so there's no desktop: padding override
-        // needed for `sm`/`default` any more, only for `lg`.
+        // Исправление второго прохода: горизонтальные отступы были неверны
+        // на всех размерах — систематический +1px против литеральных
+        // значений мастера «ELK / button», а у мобильного `default`
+        // расхождение было куда больше: стоявший там px-17 выглядел как
+        // случайная копия значения `sm` вместо настоящих 24px. Макет вдобавок
+        // задаёт отступы рядом со значком (has-icon) действительно разной
+        // парой чисел по сторонам, а не только со стороны значка. Оказалось
+        // также, что `default` и мобильный `lg` совпадают по отступам друг с
+        // другом и с `sm` там, где совпадают и сами инстансы макета, поэтому
+        // переопределение отступов под desktop: больше не нужно ни `sm`, ни
+        // `default` — только `lg`.
         //
-        // Round-3: both sides have to move together, and the smaller value
-        // belongs on the *icon's* side. The anatomy (node 29161:73334)
-        // measures every size's Icon Left row as 16px before the icon and
-        // 20px after the text (24/32 on the 56px desktop L), mirrored for
-        // Icon Right. Previously only one side was overridden, so an
-        // icon-at-the-end button padded the icon side to 20 and left the
-        // text side at the base — i.e. the asymmetry ran backwards.
+        // Третий проход: обе стороны обязаны двигаться вместе, и меньшее
+        // значение принадлежит стороне *значка*. По анатомии у каждого
+        // размера ряд Icon Left — это 16px до значка и 20px после текста
+        // (24 и 32 у десктопного L высотой 56px), зеркально для Icon Right.
+        // Раньше переопределялась только одна сторона, и у кнопки со значком
+        // в конце сторона значка получала 20, а сторона текста оставалась
+        // базовой — то есть асимметрия шла наоборот.
         sm: "h-8 gap-2 rounded-[16px] px-4 text-p3-medium desktop:text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4",
         default:
           "h-10 gap-2 rounded-[12px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-12 desktop:rounded-[16px] desktop:text-p1-medium",
@@ -106,8 +108,8 @@ const buttonVariants = cva(
   }
 )
 
-// iconPosition="only" swaps the regular size for its square icon-button
-// counterpart.
+// iconPosition="only" подменяет обычный размер его квадратной парой для
+// кнопки-значка.
 const ICON_ONLY_SIZE: Record<"sm" | "default" | "lg", "icon-sm" | "icon" | "icon-lg"> = {
   sm: "icon-sm",
   default: "icon",
@@ -131,14 +133,16 @@ type ButtonProps = Omit<ButtonPrimitive.Props, "children" | "ref"> &
     children?: React.ReactNode
   }
 
-// Base UI's own <Button> is forwardRef'd (it needs the DOM node for its own
-// focus/press handling); this wrapper has to be too, or a ref passed through
-// it — e.g. Base UI's own Trigger components via `render={<Button />}`, see
-// TableRowMenu, ButtonMenuOverflow, ModalContent's default close button —
-// never reaches the underlying element. Under React 19 this happens to work
-// even without forwardRef (function components accept `ref` as a plain
-// prop there), which is how this shipped unnoticed; React 18 has no such
-// fallback and fails outright ("Function components cannot be given refs").
+// Собственный <Button> из Base UI обёрнут в forwardRef (ему нужен узел DOM
+// для своей работы с фокусом и нажатием), и эта обёртка обязана быть такой
+// же — иначе ref, проброшенный через неё, просто не доедет до нижележащего
+// элемента. Так бывает, например, у триггеров Base UI через
+// `render={<Button />}`: см. TableRowMenu, ButtonMenuOverflow и кнопку
+// закрытия по умолчанию в ModalContent. На React 19 это случайно работает и
+// без forwardRef (там функциональные компоненты принимают `ref` обычным
+// пропсом), поэтому недочёт и уехал незамеченным; в React 18 такого
+// запасного пути нет, и всё падает сразу («Function components cannot be
+// given refs»).
 const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
   {
     className,
@@ -153,8 +157,8 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
   },
   ref
 ) {
-  // "Secondary Logo" variants always carry the Госуслуги glyph as their
-  // leading icon — it's fixed brand mark, not the swappable `icon` prop.
+  // Варианты «Secondary Logo» всегда несут глиф Госуслуг как ведущий
+  // значок: это фиксированный фирменный знак, а не сменный пропс `icon`.
   const isLogoVariant =
     typeof variant === "string" && variant.startsWith("secondary-logo")
 
@@ -175,12 +179,13 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
 
   const Glyph = isLogoVariant ? GosuslugiLogo : Icon
 
-  // `lg` and `icon-lg` render their glyph at 24px from the desktop: breakpoint up
-  // (see the size variants above), and Figma draws a separate 24px artwork
-  // for most icons rather than scaling the 16px one. Pick the drawing here
-  // so callers never have to remember `size={24}` — they keep writing
-  // `<Button size="lg" icon={Mail}>`. It has to be a media query rather than
-  // a `desktop:` class because this selects the *path*, not the box.
+  // `lg` и `icon-lg` от брейкпоинта desktop: и выше рисуют глиф в 24px
+  // (см. размерные варианты выше), а в макете для большинства значков
+  // нарисована отдельная 24-пиксельная графика, а не увеличенная
+  // 16-пиксельная. Выбор рисунка делается здесь, чтобы вызывающему коду не
+  // приходилось помнить про `size={24}` — он продолжает писать просто
+  // `<Button size="lg" icon={Mail}>`. Это должен быть медиазапрос, а не
+  // класс `desktop:`, потому что выбирается сам *контур*, а не коробка.
   const isDesktop = useIsDesktop()
   const glyphSize =
     isDesktop && (resolvedSize === "lg" || resolvedSize === "icon-lg") ? 24 : 16
@@ -220,10 +225,10 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
         //
         // Всё остальное в этом состоянии взято из макета один в один:
         // заливка grey-114 (--btn-muted-bg), высота и паддинги те же, что у
-        // обычной кнопки, спиннер 24px на размере L (нода 9339:29870).
+        // обычной кнопки, спиннер 24px на размере L.
         // Расходится только ширина: символы Loading в Figma уже обычных
-        // (L/Desktop/Text — 118px в Default против 88px в Loading, ноды
-        // 32:9065 и 9339:29870). Это ограничение документации, а не правило:
+        // (L/Desktop/Text — 118px в Default против 88px в Loading).
+        // Это ограничение документации, а не правило:
         // дизайнер отдельно оговорил, что «на продукте при переходе кнопки в
         // состояние загрузки она не должна менять свой размер», и просил
         // прописать это в корне компонента.

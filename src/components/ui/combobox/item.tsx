@@ -10,11 +10,11 @@ import {
   type ComboboxCheckboxState,
 } from "./checkbox"
 
-// Indent step for tree levels — the spec shows "Уровень 2/3/4" stepping in
-// evenly, only two of which (parent/child) are actually selectable here.
-// Round-2 audit: was 24, sampled against a literal nested "Menu Point
-// (ELK)" instance on canvas 666:11 (level-0 pl-[16px] -> level-1
-// pl-[32px], a 16px step, not 24).
+// Шаг отступа для уровней дерева: макет показывает равномерно
+// сдвигающиеся «Уровень 2/3/4», из которых здесь на самом деле выбираемы
+// только два (родитель и ребёнок). Второй проход: стояло 24, а замер по
+// литеральному вложенному инстансу «Menu Point (ELK)» дал шаг 16 (уровень 0
+// это pl-[16px], уровень 1 — pl-[32px]), а не 24.
 const COMBOBOX_INDENT_PX = 16
 
 // Item — a real, selectable leaf (checkbox + Text + Description).
@@ -35,14 +35,14 @@ export function ComboboxItem({
   return (
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
-      // Round-2 audit: matches the literal checkbox "Menu Point (ELK)"
-      // instances sampled off canvas 666:11 (both the plain and tree-nested
-      // dropdown examples) — p-[16px] all sides (not py-2/pr-3/pl-3),
-      // gap-[16px] between the checkbox and text block (not gap-2.5), and
-      // no independent corner radius (pixel-sampled against a hover-state
-      // Menu Point: hard square corner, rounding only comes from the
-      // popup's own clip) with #F8F8F8 highlighted background instead of
-      // the generic --accent token.
+      // Второй проход: совпадает с литеральными инстансами «Menu Point
+      // (ELK)» с флажком, снятыми с канваса (и с обычного примера
+      // выпадающего списка, и с вложенного деревом): p-[16px] со всех
+      // сторон (а не py-2/pr-3/pl-3), gap-[16px] между флажком и текстовым
+      // блоком (а не gap-2.5) и отсутствие собственного радиуса углов
+      // (снято пипеткой с Menu Point в состоянии наведения: жёсткий прямой
+      // угол, скругление приходит только от обрезки самим всплывающим
+      // окном), плюс фон подсветки #F8F8F8 вместо общего токена --accent.
       className={menuItemRowClass(
         "group/item data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
@@ -79,11 +79,11 @@ export function ComboboxItem({
   )
 }
 
-// GroupRow — the parent/first-level checkbox in a two-level tree. Per spec
-// it is *not* a selectable value of its own: it's a derived control that
-// shows indeterminate/checked from its children's selection and toggles all
-// of them at once. Callers compute `state` from their own selection state
-// and children values.
+// GroupRow — родительский флажок первого уровня в двухуровневом дереве. По
+// макету это *не* самостоятельное выбираемое значение, а производный
+// контрол: он показывает промежуточное или отмеченное состояние по выбору
+// своих детей и переключает их всех разом. Значение `state` вызывающий код
+// вычисляет сам из своего состояния выбора и значений детей.
 
 export function ComboboxGroupRow({
   className,

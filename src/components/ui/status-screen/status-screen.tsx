@@ -7,7 +7,7 @@ import { StatusIllustration } from "./illustration"
 import { STATUS_TYPES, type StatusType } from "./variants"
 
 // Status Screen — «Экран результата операции»: 3D-иллюстрация статуса +
-// Title + Subtitle + кнопки (нода 47945:13711).
+// Title + Subtitle + кнопки.
 //
 // Дизайн-чек 3/3 №16: плоская плашка с иконкой заменена настоящими
 // объёмными кадрами из макета — см. illustration.tsx.

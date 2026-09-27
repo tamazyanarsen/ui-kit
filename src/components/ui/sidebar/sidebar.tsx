@@ -3,19 +3,20 @@ import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 
 import { cn } from "@/lib/utils"
 
-// Sidebar — "Боковая панель для сотрудников": one nav rail, two width
-// states (per spec: "Панель может находиться в свёрнутом или развёрнутом
-// состоянии"). Everything else in the spec's own property table (Show
-// Scroll, Dropdown groups, Show Text: Icon/Text/Select, item State) is
-// configuration of this single component, not separate variants.
+// Sidebar — «Боковая панель для сотрудников»: одна навигационная полоса в
+// двух состояниях по ширине (по макету: «Панель может находиться в свёрнутом
+// или развёрнутом состоянии»). Всё остальное из собственной таблицы свойств
+// макета (Show Scroll, группы Dropdown, Show Text: Icon/Text/Select,
+// состояние пункта) — это настройка одного этого компонента, а не отдельные
+// варианты.
 //
-// Expanding a group (see SidebarGroup in item.tsx) is lifted up into this
-// Root rather than left to each Accordion.Item's own uncontrolled state,
-// because collapsed-rail clicks need to both open the *sidebar* and expand
-// the clicked *group* together — per the spec's own callout: "При клике на
-// категорию в свёрнутом сайдбаре: для элементов без вложенности происходит
-// переход на страницу, а для категорий с подразделами — раскрывается
-// сайдбар для выбора нужной подкатегории."
+// Раскрытие группы (см. SidebarGroup в item.tsx) поднято сюда, в корень, а
+// не оставлено собственному неуправляемому состоянию каждого
+// Accordion.Item, потому что клик в свёрнутой полосе должен разом и открыть
+// *панель*, и раскрыть нажатую *группу* — по собственному примечанию
+// макета: «При клике на категорию в свёрнутом сайдбаре: для элементов без
+// вложенности происходит переход на страницу, а для категорий с
+// подразделами — раскрывается сайдбар для выбора нужной подкатегории».
 interface SidebarContextValue {
   open: boolean
   requestOpenGroup: (value: string) => void
@@ -94,9 +95,9 @@ function Sidebar({
           className={cn(
             "flex flex-1 flex-col gap-4 py-6",
             isOpen ? "px-2" : "items-center",
-            // Figma gates an `ELK / scrollbar` on this same `showScroll`
-            // property (node 24258:178753) — 4px track, 2px radius — so the
-            // themed track comes along with the overflow.
+            // Макет включает `ELK / scrollbar` по тому же свойству
+            // `showScroll` (дорожка 4px, радиус 2px), поэтому вместе с
+            // переполнением приходит и оформленная дорожка.
             showScroll ? "themed-scrollbar overflow-y-auto" : "overflow-hidden"
           )}
         >

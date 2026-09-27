@@ -21,19 +21,19 @@ type PlaygroundArgs = OtpConfirmCardProps & { viewport?: Viewport }
 
 // Дизайн-чек №4 №1: в Figma это один компонент `ELK / otp-code`, а
 // `Input Code` и «отправить повторно» — его элементы (секция Elements на
-// канвасе 1357:132865). Поэтому в Storybook тоже один раздел «OTP code»:
+// том же канвасе). Поэтому в Storybook тоже один раздел «OTP code»:
 // Playground/Варианты использования показывают сам компонент, а элементы
 // вынесены отдельными матрицами внутри этого же раздела.
 const meta = {
   title: "Компоненты/OTP code",
   component: OtpConfirmCard,
   parameters: { layout: "centered" },
-  // The card is a dialog (Figma composes it from ELK / Modal), so the
-  // Playground opens it outright instead of relying on a trigger click.
-  /* Панель повторяет свойства компонент-сета `ELK / otp-code`
-     (694:112669): у него единственная ось `Size` (Desktop / Mobile), а
-     состояния поля — у вложенного `Input Code (Desktop/Mobile)`
-     (11490:14320): Default / Focused / Filled / Error / Send Password. В
+  // Карточка — это диалог (в макете она собрана из ELK / Modal), поэтому
+  // Playground открывает её сразу, а не ждёт клика по триггеру.
+  /* Панель повторяет свойства компонент-сета `ELK / otp-code`: у него
+     единственная ось `Size` (Desktop / Mobile), а
+     состояния поля — у вложенного `Input Code (Desktop/Mobile)`:
+     Default / Focused / Filled / Error / Send Password. В
      коде это внутреннее поведение формы, поэтому контролов у них нет.
 
      Порядок ключей здесь задаёт порядок строк в панели Storybook. */
@@ -45,9 +45,10 @@ const meta = {
     title: "Подтвердите контактные данные",
     phone: "+7 900 000-00-00",
   },
-  // title/subtitle/error are typed React.ReactNode but every usage is a
-  // plain string — pin text controls so leaving one unset doesn't fall back
-  // to Storybook's "Set object" JSON-editor placeholder.
+  // title, subtitle и error объявлены как React.ReactNode, но везде
+  // используются обычными строками: закрепляем текстовые контролы, чтобы
+  // незаданное значение не откатывалось на заглушку JSON-редактора
+  // «Set object» в Storybook.
   argTypes: {
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
@@ -60,9 +61,10 @@ const meta = {
     error: { control: "text", table: { category: "Контент" } },
     phone: { control: "text", table: { category: "Контент" } },
     defaultValue: { control: "text", table: { category: "Контент" } },
-    // `trigger` takes a JSX element instance — no JSON value can build one,
-    // so map a friendly choice to a real element (same technique as
-    // Button's `icon`). "None" leaves the card opened by `defaultOpen`.
+    // `trigger` принимает экземпляр JSX-элемента, а собрать такой из
+    // значения JSON невозможно, поэтому понятный выбор отображается в
+    // настоящий элемент (тот же приём, что и с `icon` у Button). «None»
+    // оставляет карточку открытой через `defaultOpen`.
     trigger: {
       control: { type: "select", labels: { none: "None (открыта сразу)", button: "Кнопка" } },
       options: ["none", "button"],
@@ -90,9 +92,9 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {}
 
-/* The card is a real modal dialog (portal + backdrop + focus trap), so only
-   one can be open at a time — the variants are separate triggers rather than
-   matrix cells. */
+/* Карточка — настоящее модальное окно (портал, подложка, ловушка фокуса),
+   поэтому открытым может быть только одно за раз: варианты показаны
+   отдельными триггерами, а не ячейками матрицы. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },
@@ -133,7 +135,7 @@ export const Examples: Story = {
 }
 
 /* Элемент Input Code — Figma рисует его отдельной таблицей состояний
-   (Input Code Desktop/Mobile, 11490:14320 / 11490:23533). */
+   (Input Code Desktop/Mobile). */
 export const InputCodeMatrix: Story = {
   name: "Элемент «Input Code»",
   parameters: { layout: "fullscreen", controls: { disable: true } },
@@ -172,7 +174,7 @@ export const ResendCodeMatrix: Story = {
       rows={[
         { label: "Отсчёт (60 с)", props: { seconds: 60 } },
         { label: "Отсчёт (5 с)", props: { seconds: 5 } },
-        // At 0 the counter turns into an active "отправить ещё раз" link.
+        // На нуле счётчик превращается в активную ссылку «отправить ещё раз».
         { label: "Готово (0 с)", props: { seconds: 0 } },
         { label: "Готово · Hover", props: { seconds: 0 }, pseudo: "hover" },
       ]}

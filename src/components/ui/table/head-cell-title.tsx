@@ -62,9 +62,9 @@ function TableHeadCellTitle({
       onClick={onSortClick}
       data-slot="table-sort"
       className={cn(
-        // The colour shift alone is not a focus indicator — it is the same
-        // darkening the cell already does on hover — so the sort control
-        // carries the kit's standard ring as well.
+        // Одна лишь смена цвета признаком фокуса не является — это то же
+        // затемнение, которое ячейка и так делает при наведении, — поэтому
+        // контрол сортировки несёт вдобавок стандартное кольцо кита.
         "flex min-w-0 cursor-pointer items-center gap-2 rounded-[4px] outline-none transition-colors hover:text-[var(--table-fg)] focus-visible:text-[var(--table-fg)] focus-visible:focus-ring",
         alignRight ? "justify-end" : "flex-1",
         sortDirection
@@ -73,10 +73,10 @@ function TableHeadCellTitle({
       )}
     >
       {label}
-      {/* 16px, gap 8 — `icon / sort` is a full-size glyph in the spec. Its
-          own two chevrons stay muted until the column is actually sorted,
-          which is why Hover only darkens the *text* while Active darkens
-          text + one chevron. */}
+      {/* 16px, зазор 8 — `icon / sort` в макете полноразмерный глиф. Его
+          собственные два шеврона остаются приглушёнными, пока колонка
+          действительно не отсортирована, и именно поэтому Hover затемняет
+          только *текст*, а Active — текст и один шеврон. */}
       <ChevronsUpDown
         aria-hidden="true"
         sort={sortDirection ?? "none"}

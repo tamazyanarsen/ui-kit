@@ -7,9 +7,9 @@ import { Divider } from "@/components/ui/divider"
 // из которой собираются виджеты дашборда.
 //
 // В Figma это ДВА компонент-сета, а не одно свойство:
-//   • `ELK / block-widget (solid)` (70343:13144) — заливка Grey 106,
+//   • `ELK / block-widget (solid)` — заливка Grey 106,
 //     свойства Size / State (Default, Hover) / Type;
-//   • `ELK / block-widget (border)` (70343:13300) — обводка Grey 134,
+//   • `ELK / block-widget (border)` — обводка Grey 134,
 //     свойства Size / Type, состояния Hover НЕТ.
 // Оба Version 1.0.0, Release 67.32.
 //

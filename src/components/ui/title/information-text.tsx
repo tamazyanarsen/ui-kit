@@ -2,19 +2,22 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// TitleInformationText — "Information Text (ELK)" (node 60519:35006), the
-// secondary line that sits next to the status Tag under a page title. Figma
-// gives it two types:
+// TitleInformationText — «Information Text (ELK)», второстепенная строка,
+// которая стоит рядом с тегом статуса под заголовком страницы. Макет даёт
+// ей два типа:
 //
-//   • `Link` — a single underlined P2 Link Medium in the standard dark text
-//     colour (NOT the kit's link blue — the master is #252628 underlined);
-//   • `Text` — one or more `label: value` pairs, the label in Grey 284 and
-//     the value in Grey 1514, 4px apart inside a pair and 16px between pairs
-//     (the master ships a `showDublicate` flag purely to draw a second pair,
-//     which as a component is just "render the list you were given").
+//   • `Link` — одна подчёркнутая P2 Link Medium стандартным тёмным цветом
+//     текста (НЕ синим цветом ссылок кита: в мастере это подчёркнутый
+//     #252628);
+//   • `Text` — одна или несколько пар «подпись: значение», подпись цветом
+//     Grey 284, значение — Grey 1514, 4px внутри пары и 16px между парами
+//     (в мастере есть флаг `showDublicate` исключительно ради отрисовки
+//     второй пары, а для компонента это просто «нарисуй список, который
+//     тебе дали»).
 //
-// Both live in the same slot of `ELK / title-page`, so they are one component
-// switched by `type` rather than two exports the caller has to choose between.
+// Оба живут в одном и том же слоте `ELK / title-page`, поэтому здесь это
+// один компонент, переключаемый пропсом `type`, а не два экспорта, между
+// которыми вызывающему коду пришлось бы выбирать.
 
 interface TitleInformationTextPair {
   label: React.ReactNode
@@ -24,7 +27,7 @@ interface TitleInformationTextPair {
 interface TitleInformationTextProps
   extends Omit<React.ComponentProps<"div">, "children"> {
   type?: "link" | "text"
-  /** `type="link"`: the link's own text. */
+  /** При `type="link"` — собственный текст ссылки. */
   children?: React.ReactNode
   href?: string
   onLinkClick?: () => void

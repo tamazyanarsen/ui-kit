@@ -19,18 +19,20 @@ const meta = {
   component: UpButton,
   parameters: { layout: "padded" },
   argTypes: {
-    // Единственное свойство мастера (компонент-сет 34:15225).
+    // Единственное свойство мастера.
     state: stateArgTypeOf(["default", "hover", "active"]),
     threshold: { control: "number" },
     hidden: { control: "boolean" },
-    // scrollContainer is a React.RefObject<HTMLElement> — no JSON value can
-    // produce a real DOM ref, so Storybook's control can only ever build a
-    // plain {} that silently falls back to `window` (same non-representable
-    // class as Button's icon/iconPosition, already fixed there).
+    // scrollContainer — это React.RefObject<HTMLElement>, и никакое
+    // значение JSON не способно создать настоящий ref на DOM, поэтому
+    // контрол Storybook может собрать лишь пустой {}, который молча
+    // откатывается на `window` (тот же класс непредставимых значений, что и
+    // icon с iconPosition у Button, где это уже исправлено).
     scrollContainer: { control: false },
   },
-  // threshold=-1 keeps it visible immediately in the story canvas — real
-  // usage only shows it once the page has scrolled past the threshold.
+  // threshold=-1 оставляет кнопку видимой сразу на холсте стори; в реальном
+  // применении она появляется только после того, как страницу прокрутили за
+  // порог.
   args: { threshold: -1, hidden: false, state: "default" as PlaygroundState },
 } satisfies Meta<PlaygroundArgs>
 
@@ -71,8 +73,8 @@ export const Matrix: Story = {
         { label: "Hover", props: {}, pseudo: "hover" },
         { label: "Pressed", props: {}, pseudo: "active" },
         { label: "Focus", props: {}, pseudo: "focus-visible" },
-        // `hidden` is how a consumer suppresses it (e.g. while a modal is
-        // open) — it fades out rather than unmounting.
+        // `hidden` — это то, чем потребитель её подавляет (например, пока
+        // открыто модальное окно): она угасает, а не размонтируется.
         { label: "Hidden", props: { hidden: true } },
       ]}
       render={(props) => <UpButton {...props} className={STORY_POSITION} />}

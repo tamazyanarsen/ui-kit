@@ -2,21 +2,23 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Shimmer — "Скелетная загрузка": a loading placeholder used wherever a
-// real component reads from the database (tables, card previews, cards
-// themselves) before its data has arrived. Per the spec, each real text or
-// graphic element is replaced by exactly one shimmer block sized to match —
-// a multi-line text block still collapses to a single skeleton line, and a
-// graphic's block must match its real size exactly. There is no separate
-// component/prop for "text line" vs "avatar" vs "button placeholder" (the
-// spec's own "Текст"/"Фигура" split is just usage guidance for which `shape`
-// and which className sizing to reach for) — width/height are entirely
-// consumer-controlled via className, same as the real content being masked.
+// Shimmer — «Скелетная загрузка»: заглушка на время загрузки, которая
+// ставится везде, где настоящий компонент читает из базы (таблицы,
+// превью карточек, сами карточки), пока данные ещё не пришли. По макету
+// каждый настоящий текстовый или графический элемент заменяется ровно
+// одним блоком скелетона подходящего размера: многострочный текстовый блок
+// всё равно схлопывается в одну скелетную строку, а блок под графику обязан
+// в точности повторять её настоящий размер. Отдельного компонента или
+// пропса под «строку текста», «аватар» или «заглушку кнопки» нет
+// (собственное разделение макета на «Текст» и «Фигуру» — это лишь указание,
+// какой `shape` и какие размеры в className выбирать), а ширина и высота
+// целиком задаются потребителем через className, так же как и у настоящего
+// содержимого, которое маскируется.
 //
-// Motion is a plain opacity pulse (`animate-pulse`), not a sliding shine
-// sweep — the highlight is baked into the static gradient background
-// instead (see the --shimmer-* token comment in styles/tokens-table.css) — at the spec's
-// own 1.8s cycle rather than Tailwind's default 2s.
+// Движение — это обычная пульсация прозрачности (`animate-pulse`), а не
+// бегущий блик: сам блик запечён в статичный фоновый градиент (см.
+// комментарий к токенам --shimmer-* в styles/tokens-table.css). Цикл — 1.8 с
+// из макета, а не 2 с по умолчанию в Tailwind.
 interface ShimmerProps extends React.ComponentProps<"div"> {
   shape?: "square" | "circle"
 }

@@ -46,7 +46,7 @@ describe("Chips", () => {
 
   /* Свойство `Type` компонент-сета «ELK / chips, filter»: строка подписи есть
      только у `Chips` и у двух типов `Filter Subtitle …`, у голых `Filter …`
-     её в макете нет вовсе (54887:29180 / 54887:29185). */
+     её в макете нет вовсе. */
   it("shows the subtitle only for types that have one", () => {
     const { rerender } = render(
       <Chips type="filter-subtitle-white" subtitle="Подзаголовок">
@@ -64,8 +64,7 @@ describe("Chips", () => {
   })
 
   /* Брендовая рамка на State=Active есть только у типов Filter; у
-     `Type=Chips` выбранное состояние — заливка (54887:29218 против
-     54887:29390). */
+     `Type=Chips` выбранное состояние — заливка. */
   it("gives the Filter types a brand border when selected", () => {
     const { rerender } = render(
       <Chips type="filter-grey" selected>

@@ -27,8 +27,9 @@ describe("Shimmer", () => {
   })
 
   it("pulses at a 1.8s cycle", () => {
-    // jsdom has no stylesheet/CSS engine, so this checks for the Tailwind
-    // utility classes that drive the pulse rather than computed style.
+    // В jsdom нет ни таблиц стилей, ни движка CSS, поэтому проверяются
+    // утилитарные классы Tailwind, которые задают пульсацию, а не
+    // вычисленный стиль.
     const { container } = render(<Shimmer />)
     const el = container.querySelector('[data-slot="shimmer"]')!
     expect(el).toHaveClass("animate-pulse", "[animation-duration:1.8s]")

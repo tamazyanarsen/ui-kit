@@ -29,8 +29,8 @@ const meta = {
   component: Tooltip,
   parameters: { layout: "centered" },
   argTypes: {
-    /* Свойство `Direction` компонент-сета `ELK / tooltip & hint`
-       (687:25263) — подписи ровно как в правой панели Figma. Девятое
+    /* Свойство `Direction` компонент-сета `ELK / tooltip & hint` —
+       подписи ровно как в правой панели Figma. Девятое
        значение сета, `Mobile`, — это боттом-шит: он живёт в истории Hint,
        потому что в коде это подменённая форма, а не направление. */
     direction: optionsArgType<TooltipDirection>("Direction", {
@@ -44,7 +44,7 @@ const meta = {
       "down-right": "Down Right",
     }),
     // Дизайн-чек 3/3 №5: Show Title / Show Cross — свойства компонент-сета
-    // `ELK / tooltip & hint` (11756:8037 / 11756:8039), поэтому они должны
+    // `ELK / tooltip & hint`, поэтому они должны
     // переключаться из панели, а не быть зашиты.
     showTitle: toggleArgType("Show Title"),
     showCross: toggleArgType("Show Cross"),
@@ -59,11 +59,12 @@ const meta = {
       description: "base — 256px, auto — по содержимому",
     },
     disabled: { control: "boolean" },
-    // `children` is a React.ReactElement (the trigger) — no JSON value can
-    // represent it; Storybook falls back to a raw editable tree of the
-    // element's internals, which looks like a working control but isn't.
-    // Map a friendly choice between two real trigger elements instead of
-    // disabling the control (same technique as Button's `icon`).
+    // `children` — это React.ReactElement (триггер), и никакое значение
+    // JSON его не представит; Storybook откатывается на сырое
+    // редактируемое дерево внутренностей элемента, которое выглядит
+    // рабочим контролом, но им не является. Вместо выключения контрола
+    // понятный выбор отображается в два настоящих элемента триггера (тот же
+    // приём, что и с `icon` у Button).
     children: {
       control: {
         type: "select",
@@ -99,9 +100,9 @@ export const Playground: Story = {
   ),
 }
 
-/* Tooltips are portalled popups that only appear on hover, so a matrix would
-   show empty cells — the directions are laid out as a spaced grid of live
-   triggers instead. */
+/* Подсказки — это всплывающие окна в портале, появляющиеся только по
+   наведению, поэтому матрица показывала бы пустые ячейки. Вместо неё
+   направления разложены разреженной сеткой живых триггеров. */
 export const Examples: Story = {
   name: "Направления",
   parameters: { layout: "fullscreen", controls: { disable: true } },

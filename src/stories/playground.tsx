@@ -56,11 +56,12 @@ export const viewportArgType = {
   table: { category: "Storybook" },
 }
 
-/* Figma's property panels expose State (Default / Hover / Pressed / Focus) as
-   a variant dropdown. In code those are CSS pseudo-classes, so a Playground
-   can't pass them as props — it wraps the component in this instead, which
-   storybook-addon-pseudo-states turns into the real thing. `disabled` stays a
-   genuine prop and is handled per component. */
+/* Панели свойств в макете выставляют State (Default / Hover / Pressed /
+   Focus) выпадающим списком вариантов. В коде это псевдоклассы CSS, так что
+   Playground не может передать их пропсами: вместо этого он оборачивает
+   компонент вот в это, а storybook-addon-pseudo-states превращает обёртку в
+   настоящее состояние. `disabled` остаётся честным пропсом и разбирается
+   отдельно в каждом компоненте. */
 export type PlaygroundState =
   | "default"
   | "hover"
@@ -114,7 +115,7 @@ export function PseudoBox({
   )
 }
 
-/** argTypes entry for the shared `state` Playground control. */
+/** Запись argTypes для общего контрола `state` в Playground. */
 export const stateArgType = {
   name: "state",
   description:

@@ -35,9 +35,10 @@ export interface DayCell {
   day: number
 }
 
-/** Monday-first week grid for a given month. Leading/trailing slots outside
- * the month are `null` (the design leaves them empty, no adjacent-month
- * overflow digits). Returns 4-6 rows depending on the month. */
+/** Сетка недель с началом в понедельник для заданного месяца. Ведущие и
+ * замыкающие позиции вне месяца равны `null` (дизайн оставляет их пустыми,
+ * без цифр соседних месяцев). Возвращает от 4 до 6 строк в зависимости от
+ * месяца. */
 export function getMonthMatrix(year: number, month: number): (DayCell | null)[][] {
   const firstOfMonth = new Date(year, month, 1)
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -79,7 +80,7 @@ export function isSameMonth(a: Date, year: number, month: number) {
   return a.getFullYear() === year && a.getMonth() === month
 }
 
-/** Sorts an (possibly reversed) range so start <= end. */
+/** Упорядочивает (возможно, перевёрнутый) диапазон так, чтобы начало было не позже конца. */
 export function normalizeRange(
   a: Date | null,
   b: Date | null
@@ -96,7 +97,8 @@ export function isInRange(date: Date, start: Date | null, end: Date | null) {
   )
 }
 
-/** 12-year window ending at `endYear`, e.g. endYear=2024 -> 2013..2024. */
+/** Окно из 12 лет, последний — `endYear`: например, endYear=2024 даёт
+ * 2013…2024. */
 export function getDecadeYears(endYear: number): number[] {
   const start = endYear - 11
   return Array.from({ length: 12 }, (_, i) => start + i)
@@ -107,17 +109,17 @@ export function addMonths(year: number, month: number, delta: number) {
   return { year: d.getFullYear(), month: d.getMonth() }
 }
 
-/** "DD.MM.YYYY" — the format the spec uses for both the single-day field
- * and each half of the range field ("DD.MM.YYYY – DD.MM.YYYY"). */
+/** «DD.MM.YYYY» — формат, которым макет пользуется и для поля одного дня, и
+ * для каждой половины поля диапазона («DD.MM.YYYY – DD.MM.YYYY»). */
 export function formatDateRu(date: Date): string {
   const dd = String(date.getDate()).padStart(2, "0")
   const mm = String(date.getMonth() + 1).padStart(2, "0")
   return `${dd}.${mm}.${date.getFullYear()}`
 }
 
-/** Inverse of formatDateRu. Rejects both malformed strings and dates that
- * overflowed (e.g. "31.02.2024" rolling into March) rather than silently
- * accepting them. */
+/** Обратная к formatDateRu. Отвергает и неверно составленные строки, и
+ * даты, которые переполнились (например, «31.02.2024», переехавшее в
+ * март), а не принимает их молча. */
 export function parseDateRu(value: string): Date | null {
   const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value)
   if (!match) return null

@@ -4,19 +4,19 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Divider } from "@/components/ui/divider"
 
-// Сбросить (left) + Применить / Выбрать N (right), split by a vertical
-// divider, flush with the popup's bottom corners.
+// «Сбросить» слева и «Применить» или «Выбрать N» справа, разделённые
+// вертикальной линией, вровень с нижними углами всплывающего окна.
 //
-// Both actions are `ELK / button` instances in Figma (node 45821:30170 on
-// the Select/Dropdown canvas — 56px tall, 32px sides, P1 Medium 16/24), the
-// same footer construction the Calendar card uses, so they render the real
-// Button. That matters most for the disabled state: Figma greys the whole
-// button (fill grey-114 #EFEFEF, label grey-166 #C8C8CB), which is exactly
-// Button's --btn-muted-bg/--btn-muted-fg pair. The hand-rolled version this
-// replaces only dimmed the *label* and left the fill white.
+// Оба действия в макете — инстансы `ELK / button` (56px высотой, 32px по
+// бокам, P1 Medium 16/24), та же конструкция подвала, что и у карточки
+// Calendar, поэтому здесь рисуется настоящий Button. Важнее всего это для
+// выключенного состояния: макет гасит кнопку целиком (заливка grey-114
+// #EFEFEF, подпись grey-166 #C8C8CB), а это ровно пара
+// --btn-muted-bg и --btn-muted-fg у Button. Самодельный вариант, который
+// это заменило, приглушал только *подпись*, оставляя заливку белой.
 //
-// `rounded-none` because the footer sits flush inside the popup's own
-// rounded, overflow-hidden shell (see Dropdown).
+// `rounded-none` — потому что подвал стоит вровень внутри собственной
+// скруглённой оболочки всплывающего окна с overflow-hidden (см. Dropdown).
 
 export function ComboboxFooter({
   className,
@@ -38,10 +38,10 @@ export function ComboboxFooter({
   return (
     <div
       data-slot="combobox-footer"
-      // Round-2 audit: the top divider and the vertical divider between the
-      // two buttons are literal grey-134 #DEDEDE in the sampled "ELK /
-      // dropdown" footer (both the checkbox-tree and plain examples on
-      // canvas 666:11), not the kit's generic --border token (#E5E5E5).
+      // Второй проход: и верхняя линия, и вертикальная линия между двумя
+      // кнопками — литеральный grey-134 #DEDEDE в снятом подвале
+      // «ELK / dropdown» (и в примере с деревом флажков, и в обычном), а не
+      // общий токен кита --border (#E5E5E5).
       className={cn(
         "flex shrink-0 border-t border-[var(--menu-item-divider)]",
         className
@@ -56,10 +56,10 @@ export function ComboboxFooter({
       >
         {resetLabel}
       </Button>
-      {/* Figma draws the split as its own 1px "Devider" element rather than
-          a border on either button — and a border-r here would lose to
-          Button's own base `border-transparent` anyway. That element is the
-          shared "ELK / divider" component. */}
+      {/* Макет рисует разделение собственным элементом «Devider» толщиной
+          1px, а не рамкой на одной из кнопок; да и border-r здесь всё равно
+          проиграл бы собственному базовому `border-transparent` у Button.
+          Этот элемент — общий компонент «ELK / divider». */}
       <Divider orientation="vertical" />
       <Button
         variant="secondary-white"

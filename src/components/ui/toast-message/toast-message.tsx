@@ -9,21 +9,23 @@ import { ToastProvider } from "./provider"
 import { useToast, type ToastItem } from "./use-toast"
 import { CloseCross } from "@/components/ui/close-cross"
 
-// Toast Message — "Всплывающее уведомление". Shows a notification
-// noticeably without blocking the user's work; auto-dismisses after 4s
-// (дизайн-чек от 13.09, замечание 20). `data` carries the two optional
-// buttons (Type (Button): Two Buttons / Black Button / White Button).
+// Toast Message — «Всплывающее уведомление». Показывает уведомление
+// заметно, но не блокируя работу пользователя; само закрывается через 4
+// секунды (дизайн-чек от 13.09, замечание 20). `data` несёт две
+// необязательные кнопки (Type (Button): Two Buttons / Black Button /
+// White Button).
 //
 // Очередь, таймеры и пауза по наведению живут в `./provider`.
 //
-// Hand-rolled state (Context + useState + timers) rather than Base UI's
-// own Toast primitive: that primitive's store (`useToastManager`) never
-// reflected `.add()` calls in this project's exact setup — reproduced with
-// a minimal, textbook-correct usage both nested in the app tree and
-// mounted standalone at the app root, so it isn't a nesting/context
-// mistake on this component's part. Everything else in this kit that
-// leans on Base UI (Menu, Popover, Tooltip, Accordion, Dialog, ...) works
-// fine; this is scoped to Toast specifically.
+// Состояние написано вручную (контекст, useState и таймеры), а не взято у
+// примитива Toast из Base UI: хранилище того примитива
+// (`useToastManager`) в этом проекте так и не отразило ни одного вызова
+// `.add()`. Воспроизведено на минимальном, образцово-правильном
+// использовании — и вложенным в дерево приложения, и смонтированным
+// отдельно в его корне, — так что дело не в ошибке вложенности или
+// контекста со стороны этого компонента. Всё остальное в ките, что
+// опирается на Base UI (Menu, Popover, Tooltip, Accordion, Dialog и
+// прочее), работает нормально; проблема касается именно Toast.
 
 function ToastCard({
   toast,
@@ -48,8 +50,8 @@ function ToastCard({
       data-behavior={behavior}
       data-closing={toast.closing || undefined}
       role="status"
-      // Size=Mobile is a 328px card with 16px padding and a 16px close
-      // cross; Size=Desktop is 480px with 24px padding and a 24px cross.
+      // Size=Mobile — это карточка 328px с отступом 16px и крестиком 16px;
+      // Size=Desktop — 480px с отступом 24px и крестиком 24px.
       // Появление общее у всех, уход — по судьбе сообщения. Числа и кадры —
       // в styles/base.css, длительности в tokens-motion.css.
       className={cn(
@@ -69,7 +71,7 @@ function ToastCard({
         // Дизайн-чек 3/3 №31: «сейчас размер тоста 76px, должен быть 74px».
         // В Figma обводка нарисована ВНУТРЬ рамки, поэтому не увеличивает
         // высоту: 24 (pt) + 2 (pt-0.5 текстовой колонки) + 24 (Title 16/24)
-        // + 24 (pb) = 74 (774:134177). CSS-`border` же добавлялся снаружи и
+        // + 24 (pb) = 74. CSS-`border` же добавлялся снаружи и
         // давал 76. `outline` с отрицательным offset рисует ту же линию, но
         // вне потока — высота становится ровно 74.
         outline: `1px solid ${TOAST_BORDER[type]}`,
@@ -89,10 +91,10 @@ function ToastCard({
         />
 
         <div className="flex min-w-0 flex-1 flex-col gap-2 pt-0.5">
-          {/* Size=Mobile steps the whole text block down one notch, like
-              Informer does: Title 14/20 and Description 12/16 against
-              16/24 and 14/20 on Size=Desktop (master `ELK / toast
-              message` v2.0.0, node 774:134168). */}
+          {/* Size=Mobile опускает весь текстовый блок на ступень, как это
+              делает Informer: заголовок 14/20 и описание 12/16 против
+              16/24 и 14/20 при Size=Desktop (мастер `ELK / toast message`
+              v2.0.0). */}
           <span className="text-p2-medium text-[var(--toast-title-fg)] desktop:text-p1-medium">
             {toast.title}
           </span>
@@ -130,7 +132,7 @@ function ToastCard({
         </div>
 
         {/* Дизайн-чек 3/3 №8: Show Cross — свойство компонент-сета
-            `ELK / toast message` (774:134186), поэтому крестик отключаемый. */}
+            `ELK / toast message`, поэтому крестик отключаемый. */}
         {showCross && (
         /* Дизайн-чек №3 №9: «Некорректное начертание крестика… ещё
            заметил в toast message». У крестика два самостоятельных рисунка,
@@ -148,9 +150,9 @@ function ToastCard({
   )
 }
 
-// Toaster — the fixed viewport. Per the spec: desktop top-right, 32px
-// from the header, 40px from the right edge, 24px gap between stacked
-// toasts; mobile: top, 16px edge padding.
+// Toaster — закреплённая область показа. По макету: на десктопе сверху
+// справа, 32px от шапки, 40px от правого края, зазор 24px между тостами в
+// стопке; на мобильном — сверху, отступ от краёв 16px.
 //
 // «От ШАПКИ», а не от края вьюпорта — и это разные числа, как только шапка
 // закреплена (`Header pinned`). Отсчёт от нуля клал тост ПОВЕРХ шапки,
@@ -283,9 +285,10 @@ function ToastRow({
   )
 }
 
-// ToastCard is the presentational half of the component (the Toaster owns
-// mounting/timing). It's exported for the Storybook state matrix, which has
-// to render every type/button combination at once — going through
-// `toast.add()` would stack them on a timer instead. Not re-exported from
-// index.ts: consumers should still go through `useToast()`.
+// ToastCard — это оформительская половина компонента (монтированием и
+// временем ведает Toaster). Он экспортирован ради матрицы состояний в
+// Storybook, которой нужно отрисовать все сочетания типа и кнопок сразу:
+// через `toast.add()` они складывались бы в стопку по таймеру. Из index.ts
+// он не реэкспортируется — потребителям по-прежнему следует ходить через
+// `useToast()`.
 export { ToastProvider, Toaster, ToastCard }

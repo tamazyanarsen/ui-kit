@@ -4,9 +4,9 @@ import { LoaderCircle, Search, X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Dropdown } from "@/components/ui/dropdown"
 
-// Portal + Positioner + Popup. Per spec: 8px gap to the trigger, width
-// matches the trigger, height clamps between 168 and 504px (and still
-// shrinks to fit the viewport).
+// Portal, Positioner и Popup. По макету: зазор до триггера 8px, ширина
+// равна ширине триггера, высота зажата между 168 и 504px (и всё равно
+// ужимается под вьюпорт).
 
 export function ComboboxContent({
   className,
@@ -49,9 +49,9 @@ export function ComboboxContent({
   )
 }
 
-// Search input — lives inside the popup (not the trigger). Spec: search
-// icon left, spinner while a request is in flight (shown *alongside* the
-// clear button, not instead of it), clear button once there's text.
+// Поле поиска живёт внутри всплывающего окна, а не в триггере. По макету:
+// значок поиска слева, крутилка на время запроса (показывается *вместе* с
+// кнопкой очистки, а не вместо неё) и кнопка очистки, когда есть текст.
 
 export function ComboboxSearchInput({
   className,
@@ -59,12 +59,12 @@ export function ComboboxSearchInput({
   ...props
 }: ComboboxPrimitive.Input.Props & { loading?: boolean }) {
   return (
-    // Round-2 audit: matches the literal "ELK / input" search row sampled
-    // off canvas 666:11's own dropdown instances — p-[16px] (not
-    // px-3/py-2.5), search icon size-[24px] (not size-4), text 16px (not
-    // text-sm), and the row's own bottom border is the spec's literal
-    // grey-134 #DEDEDE, not the kit's generic --border token (#E5E5E5,
-    // close but not an exact match).
+    // Второй проход: совпадает с литеральной строкой поиска
+    // «ELK / input», снятой с собственных инстансов выпадающего списка, —
+    // p-[16px] (а не px-3/py-2.5), значок поиска size-[24px] (а не
+    // size-4), текст 16px (а не text-sm), и нижняя рамка самой строки —
+    // литеральный grey-134 #DEDEDE из макета, а не общий токен кита
+    // --border (#E5E5E5, близко, но не точное совпадение).
     <div className="flex shrink-0 items-center gap-2 border-b border-[var(--menu-item-divider)] p-4">
       <Search
         size={24}
@@ -74,9 +74,9 @@ export function ComboboxSearchInput({
       <ComboboxPrimitive.Input
         data-slot="combobox-search"
         className={cn(
-          // get_design_context on the "ELK / dropdown" search row (e.g.
-          // 29750:53185): the search text sits in a font-['Object_Sans:Medium']
-          // wrapper, Medium at 16px, not the browser default.
+          // В строке поиска «ELK / dropdown» текст поиска лежит в обёртке
+          // font-['Object_Sans:Medium'] — Medium размером 16px, а не
+          // браузерное умолчание.
           "h-6 w-full min-w-0 border-0 bg-transparent text-p1-medium text-[var(--select-fg)] outline-none focus-visible:focus-ring placeholder:text-[var(--select-label-fg)]",
           className
         )}
@@ -98,9 +98,9 @@ export function ComboboxSearchInput({
   )
 }
 
-// Status / Empty — the hint / no-results / error copy shown between the
-// search field and the list ("Начните вводить параметры поиска",
-// "Поиск не дал результатов...", etc).
+// Status и Empty — текст подсказки, отсутствия результатов или ошибки,
+// который показывается между полем поиска и списком («Начните вводить
+// параметры поиска», «Поиск не дал результатов...» и подобное).
 
 export function ComboboxStatus({
   className,
@@ -110,12 +110,12 @@ export function ComboboxStatus({
     <ComboboxPrimitive.Status
       data-slot="combobox-status"
       className={cn(
-        // Round-2 audit: matches the literal "Text Help" hint sampled off
-        // canvas 666:11's own search-hint dropdown instance —
-        // pt-[12px]/pb-[16px]/px-[16px] (not a uniform px-3/py-2.5).
-        // get_design_context on the dropdown's own "Empty" state text
-        // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
-        // Regular, despite the muted --select-caption-fg color.
+        // Второй проход: совпадает с литеральной подсказкой «Text Help»,
+        // снятой с собственного инстанса выпадающего списка с подсказкой
+        // поиска, — pt-[12px]/pb-[16px]/px-[16px], а не равномерные
+        // px-3/py-2.5. Текст состояния «Empty» у самого списка —
+        // Object Sans Medium (P2 Medium), а не Regular, несмотря на
+        // приглушённый цвет --select-caption-fg.
         "px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden",
         className
       )}
@@ -132,12 +132,12 @@ export function ComboboxEmpty({
     <ComboboxPrimitive.Empty
       data-slot="combobox-empty"
       className={cn(
-        // Round-2 audit: matches the literal "Text Help" hint sampled off
-        // canvas 666:11's own search-hint dropdown instance —
-        // pt-[12px]/pb-[16px]/px-[16px] (not a uniform px-3/py-2.5).
-        // get_design_context on the dropdown's own "Empty" state text
-        // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
-        // Regular, despite the muted --select-caption-fg color.
+        // Второй проход: совпадает с литеральной подсказкой «Text Help»,
+        // снятой с собственного инстанса выпадающего списка с подсказкой
+        // поиска, — pt-[12px]/pb-[16px]/px-[16px], а не равномерные
+        // px-3/py-2.5. Текст состояния «Empty» у самого списка —
+        // Object Sans Medium (P2 Medium), а не Regular, несмотря на
+        // приглушённый цвет --select-caption-fg.
         "px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden",
         className
       )}
@@ -179,7 +179,7 @@ export function ComboboxSectionLabel({
   )
 }
 
-// Scrollable region below the (optional) search bar.
+// Прокручиваемая область под строкой поиска (строка необязательная).
 
 export function ComboboxList({
   className,

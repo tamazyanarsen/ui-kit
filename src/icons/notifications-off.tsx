@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / notifications off — 15. Notification, набор ALL ICONS (канвас 70326:26).
+// icon / notifications off — 15. Notification, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function NotificationsOff({ size = 16, ...props }: IconProps) {
   if (size === 24) {

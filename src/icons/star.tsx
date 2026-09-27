@@ -1,16 +1,16 @@
 import type { IconProps } from "./types"
 
-// Figma's `icon / Star` (node 64534:44320 inside Estimate (ELK)) is drawn
-// for a 32px box: a 29.3199×29.3549 glyph at (1.34, 1.33) per the
-// component's 4.17%/4.19% insets — which is exactly the size NPS renders it
-// at. What lived here before was a 24-grid drawing from the lucide
-// passthrough era; scaled to 32px its proportions did not line up with the
-// spec (its outer contour sits noticeably lower).
+// `icon / Star` из макета (внутри Estimate (ELK)) нарисована под коробку
+// 32px: глиф 29,3199 × 29,3549 в точке (1.34, 1.33) по отступам мастера
+// 4,17% / 4,19% — ровно в том размере, в котором её рисует NPS. Раньше
+// здесь лежал рисунок по 24-й сетке из эпохи проброса lucide: растянутый
+// до 32px, он по пропорциям с макетом не совпадал (внешний контур сидел
+// заметно ниже).
 //
-// The two states share one contour: `filled` is that contour on its own,
-// while the empty state adds an inner cutout and relies on fill-rule
-// evenodd — an outline drawn as a hole, not a `stroke`, which is why this
-// icon takes a prop instead of toggling fill/stroke via className.
+// У двух состояний один и тот же контур: `filled` — это он сам по себе, а
+// пустое состояние добавляет внутренний вырез и опирается на fill-rule
+// evenodd. То есть обводка нарисована ДЫРКОЙ, а не через `stroke`, —
+// поэтому иконка принимает пропс, а не переключает fill/stroke классом.
 const STAR_OUTER =
   "M12.1822 1.70517C13.0862 -0.568396 16.2337 -0.568385 17.1378 1.70517L19.8429 8.50831C19.8483 8.52188 19.8543 8.52949 19.8579 8.53321L26.8683 9.1211C29.3226 9.32691 30.1147 12.3822 28.4123 13.9076L23.0627 18.701C23.0586 18.7047 23.0495 18.7151 23.0431 18.7357C23.0367 18.7564 23.0354 18.78 23.0407 18.803L24.6751 25.9701C25.1787 28.1786 22.8198 30.298 20.6528 28.9135L14.66 25.0846L8.66714 28.9135C6.50011 30.298 4.14123 28.1786 4.64485 25.9701L6.27923 18.803C6.28449 18.78 6.28325 18.7564 6.27683 18.7357C6.27042 18.7151 6.26132 18.7047 6.25719 18.701L0.907603 13.9076C-0.794774 12.3822 -0.00262278 9.32691 2.45159 9.1211L9.46201 8.53321C9.46565 8.52949 9.47167 8.52188 9.47706 8.50831L12.1822 1.70517Z"
 

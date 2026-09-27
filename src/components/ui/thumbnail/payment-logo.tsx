@@ -2,14 +2,15 @@ import { cn } from "@/lib/utils"
 
 import type { PaymentSystem } from "./variants"
 
-// Simplified brand marks — this is a spec-verification demo kit, not a
-// place to vendor real payment-network SVG assets, so each logo is a
-// small approximation (color + wordmark) rather than the literal brand
-// artwork shown in the Figma export.
+// Упрощённые фирменные знаки: это кит для сверки с макетом, а не место для
+// переноса настоящих SVG-ассетов платёжных систем, поэтому каждый логотип —
+// небольшое приближение (цвет плюс надпись), а не буквальная фирменная
+// графика из выгрузки макета.
 //
-// `size="sm"` is the same mark scaled down for Card's tiny 48×34 mini-card
-// tile (see ui/card) — proportioned to sit legibly in that corner rather
-// than a literal transform-scale of the "md" mark used by Thumbnail.
+// `size="sm"` — тот же знак, уменьшенный под крошечную плитку мини-карты
+// 48×34 у Card (см. ui/card): пропорции подобраны, чтобы он читался в этом
+// углу, а не буквальным transform-scale знака «md», который использует
+// Thumbnail.
 const MIR_TEXT_SIZE = { sm: "text-[6px]", md: "text-[10px]", lg: "text-[17px]" }
 const MASTERCARD_BOX = { sm: "h-2.5 w-4", md: "h-4 w-6", lg: "h-[26px] w-[39px]" }
 const MASTERCARD_CIRCLE = { sm: "size-2.5", md: "size-4", lg: "size-[26px]" }

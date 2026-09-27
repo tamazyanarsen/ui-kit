@@ -12,24 +12,24 @@ import { useActiveIndicator } from "@/lib/use-active-indicator"
 import { TabButton } from "./tab-button"
 import type { TabItem, TabsSize } from "./types"
 
-// Tabs — "Табы": underline-style tab bar. Value is a literal item count
-// (2–12) — that's a content constraint, not something this component
-// enforces; it just renders however many `items` it's given.
+// Tabs — «Табы»: полоса вкладок с подчёркиванием. Значение — буквальное
+// количество пунктов (2–12), но это ограничение содержания, а не то, что
+// компонент проверяет: он рисует столько `items`, сколько ему дали.
 //
-// `ELK / tabs` v1.2.0 replaced the old Large/Medium *level* property with a
-// responsive Size=Desktop/Mobile pair, so the bar now switches with the
-// viewport instead of a prop: 44px tall with a 32px gap, 16/24 labels and a
-// 24px overflow glyph from `desktop:` up; 40px / 24px / 14/20 / 16px below it.
-// (The two old sizes happened to hold exactly these two sets of numbers.)
+// В `ELK / tabs` v1.2.0 прежнее свойство *уровня* Large/Medium заменено на
+// адаптивную пару Size=Desktop/Mobile, поэтому полоса теперь переключается
+// по вьюпорту, а не по пропсу: высота 44px с зазором 32px, подписи 16/24 и
+// глиф перекрытия 24px от `desktop:` и выше; ниже — 40px, 24px, 14/20 и
+// 16px. (У двух прежних размеров как раз и стояли эти два набора чисел.)
 //
-// Overflow ("Show More"): once the row doesn't fit, the trailing tabs move
-// behind a "..." trigger that opens a dropdown (spec: "часть табов может
-// скрываться в многоточие. При клике на иконку многоточия открывается
-// Dropdown"). Reuses ButtonMenuOverflowItem for the list rows — same
-// component `button-menu/overflow.tsx` already built for exactly this
-// "Text / Text" popup — but the trigger itself is custom-styled here since
-// Tabs' own anatomy calls for a plain inline ellipsis, not ButtonMenu's
-// bordered secondary-grey button.
+// Перекрытие («Show More»): как только ряд перестаёт помещаться, хвостовые
+// вкладки уходят за триггер «...», открывающий выпадающий список (в макете:
+// «часть табов может скрываться в многоточие. При клике на иконку
+// многоточия открывается Dropdown»). Для строк списка переиспользуется
+// ButtonMenuOverflowItem — тот самый компонент `button-menu/overflow.tsx`,
+// уже сделанный ровно под такое всплывающее окно «Text / Text», — а вот сам
+// триггер здесь оформлен по-своему: анатомия Tabs требует обычного
+// строчного многоточия, а не обведённой серой кнопки ButtonMenu.
 interface TabsProps {
   items: TabItem[]
   value?: string
@@ -55,8 +55,9 @@ interface TabsProps {
   className?: string
 }
 
-// The gap and the room reserved for the "…" trigger feed the JS overflow
-// measurement, so they can't be CSS-only like the type sizes below.
+// Зазор и место, зарезервированное под триггер «…», участвуют в замере
+// перекрытия на JS, поэтому их нельзя оставить чисто в CSS, как размеры
+// шрифта ниже.
 const GAP = { desktop: 32, mobile: 24 }
 const ELLIPSIS_RESERVED = { desktop: 44, mobile: 32 }
 
@@ -182,10 +183,10 @@ function Tabs({
                 // незачем — пока за многоточием ничего не спрятано, он
                 // просто не раскрывается.
                 disabled={!hasOverflow}
-                // The mobile glyph is 16px against a 20px label line, so
-                // Figma pads it 2px and widens the gap to 18px to keep the
-                // trigger the full 40px — otherwise its underline floats
-                // above the bar's bottom border.
+                // Мобильный глиф 16px стоит против строки подписи 20px,
+                // поэтому в макете ему дают отступ 2px и расширяют зазор до
+                // 18px, чтобы триггер сохранил полные 40px, — иначе его
+                // подчёркивание всплывает над нижней рамкой полосы.
                 className={cn(
                   "group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none focus-visible:focus-ring",
                   // Варианты `desktop:` при закреплённом размере не
@@ -232,10 +233,11 @@ function Tabs({
         )}
       </div>
 
-      {/* Off-screen measurement copy — always renders every item (unlike
-          the visible row, which drops items behind the overflow trigger)
-          so useOverflowCount always has a real width to measure, even for
-          items currently tucked away in the dropdown. */}
+      {/* Закадровая копия для замеров: она всегда рисует все пункты (в
+          отличие от видимого ряда, который прячет часть за триггер
+          перекрытия), чтобы useOverflowCount всегда имел настоящую ширину
+          для замера — даже у пунктов, сейчас убранных в выпадающий
+          список. */}
       <div
         aria-hidden="true"
         className="pointer-events-none invisible absolute top-0 left-0 flex"

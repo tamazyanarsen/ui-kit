@@ -14,40 +14,40 @@ import {
   useSortable,
 } from "@/components/ui/sortable"
 
-// TableColumnSettings — "Управление столбцами" (node 70279:7092), the popup
-// behind the table top's "Настроить столбцы" button.
+// TableColumnSettings — «Управление столбцами», всплывающее окно за кнопкой
+// «Настроить столбцы» в верху таблицы.
 //
-// Per the spec the popup is a 280px list of `Menu Point (ELK)` rows (56px
-// tall, p-16, gap-16: a 24px Checkbox, a P1 Medium label and the 24px
-// `icon / drag` grip) above a search field, and it governs two independent
-// axes:
+// По макету это список шириной 280px из строк `Menu Point (ELK)` (высотой
+// 56px, p-16, gap-16: флажок 24px, подпись P1 Medium и ручка `icon / drag`
+// 24px) над полем поиска, и он управляет двумя независимыми осями:
 //
-//   • visibility — "Скрытие столбцов не сбрасывает их положение относительно
-//     других столбцов", so hiding a column never reorders it;
-//   • order — dragged by the grip.
+//   • видимость — «Скрытие столбцов не сбрасывает их положение относительно
+//     других столбцов», то есть скрытие никогда не меняет порядок;
+//   • порядок — перетаскивается за ручку.
 //
-// "Допускаются таблицы, в которых доступно только включение/отключение
+// «Допускаются таблицы, в которых доступно только включение/отключение
 // видимости или только изменение порядка столбцов (не оба параметра
-// одновременно)", which is why `reorderable` and `hideable` are separate
-// flags rather than one "editable". A column can also opt out individually
-// via `locked` — the spec draws those with a greyed-out checked checkbox.
+// одновременно)» — именно поэтому `reorderable` и `hideable` это два
+// отдельных флага, а не один «editable». Отдельная колонка может
+// отказаться от участия через `locked`: такие макет рисует с серым
+// отмеченным флажком.
 
 interface TableColumn {
   id: string
   label: React.ReactNode
   visible?: boolean
-  /** Always shown, checkbox disabled (the greyed rows in the spec's popup). */
+  /** Показывается всегда, флажок выключен (серые строки во всплывающем окне макета). */
   locked?: boolean
 }
 
 interface TableColumnSettingsProps {
   columns: TableColumn[]
   onColumnsChange: (columns: TableColumn[]) => void
-  /** Show the drag grip and allow reordering. */
+  /** Показывать ручку перетаскивания и разрешить смену порядка. */
   reorderable?: boolean
-  /** Show the checkbox and allow hiding columns. */
+  /** Показывать флажок и разрешить скрывать колонки. */
   hideable?: boolean
-  /** Search field over the column names. Hidden for short lists. */
+  /** Поле поиска по названиям колонок. Для коротких списков скрыто. */
   searchable?: boolean
   searchPlaceholder?: string
   label?: React.ReactNode
@@ -84,10 +84,11 @@ function TableColumnSettings({
     )
   }
 
-  // Reorder is index-based on the full list, not the filtered view: dropping
-  // onto a row while a search is active still has to land the dragged column
-  // at that row's real position. Хук отдаёт индексы в ВИДИМОМ списке —
-  // поэтому здесь они переводятся обратно в индексы `columns`.
+  // Смена порядка считается по индексам полного списка, а не
+  // отфильтрованного вида: бросок на строку при активном поиске всё равно
+  // должен поставить перетаскиваемую колонку на настоящее место этой
+  // строки. Хук отдаёт индексы в ВИДИМОМ списке — поэтому здесь они
+  // переводятся обратно в индексы `columns`.
   function move(from: number, to: number) {
     const fromId = visibleRows[from]?.id
     const toId = visibleRows[to]?.id
@@ -134,10 +135,10 @@ function TableColumnSettings({
               />
             }
           >
-            {/* The search field is flush: Figma's "Поля таблицы" frame (node
-                70279:7098) is 280 wide with `ELK / input` at (0,0) sized
-                280×56 — an L input, full-bleed, with the row list starting
-                immediately at y=56 and no padding of its own.
+            {/* Поле поиска идёт вровень: кадр «Поля таблицы» в макете
+                шириной 280 с `ELK / input` в точке (0,0) размером 280×56 —
+                это поле размера L во всю ширину, а список строк начинается
+                сразу с y=56 и собственных отступов не имеет.
 
                 Дизайн-чек «Storybook 3», замечание 7: «поправить вид поля
                 поиска для настройки столбцов, опираясь на вид dropdown».
@@ -176,7 +177,7 @@ function TableColumnSettings({
                       : undefined
                   }
                   // Взятая строка красится в Active (Grey 124) — общий вид
-                  // перетаскивания по макету 42995:34194. Раньше здесь была
+                  // перетаскивания по макету. Раньше здесь была
                   // своя полупрозрачность, и то же действие в трёх списках
                   // кита выглядело тремя разными способами.
                   className={sortableRowClass(
@@ -239,8 +240,8 @@ function TableColumnSettings({
   )
 }
 
-// A locked column is pinned in place as well as always visible — the spec's
-// greyed rows carry a muted grip, not an active one.
+// Закреплённая колонка не только всегда видима, но и зафиксирована на
+// месте: у серых строк макета ручка приглушённая, а не активная.
 function dragDisabled(column: TableColumn) {
   return Boolean(column.locked)
 }

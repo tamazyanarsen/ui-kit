@@ -129,7 +129,7 @@ const meta = {
   component: HeaderDemo,
   parameters: { layout: "fullscreen" },
   argTypes: {
-    /* `Type` компонент-сета `ELK / header` (70303:48760) — четыре значения.
+    /* `Type` компонент-сета `ELK / header` — четыре значения.
        В коде они разложены на пару `type` + `clientHeaderType`, поэтому
        контролов два: первый повторяет ось макета, второй показывает
        клиентские подтипы, которых в оси нет (у кита их на один больше). */
@@ -227,8 +227,8 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {}
 
-/* Header is a full-width bar with portalled menus, so a matrix of cells
-   would be unreadable — each type gets its own full-width canvas instead. */
+/* Header — это полоса во всю ширину с меню в порталах, поэтому матрица из
+   ячеек была бы нечитаемой: каждому типу отведён свой холст во всю ширину. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

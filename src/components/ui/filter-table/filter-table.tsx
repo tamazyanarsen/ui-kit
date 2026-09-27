@@ -4,44 +4,44 @@ import { X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
-// "ELK / filter-table" (сет 70422:5119, v1.0.1 — бывш. 1303:99241) — the compact pill used
-// both as a tappable suggestion (NPS's reply chips) and as a selected table
-// filter. Figma models the two looks as one component with a `Checked`
-// property, so they live together here rather than as two lookalikes.
+// «ELK / filter-table» (v1.0.1) — компактная таблетка, которая служит и
+// нажимаемой подсказкой (чипы ответов в NPS), и выбранным фильтром
+// таблицы. В макете оба вида сделаны одним компонентом со свойством
+// `Checked`, поэтому и здесь они живут вместе, а не двумя похожими
+// близнецами.
 //
-// Values below are read off the variant symbols directly:
-//   Checked=False  Default  1303:99332 — bg grey-109 #F4F4F4, fg #252628
-//                  Hover    1303:99342 — bg grey-114 #EFEFEF
-//                  Disabled 1303:99362 — bg grey-114 #EFEFEF, fg grey-166 #C8C8CB
-//   Checked=True   Default  1303:99257 — bg dark-blue-1412 #012F42, fg white,
-//                                        plus a 16px close cross
-// Box is shared: max-w-256, px-16/py-6, radius 16, P2 Medium 14/20, gap 8.
-// Note both disabled looks are #EFEFEF/#C8C8CB (i.e. --btn-muted-*), NOT
-// --chips-disabled-bg's lighter #F4F4F4.
+// Значения ниже прочитаны прямо с символов вариантов:
+//   Checked=False  Default  — фон grey-109 #F4F4F4, текст #252628
+//                  Hover    — фон grey-114 #EFEFEF
+//                  Disabled — фон grey-114 #EFEFEF, текст grey-166 #C8C8CB
+//   Checked=True   Default  — фон dark-blue-1412 #012F42, текст белый,
+//                             плюс крестик закрытия 16px
+// Коробка общая: max-w-256, px-16/py-6, радиус 16, P2 Medium 14/20, зазор 8.
+// Обратите внимание: оба выключенных вида — это #EFEFEF/#C8C8CB (то есть
+// --btn-muted-*), а НЕ более светлый #F4F4F4 из --chips-disabled-bg.
 
-/** The pill's own visual, split out from the component because the two real
- * call sites cannot share one element type: NPS's suggestion is itself the
- * button, while `FilterTableSelect`'s chip is a Popover trigger that *nests*
- * a reset
- * button, and nested <button>s are invalid HTML. Sharing the classes keeps
- * one source of truth for the geometry/colours either way. */
+/** Внешний вид самой таблетки вынесен из компонента, потому что два
+ * реальных места использования не могут делить один тип элемента: подсказка
+ * в NPS сама является кнопкой, а чип у `FilterTableSelect` — это триггер
+ * поповера, *внутрь* которого вложена кнопка сброса, а вложенные <button>
+ * недопустимы в HTML. Общие классы при этом оставляют геометрию и цвета в
+ * одном месте. */
 function filterTablePillClass({
   selected = false,
   disabled = false,
 }: { selected?: boolean; disabled?: boolean } = {}) {
   return cn(
     // ⚠️ `min-w-20` — не догадка, а «Правила отступов» из доки компонента
-    // (нода 15693:35370, файл-копия): «минимальная ширина — 80 px,
+    // (файл-копия): «минимальная ширина — 80 px,
     // максимальная ширина — 256 px. Если название не умещается в
     // максимальную ширину, то оно скрывается в многоточие». Дизайн-чек
     // «Storybook 3», замечание 8: без нижней границы короткая подпись («Тип»)
     // давала пилюлю уже 80, и ряд фильтров рассыпался по ширинам.
-    // ⚠️ Мобильная адаптация (сет 70422:5119, v1.0.1): у пилюли меняется
+    // ⚠️ Мобильная адаптация: у пилюли меняется
     // ТОЛЬКО типографика подписи — P2 Medium Mobile (12/16) против
     // десктопного P2 Medium (14/20). Коробка одна и та же на обеих формах:
     // px-16/py-6, радиус 16, зазор 8, крестик и шеврон по 16, плашка
-    // счётчика 16 — сверено по `get_design_context` мобильных и десктопных
-    // символов (70422:5123 против 70422:5120, 70422:5202, 70422:5171).
+    // счётчика 16 — сверено по мобильным и десктопным символам мастера.
     // Отсюда и разница высот: 28 px на мобайле против 32 на десктопе — она
     // выходит сама из line-height, отдельной высоты задавать не надо.
     // В ките 12/16 Medium — это ключ `p3`, см. таблицу масштаба: мобильный
@@ -119,8 +119,8 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
         )}
         {...props}
       >
-        {/* Only the unselected look centres its label — the selected one is
-            left-aligned because the close cross takes the right edge. */}
+        {/* Подпись по центру только у невыбранного вида: у выбранного она
+            прижата влево, потому что правый край занимает крестик. */}
         <span
           className={cn(
             "min-w-0 flex-1 truncate",
@@ -129,10 +129,10 @@ const FilterTable = React.forwardRef<HTMLButtonElement, FilterTableProps>(
         >
           {children}
         </span>
-        {/* The counter is the same #6D6D6D/white badge in both Checked
-            states — Figma's Counter=True variants (1303:99335 grey pill and
-            1303:99338 dark pill) carry an identical `ELK / badge`, so it does
-            not flip to the pale one on the dark pill. */}
+        {/* Счётчик — один и тот же значок #6D6D6D на белом в обоих
+            состояниях Checked: варианты Counter=True в макете (и серая
+            таблетка, и тёмная) несут одинаковый `ELK / badge`, так что на
+            тёмной таблетке он не переключается на бледный. */}
         {showCounter && count !== undefined && (
           <Badge type="counter" value={count} color="dark-grey" disabled={disabled} />
         )}

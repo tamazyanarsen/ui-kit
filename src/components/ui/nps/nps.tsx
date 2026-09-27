@@ -6,22 +6,23 @@ import { FeedbackPanel } from "./feedback-panel"
 import { StarRating } from "./rating"
 import { CloseCross } from "@/components/ui/close-cross"
 
-// NPS — "Обратная связь": a feedback card (5-star rating → comment + quick-
-// reply chips → submit → "Спасибо за оценку" done state). Per spec the
-// done state "автоматически исчезает через 2000 ms" — modeled here via
-// onOpenChange/onClose rather than a timer inside the card itself, so the
-// consumer decides whether/how the card is actually removed from the DOM.
-// Chips are the same fixed set at every rating (confirmed against the
-// spec's own 1–4 star swatches, all showing identical chip text) rather
-// than varying per score, so they're a plain default list, not derived
-// from `value`. The done-state illustration is a real asset extracted from
-// the Figma export (same policy as ErrorPage's mascots) — not redrawn.
+// NPS — «Обратная связь»: карточка отзыва (оценка пятью звёздами →
+// комментарий и чипы быстрых ответов → отправка → состояние «Спасибо за
+// оценку»). По макету состояние завершения «автоматически исчезает через
+// 2000 ms»; здесь это выражено через onOpenChange и onClose, а не таймером
+// внутри самой карточки, чтобы потребитель сам решал, убирать ли карточку
+// из DOM и как именно. Чипы — один и тот же фиксированный набор при любой
+// оценке (сверено с собственными образцами макета на 1–4 звезды, где текст
+// чипов везде одинаков), а не меняющийся по баллу, поэтому это обычный
+// список по умолчанию, а не производная от `value`. Иллюстрация состояния
+// завершения — настоящий ассет из выгрузки макета (та же политика, что и с
+// маскотами ErrorPage), а не перерисовка.
 //
 // Звёзды живут в `rating.tsx`, раскрывающийся низ карточки — в
 // `feedback-panel.tsx`.
 
 // Дизайн-чек №4 №10: тексты предлагаемых ответов — из описания компонента
-// ДС (нода 64540:44922).
+// ДС.
 const DEFAULT_CHIPS = [
   "Долго заполнять",
   "Непонятно",
@@ -31,14 +32,14 @@ const DEFAULT_CHIPS = [
 
 /**
  * Дизайн-чек №4 №13: «Show Chips» — не булев флаг, а выбор из None, 1–5
- * (таблица «Свойства компонента», нода 70326:40017): сколько предлагаемых
+ * (таблица «Свойства компонента»): сколько предлагаемых
  * ответов показывать, `"none"` — не показывать вовсе.
  */
 type NpsShowChips = "none" | 1 | 2 | 3 | 4 | 5
 
 /**
  * Дизайн-чек №4 №11: «Estimate Type» — оценка None, 1–5 (элемент
- * «Estimate (ELK)», нода 70326:40173).
+ * «Estimate (ELK)»).
  */
 type NpsEstimateType = 1 | 2 | 3 | 4 | 5
 
@@ -52,7 +53,7 @@ type NpsEstimateType = 1 | 2 | 3 | 4 | 5
  * только что похвалил.
  *
  * ⚠️ Формулировка для пятёрки поставлена по смыслу: матрица вопросов лежит
- * в файле `ESnThXjNXu55oAZWZJEKra` (нода 64534:44318), к которому у сборки
+ * в файле `ESnThXjNXu55oAZWZJEKra`, к которому у сборки
  * нет доступа. Правило («у высшей оценки вопрос другой») реализовано, текст
  * подлежит сверке — и переопределяется пропом `question`.
  */
@@ -111,8 +112,8 @@ function CloseButton({
   className?: string
 }) {
   return (
-    /* Figma's NPS card closes with `icon / close cross` at 24px
-       (node 64534:44748). */
+    /* Карточка NPS в макете закрывается через `icon / close cross`
+       размером 24px. */
     <CloseCross
       size={24}
       onClick={onClose}

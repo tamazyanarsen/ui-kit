@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / ellipse — 05. Check Plus Minus Close, набор ALL ICONS (канвас 70326:26).
+// icon / ellipse — 05. Check Plus Minus Close, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Ellipse({ size = 16, ...props }: IconProps) {
   if (size === 24) {

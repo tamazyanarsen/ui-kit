@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / apple — 21. Social Networks, набор ALL ICONS (канвас 70326:26).
+// icon / apple — 21. Social Networks, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Apple({ size = 16, ...props }: IconProps) {
   if (size === 24) {

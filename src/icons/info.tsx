@@ -1,7 +1,7 @@
 import type { IconProps } from "./types"
 
-// 24px — отдельный рисунок `icon / information` (нода 38295:12204 внутри
-// тоста типа Information): кольцо в 2px и более крупная «i». Раньше на
+// 24px — отдельный рисунок `icon / information` (внутри тоста типа
+// Information): кольцо в 2px и более крупная «i». Раньше на
 // 24px растягивался 16px-глиф, отчего он выглядел жирнее макета
 // (дизайн-чек №3 №5).
 export function Info({ size = 16, ...props }: IconProps) {

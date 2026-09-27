@@ -8,23 +8,24 @@ import { Input } from "@/components/ui/input"
 
 import { FilterShell, filterApplyLabel } from "./shell"
 
-// FilterDate — вид «Date» (node 70295:22736).
+// FilterDate — вид «Date».
 //
-// "Ширина раскрытого фильтра – 560 px. Состав шаблонов периодов описывается
+// «Ширина раскрытого фильтра – 560 px. Состав шаблонов периодов описывается
 // в рамках каждой функциональности, ввиду невозможности собрать
-// универсальный набор диапазонов для разных бизнес-задач" — so the period
-// chips are a prop, not a baked-in list. The one template the spec does pin
-// down: "Выбор варианта «Неделя» из чипсов выделяет диапазон «Текущая дата +
-// 6 дней» (то есть совокупно диапзон равен семи дням)", which is what
-// `datePresetWeek` implements for callers that want the standard set.
+// универсальный набор диапазонов для разных бизнес-задач» — поэтому чипы
+// периодов задаются пропсом, а не зашиты списком. Единственная заготовка,
+// которую макет закрепляет прямо: «Выбор варианта «Неделя» из чипсов
+// выделяет диапазон «Текущая дата + 6 дней» (то есть совокупно диапзон
+// равен семи дням)», и это то, что реализует `datePresetWeek` для
+// вызывающего кода, которому нужен стандартный набор.
 //
-// Layout off the master: a 16px-padded head with two 176px date inputs and a
-// dash between them, a row of period chips, then the range Calendar, then the
-// shared footer.
+// Раскладка снята с мастера: голова с отступом 16px и двумя полями даты по
+// 176px с тире между ними, ряд чипов периодов, затем Calendar диапазона и
+// общий подвал.
 
 interface FilterDatePreset {
   label: string
-  /** Returns the range this template selects. */
+  /** Возвращает диапазон, который выбирает эта заготовка. */
   range: () => [Date, Date]
 }
 

@@ -9,7 +9,7 @@ import { SandboxBlock } from "../../shell"
 
 import type { HelpBlock, HelpSection, HelpTopic } from "./types"
 
-// Правая колонка страницы «Помощь» — фрейм `Questions` (нода 70400:30502):
+// Правая колонка страницы «Помощь» — фрейм `Questions`:
 // заголовок раздела, блок `Indice` с якорными ссылками и сами темы,
 // разделённые линиями.
 //
@@ -89,7 +89,7 @@ function ContentBlock({ block }: { block: HelpBlock }) {
 
     case "media":
       // Видео идёт со своим заголовком H4 и зазором 16 — фрейм «Видео +
-      // заголовок» (нода 70400:30529).
+      // заголовок».
       return block.title ? (
         <div className="flex w-full flex-col gap-4">
           <h4 className="w-full text-h4 text-[var(--grey-1514)]">

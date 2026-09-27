@@ -6,28 +6,28 @@ import { NoOrphan } from "@/lib/no-orphan"
 import { Tooltip } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/toast-message"
 
-// Item.Information Field — "Текстовое поле": a read-only label+value row,
-// used to display information the user can't interact with or edit (per
-// the spec's own description). Distinct from ./item, which is always an
-// interactive row.
+// Item.Information Field — «Текстовое поле»: строка «подпись + значение»
+// только для чтения, показывает информацию, с которой пользователь не
+// взаимодействует и которую не редактирует (так сказано в самом макете).
+// Отличается от ./item, который всегда интерактивная строка.
 //
-// Four layouts (the spec's own "Type" property, node 23980:66146):
-// - label-left (default): Label left, Value right, both on one line. Each
-//   gets an even flex-1 share, Label capped at 384px so a long one can't
-//   shrink Value below its own share — both left-aligned within their own
-//   half (design-check #33; a stray ml-auto used to shove Value flush to
-//   the row's right edge instead). This is the only type that carries
-//   padding and a divider: `pt-16 / pb-15 / 1px rule`, because per the
-//   spec's own "Правило отступов (Label Left)" consecutive fields stack
-//   with 0px between them and the rule is what separates them.
-// - label-line: the same one-line layout, but Label is capped at 216px and
-//   there is no padding and no divider — consecutive fields are spaced 16px
-//   apart by the container ("Правило отступов (Line)").
-// - label-top: Label stacked above Value (compact, for tight spaces), 4px
-//   between the three lines, also spaced 16px by the container.
-// - large-value: same stacking, Value at H2 (32/44) "for displaying a
-//   Factoid", lines flush (0px), and a 24px copy icon.
-// SubText (when present) always renders below Value.
+// Четыре раскладки (свойство «Type» в макете):
+// - label-left (по умолчанию): подпись слева, значение справа, обе в одну
+//   строку. Каждая получает равную долю flex-1, подпись ограничена 384px,
+//   чтобы длинная не ужала значение ниже его доли; обе выровнены по левому
+//   краю внутри своей половины (дизайн-чек, замечание 33: раньше случайный
+//   ml-auto прижимал значение к правому краю строки). Это единственный тип
+//   с отступами и разделителем: `pt-16 / pb-15 / линия 1px`, потому что по
+//   «Правилу отступов (Label Left)» идущие подряд поля стыкуются вплотную,
+//   и разделяет их именно линия.
+// - label-line: та же однострочная раскладка, но подпись ограничена 216px,
+//   отступов и разделителя нет — идущие подряд поля разводит на 16px сам
+//   контейнер («Правило отступов (Line)»).
+// - label-top: подпись над значением (компактно, для тесных мест), 4px
+//   между тремя строками, контейнер тоже разводит поля на 16px.
+// - large-value: та же вертикальная укладка, значение в H2 (32/44) «для
+//   вывода фактоида», строки вплотную (0px), значок копирования 24px.
+// SubText, если он есть, всегда рисуется под значением.
 
 type FieldType = "label-left" | "label-line" | "label-top" | "large-value"
 type FieldStatus = "default" | "success" | "error" | "attention" | "information"
@@ -76,8 +76,8 @@ interface ItemInformationFieldProps {
 // ставиться после последнего символа в последней строке с пробелом 8
 // пикселей от неё. Соответственно, иконка должна располагаться inline».
 //
-// В мастере иконка лежит в строке `Label` (`flex gap-[8px] items-end`,
-// нода 70251:48887) — те самые 8px и выравнивание по низу строки. Для
+// В мастере иконка лежит в строке `Label` (`flex gap-[8px] items-end`) —
+// те самые 8px и выравнивание по низу строки. Для
 // однострочного случая inline-элемент по baseline даёт тот же результат
 // (Figma держит глиф в боксе с 2px сверху и 6px снизу внутри 24px-строки,
 // а baseline 16px-текста как раз проходит в 16px от верха строки — отсюда
@@ -130,15 +130,16 @@ function InfoIcon({
   )
 }
 
-// Per-type top offset of the copy glyph, straight off the spec's own
-// "Copy (…, ELK)" frames: pt-18 for Label Left (whose content already sits
-// 16px down, so 2px of its own), pt-2 for Line, pt-30 for Label Top and
-// pt-33 for the large one. The glyph keeps its exact 16/24px box — the hit
-// target is grown with a transparent inset pseudo-element instead, so
-// enlarging it can't shift the alignment.
-// On mobile every type stacks, so the glyph always lands just under the
-// label line: 26px down (27 for the large one, whose 24px glyph sits on a
-// 30px value line) — the same "+2px below the value's top" rule.
+// Верхний отступ значка копирования по типам, прямо из кадров «Copy (…,
+// ELK)» макета: pt-18 у Label Left (его содержимое и так опущено на 16px,
+// то есть собственных 2px), pt-2 у Line, pt-30 у Label Top и pt-33 у
+// большого. Сам глиф сохраняет точную коробку 16 или 24px, а область
+// нажатия растягивается прозрачным псевдоэлементом — так её увеличение не
+// может сдвинуть выравнивание.
+// На мобильном все типы укладываются вертикально, поэтому глиф всегда
+// оказывается прямо под строкой подписи: на 26px ниже (27 у большого, где
+// значок 24px стоит на строке значения высотой 30px) — то же правило «+2px
+// ниже верха значения».
 const COPY_OFFSET: Record<FieldType, string> = {
   // ⚠️ У «Label Left» и «Line» отступ ОДИН на оба брейкпоинта, и это прямое
   // следствие правки по замечанию 1 (см. разметку ниже): значок переехал
@@ -220,14 +221,15 @@ function ItemInformationField({
   className,
 }: ItemInformationFieldProps) {
   const large = type === "large-value"
-  // Only Label Left and Line put the label beside the value, and only from
-  // `desktop:` up — Size=Mobile stacks every type (node 70240:38661).
+  // Только Label Left и Line ставят подпись рядом со значением, и только
+  // от `desktop:` и выше: при Size=Mobile все типы укладываются
+  // вертикально.
   const sideBySide = type === "label-left" || type === "label-line"
 
-  // Label is Medium like the Value — the two differ only in colour — and
-  // steps down to 14/20 on mobile along with it.
+  // Подпись идёт в Medium, как и значение, — различаются они только цветом,
+  // — и вместе с ним опускается до 14/20 на мобильном.
   // `break-words` — это `[word-break:break-word]` мастера: и Label, и Value
-  // там переносятся, а не обрезаются (ноды 70251:48888 и 70251:48898).
+  // там переносятся, а не обрезаются.
   // Заодно это чинит вторую половину дизайн-чека №31 — длинное значение
   // (например ИНН из семидесяти цифр одной строкой) больше не уезжает в
   // правый край и не перекрывает иконку копирования: сплошной «слово» без
@@ -242,9 +244,10 @@ function ItemInformationField({
   const valueRow = (
     <span
       className={cn(
-        // text-h2 (32/44) already bakes in weight 500, so it doesn't need
-        // its own font-medium alongside the text-p1 branch that does.
-        // Mobile: 22/30 for the large value, 14/20 for the rest.
+        // text-h2 (32/44) уже несёт в себе насыщенность 500, поэтому
+        // отдельный font-medium ему не нужен — в отличие от ветки text-p1,
+        // которой он нужен. На мобильном: 22/30 у большого значения и
+        // 14/20 у остальных.
         "block min-w-0 break-words",
         large ? "text-h2-mobile desktop:text-h2" : "text-p2-medium desktop:text-p1-medium",
         VALUE_COLOR[valueStatus]
@@ -277,8 +280,9 @@ function ItemInformationField({
         // и свой зазор берёт оттуда.
         "flex items-start",
         !sideBySide && "gap-4",
-        // Only Label Left is a padded, ruled row; the other three are bare
-        // content the container spaces out (16px) itself.
+        // Отступы и разделительную линию имеет только строка Label Left;
+        // остальные три — голое содержимое, которое контейнер сам разводит
+        // на 16px.
         type === "label-left" && "border-b pt-4 pb-[15px]",
         type === "label-left" &&
           (divider === false
@@ -287,9 +291,10 @@ function ItemInformationField({
         className
       )}
     >
-      {/* One DOM for both breakpoints: the label is always the first child
-          of this group, stacked above the value on mobile and turned into
-          the left-hand column from `desktop:` up on the two side-by-side types. */}
+      {/* Один DOM на оба брейкпоинта: подпись всегда первый потомок этой
+          группы — на мобильном она стоит над значением, а от `desktop:` и
+          выше у двух «рядоположенных» типов превращается в левую
+          колонку. */}
       <div
         className={cn(
           "flex min-w-0 flex-1 flex-col gap-1",
@@ -298,9 +303,9 @@ function ItemInformationField({
           large && "desktop:gap-0"
         )}
       >
-        {/* Label box: an even share of the row, but never wider than 384px
-            (Label Left) / 216px (Line) and never below 100px — widths that
-            only apply once it *is* a column. */}
+        {/* Коробка подписи: равная доля строки, но не шире 384px (Label
+            Left) или 216px (Line) и не уже 100px. Эти ширины начинают
+            действовать только тогда, когда подпись *становится* колонкой. */}
         <span
           className={cn(
             "min-w-0",
@@ -320,12 +325,12 @@ function ItemInformationField({
             соседом группы «подпись + значение», он забирал ширину у ВСЕЙ
             группы: колонка значения (`flex-1`) сжималась, и её левый край
             уезжал — строки с копированием и без него не выстраивались в одну
-            вертикаль. В мастере (нода 70240:38672) структура другая:
+            вертикаль. В мастере структура другая:
             `Content = [Label, Value]`, а `Value = [Text, Copy]`, то есть
             значок отъедает место только у самого значения.
 
             У «Label Top» и «Large Value» значок в мастере, наоборот, сосед
-            всего текстового блока (нода 70240:38705, `pt-30`) — там подпись
+            всего текстового блока (`pt-30`) — там подпись
             стоит НАД значением, и колонок нет вовсе, смещать нечего. */}
         <div
           className={cn(
@@ -335,9 +340,9 @@ function ItemInformationField({
         >
           <div
             className={cn(
-              // Value and Sub Text are 4px apart on mobile (2px under the
-              // large value) and flush on desktop — except Label Top, which
-              // keeps 4px there too.
+              // Значение и Sub Text разведены на 4px на мобильном (2px под
+              // большим значением) и стоят вплотную на десктопе — кроме
+              // Label Top, который и там держит 4px.
               "flex min-w-0 flex-1 flex-col items-start gap-1",
               large && "gap-0.5 desktop:gap-0",
               sideBySide && "desktop:gap-0",

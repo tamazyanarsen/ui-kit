@@ -31,7 +31,7 @@ function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
             //
             // Дизайн-чек Storybook (Аня Багрова) №2: «отступ от иконки
             // кошелька до шеврона должен быть 16 px». В мастере `Wallet
-            // Header (ELK)` (70303:48864) — `gap-[16px] px-[16px] py-[20px]`,
+            // Header (ELK)` — `gap-[16px] px-[16px] py-[20px]`,
             // что и даёт 16 + 24 + 16 + 16 + 16 = 88.
             className={cn(HEADER_ICON_TILE_ACCENT, "w-22 gap-4")}
           />
@@ -72,14 +72,14 @@ function EmployeeUserMenu({
           <button
             type="button"
             // Заливки на наведении нет — у `Profile Employee (ELK)` в Hover
-            // (нода 70303:48879) фон прозрачен, брендовыми становятся только
+            // фон прозрачен, брендовыми становятся только
             // подпись и знаки.
             className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]"
           />
         }
       >
         <span className="flex items-center gap-3">
-          {/* `Profile Employee (ELK)` (нода 70303:48874) рисует человека в
+          {/* `Profile Employee (ELK)` рисует человека в
               круге, а не кейс: кейс (`icon / company`) стоит в клиентской
               шапке, где подпись — организация, а здесь подпись — ФИО
               сотрудника банка. */}

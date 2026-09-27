@@ -88,7 +88,7 @@ describe("Combobox", () => {
     await openTrigger(user)
     await user.click(await screen.findByText("СНИЛС"))
 
-    // Still just a draft — the trigger hasn't picked up the selection yet.
+    // Пока это лишь черновик — триггер выбор ещё не подхватил.
     expect(screen.getByText("Выберите документы")).toBeInTheDocument()
 
     await user.click(screen.getByRole("button", { name: "Выбрать: 1" }))

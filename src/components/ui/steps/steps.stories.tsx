@@ -62,8 +62,8 @@ const meta = {
   title: "Компоненты/Steps",
   component: Steps,
   parameters: { layout: "padded" },
-  /* Панель повторяет «Свойства компонента» `ELK / steps` (компонент-сет
-     5582:8590, таблица 5609:33617): Steps / Show Left Fade / Show Right
+  /* Панель повторяет «Свойства компонента» `ELK / steps`: Steps /
+     Show Left Fade / Show Right
      Fade / State / Steps Status. Свойство `Steps` в мастере названо с
      опечаткой («Spets») — здесь оно под именем из таблицы. */
   argTypes: {
@@ -128,9 +128,10 @@ export const Playground: Story = {
   },
 }
 
-/* A single step's own State (default / active / disabled) × Status (none /
-   filled / error) is the real grid — the Steps container is just the strip
-   they sit in, so each cell is a one-step strip. */
+/* Настоящая сетка — это собственное State одного шага (default, active,
+   disabled) × Status (без статуса, заполнен, ошибка), а контейнер Steps
+   лишь полоса, в которой они стоят, поэтому каждая ячейка — полоса из
+   одного шага. */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
@@ -167,7 +168,7 @@ export const Matrix: Story = {
         )}
       />
 
-      {/* The fade arrows only appear when the strip overflows its container. */}
+      {/* Стрелки затухания появляются только когда полоса не помещается в свой контейнер. */}
       <StatesMatrix<StepsProps>
         stretch
         cellClassName="min-w-[560px]"

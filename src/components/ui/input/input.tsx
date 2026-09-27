@@ -28,22 +28,23 @@ interface InputOwnProps {
   comment?: React.ReactNode
   error?: React.ReactNode
   locked?: boolean
-  // Reason a locked field can't be edited, shown in a Tooltip on hover —
-  // Figma requires the explanation on every Lock Input (canvas 666:12).
+  // Причина, по которой поле нельзя редактировать; показывается в
+  // подсказке по наведению — макет требует пояснения у каждого Lock Input.
   lockedHint?: React.ReactNode
   clearable?: boolean
   onClear?: () => void
   containerClassName?: string
-  // Leading icon slot (calendar for Date, magnifier for Search, or any
-  // custom glyph) — purely presentational, doesn't affect masking.
+  // Слот ведущего значка (календарь у Date, лупа у Search или любой
+  // другой глиф) — чисто оформительский, на маску не влияет.
   iconLeft?: React.ReactNode
-  // Search-style "actively looking" spinner. Takes over the trailing slot.
+  // Крутилка «идёт поиск» в стиле Search. Забирает себе замыкающий слот.
   loading?: boolean
-  // Custom trailing icon (e.g. Промокод's validity checkmark) that replaces
-  // the clear button outright — unlike clear, it doesn't react to hover.
+  // Свой замыкающий значок (например, галочка проверки промокода),
+  // который полностью заменяет кнопку очистки и, в отличие от неё, на
+  // наведение не реагирует.
   trailingIcon?: React.ReactNode
-  // Digit-mask preset — see ./mask.ts. Reformats on every keystroke and
-  // reports the formatted string back through the normal onChange.
+  // Заготовка цифровой маски — см. ./mask.ts. Переформатирует значение на
+  // каждое нажатие и отдаёт отформатированную строку обычным onChange.
   mask?: MaskName
 }
 
@@ -92,8 +93,9 @@ function Input({
     showAmountSuffix,
   } = useMask({ mask, value, defaultValue, onChange })
 
-  // Floating label needs the peer's :placeholder-shown state, so at S size
-  // (no floating label) the label prop just becomes the native placeholder.
+  // Плавающей подписи нужно состояние :placeholder-shown соседа, поэтому
+  // на размере S, где плавающей подписи нет, пропс label просто становится
+  // нативным placeholder.
   const floating = Boolean(label) && size !== "sm"
   const resolvedPlaceholder = resolvePlaceholder({
     mask,
@@ -167,10 +169,11 @@ function Input({
     "aria-label": !floating && typeof label === "string" ? label : undefined,
   }
 
-  // react-imask's IMaskInput prop type is a large discriminated union keyed
-  // off `mask`. TS can't reconcile it once native <input> rest props
-  // (`...props`) are merged in alongside it, even though the merged shape is
-  // valid at runtime — hence the cast at the end.
+  // Тип пропсов IMaskInput из react-imask — это большое размеченное
+  // объединение с ключом по `mask`. TypeScript не может свести его с
+  // нативными пропсами <input>, подмешанными через `...props`, хотя
+  // получающаяся форма во время выполнения корректна: отсюда приведение
+  // типа в конце.
   const maskProps = mask
     ? ({
         ...getImaskProps(mask),
@@ -192,10 +195,9 @@ function Input({
     : null
 
   return (
-    // Round-2 audit: was gap-1.5 (6px) — every ELK/input symbol with a
-    // Comment/Error caption (215:6570, 215:6676, 215:6684, 215:6680, both
-    // sizes/breakpoints) gives a literal gap-[4px] between the box and the
-    // caption row, not 6px.
+    // Второй проход: стояло gap-1.5 (6px), а каждый символ ELK/input с
+    // подписью Comment или Error (оба размера и оба брейкпоинта) даёт
+    // литеральный gap-[4px] между коробкой и строкой подписи, а не 6px.
     <div className="flex w-full flex-col gap-1">
       <FieldTooltip content={hoverTooltip}>
         <div
@@ -204,11 +206,11 @@ function Input({
             containerClassName
           )}
           onClick={() => {
-            // Design-check #29: only the text itself was hit-testable —
-            // clicking the box's own padding/gap area (or the leading icon)
-            // silently did nothing. The field fills the box via flex-1, so
-            // focusing it programmatically on any box click covers those
-            // gaps.
+            // Дизайн-чек, замечание 29: нажималcя только сам текст — клик
+            // по отступам и зазорам внутри коробки (или по ведущему значку)
+            // молча ничего не делал. Поле занимает коробку через flex-1,
+            // поэтому программная установка фокуса на любой клик по коробке
+            // закрывает эти зазоры.
             if (!disabled && !locked) inputRef.current?.focus()
           }}
         >
@@ -254,17 +256,18 @@ function Input({
               htmlFor={inputId}
               className={cn(
                 floatingLabelVariants,
-                // Flush with the value text: the box pads 16px, and a
-                // leading icon adds its own width plus the 8px gap (16 + 16
-                // + 8 = 40 at S-sized glyphs, 16 + 24 + 8 = 48 once the L
-                // row's 24px one kicks in). The old `desktop:left-5` put the
-                // label 4px right of the value it labels.
+                // Вровень с текстом значения: коробка даёт отступ 16px, а
+                // ведущий значок добавляет свою ширину плюс зазор 8px
+                // (16 + 16 + 8 = 40 при значках размера S и
+                // 16 + 24 + 8 = 48, когда включается 24-пиксельный значок
+                // ряда L). Прежний `desktop:left-5` ставил подпись на 4px
+                // правее значения, которое она подписывает.
                 iconLeft ? "left-10 desktop:left-12" : "left-4",
-                // Without a right edge, `truncate` has nothing to clip
-                // against — an absolutely positioned label just grows to fit
-                // its text, so a long label (e.g. DatePicker's "Дата начала
-                // — Дата окончания") renders straight through the trailing
-                // icon instead of eliding before it.
+                // Без правой границы `truncate` не об что обрезать:
+                // абсолютно спозиционированная подпись просто растёт под
+                // свой текст, и длинная подпись (например, «Дата начала —
+                // Дата окончания» у DatePicker) уезжает прямо сквозь
+                // замыкающий значок вместо того, чтобы оборваться до него.
                 hasTrailingSlot({
                   locked,
                   loading,
@@ -299,13 +302,13 @@ function Input({
         <p
           id={captionId}
           className={cn(
-            // Round-2 audit: was missing font-medium — get_design_context
-            // on every Comment/Error caption instance (215:6570, 215:6676)
-            // wraps the <p> in a font-['Object_Sans:Medium'] parent (P3
-            // Medium, weight 500), not the browser default 400.
-            // `px-4`: the spec's "Comment (ELK)" frame is indented 16px so
-            // the caption lines up with the field's own text, not with the
-            // box's outer edge.
+            // Второй проход: не хватало font-medium — у каждого инстанса
+            // подписи Comment или Error <p> обёрнут в родителя с
+            // font-['Object_Sans:Medium'] (P3 Medium, насыщенность 500), а
+            // не в браузерные 400 по умолчанию.
+            // `px-4`: кадр «Comment (ELK)» в макете сдвинут на 16px, чтобы
+            // подпись встала по тексту самого поля, а не по внешнему краю
+            // коробки.
             "px-4 text-p3-medium",
             error
               ? "text-[var(--input-caption-error-fg)]"

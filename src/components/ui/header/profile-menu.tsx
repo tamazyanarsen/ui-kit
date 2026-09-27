@@ -13,16 +13,17 @@ import {
   type ProfileMenuOrganization,
 } from "./profile-menu-blocks"
 
-// Profile Menu — the header's organization switcher (spec's own "Profile
-// Menu" property table, separate from Header's). `organizations.length`
-// alone decides the layout: 1 -> static "One" card (no search, no list
-// header, per the spec's own callout that switching UI only exists once
-// there's something to switch between), 2-6 -> plain list ("Two — Six"),
-// 7+ -> list gains a live-filtering search box ("Seven and More"/"Search" —
-// the spec draws these as two states, but "Search" is just "Seven and
-// More" with a query typed in, not a separate mode). "Профиль и настройки"
-// and "Выйти" are gated by one `showSetting` boolean — per the spec's own
-// caption, repeated on every variant, they're "a single optional element".
+// Profile Menu — переключатель организаций в шапке (у него в макете своя
+// таблица свойств, отдельная от таблицы Header). Раскладку определяет одна
+// только длина `organizations`: 1 — статичная карточка «One» без поиска и
+// без заголовка списка (по собственному примечанию макета интерфейс
+// переключения появляется только тогда, когда есть между чем
+// переключаться); 2–6 — обычный список («Two — Six»); 7 и больше — список с
+// полем поиска, фильтрующим на лету («Seven and More» и «Search»: макет
+// рисует их двумя состояниями, но «Search» — это тот же «Seven and More» с
+// набранным запросом, а не отдельный режим). «Профиль и настройки» и
+// «Выйти» включаются одним флагом `showSetting`: по подписи в макете,
+// повторённой у каждого варианта, это «единый опциональный элемент».
 interface ProfileMenuProps {
   organizations: ProfileMenuOrganization[]
   value: string
@@ -66,7 +67,7 @@ function ProfileMenuTrigger({
             // предела у самой плитки.
             //
             // Заливки на наведении нет: у `Profile Client Header (ELK)` в
-            // Hover (нода 70303:48897) фон прозрачен, меняется только цвет
+            // Hover фон прозрачен, меняется только цвет
             // названия и знаков — его дают `group-hover` ниже.
             "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none focus-visible:focus-ring transition-colors",
             className
@@ -89,9 +90,9 @@ function ProfileMenuTrigger({
             {organization?.name}
           </span>
           {contactPerson && (
-            // get_design_context on ProfileMenuElk's "ИНН ... • Оператор"
-            // subtitle (46107:44110) confirms Object Sans Medium (P3
-            // Medium), not Regular, for this secondary line.
+            // У подзаголовка «ИНН ... • Оператор» в ProfileMenuElk
+            // подтверждено Object Sans Medium (P3 Medium), а не Regular,
+            // для этой второстепенной строки.
             <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
               {contactPerson}
             </span>
@@ -101,7 +102,7 @@ function ProfileMenuTrigger({
       {/* Дизайн-чек Storybook (Аня Багрова) №1: «при hover иконка чемодана и
           наименование организации окрашиваются в Blue 254… шеврон остаётся
           Grey 1514». Проверено по ассетам состояний `Profile Client Header
-          (ELK)` (70303:48890 → 70303:48897): SVG шеврона в Default и Hover
+          (ELK)`: SVG шеврона в Default и Hover
           один и тот же, брендовыми становятся только кейс и название. */}
       <ChevronDown
         aria-hidden="true"
@@ -146,7 +147,7 @@ function ProfileMenu({
         className={className}
       />
 
-      {/* Ширина 400 — из мастера `Profile Menu (ELK)` (70303:49093): панель
+      {/* Ширина 400 — из мастера `Profile Menu (ELK)`: панель
           `w-[400px]`, скругление 16, universal shadow. Прежние 320 не давали
           длинному названию организации уложиться в две строки. */}
       <HeaderMenuPopup slot="profile-menu-content" className="w-100">
@@ -164,10 +165,11 @@ function ProfileMenu({
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   onClear={() => setQuery("")}
-                  // Base UI Menu listens for keydown on the popup for
-                  // arrow-key navigation and type-ahead — without this it
-                  // swallows every keystroke meant for the search box
-                  // instead of letting it reach the input's value.
+                  // Menu из Base UI слушает keydown на всплывающем окне
+                  // ради навигации стрелками и поиска по первым буквам.
+                  // Без этого он проглатывает каждое нажатие,
+                  // предназначенное полю поиска, вместо того чтобы дать ему
+                  // дойти до значения поля.
                   onKeyDown={(event) => event.stopPropagation()}
                 />
               </div>

@@ -18,8 +18,8 @@ import { SandboxBlock, SandboxSection, SandboxPage } from "../../shell"
 import { COST_ITEMS, type CostItem } from "./data"
 import { CostTable } from "./table"
 
-// D13. «Перераспределение ССР», шаг 1 — секция 70371:36100, кадр
-// «Начальное состояние» 70371:36101.
+// D13. «Перераспределение ССР», шаг 1 — секция, кадр
+// «Начальное состояние».
 //
 // Экрана не было в песочнице вовсе (проверено по группе «Песочница» в
 // Storybook), поэтому он собран целиком по эталону.
@@ -162,7 +162,7 @@ function CostRedistributionScreen() {
       </SandboxBlock>
 
       <TableBlock>
-        {/* Шапка шага 1 (нода 70371:36189): радиогруппа слева, тумблер и поиск
+        {/* Шапка шага 1: радиогруппа слева, тумблер и поиск
             справа. Все три — живые. */}
         <div className="flex flex-wrap items-center gap-6 px-8 pt-8">
           {/* Ряд, а не столбец: у `RadioGroup` умолчание — вертикальная

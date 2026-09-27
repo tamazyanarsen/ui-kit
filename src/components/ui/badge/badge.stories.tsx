@@ -77,7 +77,7 @@ export const Matrix: Story = {
       columns={COLORS.map((color) => ({ label: color, props: { color } }))}
       rows={[
         { label: "Counter", props: { type: "counter", value: 3 } },
-        // Values above 99 clamp to "99+" per the spec.
+        // Значения больше 99 по макету сводятся к «99+».
         { label: "Counter 99+", props: { type: "counter", value: 143 } },
         { label: "Point", props: { type: "point" } },
         {

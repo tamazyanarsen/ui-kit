@@ -1,15 +1,16 @@
 import type * as React from "react"
 
-// Simplified approximation of the Госуслуги (ESIA) flag mark used by the
-// "Secondary Logo" button variants — same call as PaymentLogo in
-// ui/thumbnail: this is a spec-verification demo kit, not a place to vendor
-// exact government brand artwork, so it's a small geometric stand-in (five
-// colored wedges fanned into an arrow) rather than a literal trace. Colors
-// pixel-sampled from ui/button/button.png's own Secondary Logo swatches.
+// Упрощённое приближение знака-флага Госуслуг (ЕСИА), который используют
+// варианты кнопки «Secondary Logo». Решение то же, что и с PaymentLogo в
+// ui/thumbnail: это кит для сверки с макетом, а не место для переноса
+// точной государственной фирменной графики, поэтому здесь небольшая
+// геометрическая замена (пять цветных клиньев, развёрнутых в стрелку), а не
+// буквальная обводка. Цвета сняты пипеткой с собственных образцов Secondary
+// Logo в макете кнопки.
 function GosuslugiLogo({
   "data-icon": dataIcon,
-  // Accepted and ignored so Button can pass `size` uniformly to whatever
-  // glyph it renders — this stand-in has a single drawing.
+  // Принимается и игнорируется, чтобы Button мог единообразно передавать
+  // `size` любому глифу, который рисует: у этой замены один рисунок.
   size: _size,
   ...props
 }: React.SVGProps<SVGSVGElement> & {

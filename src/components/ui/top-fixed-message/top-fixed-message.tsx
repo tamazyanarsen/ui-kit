@@ -13,20 +13,20 @@ import {
 } from "./variants"
 import { CloseCross } from "@/components/ui/close-cross"
 
-// Top Fixed Message — "Закреплённое сообщение". Full-width, sits flush
-// under the header (0px offset) and scrolls together with the page
-// content rather than staying pinned to the viewport (per spec: "Сообщение
-// скролируеться вместе с контентом" — the name is about visual anchoring
-// to the top of the content, not CSS position:fixed).
+// Top Fixed Message — «Закреплённое сообщение». Во всю ширину, стоит
+// вплотную под шапкой (смещение 0px) и прокручивается вместе с содержимым
+// страницы, а не остаётся приколотым к вьюпорту (по макету: «Сообщение
+// скролируеться вместе с контентом» — имя говорит о визуальной привязке к
+// верху содержимого, а не о CSS position:fixed).
 //
-// Мастер: сет `ELK / top fixed message` 70441:14927 (Version 1.0.1,
-// Release 68.34) в доступной копии `lSQi6Xn5HHrt1yvGCIFPZb`. Оси сета —
-// `Size` (Desktop | Mobile) × `Type` (Red (Error) | Blue (System)).
+// Мастер: сет `ELK / top fixed message` (Version 1.0.1, Release 68.34) в
+// доступной копии файла. Оси сета — `Size` (Desktop | Mobile) × `Type`
+// (Red (Error) | Blue (System)).
 //
 // Ось `Size` в ките появилась вместе с релизом 68.34, и мобильная форма —
 // это НЕ десктопная в узкой коробке: она перестраивается целиком.
 //
-//   Desktop (70441:14945)      Mobile (70441:14935/14940)
+//   Desktop                    Mobile
 //   ─────────────────────      ──────────────────────────
 //   высота 56, px 40, py 12    высота по содержимому, p 16
 //   одна строка: значок,       значок 16 сверху + колонка
@@ -37,9 +37,9 @@ import { CloseCross } from "@/components/ui/close-cross"
 //   многоточие + тултип        многоточия и тултипа нет
 //   закрытие — крестик 24      закрытие — кнопка «Закрыть»
 //
-// Ряд кнопок мобильной формы — отдельный сет `Buttons Top Fix (ELK)`
-// (70441:14952) с осью `Type`: Two Buttons | Main | Close. Это ровно три
-// сочетания наших булевых слотов, поэтому отдельным пропом он не стал:
+// Ряд кнопок мобильной формы — отдельный сет `Buttons Top Fix (ELK)` с осью
+// `Type`: Two Buttons | Main | Close. Это ровно три сочетания наших булевых
+// слотов, поэтому отдельным пропом он не стал:
 //
 //   showButton && showIconClose → Two Buttons
 //   showButton                  → Main
@@ -135,8 +135,9 @@ function TopFixedMessage({
 
           {showIconClose && (
             /* Дизайн-чек №3 №9: «Некорректное начертание крестика».
-               Коробка 24px — значит и рисунок 24px (`icon / close cross`,
-               нода 263:6442), а не 16px, растянутый в полтора раза. */
+               Коробка 24px — значит и рисунок 24px
+               (`icon / close cross`), а не 16px, растянутый в полтора
+               раза. */
             <CloseCross
               size={24}
               onClick={onClose}

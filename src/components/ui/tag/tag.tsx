@@ -5,13 +5,14 @@ import { Icon, type IconName } from "@/components/ui/icon"
 
 import { getTagStyle, type TagColor, type TagVariant } from "./variants"
 
-// Tag — "Тег": a small, non-interactive label that marks status changes
-// (Green/Orange/Red/Blue/Grey) or generic signs (Black/White/Grey-Info) on
-// an object. Per spec it's not clickable and never shows a tooltip on hover.
+// Tag — «Тег»: маленькая неинтерактивная подпись, которая помечает смену
+// статуса (Green, Orange, Red, Blue, Grey) или обычные признаки (Black,
+// White, Grey-Info) у объекта. По макету он не нажимается и никогда не
+// показывает подсказку по наведению.
 //
-// Свойства компонент-сета `ELK / tag` (847:53629) — ровно три: Size
-// (Desktop/Mobile), Style (13 значений) и Show Icon. Style разложен здесь
-// на пару `color` + `variant` (5 статусных цветов × сплошной/контурный + 3
+// Свойства компонент-сета `ELK / tag` — ровно три: Size (Desktop/Mobile),
+// Style (13 значений) и Show Icon. Style разложен здесь на пару
+// `color` + `variant` (5 статусных цветов × сплошной/контурный + 3
 // «признака» = те же 13 сочетаний), Show Icon — это `icon`.
 //
 // Дизайн-чек №3 №1: «У тега много лишних вариантов и нет разбивки

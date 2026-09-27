@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / email — 11. Call Message, набор ALL ICONS (канвас 70326:26).
+// icon / email — 11. Call Message, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Email({ size = 16, ...props }: IconProps) {
   if (size === 24) {

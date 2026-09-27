@@ -8,9 +8,10 @@ import { HeaderLabel } from "./nav-header"
 // Обвязка мобильного листа: заголовок, строка навигации и две подписи
 // секций внутри бесконечной прокрутки.
 
-// Figma's "Title" row: pt-24/pb-8/px-16, 18px/medium/24-leading text, close
-// button on a #f4f4f4 (--calendar-range-bg) circle — measured off the real
-// mobile bottom-sheet usage mock, not the isolated anatomy symbol.
+// Строка «Title» из макета: pt-24/pb-8/px-16, текст 18px medium с
+// интерлиньяжем 24, кнопка закрытия на круге #f4f4f4
+// (--calendar-range-bg). Снято с настоящего макета применения нижней
+// шторки, а не с изолированного символа анатомии.
 function SheetHeader({
   title,
   onClose,
@@ -21,9 +22,9 @@ function SheetHeader({
   return (
     <div className="flex items-center justify-between gap-4 px-4 pt-6 pb-2">
       <h2 className="text-h4-mobile text-[var(--calendar-fg)]">{title}</h2>
-      {/* `ELK / button` instance in Figma (node 7415:58839) on a grey-109
-          #F4F4F4 fill — that is Button's own `secondary-grey`, not the
-          calendar's day-hover token that happens to share the hex. */}
+      {/* Инстанс `ELK / button` в макете на заливке grey-109 #F4F4F4 — это
+          собственный `secondary-grey` у Button, а не токен наведения на
+          день у календаря, который случайно совпадает по hex. */}
       <Button
         variant="secondary-grey"
         size="sm"
@@ -37,13 +38,14 @@ function SheetHeader({
   )
 }
 
-// Figma's "Subtitle" nav row: same gap-8 as coded (gap-2), but pb-8 (pb-2),
-// not pb-3 — measured off the same real bottom-sheet mock as SheetHeader.
+// Строка навигации «Subtitle» из макета: тот же зазор 8px, что и в коде
+// (gap-2), но pb-8 (pb-2), а не pb-3. Снято с того же настоящего макета
+// нижней шторки, что и SheetHeader.
 function SheetNav({ label, onBack }: { label: string; onBack?: () => void }) {
   return (
     <div className="flex items-center gap-2 px-4 pb-2">
       {onBack && (
-        // `ELK / button` instance in Figma (node 7415:58841), white fill.
+        // `ELK / button` instance in Figma, white fill.
         <Button
           variant="secondary-white"
           size="sm"
@@ -54,18 +56,19 @@ function SheetNav({ label, onBack }: { label: string; onBack?: () => void }) {
           className="shrink-0"
         />
       )}
-      {/* Matches the desktop nav pill's "Май"/"2024" label
-          (get_design_context on 7415:58522) — Object Sans Medium (P2
-          Medium), not Regular. */}
+      {/* Совпадает с подписью «Май» и «2024» на десктопной
+          навигационной таблетке — Object Sans Medium (P2 Medium), а не
+          Regular. */}
       <span className="text-p2-medium text-[var(--calendar-fg)]">{label}</span>
     </div>
   )
 }
 
-// Per-month heading used inside the Day/Range infinite scroll (mode="single"
-// | "range"): Figma renders this as the same rounded pill/label used for the
-// desktop nav ("Май"), not a plain heading — confirmed against the real
-// bottom-sheet usage mock (title "Выберите даты" → nav "2024" → pill "Май").
+// Заголовок месяца внутри бесконечной прокрутки Day и Range
+// (mode="single" и "range"): в макете он нарисован той же скруглённой
+// таблеткой-подписью, что и десктопная навигация («Май»), а не обычным
+// заголовком. Сверено с настоящим макетом применения нижней шторки
+// (заголовок «Выберите даты» → навигация «2024» → таблетка «Май»).
 function MonthPillHeading({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start px-3 pt-2 pb-4 text-p2-medium text-[var(--calendar-fg)]">
@@ -74,9 +77,9 @@ function MonthPillHeading({ children }: { children: React.ReactNode }) {
   )
 }
 
-// Per-year/decade heading used inside the Month/Year infinite scroll
-// (mode="month" | "year"): Figma's MonthYear (Mobile) anatomy shows this as
-// a 22px/medium/30-leading heading ("2024", "2013 – 2024"), not text-lg
+// Заголовок года или десятилетия внутри бесконечной прокрутки Month и Year
+// (mode="month" и "year"): в анатомии MonthYear (Mobile) это заголовок 22px
+// medium с интерлиньяжем 30 («2024», «2013 – 2024»), а не text-lg с
 // font-semibold.
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (

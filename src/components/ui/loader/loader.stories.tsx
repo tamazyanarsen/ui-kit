@@ -5,8 +5,8 @@ import { StatesMatrix, optionsArgType } from "@/stories/matrix"
 import { Loader, type LoaderProps } from "./loader"
 
 /* Дизайн-чек Storybook 2 (от Notification до Loader) №6: панель и матрица
-   пересобраны по компонент-сету `icon / loader` (страница ALL ICONS, раздел
-   «24. Loaders», нода 70326:21335). У него ровно две оси:
+   пересобраны по компонент-сету `icon / loader` (страница ALL ICONS,
+   раздел «24. Loaders»). У него ровно две оси:
 
      Size   16х16 | 24х24 | 40х40
      Color  Green | Yellow | White

@@ -25,16 +25,18 @@ import {
   type TooltipWidth,
 } from "./variants"
 
-// Hint — click-triggered, dismissed via its own "X" or an outside click
-// (Popover's default behavior). Unlike Tooltip, it carries more content: an
-// optional Title plus body text. Max width 592px, height adaptive.
+// Hint открывается по клику и закрывается своим крестиком или кликом
+// снаружи (обычное поведение поповера). В отличие от Tooltip, он несёт
+// больше содержимого: необязательный заголовок плюс основной текст.
+// Максимальная ширина 592px, высота подстраивается.
 //
-// Below `md` it is a different component entirely, not a restyled popover:
-// the spec's `Direction=Mobile` variant (node 11756:8112) is an actual
-// `ELK / Modal` instance — a bottom sheet with the title/close row, the body
-// text, and a full-width "Понятно" button pinned to the bottom panel. That
-// swap can't be expressed in CSS (both forms are portalled subtrees), so it
-// runs off a media query rather than a `desktop:` class.
+// Ниже `md` это вообще другой компонент, а не переоформленный поповер:
+// вариант `Direction=Mobile` в макете — это настоящий инстанс
+// `ELK / Modal`, то есть нижняя шторка со строкой заголовка и крестиком,
+// основным текстом и кнопкой «Понятно» во всю ширину, прижатой к нижней
+// панели. Такую подмену средствами CSS не выразить (обе формы —
+// поддеревья в портале), поэтому она работает от медиазапроса, а не от
+// класса `desktop:`.
 const MOBILE_DISMISS_LABEL = "Понятно"
 
 interface HintProps {
@@ -76,15 +78,16 @@ function Hint({
     return (
       <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
         <ModalTrigger render={children} />
-        {/* size is irrelevant below `md` — the sheet is always full-width
-            there — but `m` keeps the desktop fallback at the 592px card
-            rather than the 1008px one if this ever renders wide. */}
+        {/* Ниже `md` размер не имеет значения — там шторка всегда во всю
+            ширину, — но `m` оставляет десктопный запасной вариант на
+            карточке 592px, а не на 1008px, если это вдруг отрисуется
+            широко. */}
         <ModalContent
           size="m"
           showClose={showCross}
           data-slot="hint-sheet"
-          // A Hint without a title would otherwise leave the sheet with no
-          // accessible name — the body text is the description, not the label.
+          // Иначе у Hint без заголовка шторка осталась бы без доступного
+          // имени: основной текст — это описание, а не подпись.
           aria-label={title ? undefined : "Подсказка"}
         >
           {title && (
@@ -95,8 +98,8 @@ function Hint({
           <ModalDescription
             className={cn(
               "px-6 pb-5 desktop:px-8 desktop:pb-6",
-              // Without a header above it the text needs the header's own top
-              // padding, or it collides with the sheet's rounded top edge.
+              // Без шапки над собой тексту нужен её верхний отступ, иначе
+              // он налезет на скруглённый верхний край шторки.
               !title && "pt-5 desktop:pt-6"
             )}
           >
@@ -133,16 +136,16 @@ function Hint({
           <PopoverPrimitive.Popup
             data-slot="hint-content"
             className={cn(
-              // Padding/layout pixel-confirmed against the spec's master
-              // ("ELK / tooltip & hint", get_design_context): the Wrapper
-              // is pl-4/pr-3/py-3 (NOT a uniform p-4 — that overpadded the
-              // top/bottom by 4px each), and Title+content sit in one
-              // flex-col column that's a sibling of the close icon (gap-2
-              // row), not a header row with the icon above the content.
-              // That distinction isn't just cosmetic: with the icon beside
-              // the *whole* text column (not just the title line), the
-              // text column is narrower throughout, which changes the
-              // wrap point for long body copy versus stacking icon-above.
+              // Отступы и раскладка попиксельно сверены с мастером
+              // «ELK / tooltip & hint»: обёртка это pl-4/pr-3/py-3 (а НЕ
+              // равномерный p-4 — тот давал лишние 4px сверху и снизу), а
+              // заголовок вместе с содержимым лежат в одной колонке
+              // flex-col, которая является соседом значка закрытия (ряд с
+              // gap-2), а не шапкой со значком над содержимым. Разница не
+              // косметическая: когда значок стоит рядом со *всей* колонкой
+              // текста, а не только со строкой заголовка, колонка текста
+              // уже по всей высоте, и точка переноса длинного текста
+              // получается другой, чем при укладке «значок сверху».
               "relative flex items-start gap-2 rounded-[8px] bg-[var(--tooltip-bg)] py-3 pr-3 pl-4 text-p3-medium text-[var(--tooltip-fg)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
               TOOLTIP_WIDTH[width],
               className

@@ -1,55 +1,56 @@
 
-/* Старый_ЕЛК theme ("как было") — add data-product="odl-elk" to <html> to render every
-   rebranded component in the pre-rebrand green/near-black palette instead of
-   the current default cyan/navy one. No component needs any changes for this
-   to apply.
+/* Тема «Старый_ЕЛК» («как было») — поставьте data-product="odl-elk" на
+   <html>, и все ребрендированные компоненты нарисуются в прежней
+   зелёно-чёрной палитре вместо нынешней голубо-синей. Менять сами
+   компоненты для этого не нужно.
 
-   Values are the exact "Было" (old) side of the bank's official color-
-   replacement map (ui/changecolor/Инструкция по замене цветов Банка.svg,
-   "Было: Green colors" -> "Стало: Blue colors (Банк)" table), applied to every
-   token below that currently holds the matching "Стало" (new) hex:
-     #80E3FF -> #82BF00 (Green 223)   #2FCEEF -> #72A716 (Green 289)
-     #14B1D1 -> #699B12 (Green 333)   #B6F3FF -> #C4E88B (Green 137)
-     #CFF7FF -> #D9F0AB (Green 123)   #F0FCFF -> #F3F9E6 (Green 107)
+   Значения — это в точности сторона «Было» из официальной карты замены
+   цветов банка (таблица «Было: Green colors» → «Стало: Blue colors
+   (Банк)»), применённая к каждому токену ниже, где сейчас стоит
+   соответствующий hex из «Стало»:
+     #80E3FF → #82BF00 (Green 223)   #2FCEEF → #72A716 (Green 289)
+     #14B1D1 → #699B12 (Green 333)   #B6F3FF → #C4E88B (Green 137)
+     #CFF7FF → #D9F0AB (Green 123)   #F0FCFF → #F3F9E6 (Green 107)
 
-   --btn-secondary-black-* reverts to #252628 (Grey 1514, the kit's plain
-   near-black neutral) rather than a "old navy" — that same instruction doc
-   marks #012F42/#114870 as brand-new additions with no "Было" counterpart,
-   confirming the old brand had no navy accent at all and used near-black
-   instead (also matches the As-is swatch in ui/changecolor/Переходный этап
-   ребрендинга.svg's Button row). Its hover/active shades have no measured
-   Figma source, so they're derived by applying this same file's own
-   lighten-on-interaction delta already established for
-   --btn-secondary-logo-grey (+19, then +18 per RGB channel) rather than
-   invented outright — flagged as an approximation pending confirmation.
+   --btn-secondary-black-* возвращается к #252628 (Grey 1514, обычный
+   почти-чёрный кита), а не к какому-то «старому тёмно-синему»: та же
+   инструкция помечает #012F42 и #114870 как совершенно новые цвета без
+   пары в «Было». Это подтверждает, что у старого бренда тёмно-синего
+   акцента не было вовсе и вместо него шёл почти-чёрный (совпадает и с
+   образцом As-is в строке Button на странице «Переходный этап
+   ребрендинга»). Для его оттенков наведения и нажатия измеренного
+   источника в макете нет, поэтому они выведены тем же шагом осветления при
+   взаимодействии, который уже установлен в этом файле для
+   --btn-secondary-logo-grey (+19, затем +18 по каждому каналу RGB), а не
+   придуманы. Помечено как приближение до подтверждения.
 
-   --btn-primary-fg flips to white here — the color-replacement map only
-   covers backgrounds, but the As-is swatch in that same Button row shows
-   white label text on the old green primary (the current theme's dark
-   #252628 label only works against the new pale-cyan background).
+   --btn-primary-fg здесь становится белым: карта замены покрывает только
+   фоны, но образец As-is в той же строке Button показывает белую подпись на
+   старом зелёном primary (тёмная подпись #252628 нынешней темы работает
+   только на новом бледно-голубом фоне).
 
-   **Second pass (2026-08-07) — verified against the render, not just the
-   map.** The instruction page also carries a side-by-side "WebLK —
-   Сравнение основных компонентов на переходный период ребрендинга" table
-   (node 70251:48106) showing every affected component As-is next to To-be.
-   Exporting it at full resolution and diffing the two columns band by band
-   yields the complete swatch map, which is what every "(измерено)" value
-   below comes from:
+   **Второй проход (07.08.2026) — сверка по рендеру, а не только по карте.**
+   На странице инструкции есть ещё таблица «WebLK — Сравнение основных
+   компонентов на переходный период ребрендинга», где каждый затронутый
+   компонент показан As-is рядом с To-be. Выгрузка её в полном разрешении и
+   построчное сравнение двух колонок дают полную карту образцов — именно
+   оттуда взяты все значения, помеченные ниже «(измерено)»:
 
-     #82BF00 <- #80E3FF   #82BF00 <- #2FCEEF   #699B12 <- #14B1D1
-     #252628 <- #012F42   #82BF00 <- #39C182   #DE4A2A <- #D74B54
-     #D9F0AB <- #BDF8DB   #C4E88B <- #89F2BD   #FFC9B5 <- #FFE8E3
-     #FFAB99 <- #FFBEB5   #E3EEFF <- #EDF6FC   #F3F9E6 <- #CFF7FF
+     #82BF00 ← #80E3FF   #82BF00 ← #2FCEEF   #699B12 ← #14B1D1
+     #252628 ← #012F42   #82BF00 ← #39C182   #DE4A2A ← #D74B54
+     #D9F0AB ← #BDF8DB   #C4E88B ← #89F2BD   #FFC9B5 ← #FFE8E3
+     #FFAB99 ← #FFBEB5   #E3EEFF ← #EDF6FC   #F3F9E6 ← #CFF7FF
 
-   Two things that map alone would have got wrong, and one bug it exposed:
-   - Progress Bar's step fill and Item's check glyph sat on the wrong step
-     of the green ramp (the component's own token moved during the rebrand,
-     so a palette-level substitution isn't enough).
-   - The whole error-red family (#D74B54) and success-green family
-     (#39C182) had no old-theme counterpart at all, so every error/success
-     accent stayed rebranded under data-product="odl-elk".
-   - --top-fixed-message-blue-bg in :root was still holding the *old*
-     #E3EEFF; fixed to #EDF6FC there, with #E3EEFF moved down here. */
+   Две вещи, в которых одна лишь карта ошиблась бы, и один вскрытый баг:
+   - Заливка шага у Progress Bar и галочка у Item стояли не на той ступени
+     зелёной шкалы: во время ребрендинга сместился собственный токен
+     компонента, поэтому подмены на уровне палитры недостаточно.
+   - У всего семейства красного цвета ошибки (#D74B54) и зелёного успеха
+     (#39C182) пары в старой теме не было вовсе, поэтому под
+     data-product="odl-elk" все акценты ошибок и успеха оставались
+     ребрендированными.
+   - --top-fixed-message-blue-bg в :root всё ещё держал *старый* #E3EEFF;
+     там он исправлен на #EDF6FC, а #E3EEFF переехал сюда. */
 [data-product="odl-elk"] {
   --btn-primary-bg: var(--odl-green-223);
   --btn-primary-bg-hover: var(--odl-green-289);
@@ -80,23 +81,24 @@
   --toggle-track-checked-bg-disabled: var(--odl-green-137);
 
   --range-input-accent: var(--odl-green-223);
-  /* Renamed from --range-input-accent-hover alongside the root token (see
-     round-2 audit comment there) — same #72A716 value, just no longer tied
-     to a thumb :hover interaction. */
+  /* Переименован из --range-input-accent-hover вслед за корневым токеном
+     (см. комментарий второго прохода там же): значение то же, #72A716,
+     просто оно больше не привязано к наведению на ползунок. */
   --range-input-indicator-bg: var(--odl-green-289);
-  /* Design-check #45: thumb arrows are white in the old-brand theme (the
-     new theme's dark #252628 icon only reads against the pale cyan thumb —
-     against the old theme's green it needs the light variant instead). */
+  /* Дизайн-чек, замечание 45: в старой теме стрелки на ползунке белые.
+     Тёмный значок #252628 новой темы читается только на бледно-голубом
+     ползунке, а на зелёном из старой темы нужен светлый вариант. */
   --range-input-thumb-icon-fg: var(--white-101);
 
   --steps-active-ring: var(--odl-green-223);
   --steps-fade-arrow-bg: var(--grey-1514);
 
-  /* Measured, not derived: the As-is step bar renders #82BF00, one step up
-     from the #72A716 the palette map alone would predict — the component's
-     own token moved a step in the rebrand, so the map can't be applied
-     blindly here. Same reasoning applies everywhere below marked
-     "(измерено)". */
+  /* Измерено, а не выведено: полоса шага в колонке As-is рисуется цветом
+     #82BF00 — на ступень выше, чем #72A716, который предсказала бы одна
+     карта палитры. Во время ребрендинга собственный токен компонента
+     сместился на ступень, поэтому вслепую применять карту здесь нельзя. То
+     же рассуждение относится ко всем значениям ниже с пометкой
+     «(измерено)». */
   --progress-step-fill: var(--odl-green-223);
 
   --calendar-accent-fg: var(--odl-green-333);
@@ -104,9 +106,9 @@
 
   --filter-active-border: var(--odl-green-223);
 
-  /* #14B1D1 -> #699B12 per the replacement map (was #82BF00, i.e. the wrong
-     step of the ramp — the check glyph uses the same accent as the header's
-     links, which the As-is render shows at #699B12). */
+  /* #14B1D1 → #699B12 по карте замены (стояло #82BF00, то есть не та
+     ступень шкалы: галочка берёт тот же акцент, что и ссылки в шапке, а в
+     рендере As-is он #699B12). */
   /* Галочка выбранного — единый токен кита (см. tokens-controls.css). */
   --check-mark-fg: var(--odl-green-333);
 
@@ -122,20 +124,21 @@
   --switcher-active-black-bg: var(--grey-1514);
   --button-menu-black-bg: var(--grey-1514); /* измерено */
 
-  /* Active is measured (#CFF7FF -> #F3F9E6, the selected page-size pill in
-     the As-is paginator). Hover/Onclick aren't drawn anywhere in the
-     instruction, so they stay derived from the replacement map's green ramp
-     — which puts hover at the same lightest step as active, since the old
-     palette has nothing lighter than Green 107. Flagged as approximate. */
+  /* Active измерен (#CFF7FF → #F3F9E6 — выбранная таблетка размера
+     страницы в пагинаторе As-is). Hover и Onclick в инструкции не
+     нарисованы нигде, поэтому остаются выведенными по зелёной шкале карты
+     замены, а она ставит наведение на ту же самую светлую ступень, что и
+     активное состояние: светлее Green 107 в старой палитре ничего нет.
+     Помечено как приближение. */
   --pagination-hover-bg: var(--odl-green-107);
   --pagination-active-bg: var(--odl-green-107);
   --pagination-onclick-bg: var(--odl-green-123);
 
   --header-hover-fg: var(--odl-green-333);
 
-  /* --- Success green: #39C182 -> #82BF00 (измерено на Informer, Toast,
-     Progress Bar и Tag в таблице As-is/To-be). Every token below holds the
-     same semantic "success" swatch, so they move together. --- */
+  /* --- Зелёный успеха: #39C182 → #82BF00 (измерено на Informer, Toast,
+     Progress Bar и Tag в таблице As-is/To-be). Все токены ниже держат один
+     и тот же смысловой образец «успех», поэтому едут вместе. --- */
   --accordion-list-description-success-fg: var(--odl-green-223);
   --progress-green: var(--odl-green-223);
   --event-status-success-bg: var(--odl-green-223);
@@ -144,8 +147,9 @@
   --tag-green-bg: var(--odl-green-223);
   --item-right-text-fg: var(--odl-green-223);
   --ifield-success-fg: var(--odl-green-223);
-  /* No As-is counterpart drawn for the pale Secondary tint — derived as the
-     lightest green of the replacement map (Green 107). Approximate. */
+  /* Для бледного оттенка Secondary пары в колонке As-is не нарисовано —
+     выведен как самый светлый зелёный карты замены (Green 107).
+     Приближение. */
   --tag-green-secondary-bg: var(--odl-green-107);
 
   /* --- Error red: #D74B54 -> #DE4A2A (измерено на Progress Bar, Top Fixed
@@ -156,7 +160,7 @@
      по красному нужна во ВСЕХ компонентах, а не только там, где она уже была.
      Недостающие держатели дописаны ниже; источник значений — таблица
      «Было: Red colors / Стало: Red colors» на канвасе ребрендинга
-     (нода 70251:44107):
+     :
 
        Было:  Red 603 #B92F10, Red 211 #CB4022, Red 241 #DE4A2A,
               Red 182 #FFAB99, Red 147 #FFC9B5, Red 117 #FFE8E3, Red 109 #FFF2F0
@@ -219,8 +223,8 @@
   --top-fixed-message-blue-bg: var(--odl-dark-blue-117);
   --accordion-card-blocked-bg-hover: var(--odl-red-147);
   --mail-feed-error-bg: var(--odl-red-147);
-  /* #F0FCFF -> #F3F9E6 per the replacement map (same pale tint the paginator
-     uses). Not drawn in the instruction — derived. */
+  /* #F0FCFF → #F3F9E6 по карте замены (тот же бледный оттенок, что и у
+     пагинатора). В инструкции не нарисован — выведен. */
   --mail-feed-new-bg: var(--odl-green-107);
 
   /* --- Дизайн-чек №6: держатели статусных цветов, у которых развилки не было
@@ -259,8 +263,8 @@
   background-image: url("../assets/nps/done-illustration.webp");
 }
 
-/* Error Page: в старой теме карабин и маскот зелёные — нода 70340:718 «old
-   image for error page» в файле Ui-kit | Web LK. Это тот же 3D-кадр, что и
+/* Error Page: в старой теме карабин и маскот зелёные — слой «old image for
+   error page» в файле Ui-kit | Web LK. Это тот же 3D-кадр, что и
    в текущей теме, перекрашенный, поэтому зелёные PNG собраны из исходных
    растров той ноды и уложены в тот же холст, что и голубые (1600×1119 и
    700×484, силуэт совпадает в пределах пикселя) — раскладка компонента от

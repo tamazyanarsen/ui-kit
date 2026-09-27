@@ -1,15 +1,17 @@
 import type { IconProps } from "./types"
 
-// The Figma export is an angular/conic gradient (transparent -> opaque
-// sweeping ~360°, a "spinner tail" effect) via `data-figma-gradient-fill`
-// metadata — that's Figma-internal, not real SVG and browsers ignore it, so
-// there's no way to paste it in directly. SVG has no native conic gradient
-// either. This approximates the same tail-fade look as `donut` wedge
-// segments (ring: outer r=12, inner r=7.8, matching the export's geometry)
-// with opacity ramping 0 -> 1 around the ring; currentColor rather than a
-// hardcoded blue so it keeps inheriting each usage site's own color
-// (input.tsx's grey, button.tsx's per-variant accent, etc. — all already
-// set via className, unchanged from before this file had real markup).
+// В выгрузке макета это угловой (конический) градиент — от прозрачного к
+// плотному примерно на 360°, то есть «хвост» спиннера, — и задан он
+// метаданными `data-figma-gradient-fill`. Это внутренний формат макета, а
+// не настоящий SVG: браузеры его игнорируют, вставить как есть нельзя, и
+// собственного конического градиента в SVG тоже нет. Здесь тот же
+// затухающий хвост набран секторами-клиньями `donut` (кольцо: внешний
+// r=12, внутренний r=7.8 — геометрия как в выгрузке), а прозрачность
+// нарастает от 0 до 1 по кругу. Цвет берётся из `currentColor`, а не
+// зашит синим, чтобы иконка и дальше наследовала цвет места установки
+// (серый у input.tsx, акцент под вариант у button.tsx и так далее — всё
+// это уже задано через className и не менялось с тех пор, как в этом
+// файле появилась настоящая разметка).
 export function Loader2({ size: _size, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>

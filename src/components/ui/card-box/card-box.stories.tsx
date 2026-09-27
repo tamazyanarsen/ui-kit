@@ -66,9 +66,8 @@ const meta = {
   title: "Компоненты/Card Box",
   component: CardBox,
   parameters: { layout: "padded" },
-  /* Панель повторяет «Свойства компонента» `ELK / card-box` (компонент-сет
-     70333:11271, таблица 70333:11363): Size / Type — плюс булевы слоты
-     мастера. */
+  /* Панель повторяет «Свойства компонента» `ELK / card-box`: Size / Type —
+     плюс булевы слоты мастера. */
   argTypes: {
     viewport: sizeArgType,
     type: optionsArgType(

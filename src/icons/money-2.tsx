@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / money 2 — 13. Money Card, набор ALL ICONS (канвас 70326:26).
+// icon / money 2 — 13. Money Card, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Money2({ size = 16, ...props }: IconProps) {
   if (size === 24) {

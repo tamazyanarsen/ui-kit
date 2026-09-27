@@ -1,14 +1,13 @@
 import * as React from "react"
 
-// Shared by Tabs, Switcher and Header — all three specs describe the same
-// "Show More" behavior: once the row doesn't fit, the trailing items move
-// behind a "..." trigger that opens a dropdown.
+// Общий для Tabs, Switcher и Header: во всех трёх макетах описано одно и то
+// же поведение «Show More» — как только ряд перестаёт помещаться, хвостовые
+// элементы уходят за триггер «...», открывающий выпадающий список.
 //
-// `itemRefs` must be attached to an *always-rendered, off-screen* copy of
-// every item (see Tabs/Switcher's own "measure" row) rather than the
-// visible row itself — items hidden behind the overflow trigger would
-// otherwise report a width of 0 the next time this recomputes, permanently
-// wrecking the count.
+// `itemRefs` обязан быть привязан к *всегда отрисованной закадровой* копии
+// каждого элемента (см. замерочный ряд у Tabs и Switcher), а не к видимому
+// ряду: элементы, спрятанные за триггером перекрытия, иначе сообщили бы
+// нулевую ширину при следующем пересчёте и навсегда сломали бы счёт.
 //
 // ⚠️ Пересчёт обязан висеть на ТРЁХ источниках, и каждый закрывает свой
 // способ соврать:

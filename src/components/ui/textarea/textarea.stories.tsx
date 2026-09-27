@@ -13,9 +13,8 @@ import { type Viewport } from "@/lib/viewport"
 
 import { Textarea, type TextareaProps } from "./textarea"
 
-/* Панель повторяет «Свойства компонента» `ELK / text-area` (компонент-сет
-   137:2618, таблица 1246:205583): Size / State / Type / Add /
-   Show Error Text / Scrollbar. */
+/* Панель повторяет «Свойства компонента» `ELK / text-area`: Size / State /
+   Type / Add / Show Error Text / Scrollbar. */
 const TYPE_LABELS = {
   empty: "Empty",
   filled: "Filled",
@@ -102,7 +101,7 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-/* Дизайн-чек 3/3 №18: у Lock Input в спеке (52140:162555) написано «всегда
+/* Дизайн-чек 3/3 №18: у Lock Input в спеке написано «всегда
    заполнено» — пустое заблокированное поле состояния не показывает. Поэтому
    при Type=Locked в Playground подставляется текст; `key` заставляет поле
    перемонтироваться, иначе неуправляемая textarea сохранила бы старое
@@ -155,7 +154,7 @@ export const Playground: Story = {
    классическая разбивка desktop/mobile. Разбивка по числу строк в
    компоненте не нужна».
 
-   Компонент-сет `ELK / text-area` (137:2618) варьируется по четырём осям:
+   Компонент-сет `ELK / text-area` варьируется по четырём осям:
    Size (Desktop / Mobile), State (Default / Hover / Focused / Disabled),
    Type (Empty / Filled / Locked) и Add (None / Comment / Error). Разложены
    они здесь ровно так же, как на листе: State — колонки, Type × Add —

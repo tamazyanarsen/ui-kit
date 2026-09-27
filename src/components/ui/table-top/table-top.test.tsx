@@ -58,8 +58,7 @@ describe("TableTopSummary", () => {
   })
 })
 
-// "Сводка" (node 70279:10336) — the Details row at the bottom of the block's
-// top panel.
+// «Сводка» — строка Details в нижней части верхней панели блока.
 describe("TableTopDetails", () => {
   it("renders the label and every label: value pair", () => {
     render(
@@ -87,9 +86,9 @@ describe("TableTopDetails", () => {
         ]}
       />
     )
-    // Filtered by class name rather than selected with one: the divider's
-    // Tailwind class contains brackets and parentheses that the DOM selector
-    // engine rejects even when escaped.
+    // Отфильтровано по имени класса, а не выбрано селектором: класс
+    // Tailwind у разделителя содержит квадратные и круглые скобки, которые
+    // движок селекторов DOM отвергает даже в экранированном виде.
     const separators = [
       ...container.querySelectorAll("[aria-hidden='true']"),
     ].filter((node) => node.className.includes("--table-summary-divider"))

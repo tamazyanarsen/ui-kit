@@ -6,11 +6,11 @@ import { OtpInput } from "./input"
 import { ResendCode } from "./resend-code"
 import { OtpConfirmCard } from "./confirm-card"
 
-// The countdown reschedules its own setTimeout from inside a state-update
-// callback each tick — advancing fake timers in one big jump fires every
-// pending timer before React gets a chance to re-render and schedule the
-// next one, so it has to be stepped one second at a time with an `act()`
-// flush in between.
+// Отсчёт перепланирует собственный setTimeout из колбэка обновления
+// состояния на каждом тике, и прокрутка поддельных таймеров одним большим
+// прыжком отрабатывает все ожидающие таймеры до того, как React успеет
+// перерисоваться и запланировать следующий. Поэтому шагать приходится по
+// одной секунде, со сбросом через `act()` между шагами.
 async function advanceSeconds(n: number) {
   for (let i = 0; i < n; i++) {
     await act(async () => {
@@ -123,9 +123,9 @@ describe("OtpConfirmCard", () => {
     expect(onSubmit).toHaveBeenCalledWith("1234")
   })
 
-  // The close button is Modal's own (Figma composes the card from
-  // ELK / Modal), so closing reports through the dialog's onOpenChange
-  // rather than a bespoke onClose prop.
+  // Кнопка закрытия принадлежит самому Modal (в макете карточка собрана из
+  // ELK / Modal), поэтому закрытие сообщается через onOpenChange диалога, а
+  // не через отдельный пропс onClose.
   it("closes through the modal's close button", async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()

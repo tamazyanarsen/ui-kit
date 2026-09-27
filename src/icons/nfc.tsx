@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / NFC — 14. Device, набор ALL ICONS (канвас 70326:26).
+// icon / NFC — 14. Device, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Nfc({ size = 16, ...props }: IconProps) {
   if (size === 24) {

@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / Lghtning Fill — 10. Fav Like, набор ALL ICONS (канвас 70326:26).
+// icon / Lghtning Fill — 10. Fav Like, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function LghtningFill({ size = 16, ...props }: IconProps) {
   if (size === 24) {

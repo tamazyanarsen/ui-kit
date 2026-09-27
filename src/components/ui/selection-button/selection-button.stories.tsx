@@ -33,9 +33,9 @@ type ItemCount = (typeof ITEM_COUNTS)[number]
 
 type PlaygroundArgs = SelectionButtonProps & { itemsCount?: ItemCount }
 
-/* Панель повторяет «Свойства компонента» `ELK / selection button`
-   (компонент-сет 17827:39199, таблица 17851:45073): Size / Show Dropdown /
-   Direction — те же имена и подписи, что в правой панели Figma. */
+/* Панель повторяет «Свойства компонента» `ELK / selection button`:
+   Size / Show Dropdown / Direction — те же имена и подписи, что в правой
+   панели Figma. */
 const meta = {
   title: "Компоненты/Selection Button",
   component: SelectionButton,
@@ -60,9 +60,10 @@ const meta = {
       table: { category: "Контент" },
     },
     items: { table: { disable: true } },
-    // `trigger` takes a JSX element instance — map a friendly "Default
-    // (⋯)"/"Custom Button" choice to the real element/`undefined` instead of
-    // disabling the control (same technique as Button's `icon`).
+    // `trigger` принимает экземпляр JSX-элемента: понятный выбор «Default
+    // (⋯)» и «Custom Button» отображается в настоящий элемент или
+    // `undefined`, а не выключает контрол (тот же приём, что и с `icon` у
+    // Button).
     trigger: {
       control: {
         type: "select",
@@ -95,9 +96,9 @@ export const Playground: Story = {
   ),
 }
 
-/* The menu is a portalled popup, so a real grid would have every open cell
-   overlaying the next — the variants are laid out as separate open menus
-   with room around each instead. */
+/* Меню — это всплывающее окно в портале, поэтому в настоящей сетке каждая
+   открытая ячейка накрывала бы следующую: варианты вместо этого разложены
+   отдельными открытыми меню с запасом места вокруг каждого. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

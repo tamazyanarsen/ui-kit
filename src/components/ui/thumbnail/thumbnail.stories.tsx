@@ -20,7 +20,7 @@ import type {
 /* Дизайн-чек №3 №4: «Некорректные нейминги в матрице thumbnail. Это не
    more, это вариант с иконкой. Матрицу взять из figma».
 
-   Свойства мастера `ELK / thumbnail` (687:29204): Size (`L / Desktop`,
+   Свойства мастера `ELK / thumbnail`: Size (`L / Desktop`,
    `M / Desktop`, `L-M / Mobile`), State (Default / Disabled) и Type из
    девяти значений — Icon, Card, Sticker, SBP Card, SBP Card Account,
    Image, Check (Green), Attention (Yellow), Alert (Red). Порядок и имена
@@ -100,8 +100,8 @@ const meta = {
   title: "Компоненты/Thumbnail",
   component: Thumbnail,
   parameters: { layout: "centered" },
-  /* Панель повторяет «Свойства компонента» `ELK / thumbnail` (компонент-сет
-     687:29204, таблица 7203:102402): Size / State / Type — плюс вложенные
+  /* Панель повторяет «Свойства компонента» `ELK / thumbnail`: Size /
+     State / Type — плюс вложенные
      инстансы `Payment System (ELK)` и `ELK / badge` своими категориями. */
   argTypes: {
     figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS, "inline-radio"),
@@ -189,8 +189,8 @@ export const Matrix: Story = {
           { label: "M", props: { size: "m" } },
           { label: "Со счётчиком", props: { count: 3 } },
           { label: "С точкой", props: { showDot: true } },
-          // Disabled is a flat opacity-50 over the whole tile, not a
-          // background swap.
+          // Выключенное состояние — плоский opacity-50 на всей плитке, а
+          // не подмена фона.
           { label: "Disabled", props: { disabled: true } },
         ]}
         render={(props) => <Thumbnail {...props} />}

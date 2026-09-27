@@ -24,7 +24,7 @@ import { CountButton, type CountButtonProps } from "./count-button"
  * нечем. Теперь он есть в Playground, а в матрице обе формы стоят рядом
  * (`responsive`).
  */
-/* Мастер `ELK / count button` (34:17381) — обёртка над `ELK / button` с
+/* Мастер `ELK / count button` — обёртка над `ELK / button` с
    единственным собственным свойством `Show Count`; размер, состояние и тип
    он наследует от вложенной кнопки, а цвет счётчика — от вложенного
    `ELK / badge`. Панель собрана в том же порядке. */
@@ -136,8 +136,8 @@ export const Matrix: Story = {
         { label: "Hover", props: {}, pseudo: "hover" },
         { label: "Pressed", props: {}, pseudo: "active" },
         { label: "Счётчик 99+", props: { count: 250 } },
-        // `ELK / count button`'s own master carries the red badge, but Table
-        // Top's "Ещё фильтры" instance overrides it to the dark one.
+        // У собственного мастера `ELK / count button` значок красный, но
+        // инстанс «Ещё фильтры» в Table Top переопределяет его на тёмный.
         { label: "Тёмный счётчик\n(Table Top)", props: { countColor: "black" } },
         { label: "S", props: { size: "sm" } },
         { label: "L", props: { size: "lg" } },

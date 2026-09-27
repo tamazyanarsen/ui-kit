@@ -39,7 +39,6 @@ export interface LineChartProps extends Omit<BaseChartProps, 'option'> {
 /**
  * Компонент линейного графика (Line Chart) на базе ECharts.
  * Автоматически настраивает сетку, оси, легенду и подсказки (tooltip).
- * https://www.figma.com/design/bCYDX3qEGAxzFqhUNEVyVo/D-10984-%D0%9E%D1%82%D1%87%D1%91%D1%82%D1%8B-%D0%BF%D0%BE-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0%D0%BC?node-id=25659-4705&p=f&t=tZVQzSeeTnutDwMT-0
  *
  * @example
  * ```tsx

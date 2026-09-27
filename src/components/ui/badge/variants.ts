@@ -7,9 +7,10 @@ interface BadgeColorStyle {
   border?: string
 }
 
-// Non-disabled palette per color. "contra-red" is literally Red plus a
-// white border — for laying the badge over a same-color (or busy) surface
-// where it'd otherwise blend in — not a different fill.
+// Палитра по цветам для невыключенного состояния. «contra-red» — это
+// буквально красный плюс белая рамка, чтобы положить значок на поверхность
+// того же цвета (или на насыщенную), где он иначе слился бы, а не другая
+// заливка.
 export const BADGE_COLORS: Record<BadgeColor, BadgeColorStyle> = {
   red: { bg: "var(--badge-red-bg)", fg: "var(--badge-red-fg)" },
   "contra-red": {
@@ -22,9 +23,9 @@ export const BADGE_COLORS: Record<BadgeColor, BadgeColorStyle> = {
   black: { bg: "var(--badge-black-bg)", fg: "var(--badge-black-fg)" },
 }
 
-// Disabled collapses every color to one muted grey, except light-grey
-// (already the palest option) which just steps down one shade — matches
-// the spec's own Disabled column exactly.
+// Выключенное состояние сводит все цвета к одному приглушённому серому,
+// кроме светло-серого (он и так самый бледный), который просто уходит на
+// ступень ниже, — в точности как в колонке Disabled макета.
 export function disabledBadgeStyle(color: BadgeColor): BadgeColorStyle {
   if (color === "light-grey") {
     return {
@@ -35,7 +36,7 @@ export function disabledBadgeStyle(color: BadgeColor): BadgeColorStyle {
   return { bg: "var(--badge-disabled-bg)", fg: "var(--badge-disabled-fg)" }
 }
 
-// 1–99 unchanged, 100+ shown as "99+" — per the spec's exact rule.
+// От 1 до 99 без изменений, от 100 — как «99+», по точному правилу макета.
 export function formatBadgeCount(value: number): string {
   if (value > 99) return "99+"
   return String(Math.max(0, Math.trunc(value)))

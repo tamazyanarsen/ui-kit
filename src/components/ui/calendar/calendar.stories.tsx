@@ -38,14 +38,15 @@ const meta = {
   title: "Компоненты/Calendar",
   component: Calendar,
   parameters: { layout: "centered" },
-  // `defaultMonth`/`value`/`rangeValue`/`monthValue`/`yearValue` are all
-  // Date-based and owned by each story's own local state wrapper — they're
-  // never meant to be driven by the Controls panel. Worse than just an
-  // unfriendly "Set object" JSON-editor placeholder: verified live that
-  // setting a value crashes the story outright (`TypeError:
-  // initial.getFullYear is not a function`, since the JSON editor produces a
-  // plain object, not a real Date instance). `control: false` removes the
-  // footgun instead of just prettying up a control that was never safe.
+  // `defaultMonth`, `value`, `rangeValue`, `monthValue` и `yearValue` все
+  // построены на Date и принадлежат собственной локальной обёртке состояния
+  // каждой стори — панель Controls ими править не должна. Это хуже, чем
+  // просто недружелюбная заглушка JSON-редактора «Set object»: проверено
+  // вживую, что установка значения роняет стори целиком (`TypeError:
+  // initial.getFullYear is not a function`, поскольку JSON-редактор выдаёт
+  // обычный объект, а не настоящий экземпляр Date). `control: false` убирает
+  // грабли, а не наводит красоту на контрол, который и так не был
+  // безопасен.
   argTypes: {
     layout: optionsArgType(
       "Size",
@@ -59,8 +60,9 @@ const meta = {
       "Кнопка «Сбросить» в подвале"
     ),
     title: { control: "text", table: { category: "Контент" } },
-    // A predicate, not a value — no JSON control can express one, so map a
-    // friendly choice to a real function (same technique as Button's `icon`).
+    // Это предикат, а не значение: никакой JSON-контрол его не выразит,
+    // поэтому понятный выбор отображается в настоящую функцию (тот же
+    // приём, что и с `icon` у Button).
     disabledDate: {
       control: { type: "select", labels: { none: "Нет", weekends: "Выходные" } },
       options: ["none", "weekends"],
@@ -104,11 +106,11 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-// `value`/`onChange` are fixed by this demo's own local state (a bare
-// `Date | null`, incompatible with range/month/year's value shapes) — every
-// other control (layout, title, footer, …) is still forwarded, so the
-// Controls panel isn't just decorative (same pattern as Checkbox's
-// `Controlled` wrapper).
+// `value` и `onChange` зафиксированы собственным локальным состоянием
+// этого демо (голый `Date | null`, несовместимый с формами значений у
+// range, month и year), а все остальные контролы (раскладка, заголовок,
+// подвал и прочие) по-прежнему пробрасываются, так что панель Controls не
+// декоративная (та же схема, что у обёртки `Controlled` у Checkbox).
 function SingleDateCalendar(
   props: Omit<CalendarProps, "value" | "onChange">
 ) {
@@ -137,8 +139,8 @@ export const Playground: Story = {
     ),
 }
 
-/* Figma's own axes are Mode (Single / Range / Month / Year) × Layout
-   (popup on desktop, bottom sheet on mobile). */
+/* Собственные оси макета — Mode (Single / Range / Month / Year) × Layout
+   (поповер на десктопе, нижняя шторка на мобильном). */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },
@@ -161,8 +163,8 @@ export const Matrix: Story = {
           { label: "Popover (Desktop)", props: { layout: "popover" } },
           { label: "Без подвала", props: { layout: "popover", footer: false } },
           {
-            // Weekends demonstrate `disabledDate`; the whole grid keeps
-            // working, only those cells go inert.
+            // Выходные показывают работу `disabledDate`: вся сетка
+            // продолжает работать, инертными становятся только эти ячейки.
             label: "Недоступные дни\n(выходные)",
             props: {
               layout: "popover",

@@ -24,7 +24,7 @@ const meta = {
      Раньше это был плоский список из двенадцати булевых в алфавитном
      беспорядке — по нему нельзя понять, что к чему относится. В макете
      свойства расписаны отдельными таблицами на каждую часть таблицы
-     («Свойства компонента — Table Title Cell», 10623:30106, и соседние),
+     («Свойства компонента — Table Title Cell» и соседние),
      поэтому контролы сгруппированы так же: блок, шапка, столбцы, строки. */
   argTypes: {
     block: {
@@ -80,9 +80,10 @@ type Story = StoryObj<TableExampleProps>
 
 export const Playground: Story = {}
 
-/* Table is a composition, not a single prop-driven component — the real
-   variant axis is the cell type, so the second story enumerates every
-   head-cell and body-cell type the kit ships, plus the row fills. */
+/* Table — это композиция, а не один компонент, управляемый пропсами:
+   настоящая ось вариантов здесь — тип ячейки, поэтому вторая стори
+   перечисляет все типы ячеек шапки и тела, которые есть в ките, плюс
+   заливки строк. */
 export const Matrix: Story = {
   name: "Matrix (типы ячеек и состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },

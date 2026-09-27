@@ -17,7 +17,7 @@ import { ModalBody } from "./body"
 import { ModalFooter } from "./footer"
 import { Button } from "@/components/ui/button"
 
-/* Панель свойств компонент-сета `ELK / Modal` (45321:17265) и его частей:
+/* Панель свойств компонент-сета `ELK / Modal` и его частей:
 
      ELK / Modal            Size = Desktop | Mobile
                             Type = Large Modal | Small Modal | With Image
@@ -162,9 +162,9 @@ const meta = {
   title: "Компоненты/Modal",
   component: ConfirmModal,
   parameters: { layout: "centered" },
-  // `ConfirmModal` is declared locally in this file rather than imported
-  // from a component module, so react-docgen-typescript doesn't extract its
-  // props — declare every control explicitly.
+  // `ConfirmModal` объявлен локально в этом файле, а не импортирован из
+  // модуля компонента, поэтому react-docgen-typescript не извлекает его
+  // пропсы — объявляем каждый контрол явно.
   argTypes: {
     // Мобильная форма (Bottom Sheet) выбирается контролом, а не пиннингом
     // вьюпорта — дизайн-чек №3 №19.
@@ -212,10 +212,11 @@ type Story = StoryObj<ConfirmModalProps>
 
 export const Playground: Story = {}
 
-/* A modal is a portalled dialog with a backdrop and a focus trap, so only
-   one can be open at a time — the variants are separate triggers rather
-   than matrix cells. Below `md` every one of them becomes a bottom sheet
-   (switch the viewport to see that form). */
+/* Модальное окно — это диалог в портале с подложкой и ловушкой фокуса,
+   поэтому открытым может быть только одно за раз: варианты показаны
+   отдельными триггерами, а не ячейками матрицы. Ниже `md` каждое из них
+   становится нижней шторкой (переключите вьюпорт, чтобы увидеть эту
+   форму). */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

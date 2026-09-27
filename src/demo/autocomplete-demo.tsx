@@ -39,8 +39,8 @@ function OrganizationSearch() {
   const [query, setQuery] = useState("")
   const [selected, setSelected] = useState<string | null>(null)
 
-  // Stands in for a server-side search — real usage would debounce this
-  // and call an API, then hand the response straight to `items`.
+  // Заменяет поиск на сервере: в реальном применении это откладывалось бы
+  // по debounce и вызывало API, а ответ передавался бы прямо в `items`.
   const results = useMemo(() => {
     if (!query.trim()) return []
     const q = query.trim().toLowerCase()

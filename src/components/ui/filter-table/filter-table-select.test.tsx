@@ -33,7 +33,7 @@ describe("FilterTableSelect", () => {
     await user.click(screen.getByText("Статус"))
     await user.type(await screen.findByRole("textbox"), "Оплачен")
     // "Если выбранно несколько значений, то пишем количество в кнопке –
-    // «Применить: 1»" (Фильтрация (ЕЛК), node 70295:22605).
+    // «Применить: 1»" (Фильтрация (ЕЛК)).
     await user.click(screen.getByRole("button", { name: "Применить: 1" }))
 
     expect(onValueChange).toHaveBeenCalledWith("Оплачен")

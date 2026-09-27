@@ -46,11 +46,11 @@ interface ButtonMenuProps extends React.ComponentProps<"div"> {
   span?: number
 }
 
-// Pill-shaped inline toolbar. Pass `Button` instances as children — per the
-// spec, a Primary button (if any) always goes first/left (though the first
-// slot can just as validly be Secondary/grey — the spec doesn't force a
-// brand button), followed by up to three Secondary buttons ordered
-// most-frequently-used first.
+// Строчная панель инструментов в форме таблетки. Передавайте детьми
+// экземпляры `Button`: по макету кнопка Primary (если она есть) всегда идёт
+// первой слева (хотя первым слотом столь же законно может быть Secondary
+// или серая — бренд-кнопку макет не навязывает), за ней — до трёх кнопок
+// Secondary, упорядоченных от самой часто используемой.
 //
 // Дизайн-чек от 07.09, замечание 3: «Непоместившиеся кнопки должны уходить
 // в многоточие. Либо 3 команды и многоточие (если всё влезло), либо если не
@@ -96,14 +96,15 @@ function ButtonMenu({
     // Обёртка — `display: contents`, в раскладке не участвует, поэтому липкий
     // низ и место в потоке остаются за самой полосой.
     <ViewportScope viewport="desktop">
-      {/* Figma's live "ELK / button menu" master component (node 4244:20536,
-          v2.0.0) confirms design-check #5's original reading: this is a
-          bottom-anchored bar, not a floating pill — top corners rounded only,
-          border on the top/left/right only (no bottom border/radius, since
-          that edge sits flush against the viewport/container bottom), plus a
-          specific drop shadow (offset 0/4, blur 12, #8B99A9 @ 24%). The stale
-          static preview asset that justified the old fully-rounded/no-border
-          treatment predates this; trust the live component over it.
+      {/* Живой мастер «ELK / button menu» (v2.0.0) подтверждает исходное
+          прочтение замечания 5 дизайн-чека: это панель, прижатая к низу, а
+          не плавающая таблетка. Скруглены только верхние углы, рамка идёт
+          только сверху и по бокам (снизу ни рамки, ни радиуса, потому что
+          этот край стоит вплотную к низу вьюпорта или контейнера), плюс
+          своя тень (смещение 0/4, размытие 12, #8B99A9 при 24%). Устаревший
+          статичный превью-ассет, которым обосновывали прежний полностью
+          скруглённый вид без рамки, старше этого мастера; верить надо живому
+          компоненту.
 
           Ширину задаёт размещение на сетке: по умолчанию вся полоса, что и
           показывают макеты «Использование в макете» (кнопки жмутся влево,

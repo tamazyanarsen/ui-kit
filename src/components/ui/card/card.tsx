@@ -10,26 +10,27 @@ import type { PaymentSystem } from "@/components/ui/thumbnail"
 // это отдельный компонент со своей историей, подключённый как зависимость.
 import { CardAccount } from "@/components/ui/card-account"
 
-// Card — the "ELK / card" bank-card row (Figma node 42383:43897). Every text
-// block (title, subtitle, value) is single-line-only per the spec
-// ("Ограничения текстовых блоков": overflow is clipped to an ellipsis, never
-// wraps). `titleSuffix`, `tag`, `subtitle`, `value` and `menuItems` are all
-// optional and simply omit their slot when absent — mirrors the spec's own
-// "Show Number Card / Show Tag / Show User Name / Show Value / Show Button"
-// boolean properties, all demoed as content toggles rather than a separate
-// flag per field.
+// Card — строка банковской карты «ELK / card». Каждый текстовый блок
+// (заголовок, подзаголовок, значение) по макету строго однострочный (раздел
+// «Ограничения текстовых блоков»: выходящее за границы обрезается
+// многоточием и никогда не переносится). `titleSuffix`, `tag`, `subtitle`,
+// `value` и `menuItems` необязательны и просто не рисуют свой слот, когда
+// их нет, — это повторяет собственные булевы свойства макета «Show Number
+// Card / Show Tag / Show User Name / Show Value / Show Button», которые все
+// показаны как переключатели содержимого, а не как отдельный флаг на
+// каждое поле.
 //
-// `value` (the account number) lives in the top row alongside title/tag, not
-// as a separate block below — per Figma it's a `flex-[1_0_0]` sibling of
-// Title,Number and Tag inside the "Top" row, right-aligned and growing to
-// fill the row's remaining width. It is NOT a sibling of the whole
-// title+subtitle column, so it must never be vertically centered across the
-// full card height (that would visibly detach it from the title once a
-// subtitle is present) — it only ever centers within the Top row itself.
+// `value` (номер счёта) живёт в верхней строке рядом с заголовком и тегом,
+// а не отдельным блоком снизу: по макету это сосед Title, Number и Tag
+// внутри строки «Top» с `flex-[1_0_0]`, прижатый вправо и растущий на
+// оставшуюся ширину строки. Он НЕ сосед всей колонки «заголовок плюс
+// подзаголовок», поэтому его нельзя центровать по вертикали на всю высоту
+// карточки: при наличии подзаголовка он бы заметно оторвался от заголовка.
+// Центруется он только внутри самой строки Top.
 //
-// The "..." button is a SelectionButton (S, secondary-white, down-left —
-// the row's own edge is the right side of the viewport in the spec, so the
-// list opens leftward/downward from the trigger).
+// Кнопка «...» — это SelectionButton (размер S, secondary-white, вниз и
+// влево): в макете правым краем строки служит край вьюпорта, поэтому
+// список открывается от триггера влево и вниз.
 interface CardProps {
   title: React.ReactNode
   titleSuffix?: React.ReactNode
@@ -80,8 +81,8 @@ function Card({
       className={cn(
         // ⚠️ Выключка по ВЕРХУ, а не по центру. Дизайн-чек «Storybook 3»,
         // замечание 11: «проверить и скорректировать расположение кнопки в
-        // Card». Замер анатомии (54297:12790 → инстанс 54297:12955, карточка
-        // 1200×100 с полем 24): блок `Container` стоит на y=24, блок `Button`
+        // Card». Замер анатомии (карточка 1200×100 с полем 24): блок
+        // `Container` стоит на y=24, блок `Button`
         // — тоже на y=24 и ростом 52, то есть кнопка прижата к верхней кромке
         // содержимого. По центру карточки (y=34) её ставило `items-center`, и
         // с подписью пользователя она уезжала на 10px вниз относительно

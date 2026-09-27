@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / tag — 09. Settings Menus, набор ALL ICONS (канвас 70326:26).
+// icon / tag — 09. Settings Menus, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Tag({ size = 16, ...props }: IconProps) {
   if (size === 24) {

@@ -9,10 +9,11 @@ import {
 
 import { RowLabel } from "./shared"
 
-// `Calendar` now manages its own draft selection internally (see its own
-// comment) and only calls `onChange` once "Применить" is pressed — so this
-// wrapper's `value`/`onChange` reflect the *committed* date, one click
-// (plus Apply) behind whatever's currently highlighted in the grid.
+// `Calendar` теперь сам ведёт свой черновой выбор внутри (см. его
+// собственный комментарий) и вызывает `onChange` только после нажатия
+// «Применить», поэтому `value` и `onChange` этой обёртки отражают
+// *подтверждённую* дату — на один клик (плюс «Применить») позади того, что
+// подсвечено в сетке сейчас.
 function SingleDateCalendar(
   props: Omit<React.ComponentProps<typeof Calendar>, "mode" | "value" | "onChange">
 ) {

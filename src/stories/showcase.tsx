@@ -2,8 +2,9 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-/* A looser layout for components that are too wide or too composite for a
-   real grid (Modal, Header, Table, …): a stack of captioned sections. */
+/* Более свободная раскладка для компонентов, которые слишком широки или
+   слишком составные для настоящей сетки (Modal, Header, Table и прочие):
+   стопка разделов с подписями. */
 export function StoryShowcase({
   children,
   className,

@@ -58,15 +58,16 @@ const meta = {
     titleSuffix: { control: "text", ...CONTENT },
     subtitle: { control: "text", ...CONTENT },
     value: { control: "text", ...CONTENT },
-    // `tag` is `React.ReactNode` but every usage is a plain string —
-    // without this, leaving it unset falls back to a generic "Set object"
-    // JSON editor.
+    // `tag` объявлен как `React.ReactNode`, но везде используется обычной
+    // строкой. Без этого незаданное значение откатывается на универсальный
+    // JSON-редактор «Set object».
     tag: { control: "text", ...CONTENT },
-    // `tagColor`/`paymentSystem` are plain string unions imported from other
-    // modules (`TagColor`, `PaymentSystem`) — react-docgen can't resolve an
-    // imported type alias into an enum, so both fall back to the same
-    // generic "Set object" editor. Pin the real option lists explicitly
-    // instead, same fix as Badge's `color`.
+    // `tagColor` и `paymentSystem` — обычные строковые объединения,
+    // импортированные из других модулей (`TagColor` и `PaymentSystem`), а
+    // react-docgen не умеет разрешить импортированный псевдоним типа в
+    // перечисление, и оба откатываются на тот же универсальный редактор
+    // «Set object». Вместо этого списки значений заданы явно — та же
+    // правка, что и с `color` у Badge.
     tagColor: {
       ...CONTENT,
       control: "select",
@@ -82,8 +83,9 @@ const meta = {
       ] satisfies TagColor[],
     },
     paymentSystem: { control: "select", options: PAYMENT_SYSTEMS, ...CONTENT },
-    // `thumbnailNumber` is `React.ReactNode` but only ever demoed as a plain
-    // string (see the CardThumbnail's own "last 4 digits" usage).
+    // `thumbnailNumber` объявлен как `React.ReactNode`, но в примерах
+    // всегда обычная строка (см. использование «последних 4 цифр» у
+    // CardThumbnail).
     // Дизайн-чек №15: окончание номера карты — обязательная часть
     // пиктограммы, поэтому в Playground оно задано по умолчанию.
     thumbnailNumber: { control: "text", ...CONTENT },

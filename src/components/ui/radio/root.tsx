@@ -5,20 +5,22 @@ import { cn } from "@/lib/utils"
 
 import { Radio } from "./radio"
 
-// Groups Radio items — "включение одной означает отключение другой" per the
-// spec (selecting one deselects the rest). Renders a <div>; layout is left
-// to the consumer via className (defaults to a vertical stack).
+// Группирует пункты Radio — по макету «включение одной означает отключение
+// другой» (выбор одного снимает выбор с остальных). Рисует <div>, а
+// раскладку оставляет вызывающему коду через className (по умолчанию —
+// вертикальная стопка).
 //
-// Round-2 audit: gap was 12px (gap-3) — the "Use" documentation frame for
-// both Radio and Checkbox states this explicitly: "Вертикальный отступ
-// между радиокнопками составляет 24 px, для мобильной версии 24 px" (24px
-// vertical gap, same at both breakpoints).
+// Второй проход: зазор стоял 12px (gap-3), а документационный кадр «Use» и
+// для Radio, и для Checkbox говорит об этом прямо: «Вертикальный отступ
+// между радиокнопками составляет 24 px, для мобильной версии 24 px», то
+// есть 24px на обоих брейкпоинтах.
 //
-// Two ways to fill it. Passing `items` declares the whole group in one place,
-// which is what makes the *group* behaviour (one selection at a time,
-// roving-focus arrow keys, disabled options skipped) testable as a unit
-// rather than only as a pile of individual radios. Passing children keeps the
-// original composition form for layouts the items list can't express.
+// Заполнить группу можно двумя способами. Передача `items` объявляет всю
+// группу в одном месте, и именно это делает *групповое* поведение (выбор по
+// одному за раз, перемещение фокуса стрелками, пропуск выключенных опций)
+// проверяемым как единое целое, а не как кучка отдельных радиокнопок.
+// Передача детей сохраняет исходную композиционную форму для раскладок,
+// которые списком пунктов не выразить.
 
 interface RadioGroupItem {
   value: string

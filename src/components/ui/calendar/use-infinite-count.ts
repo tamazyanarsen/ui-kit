@@ -1,10 +1,11 @@
 import * as React from "react"
 
-/** Grows `count` by `step` whenever a sentinel placed after the last
- * rendered section scrolls into view inside `scrollRef` — true infinite
- * scroll (forward direction only; going back is handled by the jump-to
- * picker in the sheet layout, not by scrolling further up). Sheet-only:
- * the popover layout paginates instead. */
+/** Наращивает `count` на `step` всякий раз, когда маркер, поставленный
+ * после последней отрисованной секции, попадает в область видимости внутри
+ * `scrollRef` — настоящая бесконечная прокрутка (только вперёд: возврат
+ * назад делается переходом через выбор года в раскладке шторки, а не
+ * прокруткой ещё выше). Только для шторки: раскладка поповера вместо этого
+ * листается страницами. */
 export function useInfiniteCount(
   scrollRef: React.RefObject<HTMLElement | null>,
   initial: number,

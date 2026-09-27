@@ -5,25 +5,25 @@ import { Button } from "@/components/ui/button"
 
 import { ErrorPageIllustration } from "./illustration"
 
-// ErrorPage — "Страница ошибок" (403/404/etc). Design-check #18/#19/#20:
-// both illustrations are real assets, extracted from the Figma export's own
-// embedded raster layers (ui/error-page/*.svg's <image> nodes) rather than
-// redrawn from scratch. The Figma component's own "Type" property only
-// enumerates three values — 403, 404, Image (generic) — and its usage
-// documentation confirms every other error (500, maintenance, etc.) uses
-// the generic illustration with no numeral shown at all, not a composed
-// digit string. So the big numeral render is intentionally restricted to
-// exactly those two codes:
-// - `zeroMascot` stands in for the "0" in "403"/"404" (the spec's own
-//   composed-digit examples), the other digit ("4"/"3") is bespoke vector
-//   art in the source too, but per above that art only exists for these
-//   two codes — there's no general digit typeface to fall back to for
-//   other numbers, so any other `code` value (including plain numeric
-//   strings like "500") falls back to `noCodeMascot` instead of attempting
-//   to render numerals.
-// - `noCodeMascot` is a distinct illustration used whenever there's no
-//   403/404 code (confirmed against a separate anatomy example with no
-//   flanking numerals), not a fallback/placeholder for the zero one.
+// ErrorPage — «Страница ошибок» (403, 404 и прочие). Дизайн-чек,
+// замечания 18, 19 и 20: обе иллюстрации — настоящие ассеты, извлечённые
+// из встроенных растровых слоёв выгрузки макета, а не перерисованные
+// заново. Собственное свойство «Type» компонента в макете перечисляет лишь
+// три значения — 403, 404 и Image (общая), — а документация по применению
+// подтверждает, что все прочие ошибки (500, технические работы и так
+// далее) используют общую иллюстрацию вообще без цифр, а не составленную
+// строку из цифр. Поэтому отрисовка крупных цифр намеренно ограничена
+// ровно этими двумя кодами:
+// - `zeroMascot` подставляется вместо «0» в «403» и «404» (собственные
+//   примеры составленных цифр в макете), а вторая цифра («4» или «3») в
+//   исходнике тоже отдельная векторная графика. Но, как сказано выше, эта
+//   графика существует только для двух кодов: общего цифрового начертания,
+//   на которое можно было бы откатиться для других чисел, нет. Поэтому
+//   любое другое значение `code` (включая обычные числовые строки вроде
+//   «500») откатывается на `noCodeMascot`, а не пытается нарисовать цифры.
+// - `noCodeMascot` — самостоятельная иллюстрация, которая используется
+//   всегда, когда кода 403 или 404 нет (сверено с отдельным примером
+//   анатомии без цифр по бокам), а не запасной вариант первой.
 /**
  * Свойство `Type` компонент-сета Figma: 403, 404 или обобщённая картинка.
  *
@@ -69,8 +69,9 @@ function ErrorPage({
         </h1>
       )}
       {description && (
-        // 592px, the width Figma gives this paragraph inside the 1008px text
-        // column — `max-w-md` (448) wrapped it a line early.
+        // 592px — ширина, которую макет даёт этому абзацу внутри
+        // текстовой колонки 1008px; `max-w-md` (448) переносил его на
+        // строку раньше.
         <p className="mt-2 max-w-[592px] text-p1-medium text-[var(--error-page-description-fg)]">
           {description}
         </p>
@@ -89,8 +90,8 @@ function ErrorPage({
       {/* Дизайн-чек №28: иллюстрация целиком вынесена в `Image Error (ELK)`
           и собрана по мастеру — см. illustration.tsx. Раньше цифры
           рисовались текстом (не тем шрифтом), а «ноль» вставлялся отдельной
-          мелкой картинкой. Отступ 48px — `gap-[48px]` блока Box в мастере
-          (нода 39222:9051). */}
+          мелкой картинкой. Отступ 48px — `gap-[48px]` блока Box в
+          мастере. */}
       <ErrorPageIllustration
         type={showCode ? type : "image"}
         className="mt-12"

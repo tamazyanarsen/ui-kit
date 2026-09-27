@@ -2,33 +2,34 @@ import { ChevronLeft, ChevronRight, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
-// Pagination ("Paginator") — page-number nav + a page-size selector on the
-// right. Two layouts per spec: "L" (single row, selector inline right) and
-// "M" (selector wraps below, left-aligned) — the spec frames M as a
-// responsive fallback ("used when there's under 16px of horizontal room
-// left"), not a fixed size, so it's implemented as natural flex-wrap rather
-// than a separate prop.
+// Pagination («Paginator») — навигация по номерам страниц плюс выбор
+// размера страницы справа. По макету две раскладки: «L» (одна строка,
+// выбор размера в той же строке справа) и «M» (выбор переносится вниз и
+// прижимается влево). Макет описывает M как адаптивный запасной вариант
+// («применяется, когда по горизонтали осталось меньше 16px»), а не как
+// фиксированный размер, поэтому она сделана обычным переносом flex, а не
+// отдельным пропсом.
 //
-// The outer bar itself carries chrome in both the L and M master symbols
-// (confirmed identical on both, and pixel-sampled off a "paginator glued to
-// the bottom of a table" usage example): white background, a 1px top
-// border, and 16px/4px horizontal/vertical padding — this is the
-// component's own footer-style frame, not something callers are expected to
-// wrap it in.
+// Сама внешняя полоса несёт оформление в обоих мастерах, и L и M (у обоих
+// одинаково, плюс снято пипеткой с примера «пагинатор, приклеенный к низу
+// таблицы»): белый фон, верхняя рамка 1px и отступы 16px по горизонтали и
+// 4px по вертикали. Это собственная рамка компонента в стиле подвала, а не
+// то, во что вызывающий код должен его оборачивать.
 //
-// All page/size pill text (every state) and the "Показать на странице"
-// caption use the kit's Medium (500) weight per spec, not just the active
-// pill — Default/Hover/Onclick number pills sample as font-medium too, only
-// their background changes.
+// Текст на всех таблетках страниц и размеров (во всех состояниях) и
+// подпись «Показать на странице» идут в насыщенности Medium (500) по
+// макету, а не только активная таблетка: числовые таблетки Default, Hover
+// и Onclick тоже дают font-medium, у них меняется лишь фон.
 //
-// Truncation (Begin/Middle/End, sampled from the spec's own Value swatches):
-// - totalPages <= 7: show every page, no ellipsis.
-// - current near the start ("Begin"): 1 2 3 4 5 … last
-// - current near the end ("End"):     1 … last-4 last-3 last-2 last-1 last
-// - otherwise ("Middle"):             1 … current-1 current current+1 … last
+// Сокращение (Begin/Middle/End, снято с собственных образцов значений в
+// макете):
+// - totalPages <= 7: показываем все страницы, без многоточия.
+// - текущая рядом с началом («Begin»): 1 2 3 4 5 … последняя
+// - текущая рядом с концом («End»):    1 … п-4 п-3 п-2 п-1 последняя
+// - иначе («Middle»):                  1 … т-1 текущая т+1 … последняя
 
 /**
- * Дизайн-чек №4 №7: элемент «Page Count (ELK)» (нода 14679:38986) имеет
+ * Дизайн-чек №4 №7: элемент «Page Count (ELK)» имеет
  * ровно два значения `Value` — «100 (Without 75)» и «100», поэтому набор
  * записей на странице задаётся выбором из них, а не произвольным массивом.
  */
@@ -60,7 +61,7 @@ interface PaginationProps {
    * проверить нельзя». Раньше симметричный `showPageSize` был, а этого не
    * было — блок страниц отключить было нечем.
    *
-   * Документация компонента (нода 30021:39016) описывает два случая:
+   * Документация компонента описывает два случая:
    * «если все записи отображаются на одной странице, в правой части
    * пагинатора должен оставаться только один активный элемент — текущая
    * страница» (это `totalPages = 1`, стрелки прячутся сами) и «в случае,
@@ -74,11 +75,11 @@ interface PaginationProps {
    */
   showPages?: boolean
   /**
-   * Свойство `Size` компонент-сета «ELK / paginator» (нода 4244:20536 →
-   * 48825:4128): `L` — всё в одну строку, `M` — «используется когда между
+   * Свойство `Size` компонент-сета «ELK / paginator»: `L` — всё в одну
+   * строку, `M` — «используется когда между
    * переключением страниц и выбором числа записей на странице остаётся
    * менее 16 пикселей по горизонтали: выбор числа записей перемещается вниз
-   * на левую сторону» (нода 50689:23757).
+   * на левую сторону».
    */
   size?: "L" | "M"
   className?: string
@@ -122,10 +123,10 @@ function PageButton({
       data-active={active || undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
-        // pt-[9px]/pb-[7px] instead of a centred h-9: Figma's Paginator
-        // Numbers (node 8567:28146) sits the 20px line 1px below centre in
-        // its 36px box. Height still resolves to 36 (9 + 20 + 7), width to
-        // 44 (8 + 28 + 8).
+        // pt-[9px] и pb-[7px] вместо отцентрованного h-9: в макете у
+        // Paginator Numbers строка высотой 20px стоит на 1px ниже центра
+        // своей коробки 36px. Высота по-прежнему складывается в 36
+        // (9 + 20 + 7), ширина — в 44 (8 + 28 + 8).
         "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
@@ -178,10 +179,10 @@ function SizeButton({
       data-slot="pagination-size"
       data-active={active || undefined}
       className={cn(
-        // pt-[9px]/pb-[7px] instead of a centred h-9: Figma's Paginator
-        // Numbers (node 8567:28146) sits the 20px line 1px below centre in
-        // its 36px box. Height still resolves to 36 (9 + 20 + 7), width to
-        // 44 (8 + 28 + 8).
+        // pt-[9px] и pb-[7px] вместо отцентрованного h-9: в макете у
+        // Paginator Numbers строка высотой 20px стоит на 1px ниже центра
+        // своей коробки 36px. Высота по-прежнему складывается в 36
+        // (9 + 20 + 7), ширина — в 44 (8 + 28 + 8).
         "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",

@@ -6,23 +6,24 @@ import { cn } from "@/lib/utils"
 import { Hint } from "@/components/ui/tooltip"
 import { FieldTooltip } from "@/components/ui/input/hover-tooltip"
 
-// Sizing verified against ui/textarea/*.svg (exact vector rects, not just
-// pixel-sampled PNGs): radius is 16px (not the theme's rounded-2xl, which
-// computes to 18px here) and — unlike the earlier PNG-based read — desktop
-// and mobile genuinely differ in height (111px vs 97px in the reference,
-// both stroke-inclusive), mobile-first like Input's L size. Box height is
-// still driven by the `rows` attribute + padding, not a hardcoded height,
-// and stays constant across Empty/Filled/Lock states within a breakpoint.
-// Padding is a uniform 16px on both breakpoints (confirmed against the live
-// Figma component) — not reduced on mobile.
+// Размеры сверены с вектором макета (точные прямоугольники, а не только
+// пипетка по растру): радиус 16px (а не rounded-2xl из темы, который здесь
+// даёт 18px), и — в отличие от прежнего прочтения по растру — десктопная и
+// мобильная формы действительно различаются по высоте (111px против 97px в
+// эталоне, обе с учётом обводки), сначала мобильная, как у размера L у
+// Input. Высоту коробки по-прежнему задают атрибут `rows` и отступы, а не
+// жёстко прописанное число, и внутри одного брейкпоинта она не меняется
+// между состояниями Empty, Filled и Lock. Отступы — равномерные 16px на
+// обоих брейкпоинтах (сверено с живым компонентом макета), на мобильном
+// они не уменьшаются.
 //
-// Высота задана явно: мастер `ELK / text-area` (137:2610 Empty и 137:2617
-// Filled) в обоих состояниях — `h-[112px]` на Desktop и 98 на Mobile, с
-// `min-h-[56px]` и текстом `flex-[1_0_0]`, т.е. рамка НЕ меняет высоту при
-// заполнении. Раньше высота была чисто контентной (rows=3), что давало
-// 110px на десктопе — на 2px меньше мастера; мобильная при этом совпадала
-// случайно. `min-h-*`, а не `h-*`, чтобы поле по-прежнему могло вырасти
-// под большее число строк и переопределяться через className.
+// Высота задана явно: мастер `ELK / text-area` в состояниях Empty и Filled
+// — это `h-[112px]` на Desktop и 98 на Mobile, с `min-h-[56px]` и текстом
+// `flex-[1_0_0]`, т.е. рамка НЕ меняет высоту при заполнении. Раньше высота
+// была чисто контентной (rows=3), что давало 110px на десктопе — на 2px
+// меньше мастера; мобильная при этом совпадала случайно. `min-h-*`, а не
+// `h-*`, чтобы поле по-прежнему могло вырасти под большее число строк и
+// переопределяться через className.
 const textareaBoxVariants = cva(
   // `transition-all`, а не `transition-colors`: вместе с подписью едет и
   // вертикальный отступ коробки (16px → 8px), иначе текст прыгал бы под
@@ -68,7 +69,7 @@ interface TextareaOwnProps {
    * Lock Input — поле заблокировано для редактирования.
    *
    * Дизайн-чек 3/3 №18: «неверное поведение компонента при настройке
-   * заблокированного поля». В спеке рядом с этим состоянием (52140:162555)
+   * заблокированного поля». В спеке рядом с этим состоянием
    * написано буквально: «Состояние поля ввода заблокировано. Всегда
    * заполнено. При наведении отображается Tooltip с информацией о причине
    * невозможности редактирования поля». Из трёх требований выполнялось одно:
@@ -81,7 +82,7 @@ interface TextareaOwnProps {
   lockedHint?: React.ReactNode
   /**
    * Comment & Icon — иконка «i» в правом краю строки комментария
-   * (52140:162590). Дизайн-чек 3/3 №19: её не было ни в компоненте, ни в
+   * . Дизайн-чек 3/3 №19: её не было ни в компоненте, ни в
    * контролах. По спеке «иконка предназначена для возможности отобразить
    * дополнительную информацию», поэтому она не декоративная: текст подсказки
    * приходит в `commentHint` и раскрывается по клику через Hint.
@@ -116,11 +117,12 @@ function Textarea({
   const invalid = Boolean(error)
   const captionId = comment || error ? `${textareaId}-caption` : undefined
 
-  // Floating label, matching Input: empty + unfocused shows the label as the
-  // field's own placeholder (large, grey); once there's a value or focus, a
-  // small 12px caption takes its place above the text instead. The box's own
-  // vertical padding shrinks from 16px to 8px in that same state, matching
-  // the live Figma component's Empty-vs-Filled padding exactly.
+  // Плавающая подпись, как у Input: пока поле пусто и не в фокусе, подпись
+  // играет роль его placeholder (крупная, серая); как только появляется
+  // значение или фокус, её место над текстом занимает маленькая подпись
+  // 12px. В том же состоянии вертикальные отступы коробки уменьшаются с
+  // 16px до 8px — в точности как отступы Empty против Filled у живого
+  // компонента макета.
   //
   // Дизайн-чек №3 №2: «Нет анимации текстов как у input. Нужно добавить».
   // Раньше подпись просто переключалась `hidden` → `block`: рывок вместо
@@ -136,9 +138,9 @@ function Textarea({
     : placeholder
 
   return (
-    // Round-2 audit fix: gap was gap-1.5 (6px); the Figma root frame for
-    // the Comment/Error variants (7426:2047, 158:3743) is a flex-col with
-    // gap-[4px] between the box and the caption row.
+    // Исправление второго прохода: зазор стоял gap-1.5 (6px), а корневой
+    // кадр макета для вариантов Comment и Error — это flex-col с
+    // gap-[4px] между коробкой и строкой подписи.
     <div className="flex w-full flex-col gap-1">
       {/* Дизайн-чек 3/3 №18: подсказка о причине блокировки — та же обёртка,
           что и у Input (input/hover-tooltip.tsx). Она монтируется всегда и
@@ -168,15 +170,15 @@ function Textarea({
           aria-describedby={captionId}
           aria-readonly={locked || undefined}
           className={cn(
-            // Round-2 audit fix: disabled text color was --input-fg-disabled
-            // (#C8C8CB) — get_design_context on the live Disabled/Filled and
-            // Disabled+Locked symbols (137:2616, 11282:15677) both show the
-            // typed value text as #6D6D6D, not the lighter Input grey.
-            // Also added hover:placeholder darkening: the Empty+Hover symbol
-            // (137:2607, and its Error variant 158:3743) shows the
-            // placeholder-as-label text going from #999 to #6D6D6D on
-            // hover — same tone as --textarea-border-hover — which this
-            // component previously never did.
+            // Исправление второго прохода: цвет текста в выключенном
+            // состоянии был --input-fg-disabled (#C8C8CB), а живые символы
+            // Disabled/Filled и Disabled+Locked оба показывают введённое
+            // значение цветом #6D6D6D, а не более светлым серым Input.
+            // Заодно добавлено затемнение placeholder при наведении: символ
+            // Empty+Hover (и его вариант с ошибкой) показывает, что текст
+            // placeholder-подписи при наведении уходит с #999 на #6D6D6D —
+            // тот же тон, что и --textarea-border-hover, — чего этот
+            // компонент раньше не делал вовсе.
             "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring desktop:text-p1-medium",
             // Плавающая подпись перекрывает первую строку, поэтому в
             // «поднятом» состоянии текст уходит вниз ровно на её высоту
@@ -189,11 +191,11 @@ function Textarea({
           {...props}
         />
         {label && (
-          // Round-2 audit fix: dropped the group-has-disabled color
-          // override — get_design_context on the Disabled/Filled and
-          // Disabled+Locked symbols (137:2616, 11282:15677) both show
-          // the small 12px label staying --input-label-fg (#999) when
-          // disabled, same as every other state; it never recolors.
+          // Исправление второго прохода: убрано переопределение цвета по
+          // group-has-disabled — у символов Disabled/Filled и
+          // Disabled+Locked маленькая подпись 12px в выключенном состоянии
+          // остаётся --input-label-fg (#999), как и во всех остальных
+          // состояниях: она не перекрашивается никогда.
           //
           // Покоящееся положение совпадает с первой строкой текста (тот же
           // кегль и та же координата), поэтому переход читается как рост
@@ -215,24 +217,25 @@ function Textarea({
         {locked && (
           <Lock
             aria-hidden="true"
-            // Round-2 audit fix: disabled color was --input-fg-disabled
-            // (#C8C8CB) — the Disabled+Locked lock icon SVG
-            // (11282:15677) is fill="#999999", matching --input-label-fg
-            // exactly rather than the lighter Input grey.
+            // Исправление второго прохода: цвет в выключенном состоянии
+            // был --input-fg-disabled (#C8C8CB), а у SVG значка замка в
+            // Disabled+Locked стоит fill="#999999", что в точности
+            // совпадает с --input-label-fg, а не с более светлым серым
+            // Input.
             className="absolute top-4 right-4 order-1 size-4 shrink-0 text-[var(--input-icon-fg)] group-has-[[aria-disabled=true]]/textarea:text-[var(--textarea-icon-fg-disabled)]"
           />
         )}
       </div>
       </FieldTooltip>
       {(comment || error) && (
-        // Round-2 audit fix: missing px-4 and font-medium — the Figma
-        // Comment/Error rows (52140:162226, 52140:162391) both use
-        // px-[16px] (aligning with the box's own inner padding) and
-        // font-['Object_Sans:Medium'], neither of which this caption had.
+        // Исправление второго прохода: не хватало px-4 и font-medium — ряды
+        // Comment и Error в макете оба используют px-[16px] (встают по
+        // внутреннему отступу самой коробки) и font-['Object_Sans:Medium'],
+        // а у этой подписи не было ни того, ни другого.
         //
         // Дизайн-чек 3/3 №19: строка комментария в макете — flex-ряд с
         // gap-[4px], где текст занимает всё свободное место, а иконка «i»
-        // 16×16 прижата к правому краю (52140:162590).
+        // 16×16 прижата к правому краю.
         <div className="flex w-full items-start gap-1 px-4">
           <p
             id={captionId}

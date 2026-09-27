@@ -14,8 +14,7 @@ import { type Viewport } from "@/lib/viewport"
 
 import { Chips, type ChipsProps, type ChipsType } from "./chips"
 
-/* Панель «Свойства компонента» компонент-сета «ELK / chips, filter»
-   (таблица 54887:28874):
+/* Панель «Свойства компонента» компонент-сета «ELK / chips, filter»:
 
      Size        Desktop, Mobile
      State       Default, Hover, Active, Active (Hover), Disabled

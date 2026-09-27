@@ -5,18 +5,18 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Thumbnail, type ThumbnailType } from "@/components/ui/thumbnail"
 
-// EmptySearchResults — «Пустая страница» (`ELK / empty-page`, node
-// 70333:270): a centered info block for "nothing found" / "couldn't load"
-// states. Per spec it's not search-specific in practice ("Блок может
-// использоваться без иконки и/или без дополнительного текста") —
-// icon/description/button are all independently optional, so this doubles as
-// a generic empty-state block.
+// EmptySearchResults — «Пустая страница» (`ELK / empty-page`):
+// центрированный информационный блок для состояний «ничего не найдено» и
+// «не удалось загрузить». На практике по макету он не привязан к поиску
+// («Блок может использоваться без иконки и/или без дополнительного
+// текста»): значок, описание и кнопка независимо необязательны, поэтому
+// компонент заодно служит обычным блоком пустого состояния.
 //
-// Both forms come from the master's `Size` axis: Desktop is 40/64 padding
-// with H4 + P1 Medium, Mobile drops the horizontal padding entirely (24px
-// vertical only) and steps the type down to H4/P1 Medium Mobile. The 24px
-// gap between icon → text → button and the 4px gap inside the text block are
-// the same in both.
+// Обе формы идут от оси `Size` мастера: Desktop — это отступы 40/64 с H4 и
+// P1 Medium, а Mobile убирает горизонтальные отступы совсем (остаются
+// только 24px по вертикали) и опускает шрифты на ступень до H4 Mobile и
+// P1 Medium Mobile. Зазор 24px между значком, текстом и кнопкой и зазор 4px
+// внутри текстового блока в обеих формах одинаковы.
 interface EmptySearchResultsProps {
   icon?: React.ReactNode
   /**

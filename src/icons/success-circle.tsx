@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / success circle — 22. Product, набор ALL ICONS (канвас 70326:26).
+// icon / success circle — 22. Product, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function SuccessCircle({ size = 16, ...props }: IconProps) {
   if (size === 24) {

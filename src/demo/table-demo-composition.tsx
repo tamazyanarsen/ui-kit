@@ -34,10 +34,11 @@ function toggleIn(set: Set<string>, id: string) {
   return next
 }
 
-// Demo owns real controlled state (selection, sort, expansion, columns) — per
-// this kit's own convention (see the Select/Calendar demos), Table's checkbox,
-// sort header and collapse chevrons have no fallback state of their own, so an
-// uncontrolled demo instance would just look broken.
+// Демо держит настоящее управляемое состояние (выбор, сортировка,
+// раскрытие, колонки): по конвенции этого кита (см. демо Select и Calendar)
+// у флажка, шапки сортировки и шевронов сворачивания в Table нет
+// собственного запасного состояния, поэтому неуправляемый экземпляр демо
+// просто выглядел бы сломанным.
 function TableCompositionDemo() {
   const [selected, setSelected] = React.useState<Set<string>>(new Set())
   const [expanded, setExpanded] = React.useState<Set<string>>(
@@ -49,11 +50,11 @@ function TableCompositionDemo() {
   const [added, setAdded] = React.useState<string | null>(null)
   const [allPagesSelected, setAllPagesSelected] = React.useState(false)
 
-  // "События, которые сбрасывают выделение: изменения в настройках
+  // «События, которые сбрасывают выделение: изменения в настройках
   // фильтрации и сортировки, нажатие на чекбокс в шапке, взаимодействия с
-  // пагинатором, добавление новых записей в таблицу по внешним причинам."
-  // Selection state lives with the consumer, so the reset is wired here
-  // rather than inside Table — this is the filter half of that rule.
+  // пагинатором, добавление новых записей в таблицу по внешним причинам».
+  // Состоянием выделения владеет вызывающий код, поэтому сброс подключён
+  // здесь, а не внутри Table: это фильтровая половина того правила.
   React.useEffect(() => {
     setSelected(new Set())
     setAllPagesSelected(false)
@@ -65,7 +66,7 @@ function TableCompositionDemo() {
           row.title.toLowerCase().includes(query.trim().toLowerCase())
         )
       : TABLE_ROWS
-    // A row is visible only while every ancestor is expanded.
+    // Строка видна только пока раскрыты все её предки.
     return matching.filter((row) => {
       let parent = row.parent
       while (parent) {
@@ -103,7 +104,7 @@ function TableCompositionDemo() {
     )
   }
 
-  // Re-triggers the 2000ms "Added" highlight by remounting the row.
+  // Заново запускает подсветку «Added» на 2000 мс, перемонтируя строку.
   function highlightNewRow() {
     setAdded(null)
     window.setTimeout(() => setAdded("2"), 0)
@@ -219,8 +220,8 @@ function TableCompositionDemo() {
 
       {/* "Кнопка массового выбора: Позволяет пользователю выбрать все строки
           в таблице. При выборе всех значений кнопка пропадает. Отступ до края
-          страницы при исчезновении кнопки не меняется" (node 70279:9454) —
-          hence the fixed-height wrapper, so the layout doesn't jump when the
+          страницы при исчезновении кнопки не меняется» — отсюда и обёртка
+          фиксированной высоты: раскладка не прыгает, когда
           button goes away. */}
       {selected.size > 0 && (
         <div className="flex min-h-8 items-center justify-center">

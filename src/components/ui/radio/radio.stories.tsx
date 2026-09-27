@@ -34,9 +34,9 @@ type PlaygroundArgs = Omit<RadioProps, "error"> & {
   showComment?: boolean
 }
 
-/* Панель повторяет «Свойства компонента» `ELK / radio` (компонент-сет
-   600:8772, таблица 1242:99827): Size / State / Checked / Error / Show Text /
-   Show Comment. Строку Partial из таблицы сюда не переносим — у сета такой
+/* Панель повторяет «Свойства компонента» `ELK / radio`: Size / State /
+   Checked / Error / Show Text / Show Comment. Строку Partial из таблицы
+   сюда не переносим — у сета такой
    оси нет, она попала в документацию копипастой из Checkbox. */
 const meta = {
   title: "Компоненты/Radio",
@@ -79,9 +79,9 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-// A Radio only means anything inside a RadioGroup (it's the group that owns
-// the selected value), so the Playground wraps a single one in its own
-// group and keeps it clickable.
+// Отдельная Radio что-то значит только внутри RadioGroup (именно группа
+// владеет выбранным значением), поэтому Playground оборачивает одну кнопку
+// в собственную группу и оставляет её кликабельной.
 function Controlled({
   state,
   checked,
@@ -242,8 +242,9 @@ export const Matrix: Story = {
         { label: "Checked\nDisabled", props: { on: true, disabled: true } },
         { label: "Error", props: { error: "Text about error here" } },
       ]}
-      /* Each cell is its own single-item group so the checked/unchecked
-         rows can coexist — one shared group would allow only one. */
+      /* Каждая ячейка — своя группа из одного пункта, чтобы отмеченные и
+         неотмеченные строки могли сосуществовать: одна общая группа
+         допустила бы только одну отмеченную. */
       render={({ on, ...props }) => (
         <RadioGroup value={on ? "a" : null}>
           <Radio {...props} value="a" />

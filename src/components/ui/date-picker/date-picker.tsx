@@ -31,9 +31,10 @@ const DEFAULT_LABEL: Record<CalendarMode, string> = {
   year: "Год",
 }
 
-// Formats the read-only field's value for the three non-"single" modes
-// (single stays an editable masked <Input>, handled separately — see
-// mode === "single" below). Empty string means "nothing picked yet".
+// Форматирует значение поля только для чтения в трёх режимах, кроме
+// «single» (тот остаётся редактируемым <Input> с маской и разбирается
+// отдельно — см. mode === "single" ниже). Пустая строка означает «ещё
+// ничего не выбрано».
 function formatDisplayValue(
   mode: Exclude<CalendarMode, "single">,
   activeRange: [Date | null, Date | null],
@@ -57,29 +58,31 @@ function formatDisplayValue(
   }
 }
 
-// DatePicker — the missing link between Calendar (pure content, no
-// popover/trigger of its own by design — see calendar-demo.tsx) and Input
-// (which already has the `mask="date"` + calendar icon pieces). Per spec:
-// 8px gap field-to-dropdown. Clicking a day/month/year only *selects* it
-// (updates the field, highlights the cell) — the dropdown stays open until
-// "Применить" confirms and closes it, uniformly across all four modes.
-// Reopening shows the previously-picked value as Active, which falls out
-// for free here since the Popover unmounts Calendar on close, so it
-// remounts fresh (re-reading the current value as its `defaultMonth`)
-// every time it reopens, rather than needing to imperatively re-focus it.
+// DatePicker — недостающее звено между Calendar (чистое содержимое, без
+// собственного поповера и триггера — так задумано, см. calendar-demo.tsx) и
+// Input (у которого уже есть и `mask="date"`, и значок календаря). По
+// макету зазор от поля до выпадающего списка — 8px. Клик по дню, месяцу
+// или году только *выбирает* его (обновляет поле, подсвечивает ячейку), а
+// список остаётся открытым, пока «Применить» не подтвердит выбор и не
+// закроет его, — одинаково во всех четырёх режимах. При повторном открытии
+// ранее выбранное значение показано как Active, и это получается само
+// собой: поповер при закрытии размонтирует Calendar, поэтому тот каждый раз
+// монтируется заново (перечитывая текущее значение как свой `defaultMonth`),
+// и возвращать ему фокус вручную не нужно.
 //
-// The whole field (not just the icon) is the Popover.Trigger — Base UI's
-// Trigger already opens on both click *and* focus on its own (don't layer
-// a manual onFocus/onClick handler on top: it fires a second, separately-
-// tracked open that Base UI's own outside-press detection then immediately
-// closes again, since it doesn't recognize that open as having come from
-// its own trigger).
+// Popover.Trigger — это всё поле целиком, а не только значок. Триггер из
+// Base UI сам открывается и по клику, и по фокусу (не навешивайте поверх
+// свои onFocus и onClick: они вызовут второе, отдельно отслеживаемое
+// открытие, которое собственное определение нажатия снаружи у Base UI тут
+// же закроет, потому что не признает это открытие пришедшим от своего
+// триггера).
 //
-// Manual typing (mask="date") is wired for `mode="single"` only, matching
-// the spec's own "ручной ввод доступен" callout, which only ever shows it
-// for the single-day field — range/month/year stay selection-only (their
-// field is read-only), since parsing a typed "DD.MM.YYYY – DD.MM.YYYY"
-// range reliably is a materially bigger feature than this pass covers.
+// Ручной ввод (mask="date") подключён только для `mode="single"` — ровно
+// как в самом макете, где пометка «ручной ввод доступен» стоит лишь у поля
+// одиночной даты. Диапазон, месяц и год остаются только для выбора (их поле
+// только для чтения): надёжный разбор введённого руками диапазона
+// «DD.MM.YYYY – DD.MM.YYYY» — заметно большая задача, чем покрывает этот
+// проход.
 interface DatePickerProps {
   mode?: CalendarMode
   size?: InputSize
@@ -128,8 +131,8 @@ function DatePicker({
   const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef<HTMLDivElement>(null)
 
-  // Uncontrolled fallback — only the state matching the active `mode` is
-  // ever read or written.
+  // Запасное неуправляемое состояние: читается и пишется только то, что
+  // соответствует активному режиму `mode`.
   const [internalValue, setInternalValue] = React.useState<Date | null>(null)
   const [internalRange, setInternalRange] = React.useState<
     [Date | null, Date | null]
@@ -147,8 +150,8 @@ function DatePicker({
 
   const defaultLabel = DEFAULT_LABEL[mode]
 
-  // Purely decorative — the whole field (see the Trigger wrapping it below)
-  // is the click target, not just this glyph.
+  // Чисто декоративный: целью клика служит всё поле (см. оборачивающий его
+  // Trigger ниже), а не только этот глиф.
   const icon = <CalendarDays aria-hidden="true" className={ICON_SIZE[size]} />
 
   function handleSelectDay(date: Date) {
@@ -171,8 +174,8 @@ function DatePicker({
     onYearChange?.(next)
   }
 
-  // Reset clears the draft selection but — per the "Применить" pairing in
-  // the spec — leaves the dropdown open for a fresh pick.
+  // Сброс очищает черновой выбор, но — по паре с «Применить» из макета —
+  // оставляет список открытым для нового выбора.
   function handleReset() {
     if (mode === "range") handleRangeChange([null, null])
     else if (mode === "month") setInternalMonth(null)
@@ -202,13 +205,14 @@ function DatePicker({
         : undefined
 
   return (
-    // Popover.Root has no DOM node of its own, so its children — including
-    // the focus-guard spans Base UI inserts/removes as siblings of Trigger
-    // once open — would otherwise land directly in whatever the consumer
-    // wraps DatePicker with. A layout that spaces its children by margin
-    // (e.g. Tailwind's space-y-*) would then pick up those guards as extra
-    // items and visibly grow when the popover opens. This div keeps them
-    // contained so DatePicker always presents as exactly one child.
+    // У Popover.Root нет собственного узла DOM, поэтому его дети — включая
+    // защитные span для фокуса, которые Base UI вставляет и убирает рядом с
+    // Trigger при открытии, — иначе попадали бы прямо в то, во что
+    // вызывающий код обернул DatePicker. Раскладка, разводящая детей
+    // внешними отступами (например, space-y-* в Tailwind), приняла бы эти
+    // защитные элементы за дополнительные пункты и заметно выросла бы при
+    // открытии поповера. Этот div держит их внутри, чтобы DatePicker всегда
+    // выглядел ровно одним ребёнком.
     // ⚠️ `w-full min-w-0`, а НЕ `w-fit`. Дизайн-чек от 08.09, замечание 18
     // («снять минимальную ширину с инпутов/селектов») и 26 («строка полей
     // должна упираться в правый край блока»): `w-fit` брал у поля ширину
@@ -222,9 +226,9 @@ function DatePicker({
     // и так `w-full`, так что теперь оба ведут себя одинаково.
     <div className="w-full min-w-0">
       <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
-        {/* The whole field is the trigger (not just the icon) — Base UI then
-            recognizes clicks/focus on it as "inside", so they don't also
-            fire its own outside-press dismissal against themselves. */}
+        {/* Триггер — всё поле целиком, а не только значок: тогда Base UI
+            считает клики и фокус на нём «внутренними», и они не вызывают
+            его же закрытие по нажатию снаружи против самих себя. */}
         <PopoverPrimitive.Trigger
           disabled={disabled}
           nativeButton={false}

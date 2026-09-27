@@ -11,24 +11,27 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 // которое дизайн-чек не решает. Новую вёрстку собирайте из `Input` и
 // `Dropdown` (или берите `Combobox`, если нужен множественный выбор).
 //
-// Autocomplete — a single-select type-ahead: the visible field IS the
-// trigger (an `Input`-styled `Combobox.Input`, not a button that opens a
-// popup), and results appear inline below as the user types. Distinct from
-// ./combobox, which is always multi-select with a button trigger + a
-// checkbox-driven list opened by clicking it.
+// Autocomplete — поле с подсказками и одиночным выбором: видимое поле И
+// ЕСТЬ триггер (это `Combobox.Input`, оформленный как `Input`, а не кнопка,
+// открывающая всплывающее окно), а результаты появляются прямо под ним по
+// мере набора. Отличается от ./combobox, который всегда работает с
+// множественным выбором, имеет триггер-кнопку и список с флажками,
+// открываемый по клику.
 //
-// Real usage is server-driven (e.g. searching an org by ИНН/name via API),
-// so internal filtering is disabled by default (`filter={null}`) — the
-// caller passes back already-filtered `items` for whatever the current
-// `inputValue` is, via `onInputValueChange`.
+// В реальном применении поиск идёт на сервере (например, организация по ИНН
+// или названию через API), поэтому внутренняя фильтрация по умолчанию
+// выключена (`filter={null}`): вызывающий код сам возвращает уже
+// отфильтрованные `items` под текущее значение `inputValue` через
+// `onInputValueChange`.
 //
-// Base UI has no `Combobox.Trigger` in this tree (there's no button — the
-// field itself opens the popup), so its default positioning anchor is just
-// the bare `<input>` — narrower than AutocompleteField's outer box (which
-// also has label/clear-button padding), making the popup render undersized
-// and offset from the field. AnchorContext threads a ref to that outer box
-// from field.tsx to content.tsx so the popup anchors to the whole field
-// instead, matching every other trigger-based popup in this kit.
+// `Combobox.Trigger` из Base UI в этом дереве отсутствует (кнопки нет —
+// всплывающее окно открывает само поле), поэтому его якорем для
+// позиционирования по умолчанию оказывается голый `<input>`, а он уже
+// внешней коробки AutocompleteField (у той есть ещё отступы под подпись и
+// кнопку очистки). Из-за этого окно рисовалось бы уже, чем нужно, и со
+// смещением относительно поля. AnchorContext протягивает ref на эту внешнюю
+// коробку из field.tsx в content.tsx, и окно заякоривается на всё поле, как
+// и у всех прочих всплывающих окон с триггером в этом ките.
 const AnchorContext = React.createContext<React.RefObject<HTMLDivElement> | null>(null)
 
 function useAutocompleteAnchor() {
@@ -46,10 +49,11 @@ function Autocomplete<Value>(
 ) {
   const anchorRef = React.useRef<HTMLDivElement>(null)
   return (
-    // useRef's inferred type here differs across @types/react versions
-    // (React 19's RefObject<T> includes `| null` in T itself, React 18's
-    // doesn't) — the cast keeps AnchorContext's declared type stable across
-    // both rather than forking the type by React version.
+    // Выводимый тип useRef здесь различается между версиями @types/react
+    // (в React 19 RefObject<T> включает `| null` в сам T, в React 18 —
+    // нет), поэтому приведение типа держит объявленный тип AnchorContext
+    // одинаковым для обеих версий вместо того, чтобы разводить тип по
+    // версии React.
     <AnchorContext.Provider value={anchorRef as React.RefObject<HTMLDivElement>}>
       <ComboboxPrimitive.Root multiple={false} filter={null} {...props} />
     </AnchorContext.Provider>

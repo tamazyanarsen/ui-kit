@@ -1,8 +1,9 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-// Named for what it actually draws: the set has no left-right transfer
-// arrow, and aliasing the up/down chevron to `ArrowRightLeft` made the code
-// claim a glyph that isn't there. Coins reads correctly for a money transfer.
+// Назван по тому, что действительно рисует: в наборе нет стрелки перевода
+// влево-вправо, и присвоение шеврону вверх-вниз псевдонима `ArrowRightLeft`
+// заставляло код заявлять глиф, которого нет. Coins для денежного перевода
+// читается правильно.
 import { Coins } from "@/icons"
 
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select"
@@ -11,11 +12,12 @@ import { Button } from "@/components/ui/button"
 import { Informer } from "@/components/ui/informer"
 import { ToastProvider, Toaster, useToast } from "@/components/ui/toast-message"
 
-// Sandbox — a realistic mini business widget assembled from several
-// ui-kit components together, not a single component's own states. This one
-// is a "перевод между своими счетами" (transfer between own accounts) card:
-// two account Selects, a masked amount Input, a fee-free Informer hint and
-// a submit Button that reports success through the kit's own toast queue.
+// Песочница — правдоподобный небольшой бизнес-виджет, собранный из
+// нескольких компонентов кита сразу, а не состояния одного компонента. Этот
+// — карточка «перевод между своими счетами»: два Select со счетами, Input с
+// маской суммы, подсказка Informer об отсутствии комиссии и кнопка
+// отправки, которая сообщает об успехе через собственную очередь тостов
+// кита.
 
 const ACCOUNTS = [
   { value: "acc-1", label: "Дебетовая · 4482", balance: "128 400 ₽" },

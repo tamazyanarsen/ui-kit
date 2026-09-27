@@ -2,15 +2,15 @@
    Ссылаются на палитру (`palette.css`); компоненты ходят только сюда. */
 
 :root {
-  /* Accordion (card) tokens. Colors sampled from the Default/Blocked ×
-     Close/Open/Hover states grid PNG (1998px render) — hover only ever
-     darkens the header, never the panel, so bg/bg-hover pairs are scoped
-     to the trigger element only. Round-2 audit (get_design_context literal
-     output on the Open=True Default/Blocked variants) found the panel DOES
-     carry a border-t divider (grey-134/#DEDEDE) plus its own 24px top
-     padding on top of the header's 24px bottom padding — the earlier
-     "no divider" conclusion from a vector re-check didn't hold up against
-     this literal data, so --accordion-card-divider is now real. */
+  /* Токены аккордеона-карточки. Цвета сняты с сетки состояний
+     Default/Blocked × Close/Open/Hover: наведение затемняет только шапку и
+     никогда саму панель, поэтому пары bg/bg-hover относятся исключительно к
+     триггеру. Повторная сверка по вариантам Open=True Default/Blocked
+     показала, что у панели ЕСТЬ разделитель border-t (grey-134/#DEDEDE) и
+     собственный верхний отступ 24px поверх нижних 24px шапки — прежний
+     вывод «разделителя нет» держался на перерисовке вектора и против
+     литеральных данных не устоял, так что --accordion-card-divider
+     настоящий. */
   --accordion-card-bg: var(--grey-109);
   --accordion-card-bg-hover: var(--grey-114);
   --accordion-card-blocked-bg: var(--red-110);
@@ -20,14 +20,13 @@
   --accordion-card-icon-fg: var(--grey-1514);
   --accordion-card-divider: var(--divider);
 
-  /* Accordion (content list) tokens. Base palette (border/title/subtitle)
-     follows the same neutral scale as the rest of the kit. Round-2 audit:
-     get_design_context on the "Status (ELK)" master component (node
-     50451:9206, the literal source for the descriptionType colors) gives
-     exact tokens for all 5 states — subtitle-fg is base/grey-284 (#999),
-     distinct from the card Accordion's subtitle grey-517 (#6D6D6D).
-     Error/#D74B54 already matched the prior best-effort guess; the other
-     three did not. */
+  /* Токены аккордеона-списка. Базовая часть (рамка/заголовок/подзаголовок)
+     идёт по той же нейтральной шкале, что и остальной кит. Повторная
+     сверка по мастеру «Status (ELK)» — он и есть источник цветов
+     descriptionType — дала точные токены для всех пяти состояний:
+     subtitle-fg это base/grey-284 (#999), а не grey-517 (#6D6D6D) как у
+     аккордеона-карточки. Error/#D74B54 совпал с прежней догадкой,
+     остальные три — нет. */
   --accordion-list-border: var(--divider);
   --accordion-list-divider: var(--divider);
   --accordion-list-title-fg: var(--grey-1514);
@@ -39,18 +38,16 @@
   --accordion-list-description-error-fg: var(--red-418);
   --accordion-list-description-information-fg: var(--grey-284);
 
-  /* Card Box tokens (`ELK / card-box`, node 70333:11271) — страничный блок,
-     в который укладываются секции. Заливка White 101 (та же, что у
-     табличного блока, — --table-bg), заголовок Grey 1514, разделители под
-     шапкой и над нижней кромкой Grey 134: всё три взяты из литерального
-     вывода get_design_context по вариантам Desktop/Small. */
+  /* Токены Card Box (`ELK / card-box`) — страничный блок, в который
+     укладываются секции. Заливка White 101 (та же, что у табличного блока,
+     — --table-bg), заголовок Grey 1514, разделители под шапкой и над нижней
+     кромкой Grey 134: все три взяты с вариантов Desktop/Small мастера. */
   --card-box-bg: var(--white-101);
   --card-box-title-fg: var(--grey-1514);
   --card-box-divider: var(--divider);
 
-  /* Block Widget tokens — `ELK / block-widget (solid)` (сет 70343:13144) и
-     `ELK / block-widget (border)` (сет 70343:13300), Version 1.0.0,
-     Release 67.32.
+  /* Токены Block Widget — `ELK / block-widget (solid)` и
+     `ELK / block-widget (border)`, Version 1.0.0, Release 67.32.
 
      Два сета, а не одно свойство с двумя значениями: у сплошного есть
      состояние `State=Hover`, у обводки его нет вовсе — то есть сплошной
@@ -66,14 +63,13 @@
   --block-widget-title-fg: var(--grey-1514);
   --block-widget-muted-fg: var(--grey-284);
 
-  /* Card tokens (bank-card list row). Values pixel-sampled directly from
-     ui/card/card@2x.png + card@2x-1.png (Figma export) — row bg/hover
-     confirmed as exact Grey 106 / Grey 114, title as Grey 1514, and the
-     "• 1135" suffix / subtitle / value all share the same Grey 284, matching
-     the label-color convention used by Input/Select elsewhere in the kit.
-     The mini card's own dark tile (--card-thumb-bg) matches the real "IB /
-     card account" mock in Figma; its network mark reuses Thumbnail's own
-     PaymentLogo rather than a bespoke logo/color pair. */
+  /* Токены Card (строка списка банковских карт). Значения сняты пипеткой с
+     макета: фон строки и наведение — ровно Grey 106 / Grey 114, заголовок
+     Grey 1514, а суффикс «• 1135», подзаголовок и значение делят общий
+     Grey 284 — та же конвенция цвета подписи, что у Input и Select в
+     остальном ките. Тёмная плитка мини-карты (--card-thumb-bg) совпадает с
+     живым макетом «IB / card account»; знак платёжной системы переиспользует
+     PaymentLogo из Thumbnail, а не заводит свою пару логотип/цвет. */
   --card-bg: var(--grey-106);
   --card-bg-hover: var(--grey-114);
   --card-title-fg: var(--grey-1514);
@@ -91,14 +87,14 @@
   --banner-fg: var(--grey-1514);
   --banner-fg-inverse: var(--white-101);
 
-  /* Progress Bar tokens. Values pixel-sampled directly from
-     ui/progress-bar/progress bar@2x.png + @2x-1.png (Figma export). The
-     step-wizard fill (#2FCEEF) is an exact match for --btn-primary-bg-hover
-     and the hatch stripe (#C8C8CB) for --select-border — reused rather than
-     duplicated. --progress-green also matches Card's tag bg exactly. Red
-     (#D74B54) is an exact match for --input-border-error. Amber is new —
-     brighter than accordion-list's own (unconfirmed, per its own comment)
-     attention approximation, so kept separate rather than reusing it. */
+  /* Токены Progress Bar. Значения сняты пипеткой с макета. Заливка
+     шагового мастера (#2FCEEF) в точности совпала с
+     --btn-primary-bg-hover, а штриховка (#C8C8CB) — с --select-border,
+     поэтому переиспользованы, а не продублированы. --progress-green точно
+     совпадает с фоном тега у Card. Красный (#D74B54) — это ровно
+     --input-border-error. Янтарный новый: он ярче, чем приблизительный
+     attention у аккордеона-списка (тот и сам помечен как неподтверждённый),
+     поэтому заведён отдельно. */
   --progress-track-bg: var(--grey-124);
   --progress-step-fill: var(--blue-187);
   --progress-step-hatch: var(--grey-166);
@@ -108,13 +104,12 @@
   --progress-amber: var(--yellow-214);
   --progress-red: var(--red-418);
 
-  /* Steps tokens. Values pixel-sampled directly from ui/steps/steps@2x.png
-     + @2x-1.png (Figma export). Active ring (#80E3FF) is an exact match for
-     --btn-primary-bg, the fade-arrow circle (#012F42) for
-     --btn-secondary-black-bg, error text (#D85159) is effectively
-     --input-border-error (#D74B54, within anti-aliasing tolerance), and the
-     hover tooltip (#6D6D6D) matches the kit's common muted-description
-     grey — all reused rather than duplicated. */
+  /* Токены Steps. Значения сняты пипеткой с макета. Активное кольцо
+     (#80E3FF) в точности совпало с --btn-primary-bg, круг стрелки затухания
+     (#012F42) — с --btn-secondary-black-bg, текст ошибки (#D85159)
+     фактически равен --input-border-error (#D74B54, в пределах сглаживания),
+     а подсказка по наведению (#6D6D6D) — общему приглушённому серому кита.
+     Всё переиспользовано, а не продублировано. */
   --steps-bg: var(--white-101);
   --steps-title-fg: var(--grey-1514);
   --steps-status-fg: var(--grey-284);
@@ -122,30 +117,29 @@
   --steps-active-ring: var(--blue-223);
   --steps-disabled-fg: var(--grey-284);
   --steps-fade-arrow-bg: var(--dark-blue-1412);
-  /* Round-2 audit: the fade-out mask over the scrollable row is its own
-     grey (#F8F8F8, "grey-106" in Figma), literally distinct from the white
-     card background (--steps-bg) it was previously reusing. */
+  /* Повторная сверка: маска затухания над прокручиваемым рядом — свой
+     собственный серый (#F8F8F8, «grey-106» в макете), литерально отличный
+     от белого фона карточки (--steps-bg), который переиспользовали раньше. */
   --steps-fade-bg: var(--grey-106);
   --steps-tooltip-bg: var(--grey-517);
   --steps-tooltip-fg: var(--white-101);
 
-  /* Tooltip & Hint tokens. Values pixel-sampled directly from
-     ui/tooltip/tooltip & hint@2x.png + @2x-1.png (Figma export). Bubble bg
-     (#6D6D6D) is the same muted grey already reused above for the Steps
-     hover hint — kept as its own token since Tooltip/Hint is its own
-     component. The mobile "Bottom Sheet" variant isn't a mode of this
-     component — it's the existing `Modal`, which already renders as a
-     bottom sheet on mobile / centered dialog on desktop. */
+  /* Токены Tooltip и Hint. Значения сняты пипеткой с макета. Фон пузыря
+     (#6D6D6D) — тот же приглушённый серый, что уже переиспользован выше для
+     подсказки Steps, но оставлен отдельным токеном: Tooltip/Hint —
+     самостоятельный компонент. Мобильный вариант «Bottom Sheet» не режим
+     этого компонента, а существующий `Modal`, который на мобильном и так
+     рисуется нижней шторкой, а на десктопе — центральным окном. */
   --tooltip-bg: var(--grey-517);
   --tooltip-fg: var(--white-101);
 
-  /* Badge tokens ("Счётчик"). Values pixel-sampled directly from
-     ui/badge/badge@2x.png + @2x-1.png (Figma export). Red (#D74B54) is an
-     exact match for --input-border-error; dark-grey/black match the kit's
-     usual muted/near-black neutrals — all reused rather than duplicated.
-     Disabled collapses every color to the same muted grey except
-     light-grey, which just goes one shade lighter (per the spec's own
-     Disabled column — light-grey was already the palest option). */
+  /* Токены Badge («Счётчик»). Значения сняты пипеткой с макета. Красный
+     (#D74B54) в точности равен --input-border-error; тёмно-серый и чёрный
+     совпадают с обычными приглушёнными и почти-чёрными нейтралями кита —
+     всё переиспользовано, а не продублировано. Disabled сводит все цвета к
+     одному приглушённому серому, кроме светло-серого: тот просто уходит на
+     ступень светлее (так в самой колонке Disabled — светло-серый уже был
+     самым бледным вариантом). */
   --badge-red-bg: var(--red-418);
   --badge-red-fg: var(--white-101);
   --badge-contra-red-border: var(--white-101);
@@ -160,16 +154,16 @@
   --badge-disabled-light-grey-bg: var(--grey-124);
   --badge-disabled-light-grey-fg: var(--grey-166);
 
-  /* Event tokens ("История изменений" timeline row). Values pixel-sampled
-     directly from ui/message/event/event@2x.png. Grey (#999999), amber
-     (#EEA20F) and green (#39C182) are exact matches for tokens already
-     established by Progress Bar/Card — reused rather than duplicated. No
-     error example is shown in the spec but is included for parity with
-     the same Default/Success/Attention/Error/Information set used
-     elsewhere (Card status, Progress Bar status). File-icon square bg is
-     grey-106 (#F8F8F8, live Figma get_design_context on node 40513:71577 /
-     40554:24336's "ELK / thumbnail") — was mistakenly set to grey-109
-     (#F4F4F4, the ELK/button pill's own bg) in round 1. */
+  /* Токены Event (строка ленты «История изменений»). Значения сняты
+     пипеткой с макета. Серый (#999999), янтарный (#EEA20F) и зелёный
+     (#39C182) точно совпали с токенами, заведёнными раньше для Progress Bar
+     и Card, — переиспользованы, а не продублированы. Примера ошибки в
+     макете нет, но состояние заведено ради единообразия с набором
+     Default/Success/Attention/Error/Information, который используется
+     повсюду (статус Card, статус Progress Bar). Фон квадрата с иконкой
+     файла — grey-106 (#F8F8F8, с живого мастера «ELK / thumbnail»); в
+     первом проходе ошибочно стоял grey-109 (#F4F4F4, фон таблетки
+     ELK/button). */
   --event-title-fg: var(--grey-1514);
   --event-meta-fg: var(--grey-284);
   --event-author-fg: var(--grey-517);
@@ -181,12 +175,12 @@
   --event-status-error-bg: var(--red-418);
   --event-file-bg: var(--grey-106);
 
-  /* Informer tokens ("Уведомление внутри контентного блока"). Values
-     pixel-sampled directly from ui/message/informer/informer@2x.png +
-     @2x-1.png. Red/amber/green/grey icon colors are exact matches for
-     tokens already established elsewhere (--input-border-error,
-     --progress-amber, --progress-green) — reused rather than duplicated.
-     Grey solid bg (#F8F8F8) matches Card's own bg exactly. */
+  /* Токены Informer («Уведомление внутри контентного блока»). Значения
+     сняты пипеткой с макета. Красный, янтарный, зелёный и серый цвета
+     значков точно совпадают с токенами, заведёнными раньше
+     (--input-border-error, --progress-amber, --progress-green), —
+     переиспользованы, а не продублированы. Сплошной серый фон (#F8F8F8)
+     в точности совпадает с фоном Card. */
   --informer-bg-white: var(--white-101);
   --informer-bg-grey: var(--grey-106);
   --informer-title-fg: var(--grey-1514);
@@ -198,11 +192,10 @@
   --informer-icon-grey: var(--grey-284);
 
   /* Issue Item / List of Errors — строка «что не так» и её список
-     (`Sample Error (ELK)` / `ELK / list-errors`, сет 70427:3561). Цвет
-     значка по темам: ошибка rgb(215,75,84) в «Голубой» и rgb(222,74,42) в
-     «Зелёной» — ровно та же красная ступень, что у информера, поэтому
-     берётся её токен, а не заводится вторая. Предупреждение
-     rgb(238,162,15) в обеих темах.
+     (`Sample Error (ELK)` / `ELK / list-errors`). Цвет значка по темам:
+     ошибка rgb(215,75,84) в «Голубой» и rgb(222,74,42) в «Зелёной» — ровно
+     та же красная ступень, что у информера, поэтому берётся её токен, а не
+     заводится вторая. Предупреждение rgb(238,162,15) в обеих темах.
 
      Все три цвета сняты с ассетов мастера (дизайн-чек от 13.09, замечание
      9): #D74B54 / #EEA20F / #999999. `Status=Information` — полноценное
@@ -213,59 +206,56 @@
   --issue-icon-attention: var(--informer-icon-yellow);
   --issue-icon-info: var(--informer-icon-grey);
 
-  /* Notification tokens ("Уведомления и новости" panel). Values
-     pixel-sampled directly from ui/message/notification/notification@2x.png
-     + @2x-1.png — marked "Actual old" in the spec (unlike every other
-     message/* component, which are "Actual new"), so treat this one as
-     lower-confidence/likely-to-change. Unread dot (#D74B54) matches
-     --input-border-error exactly.
+  /* Токены Notification (панель «Уведомления и новости»). Значения сняты
+     пипеткой с макета, помеченного «Actual old» — в отличие от остальных
+     компонентов message/*, которые «Actual new», — поэтому доверия к нему
+     меньше и он с большей вероятностью изменится. Точка непрочитанного
+     (#D74B54) в точности совпадает с --input-border-error.
 
      Заливка на наведении — grey-114, и она же на нажатии. Раньше здесь
      стояла «обычная для кита эскалация Grey 106 → Grey 114», выведенная по
      аналогии с Card, а не измеренная. Замер: у обоих вариантов Hover
-     (`Type=Not Viewed` 32173:26640 и `Type=Viewed` 32173:26655) фон
-     #EFEFEF; отдельного варианта Pressed у набора нет вовсе — в
-     документации канваса кадр «Состояние при нажатии кнопки мыши
-     (Pressed)» (32216:16442) держит тот же самый Hover. Поэтому один токен
-     на оба состояния, а не два с придуманной разницей. */
+     (`Type=Not Viewed` и `Type=Viewed`) фон #EFEFEF; отдельного варианта
+     Pressed у набора нет вовсе — в документации канваса кадр «Состояние при
+     нажатии кнопки мыши (Pressed)» держит тот же самый Hover. Поэтому один
+     токен на оба состояния, а не два с придуманной разницей. */
   --notification-bg: var(--white-101);
   --notification-bg-hover: var(--grey-114);
   --notification-title-fg: var(--grey-1514);
   --notification-meta-fg: var(--grey-517);
   --notification-dot: var(--red-418);
   --notification-divider: var(--divider);
-  /* Timestamp ("11.08.2025, 16:30") is a lighter grey than status/
-     description — base/grey-284 (#999999), confirmed via live
-     get_design_context on node 32216:16404/16492 — distinct from
-     --notification-meta-fg (#6D6D6D) used elsewhere in the item. */
+  /* Отметка времени («11.08.2025, 16:30») светлее статуса и описания —
+     base/grey-284 (#999999), подтверждено по живому мастеру. Это отдельный
+     цвет от --notification-meta-fg (#6D6D6D), который используется в
+     остальной части строки. */
   --notification-timestamp-fg: var(--grey-284);
 
-  /* Toast Message tokens ("Всплывающее уведомление"). Values pixel-sampled
-     directly from ui/message/toast message/toast message@2x.png. Icon
-     colors are exact matches for tokens already established elsewhere
-     (--progress-green/--progress-amber/--input-border-error/muted grey) —
-     reused rather than duplicated; only the four pastel backgrounds are
-     new (this is the only message/* component with colored surfaces). */
+  /* Токены Toast Message («Всплывающее уведомление»). Значения сняты
+     пипеткой с макета. Цвета значков точно совпадают с токенами,
+     заведёнными раньше (--progress-green, --progress-amber,
+     --input-border-error, приглушённый серый), — переиспользованы, а не
+     продублированы; новые здесь только четыре пастельные заливки, потому
+     что это единственный компонент message/* с цветными поверхностями. */
   --toast-title-fg: var(--grey-1514);
   --toast-description-fg: var(--grey-517);
   /* Крестик закрытия — grey-517 (#6D6D6D), как в мастере (`icon / close
-     cross` внутри 774:134177), а не цвет заголовка: раньше он был чёрным
-     и вместе с растянутым 16px-рисунком читался жирнее макета
-     (дизайн-чек №3 №9). */
+     cross`), а не цвет заголовка: раньше он был чёрным и вместе с
+     растянутым 16px-рисунком читался жирнее макета (дизайн-чек №3 №9). */
   --toast-close-fg: var(--grey-517);
   --toast-checked-bg: var(--mint-119);
   --toast-checked-icon: var(--mint-230);
   --toast-checked-border: var(--mint-135);
   /* ⚠️ Тут расходятся сам макет и его же переменная, и это НЕ ошибка кита.
      Переменная `Second/Yellow colors/Yellow 114` в файле — #FDF0C1, а
-     заливка карточки «Внимание» в наборе `ELK / toast message`
-     (774:134168) нарисована литералом #FCF0C1: единица разницы в красном
-     канале. Проверено, что это не артефакт рендера — рамки в том же
-     снимке выходят точно (#FADC89, #89F2BD, #FFBEB5, #DEDEDE).
-     Оставлено на переменной: слой палитры кита строится по именованным
-     переменным Figma, а не по разовым литералам в инстансах. Разница
-     невидима глазом; если дизайнер подтвердит литерал — менять надо
-     значение --yellow-114 в палитре, а не отвязывать этот токен. */
+     заливка карточки «Внимание» в наборе `ELK / toast message` нарисована
+     литералом #FCF0C1: единица разницы в красном канале. Проверено, что это
+     не артефакт рендера — рамки в том же снимке выходят точно (#FADC89,
+     #89F2BD, #FFBEB5, #DEDEDE). Оставлено на переменной: слой палитры кита
+     строится по именованным переменным Figma, а не по разовым литералам в
+     инстансах. Разница невидима глазом; если дизайнер подтвердит литерал —
+     менять надо значение --yellow-114 в палитре, а не отвязывать этот
+     токен. */
   --toast-attention-bg: var(--yellow-114);
   --toast-attention-icon: var(--yellow-214);
   --toast-attention-border: var(--yellow-134);
@@ -276,23 +266,23 @@
   --toast-information-icon: var(--grey-284);
   --toast-information-border: var(--grey-134);
 
-  /* Top Fixed Message tokens ("Закреплённое сообщение"). Exact hex values
-     read from ui/message/top foxed message/top fixed message.svg fills
-     (pixel-sampling the PNG was noisy from anti-aliasing on the thin icon
-     ring). --top-fixed-message-*-icon and title/close colors match tokens
-     used elsewhere (--input-border-error, #252628 body text). */
+  /* Токены Top Fixed Message («Закреплённое сообщение»). Точные значения
+     hex прочитаны из заливок SVG-мастера: пипетка по растру шумела из-за
+     сглаживания на тонком кольце значка. Цвета значков, заголовка и
+     крестика совпадают с токенами, которые уже используются в других местах
+     (--input-border-error, текст #252628). */
   --top-fixed-message-title-fg: var(--grey-1514);
   --top-fixed-message-close-fg: var(--grey-1514);
-  /* Was #E3EEFF, which is the *pre-rebrand* blue — the As-is/To-be table on
-     the "Переходный этап ребрендинга" page (node 70251:48106) renders this
-     surface as #E3EEFF on the left and #EDF6FC on the right, so the current
-     theme was still showing the old value. #EDF6FC is also exactly
-     --tag-blue-secondary-bg, i.e. the kit's one pale blue surface. */
+  /* Стояло #E3EEFF — это *доребрендинговый* синий. Таблица «Было/Стало» на
+     странице «Переходный этап ребрендинга» рисует эту поверхность как
+     #E3EEFF слева и #EDF6FC справа, то есть тема всё ещё показывала старое
+     значение. #EDF6FC вдобавок в точности равен --tag-blue-secondary-bg —
+     единственной бледно-синей поверхности кита. */
   --top-fixed-message-blue-bg: var(--dark-blue-109);
   /* Был --dark-blue-322 (#5B90E0) — а это «выведенный» оттенок палитры, не
-     снятый с макета. Значок обоих символов мастера 70441:14927 (Desktop
-     70441:14948 и Mobile 70441:14941) залит #2487CA, то есть Status/Dark
-     blue 389. Замерено на самих SVG-ассетах `icon / alert`, а не на глаз. */
+     снятый с макета. Значок обоих символов мастера (Desktop и Mobile) залит
+     #2487CA, то есть Status/Dark blue 389. Замерено на самих SVG-ассетах
+     `icon / alert`, а не на глаз. */
   --top-fixed-message-blue-icon: var(--dark-blue-389);
   --top-fixed-message-red-bg: var(--red-117);
   --top-fixed-message-red-icon: var(--red-418);

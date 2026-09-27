@@ -24,7 +24,7 @@ const DIRECTIONS: TooltipDirection[] = [
 ]
 
 /* Панель «Свойства компонента» компонент-сета `ELK / tooltip & hint`
-   (таблица 11756:9183 на канвасе Tooltip & Hint 675:9540):
+   (таблица на канвасе Tooltip & Hint):
 
      Direction   Left, Right, Top Center, Top Left, Top Right,
                  Down Center, Down Left, Down Right, Mobile
@@ -34,7 +34,7 @@ const DIRECTIONS: TooltipDirection[] = [
    Дизайн-чек «Сторибук Ч.2» от 10.09.2026, замечание 7.
 
    ⚠️ `Mobile` — значение той же оси Direction, а не отдельный контрол формы:
-   ниже 768 подсказка разворачивается в Bottom Sheet (символ 11756:8112), и
+   ниже 768 подсказка разворачивается в Bottom Sheet, и
    направления у неё уже нет. Поэтому прежний контрол `viewport` из панели
    убран, а мобильную форму включает сам список. */
 const DIRECTION_LABELS = {
@@ -139,10 +139,10 @@ export const Playground: Story = {
   },
 }
 
-/* Hint is a click-opened, portalled popup, so its variants are laid out as
-   live triggers rather than a grid of static cells. Мобильную форму (Bottom
-   Sheet с кнопкой «Понятно») показывает значение `Mobile` оси Direction в
-   Playground. */
+/* Hint — это всплывающее окно в портале, открывающееся по клику, поэтому
+   его варианты разложены живыми триггерами, а не сеткой статичных ячеек.
+   Мобильную форму (Bottom Sheet с кнопкой «Понятно») показывает значение
+   `Mobile` оси Direction в Playground. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

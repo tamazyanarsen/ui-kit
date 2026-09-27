@@ -13,16 +13,17 @@ import {
   type FullExampleProps,
 } from "@/stories/table-top-example"
 
-/* Table Top is a slot container (title / toolbar / summary), not a
-   prop-driven component — it has no props of its own beyond `children`.
-   The Playground's controls therefore switch the *slots* on and off, which
-   is the only variant axis the component actually has. */
+/* Table Top — это контейнер со слотами (заголовок, панель инструментов,
+   сводка), а не компонент, управляемый пропсами: собственных пропсов, кроме
+   `children`, у него нет. Поэтому контролы Playground включают и выключают
+   именно *слоты* — единственную ось вариантов, которая у компонента на
+   самом деле есть. */
 const meta = {
   title: "Компоненты/Table Top",
   component: FullExample,
   parameters: { layout: "padded" },
   /* Дизайн-чек 3/3 №25: контролы разложены по тем же четырём таблицам
-     свойств, что и в макете (1246:196999), и названы так же — иначе список
+     свойств, что и в макете, и названы так же — иначе список
      не сверить. Категории Storybook повторяют названия таблиц. */
   argTypes: {
     title: { control: "text", table: { category: "Table Top" } },
@@ -105,8 +106,8 @@ const meta = {
       table: { category: "Filter Options" },
     },
 
-    // Четвёртое булево свойство `ELK / table-top` (сет 51104:13311,
-    // Version 1.0.2, Release 67.31) — имя контрола как в панели «Свойства
+    // Четвёртое булево свойство `ELK / table-top` (Version 1.0.2,
+    // Release 67.31) — имя контрола как в панели «Свойства
     // компонента», а не как слот в коде.
     showDetails: {
       control: "boolean",

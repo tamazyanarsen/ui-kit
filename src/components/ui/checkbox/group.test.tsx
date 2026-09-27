@@ -76,9 +76,9 @@ describe("CheckboxGroup", () => {
     await user.click(box("Выбрать все"))
     expect(box("Первый")).toHaveAttribute("data-checked")
     expect(box("Второй")).toHaveAttribute("data-checked")
-    // A disabled option is never flipped by the parent...
+    // Выключенную опцию родитель никогда не переключает...
     expect(box("Третий")).not.toHaveAttribute("data-checked")
-    // ...and does not stop the parent from reading as fully checked.
+    // ...и она не мешает родителю читаться как полностью отмеченный.
     expect(box("Выбрать все")).toHaveAttribute("data-checked")
 
     await user.click(box("Выбрать все"))

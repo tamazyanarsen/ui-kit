@@ -8,11 +8,12 @@ import {
   type BadgeType,
 } from "./variants"
 
-// Badge — "Счётчик": a small status/count indicator used instead of a chip
-// when the case calls for it. `type="counter"` shows a number (1–99
-// unchanged, 100+ shown as "99+"); `type="point"` is just the filled
-// circle, no text. Fixed 16px minimum size, growing into a pill only when
-// the counter text needs more room — it never squashes below a circle.
+// Badge — «Счётчик»: маленький индикатор статуса или количества, который
+// ставится вместо чипа, когда того требует случай. `type="counter"`
+// показывает число (от 1 до 99 как есть, от 100 — как «99+»),
+// `type="point"` — просто залитый кружок без текста. Минимальный размер
+// зафиксирован в 16px и вырастает в таблетку, только когда тексту счётчика
+// нужно больше места: меньше круга он не сжимается никогда.
 interface BadgeProps {
   type?: BadgeType
   color?: BadgeColor
@@ -30,16 +31,15 @@ function Badge({
 }: BadgeProps) {
   const style = disabled ? disabledBadgeStyle(color) : BADGE_COLORS[color]
 
-  // "Point" is an 8px dot centered in the same 16px hit box as Counter —
-  // confirmed via get_design_context on the master ("ELK / badge"): the
-  // outer container is a fixed size-[16px] anchor (so Point and Counter
-  // line up identically wherever a badge is positioned, e.g. pinned to an
-  // icon corner), but Point's own visible circle is a separate inner
-  // size-[8px] element, not the full 16px box. An earlier pass filled the
-  // whole 16px box for Point, rendering a dot twice the spec's diameter —
-  // caught by cross-checking the master's literal JSX against the
-  // screenshot, where Point dots are visibly half the size of Counter
-  // pills.
+  // «Point» — это точка 8px по центру той же коробки нажатия 16px, что и у
+  // Counter. Подтверждено по мастеру («ELK / badge»): внешний контейнер —
+  // это якорь фиксированного размера size-[16px] (чтобы Point и Counter
+  // вставали одинаково, где бы значок ни был размещён, например приколот к
+  // углу иконки), а видимый кружок Point — отдельный внутренний элемент
+  // size-[8px], а не вся коробка 16px. Прежний проход заливал у Point всю
+  // коробку 16px и рисовал точку вдвое большего диаметра, чем в макете;
+  // поймано сверкой литерального JSX мастера со скриншотом, где точки Point
+  // заметно вдвое меньше таблеток Counter.
   if (type === "point") {
     return (
       <span
@@ -65,12 +65,13 @@ function Badge({
       data-type={type}
       data-color={color}
       className={cn(
-        // `px-[2px] pt-[2px]`, not `px-1`/centered — the master's counter
-        // (`ELK / badge`, 34:17385) pads 2px on the sides and pushes its
-        // 14px-tall text box down by 2px from the top, which both keeps
-        // two-digit counters 4px narrower than a 4px padding would and drops
-        // the digits 1px below the geometric centre (they read as centred
-        // because digits have no descenders).
+        // `px-[2px] pt-[2px]`, а не `px-1` с центрированием: счётчик в
+        // мастере (`ELK / badge`) отступает по 2px с боков и опускает свою
+        // текстовую коробку высотой 14px на 2px от верха. Это и делает
+        // двузначные счётчики на 4px уже, чем при отступе 4px, и опускает
+        // цифры на 1px ниже геометрического центра (читаются они при этом
+        // как центрированные, потому что у цифр нет выносных элементов
+        // вниз).
         "inline-flex h-4 min-w-4 max-w-[33px] items-center justify-center rounded-full px-[2px] pt-[2px] text-p3-medium",
         className
       )}

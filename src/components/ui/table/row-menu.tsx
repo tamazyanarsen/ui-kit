@@ -5,12 +5,13 @@ import { Ellipsis } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { Dropdown } from "@/components/ui/dropdown"
 
-// The "..." action trigger for Title Cell's Button type — a Menu built the
-// same way as `ButtonMenuOverflow`, at icon-sm size and `secondary-white`
-// (bg white/hover Grey114/active Grey106, pixel-confirmed against the spec's
-// own Default/Hover/Active kebab swatch — no bespoke "ghost" button variant
-// needed). Row actions use `SelectionButton` instead, which the spec names
-// directly ("используя белый компонент Selection Button").
+// Триггер действий «...» для типа Button у ячейки заголовка — это Menu,
+// собранное так же, как `ButtonMenuOverflow`, размером icon-sm и в варианте
+// `secondary-white` (белый фон, наведение Grey 114, нажатие Grey 106;
+// попиксельно сверено с собственным образцом «кебаба» в состояниях Default,
+// Hover и Active — отдельный «призрачный» вариант кнопки не нужен). У
+// действий строки вместо этого используется `SelectionButton`, который
+// макет называет прямо: «используя белый компонент Selection Button».
 function TableRowMenu({
   menu,
   label = "Открыть меню строки",

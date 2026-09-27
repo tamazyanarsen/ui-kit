@@ -1,9 +1,10 @@
 export type StepState = "default" | "active" | "disabled"
 export type StepStatus = "none" | "filled" | "error"
 
-// "Не заполнено" and "Заполнено" render in the same muted grey in the spec
-// — only "Ошибки" (error) gets its own red. Kept as a 3-value enum anyway
-// since the spec documents all three as distinct semantic states.
+// «Не заполнено» и «Заполнено» в макете рисуются одним и тем же
+// приглушённым серым — свой красный есть только у «Ошибки». Перечисление
+// всё равно оставлено из трёх значений, потому что макет описывает все три
+// как разные смысловые состояния.
 export function statusColor(status: StepStatus): string {
   return status === "error"
     ? "var(--steps-status-error-fg)"

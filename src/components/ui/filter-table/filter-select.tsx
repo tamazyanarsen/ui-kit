@@ -8,30 +8,30 @@ import { Input } from "@/components/ui/input"
 
 import { FilterShell, filterApplyLabel } from "./shell"
 
-// FilterSelect — вид «Множественный выбор» (node 70295:22663).
+// FilterSelect — вид «Множественный выбор».
 //
-// "Ширина раскрытого фильтра – 384 px. Наполнение строки по компоненту Menu
+// «Ширина раскрытого фильтра – 384 px. Наполнение строки по компоненту Menu
 // Point (ELK). В фильтре может быть задана группировка значений. Список может
 // быть представлен в виде дерева. В фильтре показывается весь список
-// возможных значений, независимо от наличия в реестре."
+// возможных значений, независимо от наличия в реестре».
 //
-// The one non-obvious rule, spelled out at length in the spec: selecting
-// every option is NOT the same as switching the filter off — "если клиент
+// Единственное неочевидное правило, расписанное в макете подробно: выбрать
+// все значения — это НЕ то же самое, что выключить фильтр. «Если клиент
 // выбрал все значения (например, 16 из 16 возможных), а в реальном времени
 // добавляется новое возможное значение — система определяет, что новое
-// значение не добавляется к выбранным". So "all selected" stays a normal
-// multiple selection and the chip keeps reporting a count.
+// значение не добавляется к выбранным». То есть «выбраны все» остаётся
+// обычным множественным выбором, и чип продолжает показывать количество.
 //
-// Search rules inside the popup (node 70295:22621): it hides non-matching
-// options, keeps matches regardless of whether they are selected, never
-// touches the selection itself, never reorders, and matches at every nesting
-// level — group headings included, which is why a group whose *title*
-// matches keeps all of its children.
+// Правила поиска внутри всплывающего окна: он прячет не совпавшие опции,
+// оставляет совпавшие независимо от того, выбраны они или нет, никогда не
+// меняет сам выбор, никогда не меняет порядок и ищет на всех уровнях
+// вложенности, включая заголовки групп, — поэтому группа, у которой совпало
+// *название*, сохраняет всех своих детей.
 
 interface FilterSelectOption {
   value: string
   label: string
-  /** Nesting depth for the tree form; each level indents by 16px. */
+  /** Глубина вложенности для формы дерева; каждый уровень отступает на 16px. */
   level?: number
   disabled?: boolean
 }
@@ -74,8 +74,9 @@ function FilterSelect({
   const applied = value ?? uncontrolled
   const [draft, setDraft] = React.useState<string[]>(applied)
 
-  // The popup unmounts on close, so a reopen starts from what is actually
-  // applied rather than from an abandoned draft.
+  // Всплывающее окно размонтируется при закрытии, поэтому повторное
+  // открытие начинается с того, что действительно применено, а не с
+  // брошенного черновика.
   React.useEffect(() => {
     if (open) {
       setDraft(applied)

@@ -36,9 +36,10 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-// Simulated backend: min-3-chars gate happens in the caller. Query "error"
-// always fails, to exercise the "retry with the same parameter, up to 5
-// attempts" rule from the spec without needing a real flaky network.
+// Имитация бэкенда: порог «не меньше трёх символов» проверяется в
+// вызывающем коде. Запрос «error» всегда завершается ошибкой — чтобы
+// прогонять правило «повторить с тем же параметром, до 5 попыток» из макета
+// без настоящей нестабильной сети.
 async function searchCompanies(
   query: string,
   signal: AbortSignal
@@ -58,9 +59,10 @@ interface CompanySection {
   items: Company[]
 }
 
-// Search + multi-select dropdown: Рис. 1-6 from the spec — empty hint,
-// 3-char gate, loading, no-results, error retry (5 attempts max), and the
-// pinned "Выбраны" section that reappears when reopening with a selection.
+// Выпадающий список с поиском и множественным выбором: рис. 1–6 из макета
+// — пустая подсказка, порог в 3 символа, загрузка, отсутствие результатов,
+// повтор после ошибки (максимум 5 попыток) и закреплённый раздел «Выбраны»,
+// который снова появляется при повторном открытии с уже сделанным выбором.
 function CompanySearchDropdown() {
   const sel = useComboboxSelection<Company>([])
   const [query, setQuery] = useState("")
@@ -123,10 +125,11 @@ function CompanySearchDropdown() {
     { key: "results", items: resultCompanies },
   ]
 
-  // Ordered precedence: a failed fetch always wins, then loading suppresses
-  // any message, then the "too short to search" / "nothing typed yet, but
-  // something's already picked" cases stay silent, and only after all of
-  // that do the actual empty-state hints kick in.
+  // Порядок приоритетов: неудавшийся запрос побеждает всегда, затем
+  // загрузка подавляет любое сообщение, затем случаи «слишком коротко для
+  // поиска» и «ещё ничего не набрано, но кое-что уже выбрано» остаются
+  // молчаливыми, и только после всего этого включаются собственно подсказки
+  // пустого состояния.
   function getStatusMessage(): string | null {
     if (failed) {
       return `Не удалось загрузить результаты (попытка ${attempt}/5). Повторите запрос позже.`

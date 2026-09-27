@@ -9,10 +9,10 @@ import { Tooltip } from "@/components/ui/tooltip"
 
 import { TableRowMenu } from "./row-menu"
 
-/** The single-action form: "Для строк с единственным действием допускается
- * замена на кнопку с пиктограммой и обязательной текстовой подсказкой при
- * наведении, поясняющей её назначение" — hence `label` is required, it is
- * both the tooltip and the accessible name. */
+/** Форма с единственным действием: «Для строк с единственным действием
+ * допускается замена на кнопку с пиктограммой и обязательной текстовой
+ * подсказкой при наведении, поясняющей её назначение» — отсюда и
+ * обязательный `label`: он служит и подсказкой, и доступным именем. */
 interface TableRowAction {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   label: string

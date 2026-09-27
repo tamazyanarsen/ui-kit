@@ -29,8 +29,8 @@ const TABS: TabItem[] = [
   { value: "closed", label: "Закрытые" },
 ]
 
-/* `Number of Chips` — свойство `Chips Table` (1…16 по таблице свойств
-   8503:20951). Раньше в истории было жёстко два фильтра, и проверить, как
+/* `Number of Chips` — свойство `Chips Table` (1…16 по таблице свойств).
+   Раньше в истории было жёстко два фильтра, и проверить, как
    панель ведёт себя при переполнении, было негде. */
 const CHIP_LABELS = [
   "Статус",
@@ -52,8 +52,8 @@ const CHIP_LABELS = [
 ]
 
 /* Дизайн-чек 3/3 №25: «по многим компонентам внутри компонента table top
-   недостаточно контролов отображения». Полный список свойств из макета
-   (1246:196999) — четыре таблицы, по одной на вложенный блок:
+   недостаточно контролов отображения». Полный список свойств из макета —
+   четыре таблицы, по одной на вложенный блок:
 
      Table Top      — Show Title, Show Tab, Show Filter
      Title Options  — Show Button
@@ -116,7 +116,7 @@ interface FullExampleProps {
   showSelect?: boolean
   showSetting?: boolean
   showDownload?: boolean
-  // Собственный слот кита — «Сводка» внизу (70279:10367)
+  // Собственный слот кита — «Сводка» внизу
   showDetails?: boolean
 }
 
@@ -216,9 +216,9 @@ function FullExample({
           строку фильтров целиком — как одно свойство `ELK / table-top`. */}
       {showFilter && (
         <TableTopToolbar>
-          {/* Figma's search field is a fixed 260px column inside the filter
-              row; Input's own root is always w-full, so the width lives on a
-              wrapper.
+          {/* Поле поиска в макете — колонка фиксированной ширины 260px
+              внутри строки фильтров, а собственный корень Input всегда
+              w-full, поэтому ширина живёт на обёртке.
 
               Дизайн-чек «Storybook 3», замечание 3: «расстояние между полем
               поиска и фильтрами — 16 px». Общий зазор строки — 8, а недостающие
@@ -299,8 +299,7 @@ function FullExample({
         }
         actions={hasSummaryActions ? summaryActions : undefined}
       />
-      {/* "Сводка" — the Details slot at the bottom of `ELK / table-top`
-          (node 70279:10367).
+      {/* «Сводка» — слот Details в нижней части `ELK / table-top`.
 
           ⚠️ Умолчание — ВЫКЛЮЧЕНО, хотя в мастере Figma свойство
           `Show Summary` включено. Документация кита называет сводку

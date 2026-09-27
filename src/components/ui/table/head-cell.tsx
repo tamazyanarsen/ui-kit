@@ -23,12 +23,13 @@ interface TableHeadCellProps
   extends Omit<React.ComponentProps<"th">, "children" | "onSelect"> {
   type?: TableHeadCellType
   children?: React.ReactNode
-  /** "Show Sort" — renders the ⇅ toggle next to Subtitle Left/Right text. */
+  /** «Show Sort» — рисует переключатель ⇅ рядом с текстом Subtitle Left/Right. */
   sortable?: boolean
   /**
-   * Which way this column is currently sorted. Set it (i.e. non-`null`) and
-   * the cell renders the spec's Active state: dark title text plus the
-   * matching chevron of the sort icon darkened. `null` is Default/Hover.
+   * Куда эта колонка отсортирована сейчас. Задайте значение (то есть не
+   * `null`), и ячейка нарисует состояние Active из макета: тёмный текст
+   * заголовка плюс затемнённый соответствующий шеврон значка сортировки.
+   * `null` — это Default и Hover.
    *
    * ⚠️ Отдельного состояния `Active` у ячейки шапки нет намеренно, хотя в
    * ките оно есть третьим значением `State`: активность — это и есть
@@ -45,7 +46,7 @@ interface TableHeadCellProps
    * это правило нужно соблюсти в обработчике (см. `table-demo.tsx`).
    */
   onSortClick?: () => void
-  /** "Show Icon" — an optional leading icon before Subtitle text. */
+  /** «Show Icon» — необязательный ведущий значок перед текстом Subtitle. */
   icon?: React.ReactNode
   checked?: boolean
   indeterminate?: boolean
@@ -62,25 +63,27 @@ interface TableHeadCellProps
   onCheckedChange?: (checked: boolean) => void
   menu?: React.ReactNode
   /**
-   * Collapse-all control ("Сворачивание/разворачивание всех строк"). Chevron
-   * down = everything collapsed to the first level, up = fully expanded.
+   * Контрол «свернуть/развернуть всё» («Сворачивание/разворачивание всех
+   * строк»). Шеврон вниз — всё свёрнуто до первого уровня, вверх —
+   * развёрнуто полностью.
    *
-   * The spec bars this column from the other two header affordances: "в
-   * таблицах со сворачиванием/разворачиванием не предусмотрена
-   * пользовательская сортировка — она невозможна без нарушения
-   * вложенностей", and "он также не может менять ширину столбца,
-   * идентифицирующего иерархию. Его ширина опредяется в момент
-   * проектирования". So `sortable` and `resizable` are ignored here rather
-   * than silently rendering controls the design forbids.
+   * Макет запрещает этой колонке две другие возможности шапки: «в таблицах
+   * со сворачиванием/разворачиванием не предусмотрена пользовательская
+   * сортировка — она невозможна без нарушения вложенностей» и «он также не
+   * может менять ширину столбца, идентифицирующего иерархию. Его ширина
+   * опредяется в момент проектирования». Поэтому `sortable` и `resizable`
+   * здесь игнорируются, а не рисуют молча контролы, которые дизайн
+   * запрещает.
    */
   collapsible?: boolean
   expanded?: boolean
   onExpandedChange?: (expanded: boolean) => void
-  /** Drag the right border to resize the column ("при наведении на правую
-   * границу ячейки курсор меняется на вертикальную черту с двунаправленной
-   * стрелкой"). Checkbox and Collapse columns are excluded by the spec. */
+  /** Тянуть правую границу, чтобы менять ширину колонки («при наведении на
+   * правую границу ячейки курсор меняется на вертикальную черту с
+   * двунаправленной стрелкой»). Колонки Checkbox и Collapse макет из этого
+   * исключает. */
   resizable?: boolean
-  /** Column width in px. Uncontrolled when only `defaultWidth` is given. */
+  /** Ширина колонки в пикселях. Неуправляемая, если задан только `defaultWidth`. */
   width?: number
   defaultWidth?: number
   onWidthChange?: (width: number) => void
@@ -125,8 +128,9 @@ function TableHeadCell({
   // высоты у него нет, он только доносит линию под шапкой до правого края.
   const isSpacer = type === "spacer"
 
-  // The hierarchy column is neither sortable nor resizable — see the
-  // `collapsible` prop docs for the two spec lines that rule both out.
+  // Колонка иерархии не сортируется и не меняет ширину — см. описание
+  // пропса `collapsible` с двумя строками макета, которые запрещают и то и
+  // другое.
   const canSort = sortable && !collapsible
   const canResize = resizable && !collapsible
 
@@ -179,13 +183,13 @@ function TableHeadCell({
         // Правильный цвет — Grey 284; подпись и сортировка ставят его же
         // сами, но полагаться на это нельзя: слот произвольный.
         "font-medium text-[var(--table-description-fg)]",
-        // The header's bottom rule is drawn per cell (`border-b` on
-        // `ELK / table-title-cell`) so it stays put under sticky cells — but
-        // as a pseudo-element, not a real border. Figma strokes frames on the
-        // *inside*, so the rule lives within the cell's 48px rather than
-        // adding a 49th pixel: measured on the canonical renders (the header
-        // rule is the last pixel row of the 48px header in both node
-        // 70279:10368 and node 70279:7390).
+        // Нижняя линия шапки рисуется на каждой ячейке (`border-b` у
+        // `ELK / table-title-cell`), чтобы оставаться на месте под липкими
+        // ячейками, — но псевдоэлементом, а не настоящей рамкой. В макете
+        // обводка кадров идёт *внутрь*, поэтому линия живёт внутри тех же
+        // 48px ячейки, а не добавляет сорок девятый пиксель. Замерено на
+        // канонических рендерах: линия шапки — это последний пиксельный ряд
+        // её 48px.
         "relative before:absolute before:inset-x-0 before:bottom-0 before:h-px before:bg-[var(--table-divider)] before:content-['']",
         divider &&
           "after:absolute after:top-1/2 after:right-0 after:h-6 after:w-px after:-translate-y-1/2 after:rounded-[1px] after:bg-[var(--table-divider)] after:content-['']",
@@ -195,9 +199,9 @@ function TableHeadCell({
             ? "text-right"
             : "text-left",
         pinned.className,
-        // The header is always opaque white — `bg-inherit` would resolve to
-        // the (transparent) `<tr>` and let the scrolling columns slide under
-        // a pinned or sticky header cell.
+        // Шапка всегда непрозрачно-белая: `bg-inherit` разрешился бы в
+        // (прозрачный) `<tr>` и позволил бы прокручиваемым колонкам
+        // проезжать под закреплённой или липкой ячейкой шапки.
         "bg-[var(--table-bg)]",
         className
       )}
@@ -212,12 +216,12 @@ function TableHeadCell({
         />
       )}
 
-      {/* `flex`, not `inline-flex` — an inline-level box here would stay in
-          the table cell's inline formatting context and inherit a 20px
-          line-height "strut" from the table's text-sm, forcing the 16px
-          icon's effective box up to 20px regardless of the cell's own
-          declared padding. `flex` makes it a block box, which isn't subject
-          to the strut. */}
+      {/* `flex`, а не `inline-flex`: коробка строчного уровня осталась бы
+          в строчном контексте форматирования ячейки таблицы и унаследовала
+          бы «распорку» интерлиньяжа 20px от text-sm таблицы, из-за чего
+          фактическая коробка значка 16px выросла бы до 20px независимо от
+          объявленных отступов самой ячейки. `flex` делает её блочной, а на
+          блочную распорка не действует. */}
       {type === "icon" && (
         <span className="flex text-[var(--table-fg)]" aria-hidden="true">
           {icon}
@@ -253,9 +257,10 @@ function TableHeadCell({
       )}
 
       {canResize && (
-        // Sits on the column border itself, half in each neighbour, so the
-        // cursor flips as soon as it touches the line. 9px of grab zone: the
-        // line is 1px and a zone narrower than this is genuinely hard to hit.
+        // Сидит прямо на границе колонок, наполовину в каждом соседе,
+        // чтобы курсор менялся сразу при касании линии. Зона захвата 9px:
+        // сама линия шириной 1px, и в зону уже этой попасть по-настоящему
+        // трудно.
         <span
           role="separator"
           aria-orientation="vertical"

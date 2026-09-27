@@ -7,16 +7,19 @@ import { Input } from "@/components/ui/input"
 
 import { FilterTrigger, type FilterType } from "./select-trigger"
 
-// FilterTableSelect — «Фильтр таблицы» с выпадающим списком: a Select-like
-// dropdown trigger whose popup is a single value field + Сбросить/Применить
-// footer (ui/filter-table/filter-table@2x.png's "Взаимодействие с
-// фильтром" mockup — reusing ComboboxFooter verbatim, it's the exact same
-// two-button layout). Chevron-down (closed) -> chevron-up (open) -> X (has
-// a value, popup closed; click clears without reopening) per chips-filter's
-// own "Варианты — поведение Select" row.
+// FilterTableSelect — «Фильтр таблицы» с выпадающим списком: элемент
+// вызова ведёт себя как у Select, а во всплывашке одно поле значения и
+// подвал «Сбросить / Применить» (кадр «Взаимодействие с фильтром» в
+// мастере filter-table). ComboboxFooter переиспользован дословно: там
+// ровно та же раскладка на две кнопки.
 //
-// Элемент вызова у фильтра ОДИН — пилюля `ELK / filter-table` (нода
-// 1303:99241): серая #F4F4F4, пока пусто, и тёмная #012F42 с крестиком,
+// Глиф элемента вызова меняется по кругу: шеврон вниз (закрыто) → шеврон
+// вверх (открыто) → крестик (значение выбрано, всплывашка закрыта; нажатие
+// очищает и НЕ открывает список заново) — по строке «Варианты — поведение
+// Select» у chips-filter.
+//
+// Элемент вызова у фильтра ОДИН — пилюля `ELK / filter-table`: серая
+// #F4F4F4, пока пусто, и тёмная #012F42 с крестиком,
 // когда значение выбрано.
 //
 // Дизайн-чек от 07.09, замечание 17: «Не тот элемент вызова фильтра. В
@@ -72,10 +75,11 @@ function FilterTableSelect({
   const [draft, setDraft] = React.useState(activeValue ?? "")
   const anchorRef = React.useRef<HTMLDivElement>(null)
 
-  // The popup unmounts on close (Base UI default), so every reopen would
-  // otherwise start the draft from an empty string — resync it from the
-  // last *applied* value instead, matching Calendar/DatePicker's own
-  // reopen-shows-current-value behavior.
+  // Всплывающее окно размонтируется при закрытии (умолчание Base UI),
+  // поэтому иначе каждое повторное открытие начинало бы черновик с пустой
+  // строки. Вместо этого он пересинхронизируется с последним *применённым*
+  // значением — так же, как Calendar и DatePicker показывают при повторном
+  // открытии текущее значение.
   React.useEffect(() => {
     if (open) setDraft(activeValue ?? "")
   }, [open, activeValue])
@@ -95,13 +99,14 @@ function FilterTableSelect({
     setOpen(false)
   }
 
-  // "При нажатии на кнопку «Сбросить» фильтр закрывается. Значения фильтра
-  // возвращаются в исходное состояние" (Фильтрация (ЕЛК), node 70295:22605).
-  // This kit's other Сбросить/Применить pairings (Calendar, DatePicker) keep
-  // their popup open, but the filter spec is explicit that this one closes —
-  // and it also covers the empty case the same way: "Если кнопки «Применить»
-  // и «Сбросить» были нажаты, когда внутри фильтра ничего не было выбрано —
-  // выпадающий список закрывается без применения фильтра".
+  // «При нажатии на кнопку „Сбросить“ фильтр закрывается. Значения фильтра
+  // возвращаются в исходное состояние» (Фильтрация (ЕЛК)). Остальные пары
+  // «Сбросить/Применить» в этом ките (Calendar, DatePicker) оставляют своё
+  // всплывающее окно открытым, но макет фильтра прямо говорит, что это —
+  // закрывается. Он же покрывает и пустой случай тем же образом: «Если
+  // кнопки „Применить“ и „Сбросить“ были нажаты, когда внутри фильтра ничего
+  // не было выбрано — выпадающий список закрывается без применения
+  // фильтра».
   function handleReset() {
     setDraft("")
     commitValue(null)
@@ -113,8 +118,9 @@ function FilterTableSelect({
     commitValue(null)
   }
 
-  // A free-text filter holds exactly one value; the count exists so the
-  // multi-select kinds can report how many options the draft covers.
+  // У фильтра со свободным вводом ровно одно значение; счётчик существует
+  // для того, чтобы виды с множественным выбором могли сообщить, сколько
+  // опций охватывает черновик.
   const selectedCount = draft.trim() ? 1 : 0
   const hasValue = Boolean(activeValue)
 
@@ -148,14 +154,14 @@ function FilterTableSelect({
               data-slot="filter-content"
               render={<Dropdown className="w-96 overflow-hidden" />}
             >
-              {/* Round-2 audit fix: outer padding is 16px (Figma node
-                  15693:35423, "Input area" wrapper), not 12px — and the
-                  input box itself is a literal `px-[16px]` there too
-                  (node 15693:35424), wider than the shared Input `sm`
-                  size's own `px-3`. Overridden locally via
-                  `containerClassName` rather than touching Input's own
-                  `sm` token, since that size is shared by other
-                  consumers not covered by this audit. */}
+              {/* Исправление второго прохода: внешний отступ равен 16px
+                  (обёртка «Input area» в макете), а не 12px, — и сама
+                  коробка поля там тоже литерально `px-[16px]`, то есть
+                  шире, чем собственный `px-3` у общего размера `sm` у
+                  Input. Переопределено локально через `containerClassName`,
+                  а не правкой самого токена `sm` у Input: этот размер
+                  используют и другие потребители, не охваченные данной
+                  сверкой. */}
               <div className="p-4">
                 <Input
                   size="sm"

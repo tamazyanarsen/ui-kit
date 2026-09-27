@@ -3,15 +3,16 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 
 import { cn } from "@/lib/utils"
 
-// Sticky/pinned title bar ("Modal Top: Title" in the spec). Omit this part
-// entirely for "Modal Top: None" — put the title inline as the first child
-// of ModalBody instead, where it scrolls away with the rest of the content.
-// Padding is symmetric (design-check #39) — the old asymmetric pr-16/pr-20
-// was only there to dodge the close button, which design-check #37 moved
-// outside the card entirely, so there's nothing left to make room for.
-// Title/description gap is 16px mobile, 8px desktop (Figma "Modal Top"
-// node 45321:17708 Texts=gap-8; mobile Title block 45321:17311 gap-16) —
-// round-2 audit found this at a flat 4px (gap-1) on both breakpoints.
+// Закреплённая полоса заголовка («Modal Top: Title» в макете). Для
+// варианта «Modal Top: None» эту часть нужно опустить целиком, а заголовок
+// поставить обычным первым ребёнком ModalBody, где он уезжает вверх вместе
+// с остальным содержимым. Отступы симметричны (дизайн-чек, замечание 39):
+// прежние несимметричные pr-16 и pr-20 стояли только ради обхода кнопки
+// закрытия, а замечание 37 вынесло её за карточку целиком, так что
+// освобождать место больше не для чего. Зазор между заголовком и описанием
+// — 16px на мобильном и 8px на десктопе (в макете у «Modal Top» Texts это
+// gap-8, а у мобильного блока заголовка gap-16); второй проход обнаружил
+// здесь плоские 4px (gap-1) на обоих брейкпоинтах.
 function ModalHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -74,11 +75,12 @@ function ModalDescription({
   return (
     <DialogPrimitive.Description
       data-slot="modal-description"
-      // Same color as ModalTitle (design-check #38) — was a muted grey,
-      // reads as unrelated secondary text instead of the title's subtitle.
-      // Mobile P1 Medium (14/20) growing to Desktop P1 Medium (16/24) —
-      // Figma "Modal Top" spec (node 45321:17708 / :17732) applies the
-      // desktop paragraph style here, not a fixed mobile size.
+      // Тот же цвет, что у ModalTitle (дизайн-чек, замечание 38): раньше
+      // был приглушённый серый, и текст читался как посторонний
+      // второстепенный, а не как подзаголовок к заголовку. Размер — P1
+      // Medium на мобильном (14/20), вырастающий до P1 Medium на десктопе
+      // (16/24): макет «Modal Top» применяет здесь десктопный параграфный
+      // стиль, а не фиксированный мобильный размер.
       className={cn("text-p2-medium text-[var(--modal-title-fg)] desktop:text-p1-medium", className)}
       {...props}
     />

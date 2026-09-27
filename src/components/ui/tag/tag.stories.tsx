@@ -11,7 +11,7 @@ import type { TagColor, TagVariant } from "./variants"
 /* Дизайн-чек №3 №1: «У тега много лишних вариантов и нет разбивки
    desktop/mobile. Нужно варианты унаследовать из фигмы, лишнее убрать».
 
-   Компонент-сет `ELK / tag` (737:411) держит ровно два варьирующих
+   Компонент-сет `ELK / tag` держит ровно два варьирующих
    свойства — Size (Desktop / Mobile) и Style (13 значений) — плюс булев
    Show Icon. Раньше матрица перемножала цвет × Main/Secondary × L/S ×
    «+ icon» и давала 48 клеток вместо 26, причём L/S были теми же
@@ -40,8 +40,8 @@ const FIGMA_STYLES: {
 ]
 
 /* Значение свойства `Style` мастера → пара `color` + `variant` в коде.
-   Ключи и подписи — как в именах вариантов компонент-сета 847:53629
-   (включая фигмовскую «Сompleted» с кириллической С). */
+   Ключи и подписи — как в именах вариантов компонент-сета (включая
+   фигмовскую «Сompleted» с кириллической С). */
 const STYLE_PROPS = {
   "green-main": { color: "green", variant: "main" },
   "green-text": { color: "green", variant: "secondary" },
@@ -85,8 +85,8 @@ const meta = {
   title: "Компоненты/Tag",
   component: Tag,
   parameters: { layout: "centered" },
-  /* Панель повторяет «Свойства компонента» `ELK / tag` (компонент-сет
-     847:53629, таблица 5694:9311): Size / Style / Show Icon. Пара
+  /* Панель повторяет «Свойства компонента» `ELK / tag`: Size / Style /
+     Show Icon. Пара
      `color` + `variant` в коде — это одно свойство Style в Figma, поэтому
      контрол один, а раскладывает его `render`. */
   argTypes: {

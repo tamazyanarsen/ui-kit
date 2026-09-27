@@ -12,9 +12,10 @@ import {
 
 import { useAutocompleteAnchor } from "./root"
 
-// The visible field itself — same box/label chrome as `Input` (reused
-// directly, not re-implemented: `Combobox.Input` renders a real `<input>`,
-// so Input's `:placeholder-shown`-keyed floating-label CSS applies as-is).
+// Само видимое поле — коробка и подпись оформлены как у `Input` (и
+// переиспользованы напрямую, а не написаны заново: `Combobox.Input` рисует
+// настоящий `<input>`, поэтому CSS плавающей подписи у Input, завязанный на
+// `:placeholder-shown`, применяется как есть).
 
 interface AutocompleteFieldOwnProps {
   size?: "sm" | "lg"
@@ -80,9 +81,9 @@ function AutocompleteField({
         <p
           id={captionId}
           className={cn(
-            // Same Comment/Error caption as Input (see input.tsx) — confirmed
-            // Object Sans Medium via get_design_context on ELK/input's own
-            // Comment instance (1246:139719), not the browser default.
+            // Та же подпись Comment и Error, что у Input (см. input.tsx):
+            // Object Sans Medium подтверждён по собственному инстансу
+            // Comment у ELK/input, а не браузерное умолчание.
             "text-p3-medium",
             error ? "text-[var(--input-caption-error-fg)]" : "text-[var(--input-caption-fg)]"
           )}

@@ -1,8 +1,8 @@
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
-// Thin re-export. This facet of the design (search + tree + footer with
-// Сбросить/Применить) is always multi-select, so callers don't need to pass
-// `multiple` themselves.
+// Тонкий реэкспорт. Этот фасет дизайна (поиск, дерево и подвал с
+// «Сбросить» и «Применить») всегда работает с множественным выбором,
+// поэтому вызывающему коду не нужно передавать `multiple` самому.
 export function Combobox<Value = string>(
   props: Omit<ComboboxPrimitive.Root.Props<Value, true>, "multiple">
 ) {

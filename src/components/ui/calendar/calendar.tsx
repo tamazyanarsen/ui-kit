@@ -39,15 +39,16 @@ function Calendar({
     Math.max(initial.getFullYear(), today.getFullYear())
   )
 
-  // Day/range selection is a local draft until "Применить" commits it via
-  // onChange/onRangeChange — clicking a date only updates the grid's own
-  // highlight, matching the footer's own Reset/Apply wording (Reset clears
-  // the draft, Apply commits it; neither should happen just from clicking a
-  // day). Re-synced whenever the *committed* value changes from outside
-  // (e.g. the parent resets it, or the popover reopens with a fresh value).
-  // Without a footer there's no Apply to ever commit through, so that case
-  // falls back to firing onChange/onRangeChange immediately per click, same
-  // as before.
+  // Выбор дня и диапазона остаётся локальным черновиком, пока «Применить»
+  // не подтвердит его через onChange или onRangeChange: клик по дате
+  // обновляет только подсветку в сетке. Это соответствует формулировкам
+  // самого подвала («Сбросить» очищает черновик, «Применить» подтверждает
+  // его; ни то, ни другое не должно происходить просто от клика по дню).
+  // Пересинхронизируется всякий раз, когда *подтверждённое* значение
+  // меняется снаружи (например, родитель его сбросил или поповер
+  // переоткрылся с новым значением). Без подвала подтверждать нечем, и в
+  // этом случае поведение откатывается к немедленному вызову onChange или
+  // onRangeChange на каждый клик, как было раньше.
   const [draftValue, setDraftValue] = React.useState<Date | null>(value)
   const [draftRange, setDraftRange] = React.useState<[Date | null, Date | null]>(
     rangeValue ?? [null, null]
@@ -119,7 +120,7 @@ function Calendar({
       onMonthChange?.({ year: focus.year, month: m })
       return
     }
-    // drill-down from the single day view
+    // переход вглубь из вида одного дня
     setFocus((f) => ({ ...f, month: m }))
     setView("days")
   }

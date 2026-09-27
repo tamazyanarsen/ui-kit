@@ -24,7 +24,7 @@ const FRUIT_OPTIONS = [
 ]
 
 /* Дизайн-чек 3/3 №21: «не хватает контролов для выбора маски». В макете
-   (65732:19613) содержимое триггера — отдельный набор «масок»: Empty (только
+   содержимое триггера — отдельный набор «масок»: Empty (только
    подпись), Fill (подпись + значение), Lock (то же плюс замок),
    Logotype (логотип слева от подписи/значения) и Logotype BIK (логотип и
    третья строка с БИК). В контролах выбрать их было нельзя. */
@@ -151,9 +151,8 @@ function DemoSelect({
   )
 }
 
-/* Панель повторяет «Свойства компонента» `ELK / select` (компонент-сет
-   687:9278, таблица 29750:54028): Size / State / Type / Add /
-   Show Text Error.
+/* Панель повторяет «Свойства компонента» `ELK / select`: Size / State /
+   Type / Add / Show Text Error.
 
    `Size` в Figma — одно свойство с четырьмя значениями: размер (L/S) и форма
    (Desktop/Mobile) там не разъезжаются, в коде это `size` + <ViewportScope>.
@@ -193,11 +192,11 @@ const meta = {
   title: "Компоненты/Select",
   component: DemoSelect,
   parameters: { layout: "padded" },
-  // `DemoSelect` is a plain function declared locally in this file rather
-  // than imported from its own component module — Storybook's docgen
-  // (react-docgen-typescript) only reliably extracts props from component
-  // modules, so most of this wrapper's props silently get NO Controls row at
-  // all. Declare every one of them explicitly instead.
+  // `DemoSelect` — обычная функция, объявленная локально в этом файле, а не
+  // импортированная из модуля компонента. Docgen у Storybook
+  // (react-docgen-typescript) надёжно извлекает пропсы только из модулей
+  // компонентов, поэтому большинство пропсов этой обёртки молча не получает
+  // строки в Controls ВООБЩЕ. Вместо этого объявляем каждый явно.
   argTypes: {
     figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS),
     // Active в Figma — раскрытый список, Disabled — настоящий проп.
@@ -206,7 +205,7 @@ const meta = {
     add: optionsArgType<FigmaAdd>("Add", ADD_LABELS, "inline-radio"),
     showErrorText: toggleArgType("Show Text Error"),
     /* Дизайн-чек 3/3 №21: «не хватает контролов для выбора маски». Свойства
-       компонент-сета у этого списка нет — в макете (65732:19613) содержимое
+       компонент-сета у этого списка нет — в макете содержимое
        триггера набрано отдельными мастерами, поэтому контрол свой. */
     mask: {
       control: "select",
@@ -318,8 +317,8 @@ export const Matrix: Story = {
   ),
 }
 
-/* The open list is a portalled popup, so it can't live inside the matrix
-   (every cell would overlay the next). */
+/* Открытый список — это всплывающее окно в портале, поэтому внутри матрицы
+   он жить не может: каждая ячейка накрывала бы следующую. */
 export const Opened: Story = {
   name: "Раскрытый список",
   parameters: { layout: "padded", controls: { disable: true } },

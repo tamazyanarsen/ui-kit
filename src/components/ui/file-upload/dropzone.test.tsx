@@ -7,8 +7,9 @@ import { FileUploadDropzone } from "./dropzone"
 describe("FileUploadDropzone", () => {
   it("renders the default hint text", () => {
     render(<FileUploadDropzone />)
-    // Split across two spans now — "загрузите файлы" renders underlined to
-    // read as a click affordance, per the live Figma component.
+    // Теперь разбито на два span: «загрузите файлы» рисуется подчёркнутым,
+    // чтобы читаться как приглашение к клику, — так в живом компоненте
+    // макета.
     expect(screen.getByText("Перетащите или", { exact: false })).toBeInTheDocument()
     expect(screen.getByText("загрузите файлы")).toBeInTheDocument()
   })
@@ -65,7 +66,8 @@ describe("FileUploadDropzone", () => {
     expect(input).toBeDisabled()
 
     await user.click(zone)
-    // No assertion on file picker opening (jsdom can't do that anyway) —
-    // just confirms the click handler doesn't throw when disabled.
+    // Проверки открытия диалога выбора файла нет (в jsdom это всё равно
+    // невозможно) — подтверждается лишь то, что обработчик клика не падает
+    // в выключенном состоянии.
   })
 })

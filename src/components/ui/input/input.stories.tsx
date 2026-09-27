@@ -15,9 +15,8 @@ import { type Viewport } from "@/lib/viewport"
 import { Input, type InputProps } from "./input"
 import type { MaskName } from "./mask"
 
-/* Панель повторяет «Свойства компонента» `ELK / input` (компонент-сет
-   70303:80291, таблица 70303:79879): Size / State / Type / Add /
-   Show Error Text / Mask.
+/* Панель повторяет «Свойства компонента» `ELK / input`: Size / State /
+   Type / Add / Show Error Text / Mask.
 
    `Size` в Figma — одно свойство с четырьмя значениями: размер (L/S) и форма
    (Desktop/Mobile) там не разъезжаются, в коде это пара `size` +
@@ -69,10 +68,11 @@ const meta = {
     figmaType: optionsArgType<FigmaType>("Type", TYPE_LABELS, "inline-radio"),
     add: optionsArgType<FigmaAdd>("Add", ADD_LABELS, "inline-radio"),
     showErrorText: toggleArgType("Show Error Text"),
-    // `mask` is a plain string union (`MaskName`, imported from ./mask) —
-    // react-docgen can't resolve an imported type alias into an enum, so
-    // it falls back to the same generic "Set object" editor. Pin the real
-    // option list explicitly instead, same fix as Badge's `color`.
+    // `mask` — обычное строковое объединение (`MaskName`, импортированное
+    // из ./mask), а react-docgen не умеет разрешить импортированный
+    // псевдоним типа в перечисление и откатывается на тот же универсальный
+    // редактор «Set object». Вместо этого список значений задан явно — та
+    // же правка, что и с `color` у Badge.
     mask: {
       name: "Mask",
       control: "select",
@@ -100,9 +100,9 @@ const meta = {
     clearable: { control: "boolean" },
     loading: { control: "boolean" },
     type: { control: "select", options: ["text", "password", "number"] },
-    // `label`/`comment`/`error` are `React.ReactNode` but every usage is a
-    // plain string — without this, leaving one unset falls back to a
-    // generic "Set object" JSON editor.
+    // `label`, `comment` и `error` объявлены как `React.ReactNode`, но
+    // везде используются обычными строками. Без этого незаданное значение
+    // откатывается на универсальный JSON-редактор «Set object».
     label: { control: "text", table: { category: "Контент" } },
     placeholder: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
@@ -222,8 +222,8 @@ export const Matrix: Story = {
   ),
 }
 
-/* Masks are behaviour rather than a state, so they get their own canvas
-   instead of a matrix row — each of these is typeable. */
+/* Маски — это поведение, а не состояние, поэтому им отведён свой холст, а
+   не строка матрицы: в каждой из них можно печатать. */
 export const Masks: Story = {
   name: "Маски ввода",
   parameters: { layout: "padded", controls: { disable: true } },

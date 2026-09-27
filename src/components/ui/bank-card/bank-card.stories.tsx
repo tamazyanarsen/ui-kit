@@ -36,18 +36,20 @@ const meta = {
       "inline-radio"
     ),
     skin: optionsArgType("Style", SKIN_LABELS),
-    // `paymentSystem` is a plain string union (`PaymentSystem`, imported
-    // from thumbnail/variants) but react-docgen can't resolve an imported
-    // type alias into an enum, so it falls back to a generic "Set object"
-    // JSON editor — pin the real option list explicitly instead, same fix
-    // as Badge's `color`.
+    // `paymentSystem` — обычное строковое объединение (`PaymentSystem`,
+    // импортированное из thumbnail/variants), но react-docgen не умеет
+    // разрешить импортированный псевдоним типа в перечисление и
+    // откатывается на универсальный JSON-редактор «Set object». Вместо
+    // этого список значений задан явно — та же правка, что и с `color` у
+    // Badge.
     paymentSystem: { control: "select", options: PAYMENT_SYSTEMS, ...CONTENT },
-    // `balance` is `React.ReactNode` but every usage (including the
-    // component's own default) is a plain string — without this, leaving it
-    // unset falls back to the same generic "Set object" JSON editor.
+    // `balance` объявлен как `React.ReactNode`, но везде (включая
+    // собственное умолчание компонента) используется обычной строкой. Без
+    // этого незаданное значение откатывается на тот же универсальный
+    // JSON-редактор «Set object».
     balance: { control: "text", ...CONTENT },
     cardNumber: { control: "text", ...CONTENT },
-    // Shown by the SBP/sticker skins instead of the full masked number.
+    // Показывается обликами СБП и стикера вместо полного маскированного номера.
     last4: { control: "text", ...CONTENT },
     cardholderName: { control: "text", ...CONTENT },
     expiry: { control: "text", ...CONTENT },
@@ -87,8 +89,8 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <div className="flex flex-col gap-2">
-      {/* Skins are the master's own variant axis — SKIN_LABELS carries the
-          designer's own name for each. */}
+      {/* Облики — собственная ось вариантов мастера; SKIN_LABELS несёт
+          авторское имя каждого из них. */}
       <StatesMatrix<BankCardProps>
         columnGroups={[
           {
@@ -134,7 +136,7 @@ export const Matrix: Story = {
         ]}
         render={(props) => <BankCard {...props} />}
       />
-      {/* Every block of the card is independently switchable. */}
+      {/* Каждый блок карты включается независимо. */}
       <StatesMatrix<BankCardProps>
         baseProps={{ skin: "mono" }}
         columnGroups={[

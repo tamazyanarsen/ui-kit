@@ -138,9 +138,9 @@ function Controlled(args: SwitcherProps) {
 }
 
 export const Playground: Story = {
-  // Remount when the pinned value or the tab count changes so the
-  // `defaultValue` control actually moves the (otherwise internally-owned)
-  // selection.
+  // Перемонтируем при изменении закреплённого значения или количества
+  // вкладок, чтобы контрол `defaultValue` действительно двигал выбор,
+  // которым иначе владеет сам компонент.
   render: ({ itemsCount = 3, figmaType = "Text", ...args }) => {
     const items = ITEM_POOL.slice(0, itemsCount).map((item) => ({
       ...item,

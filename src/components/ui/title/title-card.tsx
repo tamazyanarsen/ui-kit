@@ -8,37 +8,39 @@ import { Tag, type TagColor } from "@/components/ui/tag"
 import { TitleHeading } from "./heading"
 import { TitleInformationText } from "./information-text"
 
-// TitleCard — "Заголовок со статусом", `ELK / title-page` with Type=Title
-// Card (node 7593:18875). The page heading used on an entity card: a Назад
-// button, the H2 title with an optional Справка button opposite it, a
-// description, and a status row of Tag + link/label-value pairs.
+// TitleCard — «Заголовок со статусом», то есть `ELK / title-page` с
+// Type=Title Card. Это заголовок страницы, который используется на карточке
+// сущности: кнопка «Назад», заголовок H2 с необязательной кнопкой
+// «Справка» напротив, описание и строка статуса из тега и пар
+// «ссылка/подпись-значение».
 //
-// Per the spec's own note on this variant: "Изменение в дизайне кнопки
-// «справка» не допускается. Кнопка «Назад» выводит на предыдущий экран
-// (страница откуда пришли или же шаг, откуда пришли — когда сценарий имеет
-// Progress Bar). Опциональные элементы: все, кроме Title и Button" — so the
-// help button's look is fixed here rather than exposed as a prop, and every
-// slot except the title is optional.
+// По собственному примечанию макета к этому варианту: «Изменение в дизайне
+// кнопки „справка“ не допускается. Кнопка „Назад“ выводит на предыдущий
+// экран (страница откуда пришли или же шаг, откуда пришли — когда сценарий
+// имеет Progress Bar). Опциональные элементы: все, кроме Title и Button».
+// Поэтому вид кнопки справки зафиксирован здесь, а не вынесен в пропс, и
+// все слоты, кроме заголовка, необязательны.
 //
-// This is a separate component from `TitleRegistry` (Type=Registry) rather
-// than one component behind a `type` prop: the two differ in root gap (16 vs
-// 8), in which slots exist at all, and in what the right-hand side holds
-// (one fixed help button vs a free action group), so a single component
-// would be a union of two disjoint prop sets.
+// Это отдельный компонент от `TitleRegistry` (Type=Registry), а не один
+// компонент за пропсом `type`: они отличаются зазором в корне (16 против
+// 8), самим набором существующих слотов и тем, что стоит справа (одна
+// фиксированная кнопка справки против свободной группы действий). Один
+// компонент оказался бы объединением двух непересекающихся наборов
+// пропсов.
 
 interface TitleCardProps extends Omit<React.ComponentProps<"div">, "title"> {
   title: React.ReactNode
   description?: React.ReactNode
-  /** "Назад" — omit to drop the button entirely. */
+  /** «Назад» — опустите, чтобы убрать кнопку совсем. */
   backLabel?: React.ReactNode
   onBack?: () => void
-  /** "Справка" — its design is fixed by the spec; only the handler varies. */
+  /** «Справка» — её оформление задано макетом, меняется только обработчик. */
   helpLabel?: React.ReactNode
   onHelp?: () => void
   /** The status Tag. */
   tag?: React.ReactNode
   tagColor?: TagColor
-  /** The `Information Text (ELK)` slot next to the tag: a link or pairs. */
+  /** Слот `Information Text (ELK)` рядом с тегом: ссылка или пары значений. */
   information?: React.ReactNode
 }
 
@@ -76,15 +78,15 @@ function TitleCard({
         </Button>
       )}
 
-      {/* Title + description are one 8px-gapped group; the 16px root gap sits
-          between that group, the Назад button and the status row. */}
+      {/* Заголовок и описание — одна группа с зазором 8px; корневой зазор
+          16px разделяет эту группу, кнопку «Назад» и строку статуса. */}
       <div className="flex w-full flex-col items-start gap-2">
         <div className="flex w-full items-start gap-12">
           <TitleHeading>{title}</TitleHeading>
           {showHelp && (
-            // `pt-6` on the wrapper, not on the button: Figma aligns the
-            // 32px button optically against the 44px title line rather than
-            // to its top edge.
+            // `pt-6` стоит на обёртке, а не на кнопке: в макете кнопка
+            // 32px выровнена оптически относительно строки заголовка
+            // высотой 44px, а не по её верхнему краю.
             <div className="flex shrink-0 flex-col items-start pt-1.5">
               <Button
                 variant="secondary-white"

@@ -47,7 +47,7 @@ type ItemCount = (typeof ITEM_COUNTS)[number]
    пропсы — это подписи, а не флаги (дизайн-чек №27).
 
    Дизайн-чек Storybook 2 (от Notification до Loader) №1: панель приведена к
-   «Свойствам компонента» `ELK / notification` (таблица 32216:16255):
+   «Свойствам компонента» `ELK / notification`:
 
      State                 Default, Hover, Pressed
      Type                  Not Viewed, Viewed
@@ -78,10 +78,11 @@ const meta = {
   title: "Компоненты/Notification",
   component: NotificationPanel,
   parameters: { layout: "centered" },
-  // title/primaryButtonLabel/secondaryButtonLabel are typed React.ReactNode
-  // but every usage is a plain string — pin a text control so Storybook
-  // doesn't fall back to its "Set object" JSON-editor placeholder when one
-  // is left unset (same fix as tooltip/hint.tsx's `title`).
+  // title, primaryButtonLabel и secondaryButtonLabel объявлены как
+  // React.ReactNode, но везде используются обычными строками: закрепляем
+  // текстовый контрол, чтобы Storybook не откатывался на заглушку
+  // JSON-редактора «Set object», когда значение не задано (та же правка,
+  // что и с `title` в tooltip/hint.tsx).
   argTypes: {
     state: stateArgTypeOf(["default", "hover", "pressed"]),
     viewed: optionsArgType(
@@ -126,7 +127,7 @@ const meta = {
     showPrimaryButton: true,
     showSecondaryButton: true,
     // Дизайн-чек Storybook 2 (от Notification до Loader) №7: «изменить
-    // название кнопок по компоненту». В мастере (32216:16028) основная —
+    // название кнопок по компоненту». В мастере основная —
     // «В центр уведомлений», дополнительная — «Прочитать все (23)».
     primaryButtonLabel: "В центр уведомлений",
     secondaryButtonLabel: "Прочитать все (23)",
@@ -175,9 +176,9 @@ export const Playground: Story = {
   ),
 }
 
-/* The panel is a container; the real variant grid belongs to the row
-   (NotificationItem), so the matrix covers the row and the panel's own
-   arrangements are shown underneath. */
+/* Панель — это контейнер, а настоящая сетка вариантов принадлежит строке
+   (NotificationItem), поэтому матрица покрывает строку, а собственные
+   сборки панели показаны под ней. */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },

@@ -12,7 +12,7 @@ import { Banner, type BannerProps } from "./banner"
 import type { BannerColor, BannerSize } from "./variants"
 
 /**
- * Banner — «Баннер» с канваса Banner, Slider (694:120035). Истории у него не
+ * Banner — «Баннер» с канваса Banner, Slider. Истории у него не
  * было вовсе, хотя это компонент-сет со своей матрицей:
  *
  *   size  desktop big | desktop small | mobile
@@ -30,7 +30,7 @@ const meta = {
   title: "Компоненты/Banner",
   component: Banner,
   parameters: { layout: "padded" },
-  /* `size` в мастере (694:121318) — одно свойство с тремя значениями, и
+  /* `size` в мастере — одно свойство с тремя значениями, и
      мобильное среди них: отдельной оси Desktop/Mobile у баннера нет,
      поэтому контрол `viewport` не нужен — форму задаёт сам размер. */
   argTypes: {

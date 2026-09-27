@@ -3,25 +3,25 @@ import { ChevronUp, X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
-// Chips — "Чипсы": a plain, non-interactive pill for a value with an
-// optional caption above it.
+// Chips — «Чипсы»: обычная неинтерактивная таблетка со значением и
+// необязательной подписью над ним.
 //
-// Chips и Filter — один компонент-сет в Figma («ELK / chips, filter», нода
-// 54887:29179) со свойством `Type` на пять значений. Раньше в коде жило
+// Chips и Filter — один компонент-сет в Figma («ELK / chips, filter») со
+// свойством `Type` на пять значений. Раньше в коде жило
 // только `Type=Chips`, а белый и серый вид считались чужими — «см. компонент
 // Filter». На деле все пять вариантов это одна и та же коробка
 // (`px-16`, радиус 8, значение P1 Medium, gap 8) и отличаются они заливкой,
 // наличием строки подписи и шевроном:
 //
-//   Filter (White)           54887:29180  bg White 101,  hover Grey 106
-//   Filter Subtitle (White)  54887:29200  то же + строка подписи сверху
-//   Filter (Grey)            54887:29185  bg Grey 109,   hover Grey 106
-//   Filter Subtitle (Grey)   54887:29206  то же + строка подписи сверху
-//   Chips                    54887:29212  bg Grey 109,   hover Grey 114
+//   Filter (White)           bg White 101,  hover Grey 106
+//   Filter Subtitle (White)  то же + строка подписи сверху
+//   Filter (Grey)            bg Grey 109,   hover Grey 106
+//   Filter Subtitle (Grey)   то же + строка подписи сверху
+//   Chips                    bg Grey 109,   hover Grey 114
 //
-// State=Active у типов Filter — рамка 2px Blue 223 поверх той же заливки
-// (54887:29390), у Type=Chips рамки нет вовсе: там Active это заливка
-// Grey 114, та же, что и на наведении (54887:29218).
+// State=Active у типов Filter — рамка 2px Blue 223 поверх той же заливки,
+// у Type=Chips рамки нет вовсе: там Active это заливка
+// Grey 114, та же, что и на наведении.
 //
 // `Filter` при этом остаётся отдельным компонентом: он не про вид пилюли, а
 // про поведение — поповер, выбранное значение и сброс. Вид его триггера тот
@@ -141,10 +141,10 @@ function Chips({
       data-open={(showSelect && open) || undefined}
       aria-expanded={showSelect ? open : undefined}
       className={cn(
-        // Design-check #14: rounded-2xl (18px on this kit's custom radius
-        // scale) reads as a full pill at this height — the Figma source
-        // (ui/chips/chips, filter.svg) uses an 8px corner radius throughout,
-        // which is rounded-md here, not rounded-2xl.
+        // Дизайн-чек, замечание 14: rounded-2xl (18px на собственной шкале
+        // радиусов этого кита) при такой высоте читается как полная
+        // таблетка, тогда как источник в макете использует радиус углов 8px
+        // повсюду, а это здесь rounded-md, а не rounded-2xl.
         "group/chips inline-flex w-fit max-w-64 flex-col items-start gap-0 rounded-md whitespace-nowrap transition-colors",
         withSubtitle ? "px-4 py-2" : "px-4 py-1.5",
         // Рамка держится постоянной и прозрачной, чтобы коробка не прыгала на

@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / public transport — 18. Other, набор ALL ICONS (канвас 70326:26).
+// icon / public transport — 18. Other, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function PublicTransport({ size = 16, ...props }: IconProps) {
   if (size === 24) {

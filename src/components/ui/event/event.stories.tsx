@@ -83,9 +83,10 @@ const meta = {
   title: "Компоненты/Event",
   component: Event,
   parameters: { layout: "padded" },
-  // `commentLabel`/`comment`/`buttonLabel` are `React.ReactNode` but every
-  // usage is a plain string — without this, leaving one unset falls back to
-  // a generic "Set object" JSON editor.
+  // `commentLabel`, `comment` и `buttonLabel` объявлены как
+  // `React.ReactNode`, но везде используются обычными строками. Без этого
+  // незаданное значение откатывается на универсальный JSON-редактор
+  // «Set object».
   argTypes: {
     viewport: sizeArgType,
     showSignatories: toggleArgType("Show Signatories"),

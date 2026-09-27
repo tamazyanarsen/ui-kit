@@ -1,15 +1,17 @@
 import { clsx, type ClassValue } from "clsx"
 import { extendTailwindMerge } from "tailwind-merge"
 
-// Without this, twMerge doesn't recognize the custom text-h1..h4/text-p1..p4
-// typography classes (src/styles/theme.css's @theme text-* keys) as font-size
-// utilities — it falls back to bucketing them under "text-color" instead,
-// so combining one with a real color class (e.g. `cn("text-p1 font-medium",
-// "text-[var(--x-fg)]")`) silently drops the size class at runtime instead
-// of merging cleanly. Registering them here fixes that for every consumer.
-// The compound text-pN-{regular,medium,heavy} utilities (one per named
-// Figma paragraph style) go in the same group so they still evict a bare
-// text-h*/text-p* or an earlier compound class passed in via cn() overrides.
+// Без этого twMerge не распознаёт собственные типографские классы кита
+// text-h1..h4 и text-p1..p4 (ключи @theme text-* из src/styles/theme.css)
+// как утилиты размера шрифта: он откатывается и складывает их в корзину
+// «text-color». Из-за этого сочетание такого класса с настоящим классом
+// цвета (например, `cn("text-p1 font-medium", "text-[var(--x-fg)]")`) молча
+// теряет класс размера во время выполнения вместо аккуратного слияния.
+// Регистрация здесь чинит это сразу для всех потребителей.
+// Составные утилиты text-pN-{regular,medium,heavy} (по одной на каждый
+// именованный параграфный стиль макета) попадают в ту же группу, чтобы
+// по-прежнему вытеснять голый text-h*/text-p* или более ранний составной
+// класс, переданный через переопределения в cn().
 // Параметр-generic объявляет ИМЕНА новых групп: без него tailwind-merge
 // принимает в `extend.classGroups` только свои штатные идентификаторы.
 const twMerge = extendTailwindMerge<"focus-ring">({
@@ -25,15 +27,16 @@ const twMerge = extendTailwindMerge<"focus-ring">({
         "text-p3-regular", "text-p3-medium",
         "text-p4-regular", "text-p4-medium",
       ],
-      // Same reasoning for the one custom @theme shadow key ("Universal
-      // shadow" in Figma): unregistered, twMerge reads the bare word as a
-      // shadow *color* rather than the shadow itself, so it would neither
-      // evict nor be evicted by a real shadow class passed through cn().
+      // То же рассуждение и для единственного собственного ключа тени в
+      // @theme («Universal shadow» в макете): незарегистрированным twMerge
+      // читает это слово как *цвет* тени, а не как саму тень, и класс не
+      // вытеснял бы настоящий класс тени, переданный через cn(), и не
+      // вытеснялся бы им.
       shadow: ["shadow-universal"],
-      // `.text-link` only sets text-decoration, but its name would otherwise
-      // be bucketed as a text *color* and silently survive next to a real
-      // one. Filed under text-decoration so it conflicts with underline/
-      // no-underline the way it actually behaves.
+      // `.text-link` задаёт только оформление подчёркивания, но по имени
+      // попал бы в корзину *цвета* текста и молча уцелел бы рядом с
+      // настоящим цветом. Отнесён к text-decoration, чтобы конфликтовать с
+      // underline и no-underline — как он себя и ведёт на деле.
       "text-decoration": ["text-link"],
       // Кольцо фокуса кита (base.css). Обе утилиты пишут один и тот же
       // `outline`, отличаясь только знаком отступа, поэтому должны вытеснять

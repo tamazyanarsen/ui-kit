@@ -1,9 +1,9 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-// Icons named for the glyph they actually are — the previous aliases
-// (`Briefcase as Home`, `Wallet as Landmark`) described icons this set
-// doesn't contain, which made the story look like it used glyphs it never
-// rendered.
+// Значки названы по тому глифу, которым они на самом деле являются:
+// прежние псевдонимы (`Briefcase as Home`, `Wallet as Landmark`) описывали
+// значки, которых в этом наборе нет, и из-за этого стори выглядела так,
+// будто использует глифы, которые никогда не рисовала.
 import { Briefcase, Coins, Settings, Wallet } from "@/icons"
 
 import { StorySection, StoryShowcase } from "@/stories/matrix"
@@ -101,14 +101,13 @@ const meta = {
   title: "Компоненты/Sidebar",
   component: DemoSidebar,
   parameters: { layout: "padded" },
-  // `DemoSidebar` is declared locally in this file rather than imported from
-  // a component module, so react-docgen-typescript doesn't extract its props
-  // — declare every control explicitly.
-  /* Панель повторяет свойства мастеров с канваса Header (666:17):
-     у `ELK / sidebar` (1607:59687) единственная ось `Open`, число пунктов —
-     свойство `Value` вложенного `Sidebar Menu (ELK)` (3715:40685), а
-     состояние и раскрытая группа — оси `Sidebar Item (ELK)` (2314:30680):
-     State и Show Text. */
+  // `DemoSidebar` объявлен локально в этом файле, а не импортирован из
+  // модуля компонента, поэтому react-docgen-typescript не извлекает его
+  // пропсы — объявляем каждый контрол явно.
+  /* Панель повторяет свойства мастеров с канваса Header: у
+     `ELK / sidebar` единственная ось `Open`, число пунктов — свойство
+     `Value` вложенного `Sidebar Menu (ELK)`, а состояние и раскрытая
+     группа — оси `Sidebar Item (ELK)`: State и Show Text. */
   argTypes: {
     // `Open` в макете: развёрнутая панель показывает подписи, свёрнутая —
     // только иконки (`Show Text=Icon` против `Text`).
@@ -159,8 +158,8 @@ function ControlledSidebar({ defaultOpen = false }: { defaultOpen?: boolean }) {
   )
 }
 
-/* The sidebar is a full-height rail whose two forms (56px collapsed vs
-   expanded) are laid out side by side rather than as matrix cells. */
+/* Боковая панель — это полоса во всю высоту, и две её формы (свёрнутая
+   56px против развёрнутой) разложены рядом, а не ячейками матрицы. */
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { layout: "fullscreen", controls: { disable: true } },

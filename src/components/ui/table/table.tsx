@@ -6,22 +6,24 @@ import { TableScrollContext, useHorizontalScrollState } from "./pin"
 import { TableScrollbar } from "./scrollbar"
 import { useBelowReserve } from "./use-below-reserve"
 
-// Table — "Проектирование таблиц ЕЛК" (node 70279:6891). Anatomy per spec: a
-// Title Cell row (the header, `<thead>`) and a Cell grid of data rows
-// (`<tbody>`/`TableRow`). Built on real `<table>`/`<thead>`/`<tbody>`/`<tr>`/
-// `<th>`/`<td>` — the spec's cell "Type" variants (Checkbox/Collapse/Text/
-// Number/Tag/Button) are genuinely heterogeneous per-column content, which
-// real table semantics (row/column screen-reader navigation, `scope="col"`)
-// support directly; nothing in the rest of this kit's div-based components
-// (Item, Accordion List) covers a data grid like this.
+// Table — по документу «Проектирование таблиц ЕЛК». Анатомия по макету:
+// ряд ячеек заголовка (шапка, `<thead>`) и сетка ячеек с данными
+// (`<tbody>` и `TableRow`). Построено на настоящих
+// `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>` и `<td>`: варианты
+// свойства «Type» у ячейки (Checkbox, Collapse, Text, Number, Tag, Button)
+// — это действительно разнородное содержимое по колонкам, а настоящая
+// семантика таблицы (навигация по строкам и колонкам в скринридере,
+// `scope="col"`) поддерживает такое напрямую. Ничто из остальных
+// компонентов кита на div (Item, Accordion List) сетку данных такого рода
+// не покрывает.
 //
 // Здесь — только каркас таблицы. Ячейки живут рядом: шапка в `head-cell.tsx`,
 // данные в `cell.tsx`, общая пиксельная геометрия обеих — в `geometry.ts`.
 
 interface TableProps extends React.ComponentProps<"table"> {
-  /** `table-layout: fixed`. Required for the spec's truncation and column
-   * resizing to mean anything — with the default `auto` layout a cell grows
-   * to fit its content instead of clipping it. */
+  /** `table-layout: fixed`. Без него обрезка текста и изменение ширины
+   * колонок из макета лишены смысла: при раскладке `auto` по умолчанию
+   * ячейка растёт под содержимое, а не подрезает его. */
   fixed?: boolean
   /**
    * Липкая шапка: «Шапка (закрепляется всегда при достижении верха вьюпорта,
@@ -72,7 +74,7 @@ interface TableProps extends React.ComponentProps<"table"> {
    */
   gridLines?: boolean
   className?: string
-  /** Styles the horizontally scrolling viewport that wraps the table. */
+  /** Стили для горизонтально прокручиваемой области, оборачивающей таблицу. */
   containerClassName?: string
   containerRef?: React.Ref<HTMLDivElement>
 }
@@ -173,22 +175,22 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return <tbody data-slot="table-body" className={className} {...props} />
 }
 
-// Row states ("Варианты — Line Fill", node 70279:7145): Default has no fill,
-// Hover/Active are plain CSS `:hover`/`:active` — but *only on a row that
-// navigates somewhere*, since the spec says "если переход невозможен, строка
+// Состояния строки («Варианты — Line Fill»): у Default заливки нет, Hover и
+// Active — обычные `:hover` и `:active` в CSS, но *только у строки, которая
+// куда-то ведёт*, потому что макет говорит: «если переход невозможен, строка
 // не меняет цвет и сохраняет стандартный курсор, исключая состояния
-// наведения и активности", hence the explicit `clickable` prop. `selected`
-// is the multi-select fill (checkbox checked) and `added` marks a
-// just-created row, which fades itself out over 2000ms (see `--table-added`
-// keyframes in styles/base.css).
+// наведения и активности», — отсюда и явный пропс `clickable`. `selected` —
+// это заливка множественного выбора (флажок отмечен), а `added` помечает
+// только что созданную строку, которая сама затухает за 2000 мс (см.
+// ключевые кадры `--table-added` в styles/base.css).
 interface TableRowProps extends React.ComponentProps<"tr"> {
-  /** Multi-select fill (the row's checkbox is checked). */
+  /** Заливка множественного выбора (флажок строки отмечен). */
   selected?: boolean
-  /** "Added" — a just-created row. The highlight lives 2000ms: 1000ms static
-   * then 1000ms fading out, per "Добавление новой строки/строк". */
+  /** «Added» — только что созданная строка. Подсветка живёт 2000 мс: 1000 мс
+   * статично, затем 1000 мс затухает, по разделу «Добавление новой строки/строк». */
   added?: boolean
-  /** The row navigates to a detail page: enables the Hover/Active fills and
-   * the pointer cursor. Without it the spec keeps the row inert. */
+  /** Строка ведёт на страницу детального просмотра: включает заливки Hover
+   * и Active и курсор-указатель. Без этого макет оставляет строку инертной. */
   clickable?: boolean
 }
 
@@ -206,9 +208,9 @@ function TableRow({
       data-added={added || undefined}
       data-clickable={clickable || undefined}
       className={cn(
-        // Every row carries an explicit fill rather than inheriting the
-        // table's: pinned cells paint themselves with `bg-inherit`, so a
-        // transparent row would let the scrolling columns show through them.
+        // Каждая строка несёт явную заливку, а не наследует заливку
+        // таблицы: закреплённые ячейки красят себя через `bg-inherit`, и
+        // сквозь прозрачную строку прокручиваемые колонки просвечивали бы.
         "bg-[var(--table-bg)] transition-colors",
         // Выбранная чекбоксом строка — Grey 124. Состояния `Selected` в сете
         // «line fill» нет: цвет снят с макетов режима множественного выбора.
@@ -227,13 +229,13 @@ function TableRow({
         // бьёт `hover:` и возвращает строку в 124.
         clickable &&
           "cursor-pointer hover:bg-[var(--table-row-hover-bg)] active:bg-[var(--table-row-active-bg)]",
-        // "Hover, работа с кнопкой действий (изменения от 19.12.2025):
+        // «Hover, работа с кнопкой действий (изменения от 19.12.2025):
         // Строка также меняет цвет — для понимания пользователя, к какой
-        // именно строке относятся раскрытые действия." The fill has to
-        // outlive the cursor, which moves off the row and onto the portalled
-        // menu, so it keys off the trigger's own open state rather than
-        // `:hover`. Independent of `clickable`: this is about attributing the
-        // open menu, not about navigating.
+        // именно строке относятся раскрытые действия». Заливка обязана
+        // пережить курсор, который уходит со строки на меню в портале,
+        // поэтому она завязана на собственное состояние открытия триггера, а
+        // не на `:hover`. С `clickable` это не связано: речь о том, чтобы
+        // показать принадлежность открытого меню, а не о переходе.
         "has-[[data-popup-open]]:bg-[var(--table-row-hover-bg)]",
         className
       )}

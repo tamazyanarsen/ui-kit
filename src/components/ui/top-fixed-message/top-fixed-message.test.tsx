@@ -56,7 +56,7 @@ describe("TopFixedMessage", () => {
           <TopFixedMessage text="Сообщение" showIcon={false} />
         </Desktop>
       )
-      // Only the close (X) icon remains once the leading alert icon is hidden.
+      // Когда ведущий значок предупреждения скрыт, остаётся только крестик закрытия.
       expect(container.querySelectorAll("svg")).toHaveLength(1)
     })
 

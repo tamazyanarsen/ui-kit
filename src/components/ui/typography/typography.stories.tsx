@@ -1,11 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 /**
- * Type scale digitized from ui/typography/01. Typography Object Sans.svg (Figma export,
- * "Actual new" — outlined-text vector, sliced into PNG strips and read visually since the
- * source has no extractable <text> nodes). Size/line-height/spacing are exact spec values;
- * "spacing" is the spec's own third column (paragraphSpacing, px) — kept under a neutral
- * label since the export UI mislabels it "Border".
+ * Типографская шкала, снятая с выгрузки макета «01. Typography Object Sans»
+ * (помечена «Actual new»; это вектор с обведённым текстом, нарезанный на
+ * растровые полосы и прочитанный глазами, потому что извлекаемых узлов
+ * <text> в источнике нет). Размер, интерлиньяж и spacing — точные значения
+ * макета; «spacing» — это его собственная третья колонка (paragraphSpacing,
+ * px), оставленная под нейтральной подписью, потому что интерфейс выгрузки
+ * ошибочно называет её «Border».
  */
 interface TypeStyle {
   name: string
@@ -65,7 +67,7 @@ const SECTIONS: TypeSection[] = [
 
 /* Дизайн-чек №2: в Figma стили именованы с указанием платформы —
    `Desktop. Заголовок/H1 Medium` против `Mobile. Заголовок/H1 Medium Mobile`
-   (проверено на нодах 29445:37264 и 29445:37404). Подпись под образцом
+   (проверено на обоих символах). Подпись под образцом
    повторяет это имя, иначе мобильную колонку не отличить от десктопной. */
 function styleLabel(name: string, mode: "desktop" | "mobile") {
   return mode === "mobile" ? `${name} Mobile` : name
@@ -100,7 +102,7 @@ function TypeTable({ mode }: { mode: "desktop" | "mobile" }) {
   return (
     <div className="flex flex-1 flex-col gap-8">
       {/* Дизайн-чек №1: на канвасе Figma колонки подписаны отдельным рядом
-          «Desktop» / «Mobile» (нода 29445:37212) — без него непонятно, какая
+          «Desktop» / «Mobile» — без него непонятно, какая
           из двух таблиц какая. */}
       <h2 className="text-h4 text-[#252628]">{mode === "desktop" ? "Desktop" : "Mobile"}</h2>
       {SECTIONS.map((section) => (

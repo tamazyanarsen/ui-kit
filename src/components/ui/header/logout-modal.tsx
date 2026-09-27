@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 
-// Logout confirmation — fixed copy per the spec ("Выйти из личного
-// кабинета?" / "Для повторного входа потребуется авторизация"), fully
-// controlled from outside since it's triggered from two different places
-// in Header (ProfileMenu's "Выйти" item, and Employee's standalone logout
-// icon button) rather than owning its own trigger.
+// Подтверждение выхода — текст зафиксирован макетом («Выйти из личного
+// кабинета?» и «Для повторного входа потребуется авторизация»), а само окно
+// полностью управляется снаружи, потому что вызывается из двух разных мест
+// в Header (пункт «Выйти» в ProfileMenu и отдельная кнопка-значок выхода у
+// Employee), а не владеет своим триггером.
 interface LogoutModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void

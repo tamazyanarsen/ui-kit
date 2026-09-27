@@ -13,13 +13,14 @@ import {
   type InformerSolid,
 } from "./variants"
 
-// Informer — "Уведомление": a notification for use inside a content
-// block. Noticeable but doesn't block the user's work; its size auto-fits
-// the text. Width: min 360px, max unlimited (min drops to 240px for the
-// link-only variant used in modals, per the spec's own exception note —
-// callers control that via `className`, this component doesn't clamp
-// width itself). Date/description/buttons/cross are all optional — the
-// spec's minimal form is just icon + Title.
+// Informer — «Уведомление»: сообщение для показа внутри контентного
+// блока. Заметное, но не блокирующее работу пользователя; размер
+// подстраивается под текст. Ширина: минимум 360px, максимум не ограничен
+// (минимум падает до 240px у варианта со ссылкой, который используется в
+// модальных окнах, — так записано в исключении самого макета). Шириной
+// управляет вызывающий код через `className`, сам компонент её не
+// зажимает. Дата, описание, кнопки и крестик необязательны: минимальная
+// форма в макете — это значок плюс заголовок.
 interface InformerProps {
   icon?: InformerIcon
   /**
@@ -74,12 +75,12 @@ function Informer({
   return (
     <div
       data-slot="informer"
-      // Design-check #27: padding/icon-gap read directly off the anatomy
-      // sheet (ui/message/informer) — 24px padding (was 16, p-4) and a 16px
-      // gap between the icon and the text column (was 12, gap-3).
-      // Size=Mobile is a 328px card with 16px padding, Size=Desktop a
-      // 592px one (min 400) with 24px — the min-width was 360 and the
-      // padding was desktop-only.
+      // Дизайн-чек, замечание 27: отступ и зазор до значка прочитаны прямо
+      // с листа анатомии — отступ 24px (был 16, p-4) и зазор 16px между
+      // значком и текстовой колонкой (был 12, gap-3).
+      // Size=Mobile — карточка 328px с отступом 16px, Size=Desktop — 592px
+      // (минимум 400) с отступом 24px; прежде минимальная ширина была 360, а
+      // отступ задавался только для десктопа.
       // ⚠️ Минимум взят `min(400px, 100%)`, а не голыми 400px. Дизайн-чек от
       // 07.09, замечание 28: «Информер не должен вылезать за пределы блока…
       // у информера не должно быть макс ширины, он должен встроиться в
@@ -126,9 +127,9 @@ function Informer({
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              {/* Mobile steps the whole text block down one notch:
-                  Title 14/20 and date/description 12/16 (Size=Mobile,
-                  node 70240:35984), against 16/24 and 14/20 on desktop. */}
+              {/* Мобильная форма опускает весь текстовый блок на ступень:
+                  заголовок 14/20 и дата с описанием 12/16 при Size=Mobile
+                  против 16/24 и 14/20 на десктопе. */}
               <span className="text-p2-medium text-[var(--informer-title-fg)] desktop:text-p1-medium">
                 {title}
               </span>
@@ -169,12 +170,12 @@ function Informer({
             </div>
           )}
         </div>
-        {/* The cross is a sibling of the whole text Box in the master
-            (v2.0.5, node 70240:35984) — one 16px-gap row of
-            [icon 24][Box][cross] — not a child of the title line. Its
-            `py-1` wrapper is what centres the 16px glyph against the 24px
-            status icon; nested in the title row it sat 4px high, and the
-            gap was 12px instead of 16. */}
+        {/* Крестик в мастере (v2.0.5) — сосед всей текстовой коробки, то
+            есть одна строка с зазором 16px из [значок 24][коробка]
+            [крестик], а не ребёнок строки заголовка. Его обёртка с `py-1`
+            и центрует глиф 16px относительно значка статуса 24px; будучи
+            вложенным в строку заголовка, он стоял на 4px выше, а зазор был
+            12px вместо 16. */}
         {showCross && (
           <span className="flex shrink-0 items-center py-1">
             <CloseCross

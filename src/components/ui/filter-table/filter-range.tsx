@@ -5,14 +5,14 @@ import { Input } from "@/components/ui/input"
 
 import { FilterShell, filterApplyLabel } from "./shell"
 
-// FilterRange — "Раскрытый фильтр сумм и количеств" (node 70295:22796).
+// FilterRange — «Раскрытый фильтр сумм и количеств».
 //
-// "Ширина раскрытого фильтра – 384 px. Валидация производстися на обоих
+// «Ширина раскрытого фильтра – 384 px. Валидация производстися на обоих
 // полях, но отображется только на втором поле с универсальным текстом
-// (независимо от валюты)" — hence a single `error` prop that always renders
-// under the second field no matter which one failed. The master draws the
-// two inputs 352px wide inside a 16px-padded box, then a divider and the
-// footer.
+// (независимо от валюты)» — отсюда единственный пропс `error`, который
+// всегда рисуется под вторым полем, независимо от того, какое из них не
+// прошло проверку. Мастер рисует два поля шириной 352px внутри коробки с
+// отступом 16px, затем разделитель и подвал.
 
 interface FilterRangeProps {
   label: React.ReactNode
@@ -21,7 +21,7 @@ interface FilterRangeProps {
   value?: { from: string; to: string }
   defaultValue?: { from: string; to: string }
   onValueChange?: (value: { from: string; to: string }) => void
-  /** Universal validation message, always shown on the second field. */
+  /** Универсальное сообщение о проверке, всегда показывается у второго поля. */
   error?: React.ReactNode
   /** Currency form: "в маске полей ввода добавляется инпут". */
   suffix?: React.ReactNode

@@ -49,7 +49,7 @@ function TabButton({
     >
       <span
         className={cn(
-          // Weight lives in TEXT_SIZE's text-pN-medium below, not here.
+          // Насыщенность живёт в text-pN-medium внутри TEXT_SIZE ниже, а не здесь.
           "flex items-center whitespace-nowrap transition-colors",
           item.badge !== undefined ? "gap-2" : "gap-1",
           "text-[var(--tabs-fg)] group-hover:text-[var(--tabs-fg)]",

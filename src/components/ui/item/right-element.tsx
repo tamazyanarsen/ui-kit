@@ -6,12 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Toggle } from "@/components/ui/toggle"
 import { Tooltip } from "@/components/ui/tooltip"
 
-// Right-element hit areas (per the spec's own "Активные области" section):
-// Navigation/Accordion(Select)/Check/Text/None have NO separate hit area —
-// the whole row is one click target. Information/Toggle/Checkbox DO have
-// their own isolated hit area and must not also fire the row's onClick, so
-// those three go through `IsolatedControl` (same technique as
-// AccordionListItem's nested Button/Checkbox).
+// Области нажатия у правых элементов (по разделу макета «Активные
+// области»): у Navigation, Accordion (Select), Check, Text и None
+// отдельной области НЕТ — целью клика служит вся строка. А у Information,
+// Toggle и Checkbox собственная изолированная область ЕСТЬ, и они не
+// должны заодно вызывать onClick строки, поэтому эти три идут через
+// `IsolatedControl` (тот же приём, что и у вложенных Button и Checkbox в
+// AccordionListItem).
 
 type RightElementType =
   | "none"
@@ -70,11 +71,12 @@ function RightElement({
   checkboxChecked,
   onCheckboxChange,
 }: RightElementProps) {
-  // Round-2 audit: the disabled "icon / arrow next chevron" asset on the
-  // master "ELK / item" component is a distinct fill (#C8C8CB, same as
-  // --item-value-fg-disabled) rather than the default's #999999 dimmed via
-  // opacity — matches the same literal-recolor (not opacity-fade) pattern
-  // already used for the Value/Comment text right above.
+  // Второй проход: у выключенного ассета «icon / arrow next chevron» на
+  // мастере «ELK / item» своя собственная заливка (#C8C8CB, та же, что у
+  // --item-value-fg-disabled), а не приглушённый прозрачностью #999999 из
+  // умолчания. Это совпадает с той же схемой «литеральная перекраска, а не
+  // затухание прозрачностью», которая уже применена к тексту значения и
+  // комментария чуть выше.
   const iconColorClass = disabled
     ? "text-[var(--item-value-fg-disabled)]"
     : "text-[var(--item-icon-fg)]"
@@ -134,9 +136,9 @@ function RightElement({
               disabled={disabled}
               aria-label="Информация"
               className={cn(
-                // "активная область иконки справа 16х44 px" — tall enough to
-                // hit comfortably, but only as wide as the icon so it
-                // doesn't eat 28px of the row's right edge.
+                // «активная область иконки справа 16х44 px» — достаточно
+                // высокая, чтобы попадать удобно, но шириной ровно со
+                // значок, чтобы не съедать 28px у правого края строки.
                 "flex h-11 w-4 shrink-0 items-center justify-center outline-none focus-visible:focus-ring",
                 iconColorClass
               )}

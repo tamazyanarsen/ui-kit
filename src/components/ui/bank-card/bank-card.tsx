@@ -7,13 +7,14 @@ import { useToast } from "@/components/ui/toast-message"
 import { CardBack, CardFace, type BankCardSize } from "./faces"
 import type { BankCardSkin } from "./variants"
 
-// BankCard — "ELK / cards": the full bank-card visual (not to be confused
-// with the unrelated `Card` account-row component). Tapping the face flips
-// to the back (спецификация: "по нажатию на иконку eye раскрывается номер
-// карты или CVC/CVV-код. Одновременно оба значения в полях не могут быть
-// открытыми"); revealing either value simultaneously copies it and shows a
-// toast (спецификация: "Одновременно с раскрытием должно происходить
-// копирование").
+// BankCard — «ELK / cards»: полный внешний вид банковской карты (не путать
+// с посторонним компонентом `Card`, который рисует строку счёта). Нажатие на
+// лицевую сторону переворачивает карту на обратную (спецификация: «по
+// нажатию на иконку eye раскрывается номер карты или CVC/CVV-код.
+// Одновременно оба значения в полях не могут быть открытыми»), а раскрытие
+// любого из значений одновременно копирует его и показывает тост
+// (спецификация: «Одновременно с раскрытием должно происходить
+// копирование»).
 //
 // Дизайн-чек №16: артворк каждой карты — настоящий векторный ассет из
 // Figma (см. ./variants.ts). Прежний комментарий здесь утверждал, что

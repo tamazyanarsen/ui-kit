@@ -22,8 +22,9 @@ describe("Header", () => {
     render(<Header type="client" navItems={NAV_ITEMS} organizations={ORG_ONE} />)
     expect(screen.getByRole("button", { name: "Меню" })).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Создать" })).toBeInTheDocument()
-    // The always-rendered off-screen measurement copy (see useOverflowCount)
-    // duplicates every nav item, so this legitimately renders twice.
+    // Всегда отрисованная закадровая копия для замеров (см.
+    // useOverflowCount) дублирует каждый пункт навигации, поэтому здесь
+    // законно отрисовывается дважды.
     expect(screen.getAllByText("Рублёвые операции").length).toBeGreaterThan(0)
   })
 

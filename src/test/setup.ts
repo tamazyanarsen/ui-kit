@@ -2,12 +2,13 @@ import { afterEach } from "vitest"
 import { cleanup } from "@testing-library/react"
 import "@testing-library/jest-dom/vitest"
 
-// jsdom implements neither of these, but the kit targets real browsers and
-// several components depend on them (ModalBody and Input observe their own
-// box with ResizeObserver; Input gates its desktop-only overflow Tooltip on
-// a media query). Stub them here rather than defensively branching in every
-// component. Both stubs are inert: nothing resizes in jsdom, and the media
-// query always reports "no match" so tests see the mobile form.
+// jsdom не реализует ни то, ни другое, но кит нацелен на настоящие
+// браузеры, и несколько компонентов от этого зависят (ModalBody и Input
+// наблюдают за своей коробкой через ResizeObserver, а Input включает свою
+// подсказку о переполнении только на десктопе по медиазапросу). Ставим
+// заглушки здесь, а не разводим защитные ветки в каждом компоненте. Обе
+// заглушки инертны: в jsdom ничто не меняет размеры, а медиазапрос всегда
+// сообщает «не совпало», поэтому тесты видят мобильную форму.
 if (!("ResizeObserver" in globalThis)) {
   globalThis.ResizeObserver = class {
     observe() {}

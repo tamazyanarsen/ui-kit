@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / phone in coming — 11. Call Message, набор ALL ICONS (канвас 70326:26).
+// icon / phone in coming — 11. Call Message, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function PhoneInComing({ size = 16, ...props }: IconProps) {
   if (size === 24) {

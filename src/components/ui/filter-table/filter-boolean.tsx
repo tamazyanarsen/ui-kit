@@ -3,16 +3,17 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { filterTablePillClass } from "./filter-table"
 
-// FilterBoolean — «Булев фильтр» (node 70295:22807).
+// FilterBoolean — «Булев фильтр».
 //
-// "Не имеет выпадающего окна и срабатывает по значению «Истина». Примеры
+// «Не имеет выпадающего окна и срабатывает по значению „Истина“. Примеры
 // использования: Ненулевой баланс — система должна показать все счета,
-// баланс которых выше нуля."
+// баланс которых выше нуля».
 //
-// So this one is not a FilterShell at all: with no popup there is no trigger
-// to anchor, no Apply/Reset pair and no value to display — it is a toggle
-// pill that is either on ("фильтр действует") or off ("фильтр не действует"),
-// drawn with the same `ELK / filter-table` fill as every other chip.
+// То есть это вообще не FilterShell: раз всплывающего окна нет, то нет ни
+// триггера, который надо заякорить, ни пары «Применить/Сбросить», ни
+// значения для показа. Это таблетка-переключатель, которая либо включена
+// («фильтр действует»), либо выключена («фильтр не действует»), нарисованная
+// той же заливкой `ELK / filter-table`, что и любой другой чип.
 
 interface FilterBooleanProps
   extends Omit<

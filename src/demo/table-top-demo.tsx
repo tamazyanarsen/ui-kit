@@ -41,9 +41,10 @@ const SORT_OPTIONS = [
   { value: "asc", label: "По возрастанию" },
 ]
 
-// "Скачать" — a labeled dropdown trigger (Button + Menu), distinct from
-// `ButtonMenuOverflow` (which is fixed to an icon-only "..." trigger) — the
-// spec's own anatomy shows this as a text button with a PDF/XLSX list.
+// «Скачать» — триггер выпадающего списка с подписью (Button плюс Menu), и
+// это не `ButtonMenuOverflow` (тот жёстко привязан к триггеру «...» только
+// со значком): собственная анатомия макета показывает здесь текстовую
+// кнопку со списком PDF и XLSX.
 function DownloadMenu() {
   return (
     <MenuPrimitive.Root modal={false}>
@@ -111,9 +112,9 @@ function TableTopFilterSettingExample() {
         onValueChange={setTab}
       />
       <TableTopToolbar>
-        {/* Figma's search field is a fixed 260px column inside the filter
-            row; Input's own root is always w-full, so the width lives on a
-            wrapper.
+        {/* Поле поиска в макете — колонка фиксированной ширины 260px внутри
+            строки фильтров, а собственный корень Input всегда w-full,
+            поэтому ширина живёт на обёртке.
 
             Дизайн-чек «Storybook 3», замечание 3: до фильтров 16 — зазор
             строки 8 плюс собственные 8 у обёртки поиска (268 = 260 + 8). */}
@@ -186,8 +187,9 @@ function TableTopFilterSettingExample() {
   )
 }
 
-// Filter Select variant — same info line, but the right slot is a sort
-// Select ("По убыванию") instead of Скачать/Настроить столбцы.
+// Вариант Filter Select — та же информационная строка, но в правом слоте
+// стоит Select сортировки («По убыванию») вместо «Скачать» и «Настроить
+// столбцы».
 function TableTopFilterSelectExample() {
   const [sort, setSort] = React.useState<string | null>("desc")
 

@@ -1,32 +1,34 @@
 import * as React from "react"
 
-// Column pinning — "Прокрутки и закрепления" (Проектирование таблиц ЕЛК,
-// node 70279:7616). The spec pins a table on three sides:
+// Закрепление колонок — раздел «Прокрутки и закрепления» документа
+// «Проектирование таблиц ЕЛК». Макет закрепляет таблицу с трёх сторон:
 //
-//   • the header row (always, once it reaches the top of the viewport),
-//   • the leading columns (situational, "сохранять в поле зрения первые
-//     столбцы для таблиц с большим количеством столбцов"),
-//   • the trailing action column (situational, "Действия всегда размещаются
+//   • строка шапки (всегда, как только доходит до верха вьюпорта),
+//   • ведущие колонки (по ситуации, «сохранять в поле зрения первые
+//     столбцы для таблиц с большим количеством столбцов»),
+//   • замыкающая колонка действий (по ситуации, «Действия всегда размещаются
 //     с правой стороны — независимо от того, поместился ли остальной контент
-//     по горизонтали").
+//     по горизонтали»).
 //
-// All three are `position: sticky` on the cells themselves rather than
-// overlay layers: a real `<table>` keeps its column widths in one shared
-// layout, so a floated copy of the pinned columns would have to be measured
-// and re-synced on every resize.
+// Все три сделаны через `position: sticky` на самих ячейках, а не
+// наложенными слоями: у настоящей `<table>` ширины колонок живут в одной
+// общей раскладке, поэтому всплывающую копию закреплённых колонок
+// приходилось бы замерять и пересинхронизировать на каждое изменение
+// размера.
 //
-// The horizontal scrollbar "располагается между закреплёнными столбцами",
-// and each pinned block casts the kit's Universal shadow *only while there
-// is content hidden behind it* — "Если горизонтальная прокрутка находится в
-// крайнем левом положении — не отображается левая подложка с тенью. Если в
-// крайнем правом положении — не отображается правая подложка".
+// Горизонтальная полоса прокрутки «располагается между закреплёнными
+// столбцами», а каждый закреплённый блок отбрасывает универсальную тень
+// кита *только пока за ним действительно скрыто содержимое*: «Если
+// горизонтальная прокрутка находится в крайнем левом положении — не
+// отображается левая подложка с тенью. Если в крайнем правом положении — не
+// отображается правая подложка».
 
 type TablePin = "left" | "right"
 
 interface TableScrollState {
-  /** Scrolled off the left edge, so the left pinned block covers content. */
+  /** Прокручено от левого края, поэтому левый закреплённый блок перекрывает содержимое. */
   scrolledFromStart: boolean
-  /** Not yet at the right edge, so the right pinned block covers content. */
+  /** Правый край ещё не достигнут, поэтому правый закреплённый блок перекрывает содержимое. */
   scrolledFromEnd: boolean
 }
 
@@ -39,7 +41,7 @@ function useTableScrollState(): TableScrollState {
   return React.useContext(TableScrollContext)
 }
 
-/** Tracks whether a scroll container has content hidden on either side. */
+/** Следит, скрыто ли у контейнера прокрутки содержимое с какой-либо стороны. */
 function useHorizontalScrollState(
   ref: React.RefObject<HTMLElement | null>
 ): TableScrollState {
@@ -53,9 +55,9 @@ function useHorizontalScrollState(
     if (!el) return
 
     const measure = () => {
-      // 1px of slack: sub-pixel layout leaves `scrollLeft` a fraction short
-      // of the true maximum, which would keep the right shadow permanently
-      // lit at the end of the track.
+      // Запас в 1px: из-за субпиксельной раскладки `scrollLeft` не
+      // дотягивает до истинного максимума на доли пикселя, и правая тень
+      // горела бы постоянно даже в самом конце дорожки.
       const max = el.scrollWidth - el.clientWidth
       setState((prev) => {
         const next = {
@@ -84,22 +86,22 @@ function useHorizontalScrollState(
 }
 
 interface PinnedCellState {
-  /** `left`/`right` inset for the sticky cell, in px. */
+  /** Отступ `left` или `right` для липкой ячейки, в пикселях. */
   offset: number
-  /** True on the cell at the inner edge of its pinned block — the one that
-   * carries the shadow, so a multi-column pin casts a single shadow. */
+  /** Истинно у ячейки на внутреннем крае своего закреплённого блока — это
+   * она несёт тень, чтобы закреп из нескольких колонок отбрасывал одну. */
   edge: boolean
 }
 
 /**
- * Measures a pinned cell's sticky inset from its own siblings.
+ * Измеряет липкий отступ закреплённой ячейки по её же соседям.
  *
- * `offsetLeft` is unreliable here (a stuck cell reports its shifted box in
- * some engines, which would feed back into its own offset), so the inset is
- * summed from the widths of the cells the pinned block is anchored past —
- * everything before it for a left pin, everything after it for a right pin.
- * That holds because the spec's pinned blocks are always contiguous runs at
- * the start and end of the row.
+ * `offsetLeft` здесь ненадёжен (в некоторых движках залипшая ячейка
+ * сообщает уже смещённую коробку, и это подмешалось бы в её собственный
+ * отступ), поэтому отступ складывается из ширин тех ячеек, мимо которых
+ * закреплённый блок заякорен: всех предшествующих для левого закрепа и всех
+ * последующих для правого. Это работает, потому что закреплённые блоки в
+ * макете всегда идут сплошными отрезками в начале и в конце строки.
  */
 function usePinnedCell<T extends HTMLTableCellElement>(
   pin: TablePin | undefined
@@ -121,9 +123,10 @@ function usePinnedCell<T extends HTMLTableCellElement>(
       if (pin === "left") {
         let sibling = el.previousElementSibling as HTMLElement | null
         while (sibling) {
-          // Fractional width, not `offsetWidth`: a rounded integer leaves a
-          // sub-pixel gap between two adjacent pinned cells, through which
-          // the scrolling columns show as a 1px sliver.
+          // Дробная ширина, а не `offsetWidth`: округлённое целое
+          // оставляет между двумя соседними закреплёнными ячейками
+          // субпиксельный зазор, сквозь который прокручиваемые колонки
+          // просвечивают полоской в 1px.
           offset += sibling.getBoundingClientRect().width
           sibling = sibling.previousElementSibling as HTMLElement | null
         }
@@ -132,9 +135,10 @@ function usePinnedCell<T extends HTMLTableCellElement>(
       } else {
         let sibling = el.nextElementSibling as HTMLElement | null
         while (sibling) {
-          // Fractional width, not `offsetWidth`: a rounded integer leaves a
-          // sub-pixel gap between two adjacent pinned cells, through which
-          // the scrolling columns show as a 1px sliver.
+          // Дробная ширина, а не `offsetWidth`: округлённое целое
+          // оставляет между двумя соседними закреплёнными ячейками
+          // субпиксельный зазор, сквозь который прокручиваемые колонки
+          // просвечивают полоской в 1px.
           offset += sibling.getBoundingClientRect().width
           sibling = sibling.nextElementSibling as HTMLElement | null
         }
@@ -149,8 +153,8 @@ function usePinnedCell<T extends HTMLTableCellElement>(
 
     measure()
 
-    // Observe every cell in the row: a column resize anywhere ahead of (or
-    // behind) this one moves it.
+    // Наблюдаем за каждой ячейкой строки: изменение ширины любой колонки
+    // впереди или позади этой сдвигает её.
     const observer = new ResizeObserver(measure)
     const row = el.parentElement
     if (row) {

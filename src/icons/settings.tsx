@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / settings — набор ALL ICONS (Library-Image, нода 70326:31945).
+// icon / settings — набор ALL ICONS (Library-Image).
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 //
 // ⚠️ Раньше в этом файле лежала СПЛОШНАЯ шестерёнка из чужого набора: она

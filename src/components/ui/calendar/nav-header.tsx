@@ -8,20 +8,21 @@ interface NavHeaderProps {
   onPrev: () => void
   onNext: () => void
   children: React.ReactNode
-  /** Figma's ELK/calendar has two different container paddings: the Day/
-   * Range card is 14px horizontal with an 8px gap down to the weekday row
-   * ("day"), while the Month/Year card is 16px horizontal with a 16px gap
-   * down to the grid ("picker"). Both are baked in here as the header's own
-   * side/bottom padding rather than a parent-level gap. */
+  /** У ELK/calendar в макете два разных отступа контейнера: карточка Day и
+   * Range — 14px по горизонтали с зазором 8px вниз до строки дней недели
+   * («day»), а карточка Month и Year — 16px по горизонтали с зазором 16px
+   * вниз до сетки («picker»). И то и другое зашито здесь как собственные
+   * боковые и нижний отступы шапки, а не как зазор на уровне родителя. */
   variant?: "day" | "picker"
 }
 
-// The prev/next arrows are `ELK / button` instances in Figma (32×32, 16px
-// radius, 16px glyph, white fill) — exactly Button's `icon-sm` geometry, so
-// they render the real Button. They previously hand-rolled a look-alike that
-// borrowed `--calendar-range-bg` (#F4F4F4) for hover, but that token is the
-// *day cell's* hover (Figma grey-109, node 7415:45489); a button instance
-// takes Button's own #EFEFEF hover instead.
+// Стрелки «назад» и «вперёд» в макете — это инстансы `ELK / button`
+// (32×32, радиус 16, глиф 16px, белая заливка), то есть ровно геометрия
+// `icon-sm` у Button, поэтому здесь рисуется настоящий Button. Раньше они
+// были самодельной подделкой, которая брала для наведения
+// `--calendar-range-bg` (#F4F4F4), но этот токен — наведение на *ячейку
+// дня* (grey-109 в макете); инстанс кнопки берёт собственное наведение
+// Button #EFEFEF.
 function NavHeader({ onPrev, onNext, children, variant = "day" }: NavHeaderProps) {
   return (
     <div
@@ -68,10 +69,10 @@ function HeaderLabel({
       </span>
     )
   }
-  // text-p2-medium override: Button's `sm` is text-p3-medium until
-  // `desktop:`, but Figma's Mouth/Year pill is 14px/20 on both the desktop
-  // card and the mobile sheet, so the size is pinned rather than
-  // breakpoint-switched.
+  // Переопределение text-p2-medium: у `sm` в Button до `desktop:` стоит
+  // text-p3-medium, а таблетка месяца и года в макете имеет 14px с
+  // интерлиньяжем 20 и на десктопной карточке, и в мобильной шторке,
+  // поэтому размер закреплён, а не переключается по брейкпоинту.
   return (
     <Button
       variant="secondary-white"

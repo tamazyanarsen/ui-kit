@@ -36,9 +36,9 @@ export function SelectTrigger({
   const invalid = Boolean(error)
   const captionId = comment || error ? `${triggerId}-caption` : undefined
   const floating = size === "lg"
-  // Only actually reserve room when there's a label to float — without one
-  // there's nothing above the value to make space for, so the padding bump
-  // would just sink the text in its own box for no reason.
+  // Место резервируется только тогда, когда есть чему всплывать: без
+  // подписи над значением ничего не появится, и прибавка отступа просто
+  // утопила бы текст в его коробке без всякой причины.
   const hasFloatingLabel = floating && Boolean(label)
 
   return (
@@ -68,16 +68,17 @@ export function SelectTrigger({
             "flex flex-1 items-center gap-2 truncate text-[var(--select-fg)]",
             "group-data-disabled/trigger:text-[var(--select-fg-disabled)]",
             "*:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate",
-            // The floating label already occupies the "empty" position —
-            // don't let SelectValue's own placeholder text show under it.
+            // Плавающая подпись уже занимает «пустую» позицию — не дадим
+            // собственному тексту-заглушке SelectValue показаться под ней.
             label &&
               "group-data-placeholder/trigger:*:data-[slot=select-value]:text-transparent",
-            // Padding lives here (on the value span), not on the trigger
-            // box itself — the box uses `items-center` across the whole
-            // row, so padding on the box would recenter the icons/clear
-            // button too and visibly shift them down on focus. Scoping it
-            // to just this span keeps only the value text pushed down,
-            // making room for the floated label above it.
+            // Отступ живёт здесь, на строке значения, а не на самой
+            // коробке триггера: коробка использует `items-center` по всей
+            // строке, поэтому отступ на ней переcчитал бы по центру и
+            // значки с кнопкой очистки — и они заметно уехали бы вниз при
+            // фокусе. Ограничение отступа этой строкой опускает только
+            // текст значения, освобождая место для всплывшей подписи над
+            // ним.
             hasFloatingLabel &&
               "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
           )}
@@ -97,9 +98,10 @@ export function SelectTrigger({
               type="button"
               aria-label="Очистить"
               onMouseDown={(event) => {
-                // The trigger opens the popup on mousedown, which fires
-                // before onClick — stop it here too or clicking the clear
-                // button also opens the dropdown.
+                // Триггер открывает всплывающее окно по mousedown, а он
+                // срабатывает раньше onClick: останавливаем событие и
+                // здесь, иначе клик по кнопке очистки заодно открывает
+                // список.
                 event.stopPropagation()
               }}
               onClick={(event) => {
@@ -125,9 +127,10 @@ export function SelectTrigger({
           id={captionId}
           className={cn(
             "text-p3-medium",
-            // Aligns with the label/value text inside the trigger, not the
-            // box's outer edge — matches the trigger's own horizontal
-            // padding, which is px-4 at both sizes (see variants.ts).
+            // Выравнивается по тексту подписи и значения внутри триггера,
+            // а не по внешнему краю коробки: совпадает с собственными
+            // горизонтальными отступами триггера, а это px-4 на обоих
+            // размерах (см. variants.ts).
             "px-4",
             error
               ? "text-[var(--select-caption-error-fg)]"

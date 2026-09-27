@@ -26,9 +26,10 @@ describe("TableRow", () => {
     expect(row).toHaveClass("bg-[var(--table-row-active-bg)]")
   })
 
-  // The Added highlight is no longer a static fill: per "Добавление новой
-  // строки/строк" it lives 2000ms (1000 static + 1000 fading), so the row
-  // carries the keyframe animation instead of a background class.
+  // Подсветка Added больше не статичная заливка: по разделу «Добавление
+  // новой строки/строк» она живёт 2000 мс (1000 статично плюс 1000
+  // затухания), поэтому строка несёт анимацию по ключевым кадрам, а не
+  // класс фона.
   it("marks itself added via data attribute and the fading highlight", () => {
     const { container } = render(
       <table>
@@ -75,7 +76,7 @@ describe("Table", () => {
   })
 })
 
-// "Варианты — Line Fill" (node 70279:7145).
+// "Варианты — Line Fill".
 describe("TableRow Line Fill", () => {
   // "если переход невозможен, строка не меняет цвет и сохраняет стандартный
   // курсор, исключая состояния наведения и активности"
@@ -149,8 +150,8 @@ describe("TableRow Line Fill", () => {
   })
 })
 
-// "Прокрутки и закрепления" (node 70279:7616) — pinned cells are sticky and
-// offset by the width of the cells they are anchored past.
+// «Прокрутки и закрепления» — закреплённые ячейки липкие и смещены на
+// ширину тех ячеек, мимо которых заякорены.
 describe("column pinning", () => {
   it("makes pinned cells sticky and leaves the rest alone", () => {
     const { container } = render(

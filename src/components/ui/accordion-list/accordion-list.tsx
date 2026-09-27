@@ -6,15 +6,16 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
-// AccordionList / AccordionListItem — "Content Accordion" from the spec: a
-// bordered list of expandable rows (checkbox + Title/chevron + Subtitle on
-// the left, Description/Button/kebab on the right), as opposed to the
-// standalone card in ./accordion-card.tsx. Clicking anywhere on a row
-// toggles it; the checkbox/button/kebab are real nested controls that stop
-// propagation so they don't also toggle the row (same `nativeButton={false}`
-// + `render={<div/>}` technique SelectTrigger uses for its nested clear
-// button, since Base UI's Trigger is a real <button> by default and can't
-// contain other interactive elements).
+// AccordionList и AccordionListItem — «Content Accordion» из макета:
+// обведённый рамкой список раскрывающихся строк (слева флажок, заголовок с
+// шевроном и подзаголовок, справа описание, кнопка и меню-«кебаб»), в
+// противоположность самостоятельной карточке из ./accordion-card.tsx. Клик
+// в любом месте строки переключает её, а флажок, кнопка и «кебаб» —
+// настоящие вложенные контролы, которые останавливают всплытие, чтобы не
+// переключать заодно и строку (тот же приём `nativeButton={false}` плюс
+// `render={<div/>}`, которым пользуется SelectTrigger для своей вложенной
+// кнопки очистки: триггер в Base UI по умолчанию настоящий <button> и не
+// может содержать других интерактивных элементов).
 
 const ITEM_VALUE = "item"
 
@@ -135,8 +136,8 @@ function AccordionListItem({
             )}
 
             {/* Колонка Title.Subtitle из мастера: `flex-1 flex-col gap-4`,
-                внутри — строка Title (Text + Status) и под ней Subtitle
-                (нода I42675:20084;50449:7206). Status («Подписано») живёт
+                внутри — строка Title (Text + Status) и под ней Subtitle.
+                Status («Подписано») живёт
                 именно здесь, на строке заголовка, а не в группе кнопок —
                 отсюда и претензия дизайн-чека №24, что он «располагается
                 выше чем середина по кнопкам». */}
@@ -237,10 +238,10 @@ function AccordionListItem({
             data-slot="accordion-list-panel"
             className="h-(--accordion-panel-height) overflow-hidden text-p2-medium transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
-            {/* The master puts the content Slot exactly 24px below the
-                header (header ends at 60, Slot starts at 84) and runs it
-                the full width of the row — no bottom or side inset of its
-                own, now that the trigger no longer carries padding. */}
+            {/* Мастер ставит слот содержимого ровно на 24px ниже шапки
+                (шапка заканчивается на 60, слот начинается на 84) и тянет
+                его во всю ширину строки — без собственных отступов снизу и
+                по бокам, раз у триггера отступов больше нет. */}
             <div className="pt-6">
               {children}
             </div>

@@ -38,7 +38,7 @@ function PageLink({
   return (
     // `group/link`, а не hover на самой звезде: в макете незаполненная
     // звезда прозрачна (opacity 0) и проявляется по наведению на всю
-    // строку — см. вариант `Star Container` с opacity-0 в ноде 7890:29955.
+    // строку — см. вариант `Star Container` с opacity-0 в мастере.
     <div data-slot="header-menu-link" className="group/link flex w-full items-start">
       <button
         type="button"
@@ -59,9 +59,9 @@ function PageLink({
           onClick={() => onFavouriteToggle?.(link.value)}
           className={cn(
             // Цвет звезды в макете один и тот же в обоих состояниях —
-            // отличается только заливка контура (см. «Настройку избранного»,
-            // нода 70303:58450, где добавленные разделы помечены такой же
-            // серой звездой, а не брендовой).
+            // отличается только заливка контура (см. «Настройку
+            // избранного», где добавленные разделы помечены такой же серой
+            // звездой, а не брендовой).
             "flex cursor-pointer flex-col items-start py-[3px] pl-1 text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring transition-opacity",
             favourite
               ? "opacity-100"

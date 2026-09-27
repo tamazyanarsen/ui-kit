@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / 6 month — 20. User Interface, набор ALL ICONS (канвас 70326:26).
+// icon / 6 month — 20. User Interface, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Icon6Month({ size = 16, ...props }: IconProps) {
   if (size === 24) {

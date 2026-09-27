@@ -33,9 +33,8 @@ const FORMAT_PRESETS = {
 type ScalePreset = keyof typeof SCALE_PRESETS
 type FormatPreset = keyof typeof FORMAT_PRESETS
 
-/* Панель повторяет «Свойства компонента» `ELK / range input` (компонент-сет
-   687:18338, таблица 31984:19733): Size / State / Show Comment /
-   Show Indicator / Range Line.
+/* Панель повторяет «Свойства компонента» `ELK / range input`: Size /
+   State / Show Comment / Show Indicator / Range Line.
 
    `State` — ось компонент-сета (Default, Hover, Focused, Disabled, Error):
    Disabled и Error задаются пропами, а hover и фокус пропом не выставить —
@@ -90,9 +89,10 @@ const meta = {
       "inline-radio"
     ),
     showErrorText: toggleArgType("Show Error Text"),
-    // comment/error are typed React.ReactNode but every usage is a plain
-    // string — pin text controls so leaving one unset doesn't fall back to
-    // Storybook's "Set object" JSON-editor placeholder.
+    // comment и error объявлены как React.ReactNode, но везде
+    // используются обычными строками: закрепляем текстовые контролы, чтобы
+    // незаданное значение не откатывалось на заглушку JSON-редактора
+    // «Set object» в Storybook.
     label: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
     errorText: { control: "text", table: { category: "Контент" } },
@@ -104,7 +104,7 @@ const meta = {
       options: Object.keys(SCALE_PRESETS),
       table: { category: "Контент" },
     },
-    // Intl.NumberFormat options for the value bubble, e.g. currency.
+    // Параметры Intl.NumberFormat для пузыря со значением, например валюта.
     formatPreset: {
       name: "Формат значения",
       control: "select",

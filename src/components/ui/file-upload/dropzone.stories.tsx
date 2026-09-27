@@ -15,7 +15,7 @@ import { FileUploadDropzone } from "./dropzone"
 type DropzoneProps = ComponentProps<typeof FileUploadDropzone>
 
 /* Панель «Свойства компонента» компонент-сета `ELK / file-upload`
-   (таблица 16029:57793 на канвасе File Upload 677:14056):
+   (таблица на канвасе File Upload):
 
      Size   Desktop, Mobile
      State  Default, Hover, Disabled, Error
@@ -39,9 +39,9 @@ type PlaygroundArgs = Omit<DropzoneProps, "children"> & {
   title?: string
 }
 
-/** Ссылка в подписи — «загрузите файлы» подчёркнуто и в макете
-    (нода I16029:57763;16029:57994), а править Title дизайнер должен целиком,
-    одной строкой. Поэтому фразу подчёркивает витрина, а не компонент. */
+/** Ссылка в подписи — «загрузите файлы» подчёркнуто и в макете, а править
+    Title дизайнер должен целиком, одной строкой. Поэтому фразу подчёркивает
+    витрина, а не компонент. */
 const LINK = "загрузите файлы"
 
 function withUploadLink(title: string) {
@@ -60,7 +60,7 @@ const CONTENT = { table: { category: "Контент" } }
 
 const meta = {
   // Дизайн-чек №26: компонент назывался «Dropzone», в Figma он —
-  // «ELK / file-upload» на канвасе «File Upload» (677:14056). Имя в
+  // «ELK / file-upload» на канвасе «File Upload». Имя в
   // Storybook должно совпадать с Figma, иначе продуктовый разработчик не
   // найдёт компонент по имени из макета. Код-имя `FileUploadDropzone`
   // оставлено: рядом живёт `ELK / files` (список загруженных файлов),

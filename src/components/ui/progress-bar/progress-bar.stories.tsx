@@ -23,7 +23,7 @@ type PlaygroundArgs = Omit<ProgressBarProps, "variant" | "totalSteps"> & {
   steps?: number | "timeline"
 }
 
-/* `Steps` — одно свойство мастера (70333:1940) с одиннадцатью значениями:
+/* `Steps` — одно свойство мастера с одиннадцатью значениями:
    число шагов либо «Timeline». В коде это пара `variant` + `totalSteps`,
    поэтому контрол один, а раскладывает его `render`. */
 const STEPS_LABELS: Record<string, string> = {
@@ -54,17 +54,18 @@ const STATUS_LINE: ProgressBarStatusLine[] = [
   "description",
 ]
 
-/* Дизайн-чек №4 №3-5: контролы повторяют таблицу «Свойства компонента»
-   (70333:2365) — Show Description / Show Status / Show Timeline / Status
+/* Дизайн-чек №4 №3-5: контролы повторяют таблицу «Свойства компонента» —
+   Show Description / Show Status / Show Timeline / Status
    Line / Status / Status Timeline, поэтому они разложены по тем же
    группам, что и блоки макета. */
 const meta = {
   title: "Компоненты/Progress Bar",
   component: ProgressBar,
   parameters: { layout: "padded" },
-  // description/subtitle/statusDescription are typed React.ReactNode but
-  // every usage is a plain string — pin text controls so leaving one unset
-  // doesn't fall back to Storybook's "Set object" JSON-editor placeholder.
+  // description, subtitle и statusDescription объявлены как
+  // React.ReactNode, но везде используются обычными строками: закрепляем
+  // текстовые контролы, чтобы незаданное значение не откатывалось на
+  // заглушку JSON-редактора «Set object» в Storybook.
   argTypes: {
     viewport: sizeArgType,
     steps: optionsArgType("Steps", STEPS_LABELS),
@@ -141,8 +142,9 @@ export const Matrix: Story = {
   parameters: { layout: "fullscreen", controls: { disable: true } },
   render: () => (
     <div className="flex flex-col gap-2">
-      {/* Timeline — a continuous bar whose fill colour is set by
-          `statusTimeline`, independent of the Value colour set by `status`. */}
+      {/* Timeline — непрерывная полоса, цвет заливки которой задаётся
+          `statusTimeline` независимо от цвета значения, заданного
+          `status`. */}
       <StatesMatrix<ProgressBarProps>
         responsive
         stretch

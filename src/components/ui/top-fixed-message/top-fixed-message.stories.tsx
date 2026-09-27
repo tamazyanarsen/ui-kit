@@ -7,14 +7,14 @@ import { ViewportScope, type Viewport } from "@/lib/viewport"
 import { TopFixedMessage, type TopFixedMessageProps } from "./top-fixed-message"
 
 /* Панель повторяет свойства компонент-сета `ELK / top fixed message`
-   (70441:14927, Version 1.0.1, Release 68.34): Size со значениями
+   (Version 1.0.1, Release 68.34): Size со значениями
    «Desktop» и «Mobile», Type со значениями «Red (Error)» и «Blue (System)»
    — ровно теми подписями, что видит дизайнер в правой панели, — плюс
    булевы слоты мастера.
 
    Мобильная форма перестраивается целиком: значок 16 сверху, текст с
    переносом, кнопки вторым рядом, а закрытие — кнопка «Закрыть», а не
-   крестик (ряд кнопок — сет `Buttons Top Fix (ELK)` 70441:14952 с осью
+   крестик (ряд кнопок — сет `Buttons Top Fix (ELK)` с осью
    Type: Two Buttons | Main | Close). Поэтому `Show Icon Close` на мобайле
    показывает кнопку, а не глиф. */
 type PlaygroundArgs = TopFixedMessageProps & { viewport?: Viewport }
@@ -40,9 +40,10 @@ const meta = {
   title: "Компоненты/Top Fixed Message",
   component: TopFixedMessage,
   parameters: { layout: "fullscreen" },
-  // `buttonLabel` is typed React.ReactNode but every usage is a plain string
-  // — pin a text control so leaving it unset doesn't fall back to
-  // Storybook's "Set object" JSON-editor placeholder.
+  // `buttonLabel` объявлен как React.ReactNode, но везде используется
+  // обычной строкой: закрепляем текстовый контрол, чтобы незаданное
+  // значение не откатывалось на заглушку JSON-редактора «Set object» в
+  // Storybook.
   argTypes: {
     viewport: sizeArgType,
     type: optionsArgType(

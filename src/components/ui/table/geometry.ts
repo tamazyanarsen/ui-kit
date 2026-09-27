@@ -1,5 +1,5 @@
 // Пиксельная геометрия таблицы, снятая с мастеров Figma
-// («Проектирование таблиц ЕЛК», node 70279:6891). Все числа и все классы
+// («Проектирование таблиц ЕЛК»). Все числа и все классы
 // отступов собраны здесь одним модулем: высота строки — это максимум по
 // коробкам её ячеек, поэтому один неверный тип растягивает всю строку, и
 // сверять такие правила проще, когда они лежат рядом, а не расползаются по
@@ -56,22 +56,22 @@ const NESTING_INDENT = 16
 const MIN_SCROLLABLE_REST = 160
 
 /**
- * Horizontal padding for one cell. Base is the 8px both sides that keeps
- * every row on the same grid ("Для совпадения левого отступа все строки
- * таблицы используют внутренние паддинги по 8px с обеих сторон"); a pinned
- * block then drops the padding on the side it is anchored to — "Если есть
- * левый закреп — то у закрепа левый паддинг 8px, правый 0. У подвижной части
- * — левый паддинг 0px, правый 8px", and the right pin "не получает
- * дополнительных отступов, поскольку содержит только кнопку с иконкой и
- * имеет строго фиксированную ширину".
+ * Горизонтальные отступы одной ячейки. База — 8px с обеих сторон, что и
+ * держит все строки на одной сетке («Для совпадения левого отступа все
+ * строки таблицы используют внутренние паддинги по 8px с обеих сторон»).
+ * Закреплённый блок затем убирает отступ с той стороны, к которой
+ * заякорен: «Если есть левый закреп — то у закрепа левый паддинг 8px,
+ * правый 0. У подвижной части — левый паддинг 0px, правый 8px», а правый
+ * закреп «не получает дополнительных отступов, поскольку содержит только
+ * кнопку с иконкой и имеет строго фиксированную ширину».
  *
- * Two cell types are exempt because their own master pins their width and
- * would be broken by the grid rule (`ownPadding`): the action cell's 10px
- * ring around a 32px icon button is what makes the pinned column exactly
- * 52px wide, and the body Checkbox cell is `pl-8 pr-16` around its 24px box
- * (48px total) rather than symmetric — read off `ELK / table-cell` in the
- * anatomy frame (node 70279:6915), where Figma's own annotations label the
- * gap after the checkbox as 16.
+ * Два типа ячеек из этого правила исключены, потому что их собственный
+ * мастер закрепляет ширину и правило сетки её сломало бы (`ownPadding`):
+ * кольцо 10px вокруг кнопки-значка 32px в ячейке действий — это именно то,
+ * что делает закреплённую колонку ровно 52px шириной, а ячейка тела с
+ * флажком идёт `pl-8 pr-16` вокруг своей коробки 24px (в сумме 48px), а не
+ * симметрично. Снято с `ELK / table-cell` в кадре анатомии, где собственные
+ * подписи макета помечают зазор после флажка как 16.
  */
 function cellPaddingXClass(pin: TablePin | undefined, ownPadding: boolean) {
   if (ownPadding) return undefined
@@ -94,13 +94,13 @@ function cellPaddingXClass(pin: TablePin | undefined, ownPadding: boolean) {
  */
 const DEFAULT_COLUMN_WIDTH = 200
 
-// Fixed widths for the control columns, straight off their Figma masters:
-// the Checkbox title cell is 48 wide (pl-8 + 24 + gap-15 + the 1px rule),
-// Collapse and Icon are 32 (px-8 around a 16px glyph), and Button/Filler are
-// the 52px of the pinned action block ("столбец ... имеет строго
-// фиксированную ширину"). Content can't establish these under
-// `table-layout: fixed`, where only the first row's declared widths count —
-// without them the checkbox column collapses to its padding.
+// Фиксированные ширины служебных колонок, прямо из их мастеров: ячейка
+// заголовка с флажком шириной 48 (pl-8 + 24 + зазор 15 + линия 1px),
+// Collapse и Icon — 32 (px-8 вокруг глифа 16px), а Button и Filler — это
+// 52px закреплённого блока действий («столбец ... имеет строго
+// фиксированную ширину»). Содержимое задать их не может: при
+// `table-layout: fixed` учитываются только объявленные ширины первой
+// строки, и без них колонка с флажком схлопывается до своих отступов.
 const CONTROL_COLUMN_WIDTH: Partial<Record<TableHeadCellType, number>> = {
   checkbox: 48,
   collapse: 32,
@@ -110,13 +110,14 @@ const CONTROL_COLUMN_WIDTH: Partial<Record<TableHeadCellType, number>> = {
 }
 
 /**
- * Per-type vertical padding of a title cell, pixel-confirmed against the
- * spec's own "ELK / table-title-cell" master: Subtitle is py-[14px] (the
- * default), Checkbox py-3 (12px), Icon and Collapse py-4 (16px around their
- * 16/24px box) and Filler py-3 around a bare 24px divider. Button collapses
- * to a uniform p-2 (8px) since it wraps its own 32px `icon-sm` Button
- * already — that `p-2` also sets the horizontal padding, so
- * {@link headCellPaddingXClass} skips it.
+ * Вертикальные отступы ячейки заголовка по типам, попиксельно сверенные с
+ * мастером «ELK / table-title-cell»: у Subtitle это py-[14px] (по
+ * умолчанию), у Checkbox py-3 (12px), у Icon и Collapse py-4 (16px вокруг
+ * их коробки 16 или 24px), у Filler py-3 вокруг голого разделителя 24px.
+ * Button схлопывается в одинаковый p-2 (8px), поскольку и так оборачивает
+ * собственную кнопку `icon-sm` размером 32px; этот же `p-2` задаёт и
+ * горизонтальные отступы, поэтому {@link headCellPaddingXClass} его
+ * пропускает.
  */
 function headCellPaddingYClass(type: TableHeadCellType) {
   switch (type) {
@@ -154,11 +155,11 @@ function headCellPaddingXClass(
 }
 
 /**
- * Per-type vertical padding of a body cell, so that every one of them lands
- * on the spec's 52px row: Checkbox py-14 around a 24px box, Icon/Collapse
- * py-18 around 16px, Text py-16 around a 20px line, Tag py-15 around the
- * 22px tag and Button p-10 around the 32px icon button (get_design_context
- * on `ELK / table-cell`).
+ * Вертикальные отступы ячейки тела по типам — так, чтобы каждая попадала в
+ * строку 52px из макета: у Checkbox py-14 вокруг коробки 24px, у Icon и
+ * Collapse py-18 вокруг 16px, у Text py-16 вокруг строки 20px, у Tag py-15
+ * вокруг тега 22px и у Button p-10 вокруг кнопки-значка 32px (по мастеру
+ * `ELK / table-cell`).
  */
 function cellPaddingYClass(type: TableCellType) {
   switch (type) {
@@ -179,10 +180,11 @@ function cellPaddingYClass(type: TableCellType) {
 }
 
 /**
- * Column divider — a 1px × 24px rounded rule at the cell's right edge,
- * drawn by `ELK / table-title-cell` itself for every titled type as well as
- * the Filler that sits above the pinned action block ("Филлер размещается
- * над правым закрепленным блоком действий"). Icon and Button have none.
+ * Разделитель колонок — скруглённая линия 1px × 24px у правого края
+ * ячейки. Её рисует сам `ELK / table-title-cell` для всех озаглавленных
+ * типов, а также для филлера, который стоит над закреплённым блоком
+ * действий («Филлер размещается над правым закрепленным блоком действий»).
+ * У Icon и Button её нет.
  */
 function hasColumnDivider(type: TableHeadCellType) {
   return (

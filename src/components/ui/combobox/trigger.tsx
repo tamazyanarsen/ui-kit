@@ -10,10 +10,11 @@ import {
   selectTriggerVariants,
 } from "../select"
 
-// Identical box/label/clear chrome to SelectTrigger (same Figma spec: L
-// 48->56px / S 32px, floating label at L only). Since this popup's value is
-// usually a custom summary ("Выбрано документов: 5"), children are passed
-// straight through rather than requiring a `Combobox.Value` binding.
+// Коробка, подпись и кнопка очистки оформлены точно как у SelectTrigger
+// (тот же макет: L 48→56px, S 32px, плавающая подпись только у L).
+// Поскольку значением этого всплывающего окна обычно служит собственная
+// сводка («Выбрано документов: 5»), дети пробрасываются напрямую, а не
+// требуют привязки к `Combobox.Value`.
 
 interface ComboboxTriggerOwnProps {
   size?: "sm" | "lg"
@@ -43,8 +44,8 @@ export function ComboboxTrigger({
   const invalid = Boolean(error)
   const captionId = comment || error ? `${triggerId}-caption` : undefined
   const floating = size === "lg"
-  // Only actually reserve room when there's a label to float — without one
-  // there's nothing above the value to make space for.
+  // Место резервируется только тогда, когда есть чему всплывать: без
+  // подписи над значением ничего не появится.
   const hasFloatingLabel = floating && Boolean(label)
 
   return (
@@ -77,9 +78,10 @@ export function ComboboxTrigger({
             placeholder &&
               label &&
               "group-data-placeholder/trigger:text-transparent",
-            // See select.tsx's SelectTrigger for why this lives here and
-            // not on the trigger box: padding there would recenter the
-            // icons/clear button too and shift them down on focus.
+            // Почему это живёт здесь, а не на коробке триггера, см. у
+            // SelectTrigger в select.tsx: отступ там переcчитал бы по
+            // центру и значки с кнопкой очистки и увёл бы их вниз при
+            // фокусе.
             hasFloatingLabel &&
               "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
           )}
@@ -114,8 +116,8 @@ export function ComboboxTrigger({
           id={captionId}
           className={cn(
             "text-p3-medium",
-            // Horizontal padding matches the trigger's own px-4 at both
-            // sizes (see select/variants.ts).
+            // Горизонтальный отступ совпадает с собственным px-4 у
+            // триггера на обоих размерах (см. select/variants.ts).
             "px-4",
             error
               ? "text-[var(--select-caption-error-fg)]"

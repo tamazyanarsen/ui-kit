@@ -10,8 +10,8 @@ import { ModalBody } from "./body"
 import { ModalFooter } from "./footer"
 import { Button } from "@/components/ui/button"
 
-// ModalBody measures scroll position via ResizeObserver, which jsdom
-// doesn't implement.
+// ModalBody замеряет положение прокрутки через ResizeObserver, а в jsdom
+// его нет.
 beforeAll(() => {
   vi.stubGlobal(
     "ResizeObserver",

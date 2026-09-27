@@ -12,22 +12,23 @@ import {
   type ProgressBarVariant,
 } from "./variants"
 
-// ProgressBar — "Шкала прогресса". Two variants sharing one Title/Description
-// row and an optional "Status Line" group:
-// - `step` (default): a wizard-style bar split into `totalSteps` (2–10)
-//   equal segments — Done (solid), the current step (Waiting: diagonal
-//   hatch) and None (flat track), i.e. the three states of the
-//   "Line Progress Bar (ELK)" element. Per the spec, a fully solid bar is
-//   never shown — the current step always renders hatched, even on the last
-//   step ("Полностью заполненный индикатор прогресса пользователь никогда
-//   не увидит").
-// - `timeline`: a single continuous fill (0–100 `value`, no steps). Its
-//   color auto-follows the documented ranges (0–50 success, 50–99 attention,
-//   100 error) unless `statusTimeline` overrides it.
-// `status` independently colors the Status Line's Value (Default/Success/
-// Attention/Error/Information) — unrelated to the bar's own fill color.
+// ProgressBar — «Шкала прогресса». Два варианта, у которых общая строка
+// Title/Description и необязательная группа «Status Line»:
+// - `step` (по умолчанию): пошаговая полоса, разбитая на `totalSteps`
+//   (2–10) равных отрезков — Done (сплошной), текущий шаг (Waiting:
+//   диагональная штриховка) и None (пустая дорожка), то есть три состояния
+//   элемента «Line Progress Bar (ELK)». По макету полностью залитая полоса
+//   не показывается никогда: текущий шаг всегда рисуется штриховкой, даже
+//   на последнем шаге («Полностью заполненный индикатор прогресса
+//   пользователь никогда не увидит»).
+// - `timeline`: одна непрерывная заливка (`value` от 0 до 100, без шагов).
+//   Её цвет сам следует описанным диапазонам (0–50 успех, 50–99 внимание,
+//   100 ошибка), если только его не перекрыть через `statusTimeline`.
+// `status` независимо красит значение в Status Line (Default, Success,
+// Attention, Error, Information) и к цвету заливки самой полосы отношения
+// не имеет.
 //
-// Props mirror the Figma property table (70333:2365): Show Description /
+// Пропсы повторяют таблицу свойств компонента: Show Description /
 // Show Status / Show Timeline / Line / Status Line / Status / Status
 // Timeline.
 interface ProgressBarProps {
@@ -60,7 +61,7 @@ function clamp(value: number, min: number, max: number) {
 }
 
 // Дизайн-чек №4 №2: штриховка «Waiting» замерена по Figma (Line Progress
-// Bar (ELK) / Status=Waiting, 70333:2316): полосы идут «/», шаг по
+// Bar (ELK) / Status=Waiting): полосы идут «/», шаг по
 // горизонтали 16px при толщине 6.1px, что на оси градиента даёт период
 // 10px и полосу 3.8px под углом 38.7° к горизонтали. Прежние 3px/6px были
 // вдвое мельче спецификации.
@@ -80,8 +81,8 @@ function StepTrack({
   const notDone = total - current
 
   return (
-    // Design-check #43: 8px per the Figma source (ui/progress-bar/*.svg
-    // rects are all height="8"), not 4px.
+    // Дизайн-чек, замечание 43: по макету высота 8px (во всех
+    // прямоугольниках вектора height="8"), а не 4px.
     <div className="flex h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
       <div
         aria-hidden="true"
@@ -153,10 +154,10 @@ function ProgressBar({
   return (
     <div data-slot="progress-bar" className={cn("flex flex-col gap-2", className)}>
       <div className="flex flex-col gap-1">
-        {/* "Top" (node 70333:2141/70333:1981): Title hugs its content, the
-            trailing Description takes the rest of the row and ellipsizes —
-            the title is the one line that must never be cut. Type shrinks to
-            P1 Medium Mobile (14/20) below `desktop`. */}
+        {/* «Top»: заголовок прижимается к своему содержимому, а замыкающее
+            описание забирает остаток строки и обрезается многоточием —
+            именно заголовок резать нельзя ни при каких условиях. Ниже
+            `desktop` шрифт уменьшается до P1 Medium Mobile (14/20). */}
         <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
           <span className="shrink-0">{title}</span>
           {showDescription && description && (
@@ -175,8 +176,8 @@ function ProgressBar({
       </div>
 
       {(showSubtitle || showStatusDescription) && (
-        // "Status Line (ELK)" (node 70333:2242) — 16px gap, the trailing
-        // description grows and right-aligns.
+        // «Status Line (ELK)» — зазор 16px, замыкающее описание тянется и
+        // прижимается вправо.
         <div className="flex items-center gap-4 text-p2-medium desktop:text-p1-medium">
           {showSubtitle && (
             <span className="shrink-0" style={{ color: STATUS_FG[status] }}>

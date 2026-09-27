@@ -1,8 +1,8 @@
 import type { IconProps } from "./types"
 
 // icon / unchain — «Unchain / Отвязать ссылку», парная к `icon / chain`.
-// Категория «03. Copy Link Share Download Upload», фрейм 70392:5289
-// (Size=16x16 — 70392:5292, Size=24x24 — 70392:5290).
+// Категория «03. Copy Link Share Download Upload», два начертания:
+// Size=16x16 и Size=24x24.
 //
 // Дизайн-чек от 07.09, замечание 1. Начертания взяты из мастера как есть, по
 // обычному конвейеру набора (`download_assets` на сам символ), — вручную тут

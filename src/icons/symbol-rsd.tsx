@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / Symbol / RSD — 12. Currency, набор ALL ICONS (канвас 70326:26).
+// icon / Symbol / RSD — 12. Currency, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function SymbolRsd({ size = 16, ...props }: IconProps) {
   if (size === 24) {

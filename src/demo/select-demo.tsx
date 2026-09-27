@@ -19,10 +19,11 @@ const FRUIT_OPTIONS = [
   { value: "cherry", label: "Cherry" },
 ]
 
-// `SelectTrigger`'s clear (X) button only calls the `onClear` prop — Select
-// has no built-in Clear primitive (unlike Combobox), so an uncontrolled
-// `defaultValue` Select has nothing for `onClear` to reset. Demos that want
-// a working clear button need actual controlled state.
+// Кнопка очистки (крестик) у `SelectTrigger` только вызывает пропс
+// `onClear`: у Select нет встроенного примитива Clear (в отличие от
+// Combobox), поэтому неуправляемому Select с `defaultValue` нечего
+// сбрасывать через `onClear`. Демо, которому нужна работающая кнопка
+// очистки, требует настоящего управляемого состояния.
 function ClearableFruitSelect({
   size,
   error,

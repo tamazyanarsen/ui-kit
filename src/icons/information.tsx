@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / information — 04. Errors Allert Info, набор ALL ICONS (канвас 70326:26).
+// icon / information — 04. Errors Allert Info, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Information({ size = 16, ...props }: IconProps) {
   if (size === 24) {

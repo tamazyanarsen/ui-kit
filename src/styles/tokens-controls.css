@@ -2,13 +2,14 @@
    Ссылаются на палитру (`palette.css`); компоненты ходят только сюда. */
 
 :root {
-  /* Checkbox + multi-select Combobox tokens. Checked fill sampled directly
-     from the "Список" multi-select spec screenshot — it's the same cyan as
-     --btn-primary-bg, kept in its own namespace in case that changes.
-     Standalone Checkbox additionally uses the label/caption tokens below,
-     measured from ui/checkbox/checkbox-1.svg — hover border and the
-     checked-hover fill are notably NOT the same as Combobox's static item
-     checkbox, which has no hover state of its own. */
+  /* Токены Checkbox и множественного выбора в Combobox. Заливка отмеченного
+     состояния снята прямо со скриншота макета «Список» — это тот же
+     голубой, что у --btn-primary-bg, но держится в своём пространстве имён
+     на случай, если тот изменится. Отдельно стоящий Checkbox использует
+     вдобавок токены подписи ниже, снятые с вектора макета. Обратите
+     внимание: рамка на наведении и заливка отмеченного состояния при
+     наведении НЕ совпадают с флажком внутри пункта Combobox — у того
+     собственного состояния наведения нет. */
   --checkbox-bg: var(--white-101);
   --checkbox-border: var(--grey-166);
   --checkbox-border-hover: var(--grey-1514);
@@ -25,14 +26,15 @@
   --checkbox-caption-fg-disabled: var(--grey-166);
   --checkbox-caption-error-fg: var(--red-418);
 
-  /* Radio tokens. Same 24×24 box size, gap, and label/caption palette as
-     Checkbox (measured from ui/radio/radio-1.svg) — pixel-sampled directly
-     from the anatomy PNG since checked/hover circles are drawn as filled
-     paths, not <circle> elements grep can pull colors from. Unchecked is a
-     hollow ring (bg + border, no fill); checked is a SOLID filled disc
-     (bg = the accent color, border transparent) with a contrasting dot on
-     top — not a colored ring like Checkbox's box, confirmed by zooming into
-     the raster (a first pass wrongly assumed a ring here). */
+  /* Токены Radio. Коробка 24×24, зазор и палитра подписи те же, что у
+     Checkbox (сняты с вектора макета). Цвета брались пипеткой с растра
+     страницы анатомии, потому что кружки отмеченного состояния и наведения
+     нарисованы залитыми путями, а не элементами <circle>, из которых можно
+     вытащить цвет поиском. Неотмеченное состояние — полый круг (фон плюс
+     рамка, без заливки); отмеченное — СПЛОШНОЙ залитый диск (фон равен
+     акцентному цвету, рамка прозрачная) с контрастной точкой сверху, а не
+     цветное кольцо, как коробка у Checkbox. Подтверждено увеличением
+     растра: первый проход ошибочно предположил здесь кольцо. */
   --radio-bg: var(--white-101);
   --radio-border: var(--grey-166);
   --radio-border-hover: var(--grey-1514);
@@ -46,18 +48,19 @@
   --radio-label-fg-disabled: var(--grey-284);
   --radio-caption-fg: var(--grey-284);
   --radio-caption-fg-disabled: var(--grey-166);
-  /* Round-2 audit addition: Radio's own Error=True anatomy variant
-     (600:8785 Desktop / 600:8790 Mobile) was previously unimplemented — a
-     prior pass wrongly assumed no error state existed for Radio. Both
-     values are literal matches for Checkbox's --checkbox-border-error /
-     --checkbox-caption-error-fg (same Red 418 swatch, #D74B54). */
+  /* Добавлено во втором проходе: собственный вариант анатомии Radio с
+     Error=True (Desktop и Mobile) не был реализован — прежний проход
+     ошибочно решил, что состояния ошибки у Radio нет. Оба значения
+     литерально совпадают с --checkbox-border-error и
+     --checkbox-caption-error-fg у Checkbox (тот же образец Red 418,
+     #D74B54). */
   --radio-border-error: var(--red-418);
   --radio-caption-error-fg: var(--red-418);
 
-  /* Toggle tokens, measured from ui/toggle/toggle-1.svg. Unlike
-     Checkbox/Radio, the track itself never gets an error color — only the
-     caption text turns red, and it can stack a comment + a separate error
-     line simultaneously (see ToggleField). */
+  /* Токены Toggle, сняты с вектора макета. В отличие от Checkbox и Radio,
+     сама дорожка никогда не окрашивается в цвет ошибки — краснеет только
+     текст подписи, и при этом он может одновременно показывать и
+     комментарий, и отдельную строку ошибки (см. ToggleField). */
   --toggle-track-bg: var(--grey-284);
   --toggle-track-bg-hover: var(--grey-166);
   --toggle-track-checked-bg: var(--blue-223);
@@ -71,13 +74,14 @@
   --toggle-caption-fg-disabled: var(--grey-166);
   --toggle-caption-error-fg: var(--red-418);
 
-  /* Range Input tokens, measured from ui/range input/range Input.svg,
-     cross-checked against the raster (thumb/indicator are filled paths, not
-     colored rects — same trap as Radio). Border follows Input's convention
-     (hover/focused = #999999), not Checkbox/Radio's (#252628) — this is a
-     bordered-box field like Input, not a standalone control. Unlike
-     Checkbox/Radio's colored-border error, error here keeps the box border
-     neutral and only recolors the track/thumb accent + caption text. */
+  /* Токены Range Input, сняты с вектора макета и перепроверены по растру
+     (ползунок и индикатор — залитые пути, а не цветные прямоугольники, та
+     же ловушка, что у Radio). Рамка следует конвенции Input (наведение и
+     фокус — #999999), а не Checkbox и Radio (#252628): это поле в коробке
+     с рамкой, как Input, а не отдельно стоящий контрол. И в отличие от
+     Checkbox и Radio с их цветной рамкой ошибки, здесь ошибка оставляет
+     рамку коробки нейтральной и перекрашивает только акцент дорожки с
+     ползунком и текст подписи. */
   --range-input-bg: var(--white-101);
   --range-input-bg-disabled: var(--grey-114);
   --range-input-border: var(--grey-166);
@@ -85,60 +89,62 @@
   --range-input-border-disabled: var(--grey-166);
   --range-input-label-fg: var(--grey-284);
   --range-input-value-fg: var(--grey-1514);
-  /* Round-2 audit fix: was #C8C8CB. Pixel-sampled the live Disabled/Filled
-     symbol screenshot (14342:39960) — the Value text renders as solid
-     #6D6D6D (grey-517), not the lighter grey used for borders. */
+  /* Исправление второго прохода: стояло #C8C8CB. Пипетка по скриншоту
+     живого символа Disabled/Filled показывает, что текст значения
+     рисуется сплошным #6D6D6D (grey-517), а не более светлым серым,
+     который идёт на рамки. */
   --range-input-value-fg-disabled: var(--grey-517);
-  /* Round-2 audit fix: was #EFEFEF. Pixel-sampled the unfilled portion of
-     the track across Default/Hover/Disabled/Error screenshots (all at the
-     same coordinates, right of the thumb) — consistently #C8C8CB
-     (grey-166), never the lighter #EFEFEF. */
+  /* Исправление второго прохода: стояло #EFEFEF. Пипетка по незаполненной
+     части дорожки на скриншотах Default, Hover, Disabled и Error (во всех
+     случаях в одних и тех же координатах, справа от ползунка) неизменно
+     даёт #C8C8CB (grey-166), а не более светлый #EFEFEF. */
   /* ⚠️ Токен больше НИКТО не красит. Дизайн-чек «Storybook 3», замечание 17:
      незаполненной части у дорожки нет — её роль играет нижняя граница поля
      (--range-input-border). Оставлен как запись цвета на случай, если
      незаполненную часть когда-нибудь вернут; красить им дорожку не нужно. */
   --range-input-track-bg: var(--grey-166);
-  /* Thumb pill color — pixel-sampled #80E3FF (base/blue-223) in every
-     enabled state screenshot (Default/Hover/Focused all identical); this is
-     a static color, not something that recolors on the thumb's own :hover. */
+  /* Цвет таблетки-ползунка: пипеткой #80E3FF (base/blue-223) на скриншотах
+     всех включённых состояний — Default, Hover и Focused одинаковы. Это
+     статичный цвет, а не перекраска при наведении на сам ползунок. */
   --range-input-accent: var(--blue-223);
-  /* Round-2 audit fix: this was previously applied as a Thumb :hover
-     recolor, which pixel-sampling disproves — the Default/Hover/Focused
-     screenshots all show the *indicator* (filled track, left of the thumb)
-     as a constant #2FCEEF while the thumb itself stays #80E3FF; neither
-     changes with the whole-box Hover/Focused state. Renamed from
-     --range-input-accent-hover to reflect that it's the indicator's
-     permanent fill, not a hover interaction. */
+  /* Исправление второго прохода: раньше это применялось как перекраска
+     ползунка при наведении, и пипетка это опровергает. На скриншотах
+     Default, Hover и Focused *индикатор* (заполненная часть дорожки слева
+     от ползунка) неизменно #2FCEEF, а сам ползунок остаётся #80E3FF; ни
+     тот, ни другой не меняются от наведения или фокуса на всей коробке.
+     Переименован из --range-input-accent-hover, чтобы имя отражало
+     постоянную заливку индикатора, а не взаимодействие. */
   --range-input-indicator-bg: var(--blue-187);
   --range-input-accent-disabled: var(--grey-166);
   --range-input-accent-error: var(--red-418);
   --range-input-thumb-icon-fg: var(--grey-1514);
   --range-input-thumb-icon-fg-error: var(--white-101);
-  /* Round-2 audit addition: the Disabled symbol's chevron icon SVGs
-     (fill="white") show the thumb icon turning white on a grey disabled
-     thumb, same treatment as the error state — the component previously
-     left the icon at --range-input-thumb-icon-fg (dark) when disabled,
-     unreadable against the grey pill. */
+  /* Добавлено во втором проходе: у символа Disabled в SVG стрелок стоит
+     fill="white", то есть значок на сером выключенном ползунке становится
+     белым — так же, как в состоянии ошибки. Раньше компонент в выключенном
+     состоянии оставлял значок в --range-input-thumb-icon-fg (тёмном), и на
+     серой таблетке он не читался. */
   --range-input-thumb-icon-fg-disabled: var(--white-101);
   --range-input-scale-fg: var(--grey-284);
   --range-input-caption-fg: var(--grey-284);
   --range-input-caption-error-fg: var(--red-418);
 
-  /* File Upload + File (list item) tokens. Values follow the same
-     border/bg palette as Select/Input; "Grey 100" drag-over fill and the
-     error/loading accents are called out explicitly in the spec text.
+  /* Токены File Upload и File (строки списка). Значения идут по той же
+     палитре рамок и фонов, что у Select и Input; заливка «Grey 100» при
+     перетаскивании файла и акценты ошибки и загрузки выписаны в тексте
+     макета прямо.
 
-     Токена рамки на наведении здесь нет намеренно: у `State=Hover` (нода
-     16029:57996) пунктирная рамка остаётся тем же grey-284, что и в
-     Default (16029:57991), а меняется только заливка на
-     --file-upload-bg-hover. Прежний --file-upload-border-hover указывал на
-     тот же grey-284 и выражал изменение, которого не существует.
+     Токена рамки на наведении здесь нет намеренно: у `State=Hover`
+     пунктирная рамка остаётся тем же grey-284, что и в Default, а меняется
+     только заливка на --file-upload-bg-hover. Прежний
+     --file-upload-border-hover указывал на тот же grey-284 и выражал
+     изменение, которого не существует.
 
      ⚠️ Отдельного токена заливки для Disabled нет по той же причине: у
-     `State=Disabled` (нода 16029:58001) заливки нет вовсе, ровно как и у
-     Default — меняются только рамка и текст на grey-166. Белый фон в
-     Default оставлен намеренно (поле на цветной подложке должно оставаться
-     белым), но раз он один на оба состояния, то и токен один. */
+     `State=Disabled` заливки нет вовсе, ровно как и у Default — меняются
+     только рамка и текст на grey-166. Белый фон в Default оставлен
+     намеренно (поле на цветной подложке должно оставаться белым), но раз он
+     один на оба состояния, то и токен один. */
   --file-upload-bg: var(--white-101);
   --file-upload-bg-hover: var(--grey-106);
   --file-upload-border: var(--grey-284);
@@ -160,7 +166,7 @@
 }
 
 /* Перетаскивание (drag & drop) — макет «03. ELK / drag-and-drop»
-   (нода 42995:34194). Токены общие на весь кит: правила одни для таблиц,
+   . Токены общие на весь кит: правила одни для таблиц,
    настройки главного меню, настройки избранного и любого будущего списка.
 
      • взятый элемент красится в Active — Grey 124;
@@ -171,7 +177,7 @@
    Цвета сняты с самих нод макета, а не подобраны на глаз: заливка описана
    текстом кадра 1 («окрашивается в цвет Active (Grey 124)»), подсветка —
    текстом кадра 3 («серая заливка Hover (Grey 106)»), линия — заливкой
-   прямоугольника «Область вставки» (нода 45329:30623). */
+   прямоугольника «Область вставки». */
 :root {
   --dnd-dragging-bg: var(--grey-124);
   --dnd-drop-group-bg: var(--grey-106);

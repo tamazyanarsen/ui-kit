@@ -6,31 +6,31 @@ import { useHorizontalScrollState } from "@/components/ui/table"
 
 import { cn } from "@/lib/utils"
 
-// Table Top — "Блок верха таблицы" (ui/table-top). Per its own spec this is
-// a sibling of `Table`, not a wrapper around it — the "Использование в
-// макете" mockup shows it stacked directly above a plain data table on the
-// page, sharing no state/context with it. It's a pure layout shell: every
-// color used across `table-top.svg`/`table-top-1.svg` (grepped for `fill=`)
-// is an exact reuse of tokens that already exist elsewhere — Filter's own
-// white/grey surfaces, Chips' dark "applied" pill, Button/Badge/Tabs/Input's
-// palettes, and this kit's standard text greys — so this component defines
-// no CSS tokens of its own; it borrows `--table-fg`/`--table-description-fg`/
-// `--table-divider` from Table's namespace for its own text/border and
-// leaves every interactive control (search, filter dropdowns, sort, tabs,
-// download/columns actions) to be composed from existing components
-// (`Input`, `Filter`, `Tabs`, `Button`, `Select`, `Badge`) rather than
-// re-implementing them.
+// Table Top — «Блок верха таблицы» (ui/table-top). По собственному макету
+// это сосед `Table`, а не обёртка над ним: в макете «Использование в
+// макете» он стоит прямо над обычной таблицей данных на странице и не
+// делит с ней ни состояния, ни контекста. Это чистая раскладочная оболочка:
+// каждый цвет, встречающийся в векторе компонента, — точное
+// переиспользование токенов, которые уже есть в других местах: белые и
+// серые поверхности самого Filter, тёмная таблетка «применённого значения»
+// из Chips, палитры Button, Badge, Tabs и Input, а также стандартные серые
+// цвета текста кита. Поэтому собственных CSS-токенов компонент не заводит:
+// для текста и рамки он берёт --table-fg, --table-description-fg и
+// --table-divider из пространства имён Table, а все интерактивные контролы
+// (поиск, выпадающие фильтры, сортировка, вкладки, выгрузка и настройка
+// колонок) собираются из существующих компонентов (`Input`, `Filter`,
+// `Tabs`, `Button`, `Select`, `Badge`), а не пишутся заново.
 //
-// The spec's "Elements" breakdown (Title / Filter Setting / Filter Select /
-// Chips / Tabs) maps onto these four layout pieces plus the existing `Tabs`
-// component dropped in directly between `TableTopTitle` and
-// `TableTopToolbar` — no bespoke tabs wrapper needed.
+// Разбор «Elements» в макете (Title / Filter Setting / Filter Select /
+// Chips / Tabs) ложится на эти четыре раскладочные части плюс готовый
+// компонент `Tabs`, который вставляется прямо между `TableTopTitle` и
+// `TableTopToolbar`: своя обёртка для вкладок не нужна.
 
-// The container is *not* a card: `ELK / table-top` (node 51104:13311) is a
-// transparent 16px-padded column with a single bottom rule, sitting flush
-// above the table it heads — an earlier reading of the mockup turned it into
-// a rounded white panel with 24px padding, which the symbol itself does not
-// have.
+// Контейнер — *не* карточка: `ELK / table-top` это прозрачная колонка с
+// отступом 16px и единственной линией снизу, стоящая вплотную над
+// таблицей, которую она озаглавливает. Прежнее прочтение макета превратило
+// его в скруглённую белую панель с отступом 24px, чего у самого символа
+// нет.
 function TableTop({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -63,9 +63,9 @@ function TableTopTitle({
       className={cn("flex min-h-8 items-center justify-between gap-4", className)}
       {...props}
     >
-      {/* H3 Medium (24/32) per "Title-Table (ELK)" — not H4 — and it takes the
-          free space so a long title ellipsizes instead of pushing the action
-          button out of the row. */}
+      {/* H3 Medium (24/32) по «Title-Table (ELK)», а не H4; заголовок
+          забирает свободное место, чтобы длинный обрезался многоточием, а
+          не выталкивал кнопку действия из строки. */}
       <h3 className="min-w-0 flex-1 truncate text-h3 text-[var(--table-fg)]">
         {title}
       </h3>
@@ -74,15 +74,16 @@ function TableTopTitle({
   )
 }
 
-// Wraps the search input, filter dropdowns, and "Ещё фильтры"/"Сбросить
-// фильтры" buttons — just a wrapping flex row, all content is composed by
-// the consumer (see table-top-demo.tsx for the full assembly).
+// Оборачивает поле поиска, выпадающие фильтры и кнопки «Ещё фильтры» и
+// «Сбросить фильтры» — это просто переносящаяся flex-строка, всё
+// содержимое собирает вызывающий код (полную сборку см. в
+// table-top-demo.tsx).
 function TableTopToolbar({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="table-top-toolbar"
-      // "Group Chips (ELK)" wraps with an asymmetric gap — 8px between
-      // controls in a row, 12px between wrapped rows.
+      // «Group Chips (ELK)» переносится с несимметричным зазором: 8px
+      // между контролами в строке и 12px между перенесёнными строками.
       className={cn("flex flex-wrap items-center gap-x-2 gap-y-3", className)}
       {...props}
     />
@@ -106,9 +107,9 @@ function TableTopSummary({
     <div
       data-slot="table-top-summary"
       // ⚠️ Блок результата — 40, а не 32: у `Result-Table (ELK)` есть
-      // СОБСТВЕННЫЙ верхний отступ 8 поверх минимальной высоты 32 (замер
-      // 70279:10361 — рамка 40, кнопки внутри на y=8, строка значений на
-      // y=14). Ровно та же конструкция, что у блока вкладок (4 + 40 = 44).
+      // СОБСТВЕННЫЙ верхний отступ 8 поверх минимальной высоты 32 (замер:
+      // рамка 40, кнопки внутри на y=8, строка значений на y=14). Ровно та
+      // же конструкция, что у блока вкладок (4 + 40 = 44).
       //
       // Восьмёрку было легко потерять: полотно документации подписывает
       // полную высоту шапки 220 и раскладывает её из строк по 32, а сет
@@ -168,10 +169,10 @@ function TableTopSummaryItem({
   )
 }
 
-// One end-of-strip chevron.
+// Один шеврон в конце полосы.
 //
-// ⚠️ Это НЕ своя плашка, а инстанс кнопки кита: в сете
-// (I70279:10490;7854:11945) под стрелкой лежит `ELK / button` — белый круг
+// ⚠️ Это НЕ своя плашка, а инстанс кнопки кита: в сете под стрелкой
+// лежит `ELK / button` — белый круг
 // 32 × 32, радиус 16, поле 8, глиф 16. Свёрстанная по замеру пикселя
 // «таблетка» совпала бы по картинке и разошлась бы по состояниям, фокусу и
 // поведению в темах. Правило общее: прежде чем верстать вложенный узел,
@@ -214,15 +215,15 @@ function DetailsArrow({
   )
 }
 
-// TableTopDetails — "Сводка" (node 70279:10336), the last row inside
-// `ELK / table-top` (its `Details` slot, 70279:10367). A muted "Сводка"
-// label pinned on the left and a scrolling strip of `label: value` pairs
-// separated by a 12px-wide Grey 166 rule.
+// TableTopDetails — «Сводка», последняя строка внутри `ELK / table-top`
+// (его слот `Details`). Слева закреплена приглушённая подпись «Сводка», за
+// ней — прокручиваемая лента пар «подпись: значение», разделённых линией
+// Grey 166 шириной 12px.
 //
-// The spec calls it "Дополнительная функция, наличие определяется при
-// разработке конкретного продукта", and shows three states of the strip
-// (Начало / Середина / Конец ленты) — it scrolls horizontally on its own
-// when the pairs don't fit, independently of the table below it.
+// В макете это названо «Дополнительная функция, наличие определяется при
+// разработке конкретного продукта» и показано тремя состояниями ленты
+// (Начало / Середина / Конец ленты): когда пары не помещаются, лента
+// прокручивается по горизонтали сама, независимо от таблицы под ней.
 interface TableTopDetailsProps extends React.ComponentProps<"div"> {
   label?: React.ReactNode
   items: { label: React.ReactNode; value: React.ReactNode }[]
@@ -273,17 +274,19 @@ function TableTopDetails({
       <span className="shrink-0 text-[var(--table-description-fg)]">
         {label}
       </span>
-      {/* The spec draws the strip in four states — "Сводка поместилась",
-          "Начало ленты", "Середина ленты", "Конец ленты" (node 70279:10340) —
-          which differ only by which chevron is showing: none when everything
-          fits, then one per side that still has content behind it. Same edge
-          rule as the pinned columns, so it reuses their scroll hook. */}
+      {/* В макете лента нарисована в четырёх состояниях — «Сводка
+          поместилась», «Начало ленты», «Середина ленты», «Конец ленты», —
+          и различаются они только тем, какой шеврон показан: ни одного,
+          когда всё влезло, и по одному с той стороны, за которой ещё есть
+          содержимое. Правило краёв то же, что у закреплённых колонок,
+          поэтому переиспользуется их хук прокрутки. */}
       <div className="relative flex min-w-0 flex-1 items-center">
         {scrolledFromStart && (
           <DetailsArrow direction="left" onClick={() => scrollToNeighbour(-1)} />
         )}
-        {/* rounded-[16px] + overflow on the track is Figma's own Row frame —
-            it clips the strip's ends flush with the block's radius.
+        {/* rounded-[16px] вместе с обрезкой на дорожке — это собственный
+            кадр Row в макете: он подрезает концы ленты вровень с радиусом
+            блока.
             `scrollbar-none`: своей полосы прокрутки у ленты нет ни в одном
             варианте сета — вторая полоса рядом со стрелками была бы вторым
             органом управления той же ленты. Листается она стрелками, колесом
@@ -298,7 +301,7 @@ function TableTopDetails({
             <span
               key={index}
               data-slot="table-top-details-item"
-              // Замер пары («Table Property», I70279:10490;7854:11940):
+              // Замер пары («Table Property»):
               // коробка разделителя 12 → 4 → «Подпись:» → 4 → значение, а
               // между парами 16. Двоеточие приклеено к подписи (зазор 0) —
               // это отдельная текстовая нода без отступа, отсюда `gap-1`

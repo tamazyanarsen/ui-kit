@@ -30,18 +30,19 @@ function TableDemoHead({
           indeterminate={someSelected}
           onCheckedChange={onSelectAll}
         />
-        {/* The hierarchy column carries the collapse-all chevron, the title
-            and the sort control in one cell — exactly as the spec's own
-            "⌃ Код ⇅" header does. */}
+        {/* Колонка иерархии несёт в одной ячейке и шеврон «свернуть всё»,
+            и заголовок, и контрол сортировки — ровно как собственная шапка
+            «⌃ Код ⇅» в макете. */}
         <TableHeadCell
           type="subtitle-left"
           pin="left"
           collapsible
           expanded={anyExpanded}
           onExpandedChange={onExpandAll}
-          // No sort and no resize on the hierarchy column: "в таблицах со
-          // сворачиванием/разворачиванием не предусмотрена пользовательская
-          // сортировка" and its width "опредяется в момент проектирования".
+          // У колонки иерархии нет ни сортировки, ни изменения ширины: «в
+          // таблицах со сворачиванием/разворачиванием не предусмотрена
+          // пользовательская сортировка», а её ширина «опредяется в момент
+          // проектирования».
           defaultWidth={220}
         >
           Код

@@ -161,12 +161,12 @@ const meta = {
   title: "Компоненты/Combobox",
   component: DocumentsMultiSelect,
   parameters: { layout: "padded" },
-  // `DocumentsMultiSelect` is declared locally in this file rather than
-  // imported from a component module, so react-docgen-typescript doesn't
-  // extract its props — declare every control explicitly.
-  /* Отдельного мастера у Combobox в Figma нет: это `ELK / select`
-     (687:9278) с выпадающим списком из `Menu Point (ELK)` и чекбоксами,
-     поэтому имена свойств взяты у Select — Size / Type / Add. */
+  // `DocumentsMultiSelect` объявлен локально в этом файле, а не
+  // импортирован из модуля компонента, поэтому react-docgen-typescript не
+  // извлекает его пропсы — объявляем каждый контрол явно.
+  /* Отдельного мастера у Combobox в Figma нет: это `ELK / select` с
+     выпадающим списком из `Menu Point (ELK)` и чекбоксами, поэтому имена
+     свойств взяты у Select — Size / Type / Add. */
   argTypes: {
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
@@ -211,9 +211,10 @@ export const Playground: Story = {
   ),
 }
 
-/* The trigger reuses Select's own tokens, so its closed states match Select
-   cell for cell; the list is a portalled popup that can only be open once at
-   a time, so the open forms are live examples instead of matrix cells. */
+/* Триггер переиспользует собственные токены Select, поэтому его закрытые
+   состояния совпадают с Select ячейка в ячейку; список же — всплывающее
+   окно в портале, открытым может быть только одно за раз, поэтому открытые
+   формы показаны живыми примерами, а не ячейками матрицы. */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },

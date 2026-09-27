@@ -8,13 +8,14 @@ import type { GridSize } from "./day-grid"
 /**
  * Сетка 3×N для выбора месяца или года.
  *
- * Desktop MonthYear cells are 36px tall with a 16px/24px column/row gap;
- * mobile cells are 48px tall with a 35px/16px column/row gap (Figma's
- * MonthYear (Desktop, ELK) vs MonthYear (Mobile, ELK) Date grids). The
- * container's own px-4 pb-4 stays constant — only measured for desktop, but
- * the mobile per-year/decade heading (see calendar-mobile.tsx) supplies its
- * own matching pt/gap above the grid, so no size-specific container padding
- * is needed here.
+ * Десктопные ячейки MonthYear высотой 36px с зазором 16px по колонкам и
+ * 24px по строкам; мобильные — высотой 48px с зазором 35px по колонкам и
+ * 16px по строкам (сетки дат у MonthYear (Desktop, ELK) против
+ * MonthYear (Mobile, ELK)). Собственные px-4 и pb-4 у контейнера остаются
+ * неизменными: они замерены только для десктопа, но мобильный заголовок
+ * года или десятилетия (см. calendar-mobile.tsx) сам задаёт подходящие
+ * верхний отступ и зазор над сеткой, поэтому отступ контейнера под
+ * конкретный размер здесь не нужен.
  *
  * Месяцы и годы отличаются только списком значений и подписью — сама сетка,
  * состояния и попадание «сегодня» у них общие.

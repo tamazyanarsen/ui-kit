@@ -5,13 +5,14 @@ import { useScrollEdges } from "@/lib/use-scroll-edges"
 import { Button } from "@/components/ui/button"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
-// Notification — "Уведомления и новости" panel + its item row. Per the
-// spec (marked "Actual old", unlike its message/* siblings — treat as the
-// least stable of the five): shows brief messages about events, successful
-// actions, errors or warnings, usually from a bell icon in the header.
-// `viewed` alone controls the unread dot (there's no separate toggle for
-// it in the spec's property table); every other section (sum/status/
-// description/button) is optional the same way as Event/Informer.
+// Notification — панель «Уведомления и новости» и её строка. По макету
+// (помеченному «Actual old», в отличие от прочих message/*, — считайте его
+// наименее устойчивым из пяти): показывает краткие сообщения о событиях,
+// удачных действиях, ошибках или предупреждениях, обычно от значка
+// колокольчика в шапке. Точкой непрочитанного управляет один только
+// `viewed` (отдельного переключателя для неё в таблице свойств макета
+// нет); все остальные разделы (сумма, статус, описание, кнопка)
+// необязательны так же, как у Event и Informer.
 interface NotificationItemProps {
   title: React.ReactNode
   viewed?: boolean
@@ -211,9 +212,9 @@ function NotificationPanel({
       </Scrollbar>
 
       {(primaryButtonLabel || secondaryButtonLabel) && (
-        // Design-check #41: each button fills half the row (was sized to
-        // its own text, letting "Прочитать все" and "Настройки" end up
-        // visibly different widths).
+        // Дизайн-чек, замечание 41: каждая кнопка занимает половину
+        // строки (раньше размер шёл по собственному тексту, и «Прочитать
+        // все» с «Настройками» получались заметно разной ширины).
         <div
           className={cn(
             "flex items-center gap-4 border-t border-transparent p-4 [&>*]:flex-1",

@@ -2,13 +2,14 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// OtpInput — a single native <input>, not Base UI's OTPField (6 separate
-// slot inputs). The spec shows one continuous underline with a centered
-// caret in the empty/focused state and a full-width placeholder
-// ("Введите код из СМС") — both are plain single-input behavior; a 6-slot
-// model would put the caret in slot 1 and has no concept of a placeholder
-// spanning all slots. Paste/backspace/arrow-key editing all come for free
-// from the native input this way.
+// OtpInput — один нативный <input>, а не OTPField из Base UI (шесть
+// отдельных полей-позиций). Макет показывает одно непрерывное
+// подчёркивание с кареткой по центру в пустом состоянии с фокусом и
+// placeholder во всю ширину («Введите код из СМС»); и то и другое —
+// обычное поведение одного поля, тогда как модель из шести позиций
+// поставила бы каретку в первую позицию и вообще не знает о placeholder,
+// растянутом на все позиции. Вставка, backspace и правка стрелками при
+// таком устройстве достаются от нативного поля бесплатно.
 interface OtpInputProps
   extends Omit<React.ComponentProps<"input">, "type" | "size" | "onChange"> {
   length?: number

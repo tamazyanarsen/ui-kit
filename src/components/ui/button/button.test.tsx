@@ -4,10 +4,10 @@ import userEvent from "@testing-library/user-event"
 
 import { Button } from "./button"
 
-// This file is the reference example for testing UI-kit components with
-// Vitest + React Testing Library. Follow this shape (render -> query by
-// role/text -> assert behavior, not implementation) for the rest of the
-// components in this directory.
+// Этот файл — образцовый пример тестирования компонентов кита на Vitest
+// вместе с React Testing Library. Придерживайтесь этой формы (отрисовать →
+// найти по роли или тексту → проверить поведение, а не реализацию) и для
+// остальных компонентов этого каталога.
 describe("Button", () => {
   it("renders its children", () => {
     render(<Button>Submit</Button>)

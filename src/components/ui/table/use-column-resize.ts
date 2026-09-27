@@ -38,7 +38,7 @@ interface ColumnResizeOptions {
   type: TableHeadCellType
   /** Закреплённая колонка — только у неё есть верхний предел ширины. */
   pin?: TablePin
-  /** Controlled width. Uncontrolled when only `defaultWidth` is given. */
+  /** Управляемая ширина. Неуправляемая, если задан только `defaultWidth`. */
   width?: number
   defaultWidth?: number
   onWidthChange?: (width: number) => void

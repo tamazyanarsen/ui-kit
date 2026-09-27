@@ -45,8 +45,9 @@ describe("Switcher", () => {
     render(
       <Switcher items={[{ value: "all", label: "Все", badge: 4 }]} />
     )
-    // The always-rendered off-screen measurement copy (see useOverflowCount)
-    // duplicates every item, badge included — so this legitimately renders twice.
+    // Всегда отрисованная закадровая копия для замеров (см.
+    // useOverflowCount) дублирует каждый пункт вместе со значком, поэтому
+    // здесь законно отрисовывается дважды.
     expect(screen.getAllByText("4").length).toBeGreaterThan(0)
   })
 

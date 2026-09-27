@@ -14,17 +14,17 @@ import {
   type ButtonMenuPlacement,
 } from "./placement"
 
-// ButtonMenuBlack — "ELK / button menu (black)" (node 700:54288, v1.0.0).
-// Figma documents this as its own component, not a variant of the white
-// ButtonMenu: while the user has table rows selected, this bar *replaces*
-// the white one, and closing it brings the white one back ("Когда
-// пользователь выделяет один или несколько элементов таблицы, Button Menu
-// заменяется черной панелью").
+// ButtonMenuBlack — «ELK / button menu (black)» (v1.0.0). Макет описывает
+// это как самостоятельный компонент, а не как вариант белого ButtonMenu:
+// пока у пользователя выделены строки таблицы, эта панель *подменяет*
+// собой белую, а её закрытие возвращает белую обратно («Когда пользователь
+// выделяет один или несколько элементов таблицы, Button Menu заменяется
+// черной панелью»).
 //
-// Geometry off the Button=Three symbol (4270:51380): fixed 72px tall,
-// px-24/py-16, top corners rounded 16px only (it sits flush against the
-// bottom edge, same as ButtonMenu), actions hugging left with an 8px gap,
-// and the info bar + close cross pinned right with a 32px gap.
+// Геометрия снята с символа Button=Three: фиксированная высота 72px,
+// px-24/py-16, скругление 16px только у верхних углов (панель стоит
+// вплотную к нижнему краю, как и ButtonMenu), действия прижаты влево с
+// зазором 8px, а информационная полоса и крестик — вправо с зазором 32px.
 
 // Закрепление у нижней края — поведение по умолчанию, а не опция «на
 // всякий случай»: в макете так и написано — «Панель всегда закреплена в
@@ -53,13 +53,13 @@ interface ButtonMenuBlackInfoItem {
 }
 
 interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
-  /** The "Information (ELK)" bar (node 4008:20902) — label/value pairs
-   * describing the current selection. Omit it entirely for the `showBar =
-   * false` form. */
+  /** Полоса «Information (ELK)» — пары «подпись/значение», описывающие
+   * текущее выделение. Опустите её целиком, чтобы получить форму
+   * `showBar = false`. */
   info?: ButtonMenuBlackInfoItem[]
-  /** Dismisses the bar. Figma draws this as a bare 24px `icon / close
-   * cross`, not an `ELK / button` instance — то есть это ПЛОСКИЙ крестик
-   * кита (`CloseCross`), а не кнопка на плашке. */
+  /** Закрывает панель. В макете это голый `icon / close cross` 24px, а не
+   * инстанс `ELK / button`, — то есть это ПЛОСКИЙ крестик кита
+   * (`CloseCross`), а не кнопка на плашке. */
   onClose?: () => void
   /**
    * Прижимать панель к низу контейнера. По умолчанию включено — она
@@ -135,8 +135,9 @@ function ButtonMenuBlack({
   style,
   ...props
 }: ButtonMenuBlackProps) {
-  // Same reasoning as ButtonMenu's own sizing pass: the spec draws every
-  // action at a uniform 32px pill (px-16/py-6, radius 16 — Button's `sm`).
+  // Рассуждение то же, что и в проходе по размерам самого ButtonMenu: макет
+  // рисует все действия одинаковой таблеткой 32px (px-16/py-6, радиус 16 —
+  // это `sm` у Button).
   //
   // Дизайн-чек №12: вариант тоже форсится, а не подставляется по умолчанию —
   // «для button menu black используются только белые кнопки». Раньше здесь
@@ -301,7 +302,7 @@ function ButtonMenuBlack({
     >
       <div className="pointer-events-auto w-fit">
         {/* Кнопка — не «таблетка» со своей заливкой, а инстанс кнопки кита
-            (`ELK / button` 68723:17347): `secondary-black` — это как раз
+            (`ELK / button`): `secondary-black` — это как раз
             Dark blue 1412 #012F42, а `sm` даёт 32 по высоте, радиус 16,
             поля 6/16 и P2 Medium. Своя вёрстка по замеру пикселя совпала бы
             по картинке и разошлась бы по состояниям, фокусу и темам. */}

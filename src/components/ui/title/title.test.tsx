@@ -6,8 +6,8 @@ import { TitleCard } from "./title-card"
 import { TitleRegistry } from "./title-registry"
 import { TitleInformationText } from "./information-text"
 
-// "Опциональные элементы: все, кроме Title и Button" (Title Card) /
-// "все, кроме Title" (Registry) — nodes 7593:18875 and 8712:15258.
+// «Опциональные элементы: все, кроме Title и Button» (Title Card) и
+// «все, кроме Title» (Registry).
 describe("TitleCard", () => {
   it("renders the title, back and help buttons", async () => {
     const user = userEvent.setup()

@@ -19,7 +19,7 @@ interface ProfileMenuOrganization {
 /**
  * Общая раскладка пункта меню — и у организации, и у действий внизу.
  *
- * Метрики из мастера `Profile Menu (ELK)` (70303:49084): панель без
+ * Метрики из мастера `Profile Menu (ELK)`: панель без
  * собственных полей, поля несёт сама строка `Menu Point (ELK)` — `p-16`
  * у действий и `pl-32 pr-16 py-16` у организаций (см. ORG_ITEM ниже), gap 8,
  * `items-start`. Поэтому строка тянется во всю ширину панели и подсветка
@@ -33,7 +33,7 @@ const MENU_ITEM =
  *
  * Дизайн-чек Storybook (Аня Багрова) №3: «паддинг от левой границы до текста
  * должен быть 32 px, а не 16 px» — в мастере строки списка организаций
- * (70303:49087–49089) действительно сдвинуты внутрь: `pl-[32px] pr-[16px]`,
+ * действительно сдвинуты внутрь: `pl-[32px] pr-[16px]`,
  * в отличие от «Профиля и настроек» и «Выйти», у которых `p-[16px]`.
  */
 const ORG_ITEM = "pl-8 pr-4"
@@ -49,8 +49,8 @@ function SingleOrganization({
       <span className="text-p1-medium text-[var(--header-fg)]">
         {organization?.name}
       </span>
-      {/* get_design_context on ProfileMenuElk (46107:44110) confirms Object
-          Sans Medium for this "ИНН ... • Оператор" line. */}
+      {/* У ProfileMenuElk для строки «ИНН ... • Оператор» подтверждён
+          Object Sans Medium. */}
       <span className="text-p3-medium text-[var(--header-meta-fg)]">
         ИНН {organization?.inn} · {organization?.role}
       </span>
@@ -68,9 +68,9 @@ function OrganizationList({
   onValueChange?: (id: string) => void
 }) {
   return (
-    // Figma puts an `ELK / scrollbar` inside this list (node 46107:43566 —
-    // 4px track, 2px radius, 8px inset), which is what the kit's Scrollbar
-    // renders.
+    // Макет кладёт внутрь этого списка `ELK / scrollbar` (дорожка 4px,
+    // радиус 2px, отступ 8px), а это и есть то, что рисует Scrollbar
+    // кита.
     <Scrollbar inset="dropdown" className="flex max-h-100 flex-col">
       {organizations.map((org) => (
         <MenuPrimitive.Item
@@ -100,10 +100,10 @@ function OrganizationList({
           )}
         </MenuPrimitive.Item>
       ))}
-      {/* No dedicated Profile Menu "no results" frame exists in the spec;
-          matches the Select/Dropdown empty-state text (get_design_context on
-          29750:54209) which is Object Sans Medium, not Regular, despite the
-          muted color. */}
+      {/* Отдельного кадра «ничего не найдено» для Profile Menu в макете
+          нет; текст совпадает с пустым состоянием Select и Dropdown, а там
+          это Object Sans Medium, а не Regular, несмотря на приглушённый
+          цвет. */}
       {organizations.length === 0 && (
         <p className="px-4 py-4 text-center text-p2-medium text-[var(--header-meta-fg)]">
           Ничего не найдено
@@ -123,8 +123,8 @@ function SettingsBlock({
 }) {
   return (
     <>
-      {/* Figma separates the settings block with an actual `ELK / divider`
-          instance (node 46107:27187), not a border on the block itself. */}
+      {/* Макет отделяет блок настроек настоящим инстансом
+          `ELK / divider`, а не рамкой на самом блоке. */}
       <Divider />
       <div className="flex flex-col">
         <MenuPrimitive.Item
@@ -133,7 +133,7 @@ function SettingsBlock({
           className={cn(MENU_ITEM, "text-p1-medium text-[var(--header-fg)]")}
         >
           {/* Дизайн-чек Storybook (Аня Багрова) №4: «должна быть icon /admin
-              из Library Image» — в мастере (70303:49091) у этой строки
+              из Library Image» — в мастере у этой строки
               действительно `icon / admin`, а не шестерёнка настроек. */}
           <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
           Профиль и настройки

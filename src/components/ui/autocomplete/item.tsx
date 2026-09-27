@@ -5,18 +5,19 @@ import { cn } from "@/lib/utils"
 
 import { highlightMatch } from "./highlight"
 
-// A result row — Title (bold, wraps across lines for long organization
-// names per the spec, not truncated) + an optional grey subtitle line
-// (e.g. "ИНН ... КПП ..."). No checkbox: this is single-select, and picking
-// a result just fills the field, it doesn't build up a chip list.
+// Строка результата: заголовок (жирный, по макету переносится на
+// несколько строк для длинных названий организаций, а не обрезается) плюс
+// необязательная серая строка подзаголовка (например, «ИНН ... КПП ...»).
+// Флажка нет: выбор здесь одиночный, и выбранный результат просто
+// заполняет поле, а не набирает список чипов.
 
 interface AutocompleteItemOwnProps {
   subtitle?: React.ReactNode
-  /** The current search string. Every case-insensitive occurrence of it in
-   * the title and subtitle is marked — the subtitle too, because the related
-   * -parameter filters (ИНН + КПП) are searched on both halves: "Настроить
-   * поиск таким образом, чтобы он работал и по главному, и по второстепенному
-   * параметру" (Фильтрация (ЕЛК), node 70295:22880). */
+  /** Текущая строка поиска. В заголовке и подзаголовке отмечается каждое
+   * её вхождение без учёта регистра — в подзаголовке тоже, потому что
+   * фильтры по связанным параметрам (ИНН и КПП) ищут по обеим половинам:
+   * «Настроить поиск таким образом, чтобы он работал и по главному, и по
+   * второстепенному параметру» (Фильтрация (ЕЛК)). */
   match?: string
 }
 
@@ -30,10 +31,11 @@ function AutocompleteItem({
   return (
     <ComboboxPrimitive.Item
       data-slot="autocomplete-item"
-      // Flush, un-rounded p-4 row — matches Select's and Combobox's own
-      // items, which share this exact Dropdown shell (see dropdown.tsx):
-      // only the popup container is rounded, items go edge-to-edge with no
-      // radius of their own.
+      // Строка идёт вровень, без скруглений, с отступом p-4 — совпадает с
+      // собственными пунктами Select и Combobox, которые делят ровно эту
+      // же оболочку Dropdown (см. dropdown.tsx): скруглён только контейнер
+      // всплывающего окна, а пункты идут от края до края без собственного
+      // радиуса.
       className={cn(
         "flex w-full cursor-default flex-col gap-0.5 p-4 text-p2-medium outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
@@ -44,12 +46,12 @@ function AutocompleteItem({
         {highlightMatch(children, match)}
       </span>
       {subtitle && (
-        // Round-2 audit: added font-medium — every literal "Description"
-        // line sampled on canvas 666:11's Menu Point (ELK) instances uses
-        // Object Sans Medium (500), never Regular, at this same 12px size.
-        // No dedicated Autocomplete frame exists though, so this is an
-        // extrapolation from Select/Combobox's shared list-item component,
-        // not a value confirmed against Autocomplete's own spec.
+        // Второй проход: добавлен font-medium — каждая литеральная строка
+        // «Description», снятая с инстансов Menu Point (ELK), использует
+        // Object Sans Medium (500), а не Regular, при том же размере 12px.
+        // Отдельного кадра Autocomplete, однако, не существует, поэтому это
+        // перенос с общего компонента пункта списка у Select и Combobox, а
+        // не значение, подтверждённое по собственному макету Autocomplete.
         <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)]">
           {highlightMatch(subtitle, match)}
         </span>

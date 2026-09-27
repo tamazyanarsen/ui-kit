@@ -25,9 +25,10 @@ const TREE_CHILDREN: TreeChild[] = [
   { value: "child-3", label: "Text", description: "Description" },
 ]
 
-// Plain multi-select with a two-level checkbox cascade: parent goes
-// indeterminate/checked/unchecked from its children, and toggling the
-// parent selects/clears all of them at once (no search facet here).
+// Обычный множественный выбор с двухуровневым каскадом флажков: родитель
+// принимает промежуточное, отмеченное или снятое состояние по своим детям, а
+// переключение родителя выбирает или снимает их всех разом (фасета поиска
+// здесь нет).
 function TreeMultiSelectDropdown() {
   const sel = useComboboxSelection<TreeChild>([])
 

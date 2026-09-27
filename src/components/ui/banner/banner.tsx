@@ -12,17 +12,19 @@ import {
   type BannerSize,
 } from "./variants"
 
-// Banner — the "01. Bank / banners" component. One component covers all
-// three spec sizes (`desktop` = hero with image right, `compact` = the
-// horizontal bar, `mobile` = the stacked card) since that's how the Figma
-// component itself is authored: a single node switching layout on a `size`
-// property, not three separate components. `color` picks which pastel
-// gradient layer the background starts revealing from (black shows all
-// four stacked layers, blue shows only the bottom one) — see variants.ts.
+// Banner — компонент «01. Bank / banners». Один компонент покрывает все
+// три размера из макета (`desktop` — крупный баннер с картинкой справа,
+// `compact` — горизонтальная полоса, `mobile` — карточка в столбик),
+// потому что и сам компонент в макете сделан так же: один узел, меняющий
+// раскладку по свойству `size`, а не три отдельных компонента. `color`
+// выбирает, с какого пастельного слоя градиента начинает проявляться фон
+// (чёрный показывает все четыре слоя, синий — только нижний), см.
+// variants.ts.
 //
-// `image`/`imageSrc` and `ctaLabel` are optional because the spec itself
-// demos every size with the image and/or button turned off (e.g. the
-// colored-banner mobile row has no button at all).
+// `image`, `imageSrc` и `ctaLabel` необязательны, потому что сам макет
+// показывает каждый размер и с выключенной картинкой, и с выключенной
+// кнопкой (например, в мобильной строке цветного баннера кнопки нет
+// вовсе).
 
 interface BannerProps {
   size?: BannerSize
@@ -39,14 +41,15 @@ interface BannerProps {
 }
 
 function BannerBullet({ className }: { className?: string }) {
-  // Figma's bullet asset is a small 4px circle centered in a 4x20 box
-  // (viewBox "0 0 4 20", <circle r="2" cx="2" cy="10" />), solid fill with
-  // no alpha — not a tall rounded bar. The literal fill color is
-  // inconsistent between size instances (desktop sample: #494C4B; mobile
-  // sample: solid white, i.e. exactly the surrounding text color) — the
-  // mobile sample is treated as authoritative for the color-adaptive
-  // intent since it has no dimming at all, so this renders solid
-  // `currentColor`, not a muted/opacity variant.
+  // Ассет маркера в макете — маленький кружок 4px по центру коробки 4×20
+  // (viewBox «0 0 4 20», <circle r="2" cx="2" cy="10" />), сплошная
+  // заливка без прозрачности, а не высокая скруглённая полоска.
+  // Литеральный цвет заливки у разных размерных инстансов разный (в
+  // десктопном образце #494C4B, в мобильном — сплошной белый, то есть
+  // ровно цвет окружающего текста). За образец взят мобильный: в нём нет
+  // никакого затемнения, и он лучше выражает замысел «подстраиваться под
+  // цвет». Поэтому здесь рисуется сплошной `currentColor`, а не
+  // приглушённый вариант с прозрачностью.
   return (
     <span
       aria-hidden="true"
@@ -97,9 +100,9 @@ function BannerDescription({
   description: React.ReactNode | React.ReactNode[]
   bullet: boolean
   className?: string
-  // Gap between the bullet and its line of text — 8px on desktop/compact,
-  // but 4px on mobile per the live Figma component (the outer `className`
-  // prop only reaches the line-stack gap, not this one).
+  // Зазор между маркером и его строкой текста — 8px на desktop и compact,
+  // но 4px на mobile по живому компоненту макета (внешний пропс
+  // `className` достаёт только до зазора между строками, а не до этого).
   itemGap?: string
 }) {
   const lines = Array.isArray(description) ? description : [description]
@@ -135,13 +138,14 @@ function Banner({
   className,
 }: BannerProps) {
   const fg = bannerForegroundClassName(color)
-  // get_design_context on the "mobile" and "desktop small" (compact) master
-  // components: mobile's CTA is the same blue `primary` fill as desktop
-  // (bg #80E3FF); only compact's CTA is white/`secondary-white`. Size "lg"
-  // is itself responsive (h-12/px-6/text-sm below the desktop: breakpoint,
-  // h-14/px-8/text-base at/above it) so the same size prop already
-  // reproduces both the mobile (48/24/14) and desktop+compact (56/32/16)
-  // literal dimensions without branching on size here.
+  // По мастерам «mobile» и «desktop small» (compact): у мобильного кнопка
+  // с той же синей заливкой `primary`, что и у десктопного (фон #80E3FF), и
+  // только у compact кнопка белая, `secondary-white`. Размер «lg» сам по
+  // себе адаптивный (h-12/px-6/text-sm ниже брейкпоинта desktop: и
+  // h-14/px-8/text-base на нём и выше), поэтому один и тот же пропс размера
+  // уже воспроизводит и мобильные литеральные размеры (48/24/14), и
+  // десктопные вместе с compact (56/32/16) — ветвиться по size здесь не
+  // нужно.
   const cta = ctaLabel && (
     <Button
       variant={size === "compact" ? "secondary-white" : "primary"}
@@ -210,16 +214,17 @@ function Banner({
           )}
           <div className="flex flex-col gap-4 px-4 py-6">
             <div className="flex flex-col gap-2">
-              {/* Mobile counterpart of the desktop H3 title above — 18/24 per
-                  "Mobile. Заголовок/H3 Medium Mobile" (node 29445:37296),
-                  which is what the old text-lg/leading-6 pair spelled out by
-                  hand. */}
+              {/* Мобильная пара десктопного заголовка H3 выше — 18/24 по
+                  «Mobile. Заголовок/H3 Medium Mobile», то есть ровно то,
+                  что прежняя связка text-lg и leading-6 выписывала
+                  вручную. */}
               <p className="text-h3-mobile">{title}</p>
               {description && (
-                // Line-to-line gap stays the shared default (8px, same as
-                // desktop) — only the bullet-to-text gap (itemGap) is
-                // narrower on mobile per the literal Figma component; an
-                // earlier pass had conflated the two and shrunk both to 4px.
+                // Зазор между строками остаётся общим по умолчанию (8px,
+                // как на десктопе) — на мобильном по литеральному
+                // компоненту макета уже только зазор между маркером и
+                // текстом (itemGap). Прежний проход путал эти два зазора и
+                // ужимал до 4px оба.
                 <BannerDescription
                   description={description}
                   bullet={bullet}

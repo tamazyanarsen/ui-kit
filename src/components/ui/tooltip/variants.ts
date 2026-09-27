@@ -1,10 +1,11 @@
-// Shared 8-direction placement system for both Tooltip and Hint (they're
-// one Figma spec, "Tooltip & Hint", and share the same speech-bubble
-// language). The spec names directions by which way the bubble *expands*
-// from its anchor corner — e.g. "Top Center" points its arrow up (anchor
-// above, bubble below), which is Floating UI's side="bottom"; "Down
-// Center" is the reverse (side="top"). "Left"/"Right" only ever center
-// vertically — there's no Left-Top/Left-Bottom in the spec's property list.
+// Общая система восьми направлений размещения для Tooltip и Hint (в макете
+// это один документ, «Tooltip & Hint», и они говорят на одном языке
+// «речевых пузырей»). Макет называет направления по тому, куда пузырь
+// *раскрывается* от своего угла привязки: например, «Top Center» указывает
+// стрелкой вверх (якорь сверху, пузырь снизу), а это side="bottom" в
+// Floating UI; «Down Center» — наоборот (side="top"). «Left» и «Right»
+// всегда центрируются по вертикали: Left-Top и Left-Bottom в списке
+// свойств макета нет.
 export type TooltipDirection =
   | "left"
   | "right"
@@ -40,8 +41,8 @@ export const DIRECTION_PLACEMENT: Record<
    центру при любом direction.
 
    В макете смещение задано ОТ ПУЗЫРЯ, а не от якоря: у `Direction=Top Left`
-   (11756:8032) строка со стрелкой — `flex px-[16px]` без justify, у
-   `Top Right` (11756:8043) — та же строка с `justify-end`. То есть стрелка
+   строка со стрелкой — `flex px-[16px]` без justify, у `Top Right` — та же
+   строка с `justify-end`. То есть стрелка
    прижата к своему краю пузыря с отступом 16px, а по центру стоит только у
    `*-Center`. Поэтому стрелку рисуем сами, а раскладку берём из состояния
    позиционера (`side`/`align`) — так она остаётся верной и после

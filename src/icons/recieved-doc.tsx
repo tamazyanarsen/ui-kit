@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / recieved doc — 16. Docs, набор ALL ICONS (канвас 70326:26).
+// icon / recieved doc — 16. Docs, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function RecievedDoc({ size = 16, ...props }: IconProps) {
   if (size === 24) {

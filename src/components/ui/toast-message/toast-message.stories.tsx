@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button"
 
 const TYPES: ToastType[] = ["checked", "attention", "error", "information"]
 
-// Figma's own "Type (Button)" property: Two Buttons / Black Button (primary
-// only) / White Button (secondary only) / none.
+// Собственное свойство макета «Type (Button)»: Two Buttons / Black Button
+// (только primary) / White Button (только secondary) / без кнопок.
 type ToastButtons = "none" | "two" | "black" | "white"
 
 function buttonData(buttons: ToastButtons) {
@@ -34,7 +34,7 @@ interface PlaygroundArgs {
   description?: string
   // Дизайн-чек 3/3 №8: поле описания было, а тогла показа — нет; крестика
   // в контролах не было вовсе. Оба — свойства компонент-сета в Figma
-  // (Show Description / Show Cross, 774:134177).
+  // (Show Description / Show Cross).
   showDescription?: boolean
   showCross?: boolean
   buttons: ToastButtons
@@ -79,14 +79,15 @@ const meta = {
   title: "Компоненты/Toast Message",
   component: ToastLauncher,
   parameters: { layout: "centered" },
-  // `ToastLauncher` is a plain function declared locally in this file rather
-  // than imported from its own component module — Storybook's docgen
-  // (react-docgen-typescript) only reliably extracts props from component
-  // modules, so none of this wrapper's props got a Controls row at all.
-  // Declare them explicitly so they're actually reachable.
-  /* Панель повторяет свойства компонент-сета `ELK / toast message`
-     (774:134168): Size / Type — плюс булевы слоты мастера и вложенный сет
-     «Buttons (Desktop, ELK)» (38301:6197) со своим Type. */
+  // `ToastLauncher` — обычная функция, объявленная локально в этом файле, а
+  // не импортированная из модуля компонента. Docgen у Storybook
+  // (react-docgen-typescript) надёжно извлекает пропсы только из модулей
+  // компонентов, поэтому ни один пропс этой обёртки вообще не получал
+  // строки в Controls. Объявляем их явно, чтобы до них можно было
+  // добраться.
+  /* Панель повторяет свойства компонент-сета `ELK / toast message`:
+     Size / Type — плюс булевы слоты мастера и вложенный сет
+     «Buttons (Desktop, ELK)» со своим Type. */
   argTypes: {
     // Дизайн-чек №3 №19: форма Desktop/Mobile выбирается контролом в панели
     // истории, а не изменением ширины вьюпорта.
@@ -153,9 +154,9 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {}
 
-/* The matrix renders `ToastCard` directly rather than firing `toast.add()`
-   for every cell — going through the provider would stack them in one corner
-   on a 4s timer instead of laying them out. */
+/* Матрица рисует `ToastCard` напрямую, а не вызывает `toast.add()` на
+   каждую ячейку: через провайдер они сложились бы в стопку в одном углу по
+   таймеру на 4 секунды вместо того, чтобы разложиться по сетке. */
 interface Cell {
   type: ToastType
   description?: string

@@ -10,7 +10,7 @@ import { HeaderMenu } from "./header-menu"
 import type { HeaderMenuProps } from "./header-menu"
 
 /* Панель раскрывается под шапкой на затемнении, поэтому в историях она
-   стоит на том же фоне, что и в макете (Menu Overlay, нода 70303:58313) —
+   стоит на том же фоне, что и в макете (Menu Overlay) —
    на белом фоне Storybook её нижние скругления попросту не читались бы. */
 function MenuStage({ children }: { children: React.ReactNode }) {
   return <div className="w-full bg-[var(--modal-backdrop)]/70 pb-8">{children}</div>

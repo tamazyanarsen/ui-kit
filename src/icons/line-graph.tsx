@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / line graph — 20. User Interface, набор ALL ICONS (канвас 70326:26).
+// icon / line graph — 20. User Interface, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function LineGraph({ size = 16, ...props }: IconProps) {
   if (size === 24) {

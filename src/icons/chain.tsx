@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / chain — 03. Copy Link Share Download Upload, набор ALL ICONS (канвас 70326:26).
+// icon / chain — 03. Copy Link Share Download Upload, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Chain({ size = 16, ...props }: IconProps) {
   if (size === 24) {

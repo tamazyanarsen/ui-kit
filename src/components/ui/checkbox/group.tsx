@@ -4,19 +4,20 @@ import { cn } from "@/lib/utils"
 
 import { Checkbox } from "./checkbox"
 
-// CheckboxGroup — a set of checkboxes driven by one array of selected values,
-// with an optional parent "select all" row.
+// CheckboxGroup — набор флажков, которым правит один массив выбранных
+// значений, с необязательной родительской строкой «выбрать всё».
 //
-// Unlike Radio, Base UI has no group primitive that owns this behaviour, so
-// the joint part — which children are on, and the parent's checked /
-// indeterminate / unchecked tri-state derived from them — lives here. That is
-// the whole point of the component: the interesting behaviour of a checkbox
-// set is the relationship between the parent and its children (the same
-// "Partial" state Table's select-all header uses), and it can only be
-// exercised, and tested, when something owns all of them together.
+// В отличие от Radio, у Base UI нет группового примитива, который брал бы
+// это поведение на себя, поэтому совместная часть — какие дети включены и
+// какое трёхзначное состояние родителя (отмечен, частично, не отмечен) из
+// них выводится — живёт здесь. В этом и весь смысл компонента: интересное
+// поведение набора флажков — это отношение родителя и детей (то самое
+// состояние «Partial», которым пользуется шапка выбора всех строк в
+// Table), и проверить его, в том числе тестом, можно только когда что-то
+// владеет ими всеми сразу.
 //
-// Layout matches RadioGroup: a 24px vertical stack, per the shared "Use"
-// frame ("Вертикальный отступ ... составляет 24 px").
+// Раскладка совпадает с RadioGroup: вертикальная стопка с шагом 24px, по
+// общему кадру «Use» («Вертикальный отступ ... составляет 24 px»).
 
 interface CheckboxGroupItem {
   value: string
@@ -33,9 +34,9 @@ interface CheckboxGroupProps
   defaultValue?: string[]
   onValueChange?: (value: string[]) => void
   disabled?: boolean
-  /** Renders a parent row above the children. Checking it selects every
-   * enabled child; clearing it deselects them; a partial selection shows the
-   * indeterminate state. */
+  /** Рисует родительскую строку над детьми. Отметка в ней выбирает всех
+   * доступных детей, снятие — снимает выбор со всех, а частичный выбор
+   * показывает промежуточное состояние. */
   selectAllLabel?: React.ReactNode
 }
 
@@ -65,9 +66,10 @@ function CheckboxGroup({
     )
   }
 
-  // "Select all" only ever covers the options the user could reach: a
-  // disabled row must not be flipped by the parent, and must not hold the
-  // parent back from reading as fully checked either.
+  // «Выбрать всё» всегда охватывает только те опции, до которых
+  // пользователь может дотянуться: выключенную строку родитель не должен ни
+  // переключать, ни удерживать себя из-за неё от состояния «отмечено
+  // полностью».
   const selectable = items.filter((item) => !item.disabled).map((i) => i.value)
   const selectedCount = selectable.filter((entry) =>
     selected.includes(entry)

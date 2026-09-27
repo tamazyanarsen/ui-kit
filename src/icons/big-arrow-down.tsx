@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / big arrow down — 09. Settings Menus, набор ALL ICONS (канвас 70326:26).
+// icon / big arrow down — 09. Settings Menus, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function BigArrowDown({ size = 16, ...props }: IconProps) {
   if (size === 24) {

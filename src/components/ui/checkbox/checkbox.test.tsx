@@ -32,7 +32,7 @@ describe("Checkbox", () => {
     await user.click(box)
 
     expect(onCheckedChange).toHaveBeenCalledWith(true, expect.anything())
-    // Controlled: stays unchecked because the consumer hasn't fed the new value back.
+    // Управляемый: остаётся неотмеченным, потому что потребитель не вернул новое значение.
     expect(box).not.toBeChecked()
   })
 

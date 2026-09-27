@@ -5,7 +5,7 @@ import { StorySection, StoryShowcase } from "@/stories/matrix"
 import { Divider, type DividerProps } from "./divider"
 
 /**
- * Divider — «ELK / divider» (нода 58890:9260), самостоятельный
+ * Divider — «ELK / divider», самостоятельный
  * версионированный компонент Figma. Истории у него не было, хотя он стоит
  * в шапке, в футерах Calendar и Dropdown, в Profile Menu и в таблицах.
  *

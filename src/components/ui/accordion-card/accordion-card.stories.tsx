@@ -111,7 +111,7 @@ export const Matrix: Story = {
         { label: "Свёрнута", props: {} },
         { label: "Hover", props: {}, pseudo: "hover" },
         { label: "Раскрыта", props: { defaultOpen: true } },
-        // `blocked` pins the card open and removes the toggle affordance.
+        // `blocked` держит карточку раскрытой и убирает возможность её свернуть.
         { label: "Blocked", props: { blocked: true, defaultOpen: true } },
       ]}
       render={(props) => <AccordionCard {...props} />}

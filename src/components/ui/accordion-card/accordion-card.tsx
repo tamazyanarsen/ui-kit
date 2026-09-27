@@ -4,15 +4,16 @@ import { ChevronDownIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
-// AccordionCard — the standalone "card" accordion from the spec (`ELK /
-// accordion`, node 70333:4508 — Title + Subtitle header, Default/Blocked
-// color type, Desktop/Mobile sizes). Distinct from the plain text-row
-// Accordion in `src/demo/scaffold`, which is only used for this repo's own
-// docs-page chrome and has a different visual language (no card background,
-// no subtitle, always-visible trailing chevron on the whole row), and from
-// AccordionList (`ELK / content accordion`). Each card owns its own
-// single-item Base UI Accordion.Root, so multiple cards stacked on a page
-// open/close independently.
+// AccordionCard — самостоятельный аккордеон-«карточка» из макета
+// (`ELK / accordion`: шапка с заголовком и подзаголовком, цветовые типы
+// Default и Blocked, размеры Desktop и Mobile). Отличается от простого
+// текстового Accordion из `src/demo/scaffold`, который используется только
+// для оформления страницы документации в этом репозитории и говорит на
+// другом визуальном языке (нет фона карточки, нет подзаголовка, всегда
+// видимый шеврон в конце всей строки), и от AccordionList
+// (`ELK / content accordion`). У каждой карточки собственный
+// Accordion.Root из Base UI на один пункт, поэтому несколько карточек на
+// странице открываются и закрываются независимо.
 const ITEM_VALUE = "item"
 
 interface AccordionCardProps {
@@ -61,21 +62,21 @@ function AccordionCard({
           <AccordionPrimitive.Trigger
             data-slot="accordion-card-trigger"
             className={cn(
-              // Mobile (`Size=Mobile`, node 70333:4514): the whole header
-              // shrinks — 16px padding instead of 24, 16px between text and
-              // chevron instead of 24, H4 Mobile / P1 Medium Mobile type.
-              // The 4px title↔subtitle gap and the 16px chevron are the same
-              // in both forms.
+              // Мобильная форма (`Size=Mobile`): вся шапка ужимается —
+              // отступ 16px вместо 24, расстояние от текста до шеврона
+              // 16px вместо 24, шрифты H4 Mobile и P1 Medium Mobile. Зазор
+              // 4px между заголовком и подзаголовком и шеврон 16px
+              // одинаковы в обеих формах.
               "flex w-full flex-col gap-1 p-4 text-left outline-none focus-visible:focus-ring transition-colors desktop:p-6 [&[data-panel-open]_svg]:rotate-180",
               blocked
                 ? "hover:bg-[var(--accordion-card-blocked-bg-hover)]"
                 : "hover:bg-[var(--accordion-card-bg-hover)]"
             )}
           >
-            {/* `items-start`: the chevron is pinned to the top of the title
-                line (Figma puts it at y=24, i.e. exactly the card's own top
-                padding), not vertically centred on the 28px line — centring
-                dropped it 6px lower than the master. */}
+            {/* `items-start`: шеврон прижат к верху строки заголовка (в
+                макете он стоит на y=24, то есть ровно в верхний отступ
+                самой карточки), а не отцентрован по строке высотой 28px —
+                центрирование опускало его на 6px ниже, чем у мастера. */}
             <span className="flex items-start justify-between gap-4 desktop:gap-6">
               <span className="text-h4-mobile text-[var(--accordion-card-title-fg)] desktop:text-h4">
                 {title}
@@ -97,13 +98,13 @@ function AccordionCard({
             data-slot="accordion-card-panel"
             className="h-(--accordion-panel-height) overflow-hidden text-p2-medium transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
           >
-            {/* Header/content divider — confirmed against get_design_context
-                literal output for the Open=True variants (both Default and
-                Blocked types): "Content" carries border-t grey-134/#DEDEDE
-                plus its own 24px top padding, on top of the header's own
-                24px bottom padding. A prior audit pass concluded there was
-                no divider based on a vector-source re-check that didn't
-                hold up against this literal data. */}
+            {/* Разделитель шапки и содержимого — подтверждён литеральным
+                выводом по вариантам Open=True (и для типа Default, и для
+                Blocked): «Content» несёт border-t grey-134/#DEDEDE плюс
+                собственный верхний отступ 24px поверх нижнего отступа 24px
+                у шапки. Прежний проход заключил, что разделителя нет,
+                опираясь на перепроверку по вектору, которая против этих
+                литеральных данных не устояла. */}
             <div className="border-t border-[var(--accordion-card-divider)] p-4 desktop:p-6">
               {children}
             </div>

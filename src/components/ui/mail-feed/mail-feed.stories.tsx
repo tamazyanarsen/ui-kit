@@ -82,7 +82,7 @@ export const Playground: Story = {
 
 /* Дизайн-чек Storybook 2 (от Notification до Loader) №5: «скорректируй вид в
    сетку, опираясь на структуру компонента по ссылке». Сет `Mail feed`
-   (796:69794) разложен тремя осями: `Property 1` (Default / New / Used /
+   разложен тремя осями: `Property 1` (Default / New / Used /
    Error), `Hover` (No / Yes) и `Checkbox` (No / Yes) — 16 символов. Раньше
    Hover был одной лишней строкой сбоку, а не осью, поэтому половина сета в
    матрицу не попадала. */

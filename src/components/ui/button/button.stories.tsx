@@ -28,7 +28,7 @@ const LOGO_VARIANTS: NonNullable<ButtonProps["variant"]>[] = [
   "secondary-logo-grey",
 ]
 
-/* Свойство `Style` компонента ELK / button в Figma (компонент-сет 32:9064).
+/* Свойство `Style` компонента ELK / button в Figma.
    В коде оно раскладывается на пару `icon` + `iconPosition`, но в контролах
    должно быть одним списком — см. комментарий у argTypes ниже. */
 const STYLES = ["Text", "Icon Left", "Icon Right", "Icon"] as const
@@ -109,7 +109,7 @@ const meta = {
     // нельзя было выбрать сторону иконки: «сейчас иконку в кнопке нельзя
     // поставить с левой или с правой стороны, можно только включить тестовую
     // иконку». В Figma это одно свойство `Style` с четырьмя значениями
-    // (Text / Icon Left / Icon Right / Icon — компонент-сет 32:9064), поэтому
+    // (Text / Icon Left / Icon Right / Icon), поэтому
     // здесь ровно оно: один список, значения и порядок унаследованы из Figma.
     figmaStyle: {
       name: "Style",
@@ -201,8 +201,9 @@ export const Matrix: Story = {
         ]}
         render={(props) => <Button {...props} />}
       />
-      {/* Secondary Logo types always carry the fixed Госуслуги glyph, so
-          they have no icon/icon-only rows of their own. */}
+      {/* Типы Secondary Logo всегда несут фиксированный глиф Госуслуг,
+          поэтому собственных строк со значком и «только значок» у них
+          нет. */}
       <StatesMatrix<ButtonProps>
         baseProps={{ children: "Button", size: "lg" }}
         columnGroups={[

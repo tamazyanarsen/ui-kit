@@ -14,7 +14,7 @@ import { SKIN_STYLES, type BankCardSkin } from "./variants"
  * Свойство `Size` компонент-сета ` ELK / cards`.
  *
  * Дизайн-чек Storybook (Аня Багрова) №19: «отсутствует вариант Mobile». В
- * макете это отдельные символы (`Size=Mobile, …`, напр. 52969:11687), а не
+ * макете это отдельные символы (`Size=Mobile, …`), а не
  * та же карта под медиазапросом: коробка 254×160 вместо 332×208, логотип
  * платёжной системы 52×17 вместо 80×26 и зазор между ним и номером 4 вместо
  * 6. Внутренние поля, скругление и размеры шрифтов совпадают.
@@ -34,7 +34,7 @@ function RevealField({
   onToggle,
   className,
 }: {
-  /** Мобильная карта: подпись поля 14/20 вместо 16/24 (52969:11796). */
+  /** Мобильная карта: подпись поля 14/20 вместо 16/24. */
   compact?: boolean
   maskedValue: string
   revealedValue: string
@@ -116,7 +116,7 @@ function CardFace({
       style={style}
     >
       {/* Дизайн-чек №16: артворк карты — векторный ассет из макета (слой
-          `Card Image`, например нода 52969:11716 внутри Face/Mono), а не
+          `Card Image` внутри Face/Mono), а не
           CSS-градиент «на глаз». Он же приносит водяной знак — здание
           ДОМ.РФ, стикер или облако, — поэтому отдельного слоя больше нет.
           В макете картинка лежит от −1px и на 1px больше карты с обеих
@@ -129,9 +129,9 @@ function CardFace({
       />
 
       {showPaymentSystem && (
-        // 6px between the payment-system logo and the masked number — the
-        // master's "PS and number" column is `gap-[6px]`, not 4. У мобильного
-        // символа (52969:11709) он же 4.
+        // 6px между логотипом платёжной системы и маскированным номером —
+        // колонка «PS and number» в мастере это `gap-[6px]`, а не 4. У
+        // мобильного символа он же 4.
         <div
           className={cn(
             "relative flex flex-1 flex-col items-start",
@@ -143,8 +143,8 @@ function CardFace({
             size={size === "mobile" ? "md" : "lg"}
           />
           {showCardNumber && (
-            // get_design_context on the "Face, Style=Mono" master (52969:11715):
-            // the masked number line is Medium (500), not the browser default.
+            // У мастера «Face, Style=Mono» строка маскированного номера —
+            // Medium (500), а не браузерное умолчание.
             <span className="text-p3-medium text-white">· {last4}</span>
           )}
         </div>
@@ -160,8 +160,8 @@ function CardFace({
                 event.stopPropagation()
                 onShowRequisites()
               }}
-              // "Показать реквизиты" sits in the same font-['Object_Sans:Medium']
-              // "Balance" wrapper as the balance amount above it (52969:11715).
+              // «Показать реквизиты» лежит в той же обёртке «Balance» с
+              // font-['Object_Sans:Medium'], что и сумма баланса над ней.
               className="w-fit cursor-pointer text-p3-medium text-white outline-none focus-visible:focus-ring hover:underline"
             >
               Показать реквизиты
@@ -200,7 +200,7 @@ function CardBack({
     <div
       data-slot="bank-card-back"
       className={cn(
-        // Десктопная сторона распирает блоки по краям, мобильная (52969:11793)
+        // Десктопная сторона распирает блоки по краям, мобильная
         // ставит их подряд с зазором 9.
         "flex flex-col overflow-hidden rounded-[16px] border border-white bg-[var(--tag-black-bg)] p-4 shadow-[0px_23px_12px_-15px_rgba(37,38,40,0.15)]",
         size === "mobile" ? "gap-[9px]" : "justify-between",
@@ -218,7 +218,7 @@ function CardBack({
           onToggle={() => onToggleReveal("number")}
         />
         {/* Подпись «CVC/CVV» — сосед плашки, а не её содержимое: в макете
-            (52969:11798) она стоит рядом с 72px-плашкой во flex-строке.
+            она стоит рядом с 72px-плашкой во flex-строке.
             Раньше она лежала внутри и потому налезала на глаз. */}
         <div className="flex items-center gap-2">
           <RevealField

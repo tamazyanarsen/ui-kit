@@ -33,12 +33,13 @@ const ICON_STATUS_GLYPH = {
   "alert-red": CircleAlert,
 } as const
 
-// Thumbnail — "Миниатюра": a small icon/logo tile that marks the payment
-// system on a card, or an object's status. Card-family types (card/sticker/
-// sbp-card/sbp-card-account) render a dark tile with a payment mark;
-// icon-status types (check/question/clock/alert/alert-red) render a light
-// tinted tile with a glyph; "picture" is a custom illustration slot;
-// "icon" is a light grey tile with any 24px glyph from the kit.
+// Thumbnail — «Миниатюра»: небольшая плитка со значком или логотипом,
+// которая отмечает платёжную систему на карте или статус объекта. Типы
+// семейства карт (card, sticker, sbp-card, sbp-card-account) рисуют тёмную
+// плитку со знаком платёжной системы; типы icon-status (check, question,
+// clock, alert, alert-red) — светлую подкрашенную плитку с глифом;
+// «picture» — слот под свою иллюстрацию; «icon» — светло-серая плитка с
+// любым 24-пиксельным глифом кита.
 interface ThumbnailProps {
   type?: ThumbnailType
   size?: ThumbnailSize
@@ -95,8 +96,9 @@ function Thumbnail({
       <Badge type="point" disabled={disabled} className={cn("absolute z-10", badgeOffset)} />
     ) : null
 
-  // Disabled is a flat opacity-50 on the whole tile for every type (matches
-  // Figma's Disabled samples) — no per-type background-color swap.
+  // Выключенное состояние — плоский opacity-50 на всей плитке для любого
+  // типа (совпадает с образцами Disabled в макете), без подмены цвета фона
+  // по типам.
   const containerClassName = disabled ? "opacity-50" : ""
 
   let bg: string | undefined
@@ -107,8 +109,9 @@ function Thumbnail({
   } else if (isIconStatus) {
     bg = ICON_STATUS_STYLE[type].bg
   }
-  // isSbp: left undefined — its dark tile is drawn by the inner absolutely
-  // positioned layer(s) below instead of an outer fill (see isSbp block).
+  // isSbp: оставлено неопределённым — его тёмная плитка рисуется
+  // внутренними абсолютно спозиционированными слоями ниже, а не внешней
+  // заливкой (см. блок isSbp).
 
   return (
     <span

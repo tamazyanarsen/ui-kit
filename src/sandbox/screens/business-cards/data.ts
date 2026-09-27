@@ -2,7 +2,7 @@ import type { PaymentSystem } from "@/components/ui/thumbnail"
 import type { TagColor } from "@/components/ui/tag"
 import type { TableField } from "@/components/ui/table"
 
-// Данные экранов D6 и D7 — с эталонов 70371:24883 и 70371:25281.
+// Данные экранов D6 и D7 — с эталонов песочницы.
 
 type CardStatus = "needs-activation" | "active" | "blocked" | "limited"
 

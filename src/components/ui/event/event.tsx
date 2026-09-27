@@ -7,16 +7,17 @@ import { Tag } from "@/components/ui/tag"
 
 import { SIGNATORY_STATUS_COLOR, STATUS_TAG_COLOR, type EventStatus } from "./variants"
 
-// Event — "Событие": one row of a document/status change history timeline
-// (rendered inside the existing `Modal` as a list per the spec's own
-// usage note — this component is just the row). Fixes a single user
-// action or document move *within* one status, without changing the
-// overall stage. `type="tag"` renders the title as a colored status pill
-// (ЕЛК-only per the spec — status history logic doesn't apply to other
-// products); `type="text"` is the plain default. Every section below the
-// title (author, signatories, info, comment, documents, button) is
-// optional and simply omits when its data isn't given — same pattern as
-// Card/Banner's "Show X" toggles.
+// Event — «Событие»: одна строка ленты истории изменений документа или
+// статуса (по замечанию об использовании в самом макете она рисуется
+// списком внутри готового `Modal`, а этот компонент — только строка).
+// Фиксирует одно действие пользователя или перемещение документа *внутри*
+// одного статуса, не меняя общего этапа. `type="tag"` рисует заголовок
+// цветной таблеткой статуса (по макету только для ЕЛК: логика истории
+// статусов к другим продуктам не применяется), `type="text"` — обычное
+// умолчание. Каждый раздел под заголовком (автор, подписанты, сведения,
+// комментарий, документы, кнопка) необязателен и просто не рисуется, если
+// данных нет, — та же схема, что у переключателей «Show X» в Card и
+// Banner.
 interface EventSignatory {
   /**
    * Свойство `Type` вложенного `Signatories (ELK)`: Done — подписано,
@@ -27,10 +28,10 @@ interface EventSignatory {
    */
   status: "success" | "attention" | "error"
   name: React.ReactNode
-  // Design-check #21: the spec's own signer example carries a second,
-  // lighter-colored attribute after the name (e.g. "Петров П.П. — Первая
-  // подпись") — was baked into one plain `text` node with no way to give it
-  // a different color from the name.
+  // Дизайн-чек, замечание 21: в собственном примере подписанта из макета
+  // после имени идёт второй, более светлый признак (например, «Петров П.П.
+  // — Первая подпись»). Раньше он был запечён в один обычный узел `text`,
+  // и задать ему цвет, отличный от имени, было нечем.
   attribute?: React.ReactNode
 }
 
@@ -137,7 +138,7 @@ function Event({
           <div className="flex items-baseline justify-between gap-2">
             {/* Дизайн-чек №29: тег здесь desktop-размера (22px), а не
                 mobile-огрызок. В мастере `Head Event (ELK)`, вариант
-                `Type=Status` (нода 40503:42354) инстанс `ELK / tag`
+                `Type=Status` инстанс `ELK / tag`
                 замеряется как min/max-h 22px с текстом P2 Medium 14/20 —
                 это ровно Size=Desktop. Раньше это форсировалось пропом
                 `size="l"`; после дизайн-чека №3 №1 размера как пропа нет,
@@ -199,11 +200,12 @@ function Event({
           </div>
         )}
 
-        {/* Each Information row is a two-column flex in the master
-            (`I-1`/`I-2`/`I-3`: `flex gap-[4px] items-start`, label
-            `shrink-0 whitespace-nowrap`, value `flex-[1_0_0]`), not one
-            inline paragraph — so a value long enough to wrap keeps its own
-            column instead of running back under the label. */}
+        {/* Каждая строка сведений в мастере — двухколоночный flex
+            (`I-1`, `I-2`, `I-3`: `flex gap-[4px] items-start`, подпись
+            `shrink-0 whitespace-nowrap`, значение `flex-[1_0_0]`), а не
+            один строчный абзац. Поэтому значение, достаточно длинное для
+            переноса, остаётся в своей колонке, а не убегает обратно под
+            подпись. */}
         {info && info.length > 0 && (
           <div className="flex flex-col gap-1 text-p1-medium">
             {info.map((row, index) => (
@@ -237,18 +239,18 @@ function Event({
                   key={index}
                   type="button"
                   onClick={doc.onClick}
-                  // `pr-4`, not `p-1`: the master's `ELK / files` row is
-                  // `gap-[16px] items-center pr-[16px]` with no padding on
-                  // the other three sides, so the 48px tile lines up with
-                  // the "Приложенные документы:" label above it — a uniform
-                  // 4px inset pushed it out of that column.
+                  // `pr-4`, а не `p-1`: строка `ELK / files` в мастере —
+                  // это `gap-[16px] items-center pr-[16px]` без отступов с
+                  // трёх остальных сторон, чтобы плитка 48px встала по
+                  // подписи «Приложенные документы:» над ней. Равномерный
+                  // отступ 4px выталкивал её из этой колонки.
                   className="flex items-center gap-4 overflow-hidden rounded-[8px] pr-4 text-left outline-none focus-visible:focus-ring"
                 >
                   <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--event-file-bg)]">
-                    {/* Figma nests the same `ELK / files` row here as File
-                        Upload does, so the tile holds `icon / document` at
-                        24px (node I40573:14011;40513:71361;16029:61127) —
-                        not the FileText glyph this used before. */}
+                    {/* В макете здесь вложена та же строка `ELK / files`,
+                        что и у File Upload, поэтому в плитке лежит
+                        `icon / document` размером 24px, а не глиф FileText,
+                        который стоял тут раньше. */}
                     <FileIcon
                       size={24}
                       aria-hidden="true"

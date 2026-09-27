@@ -1,20 +1,21 @@
 export type ThumbnailSize = "l" | "m"
 
-// "Card"-family types (card/sticker/picture) render a dark square with a
-// payment-system mark or image, dimmed via opacity when disabled (confirmed
-// against Figma's own Disabled samples — it's a flat opacity-50 on the whole
-// tile, not a background-color swap). SBP types render that same dark tile
-// but as an absolutely-positioned inner layer instead of an outer fill, so
-// "sbp-card-account" can show a thin gap beneath it (its "peeking second
-// card" effect). "icon" is its own light-grey tile with a dark glyph — it
-// is NOT part of the dark card family.
+// Типы семейства «Card» (card, sticker, picture) рисуют тёмный квадрат со
+// знаком платёжной системы или картинкой, приглушаемый прозрачностью в
+// выключенном состоянии (сверено с собственными образцами Disabled в
+// макете: это плоский opacity-50 на всей плитке, а не подмена цвета фона).
+// Типы СБП рисуют ту же тёмную плитку, но абсолютно спозиционированным
+// внутренним слоем, а не внешней заливкой, — чтобы «sbp-card-account» мог
+// показать под ней тонкий просвет (эффект «выглядывающей второй карты»).
+// «icon» — самостоятельная светло-серая плитка с тёмным глифом, к тёмному
+// семейству карт она НЕ относится.
 //
 // Дизайн-чек №3 №4: «Некорректные нейминги в матрице thumbnail. Это не
-// more, это вариант с иконкой». В мастере (687:29204) вариант называется
-// `Type=Icon` и держит любой 24px-глиф набора; «многоточие» — лишь
-// содержимое инстанса по умолчанию, а не имя варианта.
+// more, это вариант с иконкой». В мастере вариант называется `Type=Icon` и
+// держит любой 24px-глиф набора; «многоточие» — лишь содержимое инстанса по
+// умолчанию, а не имя варианта.
 //
-// The icon-status types render a light tinted square with a glyph.
+// Типы icon-status рисуют светлый подкрашенный квадрат с глифом.
 export type ThumbnailType =
   | "icon"
   | "card"
@@ -38,7 +39,7 @@ export type ThumbnailType =
  * трёх — значит развести их между собой.
  *
  * `mir-white` — тот же знак «МИР», но белым: так он нарисован на тёмной
- * миниатюре бизнес-карты (макет D-10923, 14002:113942).
+ * миниатюре бизнес-карты (макет D-10923).
  */
 export type PaymentSystem = "mir" | "mir-white" | "mastercard" | "visa"
 
@@ -66,10 +67,10 @@ export const CARD_TYPES = new Set<ThumbnailType>(["card", "sticker", "picture"])
 
 export const SBP_TYPES = new Set<ThumbnailType>(["sbp-card", "sbp-card-account"])
 
-// Icon-status tints reuse Tag's secondary-color tokens (same "12% over
-// white" tint family) and Informer's icon colors — confirmed by pixel
-// sampling ui/thumbnail/thumbnail@2x-1.png's Check icon against
-// --informer-icon-green, which matched within anti-aliasing noise.
+// Подкраска типов icon-status переиспользует вторичные цветовые токены Tag
+// (то же семейство оттенков «12% поверх белого») и цвета значков Informer.
+// Подтверждено пипеткой: значок Check у thumbnail против
+// --informer-icon-green совпал в пределах шума сглаживания.
 export const ICON_STATUS_STYLE: Record<
   "check" | "question" | "clock" | "alert" | "alert-red",
   { bg: string; fg: string }

@@ -76,11 +76,11 @@ const meta = {
     showSubtitle: true,
     description: "Подписано",
     // Дизайн-чек №24, вторая половина («поменять цвет»). Пять статусов сами
-    // по себе совпадают с макетом один в один: Status (ELK), нода 50451:9206
+    // по себе совпадают с макетом один в один: Status (ELK)
     // — Default #252628, Success #39C182, Error #D74B54, Attention #EEA20F,
     // Information #999999. Тёмным «Подписано» выглядело потому, что в
     // Playground стоял Default, а в анатомии компонента этот же элемент
-    // нарисован серым (инстанс I42675:20084;50451:9233 — Information).
+    // нарисован серым (инстанс — Information).
     // Поэтому меняем не палитру, а значение по умолчанию в примере.
     descriptionType: "information",
     showButtons: true,
@@ -113,9 +113,9 @@ export const Playground: Story = {
   ),
 }
 
-/* Every anatomy example in the "Content Accordion" spec carries the full
-   row — checkbox on the left, description + button + kebab on the right — so
-   the matrix varies those blocks rather than showing a stripped-down row. */
+/* Каждый пример анатомии в макете «Content Accordion» несёт полную строку —
+   флажок слева, описание, кнопка и «кебаб» справа, — поэтому матрица
+   варьирует именно эти блоки, а не показывает урезанную строку. */
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
   parameters: { layout: "fullscreen", controls: { disable: true } },

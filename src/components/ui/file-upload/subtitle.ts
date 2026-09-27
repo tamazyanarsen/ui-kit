@@ -1,12 +1,14 @@
-// buildFileUploadSubtitle — the composition rule from the spec:
-//   [count clause] [format clause], [size clause]
-// "Файл" when maxFiles is 1/unset, "До N файлов" when capped, "Любое
-// количество файлов" when uncapped. Size clause is "без ограничений по
-// размеру" (space-joined, no comma) when there's no per-file cap, otherwise
-// "не более X MB" (+ "каждый и не более Y MB суммарно" when a total cap is
-// also set) — comma-joined. A total cap without a per-file cap is invalid
-// per the spec ("на сумму файлов ограничение по размеру невозможно" without
-// a per-file limit already set) and is ignored here rather than thrown.
+// buildFileUploadSubtitle — правило сборки строки из макета:
+//   [часть про количество] [часть про формат], [часть про размер]
+// «Файл», когда maxFiles равен 1 или не задан; «До N файлов», когда есть
+// ограничение; «Любое количество файлов», когда ограничения нет. Часть про
+// размер — это «без ограничений по размеру» (присоединяется пробелом, без
+// запятой), когда ограничения на файл нет, иначе «не более X MB» (плюс
+// «каждый и не более Y MB суммарно», если задано и общее ограничение),
+// присоединяется запятой. Общее ограничение без ограничения на файл по
+// макету недопустимо («на сумму файлов ограничение по размеру невозможно»,
+// пока не задан предел на файл) и здесь просто игнорируется, а не вызывает
+// исключение.
 
 export interface FileUploadSubtitleOptions {
   maxFiles?: number | "unlimited"

@@ -8,11 +8,12 @@ export interface CalendarSingleMonth {
 
 export interface CalendarProps {
   mode?: CalendarMode
-  /** "popover" is the desktop widget (paginated, fixed width). "sheet" is
-   * the mobile widget: title + close button, a single back nav, and a
-   * continuously scrollable list of months/years/decades. The "sheet"
-   * layout renders its own content only — host it in whatever
-   * modal/bottom-sheet primitive the page uses. */
+  /** «popover» — десктопный виджет (листается страницами, фиксированной
+   * ширины). «sheet» — мобильный: заголовок с кнопкой закрытия, одна
+   * навигация «назад» и непрерывно прокручиваемый список месяцев, лет и
+   * десятилетий. Раскладка «sheet» рисует только собственное содержимое —
+   * размещайте её в том примитиве модального окна или нижней шторки,
+   * которым пользуется страница. */
   layout?: "popover" | "sheet"
   title?: string
   onClose?: () => void
@@ -23,9 +24,9 @@ export interface CalendarProps {
   onReset?: () => void
   onApply?: () => void
   defaultMonth?: Date
-  /** Marks individual days as unselectable (e.g. outside a min/max range) —
-   * Figma's "Disabled" day state. Only applies to day cells (single/range
-   * modes), not the month/year pickers. */
+  /** Помечает отдельные дни как невыбираемые (например, вне диапазона
+   * min/max) — состояние дня «Disabled» из макета. Действует только на
+   * ячейки дней (режимы single и range), но не на выбор месяца и года. */
   disabledDate?: (date: Date) => boolean
 
   // mode="single"

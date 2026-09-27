@@ -13,18 +13,19 @@ import {
 } from "./variants"
 import { CloseCross } from "@/components/ui/close-cross"
 
-// Tooltip — hover-triggered, smaller sibling of Hint (see hint.tsx). Per the
-// spec: opens after a 400ms hover delay (so moving the cursor across the page
-// doesn't flicker tooltips open), closes instantly the moment the cursor
-// leaves. Max width 256px, height adaptive.
+// Tooltip — младший брат Hint (см. hint.tsx), открывающийся по наведению.
+// По макету: появляется после задержки наведения в 400 мс (чтобы при
+// проводке курсора по странице подсказки не мигали) и закрывается сразу,
+// как только курсор ушёл. Максимальная ширина 256px, высота
+// подстраивается.
 interface TooltipProps {
   content: React.ReactNode
   /** Дизайн-чек 3/3 №5: у `ELK / tooltip & hint` есть свойство Show Title —
-   * заголовок над текстом (11756:8037), поэтому он есть и здесь, а не только
+   * заголовок над текстом, поэтому он есть и здесь, а не только
    * у Hint. */
   title?: React.ReactNode
   /** Дизайн-чек 3/3 №5: свойство Show Cross того же компонент-сета
-   * (11756:8039). У Tooltip по умолчанию выключен — он закрывается уводом
+   * . У Tooltip по умолчанию выключен — он закрывается уводом
    * курсора, крестик нужен не всегда. */
   showCross?: boolean
   direction?: TooltipDirection
@@ -36,12 +37,13 @@ interface TooltipProps {
   width?: TooltipWidth
   children: React.ReactElement
   className?: string
-  /** Keeps the tooltip permanently closed while leaving the wrapper mounted.
-   * For anchors whose tooltip comes and goes with their content (Input only
-   * explains itself while locked, or while its value overflows): swapping
-   * between a wrapped and an unwrapped child instead would remount the
-   * anchor's whole subtree, which for a field means losing focus and caret
-   * position mid-typing. */
+  /** Держит подсказку постоянно закрытой, оставляя обёртку
+   * смонтированной. Для якорей, у которых подсказка появляется и исчезает
+   * вместе с содержимым (Input поясняет себя только пока заблокирован или
+   * пока значение не помещается): переключение между обёрнутым и
+   * необёрнутым ребёнком вместо этого перемонтировало бы всё поддерево
+   * якоря, а для поля это означает потерю фокуса и позиции каретки прямо
+   * посреди набора текста. */
   disabled?: boolean
 }
 
@@ -56,9 +58,10 @@ function Tooltip({
   disabled = false,
 }: TooltipProps) {
   const { side, align } = DIRECTION_PLACEMENT[direction]
-  // Open state is always controlled, never conditionally so: handing Root an
-  // `open` prop only while disabled would flip it between uncontrolled and
-  // controlled and Base UI warns about exactly that.
+  // Состояние открытия управляемое всегда, а не по условию: передавать
+  // Root пропс `open` только в выключенном состоянии значило бы
+  // переключать его между неуправляемым и управляемым, а Base UI
+  // предупреждает ровно об этом.
   const [open, setOpen] = React.useState(false)
 
   return (

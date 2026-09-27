@@ -13,33 +13,35 @@ import {
 import { OtpInput } from "./input"
 import { ResendCode } from "./resend-code"
 
-// OtpConfirmCard — the "Подтвердите контактные данные" dialog.
+// OtpConfirmCard — окно «Подтвердите контактные данные».
 //
-// Figma composes `ELK / otp-code` as a literal `ELK / Modal` instance
-// (Modal Top/Body Small + an `ELK / button` close + `ELK / scrollbar`, with
-// `Input Code (Desktop/Mobile)` dropped into the slot), so this renders the
-// kit's real Modal rather than a look-alike card. Everything the old
-// hand-rolled shell carried turned out to be a byte-for-byte copy of
-// Modal's chrome — 592px wide (`size="m"`), 32px radius, the close button
-// on #F4F4F4/#252628 (то есть на общем --btn-secondary-grey-*: своей пары
-// токенов у крестика OTP больше нет — плашку красит один общий), and the
-// title/subtitle typography that ModalTitle/ModalDescription already own.
+// В макете `ELK / otp-code` собран как буквальный инстанс `ELK / Modal`
+// (Modal Top/Body Small плюс закрывающая `ELK / button` и
+// `ELK / scrollbar`, с `Input Code (Desktop/Mobile)` в слоте), поэтому
+// здесь рисуется настоящий Modal кита, а не похожая на него карточка. Всё,
+// что несла прежняя самодельная оболочка, оказалось побайтовой копией
+// обрамления Modal: ширина 592px (`size="m"`), радиус 32px, кнопка закрытия
+// на #F4F4F4/#252628 (то есть на общем --btn-secondary-grey-*: своей пары
+// токенов у крестика OTP больше нет — плашку красит один общий) и
+// типографика заголовка с подзаголовком, которой и так владеют ModalTitle и
+// ModalDescription.
 //
-// Note this makes the component a real dialog: portal, backdrop, focus trap
-// and Esc all come from Base UI's Dialog. That is the intended usage in this
-// system; if an inline, non-dialog OTP widget is ever needed, split it out
-// as its own component rather than making this one render both ways.
+// Учтите, что из-за этого компонент становится настоящим диалогом: портал,
+// подложка, ловушка фокуса и Esc приходят из Dialog в Base UI. В этой
+// системе так и задумано; если когда-нибудь понадобится встроенный
+// не-диалоговый виджет OTP, его следует выделить отдельным компонентом, а
+// не учить этот рисоваться двумя способами.
 //
-// Figma puts no title in the Modal Top bar — the Title/Text pair sits at the
-// start of the Body (the kit's documented "Modal Top: None" arrangement), so
-// there is no ModalHeader here.
+// Заголовка в полосе Modal Top макет не ставит: пара «заголовок и текст»
+// стоит в начале тела (документированная в ките раскладка «Modal Top:
+// None»), поэтому ModalHeader здесь нет.
 interface OtpConfirmCardProps {
-  /** Controlled open state. Omit for an uncontrolled dialog driven by
-   * `defaultOpen` and/or `trigger`. */
+  /** Управляемое состояние открытия. Опустите для неуправляемого диалога,
+   * которым правят `defaultOpen` и/или `trigger`. */
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
-  /** Element that opens the dialog, rendered through ModalTrigger. */
+  /** Элемент, открывающий диалог; рисуется через ModalTrigger. */
   trigger?: React.ReactElement
   title?: React.ReactNode
   subtitle?: React.ReactNode
@@ -87,9 +89,9 @@ function OtpConfirmCard({
     <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       {trigger && <ModalTrigger render={trigger} />}
       <ModalContent size="m" data-slot="otp-confirm-card">
-        {/* Figma's Small-modal body insets are 48px on every side (Texts and
-            Slot both start at x=48 inside the 592px card), wider than
-            ModalBody's default 32px desktop padding. */}
+        {/* Отступы тела у маленького окна в макете — 48px со всех сторон
+            (и Texts, и Slot начинаются с x=48 внутри карточки 592px), то
+            есть шире, чем десктопные 32px у ModalBody по умолчанию. */}
         <ModalBody
           className={cn("flex flex-col gap-8 desktop:px-12 desktop:py-12", className)}
         >

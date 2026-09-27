@@ -5,16 +5,17 @@ import { Dropdown } from "@/components/ui/dropdown"
 
 import { useAutocompleteAnchor } from "./root"
 
-// Portal + Positioner + Popup, anchored directly to the field (no separate
-// button trigger in the tree) — width matches the field, same shape as
-// ./combobox's own content.tsx but without the extra in-popup search input,
-// since the field itself is the search box here. `anchor` is set explicitly
-// to field.tsx's outer box (see root.tsx's AnchorContext comment) — without
-// it Base UI defaults to the bare `<input>`, which is narrower than the box.
-// Renders the actual shared Dropdown component (same one Select/Combobox
-// use), not just a matching className. No `p-2` here, same as Select's and
-// Combobox's own content.tsx — the Dropdown shell itself has zero padding;
-// items go flush to its edges (see item.tsx).
+// Portal, Positioner и Popup, заякоренные прямо к полю (отдельного
+// триггера-кнопки в дереве нет): ширина равна ширине поля, устройство то
+// же, что у content.tsx в ./combobox, но без дополнительного поля поиска
+// внутри всплывающего окна — здесь полем поиска служит само поле. `anchor`
+// задан явно на внешнюю коробку из field.tsx (см. комментарий про
+// AnchorContext в root.tsx): без этого Base UI по умолчанию берёт голый
+// <input>, который уже коробки. Рисуется настоящий общий компонент
+// Dropdown (тот же, что у Select и Combobox), а не просто совпадающий
+// className. `p-2` здесь нет — так же, как в собственных content.tsx у
+// Select и Combobox: у оболочки Dropdown нулевые отступы, пункты идут
+// вплотную к её краям (см. item.tsx).
 
 function AutocompleteContent({
   className,
@@ -74,14 +75,14 @@ function AutocompleteStatus({ className, ...props }: ComboboxPrimitive.Status.Pr
   return (
     <ComboboxPrimitive.Status
       data-slot="autocomplete-status"
-      // Round-2 audit: same "Text Help" hint padding fix as Combobox's own
-      // Status/Empty (pt-[12px]/pb-[16px]/px-[16px] per canvas 666:11's
-      // search-hint dropdown instance, not a uniform px-3/py-2.5) — no
-      // dedicated Autocomplete frame exists, but this is literally the same
-      // ComboboxPrimitive.Status/Empty pattern reused, not an extrapolation.
-      // get_design_context on the dropdown's own "Empty" state text
-      // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
-      // Regular, despite the muted --select-caption-fg color.
+      // Второй проход: та же правка отступов подсказки «Text Help», что и
+      // у Status и Empty самого Combobox (pt-[12px]/pb-[16px]/px-[16px] по
+      // инстансу выпадающего списка с подсказкой поиска, а не равномерные
+      // px-3/py-2.5). Отдельного кадра Autocomplete не существует, но это
+      // буквально тот же переиспользованный шаблон
+      // ComboboxPrimitive.Status и Empty, а не перенос по аналогии. Текст
+      // состояния «Empty» у самого списка — Object Sans Medium (P2 Medium),
+      // а не Regular, несмотря на приглушённый цвет --select-caption-fg.
       className={cn("px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden", className)}
       {...props}
     />
@@ -92,14 +93,14 @@ function AutocompleteEmpty({ className, ...props }: ComboboxPrimitive.Empty.Prop
   return (
     <ComboboxPrimitive.Empty
       data-slot="autocomplete-empty"
-      // Round-2 audit: same "Text Help" hint padding fix as Combobox's own
-      // Status/Empty (pt-[12px]/pb-[16px]/px-[16px] per canvas 666:11's
-      // search-hint dropdown instance, not a uniform px-3/py-2.5) — no
-      // dedicated Autocomplete frame exists, but this is literally the same
-      // ComboboxPrimitive.Status/Empty pattern reused, not an extrapolation.
-      // get_design_context on the dropdown's own "Empty" state text
-      // (29750:54209) confirms it's Object Sans Medium (P2 Medium), not
-      // Regular, despite the muted --select-caption-fg color.
+      // Второй проход: та же правка отступов подсказки «Text Help», что и
+      // у Status и Empty самого Combobox (pt-[12px]/pb-[16px]/px-[16px] по
+      // инстансу выпадающего списка с подсказкой поиска, а не равномерные
+      // px-3/py-2.5). Отдельного кадра Autocomplete не существует, но это
+      // буквально тот же переиспользованный шаблон
+      // ComboboxPrimitive.Status и Empty, а не перенос по аналогии. Текст
+      // состояния «Empty» у самого списка — Object Sans Medium (P2 Medium),
+      // а не Regular, несмотря на приглушённый цвет --select-caption-fg.
       className={cn("px-4 pt-3 pb-4 text-p2-medium text-[var(--select-caption-fg)] empty:hidden", className)}
       {...props}
     />

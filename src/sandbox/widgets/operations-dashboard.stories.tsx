@@ -14,10 +14,11 @@ import {
 } from "@/components/ui/table-top"
 import type { TagColor } from "@/components/ui/tag"
 
-// Sandbox — "История операций": a filter bar + data table + pagination
-// wired together like a real transactions screen, not just one component's
-// own isolated states. Filtering/paging happen client-side over a fixed
-// dataset purely to demonstrate the components reacting to each other.
+// Песочница — «История операций»: полоса фильтров, таблица данных и
+// пагинация, связанные между собой как на настоящем экране операций, а не
+// изолированные состояния одного компонента. Фильтрация и листание идут на
+// клиенте по фиксированному набору данных исключительно для того, чтобы
+// показать, как компоненты реагируют друг на друга.
 //
 // Дизайн-чек от 07.09, замечание 27: «Такой комбинации не существует в ДС.
 // 1. В табличных блоках внешние паддинги равны нулю. 2. Напротив заголовка

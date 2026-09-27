@@ -1,10 +1,10 @@
 import { ChevronUp } from "@/icons"
 
-// The collapse/expand chevron shared by the header ("свернуть весь блок до
-// строк первого уровня") and by every parent row. The spec draws its hit
-// area as a full-height band around the 16px glyph ("Кликабельная область
-// ограничена белой зоной"), which a pseudo-element gives without changing
-// the cell's own flex layout.
+// Шеврон сворачивания и разворачивания, общий у шапки («свернуть весь блок
+// до строк первого уровня») и у каждой родительской строки. Макет рисует
+// его область нажатия полосой во всю высоту вокруг глифа 16px
+// («Кликабельная область ограничена белой зоной»), и псевдоэлемент даёт
+// именно это, не меняя собственную flex-раскладку ячейки.
 //
 // Сквозное правило проекта: **свёрнуто — шеврон вниз, развёрнуто — вверх**,
 // вправо он не смотрит никогда, даже если так нарисовано в ките
@@ -38,9 +38,9 @@ function TableCollapseToggle({
         event.stopPropagation()
         onExpandedChange?.(!expanded)
       }}
-      // The glyph is already at full contrast, so a colour change would be
-      // no focus indicator at all — it gets the kit's ring like every other
-      // control in the table.
+      // Глиф и так нарисован полным контрастом, поэтому смена цвета
+      // признаком фокуса не была бы вовсе: он получает стандартное кольцо
+      // кита, как и любой другой контрол в таблице.
       className="group/collapse relative flex shrink-0 cursor-pointer rounded-[4px] text-[var(--table-fg)] outline-none before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] focus-visible:focus-ring"
     >
       <ChevronUp

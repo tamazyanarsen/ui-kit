@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event"
 
 import { Steps } from "./steps"
 
-// The active step scrolls itself into view — not implemented in jsdom.
+// Активный шаг сам подкручивает себя в область видимости — в jsdom это не реализовано.
 beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn()
 })

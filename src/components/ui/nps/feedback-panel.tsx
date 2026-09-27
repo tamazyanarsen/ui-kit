@@ -90,10 +90,10 @@ function FeedbackPanel({
 
             {showChips && (
               <div className="flex flex-wrap gap-2">
-                {/* Figma builds these from `ELK / filter-table` in its
-                    unselected (Checked=False) look — the frame is named
-                    "Chips" on the canvas, but the instances inside are
-                    filter-table, not `ELK / chips` (node 64534:44873). */}
+                {/* Макет собирает их из `ELK / filter-table` в
+                    невыбранном виде (Checked=False): кадр на канвасе
+                    называется «Chips», но инстансы внутри — это
+                    filter-table, а не `ELK / chips`. */}
                 {chips.map((chip) => (
                   <FilterTable
                     key={chip}

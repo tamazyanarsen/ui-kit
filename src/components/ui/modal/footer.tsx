@@ -2,16 +2,18 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Sticky/pinned button bar ("Modal Bottom" in the spec). Pass one Button for
-// "Type: Primary"/"Secondary" or two for "Type: Buttons". Order children
-// [secondary, primary] — mobile stacks them full-width with primary on top
-// via flex-col-reverse, desktop lays them out left-aligned in the given
-// order (design-check #36 — was right-aligned via justify-end).
+// Закреплённая полоса кнопок («Modal Bottom» в макете). Передайте одну
+// Button для «Type: Primary» или «Secondary» и две для «Type: Buttons».
+// Порядок детей — [вторичная, основная]: на мобильном они складываются во
+// всю ширину с основной сверху через flex-col-reverse, а на десктопе
+// раскладываются слева в заданном порядке (дизайн-чек, замечание 36:
+// раньше прижимались вправо через justify-end).
 //
-// Horizontal padding tracks the modal's own inset rather than being fixed:
-// `Modal Bottom (Large, ELK)` is `px-[64px] pb-[48px]` and the Small one
-// 48px, i.e. the same --modal-px the header and body already use. A flat
-// 48px here left the Large modal's buttons 16px inboard of its body text.
+// Горизонтальный отступ следует за отступом самого окна, а не задан жёстко:
+// `Modal Bottom (Large, ELK)` — это `px-[64px] pb-[48px]`, а у маленького
+// 48px, то есть тот же --modal-px, которым уже пользуются шапка и тело.
+// Плоские 48px здесь оставляли кнопки большого окна на 16px внутрь от его
+// же текста.
 function ModalFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

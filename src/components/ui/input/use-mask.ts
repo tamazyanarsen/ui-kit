@@ -5,10 +5,11 @@ import { formatWithMask, getMaskPlaceholder, type MaskName } from "./mask"
 /**
  * Состояние поля под маской.
  *
- * react-imask owns the field's value once a mask is set — it reports the
- * masked display string back via onAccept, which we mirror into state so
- * the box's clear button and floating-label logic (:placeholder-shown) keep
- * working the same way they do for a plain input.
+ * Как только задана маска, значением поля владеет react-imask: он
+ * возвращает отображаемую маскированную строку через onAccept, а мы
+ * зеркалим её в состояние, чтобы кнопка очистки коробки и логика плавающей
+ * подписи (:placeholder-shown) продолжали работать так же, как для обычного
+ * поля.
  *
  * Сюда же вынесен замер ширины числа для маски суммы: знак «₽» стоит рядом
  * с полем, и поле должно сжиматься по фактической ширине значения — почему
@@ -36,10 +37,11 @@ function useMask({
     return mask ? formatWithMask(mask, raw) : raw
   })
 
-  // Re-syncs when a *controlled* value changes from outside (e.g. a date
-  // picker pushing in the day the user just clicked in the calendar).
-  // Skipped for uncontrolled usage (defaultValue only) so typing isn't
-  // fought on every render.
+  // Пересинхронизируется, когда *управляемое* значение меняется снаружи
+  // (например, выбор даты проталкивает день, который пользователь только
+  // что нажал в календаре). Для неуправляемого использования (только
+  // defaultValue) пропускается, чтобы не бороться с набором текста на
+  // каждую отрисовку.
   React.useEffect(() => {
     if (mask && value !== undefined) {
       setMaskValue(formatWithMask(mask, String(value)))

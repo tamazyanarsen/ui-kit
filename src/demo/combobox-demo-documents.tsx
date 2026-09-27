@@ -24,8 +24,9 @@ const DOCUMENTS: DocItem[] = [
   { value: "doc-5", label: "Выписка ЕГРЮЛ" },
 ]
 
-// Document-count trigger ("Выбрано документов: N") with the two footer
-// count formats: capped ("Выбрать: N/max") and uncapped ("Выбрать: N").
+// Триггер со счётчиком документов («Выбрано документов: N») и два формата
+// счётчика в подвале: с ограничением («Выбрать: N/max») и без
+// («Выбрать: N»).
 function DocumentsMultiSelect({ max }: { max?: number }) {
   const sel = useComboboxSelection<DocItem>([])
   const atMax = max !== undefined && sel.draft.length >= max

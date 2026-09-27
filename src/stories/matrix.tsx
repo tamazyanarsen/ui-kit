@@ -4,18 +4,18 @@ import { cn } from "@/lib/utils"
 
 import { ViewportMatrix } from "./playground"
 
-/* Storybook-only helpers — this directory is deliberately outside
-   `src/components/ui`, so it is picked up by neither `src/index.ts` (the
-   published entry surface) nor vite-plugin-dts's `include` list. Nothing
-   here ships in the npm package.
+/* Помощники только для Storybook. Этот каталог намеренно лежит вне
+   `src/components/ui`, поэтому его не подхватывает ни `src/index.ts`
+   (публикуемая точка входа), ни список `include` у vite-plugin-dts. Ничто
+   отсюда не попадает в npm-пакет.
 
-   `StatesMatrix` renders the same shape the Figma spec sheets use for every
-   component: an optional band of column *groups* across the top, a row of
-   column headers under it, and a label column down the left, with one
-   rendered instance per cell. Reading a story canvas next to its Figma page
-   should be a cell-for-cell comparison. */
+   `StatesMatrix` рисует ту же форму, которой пользуются листы макета для
+   каждого компонента: необязательная полоса *групп* колонок сверху, под ней
+   ряд заголовков колонок, слева колонка подписей, и по одному
+   отрисованному инстансу в каждой ячейке. Чтение канваса стори рядом со
+   страницей макета должно быть сравнением ячейка в ячейку. */
 
-/** One column of the matrix — its own props are merged over the row's. */
+/** Одна колонка матрицы — её собственные пропсы накладываются поверх пропсов строки. */
 export interface MatrixColumn<P> {
   label?: React.ReactNode
   props?: Partial<P>
@@ -33,12 +33,13 @@ export interface MatrixColumnGroup<P> {
 export interface MatrixRow<P> {
   label?: React.ReactNode
   props?: Partial<P>
-  /* CSS pseudo-classes can't be expressed as props. storybook-addon-pseudo-
-     states rewrites every `:hover`/`:active`/`:focus-visible` rule in the
-     page's stylesheets into an equivalent `.pseudo-*-all` class rule, so
-     tagging a cell with one forces that state for the cell and everything
-     inside it — which is how the Hover/Pressed rows of a Figma state table
-     get reproduced without a real pointer. */
+  /* Псевдоклассы CSS нельзя выразить пропсами. storybook-addon-pseudo-states
+     переписывает каждое правило с `:hover`, `:active` и `:focus-visible` в
+     таблицах стилей страницы в равнозначное правило по классу
+     `.pseudo-*-all`, поэтому пометка ячейки таким классом принудительно
+     включает это состояние для неё и всего, что внутри. Так и
+     воспроизводятся ряды Hover и Pressed из таблицы состояний в макете, без
+     настоящего указателя. */
   pseudo?: PseudoState | PseudoState[]
 }
 
@@ -51,16 +52,16 @@ export type PseudoState =
   | "visited"
 
 export interface StatesMatrixProps<P> {
-  /** Columns, either flat or grouped under a spanning header. */
+  /** Колонки — плоским списком или сгруппированные под общим заголовком. */
   columns?: MatrixColumn<P>[]
   columnGroups?: MatrixColumnGroup<P>[]
   rows: MatrixRow<P>[]
-  /** Props applied to every cell, before row and column props. */
+  /** Пропсы, применяемые к каждой ячейке до пропсов строки и колонки. */
   baseProps?: Partial<P>
   render: (props: P) => React.ReactNode
-  /** Header above the row-label column (Figma writes "State" there). */
+  /** Заголовок над колонкой подписей строк (в макете там написано «State»). */
   rowHeader?: React.ReactNode
-  /** Stretch cells to the full column width instead of hugging content. */
+  /** Растягивать ячейки на всю ширину колонки вместо подгонки по содержимому. */
   stretch?: boolean
   /**
    * У компонента разные формы на десктопе и на мобайле.
@@ -144,9 +145,9 @@ function SingleMatrix<P>({
                     key={`${groupIndex}-${columnIndex}`}
                     className={cn(
                       "px-4 pb-3 text-center text-p3-medium whitespace-nowrap",
-                      // A group's first column carries the band's left edge,
-                      // so groups stay visually separated without a rule
-                      // between every single column.
+                      // Левый край полосы несёт первая колонка группы,
+                      // поэтому группы остаются визуально разделёнными без
+                      // линии между каждой отдельной колонкой.
                       columnIndex === 0 && groupIndex > 0 && "border-l border-[#DEDEDE] pl-8"
                     )}
                   >

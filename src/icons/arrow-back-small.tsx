@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / arrow back small — 08. Arrows, набор ALL ICONS (канвас 70326:26).
+// icon / arrow back small — 08. Arrows, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function ArrowBackSmall({ size = 16, ...props }: IconProps) {
   if (size === 24) {

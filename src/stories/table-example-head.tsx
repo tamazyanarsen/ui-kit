@@ -54,8 +54,9 @@ function TableExampleHead({
           collapsible={nested}
           expanded={anyExpanded}
           onExpandedChange={onExpandAll}
-          // Sort/resize are only offered while this column is not the
-          // hierarchy column — the spec forbids both once rows nest.
+          // Сортировка и изменение ширины предлагаются только пока эта
+          // колонка не является колонкой иерархии: макет запрещает и то и
+          // другое, как только строки становятся вложенными.
           sortable={sortable && !nested}
           sortDirection={sort}
           // ⚠️ Круг замкнут на двух направлениях: нажатием сортировку не

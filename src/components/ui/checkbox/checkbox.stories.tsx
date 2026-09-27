@@ -13,16 +13,15 @@ import { type Viewport } from "@/lib/viewport"
 
 import { Checkbox, type CheckboxProps } from "./checkbox"
 
-/* Two stories per component, matching the Figma page:
-   - Playground — every property of the component as a control, mirroring the
-     "Current variant" panel of `ELK / checkbox`.
-   - Matrix — the full State × Type table the spec sheet draws.
+/* Две стори на компонент, как на странице макета:
+   - Playground — каждое свойство компонента отдельным контролом, повторяя
+     панель «Current variant» у `ELK / checkbox`.
+   - Matrix — полная таблица State × Type, которую рисует лист макета.
 
-   Панель Playground собрана по «Свойствам компонента» `ELK / checkbox`
-   (компонент-сет 600:8876, таблица 1242:100003): Size / State / Checked /
-   Partial / Error / Show Text / Show Comment. `size` (Desktop/Mobile в
-   Figma) — это `viewport` + <ViewportScope>: дизайн-чек №3 №19, «пропс на
-   мобайл должен быть в панели стори». */
+   Панель Playground собрана по «Свойствам компонента» `ELK / checkbox`:
+   Size / State / Checked / Partial / Error / Show Text / Show Comment.
+   `size` (Desktop/Mobile в Figma) — это `viewport` + <ViewportScope>:
+   дизайн-чек №3 №19, «пропс на мобайл должен быть в панели стори». */
 
 type PlaygroundArgs = Omit<CheckboxProps, "error"> & {
   state?: PlaygroundState
@@ -47,9 +46,9 @@ const meta = {
     error: { control: "boolean", name: "Error" },
     showText: toggleArgType("Show Text"),
     showComment: toggleArgType("Show Comment"),
-    // `label`/`comment`/`error` are all `React.ReactNode` but every usage
-    // here is a plain string — without this, leaving one unset falls back to
-    // a generic "Set object" JSON editor.
+    // `label`, `comment` и `error` объявлены как `React.ReactNode`, но
+    // здесь везде используются обычные строки. Без этого незаданное
+    // значение откатывается на универсальный JSON-редактор «Set object».
     label: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
     errorText: { control: "text", table: { category: "Контент" } },
@@ -73,9 +72,9 @@ const meta = {
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
-// Checkbox is controlled, so the Playground owns its own `checked` state to
-// stay clickable — but the `checked` control still overrides it when set, so
-// the arg isn't decorative.
+// Checkbox управляемый, поэтому Playground держит собственное состояние
+// `checked`, чтобы оставаться кликабельным, — но заданный контрол `checked`
+// его всё равно перекрывает, так что аргумент не декоративный.
 function Controlled({
   state,
   viewport,
@@ -173,10 +172,11 @@ export const Interactive: Story = {
   render: () => <NestedCheckboxes />,
 }
 
-/* Cell shape: `on` is the row's checked-ness and `partial` the column's
-   representation of it, so the Default/Hover/Disabled rows stay empty in
-   both columns exactly as the spec sheet draws them (passing
-   `indeterminate` directly would put a dash in every Partial cell). */
+/* Устройство ячейки: `on` — отмеченность строки, а `partial` — то, как
+   колонка её представляет. Поэтому строки Default, Hover и Disabled
+   остаются пустыми в обеих колонках ровно так, как их рисует лист макета
+   (передача `indeterminate` напрямую поставила бы прочерк в каждую ячейку
+   Partial). */
 type Cell = Omit<CheckboxProps, "checked" | "indeterminate"> & {
   on?: boolean
   partial?: boolean

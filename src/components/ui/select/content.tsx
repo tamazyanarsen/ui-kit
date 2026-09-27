@@ -9,14 +9,14 @@ export function SelectContent({
   className,
   children,
   side = "bottom",
-  // Figma spec: 8px gap between the trigger and the dropdown.
+  // По макету: зазор 8px между триггером и выпадающим списком.
   sideOffset = 8,
   align = "center",
   alignOffset = 0,
-  // Anchor below the trigger like a normal popover, not overlaid on top of
-  // it aligned to the selected item (native-<select>-style) — the design
-  // always opens the dropdown below (or above near the viewport edge), never
-  // overlapping the trigger.
+  // Якорь под триггером, как у обычного поповера, а не наложение поверх
+  // него с выравниванием по выбранному пункту (как у нативного <select>):
+  // дизайн всегда открывает список ниже (или выше у края вьюпорта) и
+  // никогда не перекрывает триггер.
   alignItemWithTrigger = false,
   ...props
 }: SelectPrimitive.Popup.Props &
@@ -40,10 +40,10 @@ export function SelectContent({
           render={
             <Dropdown
               className={cn(
-                // themed-scrollbar: Figma's dropdown carries an
-                // `ELK / scrollbar` inside its list. The popup is itself the
-                // scroll container here, so it takes the class rather than
-                // nesting the Scrollbar component.
+                // themed-scrollbar: выпадающий список в макете несёт
+                // внутри своего перечня `ELK / scrollbar`. Здесь областью
+                // прокрутки служит само всплывающее окно, поэтому класс
+                // достаётся ему, а не вкладывается компонент Scrollbar.
                 "themed-scrollbar relative z-50 max-h-(--available-height) w-(--anchor-width) min-w-36 overflow-x-hidden overflow-y-auto data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
                 className
               )}

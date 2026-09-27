@@ -75,7 +75,7 @@ describe("TableCell", () => {
   })
 })
 
-// "Сворачивание/разворачивание строк" (node 70279:7290).
+// "Сворачивание/разворачивание строк".
 describe("row nesting", () => {
   it("indents the cell content by 16px per level", () => {
     const { container } = render(
@@ -171,8 +171,8 @@ describe("row nesting", () => {
   })
 })
 
-// "Статусная" (node 70279:7054) — the Tag is clipped to the column and the
-// full status moves into a hint, since Tag itself is `w-fit whitespace-nowrap`.
+// «Статусная» — тег подрезается по колонке, а полный статус уезжает в
+// подсказку, поскольку сам Tag это `w-fit whitespace-nowrap`.
 describe("TableCell tag type", () => {
   it("clips the tag inside the cell instead of letting it spill", () => {
     const { container } = render(
@@ -195,7 +195,7 @@ describe("TableCell tag type", () => {
   })
 })
 
-// "Действия со строкой" (node 70279:7066) — "Для строк с единственным
+// "Действия со строкой" — "Для строк с единственным
 
 // действием допускается замена на кнопку с пиктограммой и обязательной
 // текстовой подсказкой при наведении".

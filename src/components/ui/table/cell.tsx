@@ -27,7 +27,8 @@ interface TableCellProps
     TableCellActionProps {
   type?: TableCellType
   children?: React.ReactNode
-  /** "Show Description" — a muted second line under Text/Number cells. */
+  /** «Show Description» — приглушённая вторая строка под ячейками Text и
+   * Number. */
   description?: React.ReactNode
   /**
    * Знак ПЕРЕД пояснением — стрелка дельты, «+», «−» и т.п.
@@ -47,13 +48,13 @@ interface TableCellProps
   /** Nesting depth, 0-based: "С каждым уровнем вложенности контент
    * сдвигвается вправо на 16px". */
   level?: number
-  /** Renders the row's collapse chevron before the content. Omit it on the
-   * deepest level — the spec keeps the indent but drops the control. */
+  /** Рисует шеврон сворачивания строки перед содержимым. На самом
+   * глубоком уровне его опускают: макет оставляет отступ, но убирает контрол. */
   expandable?: boolean
   expanded?: boolean
   onExpandedChange?: (expanded: boolean) => void
-  /** Colours a Number cell's value: incoming money is the kit's success
-   * green ("+31 922 980 133 515,05 ₽" in the spec's own sample). */
+  /** Красит значение ячейки Number: приходящие деньги идут зелёным цветом
+   * успеха кита («+31 922 980 133 515,05 ₽» в образце макета). */
   tone?: "default" | "positive"
   /**
    * Знак после значения: `₽`, `$`, `%`, `шт.` Стоит **в ячейке через
@@ -142,12 +143,12 @@ function TableCell({
         // `px-*`, поэтому одиночная сторона перебивает пару, а `pl-2` от
         // `pl-4` отличит уже `twMerge`.
         edge && EDGE_PADDING_CLASS,
-        // No rule between data rows. Verified at 1:1 against two independent
-        // canonical renders (nodes 70279:7390 and 70279:10368): scanning an
-        // empty column top-to-bottom finds exactly two #DEDEDE lines — the
-        // one under the table top and the header's own — and none between
-        // rows, which are separated by whitespace alone. An earlier pass had
-        // put a divider under every row.
+        // Между строками данных линии нет. Проверено один в один на двух
+        // независимых канонических рендерах: проход по пустой колонке
+        // сверху вниз находит ровно две линии #DEDEDE — под верхом таблицы
+        // и собственную линию шапки, — и ни одной между строками, которые
+        // разделены только пустым местом. Прежний проход ставил разделитель
+        // под каждой строкой.
         isControlType(type)
           ? "w-px text-center"
           : isRight
@@ -179,8 +180,8 @@ function TableCell({
         />
       )}
 
-      {/* See the header's note on `flex` vs `inline-flex` and the 20px
-          line-height strut. */}
+      {/* См. примечание в шапке про `flex` против `inline-flex` и распорку
+          интерлиньяжа 20px. */}
       {type === "icon" && (
         <span className="flex text-[var(--table-fg)]" aria-hidden="true">
           {icon}

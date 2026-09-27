@@ -78,10 +78,10 @@ describe("Sidebar", () => {
     const user = userEvent.setup()
     render(<ControlledSidebar />)
 
-    // Collapsed: the group has no visible label, only its icon-only trigger.
+    // В свёрнутом виде у группы нет видимой подписи, только её триггер со значком.
     await user.click(screen.getByRole("button", { name: "Платежи" }))
 
-    // Now open — the group's own label and its pre-expanded child are both visible.
+    // Теперь развёрнуто — видны и собственная подпись группы, и её заранее раскрытый ребёнок.
     expect(screen.getByText("Платежи")).toBeInTheDocument()
     expect(screen.getByText("СБП")).toBeInTheDocument()
   })

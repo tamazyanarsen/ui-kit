@@ -1,17 +1,19 @@
 import * as React from "react"
 
-// useComboboxSelection — the "draft vs. committed" apply pattern used by
-// every multi-select facet in the spec: opening the popup starts a draft
-// copy of the committed value, checkbox clicks only mutate the draft, and
-// the footer's Сбросить/Применить commit or discard it. Closing the popup
-// any other way (Escape, outside click) discards the draft silently.
+// useComboboxSelection — схема «черновик против подтверждённого», которой
+// пользуется каждый фасет с множественным выбором в макете: открытие
+// всплывающего окна заводит черновую копию подтверждённого значения, клики
+// по флажкам меняют только черновик, а «Сбросить» и «Применить» в подвале
+// подтверждают его или отбрасывают. Закрытие окна любым другим способом
+// (Escape, клик снаружи) молча отбрасывает черновик.
 //
-// `T` is whatever the caller uses as the selectable item — matching Base
-// UI's own model where a `Combobox.Item`'s `value` can be the full item
-// object, not just a string id. Equality is by reference (`Array#includes`),
-// which is fine as long as the source item list is a stable identity (a
-// module-level constant or same-reference filter/slice of one) — true for
-// every facet built on this hook so far.
+// `T` — это то, что вызывающий код использует в качестве выбираемого
+// элемента; так же устроена и модель Base UI, где `value` у
+// `Combobox.Item` может быть целым объектом, а не только строковым
+// идентификатором. Сравнение идёт по ссылке (`Array#includes`), и это
+// нормально, пока исходный список элементов сохраняет тождественность
+// (константа уровня модуля или её же фильтр или срез с той же ссылкой), —
+// что верно для всех фасетов, построенных на этом хуке до сих пор.
 export function useComboboxSelection<T>(initialValue: T[] = []) {
   const [committed, setCommitted] = React.useState(initialValue)
   const [draft, setDraft] = React.useState(initialValue)

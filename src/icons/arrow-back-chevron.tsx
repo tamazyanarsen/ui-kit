@@ -1,6 +1,6 @@
 import type { IconProps } from "./types"
 
-// icon / arrow back chevron — 08. Arrows, набор ALL ICONS (канвас 70326:26).
+// icon / arrow back chevron — 08. Arrows, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function ArrowBackChevron({ size = 16, ...props }: IconProps) {
   if (size === 24) {

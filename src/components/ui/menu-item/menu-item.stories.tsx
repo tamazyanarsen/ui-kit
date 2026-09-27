@@ -110,8 +110,8 @@ const meta = {
   // компонента на "Menu point"» — так называется компонент-сет в Figma.
   title: "Компоненты/Menu Point",
   parameters: { layout: "padded" },
-  /* Панель повторяет свойства компонент-сета `Menu Point (ELK)`
-     (5877:18233): Size / State / Type / Style. Два значения Style мастера —
+  /* Панель повторяет свойства компонент-сета `Menu Point (ELK)`:
+     Size / State / Type / Style. Два значения Style мастера —
      `Product / Put In` и `Product / Put Out` — у кита пары не имеют, это
      отдельная карточка продукта, а не пункт меню. */
   argTypes: {
@@ -185,7 +185,7 @@ export const Examples: Story = {
     <div className="flex flex-col gap-8 p-8">
       {/* Дизайн-чек Storybook 2 (от Notification до Loader) №4: «скорректируй
           вид в сетку, опираясь на структуру компонента по ссылке». В макете
-          (`Menu Point (ELK)`, 5877:18233) сет разложен именно сеткой: по
+          (`Menu Point (ELK)`) сет разложен именно сеткой: по
           горизонтали — Style, по вертикали — Type (Level 1…4) × State. Здесь
           та же сетка. */}
       <StatesMatrix<PlaygroundArgs>

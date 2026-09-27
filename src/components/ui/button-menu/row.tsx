@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { useOverflowCount } from "@/lib/use-overflow-count"
+import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { Button } from "@/components/ui/button"
 
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
@@ -18,7 +19,7 @@ import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
 // `flex-wrap` — то есть переносился, чего продукт не допускает.
 //
 // Размеров ряда два и оба из кита, а не выдуманы: нижняя панель собрана из
-// `ELK / button` 56px и `ELK / selection button` 56×56 (нода 41357:45664),
+// `ELK / button` 56px и `ELK / selection button` 56×56,
 // ряд внутри карточки — из тех же кнопок размера S (32).
 
 type ButtonRowSize = "lg" | "sm"
@@ -150,24 +151,19 @@ function MeasureRow({
   size: ButtonRowSize
 }) {
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none invisible absolute inset-0 overflow-hidden"
-    >
-      <div className={cn("absolute top-0 left-0 flex", ROW_GAP_CLASS[size])}>
-        {buttons.map((child, index) => (
-          <div
-            key={index}
-            ref={(el) => {
-              itemRefs.current[index] = el
-            }}
-            className="shrink-0"
-          >
-            {React.cloneElement(child, { size })}
-          </div>
-        ))}
-      </div>
-    </div>
+    <OverflowMeasureLayer className={ROW_GAP_CLASS[size]}>
+      {buttons.map((child, index) => (
+        <div
+          key={index}
+          ref={(el) => {
+            itemRefs.current[index] = el
+          }}
+          className="shrink-0"
+        >
+          {React.cloneElement(child, { size })}
+        </div>
+      ))}
+    </OverflowMeasureLayer>
   )
 }
 

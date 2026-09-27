@@ -2,6 +2,7 @@ import * as React from "react"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 
 import { cn } from "@/lib/utils"
+import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 interface RadioOwnProps {
   label?: React.ReactNode
@@ -12,21 +13,21 @@ interface RadioOwnProps {
 
 type RadioProps = RadioPrimitive.Root.Props & RadioOwnProps
 
-// Individual radio button, meant to be used inside <RadioGroup>. Same
-// label/comment/error field pattern as Checkbox — see that component for
-// the rationale (mirrors Input's built-in caption slot); `error` replaces
-// `comment` rather than stacking, same as Checkbox. No `indeterminate`
-// here: unlike Checkbox's "Partial", a single radio has no meaningful
-// mixed state (the spec's properties table lists a "Partial" row for Radio
-// too, but it's a copy-paste artifact from Checkbox's template — no
-// "Partial" variant actually exists in the anatomy's built symbols, unlike
-// "Error" below).
+// Отдельная радиокнопка, предназначенная для использования внутри
+// <RadioGroup>. Схема подписи, комментария и ошибки та же, что у Checkbox —
+// обоснование см. там (повторяет встроенный слот подписи у Input); `error`
+// заменяет собой `comment`, а не складывается с ним, тоже как у Checkbox.
+// Свойства `indeterminate` здесь нет: в отличие от «Partial» у Checkbox, у
+// одиночной радиокнопки смешанное состояние лишено смысла (в таблице
+// свойств макета строка «Partial» у Radio есть, но это след копирования
+// шаблона Checkbox — в отличие от «Error» ниже, никакого варианта «Partial»
+// среди собранных символов анатомии нет).
 //
-// Round-2 audit: a prior pass here reasoned "no error variant exists for
-// Radio" (design-check #44) — that was wrong. get_design_context on the
-// anatomy's own Error=True symbols (600:8785 Desktop / 600:8790 Mobile)
-// shows a real, fully-styled variant: red circle border + red caption
-// text, structurally identical to Checkbox's error box.
+// Второй проход: прежний проход заключил здесь, что «варианта ошибки у
+// Radio не существует» (дизайн-чек, замечание 44), и это было неверно. У
+// собственных символов анатомии с Error=True (Desktop и Mobile) виден
+// настоящий, полностью оформленный вариант: красная рамка кружка и красный
+// текст подписи, структурно совпадающий с коробкой ошибки у Checkbox.
 function Radio({
   className,
   disabled,
@@ -40,8 +41,8 @@ function Radio({
   const radioId = id ?? generatedId
   // Дизайн-чек 3/3 №2: состояние ошибки и её текст переключаются отдельно,
   // поэтому `error` принимает и `true` (только красная обводка, без текста).
-  // В Figma подпись — один слой («Text Error» в обоих вариантах Error=True/False,
-  // 600:8773 / 600:8785), который просто краснеет, поэтому текст ошибки и
+  // В Figma подпись — один слой («Text Error» в обоих вариантах
+  // Error=True/False), который просто краснеет, поэтому текст ошибки и
   // комментарий делят одну строку, а не стакаются.
   const invalid = Boolean(error)
   const errorText = typeof error === "boolean" ? null : error
@@ -54,20 +55,23 @@ function Radio({
       id={radioId}
       data-slot="radio"
       disabled={disabled}
+      // Ошибку видно не только глазами: без `aria-invalid` скринридер
+      // объявляет кнопку обычной, сколько бы красного вокруг ни нарисовали.
+      aria-invalid={invalid || undefined}
       aria-describedby={captionId}
       className={cn(
-        // `group/circle` — RadioGroup can disable this via context (e.g.
-        // `<RadioGroup disabled>`) without ever passing the `disabled` prop
-        // to this specific Radio, so the indicator dot below reacts to the
-        // rendered `data-disabled` attribute (group-data-*) rather than the
-        // `disabled` prop, which only covers the direct-prop case. Same
-        // reasoning for the label/caption's `group-has-*` further below.
+        // `group/circle`: RadioGroup может выключить эту кнопку через
+        // контекст (например, `<RadioGroup disabled>`), ни разу не передав
+        // пропс `disabled` именно этой Radio. Поэтому точка-индикатор ниже
+        // реагирует на отрисованный атрибут `data-disabled` (group-data-*),
+        // а не на пропс `disabled`, который покрывает только случай прямой
+        // передачи. То же рассуждение и для `group-has-*` у подписи ниже.
         "group/circle flex size-6 shrink-0 items-center justify-center rounded-full border outline-none transition-colors",
         "border-[var(--radio-border)] bg-[var(--radio-bg)]",
         // Дизайн-чек 3/3 №1: ховер-обводка только для НЕвыбранного кружка.
         // Без `not-data-[checked]` этот класс сортируется после
         // `data-[checked]:border-transparent` и в состоянии Checked+Hover
-        // возвращает тёмное кольцо, которого в макете (600:8823 / 600:8829) нет.
+        // возвращает тёмное кольцо, которого в макете нет.
         "not-data-[disabled]:not-data-[checked]:hover:border-[var(--radio-border-hover)]",
         "data-[checked]:border-transparent data-[checked]:bg-[var(--radio-checked-bg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--radio-checked-bg-hover)]",
         "focus-visible:focus-ring",
@@ -91,30 +95,19 @@ function Radio({
   return (
     <label
       htmlFor={radioId}
-      // `flex`, not `inline-flex` — see Checkbox's identical fix/comment:
-      // an inline-level label wrapper lets its parent's line-box height
-      // shift by a couple px when the inline icon content changes on
-      // toggle, making the row visibly jump.
+      // `flex`, а не `inline-flex` — см. такую же правку и комментарий у
+      // Checkbox: обёртка подписи строчного уровня позволяет высоте
+      // строчного бокса родителя скакнуть на пару пикселей, когда при
+      // переключении меняется строчное содержимое значка, и строка заметно
+      // дёргается.
       className="group flex cursor-pointer items-start gap-4 has-data-[disabled]:cursor-not-allowed"
     >
       {circle}
-      {/* Same 0-gap, mobile-only pt-0.5 rule as Checkbox — see its comment
-          (verified identically against Radio's own 600:8785/600:8778
-          instances: no gap between label/caption lines, no top offset at
-          Desktop). */}
       {/* Кружок справа в мобильной форме — дизайн-чек от 07.09, замечания
-          9 и 25; механика и обоснование те же, что у Checkbox. */}
-      {/* ⚠️ `min-w-0 flex-1` на ОБОИХ брейкпоинтах, а не `desktop:flex-none`.
-          Дизайн-чек от 08.09, замечание 27: «Чекбокс должен упираться в блок…
-          Сейчас вышел за границу блока. Должен встраиваться и тексты должны
-          переноситься. Правку применить на всех подобных кейсах». С
-          `flex-none` текстовый блок брал ширину содержимого, и длинная подпись
-          («Отказаться от получения последнего транша финансирования по
-          договору подряда») вылезала за правый край блока вместо переноса.
-          `min-w-0` обязателен рядом с `flex-1`: у флекс-элемента
-          автоматический минимум — min-content, и без него перенос всё равно
-          не случился бы. */}
-      <span className="order-first flex min-w-0 flex-1 flex-col pt-0.5 desktop:order-none desktop:pt-0">
+          9 и 25. Правила колонки (переворот, отступы, перенос) — в
+          `lib/control-text-column.ts`; на собственных инстансах Radio
+          проверено, что они совпадают с Checkbox. */}
+      <span className={CONTROL_TEXT_COLUMN_CLASS}>
         {label && (
           <span className="text-p2-medium text-[var(--radio-label-fg)] desktop:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
             {label}
@@ -128,9 +121,10 @@ function Radio({
               invalid
                 ? "text-[var(--radio-caption-error-fg)]"
                 : "text-[var(--radio-caption-fg)]",
-              // `!` forces this to win regardless of Tailwind's declaration
-              // order vs. the error/default class above — same precedence
-              // issue Checkbox's box className comment calls out.
+              // `!` заставляет это правило победить независимо от порядка
+              // объявления в Tailwind относительно класса ошибки или
+              // умолчания выше — та же история с приоритетом, о которой
+              // говорит комментарий к className коробки у Checkbox.
               "group-has-data-[disabled]:!text-[var(--radio-caption-fg-disabled)]"
             )}
           >

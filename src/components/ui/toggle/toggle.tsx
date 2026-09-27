@@ -2,6 +2,7 @@ import * as React from "react"
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
 
 import { cn } from "@/lib/utils"
+import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 interface ToggleOwnProps {
   label?: React.ReactNode
@@ -12,11 +13,11 @@ interface ToggleOwnProps {
 
 type ToggleProps = SwitchPrimitive.Root.Props & ToggleOwnProps
 
-// Track never changes color for `error` (only Checkbox/Radio's box does) —
-// per the spec, error only affects the caption below, and unlike
-// Checkbox/Radio, `comment` and `error` stack rather than one replacing the
-// other (see the anatomy's "Error" row: both "Comment" and the red error
-// line render together).
+// Дорожка никогда не меняет цвет из-за `error` (это делает только коробка
+// у Checkbox и Radio): по макету ошибка влияет лишь на подпись снизу. И, в
+// отличие от Checkbox и Radio, `comment` и `error` здесь складываются, а не
+// заменяют друг друга (см. ряд «Error» в анатомии: «Comment» и красная
+// строка ошибки рисуются вместе).
 function Toggle({
   className,
   disabled,
@@ -42,6 +43,9 @@ function Toggle({
       id={toggleId}
       data-slot="toggle"
       disabled={disabled}
+      // Ошибку видно не только глазами: без `aria-invalid` скринридер
+      // объявляет тумблер обычным, сколько бы красного вокруг ни нарисовали.
+      aria-invalid={error ? true : undefined}
       aria-describedby={describedBy}
       className={cn(
         "relative inline-flex h-6 w-12 shrink-0 cursor-pointer items-center rounded-full outline-none transition-colors",
@@ -55,10 +59,11 @@ function Toggle({
     >
       <SwitchPrimitive.Thumb
         data-slot="toggle-thumb"
-        // 16px thumb inset 4px on every side, travelling 24px — read off the
-        // master's own SVG, where the circle has r=8 centred at (12,12)
-        // unchecked and (36,12) checked inside the 48×24 track. The previous
-        // 18px/3px pair came from eyeballing a screenshot.
+        // Ползунок 16px с отступом 4px со всех сторон, ход 24px — снято с
+        // собственного SVG мастера, где кружок имеет r=8 с центром в
+        // (12,12) в выключенном положении и (36,12) во включённом внутри
+        // дорожки 48×24. Прежняя пара 18px и 3px взялась с глазомера по
+        // скриншоту.
         className="absolute top-1 left-1 size-4 rounded-full bg-[var(--toggle-thumb-bg)] transition-transform data-[checked]:translate-x-6"
       />
     </SwitchPrimitive.Root>
@@ -77,27 +82,13 @@ function Toggle({
       )}
     >
       {track}
-      {/* Same 0-gap rule as Checkbox/Radio (verified against 600:9113,
-          whose stacked label+comment+error lines sum to exactly its own
-          height with no extra space). Unlike Checkbox/Radio, `pt-0.5` here
-          only kicks in *below* `md` — Desktop's toggle text wrapper has no
-          top offset (600:9089) while Mobile's does (616:9482, pt-[2px]),
-          the reverse direction from Checkbox/Radio but the same underlying
-          cause: the mobile Option Text line-height (20px) is shorter than
-          the fixed 24px track and needs the nudge to stay centered. */}
       {/* Тумблер справа в мобильной форме — дизайн-чек от 07.09, замечания
-          9 и 25; механика и обоснование те же, что у Checkbox. */}
-      {/* ⚠️ `min-w-0 flex-1` на ОБОИХ брейкпоинтах, а не `desktop:flex-none`.
-          Дизайн-чек от 08.09, замечание 27: «Чекбокс должен упираться в блок…
-          Сейчас вышел за границу блока. Должен встраиваться и тексты должны
-          переноситься. Правку применить на всех подобных кейсах». С
-          `flex-none` текстовый блок брал ширину содержимого, и длинная подпись
-          («Отказаться от получения последнего транша финансирования по
-          договору подряда») вылезала за правый край блока вместо переноса.
-          `min-w-0` обязателен рядом с `flex-1`: у флекс-элемента
-          автоматический минимум — min-content, и без него перенос всё равно
-          не случился бы. */}
-      <span className="order-first flex min-w-0 flex-1 flex-col pt-0.5 desktop:order-none desktop:pt-0">
+          9 и 25. Правила колонки — в `lib/control-text-column.ts`; у
+          тумблера они те же, только сдвиг на 2px отсчитывается от дорожки
+          высотой 24px, а не от коробки. */}
+      {/* Текстовая колонка контрола — правила переворота, отступов и
+          переноса см. в `lib/control-text-column.ts`. */}
+      <span className={CONTROL_TEXT_COLUMN_CLASS}>
         {label && (
           <span
             className={cn(

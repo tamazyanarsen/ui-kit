@@ -3,12 +3,13 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Check, ChevronDown, Star } from "@/icons"
 import { cn } from "@/lib/utils"
 import { useOverflowCount } from "@/lib/use-overflow-count"
+import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { Dropdown } from "@/components/ui/dropdown"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 import type { HeaderMenuLink } from "@/components/ui/header-menu"
 
 // «Избранное в навигации» — полоса закреплённых разделов в верхнем ряду
-// шапки сотрудника (нода I70396:22367;164:25333).
+// шапки сотрудника.
 //
 // Это вторая половина меню сотрудника: звезда у ссылки на главной кладёт
 // раздел сюда. Лежит рядом с самим меню, а не в `ui/header`, потому что
@@ -22,9 +23,9 @@ import type { HeaderMenuLink } from "@/components/ui/header-menu"
 //    иконок, а не отдельной второй строкой;
 //  • подсказка пустого избранного говорит про главную, а не про меню:
 //    «Наведите курсор на элемент на главной…» (кадр «Главная — Нет
-//    избранного», нода 70396:22293);
+//    избранного»);
 //  • у строк «Ещё» есть галочка на текущем разделе — в кадре «раскрыт
-//    элемент „Ещё“» (70396:22510) отмечена «Отчётность и аналитика».
+//    элемент „Ещё“» отмечена «Отчётность и аналитика».
 
 /** Интервал между пунктами — 32px, как в `Content` макета. */
 const NAV_GAP = 32
@@ -94,9 +95,8 @@ function NavOverflow({
         render={
           <button
             type="button"
-            // Раскрытое «Ещё» — брендового цвета вместе с шевроном: в кадре
-            // 70396:22510 подпись «Ещё» нарисована Blue 254, а шеврон
-            // перевёрнут.
+            // Раскрытое «Ещё» — брендового цвета вместе с шевроном: в
+            // кадре подпись «Ещё» нарисована Blue 254, а шеврон перевёрнут.
             className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
           />
         }
@@ -201,33 +201,25 @@ function EmployeeMenuNav({
         <NavOverflow links={hiddenLinks} activeLink={activeLink} />
       )}
 
-      {/* Мерная копия ряда — всегда в разметке и всегда со ВСЕМИ пунктами:
-          спрятанный за «Ещё» пункт иначе отдал бы ширину 0 и счёт больше
-          никогда бы не вырос обратно. Обёртка `inset-0 overflow-hidden`
-          снимает вклад копии в ширину прокрутки страницы — см. тот же приём
-          и ту же причину в `ui/header/nav-row.tsx`. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none invisible absolute inset-0 overflow-hidden"
+      {/* Мерная копия ряда — почему она обязана существовать и почему её
+          обёртка обрезает содержимое, см. в `lib/overflow-measure.tsx`. */}
+      <OverflowMeasureLayer
+        data-slot="employee-menu-nav-measure"
+        className="gap-8"
       >
-        <div
-          data-slot="employee-menu-nav-measure"
-          className="absolute top-0 left-0 flex gap-8"
-        >
-          {links.map((link, index) => (
-            <div
-              key={link.value}
-              data-value={link.value}
-              ref={(el) => {
-                itemRefs.current[index] = el
-              }}
-              className="flex shrink-0 items-center gap-1 text-p1-medium whitespace-nowrap"
-            >
-              {link.label}
-            </div>
-          ))}
-        </div>
-      </div>
+        {links.map((link, index) => (
+          <div
+            key={link.value}
+            data-value={link.value}
+            ref={(el) => {
+              itemRefs.current[index] = el
+            }}
+            className="flex shrink-0 items-center gap-1 text-p1-medium whitespace-nowrap"
+          >
+            {link.label}
+          </div>
+        ))}
+      </OverflowMeasureLayer>
     </div>
   )
 }

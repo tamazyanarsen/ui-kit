@@ -3,6 +3,7 @@ import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import { Check, Minus } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 interface CheckboxOwnProps {
   label?: React.ReactNode
@@ -12,16 +13,18 @@ interface CheckboxOwnProps {
 
 type CheckboxProps = CheckboxPrimitive.Root.Props & CheckboxOwnProps
 
-// Standalone, interactive Checkbox (Base UI Checkbox.Root renders a <span
-// role="checkbox">, not a native input — so state variants below use the
-// bracket `data-[x]:` form throughout, not `disabled:`/bare `data-x:`,
-// per the Tailwind v4 presence-vs-value heuristic gotcha (see
-// ComboboxCheckbox, the read-only sibling of this component that predates
-// it and hits the same issue).
+// Отдельно стоящий интерактивный Checkbox. Checkbox.Root из Base UI рисует
+// <span role="checkbox">, а не нативный input, поэтому варианты состояний
+// ниже везде записаны в скобочной форме `data-[x]:`, а не через `disabled:`
+// или голый `data-x:` — из-за особенности Tailwind v4, который по-разному
+// трактует «наличие атрибута» и «его значение» (см. ComboboxCheckbox,
+// предшествующий этому компоненту брат только для чтения: он спотыкался о
+// то же самое).
 //
-// `label`/`comment`/`error` are optional, matching Input's field pattern —
-// omit them for the bare 24×24 box ("Checkbox Without Text" in the spec).
-// `error` replaces `comment` (doesn't stack with it), also matching Input.
+// `label`, `comment` и `error` необязательны — так же устроено поле у
+// Input; опустите их, чтобы получить голую коробку 24×24 («Checkbox Without
+// Text» в макете). `error` заменяет собой `comment`, а не складывается с
+// ним, — тоже как у Input.
 function Checkbox({
   className,
   disabled,
@@ -43,15 +46,19 @@ function Checkbox({
       data-slot="checkbox"
       disabled={disabled}
       indeterminate={indeterminate}
+      // Ошибку видно не только глазами: без `aria-invalid` скринридер
+      // объявляет поле обычным, сколько бы красного вокруг ни нарисовали.
+      aria-invalid={error ? true : undefined}
       aria-describedby={captionId}
       className={cn(
         "flex size-6 shrink-0 items-center justify-center rounded-md border text-transparent outline-none transition-colors",
         "border-[var(--checkbox-border)] bg-[var(--checkbox-bg)]",
-        // Scoped to unchecked/non-indeterminate only — otherwise this and
-        // the "checked → border-transparent" rule below both target
-        // border-color at equal specificity, and whichever Tailwind happens
-        // to emit later in the stylesheet wins, letting the dark hover
-        // border reappear on a checked box instead of staying transparent.
+        // Ограничено только неотмеченным и не-частичным состоянием: иначе
+        // это правило и правило «отмечен → border-transparent» ниже целятся
+        // в border-color с одинаковой специфичностью, побеждает то, которое
+        // Tailwind случайно выведет в таблицу стилей позже, и тёмная рамка
+        // наведения снова вылезает на отмеченной коробке вместо
+        // прозрачной.
         "not-data-[disabled]:not-data-[checked]:not-data-[indeterminate]:hover:border-[var(--checkbox-border-hover)]",
         "data-[checked]:border-transparent data-[checked]:bg-[var(--checkbox-checked-bg)] data-[checked]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--checkbox-checked-bg-hover)]",
         "data-[indeterminate]:border-transparent data-[indeterminate]:bg-[var(--checkbox-checked-bg)] data-[indeterminate]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:data-[indeterminate]:hover:bg-[var(--checkbox-checked-bg-hover)]",
@@ -84,48 +91,35 @@ function Checkbox({
     <label
       htmlFor={checkboxId}
       className={cn(
-        // `flex`, not `inline-flex`: an inline-level wrapper makes the
-        // label an atomic inline box, so its parent's line-box height
-        // (baseline/line-height math) can shift by a couple px whenever
-        // the checkbox's inline content changes — e.g. the check icon
-        // mounting/unmounting on toggle — making the whole row visibly
-        // jump. Block-level `flex` isn't part of an inline formatting
-        // context, so it's immune. Same fix needed in Radio.
+        // `flex`, а не `inline-flex`: обёртка строчного уровня делает
+        // подпись неделимым строчным блоком, и тогда высота строчного бокса
+        // родителя (расчёт по базовой линии и интерлиньяжу) может скакнуть
+        // на пару пикселей всякий раз, когда меняется строчное содержимое
+        // флажка — например, при переключении монтируется или
+        // размонтируется значок галочки, — и вся строка заметно дёргается.
+        // Блочный `flex` в строчный контекст форматирования не входит и к
+        // этому невосприимчив. Такая же правка нужна в Radio.
         "flex items-start gap-4",
         disabled ? "cursor-not-allowed" : "cursor-pointer"
       )}
     >
       {box}
-      {/* No `gap` here — the "Checkbox With Comment" spec instance is
-          exactly labelLineHeight(24/20) + captionLineHeight(16) tall with
-          zero space between; the two lines sit flush. `pt-0.5` (2px) only
-          applies below `md` — Mobile's Option Text line-height (20px) is
-          shorter than the 24px box, needing a 2px nudge to vertically
-          center against it, while Desktop's 24px line-height already
-          matches the box exactly (get_design_context on 600:8967 vs
-          600:8960 — Desktop has no top offset, Mobile has pt-[2px]). */}
+      {/* Зазора здесь нет: инстанс «Checkbox With Comment» в макете ровно
+          такой высоты, как интерлиньяж подписи (24 на десктопе, 20 на
+          мобильном) плюс интерлиньяж пояснения (16), без просвета между
+          ними — строки стоят вплотную. `pt-0.5` (2px) применяется только
+          ниже `md`: на мобильном интерлиньяж строки Option Text (20px)
+          короче коробки 24px, и нужен сдвиг на 2px, чтобы отцентровать
+          относительно неё, тогда как на десктопе интерлиньяж 24px совпадает
+          с коробкой точно (на десктопном символе верхнего смещения нет, на
+          мобильном стоит pt-[2px]). */}
       {/* ⚠️ Порядок переворачивается на мобайле, а не на десктопе.
           Дизайн-чек от 07.09, замечания 9 и 25: «Checkbox/Radio/Toggle в
           варианте mobile должны ставить элемент СПРАВА от текста (не
-          слева)… для десктопа остаётся слева».
-
-          Переворот сделан `order` на текстовом блоке, а не перестановкой в
-          разметке: коробка обязана остаться первой в DOM — за ней ходят
-          `htmlFor`, порядок обхода с клавиатуры и чтение с экрана, и
-          менять их ради оформления нельзя. `flex-1` в мобильной форме
-          прижимает коробку к правому краю строки, а не оставляет её
-          болтаться сразу за текстом. */}
-      {/* ⚠️ `min-w-0 flex-1` на ОБОИХ брейкпоинтах, а не `desktop:flex-none`.
-          Дизайн-чек от 08.09, замечание 27: «Чекбокс должен упираться в блок…
-          Сейчас вышел за границу блока. Должен встраиваться и тексты должны
-          переноситься. Правку применить на всех подобных кейсах». С
-          `flex-none` текстовый блок брал ширину содержимого, и длинная подпись
-          («Отказаться от получения последнего транша финансирования по
-          договору подряда») вылезала за правый край блока вместо переноса.
-          `min-w-0` обязателен рядом с `flex-1`: у флекс-элемента
-          автоматический минимум — min-content, и без него перенос всё равно
-          не случился бы. */}
-      <span className="order-first flex min-w-0 flex-1 flex-col pt-0.5 desktop:order-none desktop:pt-0">
+          слева)… для десктопа остаётся слева». Почему именно `order`, а не
+          перестановка в разметке, и остальные правила колонки — в
+          `lib/control-text-column.ts`. */}
+      <span className={CONTROL_TEXT_COLUMN_CLASS}>
         {label && (
           <span
             className={cn(

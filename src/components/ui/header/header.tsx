@@ -1,26 +1,13 @@
 import * as React from "react"
 
-import { Settings } from "@/icons"
 import { cn } from "@/lib/utils"
-import { useViewportInsetTop } from "@/lib/use-viewport-inset-top"
-import { Button } from "@/components/ui/button"
 import { EmployeeMenuNav } from "@/components/ui/employee-menu"
-import {
-  CreateMenu,
-  FavouritesSettings,
-  HeaderMenu,
-  resolveFavouriteLinks,
-  toggleFavourite,
-  type CreateMenuItem,
-  type HeaderMenuGroup,
-  type MenuBannerProps,
-} from "@/components/ui/header-menu"
+import { FavouritesSettings } from "@/components/ui/header-menu"
 
+import type { ClientHeaderType, HeaderProps, HeaderType } from "./header-props"
 import { LogoutModal } from "./logout-modal"
-import { MenuOverlay } from "./menu-overlay"
-import { NavRow, type HeaderNavItem } from "./nav-row"
-import type { NotificationMenuItem } from "./notification-menu"
-import type { ProfileMenuOrganization } from "./profile-menu"
+import type { HeaderNavItem } from "./nav-row"
+import { HeaderPinnedRow } from "./pinned-row"
 import type { HeaderDocumentMenuItem } from "./top-row-menus"
 import {
   ClientActions,
@@ -30,16 +17,18 @@ import {
   TopRow,
   TopRowDivider,
 } from "./top-row"
+import { useHeaderLayout } from "./use-header-layout"
 
-// Header — "Шапка": the app's top nav bar. Per the spec's own two property
-// tables, this is two independent axes rather than one flat variant list:
-// `type` (Client/Employee/Sign Out) picks the whole layout, and
-// `clientHeaderType` (Client/Client Without An Account/Client is Blocked)
-// is a Client-only sub-state that trims how much of the Client layout
-// renders — a blocked client loses the nav row, action buttons and the
-// icon cluster entirely (just logo + org switcher), an account-less client
-// keeps a reduced nav but loses the "Создать" button, matching the spec's
-// own "Меню клиента без расчётных счетов" callout.
+// Header — «Шапка»: верхняя навигационная полоса приложения. По двум
+// собственным таблицам свойств макета это не один плоский список вариантов,
+// а две независимые оси: `type` (Client, Employee, Sign Out) выбирает всю
+// раскладку, а `clientHeaderType` (Client, Client Without An Account,
+// Client is Blocked) — подсостояние только для Client, которое урезает то,
+// сколько от клиентской раскладки рисуется. У заблокированного клиента
+// пропадают и ряд навигации, и кнопки действий, и группа значков (остаются
+// только логотип и переключатель организаций), а у клиента без счёта
+// сохраняется урезанная навигация, но пропадает кнопка «Создать» — в
+// соответствии с примечанием макета «Меню клиента без расчётных счетов».
 //
 // ⚠️ У шапки СОТРУДНИКА бургера нет. Дизайн-чек от 13.09, замечание 7: «В
 // шапке кабинета сотрудника удалить бургер-меню. У сотрудника не будет
@@ -49,180 +38,55 @@ import {
 // потребителей у них не было, а оставленные «на будущее» они снова позвали
 // бы `Sidebar` в шапку.
 //
-// Избранное — один список, а не два. Пункты нижнего ряда и звёзды в
-// раскрытом меню — это одно и то же состояние: как только передан
-// `menuGroups`, ряд СЧИТАЕТСЯ из `favourites` (в порядке избранного), а не
-// берётся из `navItems`. Так задокументировано в MENU DOCS: вариант
-// `Size=None` подсказывает «нажмите ☆ справа, чтобы добавить его сюда»,
-// комментарий «Начально закреплённые наборы» перечисляет три стартовых
-// набора избранного, а «Настройка избранного» делит все разделы на
-// «Добавлено» и «Остальные разделы». `navItems` остаётся только для
-// шапки без раскрытого меню.
-//
-// У СОТРУДНИКА то же избранное живёт в ВЕРХНЕЙ полосе, а не в нижнем ряду:
-// новое «Меню сотрудника на главном экране» (раздел 70396:22292) убирает
-// боковую панель совсем — разделы лежат карточками на главной
-// (`ui/employee-menu`), а закреплённые звездой уезжают в шапку. Признак этой
-// шапки — переданные `menuGroups` или включённое `onFavouritesChange`; без
-// них шапка сотрудника остаётся прежней, с гамбургером и парным `Sidebar`.
-//
-// Части шапки лежат рядом: верхняя полоса — `top-row.tsx`, нижний ряд с
-// навигацией — `nav-row.tsx`, раскрывающиеся панели — `menu-overlay.tsx`,
-// полоса избранного сотрудника — `ui/employee-menu/employee-menu-nav.tsx`.
+// Сам компонент — только верхняя полоса и модалки: правила раскладки живут в
+// `useHeaderLayout`, нижний ряд с панелями — в `HeaderPinnedRow`, а пропы —
+// в `header-props.ts`. Раньше всё это было одной функцией на 266 строк.
+function Header(props: HeaderProps) {
+  const {
+    type = "client",
+    clientHeaderType = "client",
+    menuGroups = [],
+    menuBanners = [],
+    favourites = [],
+    onFavouritesChange,
+    activeSection,
+    createItems = [],
+    documentMenuItems = [],
+    messageCount = 0,
+    onMessagesClick,
+    notificationItems = [],
+    organizations = [],
+    organizationId,
+    onOrganizationChange,
+    contactPerson,
+    showOrgSettings = true,
+    onOrgSettingsClick,
+    employeeName,
+    onLogout,
+    phoneNumber,
+    pinned = false,
+    className,
+  } = props
 
-type HeaderType = "client" | "employee" | "sign-out"
-type ClientHeaderType = "client" | "client-without-account" | "client-is-blocked"
-
-interface HeaderProps {
-  type?: HeaderType
-  clientHeaderType?: ClientHeaderType
-  /**
-   * Пункты нижнего ряда напрямую — только для шапки без раскрытого меню.
-   * Если передан `menuGroups`, ряд считается из `favourites`, а этот проп
-   * игнорируется (см. комментарий об избранном выше).
-   */
-  navItems?: HeaderNavItem[]
-  /** Группы разделов в панели, которая раскрывается по кнопке «Меню». */
-  menuGroups?: HeaderMenuGroup[]
-  menuBanners?: MenuBannerProps[]
-  /**
-   * Избранные разделы — значения ссылок из `menuGroups`, в том порядке, в
-   * котором они стоят в нижнем ряду.
-   */
-  favourites?: string[]
-  /**
-   * Вызывается и при щелчке по звезде в раскрытом меню, и при сохранении
-   * «Настройки избранного». Пока он не передан, звёзды и кнопка
-   * «Настроить избранное» не показываются: менять состояние было бы некуда.
-   */
-  onFavouritesChange?: (favourites: string[]) => void
-  /** Значение текущего раздела — подсвечивается в ряду и в меню. */
-  activeSection?: string
-  /** Плитки в панели, которая раскрывается по кнопке «Создать». */
-  createItems?: CreateMenuItem[]
-  documentMenuItems?: HeaderDocumentMenuItem[]
-  messageCount?: number
-  onMessagesClick?: () => void
-  notificationItems?: NotificationMenuItem[]
-  organizations?: ProfileMenuOrganization[]
-  organizationId?: string
-  onOrganizationChange?: (id: string) => void
-  contactPerson?: React.ReactNode
-  showOrgSettings?: boolean
-  onOrgSettingsClick?: () => void
-  employeeName?: React.ReactNode
-  onLogout?: () => void
-  phoneNumber?: React.ReactNode
-  /**
-   * Закрепить шапку у верха вьюпорта.
-   *
-   * ⚠️ Закрепляется НЕ ВСЯ шапка. Дизайн-чек от 07.09, замечание 29: «У
-   * компонента Header при скролле не открепилась верхняя часть. Должна
-   * открепляться, закрепляется только вторая строка с кнопками и
-   * закреплённой навигацией». То есть верхний ряд (логотип, уведомления,
-   * профиль) уезжает вместе со страницей, а прилипает только нижний.
-   *
-   * Исключение — шапки БЕЗ нижнего ряда (сотрудник, неавторизованный вход):
-   * там прилипать нечему, и закрепляется вся шапка, как раньше.
-   *
-   * Кроме самого `sticky` это включает публикацию занятой высоты в
-   * `--viewport-inset-top`: липкая шапка ТАБЛИЦЫ читает её по умолчанию и
-   * поэтому не уезжает под шапку страницы. Дефект был у всех длинных
-   * таблиц сразу, и чинится он здесь — странице не нужно передавать отступ
-   * в каждую таблицу руками. Меряется при этом ИМЕННО ЗАКРЕПЛЁННЫЙ узел:
-   * если мерить весь корень, то после того как он уедет вверх, перекрытие
-   * посчитается нулевым, а нижний ряд всё ещё будет закрывать верх экрана.
-   *
-   * Умолчание — выключено: закрепление задаёт каркас страницы, а витрины
-   * кита ставят шапку в поток.
-   */
-  pinned?: boolean
-  className?: string
-}
-
-function Header({
-  type = "client",
-  clientHeaderType = "client",
-  navItems = [],
-  menuGroups = [],
-  menuBanners = [],
-  favourites = [],
-  onFavouritesChange,
-  activeSection,
-  createItems = [],
-  documentMenuItems = [],
-  messageCount = 0,
-  onMessagesClick,
-  notificationItems = [],
-  organizations = [],
-  organizationId,
-  onOrganizationChange,
-  contactPerson,
-  showOrgSettings = true,
-  onOrgSettingsClick,
-  employeeName,
-  onLogout,
-  phoneNumber,
-  pinned = false,
-  className,
-}: HeaderProps) {
-  const [logoutOpen, setLogoutOpen] = React.useState(false)
-  const [favouritesSettingsOpen, setFavouritesSettingsOpen] =
-    React.useState(false)
-  // Раскрыта всегда не больше одной панели: в макете кнопка второй панели
-  // в этот момент стоит в обычном состоянии, а не в состоянии «закрыть».
-  const [openPanel, setOpenPanel] = React.useState<"menu" | "create" | null>(
-    null
-  )
-
-  const isBlocked = type === "client" && clientHeaderType === "client-is-blocked"
-  const showNavRow = type === "client" && !isBlocked
-  const showCreate = type === "client" && clientHeaderType === "client"
-  const favouritesEnabled = Boolean(onFavouritesChange)
-
-  // Закреплённые разделы одним списком. У клиента они уезжают в НИЖНИЙ ряд,
-  // у сотрудника — в верхнюю полосу (новое меню сотрудника, см.
-  // `ui/employee-menu`); список и его порядок при этом один и тот же.
-  const favouriteLinks = React.useMemo(
-    () => resolveFavouriteLinks(menuGroups, favourites),
-    [menuGroups, favourites]
-  )
-
-  // Нижний ряд — это избранное, когда есть из чего его считать. Раньше
-  // `navItems` и `favourites` были двумя независимыми списками, поэтому
-  // звезда в раскрытом меню ничего не меняла в шапке.
-  const resolvedNavItems: HeaderNavItem[] = React.useMemo(() => {
-    if (menuGroups.length === 0) return navItems
-    return favouriteLinks.map((link) => ({
-      value: link.value,
-      label: link.label,
-      onClick: link.onClick,
-    }))
-  }, [menuGroups, favouriteLinks, navItems])
-
-  // Шапка сотрудника нового меню: закреплённые разделы стоят прямо в
-  // верхней полосе, а гамбургера и парного `Sidebar` у неё нет. Признак —
-  // переданное меню или включённое избранное: старые вызовы, где у
-  // сотрудника ни того ни другого, работают ровно как раньше.
-  const employeeFavourites =
-    type === "employee" && (menuGroups.length > 0 || favouritesEnabled)
-
-  React.useEffect(() => {
-    if (!showNavRow) setOpenPanel(null)
-  }, [showNavRow])
-
-  // Что именно закрепляется — см. `pinned`. Если нижний ряд есть, липнет
-  // только он; если его нет, липнет вся шапка.
-  const pinnedRow = pinned && showNavRow
-  const pinnedRoot = pinned && !showNavRow
-
-  // Занятый верх вьюпорта публикуется отсюда. Величина МЕРЯЕТСЯ у того
-  // узла, который реально закреплён, — оба вызова живут рядом, неактивный
-  // просто ничего не публикует.
-  const rootRef = React.useRef<HTMLDivElement>(null)
-  const navRowRef = React.useRef<HTMLDivElement>(null)
-  useViewportInsetTop(rootRef, pinnedRoot)
-  useViewportInsetTop(navRowRef, pinnedRow)
+  const {
+    isBlocked,
+    showNavRow,
+    showCreate,
+    favouritesEnabled,
+    favouriteLinks,
+    resolvedNavItems,
+    employeeFavourites,
+    pinnedRow,
+    pinnedRoot,
+    rootRef,
+    navRowRef,
+    openPanel,
+    setOpenPanel,
+    logoutOpen,
+    setLogoutOpen,
+    favouritesSettingsOpen,
+    setFavouritesSettingsOpen,
+  } = useHeaderLayout(props)
 
   return (
     <div
@@ -299,83 +163,22 @@ function Header({
       </TopRow>
 
       {showNavRow && (
-        // Обёртка нужна ровно затем, чтобы закрепление и раскрывающиеся
-        // панели считались от НИЖНЕГО РЯДА, а не от всей шапки: панель
-        // стоит `top-full`, и якорем ей обязан быть тот узел, который
-        // остаётся на экране.
-        <div
-          ref={navRowRef}
-          data-slot="header-pinned-row"
-          className={cn(
-            "relative bg-[var(--header-bg)]",
-            pinnedRow && "sticky top-0 z-40"
-          )}
-        >
-          <NavRow
-            items={resolvedNavItems}
-            activeSection={activeSection}
-            menuOpen={openPanel === "menu"}
-            onMenuOpenChange={(open) => setOpenPanel(open ? "menu" : null)}
-            createOpen={openPanel === "create"}
-            onCreateOpenChange={(open) => setOpenPanel(open ? "create" : null)}
-            showCreate={showCreate}
-            favouritesEnabled={favouritesEnabled}
-          />
-
-        {/* ⚠️ Панели рисуются ВСЕГДА, а раскрытость передаётся пропом.
-            Дизайн-чек от 13.09, замечание 17: у панели появился уход («fade
-            down»), а анимировать уход у снятого из разметки узла нечем —
-            решение о снятии теперь принимает сам `MenuOverlay`, отодвигая его
-            на длительность анимации. */}
-        <MenuOverlay
-          open={openPanel === "menu"}
-          onClose={() => setOpenPanel(null)}
-          footer={
-            favouritesEnabled && (
-              <Button
-                variant="secondary-white"
-                size="sm"
-                icon={Settings}
-                onClick={() => setFavouritesSettingsOpen(true)}
-              >
-                Настроить избранное
-              </Button>
-            )
-          }
-        >
-          <HeaderMenu
-            groups={menuGroups}
-            banners={menuBanners}
-            favourites={favourites}
-            activeLink={activeSection}
-            // Звезда работает сразу, без «Сохранить»: подсказка пустого
-            // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
-            // его сюда». Новый раздел встаёт в конец ряда.
-            onFavouriteToggle={
-              onFavouritesChange &&
-              ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
-            }
-            showFavourites={favouritesEnabled}
-            // «Оверлей занимает всё доступное место по высоте, кроме кнопки
-            // настройки избранного и её марджинов. И внутри оверлея
-            // появляется своя прокрутка» — дизайн-чек от 08.09, замечание 1.
-            //
-            // Величину считает сам оверлей (`--menu-overlay-panel`): она
-            // зависит и от того, сколько шапки осталось на экране, и от
-            // высоты кнопки. Прежняя константа «100vh − 14rem» держалась
-            // на том, что шапка всегда 128, а это перестало быть правдой,
-            // когда закрепляться стал только нижний ряд.
-            maxHeight="var(--menu-overlay-panel, calc(100vh - 14rem))"
-          />
-        </MenuOverlay>
-
-        <MenuOverlay
-          open={openPanel === "create"}
-          onClose={() => setOpenPanel(null)}
-        >
-          <CreateMenu items={createItems} />
-        </MenuOverlay>
-        </div>
+        <HeaderPinnedRow
+          rowRef={navRowRef as React.RefObject<HTMLDivElement>}
+          pinned={pinnedRow}
+          navItems={resolvedNavItems}
+          activeSection={activeSection}
+          showCreate={showCreate}
+          favouritesEnabled={favouritesEnabled}
+          openPanel={openPanel}
+          onOpenPanelChange={setOpenPanel}
+          menuGroups={menuGroups}
+          menuBanners={menuBanners}
+          createItems={createItems}
+          favourites={favourites}
+          onFavouritesChange={onFavouritesChange}
+          onFavouritesSettingsOpen={() => setFavouritesSettingsOpen(true)}
+        />
       )}
 
       {onFavouritesChange && (

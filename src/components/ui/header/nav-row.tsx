@@ -8,21 +8,23 @@ import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Divider } from "@/components/ui/divider"
 import { Grid } from "@/components/ui/grid"
 import { useOverflowCount } from "@/lib/use-overflow-count"
+import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 
 import { HeaderMenuPopup } from "./menu-popup"
 
 // Нижний ряд шапки — кнопки «Меню»/«Создать», разделитель и пункты
-// навигации. Собран не «на глаз», а по макету `Menu Header (ELK)` (нода
-// 70303:48974): группа кнопок (интервал 8) → вертикальный `ELK / divider` во
+// навигации. Собран не «на глаз», а по макету `Menu Header (ELK)`: группа
+// кнопок (интервал 8) → вертикальный `ELK / divider` во
 // всю высоту минус 16px сверху и снизу → пункты навигации, всё с интервалом
 // 32 внутри контейнера шириной до 1800px. Обе полосы шапки — ровно 64px с
 // рамкой снизу.
 //
-// Nav overflow reuses the exact "Ещё" mechanism already built for Tabs/
-// Switcher (useOverflowCount): per the spec's own "Взаимодействие с
-// элементом" note, items should move into "Ещё" one at a time as space runs
-// out, not at fixed breakpoints. Макет подтверждает это отдельным вариантом
-// `Size=With More`, где «Ещё» — единственный пункт с шевроном.
+// Перекрытие навигации переиспользует тот же механизм «Ещё», который уже
+// сделан для Tabs и Switcher (`useOverflowCount`): по примечанию макета
+// «Взаимодействие с элементом» пункты должны уходить в «Ещё» по одному, по
+// мере того как кончается место, а не на фиксированных брейкпоинтах. Макет
+// подтверждает это отдельным вариантом `Size=With More`, где «Ещё» —
+// единственный пункт с шевроном.
 
 interface HeaderNavItem {
   value: string
@@ -40,9 +42,9 @@ const ELLIPSIS_RESERVED = 72
 const NAV_GAP = 32
 
 function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
-  // `self-stretch`, not a vertical padding: Figma's `Menu Point Header (ELK)`
-  // is the full 64px height of the row, so the whole band is the hit target
-  // even though only the 24px label is inked.
+  // `self-stretch`, а не вертикальный отступ: `Menu Point Header (ELK)` в
+  // макете занимает всю высоту строки в 64px, поэтому целью нажатия служит
+  // вся полоса, хотя закрашена только подпись высотой 24px.
   return (
     <button
       type="button"
@@ -61,7 +63,7 @@ function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
 }
 
 /**
- * Вариант `Size=None` у `Menu Header (ELK)` (нода 70303:49022) — подсказка
+ * Вариант `Size=None` у `Menu Header (ELK)` — подсказка
  * на месте пунктов навигации, когда избранное пустое. То есть пункты в
  * нижнем ряду — это и есть избранные разделы, которые пользователь
  * отмечает звёздами в раскрытом меню.
@@ -90,8 +92,7 @@ function NavOverflow({ items }: { items: HeaderNavItem[] }) {
           <button
             type="button"
             // Раскрытое «Ещё» — брендового цвета вместе с шевроном (макет
-            // «Свёрнутое меню — избранные разделы уходят в „Ещё“», нода
-            // 70303:58398).
+            // «Свёрнутое меню — избранные разделы уходят в „Ещё“»).
             className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
           />
         }
@@ -149,7 +150,7 @@ function NavRow({
       data-slot="header-nav-row"
       // Обе полосы шапки — ровно 64px, а контент стоит по общей сетке
       // продукта (поля 40, максимум 1800) — мерено с `Menu Header (ELK)`
-      // (70303:48974). Ширину держит `Grid`, а не локальные `px-10` +
+      // . Ширину держит `Grid`, а не локальные `px-10` +
       // `max-w-[1800px]`: см. комментарий в components/ui/grid/grid.tsx.
       // ⚠️ Нижняя граница гаснет, пока раскрыто меню или создание —
       // дизайн-чек от 08.09, замечание 7: «Нижний разделитель хедера не
@@ -219,40 +220,24 @@ function NavRow({
 
           {hiddenItems.length > 0 && <NavOverflow items={hiddenItems} />}
 
-          {/* Off-screen measurement copy — see Switcher/Tabs' own comment on
-              why this needs to exist as an always-rendered duplicate row.
-
-              ⚠️ Обёртка `inset-0 overflow-hidden` обязательна, а не для
-              красоты. Мерная копия шире ряда по определению (в ней ВСЕ
-              пункты, в том числе не поместившиеся), и хотя она абсолютная,
-              то есть вне потока, в ОБЛАСТЬ ПРОКРУТКИ документа она входит:
-              на 1100px шапка раздвигала страницу на лишние 23px, и продукт
-              ехал вбок даже там, где всё помещалось. Обёртка нулевой ширины
-              с обрезкой снимает вклад в scrollWidth, а замер не трогает —
-              `getBoundingClientRect` у обрезанного элемента всё тот же. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none invisible absolute inset-0 overflow-hidden"
-          >
-            <div
-              data-slot="header-nav-measure"
-              className="absolute top-0 left-0 flex gap-8"
-            >
-              {items.map((item, index) => (
-                <div
-                  key={item.value}
-                  data-value={item.value}
-                  ref={(el) => {
-                    itemRefs.current[index] = el
-                  }}
-                  className="flex shrink-0 items-center gap-1 text-p1-medium whitespace-nowrap"
-                >
-                  {item.icon}
-                  {item.label}
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Закадровая копия для замеров — почему она обязана существовать
+              и почему её обёртка обрезает содержимое, см. в
+              `lib/overflow-measure.tsx`. */}
+          <OverflowMeasureLayer data-slot="header-nav-measure" className="gap-8">
+            {items.map((item, index) => (
+              <div
+                key={item.value}
+                data-value={item.value}
+                ref={(el) => {
+                  itemRefs.current[index] = el
+                }}
+                className="flex shrink-0 items-center gap-1 text-p1-medium whitespace-nowrap"
+              >
+                {item.icon}
+                {item.label}
+              </div>
+            ))}
+          </OverflowMeasureLayer>
         </div>
       </Grid>
     </div>

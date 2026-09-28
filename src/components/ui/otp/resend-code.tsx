@@ -18,6 +18,18 @@ interface ResendCodeProps {
 
 function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
   const [remaining, setRemaining] = React.useState(seconds)
+  const statusRef = React.useRef<HTMLDivElement>(null)
+  const focusStatus = React.useRef(false)
+
+  // Кнопка «Отправить повторно» после нажатия сменяется таблеткой отсчёта —
+  // нажатый узел уходит из DOM, и фокус падал на body: клавиатурный
+  // пользователь терял место в окне. Поэтому фокус переезжает на таблетку
+  // (она программно фокусируемая, `tabIndex={-1}`, в обход Tab не попадает).
+  React.useLayoutEffect(() => {
+    if (!focusStatus.current) return
+    focusStatus.current = false
+    statusRef.current?.focus()
+  })
 
   React.useEffect(() => {
     if (remaining <= 0) return
@@ -27,6 +39,7 @@ function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
 
   function handleResend() {
     onResend?.()
+    focusStatus.current = true
     setRemaining(seconds)
   }
 
@@ -46,9 +59,11 @@ function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
 
   return (
     <div
+      ref={statusRef}
       role="status"
+      tabIndex={-1}
       className={cn(
-        "flex h-12 w-full items-center justify-center rounded-[16px] bg-[var(--btn-secondary-white-bg)] px-[25px] text-p2-medium text-[var(--btn-secondary-white-fg)] desktop:h-14 desktop:px-[33px] desktop:text-p1-medium",
+        "flex h-12 outline-none w-full items-center justify-center rounded-[16px] bg-[var(--btn-secondary-white-bg)] px-[25px] text-p2-medium text-[var(--btn-secondary-white-fg)] desktop:h-14 desktop:px-[33px] desktop:text-p1-medium",
         className
       )}
     >

@@ -22,19 +22,71 @@ import { Tooltip } from "@/components/ui/tooltip"
  */
 function useOverflowValue(
   inputRef: React.RefObject<HTMLInputElement | null>,
-  valueKey: string
+  valueKey: string,
+  masked: boolean
 ) {
   const [overflowValue, setOverflowValue] = React.useState<string | null>(null)
+
+  // Защита в +1px: субпиксельные метрики текста делают scrollWidth больше
+  // clientWidth на доли пикселя даже у значений, которые помещаются.
+  const check = React.useCallback(() => {
+    const el = inputRef.current
+    if (!el) return
+    setOverflowValue(el.scrollWidth > el.clientWidth + 1 ? el.value : null)
+  }, [inputRef])
+
+  // Запись `input.value = …` снаружи (react-hook-form: `setValue`, `reset`)
+  // не порождает ни события input, ни перерисовки: подсказка показывала
+  // прежнее значение у уже очищенного поля, а длинное записанное значение
+  // оставалось без подсказки. Поэтому у узла свой сеттер `value`, который
+  // повторяет замер. Поле с маской так не оборачивается: его сеттер уже
+  // держит use-mask (две обёртки сняли бы друг друга не в том порядке), а
+  // чужая запись доходит сюда через `maskValue` в `valueKey`.
+  React.useLayoutEffect(() => {
+    const input = inputRef.current
+    if (masked || !input) return
+    const own = Object.getOwnPropertyDescriptor(input, "value")
+    const native =
+      own ?? Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")
+    if (!native?.get || !native.set) return
+    const { get, set } = native
+    Object.defineProperty(input, "value", {
+      configurable: true,
+      get() {
+        return get.call(this)
+      },
+      set(next: string) {
+        set.call(this, next)
+        check()
+      },
+    })
+    return () => {
+      if (own) Object.defineProperty(input, "value", own)
+      else delete (input as { value?: string }).value
+    }
+  }, [inputRef, masked, check])
+
+  // Нативный сброс формы (`form.reset()`, `<button type="reset">`) браузер
+  // делает мимо JS-сеттера, а событие `reset` приходит ДО сброса значений —
+  // замер повторяется в следующей задаче.
+  React.useEffect(() => {
+    const form = inputRef.current?.form
+    if (!form) return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const onReset = () => {
+      clearTimeout(timer)
+      timer = setTimeout(check)
+    }
+    form.addEventListener("reset", onReset)
+    return () => {
+      clearTimeout(timer)
+      form.removeEventListener("reset", onReset)
+    }
+  }, [inputRef, check])
 
   React.useEffect(() => {
     const el = inputRef.current
     if (!el) return
-    const check = () => {
-      // Защита в +1px: субпиксельные метрики текста делают scrollWidth
-      // больше clientWidth на доли пикселя даже у значений, которые
-      // помещаются.
-      setOverflowValue(el.scrollWidth > el.clientWidth + 1 ? el.value : null)
-    }
     check()
     const observer = new ResizeObserver(check)
     observer.observe(el)
@@ -47,7 +99,7 @@ function useOverflowValue(
       observer.disconnect()
       el.removeEventListener("input", check)
     }
-  }, [inputRef, valueKey])
+  }, [inputRef, valueKey, check])
 
   return overflowValue
 }
@@ -59,6 +111,7 @@ function useHoverTooltip({
   lockedHint,
   valueKey,
   secret = false,
+  masked = false,
 }: {
   inputRef: React.RefObject<HTMLInputElement | null>
   locked: boolean
@@ -70,8 +123,10 @@ function useHoverTooltip({
    * открытым текстом в подсказке при наведении — ровно то, что прячут точки.
    */
   secret?: boolean
+  /** У поля маска: чужую запись значения ловит use-mask, а не этот хук. */
+  masked?: boolean
 }) {
-  const overflowValue = useOverflowValue(inputRef, valueKey)
+  const overflowValue = useOverflowValue(inputRef, valueKey, masked)
   const isDesktop = useIsDesktop()
 
   if (locked) return lockedHint

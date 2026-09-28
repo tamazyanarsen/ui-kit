@@ -75,16 +75,6 @@ function OtpConfirmCard({
   onSubmit,
   className,
 }: OtpConfirmCardProps) {
-  const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
-  const code = value ?? uncontrolled
-  const complete = code.length === length
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const next = event.target.value
-    if (value === undefined) setUncontrolled(next)
-    onValueChange?.(next)
-  }
-
   return (
     <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       {trigger && <ModalTrigger render={trigger} />}
@@ -105,36 +95,68 @@ function OtpConfirmCard({
             </ModalDescription>
           </div>
 
-          <form
-            className="flex flex-col gap-12"
-            onSubmit={(event) => {
-              event.preventDefault()
-              if (complete) onSubmit?.(code)
-            }}
-          >
-            <OtpInput
-              length={length}
-              value={code}
-              onChange={handleChange}
-              error={error}
-            />
-
-            <div className="flex flex-col gap-6">
-              <ResendCode seconds={resendSeconds} onResend={onResend} />
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                disabled={!complete}
-              >
-                Подтвердить
-              </Button>
-            </div>
-          </form>
+          <OtpConfirmForm
+            length={length}
+            value={value}
+            defaultValue={defaultValue}
+            onValueChange={onValueChange}
+            error={error}
+            resendSeconds={resendSeconds}
+            onResend={onResend}
+            onSubmit={onSubmit}
+          />
         </ModalBody>
       </ModalContent>
     </Modal>
+  )
+}
+
+/**
+ * Форма кода. Неуправляемый код живёт ЗДЕСЬ, внутри содержимого окна, а не
+ * в самом OtpConfirmCard: содержимое закрытого диалога размонтируется, и код
+ * сбрасывается вместе с таймером ResendCode. Раньше состояние жило снаружи
+ * диалога — после закрытия и повторного открытия в поле стоял прежний код,
+ * а «Подтвердить» была сразу активна.
+ */
+function OtpConfirmForm({
+  length,
+  value,
+  defaultValue,
+  onValueChange,
+  error,
+  resendSeconds,
+  onResend,
+  onSubmit,
+}: Required<Pick<OtpConfirmCardProps, "length" | "defaultValue" | "resendSeconds">> &
+  Pick<OtpConfirmCardProps, "value" | "onValueChange" | "error" | "onResend" | "onSubmit">) {
+  const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
+  const code = value ?? uncontrolled
+  const complete = code.length === length
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const next = event.target.value
+    if (value === undefined) setUncontrolled(next)
+    onValueChange?.(next)
+  }
+
+  return (
+    <form
+      className="flex flex-col gap-12"
+      onSubmit={(event) => {
+        event.preventDefault()
+        if (complete) onSubmit?.(code)
+      }}
+    >
+      <OtpInput length={length} value={code} onChange={handleChange} error={error} />
+
+      <div className="flex flex-col gap-6">
+        <ResendCode seconds={resendSeconds} onResend={onResend} />
+
+        <Button type="submit" variant="primary" size="lg" disabled={!complete}>
+          Подтвердить
+        </Button>
+      </div>
+    </form>
   )
 }
 

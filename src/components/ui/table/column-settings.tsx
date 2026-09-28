@@ -152,7 +152,14 @@ function TableColumnSettings({
   )
 
   return (
-    <PopoverPrimitive.Root>
+    // Поиск сбрасывается на каждое открытие, как у FilterSelect: иначе после
+    // закрытия с «Сум» в поле окно открывалось с одной найденной строкой, и
+    // остальные столбцы выглядели пропавшими.
+    <PopoverPrimitive.Root
+      onOpenChange={(open) => {
+        if (open) setQuery("")
+      }}
+    >
       <PopoverPrimitive.Trigger render={resolvedTrigger} />
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Positioner

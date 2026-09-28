@@ -145,7 +145,9 @@ function FilterDate({
                   filterTablePillClass({ selected: false })
                 )}
               >
-                {preset.label}
+                {/* Подпись в своём узле: голый текст во флексе кнопки не
+                    обрезается многоточием (см. FilterBoolean). */}
+                <span className="min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px]">{preset.label}</span>
               </button>
             ))}
           </div>

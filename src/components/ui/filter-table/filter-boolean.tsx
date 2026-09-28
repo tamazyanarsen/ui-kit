@@ -62,7 +62,12 @@ const FilterBoolean = React.forwardRef<
       )}
       {...props}
     >
-      {label}
+      {/* Подпись — в своём узле, как у FilterTable: голый текст во флексе
+          кнопки — анонимный элемент, `truncate` ему многоточия не даёт, а
+          `justify-center` разводил переполнение в обе стороны. Обрезка —
+          `overflow-clip` с запасом, а не `truncate`: тот срезал сглаживание
+          первой буквы короткой подписи (2px отличия от прежнего вида). */}
+      <span className="min-w-0 flex-1 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px] text-center">{label}</span>
     </button>
   )
 })

@@ -76,10 +76,14 @@ function HeaderMenuPopup({
       >
         <MenuPrimitive.Popup
           data-slot={slot}
+          // Высота — не больше места до края окна, дальше прокрутка внутри:
+          // у липкой шапки триггер едет вместе с окном, и прокрутка страницы
+          // до нижних пунктов длинного меню (профиль с дюжиной организаций)
+          // не дотягивалась.
           render={
             <Dropdown
               className={cn(
-                "min-w-56 overflow-hidden bg-[var(--header-bg)]",
+                "min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto bg-[var(--header-bg)]",
                 className
               )}
             />

@@ -41,7 +41,8 @@ function TableRowMenu({
         >
           <MenuPrimitive.Popup
             data-slot="table-row-menu-content"
-            render={<Dropdown className="min-w-48 overflow-hidden" />}
+            // Не выше места до края окна, как списки «…» (r11).
+            render={<Dropdown className="min-w-48 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
           >
             {menu}
           </MenuPrimitive.Popup>

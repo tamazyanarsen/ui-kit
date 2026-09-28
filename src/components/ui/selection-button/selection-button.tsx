@@ -132,7 +132,7 @@ function SelectionButton({
         >
           <MenuPrimitive.Popup
             data-slot="selection-button-content"
-            render={<Dropdown className={cn("min-w-56 overflow-hidden", className)} />}
+            render={<Dropdown className={cn("min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", className)} />}
           >
             {items.map((item, index) => (
               <MenuPrimitive.Item

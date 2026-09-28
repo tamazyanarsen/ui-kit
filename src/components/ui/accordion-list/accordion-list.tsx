@@ -32,6 +32,11 @@ type DescriptionType =
   | "error"
   | "information"
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+function hasValue(node: React.ReactNode) {
+  return node != null && node !== false && node !== ""
+}
+
 const DESCRIPTION_COLOR: Record<DescriptionType, string> = {
   default: "text-[var(--accordion-list-description-default-fg)]",
   success: "text-[var(--accordion-list-description-success-fg)]",
@@ -195,7 +200,10 @@ function AccordionListItem({
                   />
                 </span>
 
-                {description && (
+                {/* Проверка на «есть что показать», а не на истинность: 0 —
+                    настоящее значение (сумма, счётчик), а `0 && …` выводил
+                    голую цифру за заголовком, вне своей колонки. */}
+                {hasValue(description) && (
                   <span
                     className={cn(
                       // `py` из мастера (Status — `flex items-start py-[4px]`)
@@ -210,7 +218,7 @@ function AccordionListItem({
                   </span>
                 )}
               </span>
-              {subtitle && (
+              {hasValue(subtitle) && (
                 // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
                 <span className="text-p1-medium text-[var(--accordion-list-subtitle-fg)]">
                   {subtitle}

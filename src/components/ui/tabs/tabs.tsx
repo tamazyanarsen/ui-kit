@@ -122,6 +122,10 @@ function Tabs({
   const visibleItems = items.slice(0, visibleCount)
   const hiddenItems = items.slice(visibleCount)
   const hasOverflow = hiddenItems.length > 0
+  const [menuOpen, setMenuOpen] = React.useState(false)
+  // Прятать стало нечего — меню закрыто и после нового переполнения само
+  // не откроется.
+  if (!hasOverflow && menuOpen) setMenuOpen(false)
   const activeHidden = hiddenItems.some((item) => item.value === activeValue)
   const showOverflowTab = hasOverflow || showMore
 
@@ -248,7 +252,14 @@ function Tabs({
             `items=[]` пустой `tablist` всё равно flex-элемент, и `gap`
             отодвигал многоточие от начала ряда на пустом месте. */}
         {showOverflowTab && (
-        <MenuPrimitive.Root modal={false}>
+        <MenuPrimitive.Root
+          modal={false}
+          // Открытость — своя: триггер при `showMore` не размонтируется,
+          // когда прятать стало нечего (ряд расширился), и открытое меню
+          // оставалось висеть пустым попапом под выключенной кнопкой.
+          open={menuOpen && hasOverflow}
+          onOpenChange={setMenuOpen}
+        >
           <MenuPrimitive.Trigger
             render={
               <button

@@ -274,6 +274,14 @@ function TableColumnSettings({
               ))}
               <SortableDropIndicator indicator={sortable.indicator} />
             </SortableList>
+            {/* Поиск без совпадений: без этой строки окно сжималось до одного
+                поля, и казалось, что столбцы пропали. Вид — как у пустого
+                результата FilterSelect. */}
+            {normalized && visibleRows.length === 0 && (
+              <p className="px-4 py-3 text-p2-medium text-[var(--filter-icon-fg)]">
+                Ничего не найдено
+              </p>
+            )}
           </PopoverPrimitive.Popup>
         </PopoverPrimitive.Positioner>
       </PopoverPrimitive.Portal>

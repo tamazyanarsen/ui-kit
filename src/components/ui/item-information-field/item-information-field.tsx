@@ -188,7 +188,9 @@ function ItemInformationField({
     </span>
   )
 
-  const subTextRow = subText && (
+  // Не `subText && …`: 0 — значение (комиссия, остаток), а так он выводился
+  // голой цифрой без своей строки и цвета.
+  const subTextRow = subText != null && subText !== false && subText !== "" && (
     <span
       className={cn(
         "text-p3-medium desktop:text-p2-medium",

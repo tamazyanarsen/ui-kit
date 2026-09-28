@@ -194,28 +194,17 @@ function Switcher({
   )
 
   // Внутренние отступы корня (`p-1`, или свои из `className`) — не место под
-  // сегменты: `clientWidth` их включает, и хук разрешал ряду заехать на них,
-  // то есть вылезти за рамку на 8px. Отступы замеряются, а не зашиваются
-  // числом: потребитель может переопределить их классом.
-  const [rootInset, setRootInset] = React.useState(0)
+  // сегменты. Их вычитает сам `useOverflowCount` (для всех рядов, см. хук);
+  // раньше Switcher передавал их `occupiedWidth`-ом, и после переноса в хук
+  // они считались бы дважды.
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     resolvedItems.length,
     ELLIPSIS_RESERVED[size],
     // Зазор обязателен третьим аргументом — без него хук складывает только
     // ширины сегментов и считает переполненный ряд помещающимся (та же
     // ошибка, что нашлась в табах по дизайн-чеку 3/3 №12).
-    GAP_PX[size],
-    false,
-    rootInset
+    GAP_PX[size]
   )
-  React.useLayoutEffect(() => {
-    const root = containerRef.current
-    if (!root) return
-    const style = getComputedStyle(root)
-    const inset =
-      (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0)
-    setRootInset((previous) => (previous === inset ? previous : inset))
-  }, [containerRef, className, size])
 
   const effectiveVisible = showMore ? visibleCount : resolvedItems.length
   const visibleItems = resolvedItems.slice(0, effectiveVisible)

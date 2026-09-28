@@ -71,14 +71,23 @@ function NavItem({ link, active }: { link: HeaderMenuLink; active: boolean }) {
  */
 function EmptyFavouritesHint() {
   return (
+    // ⚠️ Подсказка обязана обрезать себя: одна строка `whitespace-nowrap`
+    // без обрезки на узкой шапке вылезала за ряд — под колокольчик и в
+    // горизонтальную прокрутку страницы. Строка — ОДИН `truncate`-блок, а
+    // звезда стоит в её потоке строчным элементом: при двух сжимаемых
+    // кусках текста многоточие появлялось и посреди фразы («…нажмит… ☆»).
+    // Отступы звезды `mx-1` повторяют прежний `gap-1` флекса, а сдвиг
+    // `-0.125em` от базовой линии — прежнее центрирование (сверено в Chrome
+    // до долей пикселя).
     <p
       data-slot="employee-menu-nav-empty-hint"
-      className="flex min-w-0 flex-1 items-center gap-1 text-p1-medium whitespace-nowrap text-[var(--header-meta-fg)]"
+      className="min-w-0 flex-1 truncate text-p1-medium text-[var(--header-meta-fg)]"
     >
       Наведите курсор на элемент на главной и нажмите
-      <span className="flex items-center pb-0.5">
-        <Star aria-hidden="true" className="size-4 shrink-0" />
-      </span>
+      <Star
+        aria-hidden="true"
+        className="mx-1 inline-block size-4 align-[-0.125em]"
+      />
       справа, чтобы добавить его сюда
     </p>
   )

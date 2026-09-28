@@ -37,7 +37,21 @@ import * as React from "react"
 // дети ButtonMenuRow: кнопка в своей обёртке, произвольная разметка). Оно
 // вычитается из доступной ширины и в проверке «помещается всё», и при
 // подсчёте: иначе ряд из пунктов и такой разметки вылезал за контейнер.
+//
+// ⚠️ Доступная ширина — это КОНТЕНТНАЯ коробка контейнера: `clientWidth`
+// включает внутренние отступы, а пункты на них не встают. Раньше отступы
+// вычитал только Switcher (сам, через `occupiedWidth`), и любой другой ряд с
+// `px-*` — Tabs с `className="px-4"`, полоса избранного, ButtonMenuRow в
+// карточке — заезжал на них и вылезал за рамку. Теперь их меряет хук, для
+// всех, при каждом пересчёте: потребитель может переопределить отступы
+// классом.
 const FIT_TOLERANCE = 1
+
+/** Сумма горизонтальных внутренних отступов элемента. */
+function horizontalPadding(element: HTMLElement) {
+  const style = getComputedStyle(element)
+  return (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0)
+}
 
 export function useOverflowCount(
   itemCount: number,
@@ -76,7 +90,7 @@ export function useOverflowCount(
     // У ряда, ширину которого задаёт само содержимое (ячейка матрицы,
     // `w-fit`-обёртка), без допуска выходило «202 ≤ 201»: пункт уезжал в
     // «Ещё», контейнер от этого сужался, и ряд так и оставался свёрнутым.
-    const available = container.clientWidth - occupiedWidth
+    const available = container.clientWidth - horizontalPadding(container) - occupiedWidth
 
     // ⚠️ Нулевая ширина — это «ещё не померили», а не «не помещается».
     // Контейнер бывает нулевым, пока он скрыт, не разложен или отрисован в

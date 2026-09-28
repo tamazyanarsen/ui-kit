@@ -13,7 +13,7 @@ const inset = () =>
 describe("ButtonMenuBlack: замер после смены узла панели", () => {
   afterEach(() => vi.restoreAllMocks())
 
-  it("после переезда панели в блок «кнопка + панель» меряется новый узел, а не снятый", () => {
+  it("после появления кнопки «Выбрать на всех» меряется живой узел панели", () => {
     // Снятый из DOM узел, как и в браузере, отдаёт нулевую коробку.
     vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
       this: HTMLElement
@@ -29,11 +29,12 @@ describe("ButtonMenuBlack: замер после смены узла панел�
     const before = container.querySelector('[data-slot="button-menu-black"]')
     expect(inset()).toBe("72px")
 
-    // Выбрано не всё — появляется кнопка «Выбрать на всех страницах», и
-    // панель переезжает в блок: React пересоздаёт её узел.
+    // Выбрано не всё — появляется кнопка «Выбрать на всех страницах». С
+    // аудита r6 панель при этом НЕ пересоздаётся (см. black-r6.test), но
+    // замер обязан остаться на живом узле в любом случае.
     rerender(<ButtonMenuBlack {...props} selectedCount={3} />)
     const after = container.querySelector('[data-slot="button-menu-black"]')
-    expect(after).not.toBe(before)
+    expect(after).toBe(before)
 
     // Любой следующий замер (прокрутка, resize) обязан смотреть на живой узел.
     act(() => {

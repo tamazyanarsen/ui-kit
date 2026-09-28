@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
-import { ChevronDown, Menu, Plus, Star, X } from "@/icons"
+import { Check, ChevronDown, Menu, Plus, Star, X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
@@ -80,21 +80,36 @@ function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
  */
 function EmptyFavouritesHint() {
   return (
+    // ⚠️ Подсказка обязана обрезать себя: одна строка `whitespace-nowrap`
+    // без обрезки на узкой шапке вылезала за ряд — под колокольчик и в
+    // горизонтальную прокрутку страницы. Строка — ОДИН `truncate`-блок, а
+    // звезда стоит в её потоке строчным элементом: при двух сжимаемых
+    // кусках текста многоточие появлялось и посреди фразы («…нажмит… ☆»).
+    // Отступы звезды `mx-1` повторяют прежний `gap-1` флекса, а сдвиг
+    // `-0.125em` от базовой линии — прежнее центрирование (сверено в Chrome
+    // до долей пикселя).
     <p
       data-slot="header-nav-empty-hint"
-      className="flex min-w-0 flex-1 items-center gap-1 text-p1-medium whitespace-nowrap text-[var(--header-meta-fg)]"
+      className="min-w-0 flex-1 truncate text-p1-medium text-[var(--header-meta-fg)]"
     >
       Избранное — наведите курсор на элемент в меню и нажмите
-      <span className="flex items-center pb-0.5">
-        <Star aria-hidden="true" className="size-4 shrink-0" />
-      </span>
+      <Star
+        aria-hidden="true"
+        className="mx-1 inline-block size-4 align-[-0.125em]"
+      />
       справа, чтобы добавить его сюда
     </p>
   )
 }
 
 /** Пункты, не поместившиеся в ряд, — под общим «Ещё». */
-function NavOverflow({ items }: { items: HeaderNavItem[] }) {
+function NavOverflow({
+  items,
+  isActive,
+}: {
+  items: HeaderNavItem[]
+  isActive: (item: HeaderNavItem) => boolean
+}) {
   return (
     <MenuPrimitive.Root modal={false}>
       <MenuPrimitive.Trigger
@@ -114,13 +129,35 @@ function NavOverflow({ items }: { items: HeaderNavItem[] }) {
         />
       </MenuPrimitive.Trigger>
       <HeaderMenuPopup slot="header-nav-overflow-content" align="start">
-        {items.map((item) => (
-          <ButtonMenuOverflowItem
-            key={item.value}
-            text={item.label}
-            onClick={item.onClick}
-          />
-        ))}
+        {/* Текущий раздел, ушедший в «Ещё», отмечен так же, как в меню
+            сотрудника: галочкой для глаз и `aria-current` для
+            вспомогательных технологий. Раньше не отмечался никак, и
+            пользователь не видел, где находится. */}
+        {items.map((item) => {
+          const active = isActive(item)
+          return (
+            <ButtonMenuOverflowItem
+              key={item.value}
+              aria-current={active ? "page" : undefined}
+              text={
+                active ? (
+                  <span className="flex items-center justify-between gap-2">
+                    {item.label}
+                    <Check
+                      size={24}
+                      aria-hidden="true"
+                      data-slot="header-nav-overflow-check"
+                      className="size-6 shrink-0 text-[var(--header-check-fg)]"
+                    />
+                  </span>
+                ) : (
+                  item.label
+                )
+              }
+              onClick={item.onClick}
+            />
+          )
+        })}
       </HeaderMenuPopup>
     </MenuPrimitive.Root>
   )
@@ -159,6 +196,7 @@ function NavRow({
   )
   const visibleItems = items.slice(0, visibleCount)
   const hiddenItems = items.slice(visibleCount)
+  const isActive = (item: HeaderNavItem) => item.active ?? item.value === activeSection
 
   return (
     <div
@@ -231,11 +269,13 @@ function NavRow({
             <NavItem
               key={item.value}
               item={item}
-              active={item.active ?? item.value === activeSection}
+              active={isActive(item)}
             />
           ))}
 
-          {hiddenItems.length > 0 && <NavOverflow items={hiddenItems} />}
+          {hiddenItems.length > 0 && (
+            <NavOverflow items={hiddenItems} isActive={isActive} />
+          )}
 
           {/* Закадровая копия для замеров — почему она обязана существовать
               и почему её обёртка обрезает содержимое, см. в

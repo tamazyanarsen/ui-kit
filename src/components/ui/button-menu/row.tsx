@@ -39,6 +39,7 @@ type ButtonElement = React.ReactElement<{
   children?: React.ReactNode
   onClick?: React.MouseEventHandler
   disabled?: boolean
+  isLoading?: boolean
   size?: string
   "aria-label"?: string
 }>
@@ -151,7 +152,9 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
         key={`overflow-${child.key ?? index}`}
         text={child.props.children ?? label}
         aria-label={label}
-        disabled={child.props.disabled}
+        // Загружающаяся кнопка клик не принимает — значит и её пункт
+        // отключён, а не выглядит активным и молча ничего не делает.
+        disabled={child.props.disabled || child.props.isLoading}
         onClick={() => pressMeasured(visibleCount + index)}
       />
     )

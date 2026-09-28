@@ -177,9 +177,9 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   // Между кнопкой и панелью прозрачный зазор 32, и липкая полоса прокрутки
   // таблицы (8px) помещается в нём целиком. Меряя блок целиком, мы отрывали
   // полосу прокрутки от панели на 64 и подвешивали её в пустоте — поэтому
-  // ref висит на ПАНЕЛИ, а не на внешнем узле. Узел панели пересоздаётся,
-  // когда она переезжает в блок «кнопка + панель» и обратно, поэтому хук
-  // отдаёт callback-ref и перемеряет новый узел (см. сам хук).
+  // ref висит на ПАНЕЛИ, а не на внешнем узле. Сам узел панели стабилен (см.
+  // возврат ниже), но хук всё равно отдаёт callback-ref и перемеряет любой
+  // новый узел — например, после перемонтирования панели снаружи.
   const ref = useViewportInsetBottom(pinned && !detached, forwardedRef)
 
   // Кнопка пропадает, когда выбрано всё, и возвращается, как только снята
@@ -274,10 +274,14 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   // `desktop:` у чёрной полосы нет, но они есть у кнопок внутри (`ELK /
   // button` размера S меняет кегль 12 → 14), поэтому форму фиксирует скоуп на
   // всё поддерево. Обёртка — `display: contents`, в раскладке не участвует.
-  if (!withSelectAll) {
-    return <ViewportScope viewport="desktop">{panel}</ViewportScope>
-  }
-
+  //
+  // ⚠️ Панель стоит на ОДНОМ месте дерева при любом `withSelectAll`: блок
+  // «кнопка + панель» есть всегда, а без кнопки он `display: contents` и в
+  // раскладке не участвует. Раньше панель без кнопки возвращалась одна, с
+  // кнопкой — внутри блока, и React на каждом переключении пересоздавал её
+  // вместе с кнопками действий: фокус падал на <body>, открытое «…»
+  // закрывалось. Переключается же это от любого клика по галке (выбрали всё —
+  // кнопка пропала, сняли одну — вернулась).
   return (
     <ViewportScope viewport="desktop">
     {/* ⚠️ Прозрачный зазор ловил указатель. Блок занимает всю ширину и 136
@@ -296,31 +300,37 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
         путать их нельзя: занятый низ вьюпорта публикует панель (см. ref
         выше), а место в потоке занимает этот узел. */}
     <div
-      data-slot="button-menu-black-block"
-      data-placement={placement}
+      data-slot={withSelectAll ? "button-menu-black-block" : undefined}
+      data-placement={withSelectAll ? placement : undefined}
       className={cn(
-        "pointer-events-none flex flex-col items-center gap-8",
-        outerPlacementClass,
-        pinned && !detached && PINNED_CLASS
+        withSelectAll
+          ? [
+              "pointer-events-none flex flex-col items-center gap-8",
+              outerPlacementClass,
+              pinned && !detached && PINNED_CLASS,
+            ]
+          : "contents"
       )}
-      style={outerPlacementStyle}
+      style={withSelectAll ? outerPlacementStyle : undefined}
     >
-      <div className="pointer-events-auto w-fit">
-        {/* Кнопка — не «таблетка» со своей заливкой, а инстанс кнопки кита
-            (`ELK / button`): `secondary-black` — это как раз
-            Dark blue 1412 #012F42, а `sm` даёт 32 по высоте, радиус 16,
-            поля 6/16 и P2 Medium. Своя вёрстка по замеру пикселя совпала бы
-            по картинке и разошлась бы по состояниям, фокусу и темам. */}
-        <Button
-          variant="secondary-black"
-          size="sm"
-          data-slot="button-menu-black-select-all"
-          onClick={onSelectAllPages}
-        >
-          Выбрать на всех страницах
-          {selectAllPagesCount !== undefined && ` (${selectAllPagesCount})`}
-        </Button>
-      </div>
+      {withSelectAll && (
+        <div className="pointer-events-auto w-fit">
+          {/* Кнопка — не «таблетка» со своей заливкой, а инстанс кнопки кита
+              (`ELK / button`): `secondary-black` — это как раз
+              Dark blue 1412 #012F42, а `sm` даёт 32 по высоте, радиус 16,
+              поля 6/16 и P2 Medium. Своя вёрстка по замеру пикселя совпала бы
+              по картинке и разошлась бы по состояниям, фокусу и темам. */}
+          <Button
+            variant="secondary-black"
+            size="sm"
+            data-slot="button-menu-black-select-all"
+            onClick={onSelectAllPages}
+          >
+            Выбрать на всех страницах
+            {selectAllPagesCount !== undefined && ` (${selectAllPagesCount})`}
+          </Button>
+        </div>
+      )}
       {panel}
     </div>
     </ViewportScope>

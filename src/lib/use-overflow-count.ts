@@ -33,11 +33,10 @@ import * as React from "react"
 // всё»: иначе ряд из пунктов, которые помещаются ровно впритык, считался
 // помещающимся, а триггер рядом с ними вылезал за контейнер.
 //
-// `measureAvailable` — своя мера доступной ширины вместо `clientWidth`
-// контейнера. Нужна контейнеру, ширина которого подгоняется под
-// содержимое (`inline-flex` у Switcher): свернувшись, он сужается до
-// видимых пунктов и больше не видит места, появившегося у родителя. Вместе с
-// ней наблюдается и родитель контейнера. Должна быть стабильной функцией.
+// `occupiedWidth` — место в ряду, которое ВСЕГДА занято не пунктами (прочие
+// дети ButtonMenuRow: кнопка в своей обёртке, произвольная разметка). Оно
+// вычитается из доступной ширины и в проверке «помещается всё», и при
+// подсчёте: иначе ряд из пунктов и такой разметки вылезал за контейнер.
 const FIT_TOLERANCE = 1
 
 export function useOverflowCount(
@@ -45,7 +44,7 @@ export function useOverflowCount(
   reservedWidth: number,
   gap = 0,
   alwaysReserve = false,
-  measureAvailable?: (container: HTMLDivElement) => number
+  occupiedWidth = 0
 ) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
@@ -77,9 +76,7 @@ export function useOverflowCount(
     // У ряда, ширину которого задаёт само содержимое (ячейка матрицы,
     // `w-fit`-обёртка), без допуска выходило «202 ≤ 201»: пункт уезжал в
     // «Ещё», контейнер от этого сужался, и ряд так и оставался свёрнутым.
-    const available = measureAvailable
-      ? measureAvailable(container)
-      : container.clientWidth
+    const available = container.clientWidth - occupiedWidth
 
     // ⚠️ Нулевая ширина — это «ещё не померили», а не «не помещается».
     // Контейнер бывает нулевым, пока он скрыт, не разложен или отрисован в
@@ -88,7 +85,7 @@ export function useOverflowCount(
     // `available`, и ряд схлопывается до одного элемента на пустом месте:
     // именно так табы и свитчер потеряли все пункты, кроме первого, как
     // только зазор начали учитывать (дизайн-чек 3/3 №12).
-    if (available === 0 || itemsWidth === 0) {
+    if (container.clientWidth === 0 || itemsWidth === 0) {
       setVisibleCount(itemCount)
       return
     }
@@ -110,7 +107,7 @@ export function useOverflowCount(
       count++
     }
     setVisibleCount(Math.max(1, count))
-  }, [itemCount, reservedWidth, gap, alwaysReserve, measureAvailable])
+  }, [itemCount, reservedWidth, gap, alwaysReserve, occupiedWidth])
 
   React.useLayoutEffect(() => {
     recompute()
@@ -133,16 +130,11 @@ export function useOverflowCount(
     observerRef.current = observer
     observed.current = new Set()
     observer.observe(container)
-    // Своя мера смотрит на место у родителя — его расширение тоже повод
-    // пересчитать: сам ужатый контейнер от этого не меняется.
-    if (measureAvailable && container.parentElement) {
-      observer.observe(container.parentElement)
-    }
     return () => {
       observer.disconnect()
       observerRef.current = null
     }
-  }, [recompute, measureAvailable])
+  }, [recompute])
 
   // Узлы копий появляются и сменяются на рендерах, поэтому набор
   // наблюдаемых сверяется после каждого: новые подписываются, ушедшие
@@ -167,6 +159,24 @@ export function useOverflowCount(
         observed.current.add(el)
       }
     }
+  })
+
+  // Пункты переставили или заменили, а их ЧИСЛО прежнее («Настройка
+  // избранного» перетащила длинные разделы в начало): зависимости
+  // `recompute` не менялись, а мерные копии с ключом по значению — те же
+  // узлы того же размера, так что и ResizeObserver молчит. Ряд вылезал за
+  // контейнер до первого ресайза. Поэтому после каждой отрисовки сверяется
+  // ПОРЯДОК узлов копий: на любой позиции другой узел — пересчёт. Сам
+  // пересчёт узлов не меняет, так что петли нет.
+  const lastNodes = React.useRef<(HTMLElement | null)[]>([])
+  React.useLayoutEffect(() => {
+    const nodes = itemRefs.current.slice(0, itemCount)
+    const previous = lastNodes.current
+    lastNodes.current = nodes
+    if (previous.length === 0) return
+    const changed =
+      nodes.length !== previous.length || nodes.some((node, i) => node !== previous[i])
+    if (changed) recompute()
   })
 
   // Ширины текста до прихода шрифта другие — см. пункт 2 выше.

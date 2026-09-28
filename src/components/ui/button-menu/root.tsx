@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
 import { ViewportScope } from "@/lib/viewport"
 
+import { flattenChildren } from "@/lib/flatten-children"
 import { ButtonMenuRow, isButton, isOverflow } from "./row"
 import { PINNED_CLASS, barShapeClass } from "./pinning"
 import {
@@ -71,7 +72,9 @@ const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function Bu
   children,
   ...props
 }, forwardedRef) {
-  const nodes = React.Children.toArray(children)
+  // Фрагменты раскрываются: кнопки в `<>…</>` — такие же кнопки ряда, а не
+  // «прочее» за его пределами.
+  const nodes = flattenChildren(children)
   // Всё, что не кнопка и не меню «ещё», рисуется как есть и в замер не
   // входит: панель не берётся угадывать, что это и как оно сжимается.
   const row = nodes.filter((node) => isButton(node) || isOverflow(node))

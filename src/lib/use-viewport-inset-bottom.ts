@@ -103,8 +103,18 @@ export function useViewportInsetBottom<T extends HTMLElement>(
     window.addEventListener("scroll", measure, { passive: true, capture: true })
     window.addEventListener("resize", measure)
     // Панель растёт от содержимого — её собственный размер тоже наблюдаем.
+    //
+    // ⚠️ И размер страницы с родителем панели: sticky-полоса начинает или
+    // перестаёт касаться низа экрана, когда меняется высота содержимого над
+    // ней (строки таблицы пришли асинхронно, фильтр оставил 0 строк), а ни
+    // scroll, ни resize, ни размер самой полосы при этом не меняются. Без
+    // этого прилипшая полоса публиковала 0 до первой прокрутки, а
+    // оказавшаяся посреди экрана — свои 88px.
     const observer = new ResizeObserver(measure)
     observer.observe(element)
+    observer.observe(document.documentElement)
+    if (document.body) observer.observe(document.body)
+    if (element.parentElement) observer.observe(element.parentElement)
 
     return () => {
       window.removeEventListener("scroll", measure, { capture: true })

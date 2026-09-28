@@ -6,6 +6,7 @@ import { useComposedRefs } from "@/lib/compose-refs"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { Button } from "@/components/ui/button"
 
+import { flattenChildren } from "@/lib/flatten-children"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
 
 // Ряд команд, который НЕ ПЕРЕНОСИТСЯ: не поместившиеся кнопки уходят в меню
@@ -69,9 +70,31 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
   children,
   ...props
 }, forwardedRef) {
-  const nodes = React.Children.toArray(children)
+  const nodes = flattenChildren(children)
   const buttons = nodes.filter(isButton)
   const supplied = nodes.find(isOverflow)
+  // Всё прочее (кнопка в своей обёртке, произвольная разметка) раньше молча
+  // не рисовалось вовсе. Теперь рисуется как есть после видимых кнопок и в
+  // «…» не уходит: ряд не берётся угадывать, что это и как оно сжимается.
+  // Но место оно занимает — его ширина (с зазором) вычитается из доступной,
+  // иначе кнопки не уходили в «…», а ряд вылезал за край. Кнопки
+  // передавайте самим `Button` — хоть во фрагменте, он раскрывается.
+  const others = nodes.filter((node) => !isButton(node) && !isOverflow(node))
+  const othersRef = React.useRef<HTMLDivElement>(null)
+  const [othersWidth, setOthersWidth] = React.useState(0)
+  const hasOthers = others.length > 0
+  React.useLayoutEffect(() => {
+    const element = othersRef.current
+    if (!element) {
+      setOthersWidth(0)
+      return
+    }
+    const measure = () => setOthersWidth(element.getBoundingClientRect().width)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [hasOthers])
 
   const gap = ROW_GAP[size]
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
@@ -85,7 +108,11 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
     // Сверено вживую (шаг 2 заявки на кредит, 375px): с нулевым резервом
     // ряд шириной 294 держал «Далее» + «Сохранить» + «…» на 360, и «…»
     // вылезало за край карточки на 66px. Теперь «Сохранить» уходит в меню.
-    Boolean(supplied)
+    Boolean(supplied),
+    // Зазор — по наличию обёртки, а не по её ширине: ребёнок, который
+    // отрисовал `null` (компонент прав без доступа), оставляет обёртку
+    // нулевой ширины, но флекс-зазор перед ней всё равно есть.
+    hasOthers ? othersWidth + gap : 0
   )
 
   // Размер кнопкам ряд задаёт САМ, что бы ни передал вызывающий: ряд обязан
@@ -162,6 +189,15 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
       {...props}
     >
       {visible}
+      {hasOthers && (
+        <div
+          ref={othersRef}
+          data-slot="button-menu-row-others"
+          className={cn("flex shrink-0 items-center", ROW_GAP_CLASS[size])}
+        >
+          {others}
+        </div>
+      )}
       {overflow}
       <MeasureRow buttons={buttons} itemRefs={itemRefs} size={size} />
     </div>

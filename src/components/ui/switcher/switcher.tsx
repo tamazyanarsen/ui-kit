@@ -11,8 +11,6 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
 
-import { availableWidth } from "./available-width"
-
 // Switcher — «Cell Switcher / Переключатель»: сегментированный контрол
 // (контейнер-таблетка плюс скользящая активная таблетка), в
 // противоположность Tabs с их подчёркиванием. Разделение по применению то
@@ -54,6 +52,17 @@ interface SwitcherProps {
   greyBackground?: boolean
   activeVariant?: "surface" | "black"
   disabled?: boolean
+  /**
+   * Не поместившиеся сегменты уходят в «…».
+   *
+   * ⚠️ Ряд меряется по ширине самого переключателя. Корень — `inline-flex`,
+   * то есть по умолчанию ужимается по содержимому: свернувшись, он сужается
+   * до видимых сегментов и больше не разворачивается, сколько бы места ни
+   * появилось у родителя. Если переключатель должен разворачиваться обратно,
+   * дайте ему ширину снаружи — `className="flex w-full"` или `flex-1`, как в
+   * витринах. Попытки мерить «место у родителя» ломали обычную вёрстку
+   * (обрезаемый заголовок рядом, перенос строк) и были откачены.
+   */
   showMore?: boolean
   className?: string
 }
@@ -187,11 +196,7 @@ function Switcher({
     // Зазор обязателен третьим аргументом — без него хук складывает только
     // ширины сегментов и считает переполненный ряд помещающимся (та же
     // ошибка, что нашлась в табах по дизайн-чеку 3/3 №12).
-    GAP_PX[size],
-    false,
-    // Корень — `inline-flex` и ужимается по содержимому: свернувшись, он
-    // мерил бы сам себя и больше не разворачивался. См. `available-width.ts`.
-    availableWidth
+    GAP_PX[size]
   )
 
   const effectiveVisible = showMore ? visibleCount : resolvedItems.length

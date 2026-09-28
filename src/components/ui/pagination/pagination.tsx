@@ -223,6 +223,7 @@ function Pagination({
     enabled: showPages,
     page,
     totalPages,
+    size,
   })
   const pages =
     totalPages <= 0

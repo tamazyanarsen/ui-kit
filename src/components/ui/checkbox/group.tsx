@@ -40,6 +40,11 @@ interface CheckboxGroupProps
    * доступных детей, снятие — снимает выбор со всех, а частичный выбор
    * показывает промежуточное состояние. */
   selectAllLabel?: React.ReactNode
+  /** Имя поля в нативной форме: каждый отмеченный флажок уходит в
+   * `FormData` парой `name=value` — как у RadioGroup. Без `name` группа в
+   * нативную форму ничего не отправляет, значение берётся из
+   * `value`/`onValueChange`. */
+  name?: string
 }
 
 // `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
@@ -52,6 +57,7 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
   onValueChange,
   disabled = false,
   selectAllLabel,
+  name,
   ...props
 }, ref) {
   const [uncontrolled, setUncontrolled] = React.useState<string[]>(defaultValue)
@@ -121,6 +127,8 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
       {items.map((item) => (
         <Checkbox
           key={item.value}
+          name={name}
+          value={item.value}
           label={item.label}
           comment={item.comment}
           checked={selected.includes(item.value)}

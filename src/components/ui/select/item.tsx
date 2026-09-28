@@ -57,15 +57,7 @@ export function SelectItem({
           срезал у «Д» выносной элемент левее начала строки, и короткие
           пункты переставали совпадать с прежними до пикселя. */}
       <SelectPrimitive.ItemText className="flex min-w-0 flex-1 gap-2 whitespace-nowrap">
-        {React.Children.map(children, (child) =>
-          typeof child === "string" || typeof child === "number" ? (
-            <span className="min-w-0 overflow-clip text-ellipsis [overflow-clip-margin:4px]">
-              {child}
-            </span>
-          ) : (
-            child
-          )
-        )}
+        {clipText(children)}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
         render={
@@ -80,6 +72,39 @@ export function SelectItem({
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   )
+}
+
+/**
+ * Подряд идущие строки и числа склеиваются в ОДИН узел с многоточием:
+ * `Счёт {n}` в JSX — это два ребёнка, и по отдельному узлу на каждого
+ * давали зазор `gap-2` вместо пробела и два многоточия на длинной подписи.
+ * Остальные узлы (значок и т.п.) проходят как есть.
+ */
+function clipText(children: React.ReactNode) {
+  const out: React.ReactNode[] = []
+  let text: Array<string | number> = []
+  const flush = () => {
+    if (text.length === 0) return
+    out.push(
+      <span
+        key={`text-${out.length}`}
+        className="min-w-0 overflow-clip text-ellipsis [overflow-clip-margin:4px]"
+      >
+        {text.join("")}
+      </span>
+    )
+    text = []
+  }
+  for (const child of React.Children.toArray(children)) {
+    if (typeof child === "string" || typeof child === "number") {
+      text.push(child)
+      continue
+    }
+    flush()
+    out.push(child)
+  }
+  flush()
+  return out
 }
 
 export function SelectSeparator({

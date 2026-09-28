@@ -14,7 +14,11 @@ function getCompactPageList(page: number, totalPages: number): (number | "ellips
   const list: (number | "ellipsis")[] = []
   anchors.forEach((entry, index) => {
     const previous = anchors[index - 1]
-    if (previous !== undefined && entry - previous > 1) list.push("ellipsis")
+    // Многоточие вместо ОДНОЙ страницы (36px против кнопки 44) места почти не
+    // экономит, а переход в один клик отнимает: «1 … 3» было «1 2 3» без
+    // второй страницы. Полный список `getPageList` так никогда не делает.
+    if (previous !== undefined && entry - previous === 2) list.push(previous + 1)
+    if (previous !== undefined && entry - previous > 2) list.push("ellipsis")
     list.push(entry)
   })
   return list
@@ -32,23 +36,41 @@ function getCompactPageList(page: number, totalPages: number): (number | "ellips
  * Ширина полного ряда запоминается, пока он на экране: в сжатом виде его не
  * измерить, а без неё не понять, когда полоса снова стала достаточно
  * широкой.
+ *
+ * ⚠️ Запомненная ширина верна, только пока не менялось число страниц и
+ * размер: после смены режим сбрасывается в полный, и ряд перемеряется в том
+ * же проходе раскладки (без мелькания). Раньше отбор, сузивший выдачу с 20
+ * страниц до 5, оставлял «1 2 … 5» — сравнение шло со старой шириной ряда
+ * на 20 страниц.
  */
 function useCompactPages(
   rootRef: React.RefObject<HTMLElement | null>,
   listRef: React.RefObject<HTMLElement | null>,
-  deps: { enabled: boolean; page: number; totalPages: number }
+  deps: { enabled: boolean; page: number; totalPages: number; size?: string }
 ) {
   const [compact, setCompact] = React.useState(false)
   const compactRef = React.useRef(compact)
   compactRef.current = compact
   const fullWidth = React.useRef(0)
-  const { enabled, page, totalPages } = deps
+  const { enabled, page, totalPages, size } = deps
+  const shape = `${totalPages}|${size}`
+  const measuredShape = React.useRef(shape)
 
   React.useLayoutEffect(() => {
     const root = rootRef.current
     if (!enabled || !root) {
       setCompact(false)
       return
+    }
+    if (measuredShape.current !== shape) {
+      measuredShape.current = shape
+      fullWidth.current = 0
+      if (compactRef.current) {
+        // Полный ряд отрисуется этим же сбросом, и следующий проход его
+        // перемеряет.
+        setCompact(false)
+        return
+      }
     }
     const check = () => {
       const list = listRef.current
@@ -67,7 +89,7 @@ function useCompactPages(
     const observer = new ResizeObserver(check)
     observer.observe(root)
     return () => observer.disconnect()
-  }, [rootRef, listRef, enabled, page, totalPages, compact])
+  }, [rootRef, listRef, enabled, page, shape, compact])
 
   return compact
 }

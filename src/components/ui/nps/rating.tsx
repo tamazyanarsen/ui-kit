@@ -25,6 +25,39 @@ function StarRating({
 }) {
   const [hoverValue, setHoverValue] = React.useState<NpsEstimateType | null>(null)
   const displayValue = hoverValue ?? value
+  const buttons = React.useRef<(HTMLButtonElement | null)[]>([])
+
+  // Радиогруппа по шаблону APG: в обходе по Tab одна звезда (выбранная, а
+  // без оценки — первая), стрелки и Home/End переводят фокус и выбор.
+  // Раньше роль radiogroup объявлялась, а клавиатура была от пяти обычных
+  // кнопок: стрелки не работали, а Tab проходил по всем звёздам.
+  const tabStop = value ?? STARS[0]
+
+  function handleKeyDown(event: React.KeyboardEvent, star: NpsEstimateType) {
+    const index = STARS.indexOf(star)
+    let next: number
+    switch (event.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        next = (index + 1) % STARS.length
+        break
+      case "ArrowLeft":
+      case "ArrowUp":
+        next = (index - 1 + STARS.length) % STARS.length
+        break
+      case "Home":
+        next = 0
+        break
+      case "End":
+        next = STARS.length - 1
+        break
+      default:
+        return
+    }
+    event.preventDefault()
+    buttons.current[next]?.focus()
+    onChange(STARS[next])
+  }
 
   return (
     <div className="flex w-full flex-col items-center gap-3">
@@ -34,14 +67,19 @@ function StarRating({
         className="flex items-center justify-center gap-3"
         onMouseLeave={() => setHoverValue(null)}
       >
-        {STARS.map((star) => {
+        {STARS.map((star, index) => {
           const filled = displayValue !== null && star <= displayValue
           return (
             <button
               key={star}
+              ref={(node) => {
+                buttons.current[index] = node
+              }}
               type="button"
               role="radio"
               aria-checked={value === star}
+              tabIndex={star === tabStop ? 0 : -1}
+              onKeyDown={(event) => handleKeyDown(event, star)}
               aria-label={`${star} из 5, ${RATING_LABELS[star]}`}
               onMouseEnter={() => setHoverValue(star)}
               onClick={() => onChange(star)}

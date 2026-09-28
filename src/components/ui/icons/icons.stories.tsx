@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Icon, ICON_NAMES, type IconProps } from "@/components/ui/icon"
 
@@ -18,15 +18,35 @@ import { Icon, ICON_NAMES, type IconProps } from "@/components/ui/icon"
  * бессмысленно.
  */
 function IconTile({ name }: { name: string }) {
-  const [copied, setCopied] = useState(false)
+  const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle")
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Таймер прошлого нажатия гасится: иначе при быстрых кликах подпись
+  // возвращалась к имени раньше времени, а после ухода со страницы таймер
+  // трогал бы размонтированную плитку.
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current)
+  }, [])
+
+  const show = (next: "copied" | "failed") => {
+    if (timer.current) clearTimeout(timer.current)
+    setStatus(next)
+    timer.current = setTimeout(() => setStatus("idle"), 1200)
+  }
 
   const handleCopy = () => {
-    // Отклонение промиса гасим осознанно: в витрине иконок копирование —
-        // удобство, и небезопасный контекст или снятый фокус не повод ронять
-        // необработанное отклонение в консоль.
-        navigator.clipboard?.writeText(`<Icon name="${name}" />`).catch(() => {})
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1200)
+    // «Скопировано» — только когда буфер действительно принял текст. Раньше
+    // надпись ставилась сразу, до ответа `writeText`, и в небезопасном
+    // контексте или без фокуса документа витрина сообщала ложный успех.
+    const clipboard = navigator.clipboard
+    if (!clipboard) {
+      show("failed")
+      return
+    }
+    clipboard.writeText(`<Icon name="${name}" />`).then(
+      () => show("copied"),
+      () => show("failed")
+    )
   }
 
   return (
@@ -40,7 +60,11 @@ function IconTile({ name }: { name: string }) {
         <Icon name={name} size={24} />
       </span>
       <span className="text-p4-medium break-all text-[var(--accordion-card-subtitle-fg)]">
-        {copied ? "Скопировано" : name}
+        {status === "copied"
+          ? "Скопировано"
+          : status === "failed"
+            ? "Не удалось скопировать"
+            : name}
       </span>
     </button>
   )

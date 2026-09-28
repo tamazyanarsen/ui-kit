@@ -69,6 +69,31 @@ interface TopFixedMessageProps {
   className?: string
 }
 
+// Подсказка с полным текстом нужна, только когда `truncate` реально
+// поставил многоточие: безусловный Tooltip дублировал бы и короткий текст
+// (то же правило, что у заголовка страницы, title/heading.tsx). Обёртка
+// Tooltip стоит всегда и держится выключенной, пока обрезки нет.
+function useIsTruncated(
+  ref: React.RefObject<HTMLElement | null>,
+  text: React.ReactNode,
+  active: boolean
+) {
+  const [truncated, setTruncated] = React.useState(false)
+
+  React.useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    // +1px — запас на субпиксельные метрики, как в title/heading.tsx.
+    const check = () => setTruncated(el.scrollWidth > el.clientWidth + 1)
+    check()
+    const observer = new ResizeObserver(check)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [ref, text, active])
+
+  return truncated
+}
+
 function TopFixedMessage({
   type = "blue",
   showIcon = true,
@@ -87,6 +112,8 @@ function TopFixedMessage({
   // выражает. `<ViewportScope>` перебивает ширину окна — на этом стоят
   // колонки Desktop/Mobile в матрице.
   const isDesktop = useIsDesktop()
+  const textRef = React.useRef<HTMLSpanElement>(null)
+  const truncated = useIsTruncated(textRef, text, isDesktop)
 
   const icon = showIcon && (
     <Alert
@@ -114,8 +141,11 @@ function TopFixedMessage({
           <div className="flex min-w-0 flex-1 items-center gap-4">
             {icon}
 
-            <Tooltip content={text}>
-              <span className="min-w-0 truncate text-p2-medium text-[var(--top-fixed-message-title-fg)]">
+            <Tooltip content={text} disabled={!truncated}>
+              <span
+                ref={textRef}
+                className="min-w-0 truncate text-p2-medium text-[var(--top-fixed-message-title-fg)]"
+              >
                 {text}
               </span>
             </Tooltip>

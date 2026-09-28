@@ -31,7 +31,11 @@ import { TitleInformationText } from "./information-text"
 interface TitleCardProps extends Omit<React.ComponentProps<"div">, "title"> {
   title: React.ReactNode
   description?: React.ReactNode
-  /** «Назад» — опустите, чтобы убрать кнопку совсем. */
+  /**
+   * Подпись кнопки «Назад», по умолчанию «Назад». `null` убирает кнопку —
+   * если только не задан `onBack`: тогда остаётся кнопка-значок без
+   * подписи, а доступное имя у неё всё равно «Назад».
+   */
   backLabel?: React.ReactNode
   onBack?: () => void
   /** «Справка» — её оформление задано макетом, меняется только обработчик. */
@@ -59,6 +63,11 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
 }, ref) {
   const showBack = Boolean(onBack || backLabel === null ? onBack : backLabel)
   const showHelp = Boolean(helpLabel)
+  // Кнопка-значок (`backLabel={null}` при заданном `onBack`) или пустая
+  // строка — у кнопки не было бы имени для скринридера.
+  const backHasText =
+    typeof backLabel === "string" ? backLabel.trim() !== "" : Boolean(backLabel)
+  const backAriaLabel = backHasText ? undefined : "Назад"
 
   return (
     <div
@@ -74,6 +83,7 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
           icon={ArrowLeftSmall}
           iconPosition="left"
           onClick={onBack}
+          aria-label={backAriaLabel}
         >
           {backLabel}
         </Button>

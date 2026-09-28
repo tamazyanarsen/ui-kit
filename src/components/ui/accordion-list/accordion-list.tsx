@@ -19,6 +19,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 const ITEM_VALUE = "item"
 
+// Пункт внутри `AccordionList` — элемент списка (`role="listitem"`): у
+// `role="list"` без них скринридер объявлял пустой список. Роль приходит
+// через контекст, а не безусловно: пункт, поставленный вне списка, с ролью
+// listitem был бы таким же нарушением ARIA, только наоборот.
+const InListContext = React.createContext(false)
+
 type DescriptionType =
   | "default"
   | "success"
@@ -44,6 +50,11 @@ interface AccordionListItemProps {
   subtitle?: React.ReactNode
   titleAs?: "h3" | "h4"
   showCheckbox?: boolean
+  /**
+   * Доступное имя флажка. По умолчанию — «Выбрать: <заголовок>» для
+   * строкового заголовка и ссылка на сам заголовок для разметки.
+   */
+  checkboxLabel?: string
   checked?: boolean
   defaultChecked?: boolean
   onCheckedChange?: (checked: boolean) => void
@@ -70,6 +81,7 @@ function AccordionListItem({
   subtitle,
   titleAs = "h3",
   showCheckbox = false,
+  checkboxLabel,
   checked,
   defaultChecked,
   onCheckedChange,
@@ -87,12 +99,19 @@ function AccordionListItem({
   className,
 }: AccordionListItemProps) {
   const controlled = open !== undefined
+  const inList = React.useContext(InListContext)
+  const titleId = React.useId()
+  // Флажок без имени скринридер объявлял просто «флажок»: подпись бралась
+  // только из строкового заголовка, а заголовок-разметка оставался без неё.
+  const checkboxName =
+    checkboxLabel ?? (typeof title === "string" ? `Выбрать: ${title}` : undefined)
   const showButton = showButtons && buttonsType !== "dropdown"
   const showMore = showButtons && buttonsType !== "button"
 
   return (
     <AccordionPrimitive.Root
       data-slot="accordion-list-item"
+      role={inList ? "listitem" : undefined}
       value={controlled ? (open ? [ITEM_VALUE] : []) : undefined}
       defaultValue={defaultOpen ? [ITEM_VALUE] : []}
       onValueChange={
@@ -128,9 +147,8 @@ function AccordionListItem({
                   checked={checked}
                   defaultChecked={defaultChecked}
                   onCheckedChange={onCheckedChange}
-                  aria-label={
-                    typeof title === "string" ? `Выбрать: ${title}` : undefined
-                  }
+                  aria-label={checkboxName}
+                  aria-labelledby={checkboxName ? undefined : titleId}
                 />
               </span>
             )}
@@ -160,6 +178,7 @@ function AccordionListItem({
                     (Text-фрейм H3 — gap-[12px]; в H4 заголовок шириной 43
                     заканчивается на 43, а Box начинается на 51). */}
                 <span
+                  id={titleId}
                   className={cn(
                     "min-w-0 flex-1 text-[var(--accordion-list-title-fg)]",
                     TITLE_SIZE[titleAs]
@@ -270,7 +289,7 @@ function AccordionList({
       // контентного блока». Рамка + divide-y были изобретением кита.
       className={cn("flex w-full flex-col gap-6", className)}
     >
-      {children}
+      <InListContext.Provider value>{children}</InListContext.Provider>
     </div>
   )
 }

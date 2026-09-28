@@ -136,12 +136,26 @@ const FLOATING_CLASS = "fixed right-10 bottom-10 z-(--z-nps)"
 function NpsDone({
   onClose,
   autoCloseMs,
+  focusOnMount,
   className,
 }: {
   onClose?: () => void
   autoCloseMs: number
+  /** Фокус был внутри формы, которую сменило это состояние. */
+  focusOnMount: boolean
   className?: string
 }) {
+  // Форма с кнопкой «Отправить» размонтируется целиком, и фокус с неё падал
+  // на body — клавиатурного пользователя выбрасывало в начало документа.
+  // Поэтому он переходит на заголовок нового состояния, но только если был
+  // внутри формы: чужой фокус на странице карточка не отбирает.
+  const titleRef = React.useRef<HTMLParagraphElement>(null)
+  React.useEffect(() => {
+    if (focusOnMount) titleRef.current?.focus()
+    // Только при монтировании: это переход «форма → спасибо».
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Текст состояния обещает «Окно закроется автоматически» — раньше таймера
   // не было вовсе. Последний `onClose` держится в ref: новый колбэк на
   // каждом рендере родителя не должен перезапускать отсчёт.
@@ -181,7 +195,13 @@ function NpsDone({
         />
       </div>
       <div className="flex flex-col items-center gap-1 text-center">
-        <p className="text-h3 text-[var(--nps-title-fg)]">Спасибо за оценку</p>
+        <p
+          ref={titleRef}
+          tabIndex={-1}
+          className="text-h3 text-[var(--nps-title-fg)] outline-none"
+        >
+          Спасибо за оценку
+        </p>
         {autoClose && (
           <p className="text-p1-medium text-[var(--nps-subtitle-fg)]">
             Окно закроется автоматически
@@ -242,6 +262,10 @@ function Nps({
     setComment(chip)
   }
 
+  // Где фокус — внутри формы или нет. Читается в тот рендер, в котором
+  // форму сменяет «Спасибо за оценку», то есть до её размонтирования.
+  const focusInside = React.useRef(false)
+
   function handleSubmit() {
     if (!activeValue) return
     onSubmit?.({ value: activeValue, comment: activeComment })
@@ -252,6 +276,7 @@ function Nps({
       <NpsDone
         onClose={onClose}
         autoCloseMs={autoCloseMs}
+        focusOnMount={focusInside.current}
         className={cn(floating && FLOATING_CLASS, className)}
       />
     )
@@ -259,6 +284,13 @@ function Nps({
   return (
     <div
       data-slot="nps"
+      onFocusCapture={() => {
+        focusInside.current = true
+      }}
+      onBlurCapture={(event) => {
+        const next = event.relatedTarget as Node | null
+        focusInside.current = Boolean(next && event.currentTarget.contains(next))
+      }}
       className={cn(
         CARD_CLASS,
         "flex flex-col items-start gap-8 pt-6 pr-6 pl-6",

@@ -73,6 +73,13 @@ function pressHandlers<T extends Element>(onPress: (() => void) | undefined) {
     onKeyDown(event: React.KeyboardEvent<T>) {
       if (!isOwnActivationKey(event)) return
       event.preventDefault()
+      // Удержание пробела: нативная кнопка срабатывает на него один раз, а
+      // автоповтор keydown звал `onPress` на каждом шаге — BankCard
+      // переворачивалась туда-обратно, переход по карточке вызывался пачкой.
+      // `preventDefault` выше остаётся и на повторе, иначе удержание
+      // прокручивало бы страницу. Enter у нативной кнопки при удержании
+      // повторяется, поэтому отсекается только пробел.
+      if (event.key === " " && event.repeat) return
       onPress()
     },
   }

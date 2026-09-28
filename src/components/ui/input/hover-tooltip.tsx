@@ -58,16 +58,24 @@ function useHoverTooltip({
   locked,
   lockedHint,
   valueKey,
+  secret = false,
 }: {
   inputRef: React.RefObject<HTMLInputElement | null>
   locked: boolean
   lockedHint?: React.ReactNode
   valueKey: string
+  /**
+   * Значение секретное (поле пароля): полным текстом его не показываем
+   * никогда. Иначе длинный пароль, не влезший в коробку, всплывал бы
+   * открытым текстом в подсказке при наведении — ровно то, что прячут точки.
+   */
+  secret?: boolean
 }) {
   const overflowValue = useOverflowValue(inputRef, valueKey)
   const isDesktop = useIsDesktop()
 
   if (locked) return lockedHint
+  if (secret) return null
   return isDesktop && overflowValue ? overflowValue : null
 }
 

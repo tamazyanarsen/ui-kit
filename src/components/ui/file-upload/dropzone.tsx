@@ -82,9 +82,11 @@ export const FileUploadDropzone = React.forwardRef<
 
   function deliver(files: FileList) {
     const { accepted, rejected } = splitFiles(files, accept, multiple)
-    if (accepted.length > 0) {
-      onFilesSelected?.(rejected.length > 0 ? toFileList(accepted) : files)
-    }
+    // Наружу — всегда копия, а не `input.files`: после выбора поле
+    // очищается (`value = ""`, чтобы тот же файл можно было выбрать снова),
+    // и Chromium обнуляет этот же объект FileList на месте. Сохранённый в
+    // состояние или в форму список оказывался пустым.
+    if (accepted.length > 0) onFilesSelected?.(toFileList(accepted))
     if (rejected.length > 0) onFilesRejected?.(rejected)
   }
 

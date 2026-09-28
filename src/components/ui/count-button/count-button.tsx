@@ -1,3 +1,5 @@
+import * as React from "react"
+
 import { Button } from "@/components/ui/button"
 import type { ButtonProps } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -21,15 +23,19 @@ interface CountButtonProps extends ButtonProps {
   countColor?: BadgeColor
 }
 
-function CountButton({
-  count,
-  countColor = "red",
-  className,
-  ...props
-}: CountButtonProps) {
+// forwardRef обязателен: CountButton подставляют триггером меню и поповера
+// (`render={<CountButton/>}`, `SelectionButton trigger`). Base UI
+// пробрасывает в подставленный элемент ref, по нему позиционирует попап;
+// без forwardRef на React 18 ref терялся — меню «открывалось», но
+// оставалось невидимым (opacity 0, без якоря). Ref уходит на саму кнопку,
+// а не на обёртку-span.
+const CountButton = React.forwardRef<HTMLButtonElement, CountButtonProps>(function CountButton(
+  { count, countColor = "red", className, ...props },
+  ref
+) {
   return (
     <span data-slot="count-button" className="relative inline-flex">
-      <Button className={className} {...props} />
+      <Button ref={ref} className={className} {...props} />
       {/* Значок свисает за кнопку на 4px с каждой стороны (в макете это
           `right-[-4px] top-[-4px]`), а не на 8. */}
       {count !== undefined && (
@@ -42,7 +48,7 @@ function CountButton({
       )}
     </span>
   )
-}
+})
 
 export { CountButton }
 export type { CountButtonProps }

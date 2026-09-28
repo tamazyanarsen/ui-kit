@@ -128,6 +128,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
     locked,
     lockedHint,
     valueKey: `${value ?? ""}|${defaultValue ?? ""}|${maskValue}`,
+    secret: isPassword,
   })
 
   // Обычное поле чистится настоящим событием `input`: React видит его как

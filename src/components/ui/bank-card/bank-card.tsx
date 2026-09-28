@@ -133,9 +133,16 @@ function BankCard({
       // `clipboard?.writeText` молча давал `undefined` — то есть «успех».
       if (!navigator.clipboard) throw new Error("Clipboard API недоступен")
       await navigator.clipboard.writeText(value.replace(/\s/g, ""))
-      toast?.add({ type: "checked", title: label, timeout: 3000 })
+      // `transient`, как у CopyButton: отклик системы в центре уведомлений
+      // не остаётся (дизайн-чек от 08.09, замечание 15).
+      toast?.add({ type: "checked", title: label, timeout: 3000, behavior: "transient" })
     } catch {
-      toast?.add({ type: "error", title: "Не удалось скопировать", timeout: 3000 })
+      toast?.add({
+        type: "error",
+        title: "Не удалось скопировать",
+        timeout: 3000,
+        behavior: "transient",
+      })
     }
   }
 

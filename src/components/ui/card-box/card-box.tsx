@@ -71,7 +71,11 @@ function CardBox({
   children,
   className,
 }: CardBoxProps) {
-  const withTitle = (showTitle ?? title != null) && title != null
+  // Пустой заголовок (`false` из условной разметки, `""`) — это «без
+  // заголовка»: иначе рисовалась пустая шапка, а верхний отступ контента,
+  // рассчитанный на её отсутствие, не применялся.
+  const hasTitle = title != null && title !== false && title !== ""
+  const withTitle = (showTitle ?? hasTitle) && hasTitle
 
   if (type === "large") {
     return (

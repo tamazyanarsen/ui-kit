@@ -5,6 +5,7 @@ import { X } from "@/icons"
 import * as React from "react"
 
 import { stateClassName } from "@/lib/state-class-name"
+import { flattenChildren } from "@/lib/flatten-children"
 import { useViewportAttr } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
 
@@ -71,8 +72,9 @@ const ModalContent = React.forwardRef<HTMLDivElement, ModalContentProps>(functio
   // Обратная сторона приёма (см. `ButtonMenuRow`): обёртка вокруг
   // `ModalHeader` ломает разбор молча — шапка будет, а холдер встанет вторым.
   // Поэтому `ModalHeader` передаётся прямым ребёнком `ModalContent`, без
-  // собственных обёрток.
-  const hasHeader = React.Children.toArray(children).some(
+  // собственных обёрток. Фрагмент обёрткой не считается — он раскрывается:
+  // условная разметка `<>{header}{body}</>` давала шапку И холдер над ней.
+  const hasHeader = flattenChildren(children).some(
     (node) => React.isValidElement(node) && node.type === ModalHeader
   )
 

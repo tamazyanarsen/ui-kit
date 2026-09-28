@@ -114,7 +114,8 @@ function Card({
               {tag}
             </Tag>
           )}
-          {value && (
+          {/* Не `value &&`: номер `0` рисовался голым нулём вне колонки. */}
+          {value != null && value !== false && value !== "" && (
             <span className="min-w-0 flex-1 truncate text-right text-p1-medium text-[var(--card-meta-fg)]">
               {value}
             </span>

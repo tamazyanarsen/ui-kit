@@ -78,7 +78,8 @@ function NotificationItem({
           >
             {title}
           </span>
-          {sum && (
+          {/* Не `sum &&`: сумма `0` рисовалась голым нулём без стиля. */}
+          {sum != null && sum !== false && sum !== "" && (
             <p
               className={cn(
                 "text-p2-medium",

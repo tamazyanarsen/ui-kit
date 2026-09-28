@@ -22,6 +22,8 @@ function useToasterPause(
   const ref = React.useRef<HTMLDivElement>(null)
   const sources = React.useRef({ hover: false, focus: false })
   const paused = React.useRef(false)
+  // Нажатие указателем внутри колонки: следующий `focus` пришёл от него.
+  const pointerFocus = React.useRef(false)
 
   const sync = React.useCallback(() => {
     const next = sources.current.hover || sources.current.focus
@@ -61,10 +63,25 @@ function useToasterPause(
     },
     onMouseLeave() {
       sources.current.hover = false
+      // Кнопку отпустили за колонкой (выделение текста увели наружу) —
+      // `pointerup` сюда не пришёл, и флаг дожил бы до Tab с клавиатуры.
+      pointerFocus.current = false
       sync()
     },
+    onPointerDownCapture() {
+      pointerFocus.current = true
+    },
+    // Фокус от нажатия приходит между `pointerdown` и `pointerup`; щелчок по
+    // тексту фокуса не даёт, и флаг не должен дожить до Tab с клавиатуры.
+    onPointerUpCapture() {
+      pointerFocus.current = false
+    },
     onFocusCapture() {
-      sources.current.focus = true
+      // Фокус от щелчка мышью паузой не считается: курсор уже держит её
+      // наведением, а после увода фокус оставался на кнопке действия — и
+      // очередь стояла, пока пользователь не щёлкнет где-то ещё.
+      sources.current.focus = !pointerFocus.current
+      pointerFocus.current = false
       sync()
     },
     onBlurCapture(event: React.FocusEvent<HTMLDivElement>) {

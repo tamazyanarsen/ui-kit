@@ -55,6 +55,9 @@ type InputProps = Omit<React.ComponentProps<"input">, "size"> &
   Omit<VariantProps<typeof inputBoxVariants>, "invalid" | "interactive"> &
   InputOwnProps
 
+/** Типы, на которых работает выделение, а значит, и маска. */
+const MASKABLE_TYPES = new Set(["text", "tel", "search", "url", "password"])
+
 // `forwardRef` — чтобы ref потребителя доезжал до нативного `<input>`:
 // `<Input {...register("x")} />` из react-hook-form держится именно на нём
 // (фокус на ошибке, чтение значения). На React 18 обычная функция его молча
@@ -78,6 +81,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   trailingIcon,
   mask,
   type,
+  readOnly,
   onChange,
   defaultValue,
   value,
@@ -129,7 +133,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   // Обычное поле чистится настоящим событием `input`: React видит его как
   // ввод, и `onChange` родителя вызывается. Маскированное — через API маски
   // (см. `clearMask`): событие imask считает от сохранённой каретки.
+  // Поле только для чтения — от потребителя (`readOnly`) или заблокированное —
+  // очистке не подлежит: крестик у него не рисуется (см. ниже), а сама
+  // очистка на всякий случай тоже ничего не делает.
+  const readOnlyField = Boolean(readOnly || locked || disabled)
+  // Крестик — только у поля, которое можно править. Выключенное прячет его
+  // само (`disabled:hidden`), заблокированное рисует замок; поле только для
+  // чтения от потребителя раньше показывало живой крестик, и клик очищал
+  // значение, которое править нельзя.
+  const showClear = clearable && !readOnly
+
   function handleClear() {
+    if (readOnlyField) return
     const input = inputRef.current
     if (input && mask && clearMask(input)) {
       input.focus()
@@ -174,7 +189,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
     id: inputId,
     "data-slot": "input",
     "aria-disabled": disabled || undefined,
-    readOnly: locked || disabled,
+    readOnly: readOnlyField,
     placeholder: resolvedPlaceholder,
     "aria-invalid": invalid || undefined,
     "aria-describedby": captionId,
@@ -191,6 +206,19 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
     ? ({
         ...getImaskProps(mask),
         ...fieldProps,
+        // Тип поля доезжает и до маскированного `<input>`: без него
+        // `type="tel"` терялся, и на мобильном открывалась полная клавиатура
+        // вместо цифровой. Только типы, где работает выделение
+        // (`setSelectionRange`), — на остальных imask не может ставить каретку.
+        // Пароль переключается «глазом» так же, как в поле без маски: иначе
+        // маскированный пароль оставался скрытым при нажатой кнопке.
+        type: isPassword
+          ? passwordVisible
+            ? "text"
+            : "password"
+          : type && MASKABLE_TYPES.has(type)
+            ? type
+            : undefined,
         ref: imaskRef,
         inputRef: setMaskInputRef,
         ...valueProps,
@@ -287,7 +315,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
                   loading,
                   isPassword,
                   trailingIcon,
-                  clearable,
+                  clearable: showClear,
                 })
                   ? "right-10"
                   : "right-4"
@@ -305,7 +333,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
             passwordVisible={passwordVisible}
             onPasswordVisibleChange={setPasswordVisible}
             trailingIcon={trailingIcon}
-            clearable={clearable}
+            clearable={showClear}
             onClear={handleClear}
             disabled={disabled}
           />

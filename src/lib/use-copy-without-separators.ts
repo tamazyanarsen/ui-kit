@@ -98,10 +98,17 @@ export function useCopyWithoutSeparators(
       // в «скопировать».
       event.preventDefault()
       const target = event.target
+      // ⚠️ Поле только для чтения (заблокированное кита — это `readOnly`) и
+      // выключенное НЕ вырезают: нативное вырезание там ничего не удаляет,
+      // а `setRangeText` работает и на `readOnly`, так что без проверки
+      // Ctrl+X стирал значение заблокированного поля и звал `onChange`.
+      // Копирование в буфер при этом остаётся — как у нативного поля.
       if (
         cut &&
         (target instanceof HTMLInputElement ||
-          target instanceof HTMLTextAreaElement)
+          target instanceof HTMLTextAreaElement) &&
+        !target.readOnly &&
+        !target.disabled
       ) {
         const start = target.selectionStart
         const end = target.selectionEnd

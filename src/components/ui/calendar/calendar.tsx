@@ -33,7 +33,7 @@ function Calendar({
   onApply,
   defaultMonth,
   disabledDate,
-  value = null,
+  value: valueProp,
   onChange,
   rangeValue,
   onRangeChange,
@@ -43,6 +43,18 @@ function Calendar({
   onYearChange,
 }: CalendarProps) {
   const today = React.useMemo(() => new Date(), [])
+
+  // Неуправляемый режим: без `value` / `monthValue` / `yearValue` календарь
+  // держит выбор сам. Раньше подсветка читала только пропсы, и в режимах
+  // month и year, а в single без подвала — выбранное не отмечалось вовсе
+  // (клик вызывал колбэк и ничего не показывал), хотя диапазон в том же
+  // неуправляемом режиме работал через свой черновик.
+  const [ownValue, setOwnValue] = React.useState<Date | null>(null)
+  const [ownMonth, setOwnMonth] = React.useState<CalendarSingleMonth | null>(null)
+  const [ownYear, setOwnYear] = React.useState<number | null>(null)
+  const value = valueProp !== undefined ? valueProp : ownValue
+  const resolvedMonth = monthValue !== undefined ? monthValue : ownMonth
+  const resolvedYear = yearValue !== undefined ? yearValue : ownYear
   // Открывается на выбранном значении в любом режиме: раньше `monthValue` и
   // `yearValue` не учитывались, и сетка месяцев или лет открывалась на
   // текущем годе без подсвеченного выбора.
@@ -140,11 +152,13 @@ function Calendar({
       setDraftValue(date)
       return
     }
+    if (valueProp === undefined) setOwnValue(date)
     onChange?.(date)
   }
 
   function handleApply() {
     if (mode === "single") {
+      if (valueProp === undefined) setOwnValue(draftValue)
       // «Сбросить» → «Применить» — это подтверждённый сброс: родитель
       // должен о нём узнать и без `onReset`.
       // `onChange` — «подтверждённое значение изменилось». Черновик, равный
@@ -169,12 +183,24 @@ function Calendar({
   function handleReset() {
     setDraftValue(null)
     setDraftRange([null, null])
+    if (monthValue === undefined) setOwnMonth(null)
+    if (yearValue === undefined) setOwnYear(null)
     onReset?.()
+  }
+
+  function chooseMonth(next: CalendarSingleMonth) {
+    if (monthValue === undefined) setOwnMonth(next)
+    onMonthChange?.(next)
+  }
+
+  function chooseYear(next: number) {
+    if (yearValue === undefined) setOwnYear(next)
+    onYearChange?.(next)
   }
 
   function handleSelectMonth(m: number) {
     if (mode === "month") {
-      onMonthChange?.({ year: focus.year, month: m })
+      chooseMonth({ year: focus.year, month: m })
       return
     }
     // переход вглубь из вида одного дня
@@ -184,7 +210,7 @@ function Calendar({
 
   function handleSelectYear(y: number) {
     if (mode === "year") {
-      onYearChange?.(y)
+      chooseYear(y)
       return
     }
     setFocus((f) => ({ ...f, year: y }))
@@ -211,10 +237,10 @@ function Calendar({
         value={activeValue}
         normStart={normStart}
         normEnd={normEnd}
-        monthValue={monthValue}
-        onMonthChange={onMonthChange}
-        yearValue={yearValue}
-        onYearChange={onYearChange}
+        monthValue={resolvedMonth}
+        onMonthChange={chooseMonth}
+        yearValue={resolvedYear}
+        onYearChange={chooseYear}
         onSelectDay={handleSelectDay}
         disabledDate={disabledDate}
       />
@@ -235,8 +261,8 @@ function Calendar({
       today={today}
       decadeEnd={decadeEnd}
       value={activeValue}
-      monthValue={monthValue}
-      yearValue={yearValue}
+      monthValue={resolvedMonth}
+      yearValue={resolvedYear}
       normStart={normStart}
       normEnd={normEnd}
       goPrev={goPrev}

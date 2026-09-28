@@ -110,6 +110,32 @@ function useMask({
     }
   }, [mask, inputRef])
 
+  // Нативный сброс формы (`form.reset()`, `<button type="reset">`) браузер
+  // делает мимо JS-сеттера: поле пустело, а маска помнила прежнее значение,
+  // и следующий ввод продолжал его («+7 912 345-8» вместо «+7 8»). Событие
+  // `reset` приходит ДО сброса значений, поэтому маска подхватывает узел в
+  // следующей задаче.
+  React.useEffect(() => {
+    const form = inputRef.current?.form
+    if (!mask || !form) return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const onReset = () => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        const input = inputRef.current
+        const handle = imaskRef.current?.maskRef
+        if (!input || !handle) return
+        handle.value = input.value
+        if (!controlled) setInternalValue(handle.displayValue)
+      })
+    }
+    form.addEventListener("reset", onReset)
+    return () => {
+      clearTimeout(timer)
+      form.removeEventListener("reset", onReset)
+    }
+  }, [mask, inputRef, controlled])
+
   /**
    * Очистка крестиком. Через API маски, а не событием `input`: imask
    * считает удалённое от последней сохранённой позиции каретки, и событие

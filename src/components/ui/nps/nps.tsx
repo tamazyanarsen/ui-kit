@@ -142,9 +142,14 @@ const CARD_CLASS =
  * его публикует закреплённая ButtonMenu), как у тостов и кнопки «Наверх».
  * От кромки экрана карточка ложилась на панель, и её «Отправить» была
  * недоступна, пока опрос не закрыт.
+ *
+ * ⚠️ Высота — не больше видимой области за вычетом тех же полей сверху и
+ * снизу и занятого низа, остальное прокручивается внутри. Раскрытая форма
+ * (оценка + чипсы + комментарий) выше 600px, и на невысоком экране верх
+ * карточки уходил за экран вместе с крестиком — закрыть опрос было нечем.
  */
 const FLOATING_CLASS =
-  "fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-w-[calc(100%_-_32px)] desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-w-none"
+  "fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))] desktop:max-w-none"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({

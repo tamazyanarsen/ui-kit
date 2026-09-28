@@ -146,7 +146,12 @@ function Informer({
             )}
           </div>
           {(mainButtonLabel || additionalButtonLabel) && (
-            <div className="flex items-center gap-2">
+            // Перенос: две длинные подписи на узкой полосе уходили за край
+            // (до 436px при полосе 343). Только в мобильной форме: на десктопе
+            // ряд задаёт минимальную ширину карточки, и в контейнере по
+            // содержимому (колонка auto) перенос сжимал её и ронял кнопки в
+            // столбик.
+            <div className="flex flex-wrap items-center gap-2 desktop:flex-nowrap">
               {mainButtonLabel && (
                 <Button
                   type="button"

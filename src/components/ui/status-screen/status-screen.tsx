@@ -78,7 +78,11 @@ function StatusScreen({
       </div>
 
       {withButtons && (
-        <div className="flex w-full items-center justify-center gap-6">
+        // Кнопки, которые не помещаются рядом, переносятся на свою строку:
+        // без переноса «В центр уведомлений» + «Прочитать все (23)» на 375
+        // уходили за край на 35px. Только в мобильной форме: на десктопе ряд
+        // задаёт минимальную ширину экрана в контейнере по содержимому.
+        <div className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-4 desktop:flex-nowrap">
           {primaryButtonLabel && (
             <Button
               type="button"

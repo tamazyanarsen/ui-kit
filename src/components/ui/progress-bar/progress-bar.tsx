@@ -190,9 +190,13 @@ function ProgressBar({
         {/* «Top»: заголовок прижимается к своему содержимому, а замыкающее
             описание забирает остаток строки и обрезается многоточием —
             именно заголовок резать нельзя ни при каких условиях. Ниже
-            `desktop` шрифт уменьшается до P1 Medium Mobile (14/20). */}
+            `desktop` шрифт уменьшается до P1 Medium Mobile (14/20).
+            Не резать — не значит не переносить: с `shrink-0` длинный
+            заголовок шёл одной строкой за контейнер и давал странице
+            горизонтальную прокрутку. Теперь он переносится по словам, а
+            описание сжимается до нуля первым (у него нулевая основа). */}
         <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
-          <span id={generatedId} className="shrink-0">{title}</span>
+          <span id={generatedId} className="min-w-0 break-words">{title}</span>
           {showDescription && description && (
             <span className="min-w-0 flex-1 truncate text-right">
               {description}

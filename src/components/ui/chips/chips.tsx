@@ -165,9 +165,11 @@ function Chips({
       )}
     >
       {withSubtitle && (
+        // `max-w-full`: в колонке `items-start` ширина узла — ширина текста,
+        // и `truncate` было нечего резать — длинная подпись шла за плашку.
         <span
           className={cn(
-            "truncate text-p3-medium",
+            "max-w-full min-w-0 truncate text-p3-medium",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-subtitle-fg)]"
           )}
         >

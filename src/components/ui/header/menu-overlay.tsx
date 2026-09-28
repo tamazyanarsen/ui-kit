@@ -39,6 +39,7 @@ function MenuOverlay({
   children,
   footer,
   onClose,
+  returnFocusRef,
 }: {
   /**
    * Раскрыта ли панель.
@@ -50,6 +51,12 @@ function MenuOverlay({
   children: React.ReactNode
   footer?: React.ReactNode
   onClose: () => void
+  /**
+   * Куда вернуть фокус после закрытия по Escape — кнопка, открывшая панель.
+   * Без этого фокус оставался на снятом через 160 мс пункте панели и падал
+   * на `<body>`: клавиатурный пользователь терял место на странице.
+   */
+  returnFocusRef?: React.RefObject<HTMLElement | null>
 }) {
   const ref = React.useRef<HTMLDivElement>(null)
   const footerRef = React.useRef<HTMLDivElement>(null)
@@ -74,10 +81,11 @@ function MenuOverlay({
       const dialog = target?.closest('[role="dialog"], [role="alertdialog"]')
       if (dialog && !ref.current?.contains(dialog)) return
       onCloseRef.current()
+      returnFocusRef?.current?.focus()
     }
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
-  }, [open])
+  }, [open, returnFocusRef])
 
   // Высота — «до низа экрана», и посчитать её в CSS нечем.
   //

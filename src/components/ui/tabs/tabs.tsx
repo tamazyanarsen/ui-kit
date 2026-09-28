@@ -5,6 +5,7 @@ import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
+import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
@@ -58,8 +59,18 @@ interface TabsProps {
 // Зазор и место, зарезервированное под триггер «…», участвуют в замере
 // перекрытия на JS, поэтому их нельзя оставить чисто в CSS, как размеры
 // шрифта ниже.
+//
+// ⚠️ Резерв — это зазор ПЕРЕД триггером плюс сам глиф (24 на десктопе, 16 на
+// мобиле; подчёркивание триггера — `w-full`, шире глифа оно не бывает). Цикл
+// в `useOverflowCount` кладёт зазоры только МЕЖДУ пунктами, так что зазор до
+// «…» обязан сидеть в резерве. Прежние 44/32 его недосчитывали на 12/8px, и
+// ряд, признанный помещающимся, вылезал за контейнер ровно на эту разницу.
 const GAP = { desktop: 32, mobile: 24 }
-const ELLIPSIS_RESERVED = { desktop: 44, mobile: 32 }
+const ELLIPSIS_GLYPH = { desktop: 24, mobile: 16 }
+const ELLIPSIS_RESERVED = {
+  desktop: GAP.desktop + ELLIPSIS_GLYPH.desktop,
+  mobile: GAP.mobile + ELLIPSIS_GLYPH.mobile,
+}
 
 function Tabs({
   items,
@@ -99,7 +110,10 @@ function Tabs({
     // складывал только ширины самих вкладок. На пяти табах это 4×32 = 128px
     // неучтённого зазора: ряд, который в реальности не помещался, считался
     // помещающимся, и таб «Ещё» не появлялся вообще никогда.
-    GAP[sizeKey]
+    GAP[sizeKey],
+    // При `showMore` триггер виден и тогда, когда прятать нечего, поэтому его
+    // место резервируется всегда, а не только при переполнении.
+    showMore
   )
 
   // Схлопываем всегда, когда ряд не помещается; `showMore` лишь добавляет
@@ -110,24 +124,33 @@ function Tabs({
   const showOverflowTab = hasOverflow || showMore
 
   // В порядок Tab попадает активная вкладка, а если она спрятана за
-  // многоточием — первая доступная видимая: иначе до ленты с клавиатуры было
-  // бы не добраться.
-  const focusValue = visibleItems.some((item) => item.value === activeValue)
+  // многоточием или выключена — первая доступная видимая. Выбор только среди
+  // доступных: выключенная кнопка фокус не принимает, и `tabIndex=0` на ней
+  // при `-1` у всех остальных вычёркивал бы ленту из обхода по Tab целиком.
+  const enabledVisible = visibleItems.filter((item) => !item.disabled)
+  const focusValue = enabledVisible.some((item) => item.value === activeValue)
     ? activeValue
-    : visibleItems.find((item) => !item.disabled)?.value
+    : enabledVisible[0]?.value
 
   // Стрелки, Home и End — по видимым доступным вкладкам, с активацией при
   // переходе (паттерн WAI-ARIA Tabs с автоматической активацией).
   function onRowKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    const enabled = visibleItems.filter((item) => !item.disabled)
-    const current = enabled.findIndex((item) => item.value === focusValue)
+    // Только нажатия на самих вкладках. События React всплывают по дереву
+    // компонентов, а не по DOM, поэтому без проверки сюда доходили бы
+    // стрелки из любого портала, отрисованного внутри ленты.
+    const source = event.target as HTMLElement
+    if (!event.currentTarget.contains(source) || source.getAttribute("role") !== "tab") return
+    // Отсчёт — от вкладки, на которой стоит фокус, а не от активной: они
+    // расходятся, когда активная выключена или спрятана за многоточием.
+    const current = enabledVisible.findIndex((item) => item.value === source.dataset.value)
+    const count = enabledVisible.length
     let next: number
-    if (event.key === "ArrowRight") next = (current + 1) % enabled.length
-    else if (event.key === "ArrowLeft") next = (current - 1 + enabled.length) % enabled.length
+    if (event.key === "ArrowRight") next = current < 0 ? 0 : (current + 1) % count
+    else if (event.key === "ArrowLeft") next = current < 0 ? count - 1 : (current - 1 + count) % count
     else if (event.key === "Home") next = 0
-    else if (event.key === "End") next = enabled.length - 1
+    else if (event.key === "End") next = count - 1
     else return
-    const target = enabled[next]
+    const target = enabledVisible[next]
     if (!target) return
     event.preventDefault()
     setValue(target.value)
@@ -171,43 +194,57 @@ function Tabs({
       )}
     >
       <div
-        ref={indicator.rowRef}
-        role="tablist"
-        onKeyDown={onRowKeyDown}
         data-slot="tabs-row"
         className={cn(
           "relative flex items-center desktop:shadow-[inset_0_-1px_0_0_var(--tabs-border)]",
           medium && "shadow-[inset_0_-1px_0_0_var(--tabs-border)]"
         )}
-        style={{ gap: GAP[sizeKey] }}
       >
-        {visibleItems.map((item) => (
-          <TabButton
-            key={item.value}
-            item={item}
-            active={item.value === activeValue}
-            medium={medium}
-            sharedUnderline
-            focusable={item.value === focusValue}
-            onClick={() => !item.disabled && setValue(item.value)}
+        {/* `tablist` держит только вкладки (и бегунок под `aria-hidden`):
+            триггер «Ещё» — не вкладка, и внутри `tablist` он нарушал
+            обязательный состав детей роли. Поэтому он стоит рядом, а общий ряд
+            с разделителем и зазором — снаружи обоих. Заодно события из
+            выпадающего списка «Ещё» больше не всплывают в обработчик стрелок
+            ленты. */}
+        <div
+          ref={indicator.rowRef}
+          role="tablist"
+          onKeyDown={onRowKeyDown}
+          data-slot="tabs-list"
+          className="relative flex items-center"
+          style={{ gap: GAP[sizeKey] }}
+        >
+          {visibleItems.map((item) => (
+            <TabButton
+              key={item.value}
+              item={item}
+              active={item.value === activeValue}
+              medium={medium}
+              sharedUnderline
+              focusable={item.value === focusValue}
+              onClick={() => !item.disabled && setValue(item.value)}
+            />
+          ))}
+
+          {/* Бегунок — общее подчёркивание активной вкладки (замечание 21).
+              Живёт в ряду один и переезжает, а не перекрашивается: за это
+              отвечает переход по `left`/`width`. Пока активная вкладка спрятана
+              за многоточием, показывать нечего. */}
+          <span
+            aria-hidden="true"
+            data-slot="tabs-indicator"
+            className={cn(
+              "pointer-events-none absolute bottom-0 h-1 rounded-t-[4px] bg-[var(--tabs-underline-active)]",
+              indicator.ready && "transition-[left,width] duration-200 ease-out",
+              !indicator.visible && "opacity-0"
+            )}
+            style={{ left: indicator.left, width: indicator.width }}
           />
-        ))}
+        </div>
 
-        {/* Бегунок — общее подчёркивание активной вкладки (замечание 21).
-            Живёт в ряду один и переезжает, а не перекрашивается: за это
-            отвечает переход по `left`/`width`. Пока активная вкладка спрятана
-            за многоточием, показывать нечего. */}
-        <span
-          aria-hidden="true"
-          data-slot="tabs-indicator"
-          className={cn(
-            "pointer-events-none absolute bottom-0 h-1 rounded-t-[4px] bg-[var(--tabs-underline-active)]",
-            indicator.ready && "transition-[left,width] duration-200 ease-out",
-            !indicator.visible && "opacity-0"
-          )}
-          style={{ left: indicator.left, width: indicator.width }}
-        />
-
+        {/* Зазор до «…» — отступом самого триггера, а не `gap` ряда: при
+            `items=[]` пустой `tablist` всё равно flex-элемент, и `gap`
+            отодвигал многоточие от начала ряда на пустом месте. */}
         {showOverflowTab && (
         <MenuPrimitive.Root modal={false}>
           <MenuPrimitive.Trigger
@@ -220,6 +257,7 @@ function Tabs({
                 // незачем — пока за многоточием ничего не спрятано, он
                 // просто не раскрывается.
                 disabled={!hasOverflow}
+                style={visibleItems.length > 0 ? { marginLeft: GAP[sizeKey] } : undefined}
                 // Мобильный глиф 16px стоит против строки подписи 20px,
                 // поэтому в макете ему дают отступ 2px и расширяют зазор до
                 // 18px, чтобы триггер сохранил полные 40px, — иначе его
@@ -274,12 +312,9 @@ function Tabs({
           отличие от видимого ряда, который прячет часть за триггер
           перекрытия), чтобы useOverflowCount всегда имел настоящую ширину
           для замера — даже у пунктов, сейчас убранных в выпадающий
-          список. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none invisible absolute top-0 left-0 flex"
-        style={{ gap: GAP[sizeKey] }}
-      >
+          список. Обёртка с обрезкой обязательна: копия шире ряда и без неё
+          раздвигала бы прокрутку страницы вбок (см. `OverflowMeasureLayer`). */}
+      <OverflowMeasureLayer style={{ gap: GAP[sizeKey] }}>
         {items.map((item, index) => (
           <TabButton
             key={item.value}
@@ -291,7 +326,7 @@ function Tabs({
             }}
           />
         ))}
-      </div>
+      </OverflowMeasureLayer>
     </div>
   )
 }

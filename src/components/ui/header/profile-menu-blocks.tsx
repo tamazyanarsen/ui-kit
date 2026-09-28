@@ -71,12 +71,26 @@ function OrganizationList({
     // Макет кладёт внутрь этого списка `ELK / scrollbar` (дорожка 4px,
     // радиус 2px, отступ 8px), а это и есть то, что рисует Scrollbar
     // кита.
-    <Scrollbar inset="dropdown" className="flex max-h-100 flex-col">
+    //
+    // Выбор организации — радиогруппа меню (`menuitemradio` +
+    // `aria-checked`), а не простые пункты: галочка под `aria-hidden`
+    // была единственным признаком выбранной, и скринридер не отличал её от
+    // остальных. Группа рисуется самим Scrollbar, чтобы не вставлять лишнюю
+    // обёртку в его flex-колонку.
+    <MenuPrimitive.RadioGroup
+      value={value}
+      onValueChange={(next: string) => onValueChange?.(next)}
+      aria-label="Мои организации"
+      render={<Scrollbar inset="dropdown" className="flex max-h-100 flex-col" />}
+    >
       {organizations.map((org) => (
-        <MenuPrimitive.Item
+        <MenuPrimitive.RadioItem
           key={org.id}
+          value={org.id}
+          // У радиопункта Base UI по умолчанию меню не закрывается — а выбор
+          // организации, как и раньше, его закрывает.
+          closeOnClick
           data-slot="profile-menu-org-item"
-          onClick={() => onValueChange?.(org.id)}
           className={cn(MENU_ITEM, ORG_ITEM, "justify-between")}
         >
           <span className="flex min-w-0 flex-col">
@@ -98,7 +112,7 @@ function OrganizationList({
               className="size-6 shrink-0 text-[var(--header-check-fg)]"
             />
           )}
-        </MenuPrimitive.Item>
+        </MenuPrimitive.RadioItem>
       ))}
       {/* Отдельного кадра «ничего не найдено» для Profile Menu в макете
           нет; текст совпадает с пустым состоянием Select и Dropdown, а там
@@ -109,7 +123,7 @@ function OrganizationList({
           Ничего не найдено
         </p>
       )}
-    </Scrollbar>
+    </MenuPrimitive.RadioGroup>
   )
 }
 

@@ -27,7 +27,19 @@ import * as React from "react"
 // ⚠️ Ширины берутся `getBoundingClientRect().width`, а не `offsetWidth`:
 // последний округляет до целого, и на ряду из десятка элементов ошибка
 // копится в заметный сдвиг.
-export function useOverflowCount(itemCount: number, reservedWidth: number, gap = 0) {
+//
+// `alwaysReserve` — триггер перекрытия виден ВСЕГДА (Tabs с `showMore`), а не
+// только при переполнении. Тогда его место входит и в проверку «помещается
+// всё»: иначе ряд из пунктов, которые помещаются ровно впритык, считался
+// помещающимся, а триггер рядом с ними вылезал за контейнер.
+const FIT_TOLERANCE = 1
+
+export function useOverflowCount(
+  itemCount: number,
+  reservedWidth: number,
+  gap = 0,
+  alwaysReserve = false
+) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
   const [visibleCount, setVisibleCount] = React.useState(itemCount)
@@ -54,6 +66,10 @@ export function useOverflowCount(itemCount: number, reservedWidth: number, gap =
     const itemsWidth = itemRefs.current
       .slice(0, itemCount)
       .reduce((sum, el) => sum + widthOf(el), 0)
+    // Допуск на округление: `clientWidth` целый, а ширины пунктов дробные.
+    // У ряда, ширину которого задаёт само содержимое (ячейка матрицы,
+    // `w-fit`-обёртка), без допуска выходило «202 ≤ 201»: пункт уезжал в
+    // «Ещё», контейнер от этого сужался, и ряд так и оставался свёрнутым.
     const available = container.clientWidth
 
     // ⚠️ Нулевая ширина — это «ещё не померили», а не «не помещается».
@@ -68,9 +84,10 @@ export function useOverflowCount(itemCount: number, reservedWidth: number, gap =
       return
     }
 
-    const fitsAll = itemsWidth + gap * (itemCount - 1)
+    const fitsAll =
+      itemsWidth + gap * (itemCount - 1) + (alwaysReserve ? reservedWidth : 0)
 
-    if (fitsAll <= available) {
+    if (fitsAll <= available + FIT_TOLERANCE) {
       setVisibleCount(itemCount)
       return
     }
@@ -80,11 +97,11 @@ export function useOverflowCount(itemCount: number, reservedWidth: number, gap =
     for (let i = 0; i < itemCount; i++) {
       used += widthOf(itemRefs.current[i])
       if (count > 0) used += gap
-      if (used > available) break
+      if (used > available + FIT_TOLERANCE) break
       count++
     }
     setVisibleCount(Math.max(1, count))
-  }, [itemCount, reservedWidth, gap])
+  }, [itemCount, reservedWidth, gap, alwaysReserve])
 
   React.useLayoutEffect(() => {
     recompute()

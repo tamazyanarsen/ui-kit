@@ -1,4 +1,4 @@
-import type * as React from "react"
+import * as React from "react"
 
 import { Settings } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -59,6 +59,8 @@ function HeaderPinnedRow({
   onFavouritesChange,
   onFavouritesSettingsOpen,
 }: HeaderPinnedRowProps) {
+  const menuTriggerRef = React.useRef<HTMLButtonElement>(null)
+  const createTriggerRef = React.useRef<HTMLButtonElement>(null)
   return (
     <div
       ref={rowRef}
@@ -74,6 +76,8 @@ function HeaderPinnedRow({
         onCreateOpenChange={(open) => onOpenPanelChange(open ? "create" : null)}
         showCreate={showCreate}
         favouritesEnabled={favouritesEnabled}
+        menuTriggerRef={menuTriggerRef}
+        createTriggerRef={createTriggerRef}
       />
 
       {/* ⚠️ Панели рисуются ВСЕГДА, а раскрытость передаётся пропом.
@@ -84,6 +88,7 @@ function HeaderPinnedRow({
       <MenuOverlay
         open={openPanel === "menu"}
         onClose={() => onOpenPanelChange(null)}
+        returnFocusRef={menuTriggerRef}
         footer={
           favouritesEnabled && (
             <Button
@@ -126,6 +131,7 @@ function HeaderPinnedRow({
       <MenuOverlay
         open={openPanel === "create"}
         onClose={() => onOpenPanelChange(null)}
+        returnFocusRef={createTriggerRef}
       >
         <CreateMenu items={createItems} />
       </MenuOverlay>

@@ -125,6 +125,9 @@ interface NavRowProps {
   onCreateOpenChange: (open: boolean) => void
   showCreate: boolean
   favouritesEnabled: boolean
+  /** Кнопки «Меню» и «Создать» — сюда возвращается фокус по Escape. */
+  menuTriggerRef?: React.Ref<HTMLButtonElement>
+  createTriggerRef?: React.Ref<HTMLButtonElement>
 }
 
 function NavRow({
@@ -136,6 +139,8 @@ function NavRow({
   onCreateOpenChange,
   showCreate,
   favouritesEnabled,
+  menuTriggerRef,
+  createTriggerRef,
 }: NavRowProps) {
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     items.length,
@@ -173,6 +178,7 @@ function NavRow({
           {/* Кнопок в макете две и обе размера S: «Меню» (secondary-black,
               `icon / classic burger`) и «Создать» (primary, `icon / plus`). */}
           <Button
+            ref={menuTriggerRef}
             variant="secondary-black"
             size="sm"
             icon={menuOpen ? X : Menu}
@@ -183,6 +189,7 @@ function NavRow({
           </Button>
           {showCreate && (
             <Button
+              ref={createTriggerRef}
               variant="primary"
               size="sm"
               icon={createOpen ? X : Plus}

@@ -122,6 +122,9 @@ function NavOverflow({
               <MenuPrimitive.Item
                 key={link.value}
                 data-slot="employee-menu-nav-overflow-item"
+                // Галочка под `aria-hidden` — только для глаз; текущий раздел
+                // объявляется атрибутом.
+                aria-current={link.value === activeLink ? "page" : undefined}
                 onClick={link.onClick}
                 className={menuItemRowClass(
                   "cursor-pointer data-highlighted:bg-[var(--menu-item-bg-highlighted)]"

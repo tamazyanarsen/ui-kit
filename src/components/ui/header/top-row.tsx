@@ -109,9 +109,18 @@ function ClientActions({
   // Без `organizationId` выбор организации живёт здесь же: иначе клик по
   // другой организации вызывал колбэк, а триггер и галочка навсегда
   // оставались на первой.
+  //
+  // Свой выбор учитывается, только пока такая организация есть в списке:
+  // после смены `organizations` устаревший id уходил в меню как `value`,
+  // триггер откатывался на первую, а галочки в списке не было ни у кого.
   const [ownOrganizationId, setOwnOrganizationId] = React.useState<string>()
+  const ownOrganizationListed = organizations.some(
+    (organization) => organization.id === ownOrganizationId
+  )
   const activeOrganizationId =
-    organizationId ?? ownOrganizationId ?? organizations[0]?.id
+    organizationId ??
+    (ownOrganizationListed ? ownOrganizationId : undefined) ??
+    organizations[0]?.id
   function changeOrganization(id: string) {
     if (organizationId === undefined) setOwnOrganizationId(id)
     onOrganizationChange?.(id)

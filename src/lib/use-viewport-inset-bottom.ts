@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import { useComposedRefs } from "@/lib/compose-refs"
+
 // Сколько нижнего края вьюпорта занято закреплёнными полосами — Button Menu
 // (88) и Button Menu Black (72). Живые полосы публикуют сюда свою занятую
 // высоту, а всё, что липнет к низу, отсчитывает `inset-block-end` от
@@ -51,15 +53,11 @@ export function useViewportInsetBottom<T extends HTMLElement>(
   if (id.current === undefined) id.current = Symbol("bottom-bar")
 
   const [element, setElement] = React.useState<T | null>(null)
-  const forwarded = React.useRef(forwardedRef)
-  forwarded.current = forwardedRef
-
-  const ref = React.useCallback((node: T | null) => {
-    setElement(node)
-    const target = forwarded.current
-    if (typeof target === "function") target(node)
-    else if (target) target.current = node
-  }, [])
+  // Ref потребителя — в зависимостях склейки, а не в ref-хранилище: при его
+  // смене React снимает старый callback (старый ref получает `null`) и
+  // вешает новый (новый ref получает узел). Стабильный callback с ref
+  // потребителя в `useRef` оставлял новый ref пустым до пересоздания узла.
+  const ref = useComposedRefs<T>(setElement, forwardedRef)
 
   React.useLayoutEffect(() => {
     const key = id.current

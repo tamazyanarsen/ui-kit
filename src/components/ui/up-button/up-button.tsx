@@ -13,10 +13,20 @@ import { Button } from "@/components/ui/button"
 // окно), а `hidden` позволяет потребителю принудительно убрать кнопку для
 // случая с плавающим элементом.
 interface UpButtonProps {
-  scrollContainer?: React.RefObject<HTMLElement | null>
+  /**
+   * Источник прокрутки: ref на контейнер или сам элемент. Не задан — окно.
+   */
+  scrollContainer?: React.RefObject<HTMLElement | null> | HTMLElement | null
   threshold?: number
   hidden?: boolean
   className?: string
+}
+
+type ScrollSource = UpButtonProps["scrollContainer"]
+
+function resolveTarget(source: ScrollSource): Window | HTMLElement {
+  if (source instanceof HTMLElement) return source
+  return source?.current ?? window
 }
 
 function UpButton({
@@ -31,31 +41,51 @@ function UpButton({
     threshold: number
     unsubscribe: () => void
   } | null>(null)
+  const latest = React.useRef({ scrollContainer, threshold })
+  latest.current = { scrollContainer, threshold }
 
-  // Источник прокрутки перепроверяется после КАЖДОЙ отрисовки, а не только
-  // при смене объекта ref: сам ref не меняется, а `ref.current` — да. С
-  // зависимостью `[scrollContainer]` контейнер, смонтированный позже кнопки
-  // (условный рендер, ленивая загрузка) или заменённый другим, не
-  // подхватывался никогда: слушатель оставался на `window`.
-  React.useEffect(() => {
-    const target: Window | HTMLElement = scrollContainer?.current ?? window
+  // Подписка на актуальный источник: без изменений — ничего не делает.
+  const ensureSubscribed = React.useCallback(() => {
+    const { scrollContainer: source, threshold: limit } = latest.current
+    const target = resolveTarget(source)
     const current = subscription.current
-    if (current && current.target === target && current.threshold === threshold) return
+    if (current && current.target === target && current.threshold === limit) return
     current?.unsubscribe()
 
     function handleScroll() {
       const scrollTop = target === window ? window.scrollY : (target as HTMLElement).scrollTop
-      setVisible(scrollTop > threshold)
+      setVisible(scrollTop > limit)
     }
 
     handleScroll()
     target.addEventListener("scroll", handleScroll, { passive: true })
     subscription.current = {
       target,
-      threshold,
+      threshold: limit,
       unsubscribe: () => target.removeEventListener("scroll", handleScroll),
     }
+  }, [])
+
+  // Источник перепроверяется после каждой отрисовки кнопки: сам ref не
+  // меняется, а `ref.current` — да.
+  React.useEffect(() => {
+    ensureSubscribed()
   })
+
+  // ⚠️ Одной перепроверки после отрисовки мало: контейнер часто монтирует
+  // соседний компонент своим состоянием, а кнопка (или её мемоизированный
+  // родитель) при этом не перерисовывается — и слушатель навсегда оставался
+  // на `window`. Пока источник задан ref-объектом, за его `current` следит
+  // MutationObserver: появление или замена узла в DOM и есть смена `current`.
+  // Считается во время отрисовки, поэтому без `instanceof HTMLElement`: на
+  // сервере такого глобала нет. У DOM-элемента поля `current` не бывает.
+  const watchRef = scrollContainer != null && "current" in scrollContainer
+  React.useEffect(() => {
+    if (!watchRef || typeof MutationObserver === "undefined") return
+    const observer = new MutationObserver(ensureSubscribed)
+    observer.observe(document.body, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [watchRef, ensureSubscribed])
 
   React.useEffect(
     () => () => {
@@ -66,9 +96,7 @@ function UpButton({
   )
 
   function handleClick() {
-    const target = scrollContainer?.current
-    if (target) target.scrollTo({ top: 0, behavior: "smooth" })
-    else window.scrollTo({ top: 0, behavior: "smooth" })
+    resolveTarget(scrollContainer).scrollTo({ top: 0, behavior: "smooth" })
   }
 
   if (!visible || hidden) return null

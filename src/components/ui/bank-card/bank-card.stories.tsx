@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { useArgs } from "storybook/preview-api"
 
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 import {
@@ -82,7 +83,15 @@ const meta = {
 export default meta
 type Story = StoryObj<BankCardProps>
 
-export const Playground: Story = {}
+// `type` в Playground — управляемый проп из контролов. Без `onTypeChange`
+// карта не переворачивается и «Показать реквизиты» остаётся текстом, поэтому
+// переворот возвращается в контрол Type через `useArgs`.
+export const Playground: Story = {
+  render: function Render(args) {
+    const [, updateArgs] = useArgs<BankCardProps>()
+    return <BankCard {...args} onTypeChange={(type) => updateArgs({ type })} />
+  },
+}
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",

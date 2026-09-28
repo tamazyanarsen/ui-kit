@@ -66,6 +66,43 @@ describe("BankCard: регрессии", () => {
     expect(back).not.toHaveAttribute("inert")
   })
 
+  it("Enter на «Показать реквизиты» переносит фокус на оборот, а не теряет его", async () => {
+    const user = userEvent.setup()
+    renderCard()
+
+    screen.getByText("Показать реквизиты").focus()
+    await user.keyboard("{Enter}")
+
+    expect(document.activeElement).toBe(screen.getAllByLabelText("Показать и скопировать")[0])
+  })
+
+  it("переворот кликом по карте оставляет фокус на карте", async () => {
+    const user = userEvent.setup()
+    const { card } = renderCard()
+
+    card.focus()
+    await user.keyboard("{Enter}")
+
+    expect(document.activeElement).toBe(card)
+  })
+
+  it("управляемая карта без onTypeChange держит подпись «Показать реквизиты» текстом, а не кнопкой", () => {
+    // Подпись есть в макете (Type=Face, Show Requisites=True) и должна
+    // остаться, но перевернуть такую карту нельзя — кнопки быть не должно.
+    renderCard({ type: "face" })
+    expect(screen.getByText("Показать реквизиты")).toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Показать реквизиты" })
+    ).not.toBeInTheDocument()
+  })
+
+  it("управляемая карта с onTypeChange оставляет «Показать реквизиты» кнопкой", () => {
+    const onTypeChange = vi.fn()
+    renderCard({ type: "face", onTypeChange })
+    fireEvent.click(screen.getByRole("button", { name: "Показать реквизиты" }))
+    expect(onTypeChange).toHaveBeenCalledWith("back")
+  })
+
   it("без Clipboard API показывает ошибку, а не «скопирован»", async () => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined })
     renderCard({ type: "back", onTypeChange: vi.fn() })

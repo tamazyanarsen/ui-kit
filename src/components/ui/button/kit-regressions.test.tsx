@@ -51,3 +51,20 @@ describe("ref доходит до корня", () => {
     error.mockRestore()
   })
 })
+
+describe("Button: загрузка", () => {
+  it("кнопка с подписью не теряет доступное имя, пока идёт загрузка", () => {
+    render(<Button isLoading>Сохранить</Button>)
+    const button = screen.getByRole("button", { name: "Сохранить" })
+    expect(button).toHaveAttribute("aria-busy", "true")
+  })
+
+  it("aria-label потребителя по-прежнему главнее подписи", () => {
+    render(
+      <Button isLoading aria-label="Отправка">
+        Сохранить
+      </Button>
+    )
+    expect(screen.getByRole("button", { name: "Отправка" })).toBeInTheDocument()
+  })
+})

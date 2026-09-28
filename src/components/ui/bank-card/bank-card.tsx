@@ -83,6 +83,29 @@ function BankCard({
   const flippable = type === undefined || onTypeChange !== undefined
   const [revealed, setRevealed] = React.useState<"number" | "cvc" | null>(null)
   const { add } = useToast()
+  const rootRef = React.useRef<HTMLDivElement>(null)
+  const prevSide = React.useRef(side)
+
+  // Отвёрнутая сторона становится `inert`, и если фокус был в ней (Enter на
+  // «Показать реквизиты»), браузер сбрасывает его на `<body>` — клавиатурный
+  // пользователь оказывается в начале документа. Поэтому до отрисовки фокус
+  // переносится на первую кнопку показанной стороны, а если кнопок нет — на
+  // саму карту. Фокус на корне (переворот кликом по карте) не трогается.
+  React.useLayoutEffect(() => {
+    if (prevSide.current === side) return
+    prevSide.current = side
+    const root = rootRef.current
+    const active = document.activeElement
+    if (!root || !active) return
+    const slot = (name: string) =>
+      root.querySelector<HTMLElement>(`[data-slot="bank-card-${name}"]`)
+    const hiddenSide = slot(side === "back" ? "face" : "back")
+    if (!hiddenSide?.contains(active)) return
+    const target =
+      slot(side)?.querySelector<HTMLElement>("button:not([disabled])") ??
+      (root.tabIndex >= 0 ? root : null)
+    target?.focus()
+  }, [side])
 
   function flip() {
     setSide(side === "face" ? "back" : "face")
@@ -116,6 +139,7 @@ function BankCard({
 
   return (
     <div
+      ref={rootRef}
       data-slot="bank-card"
       role={flippable ? "button" : undefined}
       tabIndex={flippable ? 0 : undefined}
@@ -146,8 +170,11 @@ function BankCard({
           showPaymentSystem={showPaymentSystem}
           showCardNumber={showCardNumber}
           showBalance={showBalance}
+          // Управляемая карта без `onTypeChange` перевернуться не может:
+          // подпись «Показать реквизиты» остаётся (она есть в макете), но
+          // без обработчика рисуется текстом, а не мёртвой кнопкой.
           showRequisites={showRequisites}
-          onShowRequisites={() => setSide("back")}
+          onShowRequisites={flippable ? () => setSide("back") : undefined}
           hidden={side !== "face"}
           style={{ backfaceVisibility: "hidden" }}
           className="absolute inset-0"

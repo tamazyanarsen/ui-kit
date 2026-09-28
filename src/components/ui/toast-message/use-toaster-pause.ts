@@ -31,6 +31,21 @@ function useToasterPause(
     else resume()
   }, [pause, resume])
 
+  // Колонка, снятая на паузе (смена раскладки, маршрута, условный рендер),
+  // иначе навсегда оставляла провайдер на паузе: `add` клал остаток без
+  // таймера, и все следующие тосты не закрывались. `resume` берётся из ref,
+  // чтобы смена его идентичности не снимала паузу под курсором.
+  const resumeRef = React.useRef(resume)
+  resumeRef.current = resume
+  React.useEffect(
+    () => () => {
+      if (!paused.current) return
+      paused.current = false
+      resumeRef.current()
+    },
+    []
+  )
+
   React.useEffect(() => {
     if (!sources.current.focus) return
     if (ref.current?.contains(document.activeElement)) return

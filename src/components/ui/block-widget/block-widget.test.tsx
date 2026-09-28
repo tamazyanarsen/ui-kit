@@ -69,6 +69,24 @@ describe("BlockWidget", () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  // Свой onKeyDown потребителя раньше перетирал внутренний, и Enter/Space
+  // переставали нажимать блок.
+  it("keeps Enter/Space working next to a consumer onKeyDown", async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    const onKeyDown = vi.fn()
+    render(
+      <BlockWidget onClick={onClick} onKeyDown={onKeyDown}>
+        <BlockWidgetHead title="Заголовок" />
+      </BlockWidget>
+    )
+
+    screen.getByRole("button").focus()
+    await user.keyboard("{Enter}")
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
   // Состояния `Hover` у сета обводки нет вовсе — значит и кликабельной она
   // не бывает.
   it("ignores onClick on the border variant", async () => {

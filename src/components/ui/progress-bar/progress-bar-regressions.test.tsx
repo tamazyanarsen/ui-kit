@@ -19,6 +19,12 @@ describe("ProgressBar: регрессии", () => {
     expect(bar).toHaveAttribute("aria-valuenow", "42")
   })
 
+  it("без заголовка шкала не ссылается на пустую подпись и имеет имя", () => {
+    render(<ProgressBar variant="timeline" title="" value={42} />)
+    const bar = screen.getByRole("progressbar", { name: "Прогресс" })
+    expect(bar).not.toHaveAttribute("aria-labelledby")
+  })
+
   it("NaN не заливает полосу целиком", () => {
     const { container } = render(
       <ProgressBar variant="timeline" title="Лимит" value={Number("x")} />

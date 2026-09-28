@@ -79,7 +79,8 @@ function StepTrack({
 }: {
   totalSteps: number
   currentStep: number
-  labelId: string
+  /** id подписи; нет заголовка — шкала получает имя «Прогресс». */
+  labelId?: string
 }) {
   const total = clamp(Math.round(totalSteps), 2, 10)
   const current = clamp(Math.round(currentStep), 1, total)
@@ -92,6 +93,7 @@ function StepTrack({
     <div
       role="progressbar"
       aria-labelledby={labelId}
+      aria-label={labelId ? undefined : "Прогресс"}
       aria-valuemin={1}
       aria-valuemax={total}
       aria-valuenow={current}
@@ -124,7 +126,8 @@ function TimelineTrack({
 }: {
   value: number
   statusTimeline?: ProgressBarStatusTimeline
-  labelId: string
+  /** id подписи; нет заголовка — шкала получает имя «Прогресс». */
+  labelId?: string
 }) {
   const clamped = clamp(value, 0, 100)
   const resolved = statusTimeline ?? timelineColorForValue(clamped)
@@ -133,6 +136,7 @@ function TimelineTrack({
     <div
       role="progressbar"
       aria-labelledby={labelId}
+      aria-label={labelId ? undefined : "Прогресс"}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={clamped}
@@ -175,7 +179,10 @@ function ProgressBar({
     showStatus && statusLine !== "subtitle" && Boolean(statusDescription)
   // Сама шкала — `role="progressbar"`: раньше все её полосы были под
   // `aria-hidden`, и прогресс скринридеру не сообщался вовсе.
-  const labelId = React.useId()
+  const generatedId = React.useId()
+  // Ссылка на пустую подпись давала progressbar с пустым именем — ссылаемся
+  // только на реальный заголовок.
+  const labelId = title ? generatedId : undefined
 
   return (
     <div data-slot="progress-bar" className={cn("flex flex-col gap-2", className)}>
@@ -185,7 +192,7 @@ function ProgressBar({
             именно заголовок резать нельзя ни при каких условиях. Ниже
             `desktop` шрифт уменьшается до P1 Medium Mobile (14/20). */}
         <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
-          <span id={labelId} className="shrink-0">{title}</span>
+          <span id={generatedId} className="shrink-0">{title}</span>
           {showDescription && description && (
             <span className="min-w-0 flex-1 truncate text-right">
               {description}

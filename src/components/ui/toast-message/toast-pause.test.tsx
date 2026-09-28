@@ -46,6 +46,26 @@ describe("Toast: пауза времени жизни", () => {
     expect(screen.queryByText("Второй")).not.toBeInTheDocument()
   })
 
+  it("колонка, снятая на паузе, не оставляет провайдер на паузе", () => {
+    function App({ show }: { show: boolean }) {
+      return (
+        <ToastProvider timeout={1000}>
+          <Capture />
+          {show && <Toaster />}
+        </ToastProvider>
+      )
+    }
+    const { container, rerender } = render(<App show />)
+    act(() => void api.add({ title: "Первый" }))
+    fireEvent.mouseEnter(container.querySelector("[aria-live]") as HTMLElement)
+    rerender(<App show={false} />)
+    rerender(<App show />)
+
+    act(() => void api.add({ title: "Второй" }))
+    act(() => void vi.advanceTimersByTime(1400))
+    expect(screen.queryByText("Второй")).not.toBeInTheDocument()
+  })
+
   it("увод мыши не снимает паузу, пока фокус внутри колонки", () => {
     const { column } = renderToaster()
     act(() => void api.add({ title: "Читаю" }))

@@ -101,7 +101,12 @@ function CardFace({
   showCardNumber: boolean
   showBalance: boolean
   showRequisites: boolean
-  onShowRequisites: () => void
+  /**
+   * Нет — карта перевернуться не может (управляемая без `onTypeChange`).
+   * Подпись тогда остаётся на месте, как в макете, но рисуется текстом, а
+   * не кнопкой, которая ничего не делает.
+   */
+  onShowRequisites?: () => void
   /** Сторона отвёрнута — её кнопки убираются из порядка фокуса. */
   hidden?: boolean
   style: React.CSSProperties
@@ -158,20 +163,25 @@ function CardFace({
       {showBalance && (
         <div className="relative flex flex-col gap-0.5 text-white">
           <span className="text-p1-medium">{balance}</span>
-          {showRequisites && (
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation()
-                onShowRequisites()
-              }}
-              // «Показать реквизиты» лежит в той же обёртке «Balance» с
-              // font-['Object_Sans:Medium'], что и сумма баланса над ней.
-              className="w-fit cursor-pointer text-p3-medium text-white outline-none focus-visible:focus-ring hover:underline"
-            >
-              Показать реквизиты
-            </button>
-          )}
+          {showRequisites &&
+            (onShowRequisites ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onShowRequisites()
+                }}
+                // «Показать реквизиты» лежит в той же обёртке «Balance» с
+                // font-['Object_Sans:Medium'], что и сумма баланса над ней.
+                className="w-fit cursor-pointer text-p3-medium text-white outline-none focus-visible:focus-ring hover:underline"
+              >
+                Показать реквизиты
+              </button>
+            ) : (
+              <span className="w-fit text-p3-medium text-white">
+                Показать реквизиты
+              </span>
+            ))}
         </div>
       )}
     </div>

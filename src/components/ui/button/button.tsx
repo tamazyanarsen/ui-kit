@@ -242,6 +242,13 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
           >
             {content}
           </span>
+          {/* `invisible` убирает подпись и из дерева доступности, и кнопка
+              «Сохранить» на время загрузки становилась безымянной. Копия
+              подписи для скринридера держит имя, а `aria-busy` выше говорит,
+              что идёт загрузка. */}
+          {!iconOnly && children != null && (
+            <span className="sr-only">{children}</span>
+          )}
           <Loader
             size={glyphSize === 24 ? "md" : "sm"}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"

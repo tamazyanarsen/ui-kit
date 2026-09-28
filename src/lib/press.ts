@@ -39,7 +39,12 @@ function fromNestedControl(event: PressEvent): boolean {
   if (!(target instanceof Node) || !root.contains(target)) return true
   const element = target instanceof Element ? target : target.parentElement
   const hit = element?.closest(NESTED_CONTROL_SELECTOR)
-  return Boolean(hit) && hit !== root
+  // `closest` не останавливается на границе блока: у строки таблицы (`tr`)
+  // селектор не срабатывает на ней самой и уходит к предкам — кликабельному
+  // BlockWidget, `label`, `[role=option]` снаружи. Такой предок — не
+  // вложенное управление, иначе строка внутри него не нажималась бы никогда.
+  if (!hit || hit === root) return false
+  return root.contains(hit)
 }
 
 /**

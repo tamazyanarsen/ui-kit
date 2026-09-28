@@ -57,6 +57,9 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
   variant = "solid",
   type = "default",
   onClick,
+  onKeyDown,
+  role,
+  tabIndex,
   className,
   children,
   ...props
@@ -72,9 +75,17 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
       data-slot="block-widget"
       data-variant={variant}
       data-type={type}
-      role={interactive ? "button" : undefined}
-      tabIndex={interactive ? 0 : undefined}
-      {...press}
+      role={role ?? (interactive ? "button" : undefined)}
+      tabIndex={tabIndex ?? (interactive ? 0 : undefined)}
+      onClick={press.onClick}
+      // Свой `onKeyDown` потребителя (аналитика, горячие клавиши) раньше
+      // разворачивался из `props` поверх внутреннего и отключал Enter/Space:
+      // кликабельный блок переставал нажиматься с клавиатуры. Теперь оба
+      // вызываются, а `preventDefault()` потребителя отменяет нажатие.
+      onKeyDown={(event) => {
+        onKeyDown?.(event)
+        if (!event.defaultPrevented) press.onKeyDown?.(event)
+      }}
       className={cn(
         "flex w-full flex-col items-center gap-2 rounded-[12px] p-4 desktop:gap-4 desktop:p-6",
         variant === "solid"

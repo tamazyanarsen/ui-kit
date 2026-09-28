@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
-import { useToast } from "@/components/ui/toast-message"
+import { useToastOptional } from "@/components/ui/toast-message"
 
 import { CardBack, CardFace, type BankCardSize } from "./faces"
 import type { BankCardSkin } from "./variants"
@@ -82,7 +82,9 @@ function BankCard({
   // не объявляет.
   const flippable = type === undefined || onTypeChange !== undefined
   const [revealed, setRevealed] = React.useState<"number" | "cvc" | null>(null)
-  const { add } = useToast()
+  // Тост — только сообщение о копировании: без `<ToastProvider>` карта
+  // рисуется и копирует молча, а не роняет дерево.
+  const toast = useToastOptional()
   const rootRef = React.useRef<HTMLDivElement>(null)
   const prevSide = React.useRef(side)
 
@@ -131,9 +133,9 @@ function BankCard({
       // `clipboard?.writeText` молча давал `undefined` — то есть «успех».
       if (!navigator.clipboard) throw new Error("Clipboard API недоступен")
       await navigator.clipboard.writeText(value.replace(/\s/g, ""))
-      add({ type: "checked", title: label, timeout: 3000 })
+      toast?.add({ type: "checked", title: label, timeout: 3000 })
     } catch {
-      add({ type: "error", title: "Не удалось скопировать", timeout: 3000 })
+      toast?.add({ type: "error", title: "Не удалось скопировать", timeout: 3000 })
     }
   }
 

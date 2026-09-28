@@ -198,9 +198,12 @@ function Banner({
               <p className="text-h3">{title}</p>
               {/* Массив строк раскладывается по строкам, как у desktop и
                   mobile: внутри одного `<p>` строки сливались в одну, а
-                  React ругался на ключи. */}
+                  React ругался на ключи. Строка с `bullet` идёт тем же
+                  путём — иначе compact единственный терял маркер. Строка
+                  без маркера остаётся простым `<p>`: её вёрстка не
+                  меняется. */}
               {description &&
-                (Array.isArray(description) ? (
+                (Array.isArray(description) || bullet ? (
                   <BannerDescription description={description} bullet={bullet} />
                 ) : (
                   <p className="text-p1-medium">{description}</p>

@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { Divider } from "@/components/ui/divider"
 import { cn } from "@/lib/utils"
+import { flattenChildren } from "@/lib/flatten-children"
 
 // List of Errors — список проблем (`ELK / list-errors`; один и тот же
 // компонент-сет лежит в копии в двух раскладках, Version 1.0.0,
@@ -61,7 +62,10 @@ const ListOfErrors = React.forwardRef<HTMLDivElement, ListOfErrorsProps>(functio
   children,
   ...props
 }, ref) {
-  const items = React.Children.toArray(children)
+  // Фрагменты раскрываются: `{has && <><IssueItem/><IssueItem/></>}` иначе
+  // давал одну строку `li` на две ошибки — без зазора между ними и с общей
+  // анимацией. Ключи раскрытых детей — от `toArray`, стабильные.
+  const items = flattenChildren(children)
 
   return (
     <div

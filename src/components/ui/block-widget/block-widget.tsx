@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { flattenChildren } from "@/lib/flatten-children"
 import { pressHandlers } from "@/lib/press"
 import { Divider } from "@/components/ui/divider"
 
@@ -105,23 +106,6 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
     </div>
   )
 })
-
-/**
- * Дети списком, с раскрытием фрагментов.
- *
- * ⚠️ `React.Children.toArray` фрагмент НЕ раскрывает — он считает его одним
- * ребёнком. А `<>…</>` вокруг колонок вызывающий код пишет естественно (без
- * него не собрать условную разметку), и тогда ни одна колонка не находится:
- * блок молча рисуется в один столбец. Ровно это и случилось при сборке.
- */
-function flattenChildren(children: React.ReactNode): React.ReactNode[] {
-  return React.Children.toArray(children).flatMap((child) =>
-    React.isValidElement<{ children?: React.ReactNode }>(child) &&
-    child.type === React.Fragment
-      ? flattenChildren(child.props.children)
-      : [child]
-  )
-}
 
 /**
  * Раскладка типа `Double`: колонки в ряд через вертикальный разделитель,

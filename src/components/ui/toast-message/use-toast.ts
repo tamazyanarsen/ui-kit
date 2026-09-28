@@ -69,7 +69,17 @@ function useToast() {
   return context
 }
 
-export { ToastContext, useToast }
+/**
+ * То же, что `useToast`, но без провайдера возвращает `null`, а не бросает.
+ * Для компонентов, у которых тост — побочное сообщение, а не суть: карта
+ * с реквизитами без `<ToastProvider>` должна рисоваться, а не ронять всё
+ * дерево (итоговая проверка №3). `useToast` свой контракт не меняет.
+ */
+function useToastOptional() {
+  return React.useContext(ToastContext)
+}
+
+export { ToastContext, useToast, useToastOptional }
 export type {
   ToastBehavior,
   ToastData,

@@ -29,7 +29,10 @@ interface MailFeedProps {
   preview?: React.ReactNode
   state?: MailFeedState
   showCheckbox?: boolean
+  /** Управляемое состояние флажка. Без него флажок хранит состояние сам. */
   checked?: boolean
+  /** Начальное состояние неуправляемого флажка. */
+  defaultChecked?: boolean
   onCheckedChange?: (checked: boolean) => void
   /** Доступное имя чекбокса — видимой подписи у него нет. */
   checkboxLabel?: string
@@ -46,7 +49,10 @@ function MailFeed({
   preview,
   state = "default",
   showCheckbox = false,
-  checked = false,
+  // Без умолчания `false`: с ним флажок был всегда управляемым, и без
+  // `checked` клик звал `onCheckedChange(true)`, а галочка не ставилась.
+  checked,
+  defaultChecked,
   onCheckedChange,
   checkboxLabel = "Выбрать письмо",
   onClick,
@@ -80,6 +86,7 @@ function MailFeed({
             <Checkbox
               aria-label={checkboxLabel}
               checked={checked}
+              defaultChecked={defaultChecked}
               onCheckedChange={(next) => onCheckedChange?.(next === true)}
             />
           </div>

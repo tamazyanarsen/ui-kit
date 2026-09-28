@@ -106,22 +106,29 @@ function FilterDate({
       className={className}
     >
       <div className="flex flex-col gap-4 p-4">
+        {/* Каждое поле — в своей половине ряда, коробка 176px, но на узком
+            окне сжимается: жёсткая `w-44` держала ряд, и второе поле
+            обрезалось краем окна. */}
         <div className="flex items-center gap-2">
-          <Input
-            size="sm"
-            label="С"
-            readOnly
-            value={formatDate(draft[0])}
-            containerClassName="w-44"
-          />
+          <div className="w-full min-w-0">
+            <Input
+              size="sm"
+              label="С"
+              readOnly
+              value={formatDate(draft[0])}
+              containerClassName="w-44 max-w-full"
+            />
+          </div>
           <span aria-hidden="true" className="h-px w-2 bg-[var(--filter-fg)]" />
-          <Input
-            size="sm"
-            label="По"
-            readOnly
-            value={formatDate(draft[1])}
-            containerClassName="w-44"
-          />
+          <div className="w-full min-w-0">
+            <Input
+              size="sm"
+              label="По"
+              readOnly
+              value={formatDate(draft[1])}
+              containerClassName="w-44 max-w-full"
+            />
+          </div>
         </div>
         {presets.length > 0 && (
           <div
@@ -144,13 +151,21 @@ function FilterDate({
           </div>
         )}
       </div>
-      <Calendar
-        mode="range"
-        footer={false}
-        rangeValue={draft}
-        onRangeChange={(range) => setDraft(range)}
-        className="w-full"
-      />
+      {/* Окно уже двух месяцев (560) бывает только на узком экране: там
+          виден один месяц — стрелки листают его, — иначе вторая сетка
+          уходила за край окна вместе с кнопкой «Применить». */}
+      <div
+        data-slot="filter-date-calendar"
+        className="@container/fdate @max-[559px]/fdate:[&_[data-slot=calendar-range-month][data-index='1']]:hidden"
+      >
+        <Calendar
+          mode="range"
+          footer={false}
+          rangeValue={draft}
+          onRangeChange={(range) => setDraft(range)}
+          className="w-full"
+        />
+      </div>
       <ComboboxFooter
         applyLabel={filterApplyLabel(filled(draft))}
         onReset={() => {

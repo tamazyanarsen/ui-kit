@@ -159,7 +159,8 @@ function FilterTableSelect({
           >
             <PopoverPrimitive.Popup
               data-slot="filter-content"
-              render={<Dropdown className="w-96 overflow-hidden" />}
+              // Не шире видимой области минус поля — как у окон `FilterShell`.
+              render={<Dropdown className="w-96 max-w-[calc(100vw-32px)] overflow-hidden" />}
             >
               {/* Исправление второго прохода: внешний отступ равен 16px
                   (обёртка «Input area» в макете), а не 12px, — и сама

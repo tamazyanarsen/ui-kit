@@ -313,7 +313,9 @@ function RangeBody({
     // вплотную.
     <div ref={dayFocus.containerRef} className="flex">
       {months.map((m, i) => (
-        <div key={i}>
+        // Метка месяца: узкий контейнер (окно FilterDate на телефоне) прячет
+        // второй месяц по ней, а не по порядку детей.
+        <div key={i} data-slot="calendar-range-month" data-index={i}>
           <NavHeader onPrev={onPrev} onNext={onNext}>
             <HeaderLabel>{MONTHS_RU_FULL[m.month]}</HeaderLabel>
             <HeaderLabel>{m.year}</HeaderLabel>

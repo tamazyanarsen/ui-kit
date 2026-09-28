@@ -285,20 +285,27 @@ function Switcher({
       {hasOverflow && (
         <MenuPrimitive.Root modal={false}>
           <MenuPrimitive.Trigger
+            // Выключенный переключатель гасит и «Ещё»: раньше видимые
+            // сегменты гасли, а многоточие оставалось живым — подсвечивалось,
+            // открывало список из одних выключенных пунктов и при спрятанном
+            // активном горело заливкой бегунка.
+            disabled={disabled}
             render={
               <button
                 type="button"
                 aria-label="Ещё"
                 data-slot="switcher-overflow-trigger"
-                data-active={activeHidden || undefined}
+                data-active={(activeHidden && !disabled) || undefined}
                 // Активный сегмент ушёл в «Ещё» — бегунок в ряду погас, и
                 // заливка переезжает на многоточие: иначе в ряду не было бы
                 // видно, что выбрано вообще что-то.
                 className={cn(
-                  "flex shrink-0 cursor-pointer items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors",
-                  activeHidden
-                    ? cn(indicatorBg, indicatorFg)
-                    : "hover:bg-[var(--switcher-hover-bg)]"
+                  "flex shrink-0 items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors",
+                  disabled
+                    ? "cursor-not-allowed text-[var(--switcher-disabled-fg)]"
+                    : activeHidden
+                      ? cn("cursor-pointer", indicatorBg, indicatorFg)
+                      : "cursor-pointer hover:bg-[var(--switcher-hover-bg)]"
                 )}
               />
             }

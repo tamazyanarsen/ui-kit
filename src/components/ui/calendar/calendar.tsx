@@ -31,6 +31,11 @@ function rangeAnchor(range: [Date | null, Date | null] | undefined) {
   return start ?? end
 }
 
+/** Ключ диапазона: пара ключей дней. */
+function rangeKeyOf(range: [Date | null, Date | null]) {
+  return `${dayKey(range[0])}|${dayKey(range[1])}`
+}
+
 function sameDayOrEmpty(a: Date | null, b: Date | null) {
   return a && b ? isSameDay(a, b) : !a && !b
 }
@@ -122,6 +127,12 @@ function Calendar({
   // перерисовке отдаёт новый объект того же дня — и черновик стирался.
   const valueKey = dayKey(value)
   const [syncedValue, setSyncedValue] = React.useState(valueKey)
+  // Значение, которое календарь только что отдал сам (клик без подвала,
+  // «Применить»). Вернувшись через `value` / `rangeValue`, оно вид не
+  // двигает: выбранная дата и так на экране. Без этого шторка, где лента
+  // показывает сразу много месяцев, а видимым считался один `focus`,
+  // переставляла якорь ленты — и под пальцем оказывались другие месяцы.
+  const [emitted, setEmitted] = React.useState<string | null>(null)
   // Выбор, пришедший снаружи за пределы показанных месяцев (заготовка
   // периода, дата, введённая руками, переоткрытый фильтр), переводит
   // календарь на свой месяц — иначе его было не видно. Если на экране уже
@@ -142,15 +153,19 @@ function Calendar({
   if (syncedValue !== valueKey) {
     setSyncedValue(valueKey)
     setDraftValue(value)
-    if (mode === "single") reveal([value], value)
+    // Своё значение гасится при первом возврате: если позже то же значение
+    // придёт уже снаружи, оно снова переводит вид.
+    if (valueKey === emitted) setEmitted(null)
+    else if (mode === "single") reveal([value], value)
   }
 
-  const rangeKey = rangeValue ? `${dayKey(rangeValue[0])}|${dayKey(rangeValue[1])}` : null
+  const rangeKey = rangeValue ? rangeKeyOf(rangeValue) : null
   const [syncedRange, setSyncedRange] = React.useState(rangeKey)
   if (syncedRange !== rangeKey) {
     setSyncedRange(rangeKey)
     if (rangeValue) setDraftRange(rangeValue)
-    if (mode === "range" && rangeValue) reveal(rangeValue, rangeAnchor(rangeValue))
+    if (rangeKey === emitted) setEmitted(null)
+    else if (mode === "range" && rangeValue) reveal(rangeValue, rangeAnchor(rangeValue))
   }
 
   const activeValue = footer ? draftValue : value
@@ -163,22 +178,29 @@ function Calendar({
       return
     }
     if (!rangeValue) setDraftRange(next)
+    if (rangeKeyOf(next) !== rangeKey) setEmitted(rangeKeyOf(next))
     onRangeChange?.(next)
   }
 
+  // Листание снимает метку «своего» значения: если родитель клик отклонил,
+  // а позже та же дата пришла снаружи, пролиставшего пользователя она должна
+  // перевести к себе, а не остаться незамеченной.
   function goPrev() {
+    setEmitted(null)
     if (view === "days") setFocus((f) => addMonths(f.year, f.month, -1))
     else if (view === "months") setFocus((f) => ({ ...f, year: f.year - 1 }))
     else setDecadeEnd((y) => y - 12)
   }
 
   function goNext() {
+    setEmitted(null)
     if (view === "days") setFocus((f) => addMonths(f.year, f.month, 1))
     else if (view === "months") setFocus((f) => ({ ...f, year: f.year + 1 }))
     else setDecadeEnd((y) => y + 12)
   }
 
   function shiftMonths(delta: number) {
+    setEmitted(null)
     setFocus((f) => addMonths(f.year, f.month, delta))
   }
 
@@ -196,12 +218,14 @@ function Calendar({
       return
     }
     if (valueProp === undefined) setOwnValue(date)
+    if (!sameDayOrEmpty(date, value)) setEmitted(dayKey(date))
     onChange?.(date)
   }
 
   function handleApply() {
     if (mode === "single") {
       if (valueProp === undefined) setOwnValue(draftValue)
+      if (!sameDayOrEmpty(draftValue, value)) setEmitted(dayKey(draftValue))
       // «Сбросить» → «Применить» — это подтверждённый сброс: родитель
       // должен о нём узнать и без `onReset`.
       // `onChange` — «подтверждённое значение изменилось». Черновик, равный
@@ -218,7 +242,10 @@ function Calendar({
         rangeValue !== undefined &&
         sameDayOrEmpty(draftRange[0], rangeValue[0]) &&
         sameDayOrEmpty(draftRange[1], rangeValue[1])
-      if (!same) onRangeChange?.(draftRange)
+      if (!same) {
+        setEmitted(rangeKeyOf(draftRange))
+        onRangeChange?.(draftRange)
+      }
     }
     onApply?.()
   }

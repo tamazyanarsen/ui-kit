@@ -151,7 +151,10 @@ function FilterShell({
             <PopoverPrimitive.Popup
               data-slot="filter-content"
               render={<Dropdown className="overflow-hidden" />}
-              style={{ width }}
+              // Ширина из макета — не больше видимой области минус поля по
+              // 16px: на узком экране окно 384 (а у FilterDate 560) выходило
+              // за правый край и давало горизонтальную прокрутку страницы.
+              style={{ width, maxWidth: "calc(100vw - 32px)" }}
             >
               {children}
             </PopoverPrimitive.Popup>

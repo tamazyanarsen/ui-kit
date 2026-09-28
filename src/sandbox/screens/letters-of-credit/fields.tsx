@@ -31,12 +31,10 @@ const LETTER_FIELDS: TableField<LetterOfCreditRow>[] = [
     type: "date",
     width: 120,
     sortable: true,
-    format: (value) =>
-      new Date(String(value)).toLocaleDateString("ru-RU", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }),
+    // Своего `format` нет намеренно: `new Date("2026-03-05")` — это полночь
+    // UTC, и западнее Гринвича дата показывалась на сутки раньше. Тип `date`
+    // кита сам печатает «дд.мм.гггг» и собирает дату без времени местной
+    // полночью.
   },
   { key: "kind", title: "Вид аккредитива", width: 320 },
   {

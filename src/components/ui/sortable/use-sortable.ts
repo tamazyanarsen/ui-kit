@@ -113,7 +113,8 @@ function useSortable({
   /** Куда встанет элемент, если отпустить сейчас. Индекс в `items`. */
   const dropIndex = React.useRef<number | null>(null)
   const expandTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-  const scrollFrame = React.useRef<number | null>(null)
+  /** Остановка текущего цикла автопрокрутки; цикл всегда один. */
+  const stopScroll = React.useRef<(() => void) | null>(null)
 
   const cancelExpand = React.useCallback(() => {
     if (expandTimer.current) clearTimeout(expandTimer.current)
@@ -121,8 +122,8 @@ function useSortable({
   }, [])
 
   const stopAutoscroll = React.useCallback(() => {
-    if (scrollFrame.current !== null) cancelAnimationFrame(scrollFrame.current)
-    scrollFrame.current = null
+    stopScroll.current?.()
+    stopScroll.current = null
   }, [])
 
   const reset = React.useCallback(() => {
@@ -143,7 +144,7 @@ function useSortable({
   const autoscroll = React.useCallback(
     (clientY: number) => {
       stopAutoscroll()
-      scrollFrame.current = startAutoscroll(listRef.current, clientY)
+      stopScroll.current = startAutoscroll(listRef.current, clientY)
     },
     [stopAutoscroll]
   )

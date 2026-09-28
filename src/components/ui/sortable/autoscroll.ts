@@ -14,11 +14,19 @@ const AUTOSCROLL_EDGE = 48
 const AUTOSCROLL_STEP = 12
 
 /**
- * Запускает прокрутку, если курсор в краевой полосе. Возвращает идентификатор
- * кадра — вызывающий гасит его через `cancelAnimationFrame`, — либо `null`,
- * если прокручивать не нужно.
+ * Запускает прокрутку, если курсор в краевой полосе. Возвращает функцию
+ * остановки либо `null`, если прокручивать не нужно.
+ *
+ * ⚠️ Именно функцию, а не id кадра: цикл перезапускает себя каждым кадром,
+ * и id первого кадра к моменту остановки уже отработал. Прежняя версия
+ * отдавала его наружу, `cancelAnimationFrame` гасил пустое место, и после
+ * броска у края список прокручивался бесконечно — по циклу на каждый
+ * `dragover`, в том числе после размонтирования.
  */
-function startAutoscroll(list: HTMLElement | null, clientY: number): number | null {
+function startAutoscroll(
+  list: HTMLElement | null,
+  clientY: number
+): (() => void) | null {
   const scroller = findScrollParent(list)
   const top = scroller ? scroller.getBoundingClientRect().top : 0
   const bottom = scroller
@@ -30,14 +38,12 @@ function startAutoscroll(list: HTMLElement | null, clientY: number): number | nu
   else if (clientY > bottom - AUTOSCROLL_EDGE) delta = AUTOSCROLL_STEP
   if (!delta) return null
 
-  let frame = 0
-  const step = () => {
+  let frame = requestAnimationFrame(function step() {
     if (scroller) scroller.scrollTop += delta
     else window.scrollBy(0, delta)
     frame = requestAnimationFrame(step)
-  }
-  frame = requestAnimationFrame(step)
-  return frame
+  })
+  return () => cancelAnimationFrame(frame)
 }
 
 // Поиск начинается С САМОГО списка, а не с родителя: список настройки

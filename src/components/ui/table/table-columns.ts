@@ -63,18 +63,25 @@ function headCellType<Row>(
  * Столбец иерархии — тот, что несёт шеврон и отступ по уровню.
  *
  * Объявленный `hierarchy` выигрывает; если его нет, шеврон вешается на первый
- * содержательный столбец, иначе вложенность вообще нечем раскрыть.
+ * текстовый столбец, иначе вложенность вообще нечем раскрыть.
+ *
+ * ⚠️ Именно ТЕКСТОВЫЙ, а не «первый содержательный»: шеврон и отступ умеет
+ * рисовать только текстовая ячейка. Раньше дерево с первым столбцом «№»
+ * (`number`) или статусом (`tag`) получало иерархию на нём — и в строках не
+ * было ни одной кнопки раскрытия, хотя шеврон «свернуть всё» в шапке был.
+ * Объявленный столбец, который шеврон нарисовать не может, по той же
+ * причине уступает первому текстовому.
  */
 function hierarchyColumnKey<Row>(
   columns: TableField<Row>[],
   hierarchical: boolean
 ): string | undefined {
   if (!hierarchical) return undefined
+  const canCarry = (field: TableField<Row>) =>
+    TABLE_FIELD_TYPES[field.type ?? "text"].cell === "text"
   const declared = columns.find((field) => field.hierarchy)
-  if (declared) return declared.key
-  return columns.find(
-    (field) => !TABLE_FIELD_TYPES[field.type ?? "text"].control
-  )?.key
+  if (declared && canCarry(declared)) return declared.key
+  return columns.find(canCarry)?.key ?? declared?.key
 }
 
 /**

@@ -4,6 +4,7 @@ import {
   CONTROL_COLUMN_WIDTH,
   MIN_COLUMN_WIDTH,
   MIN_SCROLLABLE_REST,
+  ROW_EDGE_PADDING,
 } from "./geometry"
 import type { TablePin } from "./pin"
 import type { TableHeadCellType } from "./types"
@@ -43,6 +44,8 @@ interface ColumnResizeOptions {
   defaultWidth?: number
   onWidthChange?: (width: number) => void
   minWidth?: number
+  /** Первая колонка строки: в её коробке лежит ещё и поле строки. */
+  edge?: boolean
 }
 
 /**
@@ -60,6 +63,7 @@ function useColumnResize({
   defaultWidth,
   onWidthChange,
   minWidth = MIN_COLUMN_WIDTH,
+  edge = false,
 }: ColumnResizeOptions) {
   const [uncontrolledWidth, setUncontrolledWidth] = React.useState(defaultWidth)
   const resolvedWidth = width ?? uncontrolledWidth ?? CONTROL_COLUMN_WIDTH[type]
@@ -71,10 +75,16 @@ function useColumnResize({
     if (!cell) return
 
     const startX = event.clientX
-    const startWidth = cell.offsetWidth
+    // Замер коробки ячейки, а хранится ОБЪЯВЛЕННАЯ ширина: у первой колонки
+    // в коробку входит поле строки (`edgeColumnWidth` прибавляет его при
+    // отрисовке). Без вычета каждый захват границы — даже без движения —
+    // расширял колонку на эти 8.
+    const edgePadding = edge ? ROW_EDGE_PADDING : 0
+    const startWidth = cell.offsetWidth - edgePadding
     const handle = event.currentTarget
     handle.setPointerCapture(event.pointerId)
-    const maxWidth = pin ? pinnedMaxWidth(cell) : null
+    const pinnedMax = pin ? pinnedMaxWidth(cell) : null
+    const maxWidth = pinnedMax === null ? null : pinnedMax - edgePadding
 
     const onMove = (moveEvent: PointerEvent) => {
       const dragged = Math.max(minWidth, startWidth + moveEvent.clientX - startX)

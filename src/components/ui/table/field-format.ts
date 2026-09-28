@@ -45,9 +45,10 @@ function withSign(text: string, value: number, signed: boolean | undefined) {
 }
 
 /**
- * Дата из чего угодно: `Date`, миллисекунды, ISO-строка. Всё остальное —
- * `null`, и тогда значение показывается как есть: подменять непонятную
- * строку прочерком нельзя, данные из ячейки так пропадут молча.
+ * Дата из чего угодно: `Date`, миллисекунды, ISO-строка, русская запись
+ * «дд.мм.гггг» (можно со временем «, чч:мм»). Всё остальное — `null`, и
+ * тогда значение показывается как есть: подменять непонятную строку
+ * прочерком нельзя, данные из ячейки так пропадут молча.
  */
 function parseDate(value: unknown): Date | null {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
@@ -60,17 +61,43 @@ function parseDate(value: unknown): Date | null {
     // UTC, а показывается дата по местному времени — западнее Гринвича такая
     // дата уезжала бы на сутки назад. Дата без времени — это календарный
     // день, а не момент, поэтому собирается местной полночью.
-    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim())
-    const date = dateOnly
-      ? new Date(
-          Number(dateOnly[1]),
-          Number(dateOnly[2]) - 1,
-          Number(dateOnly[3])
-        )
-      : new Date(value)
+    const text = value.trim()
+    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text)
+    if (dateOnly) {
+      return calendarDate(Number(dateOnly[1]), Number(dateOnly[2]), Number(dateOnly[3]))
+    }
+    // ⚠️ «01.02.2026» `new Date` в V8 читает по-американски — как 2 января,
+    // а «31.12.2026» не читает вовсе. Колонка вела себя вразнобой: одни даты
+    // молча переставлялись, другие оставались строкой. Русская запись
+    // разбирается явно, с проверкой, что такой день существует.
+    const ru = /^(\d{2})\.(\d{2})\.(\d{4})(?:,?\s+(\d{2}):(\d{2}))?$/.exec(text)
+    if (ru) {
+      const date = calendarDate(Number(ru[3]), Number(ru[2]), Number(ru[1]))
+      if (date && ru[4] !== undefined) {
+        const hours = Number(ru[4])
+        const minutes = Number(ru[5])
+        if (hours > 23 || minutes > 59) return null
+        date.setHours(hours, minutes)
+      }
+      return date
+    }
+    // Прочее — только ISO с временем. Произвольные строки `new Date` тоже
+    // «понимает», но по правилам движка, а не по договорённости кита.
+    if (!/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(text)) return null
+    const date = new Date(text)
     return Number.isNaN(date.getTime()) ? null : date
   }
   return null
+}
+
+/** Местная полночь дня; `null`, если такого дня нет (31.02, 13-й месяц). */
+function calendarDate(year: number, month: number, day: number): Date | null {
+  const date = new Date(year, month - 1, day)
+  return date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+    ? date
+    : null
 }
 
 function pad(value: number) {

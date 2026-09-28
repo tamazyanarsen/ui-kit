@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import { registerPinnedCell, type PinnedCellState } from "./pin-registry"
+
 // Закрепление колонок — раздел «Прокрутки и закрепления» документа
 // «Проектирование таблиц ЕЛК». Макет закрепляет таблицу с трёх сторон:
 //
@@ -99,23 +101,13 @@ function useHorizontalScrollState(
   return state
 }
 
-interface PinnedCellState {
-  /** Отступ `left` или `right` для липкой ячейки, в пикселях. */
-  offset: number
-  /** Истинно у ячейки на внутреннем крае своего закреплённого блока — это
-   * она несёт тень, чтобы закреп из нескольких колонок отбрасывал одну. */
-  edge: boolean
-}
-
 /**
- * Измеряет липкий отступ закреплённой ячейки по её же соседям.
+ * Липкий отступ закреплённой ячейки и признак края её блока.
  *
- * `offsetLeft` здесь ненадёжен (в некоторых движках залипшая ячейка
- * сообщает уже смещённую коробку, и это подмешалось бы в её собственный
- * отступ), поэтому отступ складывается из ширин тех ячеек, мимо которых
- * закреплённый блок заякорен: всех предшествующих для левого закрепа и всех
- * последующих для правого. Это работает, потому что закреплённые блоки в
- * макете всегда идут сплошными отрезками в начале и в конце строки.
+ * Замер и наблюдение — в реестре таблицы (`pin-registry.ts`): один
+ * наблюдатель на таблицу, а не пара на каждую закреплённую ячейку каждой
+ * строки. Работает, потому что закреплённые блоки в макете всегда идут
+ * сплошными отрезками в начале и в конце строки.
  */
 function usePinnedCell<T extends HTMLTableCellElement>(
   pin: TablePin | undefined
@@ -129,67 +121,11 @@ function usePinnedCell<T extends HTMLTableCellElement>(
   React.useLayoutEffect(() => {
     const el = ref.current
     if (!pin || !el) return
-
-    const measure = () => {
-      let offset = 0
-      let edge: boolean
-
-      if (pin === "left") {
-        let sibling = el.previousElementSibling as HTMLElement | null
-        while (sibling) {
-          // Дробная ширина, а не `offsetWidth`: округлённое целое
-          // оставляет между двумя соседними закреплёнными ячейками
-          // субпиксельный зазор, сквозь который прокручиваемые колонки
-          // просвечивают полоской в 1px.
-          offset += sibling.getBoundingClientRect().width
-          sibling = sibling.previousElementSibling as HTMLElement | null
-        }
-        const next = el.nextElementSibling as HTMLElement | null
-        edge = !next || next.dataset.pin !== "left"
-      } else {
-        let sibling = el.nextElementSibling as HTMLElement | null
-        while (sibling) {
-          // Дробная ширина, а не `offsetWidth`: округлённое целое
-          // оставляет между двумя соседними закреплёнными ячейками
-          // субпиксельный зазор, сквозь который прокручиваемые колонки
-          // просвечивают полоской в 1px.
-          offset += sibling.getBoundingClientRect().width
-          sibling = sibling.nextElementSibling as HTMLElement | null
-        }
-        const previous = el.previousElementSibling as HTMLElement | null
-        edge = !previous || previous.dataset.pin !== "right"
-      }
-
+    return registerPinnedCell(el, pin, (next) =>
       setState((prev) =>
-        prev.offset === offset && prev.edge === edge ? prev : { offset, edge }
+        prev.offset === next.offset && prev.edge === next.edge ? prev : next
       )
-    }
-
-    measure()
-
-    // Наблюдаем за каждой ячейкой строки: изменение ширины любой колонки
-    // впереди или позади этой сдвигает её. Состав строки тоже отслеживается:
-    // включили `selectable` или переставили колонки — у старых соседей
-    // размер не меняется, и без этого отступ оставался прежним, а закреп
-    // наезжал на колонку чекбоксов.
-    const observer = new ResizeObserver(measure)
-    const row = el.parentElement
-    const observeRow = () => {
-      observer.disconnect()
-      if (row) {
-        for (const child of Array.from(row.children)) observer.observe(child)
-      }
-    }
-    observeRow()
-    const mutations = new MutationObserver(() => {
-      observeRow()
-      measure()
-    })
-    if (row) mutations.observe(row, { childList: true })
-    return () => {
-      observer.disconnect()
-      mutations.disconnect()
-    }
+    )
   }, [pin])
 
   return { ref, offset: state.offset, edge: state.edge }

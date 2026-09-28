@@ -1,6 +1,9 @@
+import type * as React from "react"
 import { ChevronLeft, ChevronRight, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+
+import { useNavFocusHandoff } from "./use-nav-focus"
 
 // Pagination («Paginator») — навигация по номерам страниц плюс выбор
 // размера страницы справа. По макету две раскладки: «L» (одна строка,
@@ -143,11 +146,14 @@ function NavButton({
   disabled,
   onClick,
   label,
+  ...focusProps
 }: {
   icon: typeof ChevronLeft
   disabled?: boolean
   onClick?: () => void
   label: string
+  onFocus?: () => void
+  onBlur?: (event: React.FocusEvent) => void
 }) {
   return (
     <button
@@ -155,6 +161,7 @@ function NavButton({
       disabled={disabled}
       onClick={onClick}
       aria-label={label}
+      {...focusProps}
       data-slot="pagination-nav"
       className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors not-disabled:hover:bg-[var(--pagination-hover-bg)] disabled:cursor-not-allowed disabled:text-[var(--pagination-disabled-fg)]"
     >
@@ -208,6 +215,7 @@ function Pagination({
   const pages = totalPages > 0 ? getPageList(page, totalPages) : [1]
   const showNav = totalPages > 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
+  const { listRef, navFocusProps } = useNavFocusHandoff(page, totalPages)
 
   // Цель прижимается к существующим страницам, а не отбрасывается. Если
   // страниц стало меньше, чем номер текущей (отбор сузил выдачу, а родитель
@@ -233,13 +241,14 @@ function Pagination({
       )}
     >
       {showPages && (
-        <div className="flex items-center gap-1">
+        <div ref={listRef} className="flex items-center gap-1">
           {showNav && (
             <NavButton
               icon={ChevronLeft}
               label="Предыдущая страница"
               disabled={page <= 1}
               onClick={() => goTo(page - 1)}
+              {...navFocusProps}
             />
           )}
           {pages.map((entry, index) =>
@@ -267,6 +276,7 @@ function Pagination({
               label="Следующая страница"
               disabled={page >= totalPages}
               onClick={() => goTo(page + 1)}
+              {...navFocusProps}
             />
           )}
         </div>

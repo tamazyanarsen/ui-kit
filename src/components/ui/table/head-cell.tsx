@@ -150,6 +150,7 @@ const TableHeadCell = React.forwardRef<
     defaultWidth,
     onWidthChange,
     minWidth,
+    edge,
   })
   const pinned = usePinPresentation<HTMLTableHeaderCellElement>(pin, true)
   const ref = useComposedRefs(pinned.ref, forwardedRef)
@@ -182,10 +183,14 @@ const TableHeadCell = React.forwardRef<
           : undefined
       }
       aria-hidden={isSpacer || undefined}
+      // Ширина пишется, только если она известна: иначе `width: undefined`
+      // затирал ширину, которую потребитель задал через `style`.
       style={{
         ...style,
         ...pinned.style,
-        width: edgeColumnWidth(resolvedWidth, edge),
+        ...(resolvedWidth !== undefined && {
+          width: edgeColumnWidth(resolvedWidth, edge),
+        }),
       }}
       className={cn(
         headCellPaddingYClass(type),

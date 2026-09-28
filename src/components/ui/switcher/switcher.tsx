@@ -70,7 +70,10 @@ interface SwitcherProps {
 const GAP_PX = { lg: 4, md: 4 }
 const GAP_CLASS = { lg: "gap-1", md: "gap-1" }
 const SEGMENT_PADDING = { lg: "px-8 py-3 text-p1-medium", md: "px-6 py-2.5 text-p2-medium" }
-const ELLIPSIS_RESERVED = { lg: 56, md: 40 }
+// Место под «…» — зазор ряда перед кнопкой + сама кнопка: `p-3` (12 × 2)
+// вокруг значка 24 (lg) или 16 (md). Было 56 и 40: у md резерв был меньше
+// кнопки на 4px, и ряд с шириной снаружи вылезал за рамку.
+const ELLIPSIS_RESERVED = { lg: 4 + 12 * 2 + 24, md: 4 + 12 * 2 + 16 }
 const ELLIPSIS_ICON_SIZE = { lg: "size-6", md: "size-4" }
 
 function SegmentButton({
@@ -190,14 +193,29 @@ function Switcher({
     [disabled, items]
   )
 
+  // Внутренние отступы корня (`p-1`, или свои из `className`) — не место под
+  // сегменты: `clientWidth` их включает, и хук разрешал ряду заехать на них,
+  // то есть вылезти за рамку на 8px. Отступы замеряются, а не зашиваются
+  // числом: потребитель может переопределить их классом.
+  const [rootInset, setRootInset] = React.useState(0)
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     resolvedItems.length,
     ELLIPSIS_RESERVED[size],
     // Зазор обязателен третьим аргументом — без него хук складывает только
     // ширины сегментов и считает переполненный ряд помещающимся (та же
     // ошибка, что нашлась в табах по дизайн-чеку 3/3 №12).
-    GAP_PX[size]
+    GAP_PX[size],
+    false,
+    rootInset
   )
+  React.useLayoutEffect(() => {
+    const root = containerRef.current
+    if (!root) return
+    const style = getComputedStyle(root)
+    const inset =
+      (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0)
+    setRootInset((previous) => (previous === inset ? previous : inset))
+  }, [containerRef, className, size])
 
   const effectiveVisible = showMore ? visibleCount : resolvedItems.length
   const visibleItems = resolvedItems.slice(0, effectiveVisible)

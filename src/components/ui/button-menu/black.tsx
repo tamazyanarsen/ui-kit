@@ -2,6 +2,7 @@ import * as React from "react"
 import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
+import { flattenChildren } from "@/lib/flatten-children"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
 import { ViewportScope } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
@@ -145,7 +146,10 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   // брендовую кнопку на тёмную панель (что и попало в дизайн-чек: «Подписать»
   // была голубой). Брендового акцента на этой панели не существует: она сама
   // и есть акцент.
-  const sizedChildren = React.Children.map(children, (child) => {
+  // Дети раскрываются вместе с фрагментами: `{canSign && <><Button/>…</>}`
+  // иначе проходил мимо принудительного размера и варианта, и «Подписать»
+  // снова становилась голубой на чёрной панели (дефект дизайн-чека №12).
+  const sizedChildren = flattenChildren(children).map((child) => {
     if (React.isValidElement(child) && child.type === Button) {
       const element = child as React.ReactElement<{
         size?: string

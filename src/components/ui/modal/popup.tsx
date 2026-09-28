@@ -21,7 +21,7 @@ const modalPopupVariants = cva(
   // варианта «Size=Mobile, Type=Small Modal», то есть у самой карточки
   // нижней шторки), и это отдельное, меньшее значение, чем 32px у
   // --modal-radius десктопной карточки.
-  "fixed inset-x-0 bottom-0 z-50 flex max-h-[87vh] w-full flex-col rounded-t-[24px] bg-[var(--modal-bg)] shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom data-closed:fade-out-0 desktop:inset-x-auto desktop:top-1/2 desktop:bottom-auto desktop:left-1/2 desktop:max-h-[87vh] desktop:w-(--modal-width) desktop:-translate-x-1/2 desktop:-translate-y-1/2 desktop:rounded-[var(--modal-radius)] desktop:data-open:slide-in-from-bottom-0 desktop:data-open:zoom-in-95 desktop:data-closed:slide-out-to-bottom-0 desktop:data-closed:zoom-out-95",
+  "fixed inset-x-0 bottom-0 z-50 flex max-h-[87vh] w-full flex-col rounded-t-[24px] bg-[var(--modal-bg)] shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom data-closed:fade-out-0 desktop:inset-x-auto desktop:top-1/2 desktop:bottom-auto desktop:left-1/2 desktop:max-h-[87vh] desktop:w-(--modal-width) desktop:max-w-[calc(100%_-_160px)] desktop:-translate-x-1/2 desktop:-translate-y-1/2 desktop:rounded-[var(--modal-radius)] desktop:data-open:slide-in-from-bottom-0 desktop:data-open:zoom-in-95 desktop:data-closed:slide-out-to-bottom-0 desktop:data-closed:zoom-out-95",
   {
     // Дизайн-чек, замечание 40: снято прямо с вектора макета в натуральном
     // масштабе (пиксельным проходом по левому и правому краям самой белой
@@ -32,6 +32,11 @@ const modalPopupVariants = cva(
         // Горизонтальные отступы едут вместе с размером: большое окно
         // отступает сверху и по телу на 64px, маленькое — на 48px (у обоих
         // ряд кнопок остаётся на 48px, см. ModalFooter).
+        //
+        // ⚠️ Ширина ограничена видимой областью с запасом под вынесенный
+        // крестик (−64px справа) и поля по 16px: `desktop:` включается с
+        // 768px, и на ширине 768–1135 окно 1008px уезжало за край, а
+        // крестик пропадал вовсе. От 1168px ограничение не срабатывает.
         l: "desktop:[--modal-width:1008px] desktop:[--modal-px:64px]",
         m: "desktop:[--modal-width:592px] desktop:[--modal-px:48px]",
       },

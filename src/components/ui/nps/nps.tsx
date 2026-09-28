@@ -129,8 +129,14 @@ function CloseButton({
 const CARD_CLASS =
   "w-[360px] rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-[0px_8px_12px_rgba(0,0,0,0.06)]"
 
-/** Плавающее окно: правый нижний угол, поверх тостов. */
-const FLOATING_CLASS = "fixed right-10 bottom-10 z-(--z-nps)"
+/**
+ * Плавающее окно: правый нижний угол, поверх тостов.
+ *
+ * На мобильном — поля 16px и ширина не больше видимой области: карточка
+ * 360px с отступом 40px на экране 375 уходила за левый край на 40px.
+ */
+const FLOATING_CLASS =
+  "fixed right-4 bottom-4 z-(--z-nps) max-w-[calc(100%_-_32px)] desktop:right-10 desktop:bottom-10 desktop:max-w-none"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({

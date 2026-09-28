@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
+import { pressHandlers } from "@/lib/press"
 
 import { RightElement, type RightElementType } from "./right-element"
 
@@ -148,13 +149,9 @@ function Item({
   const hasThumbnail = thumbnail !== undefined && thumbnail !== false
   const valueColor = disabled ? DISABLED_FG : "text-[var(--item-value-fg)]"
 
-  function handleKeyDown(event: React.KeyboardEvent) {
-    if (disabled) return
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault()
-      onClick?.()
-    }
-  }
+  // Toggle, Checkbox и «i» внутри строки — свои кнопки: Enter/Space на них
+  // не должны доходить до строки (см. `pressHandlers`).
+  const press = pressHandlers<HTMLDivElement>(disabled ? undefined : onClick)
 
   return (
     <div
@@ -163,8 +160,7 @@ function Item({
       aria-disabled={disabled || undefined}
       aria-expanded={rightElement === "select" ? open : undefined}
       data-open={(rightElement === "select" && open) || undefined}
-      onClick={disabled ? undefined : onClick}
-      onKeyDown={handleKeyDown}
+      {...press}
       data-slot="item"
       data-disabled={disabled || undefined}
       // Явное решение вызывающего — атрибутом: правило `:last-child` в

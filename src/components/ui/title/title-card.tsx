@@ -44,7 +44,7 @@ interface TitleCardProps extends Omit<React.ComponentProps<"div">, "title"> {
   information?: React.ReactNode
 }
 
-function TitleCard({
+const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function TitleCard({
   className,
   title,
   description,
@@ -56,7 +56,7 @@ function TitleCard({
   tagColor = "green",
   information,
   ...props
-}: TitleCardProps) {
+}, ref) {
   const showBack = Boolean(onBack || backLabel === null ? onBack : backLabel)
   const showHelp = Boolean(helpLabel)
 
@@ -64,6 +64,7 @@ function TitleCard({
     <div
       data-slot="title-card"
       className={cn("flex w-full flex-col items-start gap-4", className)}
+      ref={ref}
       {...props}
     >
       {showBack && (
@@ -118,7 +119,7 @@ function TitleCard({
       )}
     </div>
   )
-}
+})
 
 export { TitleCard, TitleInformationText }
 export type { TitleCardProps }

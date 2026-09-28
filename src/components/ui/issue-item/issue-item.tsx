@@ -64,13 +64,13 @@ interface IssueItemProps extends React.ComponentProps<"div"> {
   children: React.ReactNode
 }
 
-function IssueItem({
+const IssueItem = React.forwardRef<HTMLDivElement, IssueItemProps>(function IssueItem({
   status = "error",
   icon: Icon = Alert,
   className,
   children,
   ...props
-}: IssueItemProps) {
+}, ref) {
   return (
     <div
       data-slot="issue-item"
@@ -78,6 +78,7 @@ function IssueItem({
       // `items-start`: значок выравнивается по ПЕРВОЙ строке текста, а не по
       // середине многострочного абзаца.
       className={cn("flex items-start gap-2", className)}
+      ref={ref}
       {...props}
     >
       {/* Опускание значка — 2px, и на мобильной строке ТОЖЕ. Раньше здесь
@@ -98,7 +99,7 @@ function IssueItem({
       </span>
     </div>
   )
-}
+})
 
 export { IssueItem }
 export type { IssueItemProps, IssueStatus, IssueIcon }

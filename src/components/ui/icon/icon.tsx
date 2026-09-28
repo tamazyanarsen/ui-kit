@@ -28,22 +28,29 @@ function toKebab(name: string) {
 }
 
 // Один и тот же глиф экспортируется под несколькими именами (`Ellipsis` и
-// `MoreHorizontal`, `Check` и `CheckIcon`). Ключи модульного пространства
-// имён отсортированы по алфавиту, поэтому канонический — первый: он же в
-// коде и используется как основной.
+// `MoreHorizontal`, `OpenEye` и `Eye`). По имени находится КАЖДЫЙ экспорт:
+// раньше повторы отбрасывались, и из пары выживало имя, первое по алфавиту,
+// — `<Icon name="open-eye">` и `chevron-down` рисовали пустоту.
+//
+// В список для контролов попадает одно имя на глиф — первое по алфавиту
+// (ключи модульного пространства имён отсортированы), иначе выпадающий
+// список дублировал бы каждую иконку с псевдонимом.
 const REGISTRY = new Map<string, GlyphComponent>()
+const canonical: string[] = []
 const seen = new Set<GlyphComponent>()
 
 for (const [exportName, value] of Object.entries(glyphs)) {
   if (typeof value !== "function") continue
   const glyph = value as GlyphComponent
+  const name = toKebab(exportName)
+  REGISTRY.set(name, glyph)
   if (seen.has(glyph)) continue
   seen.add(glyph)
-  REGISTRY.set(toKebab(exportName), glyph)
+  canonical.push(name)
 }
 
 /** Имена всех иконок набора — годится как `options` для контролов. */
-const ICON_NAMES = [...REGISTRY.keys()].sort() as readonly string[]
+const ICON_NAMES = canonical.sort() as readonly string[]
 
 type IconName = string
 
@@ -68,7 +75,10 @@ interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, "name"> {
    Поэтому пробрасываем адресно. Набор маленький и не растёт: у остальных
    иконок Figma рисует контур и заливку не отдельными вариантами, а разными
    иконками (`bookmark checked` / `bookmark uncheck`). */
-const FILLED_CAPABLE = new Set(["star", "file-icon"])
+// По глифу, а не по имени: теперь находятся и псевдонимы.
+const FILLED_CAPABLE = new Set(
+  ["star", "file-icon"].map((name) => REGISTRY.get(name)).filter(Boolean)
+)
 
 function Icon({ name, size = 16, filled, className, ...props }: IconProps) {
   const Glyph = REGISTRY.get(name)
@@ -85,7 +95,7 @@ function Icon({ name, size = 16, filled, className, ...props }: IconProps) {
       data-slot="icon"
       data-icon-name={name}
       size={size}
-      filled={FILLED_CAPABLE.has(name) ? filled : undefined}
+      filled={FILLED_CAPABLE.has(Glyph) ? filled : undefined}
       // Размер по умолчанию совпадает с выбранным начертанием, но любой
       // `size-*` в className его перебивает — на то он и className.
       className={cn(size === 24 ? "size-6" : "size-4", className)}

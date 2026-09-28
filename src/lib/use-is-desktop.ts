@@ -19,14 +19,31 @@ import { ViewportContext } from "./viewport"
  * Защищено от окружений без matchMedia (jsdom, серверная отрисовка): они
  * сообщают «не десктоп», а не падают, поэтому безопасным умолчанием
  * остаётся мобильная форма.
+ *
+ * ⚠️ В браузере значение читается СРАЗУ, в инициализаторе состояния, а не
+ * первым эффектом. С `false` до эффекта первый кадр на десктопе рисовался
+ * мобильным: Hint с `defaultOpen` успевал смонтировать шторку Modal (с
+ * подложкой, блокировкой прокрутки и перехватом фокуса), а шапка
+ * BlockWidget — переложить `action` в другого родителя и перемонтировать
+ * его. Цена — расхождение с серверной разметкой при SSR-гидратации на
+ * десктопе; кит отрисовывается на клиенте, так что это осознанный обмен.
  */
+function readIsDesktop(): boolean {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false
+  }
+  return window.matchMedia(DESKTOP_QUERY).matches
+}
+
+const DESKTOP_QUERY = "(min-width: 768px)"
+
 export function useIsDesktop(): boolean {
   const forced = React.useContext(ViewportContext)
-  const [isDesktop, setIsDesktop] = React.useState(false)
+  const [isDesktop, setIsDesktop] = React.useState(readIsDesktop)
 
   React.useEffect(() => {
     if (typeof window.matchMedia !== "function") return
-    const query = window.matchMedia("(min-width: 768px)")
+    const query = window.matchMedia(DESKTOP_QUERY)
     const sync = () => setIsDesktop(query.matches)
     sync()
     query.addEventListener("change", sync)

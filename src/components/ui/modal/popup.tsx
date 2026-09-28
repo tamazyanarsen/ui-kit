@@ -4,7 +4,7 @@ import { X } from "@/icons"
 
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+import { stateClassName } from "@/lib/state-class-name"
 import { useViewportAttr } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
 
@@ -50,13 +50,13 @@ interface ModalContentProps
   showClose?: boolean
 }
 
-function ModalContent({
+const ModalContent = React.forwardRef<HTMLDivElement, ModalContentProps>(function ModalContent({
   className,
   size,
   showClose = true,
   children,
   ...props
-}: ModalContentProps) {
+}, ref) {
   // Base UI выносит попап в конец `<body>`, то есть за пределы обёртки
   // `<ViewportScope>`: React-контекст сквозь портал проходит, а CSS-селектор
   // по предку — нет. Поэтому корню всплывающего слоя атрибут проставляем
@@ -85,7 +85,10 @@ function ModalContent({
       <DialogPrimitive.Popup
         data-slot="modal-content"
         data-viewport={viewport}
-        className={cn(modalPopupVariants({ size }), className)}
+        // `className` у Popup бывает функцией от состояния — `cn` её бы
+        // выбросил, см. `stateClassName`.
+        className={stateClassName(modalPopupVariants({ size }), className)}
+        ref={ref}
         {...props}
       >
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[inherit]">
@@ -116,6 +119,6 @@ function ModalContent({
       </DialogPrimitive.Popup>
     </DialogPrimitive.Portal>
   )
-}
+})
 
 export { ModalContent, modalPopupVariants }

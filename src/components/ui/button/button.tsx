@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { Loader } from "@/components/ui/loader"
 import { cn } from "@/lib/utils"
+import { stateClassName } from "@/lib/state-class-name"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 
 import { GosuslugiLogo } from "./gosuslugi-logo"
@@ -210,9 +211,11 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
       data-slot="button"
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
-      className={cn(
-        buttonVariants({ variant, size: resolvedSize, className }),
-        isLoading && "relative"
+      // `className` у примитива бывает функцией от состояния — `cn` её бы
+      // выбросил, см. `stateClassName`.
+      className={stateClassName(
+        cn(buttonVariants({ variant, size: resolvedSize }), isLoading && "relative"),
+        className
       )}
       {...props}
     >

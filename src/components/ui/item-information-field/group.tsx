@@ -42,12 +42,12 @@ interface ItemInformationFieldGroupProps extends React.ComponentProps<"div"> {
   type?: FieldType
 }
 
-function ItemInformationFieldGroup({
+const ItemInformationFieldGroup = React.forwardRef<HTMLDivElement, ItemInformationFieldGroupProps>(function ItemInformationFieldGroup({
   type = "label-left",
   className,
   children,
   ...props
-}: ItemInformationFieldGroupProps) {
+}, ref) {
   const items = React.Children.toArray(children)
   let lastField = -1
   for (let index = items.length - 1; index >= 0; index -= 1) {
@@ -67,6 +67,7 @@ function ItemInformationFieldGroup({
         type === "label-left" ? "gap-0" : "gap-4",
         className
       )}
+      ref={ref}
       {...props}
     >
       {items.map((node, index) =>
@@ -79,7 +80,7 @@ function ItemInformationFieldGroup({
       )}
     </div>
   )
-}
+})
 
 export { ItemInformationFieldGroup }
 export type { ItemInformationFieldGroupProps }

@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { pressHandlers } from "@/lib/press"
 import { SelectionButton } from "@/components/ui/selection-button"
 import type { SelectionButtonItem } from "@/components/ui/selection-button"
 import { Tag } from "@/components/ui/tag"
@@ -67,17 +68,9 @@ function Card({
       data-slot="card"
       role={clickable ? "button" : undefined}
       tabIndex={clickable ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={
-        clickable
-          ? (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault()
-                onClick?.()
-              }
-            }
-          : undefined
-      }
+      // Клик и Enter по «…» и по пунктам его меню (они в портале, но
+      // всплывают по дереву React) — не нажатие на карточку.
+      {...pressHandlers<HTMLDivElement>(onClick)}
       className={cn(
         // ⚠️ Выключка по ВЕРХУ, а не по центру. Дизайн-чек «Storybook 3»,
         // замечание 11: «проверить и скорректировать расположение кнопки в

@@ -23,7 +23,7 @@ interface ShimmerProps extends React.ComponentProps<"div"> {
   shape?: "square" | "circle"
 }
 
-function Shimmer({ shape = "square", className, ...props }: ShimmerProps) {
+const Shimmer = React.forwardRef<HTMLDivElement, ShimmerProps>(function Shimmer({ shape = "square", className, ...props }, ref) {
   return (
     <div
       data-slot="shimmer"
@@ -34,10 +34,11 @@ function Shimmer({ shape = "square", className, ...props }: ShimmerProps) {
         shape === "circle" ? "rounded-full" : "rounded-[8px]",
         className
       )}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
 export { Shimmer }
 export type { ShimmerProps }

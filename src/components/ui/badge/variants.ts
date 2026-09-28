@@ -37,7 +37,9 @@ export function disabledBadgeStyle(color: BadgeColor): BadgeColorStyle {
 }
 
 // От 1 до 99 без изменений, от 100 — как «99+», по точному правилу макета.
+// `NaN` (пустое поле, неудачный разбор) показывается нулём, а не «NaN».
 export function formatBadgeCount(value: number): string {
+  if (Number.isNaN(value)) return "0"
   if (value > 99) return "99+"
   return String(Math.max(0, Math.trunc(value)))
 }

@@ -2,6 +2,7 @@ import * as React from "react"
 import { Eye, EyeOff } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { inertProps } from "@/lib/inert"
 import { PaymentLogo } from "@/components/ui/thumbnail"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 
@@ -87,6 +88,7 @@ function CardFace({
   showBalance,
   showRequisites,
   onShowRequisites,
+  hidden = false,
   style,
   className,
 }: {
@@ -100,6 +102,8 @@ function CardFace({
   showBalance: boolean
   showRequisites: boolean
   onShowRequisites: () => void
+  /** Сторона отвёрнута — её кнопки убираются из порядка фокуса. */
+  hidden?: boolean
   style: React.CSSProperties
   className?: string
 }) {
@@ -108,6 +112,7 @@ function CardFace({
   return (
     <div
       data-slot="bank-card-face"
+      {...inertProps(hidden)}
       className={cn(
         "relative flex flex-col gap-4 overflow-hidden rounded-[16px] border border-white p-4 shadow-[0px_23px_12px_-15px_rgba(0,0,0,0.15)]",
         CARD_BOX[size],
@@ -182,6 +187,7 @@ function CardBack({
   expiry,
   revealed,
   onToggleReveal,
+  hidden = false,
   style,
   className,
 }: {
@@ -193,12 +199,14 @@ function CardBack({
   expiry: string
   revealed: "number" | "cvc" | null
   onToggleReveal: (field: "number" | "cvc") => void
+  hidden?: boolean
   style: React.CSSProperties
   className?: string
 }) {
   return (
     <div
       data-slot="bank-card-back"
+      {...inertProps(hidden)}
       className={cn(
         // Десктопная сторона распирает блоки по краям, мобильная
         // ставит их подряд с зазором 9.

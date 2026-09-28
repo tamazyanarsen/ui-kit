@@ -26,21 +26,44 @@ function UpButton({
   className,
 }: UpButtonProps) {
   const [visible, setVisible] = React.useState(false)
+  const subscription = React.useRef<{
+    target: Window | HTMLElement
+    threshold: number
+    unsubscribe: () => void
+  } | null>(null)
 
+  // Источник прокрутки перепроверяется после КАЖДОЙ отрисовки, а не только
+  // при смене объекта ref: сам ref не меняется, а `ref.current` — да. С
+  // зависимостью `[scrollContainer]` контейнер, смонтированный позже кнопки
+  // (условный рендер, ленивая загрузка) или заменённый другим, не
+  // подхватывался никогда: слушатель оставался на `window`.
   React.useEffect(() => {
     const target: Window | HTMLElement = scrollContainer?.current ?? window
+    const current = subscription.current
+    if (current && current.target === target && current.threshold === threshold) return
+    current?.unsubscribe()
 
     function handleScroll() {
-      const scrollTop = scrollContainer?.current
-        ? scrollContainer.current.scrollTop
-        : window.scrollY
+      const scrollTop = target === window ? window.scrollY : (target as HTMLElement).scrollTop
       setVisible(scrollTop > threshold)
     }
 
     handleScroll()
     target.addEventListener("scroll", handleScroll, { passive: true })
-    return () => target.removeEventListener("scroll", handleScroll)
-  }, [scrollContainer, threshold])
+    subscription.current = {
+      target,
+      threshold,
+      unsubscribe: () => target.removeEventListener("scroll", handleScroll),
+    }
+  })
+
+  React.useEffect(
+    () => () => {
+      subscription.current?.unsubscribe()
+      subscription.current = null
+    },
+    []
+  )
 
   function handleClick() {
     const target = scrollContainer?.current

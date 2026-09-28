@@ -40,12 +40,12 @@ const GLYPH_CLASS: Record<16 | 24, string> = {
   24: "size-6",
 }
 
-function CloseCross({
+const CloseCross = React.forwardRef<HTMLButtonElement, CloseCrossProps>(function CloseCross({
   size = 16,
   className,
   "aria-label": ariaLabel = "Закрыть",
   ...props
-}: CloseCrossProps) {
+}, ref) {
   return (
     <button
       type="button"
@@ -58,12 +58,13 @@ function CloseCross({
         "disabled:cursor-not-allowed",
         className
       )}
+      ref={ref}
       {...props}
     >
       <X size={size} aria-hidden="true" className={GLYPH_CLASS[size]} />
     </button>
   )
-}
+})
 
 export { CloseCross }
 export type { CloseCrossProps }

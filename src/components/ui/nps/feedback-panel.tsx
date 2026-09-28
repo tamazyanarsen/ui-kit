@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { inertProps } from "@/lib/inert"
 import { Button } from "@/components/ui/button"
 import { FilterTable } from "@/components/ui/filter-table"
 import { Textarea } from "@/components/ui/textarea"
@@ -59,6 +60,9 @@ function FeedbackPanel({
   return (
     <div
       aria-hidden={!open}
+      // Свёрнутая панель остаётся в DOM (ради анимации роста), и без `inert`
+      // Tab заходил в невидимые поле, чипы и кнопку — под `aria-hidden`.
+      {...inertProps(!open)}
       className={cn(
         "grid w-full transition-all duration-500 ease-out",
         open ? "mt-0 grid-rows-[1fr]" : "-mt-8 grid-rows-[0fr]"

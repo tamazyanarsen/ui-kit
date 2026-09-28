@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { pressHandlers } from "@/lib/press"
 import { Checkbox } from "@/components/ui/checkbox"
 
 export type MailFeedState = "default" | "new" | "used" | "error"
@@ -30,6 +31,8 @@ interface MailFeedProps {
   showCheckbox?: boolean
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
+  /** Доступное имя чекбокса — видимой подписи у него нет. */
+  checkboxLabel?: string
   onClick?: () => void
   className?: string
 }
@@ -45,20 +48,28 @@ function MailFeed({
   showCheckbox = false,
   checked = false,
   onCheckedChange,
+  checkboxLabel = "Выбрать письмо",
   onClick,
   className,
 }: MailFeedProps) {
+  const clickable = Boolean(onClick)
+
   return (
     <div
       data-slot="mail-feed"
       data-state={state}
-      onClick={onClick}
+      // Карточка с `onClick` — кнопка и для клавиатуры: раньше это был
+      // голый `div` с `cursor-pointer`, недоступный без мыши.
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      {...pressHandlers<HTMLDivElement>(onClick)}
       className={cn(
         // Тень на наведении — общая `shadow-universal` кита (0/4/12
         // #8B99A9 24%), а не свой литерал: значение то же, но оно уже живёт
         // токеном, и переписанное вручную расходится с ним при следующей
         // правке темы.
-        "flex w-full cursor-pointer flex-col items-start gap-4 rounded-[16px] p-4 transition-shadow hover:shadow-universal",
+        "flex w-full flex-col items-start gap-4 rounded-[16px] p-4 outline-none transition-shadow hover:shadow-universal focus-visible:focus-ring",
+        clickable && "cursor-pointer",
         className
       )}
       style={{ backgroundColor: STATE_BG[state] }}
@@ -67,6 +78,7 @@ function MailFeed({
         {showCheckbox && (
           <div onClick={(event) => event.stopPropagation()} className="shrink-0">
             <Checkbox
+              aria-label={checkboxLabel}
               checked={checked}
               onCheckedChange={(next) => onCheckedChange?.(next === true)}
             />

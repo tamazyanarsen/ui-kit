@@ -2,6 +2,7 @@ import * as React from "react"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 
 import { cn } from "@/lib/utils"
+import { stateClassName } from "@/lib/state-class-name"
 
 // Закреплённая полоса заголовка («Modal Top: Title» в макете). Для
 // варианта «Modal Top: None» эту часть нужно опустить целиком, а заголовок
@@ -13,15 +14,16 @@ import { cn } from "@/lib/utils"
 // — 16px на мобильном и 8px на десктопе (в макете у «Modal Top» Texts это
 // gap-8, а у мобильного блока заголовка gap-16); второй проход обнаружил
 // здесь плоские 4px (gap-1) на обоих брейкпоинтах.
-function ModalHeader({ className, ...props }: React.ComponentProps<"div">) {
+const ModalHeader = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(function ModalHeader({ className, ...props }, ref) {
   return (
     <div
       data-slot="modal-header"
       className={cn("flex shrink-0 flex-col gap-4 px-6 py-5 desktop:gap-2 desktop:px-(--modal-px) desktop:pt-12 desktop:pb-4", className)}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
 /**
  * Пустой холдер шапки — вариант `Modal Top: None`.
@@ -41,37 +43,39 @@ function ModalHeader({ className, ...props }: React.ComponentProps<"div">) {
  * ВНУТРИ листа (top-5, кнопка 32 → занято 52px), а на десктопе он вынесен за
  * карточку. Без этих 52 контент при `Top: None` начинался прямо под крестиком.
  */
-function ModalTopHolder({ className, ...props }: React.ComponentProps<"div">) {
+const ModalTopHolder = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(function ModalTopHolder({ className, ...props }, ref) {
   return (
     <div
       data-slot="modal-top-holder"
       aria-hidden="true"
       className={cn("h-[52px] shrink-0 desktop:h-12", className)}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
-function ModalTitle({
+const ModalTitle = React.forwardRef<HTMLHeadingElement, DialogPrimitive.Title.Props>(function ModalTitle({
   className,
   ...props
-}: DialogPrimitive.Title.Props) {
+}, ref) {
   return (
     <DialogPrimitive.Title
       data-slot="modal-title"
-      className={cn(
+      className={stateClassName(
         "pr-10 text-h2-mobile text-[var(--modal-title-fg)] desktop:pr-0 desktop:text-h2",
         className
       )}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
-function ModalDescription({
+const ModalDescription = React.forwardRef<HTMLParagraphElement, DialogPrimitive.Description.Props>(function ModalDescription({
   className,
   ...props
-}: DialogPrimitive.Description.Props) {
+}, ref) {
   return (
     <DialogPrimitive.Description
       data-slot="modal-description"
@@ -81,10 +85,11 @@ function ModalDescription({
       // Medium на мобильном (14/20), вырастающий до P1 Medium на десктопе
       // (16/24): макет «Modal Top» применяет здесь десктопный параграфный
       // стиль, а не фиксированный мобильный размер.
-      className={cn("text-p2-medium text-[var(--modal-title-fg)] desktop:text-p1-medium", className)}
+      className={stateClassName("text-p2-medium text-[var(--modal-title-fg)] desktop:text-p1-medium", className)}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
 export { ModalHeader, ModalTopHolder, ModalTitle, ModalDescription }

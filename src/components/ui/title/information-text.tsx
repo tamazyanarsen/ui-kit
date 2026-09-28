@@ -35,7 +35,10 @@ interface TitleInformationTextProps
   items?: TitleInformationTextPair[]
 }
 
-function TitleInformationText({
+const LINK_CLASS =
+  "shrink-0 text-link text-[var(--title-fg)] outline-none focus-visible:focus-ring"
+
+const TitleInformationText = React.forwardRef<HTMLDivElement, TitleInformationTextProps>(function TitleInformationText({
   className,
   type = "link",
   children,
@@ -43,7 +46,7 @@ function TitleInformationText({
   onLinkClick,
   items = [],
   ...props
-}: TitleInformationTextProps) {
+}, ref) {
   return (
     <div
       data-slot="title-information-text"
@@ -53,16 +56,26 @@ function TitleInformationText({
         type === "text" && "gap-4 whitespace-nowrap",
         className
       )}
+      ref={ref}
       {...props}
     >
       {type === "link" ? (
-        <a
-          href={href}
-          onClick={onLinkClick}
-          className="shrink-0 text-link text-[var(--title-fg)] outline-none focus-visible:focus-ring"
-        >
-          {children}
-        </a>
+        // Без `href` — кнопка в облике ссылки: `<a>` без `href` не получает
+        // фокус и не нажимается с клавиатуры, и `onLinkClick` был доступен
+        // только мышью.
+        href !== undefined ? (
+          <a href={href} onClick={onLinkClick} className={LINK_CLASS}>
+            {children}
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={onLinkClick}
+            className={cn(LINK_CLASS, "cursor-pointer text-left")}
+          >
+            {children}
+          </button>
+        )
       ) : (
         items.map((item, index) => (
           <span key={index} className="flex shrink-0 items-center gap-1">
@@ -73,7 +86,7 @@ function TitleInformationText({
       )}
     </div>
   )
-}
+})
 
 export { TitleInformationText }
 export type { TitleInformationTextProps, TitleInformationTextPair }

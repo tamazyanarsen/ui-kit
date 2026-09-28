@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { pressHandlers } from "@/lib/press"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 import { useToast } from "@/components/ui/toast-message"
 
@@ -31,6 +32,11 @@ interface BankCardProps {
    * не задан — картой управляет клик по ней.
    */
   type?: "face" | "back"
+  /**
+   * Попытка перевернуть карту (клик, «Показать реквизиты»). В управляемом
+   * режиме (`type` задан) — единственный способ узнать о ней снаружи.
+   */
+  onTypeChange?: (type: "face" | "back") => void
   paymentSystem?: PaymentSystem
   last4?: string
   cardNumber?: string
@@ -49,6 +55,7 @@ function BankCard({
   skin = "mono",
   size = "desktop",
   type,
+  onTypeChange,
   paymentSystem = "mir",
   last4 = "4498",
   cardNumber = "2200 1234 5678 4498",
@@ -67,9 +74,13 @@ function BankCard({
   const setSide = React.useCallback(
     (next: "face" | "back") => {
       if (type === undefined) setInternalSide(next)
+      onTypeChange?.(next)
     },
-    [type]
+    [type, onTypeChange]
   )
+  // Управляемая карта без колбэка перевернуться не может — и кнопкой себя
+  // не объявляет.
+  const flippable = type === undefined || onTypeChange !== undefined
   const [revealed, setRevealed] = React.useState<"number" | "cvc" | null>(null)
   const { add } = useToast()
 
@@ -93,7 +104,10 @@ function BankCard({
     const value = field === "number" ? cardNumber : cvc
     const label = field === "number" ? "Номер карты скопирован" : "CVC-код скопирован"
     try {
-      await navigator.clipboard?.writeText(value.replace(/\s/g, ""))
+      // Вне безопасного контекста `navigator.clipboard` нет вовсе, и
+      // `clipboard?.writeText` молча давал `undefined` — то есть «успех».
+      if (!navigator.clipboard) throw new Error("Clipboard API недоступен")
+      await navigator.clipboard.writeText(value.replace(/\s/g, ""))
       add({ type: "checked", title: label, timeout: 3000 })
     } catch {
       add({ type: "error", title: "Не удалось скопировать", timeout: 3000 })
@@ -103,17 +117,14 @@ function BankCard({
   return (
     <div
       data-slot="bank-card"
-      role="button"
-      tabIndex={0}
-      onClick={flip}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          flip()
-        }
-      }}
+      role={flippable ? "button" : undefined}
+      tabIndex={flippable ? 0 : undefined}
+      // Enter на «глазе» или «Показать реквизиты» — нажатие ИХ кнопки, а
+      // не переворот карты.
+      {...pressHandlers<HTMLDivElement>(flippable ? flip : undefined)}
       className={cn(
-        "relative cursor-pointer outline-none focus-visible:focus-ring",
+        "relative outline-none focus-visible:focus-ring",
+        flippable && "cursor-pointer",
         size === "mobile" ? "h-[160px] w-[254px]" : "h-[208px] w-[332px]",
         className
       )}
@@ -137,6 +148,7 @@ function BankCard({
           showBalance={showBalance}
           showRequisites={showRequisites}
           onShowRequisites={() => setSide("back")}
+          hidden={side !== "face"}
           style={{ backfaceVisibility: "hidden" }}
           className="absolute inset-0"
         />
@@ -149,6 +161,7 @@ function BankCard({
           expiry={expiry}
           revealed={revealed}
           onToggleReveal={toggleReveal}
+          hidden={side !== "back"}
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           className="absolute inset-0"
         />

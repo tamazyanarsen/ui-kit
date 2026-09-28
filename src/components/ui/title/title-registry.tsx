@@ -28,7 +28,7 @@ interface TitleRegistryProps extends Omit<React.ComponentProps<"div">, "title"> 
   actions?: React.ReactNode
 }
 
-function TitleRegistry({
+const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(function TitleRegistry({
   className,
   title,
   description,
@@ -36,7 +36,7 @@ function TitleRegistry({
   onHelp,
   actions,
   ...props
-}: TitleRegistryProps) {
+}, ref) {
   const showHelp = Boolean(helpLabel)
   const showButtons = showHelp || Boolean(actions)
 
@@ -44,6 +44,7 @@ function TitleRegistry({
     <div
       data-slot="title-registry"
       className={cn("flex w-full flex-col items-start gap-2", className)}
+      ref={ref}
       {...props}
     >
       <div className="flex w-full items-start gap-12">
@@ -73,7 +74,7 @@ function TitleRegistry({
       )}
     </div>
   )
-}
+})
 
 export { TitleRegistry }
 export type { TitleRegistryProps }

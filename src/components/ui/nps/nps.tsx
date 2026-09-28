@@ -9,9 +9,8 @@ import { CloseCross } from "@/components/ui/close-cross"
 // NPS — «Обратная связь»: карточка отзыва (оценка пятью звёздами →
 // комментарий и чипы быстрых ответов → отправка → состояние «Спасибо за
 // оценку»). По макету состояние завершения «автоматически исчезает через
-// 2000 ms»; здесь это выражено через onOpenChange и onClose, а не таймером
-// внутри самой карточки, чтобы потребитель сам решал, убирать ли карточку
-// из DOM и как именно. Чипы — один и тот же фиксированный набор при любой
+// 2000 ms»: через `autoCloseMs` карточка вызывает `onClose`, а убирать ли её
+// из DOM и как именно, по-прежнему решает потребитель. Чипы — один и тот же фиксированный набор при любой
 // оценке (сверено с собственными образцами макета на 1–4 звезды, где текст
 // чипов везде одинаков), а не меняющийся по баллу, поэтому это обычный
 // список по умолчанию, а не производная от `value`. Иллюстрация состояния
@@ -101,6 +100,11 @@ interface NpsProps {
   floating?: boolean
   onSubmit?: (data: { value: number; comment: string }) => void
   onClose?: () => void
+  /**
+   * Через сколько миллисекунд после «Спасибо за оценку» вызвать `onClose`.
+   * По макету — 2000. `0` отключает автозакрытие.
+   */
+  autoCloseMs?: number
   className?: string
 }
 
@@ -131,11 +135,26 @@ const FLOATING_CLASS = "fixed right-10 bottom-10 z-(--z-nps)"
 /** Состояние «Спасибо за оценку». */
 function NpsDone({
   onClose,
+  autoCloseMs,
   className,
 }: {
   onClose?: () => void
+  autoCloseMs: number
   className?: string
 }) {
+  // Текст состояния обещает «Окно закроется автоматически» — раньше таймера
+  // не было вовсе. Последний `onClose` держится в ref: новый колбэк на
+  // каждом рендере родителя не должен перезапускать отсчёт.
+  const onCloseRef = React.useRef(onClose)
+  onCloseRef.current = onClose
+  const autoClose = Boolean(onClose) && autoCloseMs > 0
+
+  React.useEffect(() => {
+    if (!autoClose) return
+    const timer = window.setTimeout(() => onCloseRef.current?.(), autoCloseMs)
+    return () => window.clearTimeout(timer)
+  }, [autoClose, autoCloseMs])
+
   return (
     <div
       data-slot="nps"
@@ -163,9 +182,11 @@ function NpsDone({
       </div>
       <div className="flex flex-col items-center gap-1 text-center">
         <p className="text-h3 text-[var(--nps-title-fg)]">Спасибо за оценку</p>
-        <p className="text-p1-medium text-[var(--nps-subtitle-fg)]">
-          Окно закроется автоматически
-        </p>
+        {autoClose && (
+          <p className="text-p1-medium text-[var(--nps-subtitle-fg)]">
+            Окно закроется автоматически
+          </p>
+        )}
       </div>
     </div>
   )
@@ -186,6 +207,7 @@ function Nps({
   submitted = false,
   onSubmit,
   onClose,
+  autoCloseMs = 2000,
   className,
 }: NpsProps) {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
@@ -229,6 +251,7 @@ function Nps({
     return (
       <NpsDone
         onClose={onClose}
+        autoCloseMs={autoCloseMs}
         className={cn(floating && FLOATING_CLASS, className)}
       />
     )

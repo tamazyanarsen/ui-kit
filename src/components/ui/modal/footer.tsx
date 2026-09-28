@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 // 48px, то есть тот же --modal-px, которым уже пользуются шапка и тело.
 // Плоские 48px здесь оставляли кнопки большого окна на 16px внутрь от его
 // же текста.
-function ModalFooter({ className, ...props }: React.ComponentProps<"div">) {
+const ModalFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(function ModalFooter({ className, ...props }, ref) {
   return (
     <div
       data-slot="modal-footer"
@@ -22,9 +22,10 @@ function ModalFooter({ className, ...props }: React.ComponentProps<"div">) {
         "flex shrink-0 flex-col-reverse gap-4 px-6 py-5 [&>*]:w-full desktop:flex-row desktop:justify-start desktop:gap-6 desktop:px-(--modal-px) desktop:pt-4 desktop:pb-12 desktop:[&>*]:w-auto",
         className
       )}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
 export { ModalFooter }

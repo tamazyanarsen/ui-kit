@@ -63,6 +63,11 @@ function Tooltip({
   // переключать его между неуправляемым и управляемым, а Base UI
   // предупреждает ровно об этом.
   const [open, setOpen] = React.useState(false)
+  // Выключение сбрасывает и внутреннее состояние. Base UI при `open={false}`
+  // считает подсказку закрытой и `onOpenChange(false)` не присылает, так что
+  // `open` оставался `true` — и при повторном включении подсказка
+  // всплывала сама, без наведения.
+  if (disabled && open) setOpen(false)
 
   return (
     <TooltipPrimitive.Provider delay={400} closeDelay={0}>

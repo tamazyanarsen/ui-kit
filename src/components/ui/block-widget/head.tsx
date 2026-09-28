@@ -79,7 +79,7 @@ interface BlockWidgetHeadProps
   labelFirst?: boolean
 }
 
-function BlockWidgetHead({
+const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(function BlockWidgetHead({
   title,
   subtitle,
   description,
@@ -93,7 +93,7 @@ function BlockWidgetHead({
   labelFirst = false,
   className,
   ...props
-}: BlockWidgetHeadProps) {
+}, ref) {
   const isDesktop = useIsDesktop()
 
   const infoIcon = info ? (
@@ -116,7 +116,7 @@ function BlockWidgetHead({
         // Приписка на десктопе стоит в верхнем ряду и опущена на 4, чтобы
         // сесть на строку заголовка; на мобиле она в нижнем ряду и тянется
         // по ширине, оттесняя кнопку вправо.
-        isDesktop ? "py-1 desktop:text-p1-medium" : "min-w-0 flex-1"
+        "min-w-0 flex-1 desktop:flex-none desktop:py-1 desktop:text-p1-medium"
       )}
     >
       {status}
@@ -185,47 +185,50 @@ function BlockWidgetHead({
   )
 
   return (
-    <>
-      <div
-        data-slot="block-widget-head"
-        className={cn("flex w-full items-start gap-4", className)}
-        {...props}
-      >
-        {leading && (
-          <div
-            data-slot="block-widget-leading"
-            className={cn(
-              "flex h-14 shrink-0 self-stretch",
-              leadingAlign === "center"
-                ? "flex-col justify-center"
-                : // Опускание на 2 — только на десктопе: там строка
-                  // заголовка 28, и без него управление сидит выше
-                  // прописных. На мобильной строке 24 оно уже совпадает.
-                  "items-start desktop:pt-0.5"
-            )}
-          >
-            {leading}
-          </div>
-        )}
-        {titleBlock}
-        {isDesktop && statusNode}
-        {isDesktop && action}
-      </div>
-
-      {/* Нижний ряд существует ТОЛЬКО на мобиле — на десктопе приписка и
-          кнопка стоят в верхнем ряду. */}
-      {!isDesktop && (statusNode || action) && (
+    <div
+      data-slot="block-widget-head"
+      // Перенос строки вместо второго ряда-соседа: на мобиле группа
+      // приписки и кнопки уходит на свою строку (`basis-full`), на
+      // десктопе стоит в той же. Раньше это были два РАЗНЫХ родителя по
+      // `useIsDesktop`, и `action` перемонтировался при каждом переходе
+      // через брейкпоинт, теряя состояние (например, открытое меню).
+      // Зазор строк 8 — тот же, что был между рядами у BlockWidget на мобиле.
+      className={cn(
+        "flex w-full flex-wrap items-start gap-x-4 gap-y-2 desktop:flex-nowrap",
+        className
+      )}
+      ref={ref}
+      {...props}
+    >
+      {leading && (
         <div
-          data-slot="block-widget-bottom"
-          className="flex w-full items-center justify-end gap-4"
+          data-slot="block-widget-leading"
+          className={cn(
+            "flex h-14 shrink-0 self-stretch",
+            leadingAlign === "center"
+              ? "flex-col justify-center"
+              : // Опускание на 2 — только на десктопе: там строка
+                // заголовка 28, и без него управление сидит выше
+                // прописных. На мобильной строке 24 оно уже совпадает.
+                "items-start desktop:pt-0.5"
+          )}
+        >
+          {leading}
+        </div>
+      )}
+      {titleBlock}
+      {(statusNode || action) && (
+        <div
+          data-slot="block-widget-trailing"
+          className="flex basis-full items-center justify-end gap-4 desktop:shrink-0 desktop:basis-auto desktop:items-start"
         >
           {statusNode}
           {action}
         </div>
       )}
-    </>
+    </div>
   )
-}
+})
 
 export { BlockWidgetHead }
 export type { BlockWidgetHeadProps, BlockWidgetTitleType }

@@ -71,6 +71,10 @@ const meta = {
     showChips: 5,
     submitted: false,
     floating: false,
+    // Строка «Окно закроется автоматически» рисуется, только когда закрывать
+    // есть чем: без `onClose` таймер ничего бы не сделал. Витрина карточку
+    // не убирает, но строку из макета показывает.
+    onClose: () => {},
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -108,7 +112,9 @@ export const Matrix: Story = {
           label: "Без поля комментария",
           props: { defaultValue: 3, showDescription: false },
         },
-        { label: "Отправлено", props: { submitted: true } },
+        // `onClose` — чтобы в матрице была строка «Окно закроется
+        // автоматически», как в макете (см. `args` выше).
+        { label: "Отправлено", props: { submitted: true, onClose: () => {} } },
       ]}
       render={(props) => <Nps {...props} />}
     />

@@ -55,18 +55,19 @@ interface ListOfErrorsProps extends React.ComponentProps<"div"> {
   showDivider?: boolean
 }
 
-function ListOfErrors({
+const ListOfErrors = React.forwardRef<HTMLDivElement, ListOfErrorsProps>(function ListOfErrors({
   showDivider = true,
   className,
   children,
   ...props
-}: ListOfErrorsProps) {
+}, ref) {
   const items = React.Children.toArray(children)
 
   return (
     <div
       data-slot="list-of-errors"
       className={cn("flex flex-col gap-[15px] desktop:gap-[23px]", className)}
+      ref={ref}
       {...props}
     >
       {showDivider && <Divider />}
@@ -88,7 +89,7 @@ function ListOfErrors({
       </ul>
     </div>
   )
-}
+})
 
 export { ListOfErrors }
 export type { ListOfErrorsProps }

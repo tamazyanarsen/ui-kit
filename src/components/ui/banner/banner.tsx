@@ -196,9 +196,15 @@ function Banner({
           <div className="flex flex-1 items-center gap-8">
             <div className="flex flex-1 flex-col gap-2">
               <p className="text-h3">{title}</p>
-              {description && (
-                <p className="text-p1-medium">{description}</p>
-              )}
+              {/* Массив строк раскладывается по строкам, как у desktop и
+                  mobile: внутри одного `<p>` строки сливались в одну, а
+                  React ругался на ключи. */}
+              {description &&
+                (Array.isArray(description) ? (
+                  <BannerDescription description={description} bullet={bullet} />
+                ) : (
+                  <p className="text-p1-medium">{description}</p>
+                ))}
             </div>
             {cta}
           </div>

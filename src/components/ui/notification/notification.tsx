@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { pressHandlers } from "@/lib/press"
 import { useScrollEdges } from "@/lib/use-scroll-edges"
 import { Button } from "@/components/ui/button"
 import { Scrollbar } from "@/components/ui/scrollbar"
@@ -46,17 +47,7 @@ function NotificationItem({
       data-viewed={viewed || undefined}
       role={clickable ? "button" : undefined}
       tabIndex={clickable ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={
-        clickable
-          ? (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault()
-                onClick?.()
-              }
-            }
-          : undefined
-      }
+      {...pressHandlers<HTMLDivElement>(onClick)}
       className={cn(
         "flex items-start gap-4 bg-[var(--notification-bg)] px-4 py-6",
         // Наведение и нажатие дают ОДНУ заливку: отдельного Pressed у

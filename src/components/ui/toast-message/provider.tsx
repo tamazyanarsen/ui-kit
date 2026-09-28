@@ -54,7 +54,11 @@ function ToastProvider({
   children: React.ReactNode
 }) {
   const [toasts, setToasts] = React.useState<ToastItem[]>([])
-  const [paused, setPaused] = React.useState(false)
+  // Пауза — ref, а не состояние: `add` читает её в момент вызова. Со
+  // состоянием `add`, захваченный во время наведения (асинхронный
+  // обработчик), видел `paused = true` уже после увода курсора — и тост
+  // оставался без таймера навсегда.
+  const paused = React.useRef(false)
 
   // Таймеры ухода (снятие узла после анимации) — отдельно от таймеров жизни:
   // уход пауза не останавливает, он уже начался.
@@ -118,17 +122,19 @@ function ToastProvider({
       // В КОНЕЦ: «новые просто должны продолжать появляться ниже».
       setToasts((prev) => [...prev, { ...options, id }])
       const duration = options.timeout ?? timeout
+      // Нулевое время жизни — тост без таймера, закрывается только руками.
+      if (duration <= 0) return id
       // Пока курсор в области уведомлений, новое сообщение тоже не тикает:
       // иначе оно умерло бы «под рукой» у читающего.
-      if (paused) remaining.current.set(id, duration)
+      if (paused.current) remaining.current.set(id, duration)
       else startLife(id, duration)
       return id
     },
-    [paused, startLife, timeout]
+    [startLife, timeout]
   )
 
   const pause = React.useCallback(() => {
-    setPaused(true)
+    paused.current = true
     const now = performance.now()
     lifeTimers.current.forEach((timer, id) => {
       window.clearTimeout(timer)
@@ -139,12 +145,16 @@ function ToastProvider({
   }, [])
 
   const resume = React.useCallback(() => {
-    setPaused(false)
+    paused.current = false
     remaining.current.forEach((left, id) => {
       if (lifeTimers.current.has(id)) return
-      startLife(id, left)
+      // Остаток ноль: таймер истёк ровно в момент паузы, но колбэк не успел
+      // отработать. `startLife(id, 0)` молча ничего не заводил, и тост
+      // оставался навсегда — закрываем сразу.
+      if (left <= 0) close(id)
+      else startLife(id, left)
     })
-  }, [startLife])
+  }, [close, startLife])
 
   React.useEffect(() => {
     const life = lifeTimers.current

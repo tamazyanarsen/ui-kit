@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { pressHandlers } from "@/lib/press"
 import { Divider } from "@/components/ui/divider"
 
 // BlockWidget — «блок-виджет»: карточка с шапкой и слотом содержимого,
@@ -34,18 +35,6 @@ import { Divider } from "@/components/ui/divider"
 // Первые два — это `<BlockWidgetHead>` с разными пропами, третий —
 // `<BlockWidgetColumn>` внутри `<BlockWidget type="double">`.
 
-/** Узлы, нажатие по которым НЕ считается нажатием на сам блок. */
-const INTERACTIVE_SELECTOR = [
-  "button",
-  "a",
-  "input",
-  "label",
-  "[role='checkbox']",
-  "[role='radio']",
-  "[role='button']",
-  "[role='menuitem']",
-].join(", ")
-
 type BlockWidgetVariant = "solid" | "border"
 type BlockWidgetType = "default" | "label" | "double"
 
@@ -64,44 +53,19 @@ interface BlockWidgetProps
   onClick?: () => void
 }
 
-function BlockWidget({
+const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function BlockWidget({
   variant = "solid",
   type = "default",
   onClick,
   className,
   children,
   ...props
-}: BlockWidgetProps) {
+}, ref) {
   const interactive = variant === "solid" && Boolean(onClick)
 
-  /**
-   * Нажатие пришло по вложенному управлению (кнопка, чекбокс, ссылка)?
-   *
-   * ⚠️ Найденный узел обязательно сверяется с самим блоком: кликабельный
-   * блок и сам получает `role="button"`, поэтому `closest` от любой точки
-   * внутри него находит ЕГО — и без этой проверки блок не срабатывал
-   * никогда.
-   */
-  function fromNestedControl(event: { target: EventTarget | null; currentTarget: EventTarget }) {
-    const hit = (event.target as Element | null)?.closest(INTERACTIVE_SELECTOR)
-    return Boolean(hit) && hit !== event.currentTarget
-  }
-
-  function handleClick(event: React.MouseEvent<HTMLDivElement>) {
-    if (!interactive) return
-    // Внутри блока живут своя кнопка и своё управление — нажатие по ним это
-    // не нажатие по блоку. Тот же приём, что у строки таблицы.
-    if (fromNestedControl(event)) return
-    onClick?.()
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    if (!interactive) return
-    if (event.key !== "Enter" && event.key !== " ") return
-    if (fromNestedControl(event)) return
-    event.preventDefault()
-    onClick?.()
-  }
+  // Внутри блока живут своя кнопка и своё управление — нажатие по ним это
+  // не нажатие по блоку. Тот же приём, что у строки таблицы.
+  const press = pressHandlers<HTMLDivElement>(interactive ? onClick : undefined)
 
   return (
     <div
@@ -110,8 +74,7 @@ function BlockWidget({
       data-type={type}
       role={interactive ? "button" : undefined}
       tabIndex={interactive ? 0 : undefined}
-      onClick={interactive ? handleClick : undefined}
-      onKeyDown={interactive ? handleKeyDown : undefined}
+      {...press}
       className={cn(
         "flex w-full flex-col items-center gap-2 rounded-[12px] p-4 desktop:gap-4 desktop:p-6",
         variant === "solid"
@@ -124,12 +87,13 @@ function BlockWidget({
           "cursor-pointer outline-none transition-colors hover:bg-[var(--block-widget-bg-hover)] focus-visible:focus-ring",
         className
       )}
+      ref={ref}
       {...props}
     >
       {type === "double" ? <DoubleLayout>{children}</DoubleLayout> : children}
     </div>
   )
-}
+})
 
 /**
  * Дети списком, с раскрытием фрагментов.
@@ -184,7 +148,7 @@ function DoubleLayout({ children }: { children?: React.ReactNode }) {
 }
 
 /** Колонка типа `Double` — фрейм `Container` сета. */
-function BlockWidgetColumn({ className, ...props }: React.ComponentProps<"div">) {
+const BlockWidgetColumn = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(function BlockWidgetColumn({ className, ...props }, ref) {
   return (
     <div
       data-slot="block-widget-column"
@@ -192,10 +156,11 @@ function BlockWidgetColumn({ className, ...props }: React.ComponentProps<"div">)
         "flex min-w-0 flex-1 flex-col items-start gap-2 desktop:gap-4",
         className
       )}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
 /**
  * Слот содержимого — фреймы `Slot 1` / `Slot 2` / `Slot 3` сета.
@@ -206,15 +171,16 @@ function BlockWidgetColumn({ className, ...props }: React.ComponentProps<"div">)
  * выключаемые (`Show Conteiner` / `Show Bottom Container`), то есть в коде
  * это просто «не рендерить».
  */
-function BlockWidgetSlot({ className, ...props }: React.ComponentProps<"div">) {
+const BlockWidgetSlot = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(function BlockWidgetSlot({ className, ...props }, ref) {
   return (
     <div
       data-slot="block-widget-slot"
       className={cn("w-full min-w-0", className)}
+      ref={ref}
       {...props}
     />
   )
-}
+})
 
 export { BlockWidget, BlockWidgetColumn, BlockWidgetSlot }
 export type { BlockWidgetProps, BlockWidgetType, BlockWidgetVariant }

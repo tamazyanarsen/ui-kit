@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { TOAST_BG, TOAST_BORDER, TOAST_ICON, TOAST_ICON_COLOR } from "./variants"
 import { ToastProvider } from "./provider"
 import { useToast, type ToastItem } from "./use-toast"
+import { useToasterPause } from "./use-toaster-pause"
 import { CloseCross } from "@/components/ui/close-cross"
 
 // Toast Message — «Всплывающее уведомление». Показывает уведомление
@@ -167,6 +168,7 @@ function ToastCard({
 // закреплённой шапки переменная равна нулю и поведение прежнее.
 function Toaster() {
   const { toasts, close, pause, resume } = useToast()
+  const pauseHandlers = useToasterPause(toasts, pause, resume)
 
   return (
     <div
@@ -178,10 +180,10 @@ function Toaster() {
       // (`pointer-events-none`) — иначе её невидимая коробка во всю высоту
       // экрана перехватывала бы клики по странице. Приём возвращают строки, и
       // зазоры между ними закрывает псевдоэлемент строки (см. `ToastRow`).
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-      onFocusCapture={pause}
-      onBlurCapture={resume}
+      //
+      // Наведение и фокус — два независимых источника паузы, см.
+      // `useToasterPause`.
+      {...pauseHandlers}
       // ⚠️ Колонка ОГРАНИЧЕНА высотой вьюпорта и складывается сверху вниз.
       //
       // Дизайн-чек от 07.09, замечание 21: «окно [опроса] складывает тосты в

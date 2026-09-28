@@ -56,7 +56,11 @@ interface ProgressBarProps {
   className?: string
 }
 
+// `NaN` (например, `Number("")`) сводится к нижней границе. Без этого
+// `Math.min/max` пропускали его насквозь, `width: "NaN%"` браузер отбрасывал,
+// и блок растягивался на всю ширину — полностью залитая полоса.
 function clamp(value: number, min: number, max: number) {
+  if (Number.isNaN(value)) return min
   return Math.min(Math.max(value, min), max)
 }
 
@@ -71,9 +75,11 @@ const WAITING_HATCH =
 function StepTrack({
   totalSteps,
   currentStep,
+  labelId,
 }: {
   totalSteps: number
   currentStep: number
+  labelId: string
 }) {
   const total = clamp(Math.round(totalSteps), 2, 10)
   const current = clamp(Math.round(currentStep), 1, total)
@@ -83,7 +89,15 @@ function StepTrack({
   return (
     // Дизайн-чек, замечание 43: по макету высота 8px (во всех
     // прямоугольниках вектора height="8"), а не 4px.
-    <div className="flex h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
+    <div
+      role="progressbar"
+      aria-labelledby={labelId}
+      aria-valuemin={1}
+      aria-valuemax={total}
+      aria-valuenow={current}
+      aria-valuetext={`Шаг ${current} из ${total}`}
+      className="flex h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]"
+    >
       <div
         aria-hidden="true"
         className="h-full bg-[var(--progress-step-fill)]"
@@ -106,15 +120,24 @@ function StepTrack({
 function TimelineTrack({
   value,
   statusTimeline,
+  labelId,
 }: {
   value: number
   statusTimeline?: ProgressBarStatusTimeline
+  labelId: string
 }) {
   const clamped = clamp(value, 0, 100)
   const resolved = statusTimeline ?? timelineColorForValue(clamped)
 
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]">
+    <div
+      role="progressbar"
+      aria-labelledby={labelId}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={clamped}
+      className="h-2 w-full overflow-hidden rounded-full bg-[var(--progress-track-bg)]"
+    >
       <div
         aria-hidden="true"
         className="h-full rounded-full transition-[width]"
@@ -150,6 +173,9 @@ function ProgressBar({
     showStatus && statusLine !== "description" && Boolean(subtitle)
   const showStatusDescription =
     showStatus && statusLine !== "subtitle" && Boolean(statusDescription)
+  // Сама шкала — `role="progressbar"`: раньше все её полосы были под
+  // `aria-hidden`, и прогресс скринридеру не сообщался вовсе.
+  const labelId = React.useId()
 
   return (
     <div data-slot="progress-bar" className={cn("flex flex-col gap-2", className)}>
@@ -159,7 +185,7 @@ function ProgressBar({
             именно заголовок резать нельзя ни при каких условиях. Ниже
             `desktop` шрифт уменьшается до P1 Medium Mobile (14/20). */}
         <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
-          <span className="shrink-0">{title}</span>
+          <span id={labelId} className="shrink-0">{title}</span>
           {showDescription && description && (
             <span className="min-w-0 flex-1 truncate text-right">
               {description}
@@ -169,9 +195,9 @@ function ProgressBar({
 
         {showTimeline &&
           (variant === "step" ? (
-            <StepTrack totalSteps={totalSteps} currentStep={currentStep} />
+            <StepTrack totalSteps={totalSteps} currentStep={currentStep} labelId={labelId} />
           ) : (
-            <TimelineTrack value={value} statusTimeline={statusTimeline} />
+            <TimelineTrack value={value} statusTimeline={statusTimeline} labelId={labelId} />
           ))}
       </div>
 

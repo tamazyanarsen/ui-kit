@@ -77,14 +77,13 @@ function SortableDropIndicator({
  * `<span>`: перетаскивание мышью недоступно с клавиатуры, и стрелки
  * вверх/вниз на ручке — единственный способ поменять порядок без мыши.
  */
-function SortableHandle({
-  label,
-  className,
-  disabled,
-  ...props
-}: React.ComponentProps<"button"> & { label: string }) {
+const SortableHandle = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & { label: string }
+>(function SortableHandle({ label, className, disabled, ...props }, ref) {
   return (
     <button
+      ref={ref}
       type="button"
       data-slot="sortable-handle"
       aria-label={label}
@@ -98,7 +97,7 @@ function SortableHandle({
       <Drag size={24} aria-hidden="true" className="size-6 shrink-0" />
     </button>
   )
-}
+})
 
 /**
  * Классы строки: заливка взятого элемента (Active, Grey 124) и подсветка

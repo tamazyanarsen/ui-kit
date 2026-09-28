@@ -48,9 +48,13 @@ function FilterRange({
   const applied = value ?? uncontrolled
   const [draft, setDraft] = React.useState(applied)
 
-  React.useEffect(() => {
-    if (open) setDraft(applied)
-  }, [open, applied])
+  // Черновик берётся в момент открытия, а не эффектом по `applied`: в
+  // управляемом режиме `value` — новый объект на каждый рендер, и эффект
+  // стирал введённые «от» и «до» при любой перерисовке родителя.
+  function handleOpenChange(next: boolean) {
+    if (next && !open) setDraft(applied)
+    setOpen(next)
+  }
 
   function commit(next: { from: string; to: string }) {
     if (value === undefined) setUncontrolled(next)
@@ -80,7 +84,7 @@ function FilterRange({
       onClear={() => commit(EMPTY)}
       disabled={disabled}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       width={384}
       className={className}
     >

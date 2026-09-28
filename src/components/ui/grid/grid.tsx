@@ -62,9 +62,13 @@ const GRID_VIEWPORT_WIDE = 1536
  * ⚠️ Работает, только если ни один предок не режет переполнение
  * (`overflow: hidden` на `body` убьёт прокрутку, а не переполнение).
  */
-function GridRoot({ className, ...props }: React.ComponentProps<"div">) {
+const GridRoot = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function GridRoot({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="grid-root"
       className={cn(
         "flex w-full flex-col",
@@ -77,7 +81,7 @@ function GridRoot({ className, ...props }: React.ComponentProps<"div">) {
       {...props}
     />
   )
-}
+})
 
 interface GridProps extends React.ComponentProps<"div"> {
   /**
@@ -96,9 +100,13 @@ interface GridProps extends React.ComponentProps<"div"> {
  * из него следуют сами — на 1280 это 1200, на 1880 и выше 1800, — поэтому
  * ни медиазапросов, ни `100vw` здесь нет (см. комментарий у токена).
  */
-function Grid({ columns = false, className, ...props }: GridProps) {
+const Grid = React.forwardRef<
+  HTMLDivElement,
+  GridProps
+>(function Grid({ columns = false, className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="grid"
       data-columns={columns || undefined}
       className={cn(
@@ -110,7 +118,7 @@ function Grid({ columns = false, className, ...props }: GridProps) {
       {...props}
     />
   )
-}
+})
 
 /**
  * Ряд колонок внутри полосы.
@@ -121,9 +129,13 @@ function Grid({ columns = false, className, ...props }: GridProps) {
  * flex-режиме `grid-column` просто игнорируется, и ряд не надо чинить
  * вторым набором правил.
  */
-function GridRow({ className, ...props }: React.ComponentProps<"div">) {
+const GridRow = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function GridRow({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="grid-row"
       className={cn(
         "flex w-full flex-col gap-[var(--grid-gutter)]",
@@ -133,7 +145,7 @@ function GridRow({ className, ...props }: React.ComponentProps<"div">) {
       {...props}
     />
   )
-}
+})
 
 interface GridColProps extends React.ComponentProps<"div"> {
   /** Ширина в колонках, 1…12. */
@@ -141,11 +153,15 @@ interface GridColProps extends React.ComponentProps<"div"> {
 }
 
 /** Колонка ряда. */
-function GridCol({ span = GRID_COLUMNS, className, style, ...props }: GridColProps) {
+const GridCol = React.forwardRef<
+  HTMLDivElement,
+  GridColProps
+>(function GridCol({ span = GRID_COLUMNS, className, style, ...props }, ref) {
   const width = Math.min(Math.max(Math.round(span), 1), GRID_COLUMNS)
 
   return (
     <div
+      ref={ref}
       data-slot="grid-col"
       // `min-w-0` — иначе длинное неразрывное содержимое (номер счёта,
       // таблица) распирает колонку сверх её пролёта: у grid-элемента
@@ -155,7 +171,7 @@ function GridCol({ span = GRID_COLUMNS, className, style, ...props }: GridColPro
       {...props}
     />
   )
-}
+})
 
 /**
  * Ширина пролёта в N колонок — как CSS-выражение, а не число.
@@ -193,9 +209,13 @@ function gridSpanWidth(span: number): string {
  * столбец), и подсказка честно показывает одну полосу: 12 колонок по 128 на
  * мобиле не живут.
  */
-function GridGuides({ className, ...props }: React.ComponentProps<"div">) {
+const GridGuides = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function GridGuides({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       aria-hidden="true"
       data-slot="grid-guides"
       className={cn(
@@ -220,7 +240,7 @@ function GridGuides({ className, ...props }: React.ComponentProps<"div">) {
       ))}
     </div>
   )
-}
+})
 
 export {
   Grid,

@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import { NESTED_CONTROL_SELECTOR, fromNestedControl } from "@/lib/press"
+
 import type { DataTableProps } from "./data-table-props"
 import { TABLE_FIELD_TYPES } from "./field-types"
 import { DEFAULT_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from "./geometry"
@@ -30,21 +32,15 @@ import { useTableSort } from "./use-table-sort"
 // выбор по видимым).
 
 /**
- * Узлы, на которых нажатие НЕ считается нажатием на строку.
+ * Узлы, на которых нажатие НЕ считается нажатием на строку, сверх общего
+ * списка вложенного управления из `lib/press` (там же — отсев кликов,
+ * всплывших из порталов: меню действий строки рисуется в `body`).
  *
- * ⚠️ Ролей здесь столько же, сколько тегов, и это не перестраховка: чекбокс
- * кита — это `<span role="checkbox">` (так его рисует Base UI), а не `input`
- * и не `button`. Без роли нажатие по нему одновременно переключало бы выбор
- * и уводило на карточку.
+ * ⚠️ Чекбокс кита — это `<span role="checkbox">` (так его рисует Base UI), а
+ * не `input`: общий список поэтому держит и роли, а не только теги.
  */
 const INTERACTIVE_SELECTOR = [
-  "button",
-  "a",
-  "input",
-  "label",
-  "[role='checkbox']",
-  "[role='button']",
-  "[role='menuitem']",
+  NESTED_CONTROL_SELECTOR,
   "[data-slot='table-resize-handle']",
 ].join(", ")
 
@@ -98,6 +94,21 @@ function useDataTableModel<Row>({
   )
   const hierarchical = allRows.some((entry) => entry.hasChildren)
 
+  // Ключ строки фиксируется по её месту в ИСХОДНЫХ данных. У строки без `id`
+  // и без `getRowKey` ключ — это путь по индексам, и считай его после
+  // сортировки, он переезжал бы на ту строку, что встала на её место:
+  // выбор, подсветка и `key` React прыгали бы на соседнюю строку.
+  const keyByRow = React.useMemo(() => {
+    const map = new Map<Row, string>()
+    for (const entry of allRows) map.set(entry.row, entry.key)
+    return map
+  }, [allRows])
+  const stableKeyOf = React.useCallback(
+    (row: Row, index: number, path: string) =>
+      keyByRow.get(row) ?? keyOf(row, index, path),
+    [keyByRow, keyOf]
+  )
+
   const { activeSort, handleSortClick, sortedRows } = useTableSort({
     fields,
     columns,
@@ -117,8 +128,8 @@ function useDataTableModel<Row>({
     })
 
   const visibleRows = React.useMemo(
-    () => flatten(sortedRows, childrenOf, keyOf, isExpanded),
-    [sortedRows, childrenOf, keyOf, isExpanded]
+    () => flatten(sortedRows, childrenOf, stableKeyOf, isExpanded),
+    [sortedRows, childrenOf, stableKeyOf, isExpanded]
   )
 
   // Появившиеся строки подсвечиваются САМИ — корневое правило таблиц
@@ -191,6 +202,7 @@ function useDataTableModel<Row>({
     return (event: React.MouseEvent<HTMLTableRowElement>) => {
       // Нажатие по чекбоксу, ссылке или кнопке действий — это не переход на
       // карточку: без проверки одно нажатие делало бы и то, и другое.
+      if (fromNestedControl(event)) return
       if ((event.target as Element).closest(INTERACTIVE_SELECTOR)) return
       onRowClick(row, key)
     }

@@ -57,11 +57,6 @@ function CostTable({ items, edits, onEdit, funds }: CostTableProps) {
         // Столбец иерархии — шеврон сворачивания и отступ по уровню берёт на
         // себя таблица.
         hierarchy: true,
-        // Значение нужно ТОЛЬКО чтобы ячейка не считалась пустой: пустую
-        // таблица рисует прочерком и до `render` не доходит вовсе (см.
-        // `fieldCellProps` — проверка `empty` стоит раньше). То же и у трёх
-        // денежных столбцов ниже.
-        value: (row: CostItem) => row.title,
         width: 640,
         minWidth: 320,
         render: (row: CostItem) => (
@@ -85,10 +80,6 @@ function CostTable({ items, edits, onEdit, funds }: CostTableProps) {
         ),
         type: "custom",
         align: "right",
-        value: (row: CostItem) => {
-          const value = resolved(row, edits)
-          return value.borrowed + value.own
-        },
         width: 216,
         minWidth: 216,
         render: (row: CostItem) => {
@@ -111,7 +102,6 @@ function CostTable({ items, edits, onEdit, funds }: CostTableProps) {
         ),
         type: "custom",
         align: "right",
-        value: (row: CostItem) => resolved(row, edits).borrowed,
         width: 216,
         minWidth: 216,
         render: (row: CostItem) => (
@@ -136,7 +126,6 @@ function CostTable({ items, edits, onEdit, funds }: CostTableProps) {
         ),
         type: "custom",
         align: "right",
-        value: (row: CostItem) => resolved(row, edits).own,
         width: 216,
         minWidth: 216,
         render: (row: CostItem) => (

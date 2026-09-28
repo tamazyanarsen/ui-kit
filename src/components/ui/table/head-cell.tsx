@@ -14,6 +14,7 @@ import {
 } from "./geometry"
 import { TableHeadCellTitle } from "./head-cell-title"
 import type { TablePin } from "./pin"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { usePinPresentation } from "./pin-presentation"
 import { TableRowMenu } from "./row-menu"
 import type { TableHeadCellType } from "./types"
@@ -97,7 +98,12 @@ interface TableHeadCellProps
   edge?: boolean
 }
 
-function TableHeadCell({
+// forwardRef: на React 18 обычная функция молча теряет `ref`, хотя тип пропов
+// (`ComponentProps<"th">`) его обещает. Внутренний ref закрепа сливается с ним.
+const TableHeadCell = React.forwardRef<
+  HTMLTableHeaderCellElement,
+  TableHeadCellProps
+>(function TableHeadCell({
   className,
   type = "subtitle-left",
   children,
@@ -121,7 +127,7 @@ function TableHeadCell({
   edge = false,
   style,
   ...props
-}: TableHeadCellProps) {
+}, forwardedRef) {
   const isSubtitle = type === "subtitle-left" || type === "subtitle-right"
   const isRight = type === "subtitle-right"
   // Хвостовой остаток ширины — не колонка данных: ни подписи, ни ширины, ни
@@ -143,6 +149,7 @@ function TableHeadCell({
     minWidth,
   })
   const pinned = usePinPresentation<HTMLTableHeaderCellElement>(pin, true)
+  const ref = useComposedRefs(pinned.ref, forwardedRef)
   const divider = hasColumnDivider(type)
 
   const collapseToggle = (
@@ -155,11 +162,22 @@ function TableHeadCell({
 
   return (
     <th
-      ref={pinned.ref}
+      ref={ref}
       data-slot="table-head-cell"
       data-type={type}
       data-pin={pin}
       scope={isSpacer ? undefined : "col"}
+      // Состояние сортировки для скринридера: цвет подписи и шеврон его не
+      // сообщают. Только у сортируемой колонки — у прочих атрибута нет.
+      aria-sort={
+        canSort
+          ? sortDirection === "asc"
+            ? "ascending"
+            : sortDirection === "desc"
+              ? "descending"
+              : "none"
+          : undefined
+      }
       aria-hidden={isSpacer || undefined}
       style={{
         ...style,
@@ -273,7 +291,7 @@ function TableHeadCell({
       {pinned.divider}
     </th>
   )
-}
+})
 
 export { TableHeadCell }
 export type { TableHeadCellProps }

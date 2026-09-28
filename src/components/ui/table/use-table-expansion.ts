@@ -32,6 +32,21 @@ function useTableExpansion<Row>({
   const [collapsed, setCollapsed] = React.useState<ReadonlySet<string>>(
     () => new Set(defaultCollapsed ? expandableKeys : [])
   )
+  // Сворачиваемые ключи, которые таблица уже видела. `defaultCollapsed`
+  // применяется к каждой группе при её ПЕРВОМ появлении, а не только к тем,
+  // что были на монтировании: при загрузке данных после первого рендера
+  // (пустой массив → строки) дерево иначе приходило развёрнутым целиком.
+  const [seen, setSeen] = React.useState<ReadonlySet<string>>(
+    () => new Set(expandableKeys)
+  )
+  const unseen = expandableKeys.filter((key) => !seen.has(key))
+  if (unseen.length > 0) {
+    // Обновление состояния прямо в рендере — штатный приём React для
+    // состояния, выводимого из пропов: повторный рендер идёт сразу, до
+    // отрисовки, и развёрнутый кадр на экран не попадает.
+    setSeen(new Set([...seen, ...unseen]))
+    if (defaultCollapsed) setCollapsed(new Set([...collapsed, ...unseen]))
+  }
 
   const isExpanded = React.useCallback(
     (key: string) =>

@@ -73,12 +73,26 @@ function useHorizontalScrollState(
 
     measure()
     el.addEventListener("scroll", measure, { passive: true })
+    // Наблюдаются окно и КАЖДЫЙ его ребёнок, а состав детей отслеживается.
+    // Раньше смотрели только на `firstElementChild`: у ленты сводки это
+    // первая пара (или `null` при пустом `items`), и пары, приехавшие
+    // позже, ширину окна не меняли — стрелка «вперёд» так и не появлялась.
     const observer = new ResizeObserver(measure)
-    observer.observe(el)
-    if (el.firstElementChild) observer.observe(el.firstElementChild)
+    const observeAll = () => {
+      observer.disconnect()
+      observer.observe(el)
+      for (const child of Array.from(el.children)) observer.observe(child)
+    }
+    observeAll()
+    const mutations = new MutationObserver(() => {
+      observeAll()
+      measure()
+    })
+    mutations.observe(el, { childList: true })
     return () => {
       el.removeEventListener("scroll", measure)
       observer.disconnect()
+      mutations.disconnect()
     }
   }, [ref])
 
@@ -154,13 +168,28 @@ function usePinnedCell<T extends HTMLTableCellElement>(
     measure()
 
     // Наблюдаем за каждой ячейкой строки: изменение ширины любой колонки
-    // впереди или позади этой сдвигает её.
+    // впереди или позади этой сдвигает её. Состав строки тоже отслеживается:
+    // включили `selectable` или переставили колонки — у старых соседей
+    // размер не меняется, и без этого отступ оставался прежним, а закреп
+    // наезжал на колонку чекбоксов.
     const observer = new ResizeObserver(measure)
     const row = el.parentElement
-    if (row) {
-      for (const child of Array.from(row.children)) observer.observe(child)
+    const observeRow = () => {
+      observer.disconnect()
+      if (row) {
+        for (const child of Array.from(row.children)) observer.observe(child)
+      }
     }
-    return () => observer.disconnect()
+    observeRow()
+    const mutations = new MutationObserver(() => {
+      observeRow()
+      measure()
+    })
+    if (row) mutations.observe(row, { childList: true })
+    return () => {
+      observer.disconnect()
+      mutations.disconnect()
+    }
   }, [pin])
 
   return { ref, offset: state.offset, edge: state.edge }

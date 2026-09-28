@@ -14,6 +14,9 @@ import {
   useSortable,
 } from "@/components/ui/sortable"
 
+import { isColumnVisible } from "./column-visibility"
+import { nodeText } from "./node-text"
+
 // TableColumnSettings — «Управление столбцами», всплывающее окно за кнопкой
 // «Настроить столбцы» в верху таблицы.
 //
@@ -35,6 +38,7 @@ import {
 interface TableColumn {
   id: string
   label: React.ReactNode
+  /** Не задано — столбец виден: скрывает только явное `false`. */
   visible?: boolean
   /** Показывается всегда, флажок выключен (серые строки во всплывающем окне макета). */
   locked?: boolean
@@ -72,14 +76,16 @@ function TableColumnSettings({
   const normalized = query.trim().toLowerCase()
   const visibleRows = normalized
     ? columns.filter((column) =>
-        String(column.label).toLowerCase().includes(normalized)
+        nodeText(column.label).toLowerCase().includes(normalized)
       )
     : columns
 
   function toggle(id: string) {
     onColumnsChange(
       columns.map((column) =>
-        column.id === id ? { ...column, visible: !column.visible } : column
+        column.id === id
+          ? { ...column, visible: !isColumnVisible(column) }
+          : column
       )
     )
   }
@@ -202,17 +208,17 @@ function TableColumnSettings({
                       className="flex shrink-0"
                     >
                       <Checkbox
-                        checked={column.locked ? true : column.visible}
+                        checked={column.locked || isColumnVisible(column)}
                         disabled={column.locked}
                         onCheckedChange={() => toggle(column.id)}
-                        aria-label={`Показывать столбец «${String(column.label)}»`}
+                        aria-label={`Показывать столбец «${nodeText(column.label)}»`}
                       />
                     </span>
                   )}
                   <span
                     className={cn(
                       "min-w-0 flex-1 truncate text-p1-medium",
-                      column.locked || (hideable && !column.visible)
+                      column.locked || (hideable && !isColumnVisible(column))
                         ? "text-[var(--table-description-fg)]"
                         : "text-[var(--table-fg)]"
                     )}
@@ -221,7 +227,7 @@ function TableColumnSettings({
                   </span>
                   {reorderable && (
                     <SortableHandle
-                      label={`Переместить столбец «${String(column.label)}»`}
+                      label={`Переместить столбец «${nodeText(column.label)}»`}
                       disabled={dragDisabled(column)}
                       // Клик по ручке не должен переключать видимость: строка
                       // целиком — увеличенная площадь чекбокса (см. выше).

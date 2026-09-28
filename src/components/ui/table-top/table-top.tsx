@@ -31,9 +31,13 @@ import { cn } from "@/lib/utils"
 // таблицей, которую она озаглавливает. Прежнее прочтение макета превратило
 // его в скруглённую белую панель с отступом 24px, чего у самого символа
 // нет.
-function TableTop({ className, ...props }: React.ComponentProps<"div">) {
+const TableTop = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function TableTop({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="table-top"
       className={cn(
         "flex w-full flex-col gap-4 border-b border-[var(--table-divider)] p-4",
@@ -42,7 +46,7 @@ function TableTop({ className, ...props }: React.ComponentProps<"div">) {
       {...props}
     />
   )
-}
+})
 
 interface TableTopTitleProps
   extends Omit<React.ComponentProps<"div">, "title"> {
@@ -51,14 +55,18 @@ interface TableTopTitleProps
   action?: React.ReactNode
 }
 
-function TableTopTitle({
+const TableTopTitle = React.forwardRef<
+  HTMLDivElement,
+  TableTopTitleProps
+>(function TableTopTitle({
   className,
   title,
   action,
   ...props
-}: TableTopTitleProps) {
+}, ref) {
   return (
     <div
+      ref={ref}
       data-slot="table-top-title"
       className={cn("flex min-h-8 items-center justify-between gap-4", className)}
       {...props}
@@ -72,15 +80,19 @@ function TableTopTitle({
       {action}
     </div>
   )
-}
+})
 
 // Оборачивает поле поиска, выпадающие фильтры и кнопки «Ещё фильтры» и
 // «Сбросить фильтры» — это просто переносящаяся flex-строка, всё
 // содержимое собирает вызывающий код (полную сборку см. в
 // table-top-demo.tsx).
-function TableTopToolbar({ className, ...props }: React.ComponentProps<"div">) {
+const TableTopToolbar = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function TableTopToolbar({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="table-top-toolbar"
       // «Group Chips (ELK)» переносится с несимметричным зазором: 8px
       // между контролами в строке и 12px между перенесёнными строками.
@@ -88,7 +100,7 @@ function TableTopToolbar({ className, ...props }: React.ComponentProps<"div">) {
       {...props}
     />
   )
-}
+})
 
 interface TableTopSummaryProps extends React.ComponentProps<"div"> {
   /** Left-aligned text, e.g. "Выбрано фильтров: 0  Результатов: 8". */
@@ -97,14 +109,18 @@ interface TableTopSummaryProps extends React.ComponentProps<"div"> {
   actions?: React.ReactNode
 }
 
-function TableTopSummary({
+const TableTopSummary = React.forwardRef<
+  HTMLDivElement,
+  TableTopSummaryProps
+>(function TableTopSummary({
   className,
   info,
   actions,
   ...props
-}: TableTopSummaryProps) {
+}, ref) {
   return (
     <div
+      ref={ref}
       data-slot="table-top-summary"
       // ⚠️ Блок результата — 40, а не 32: у `Result-Table (ELK)` есть
       // СОБСТВЕННЫЙ верхний отступ 8 поверх минимальной высоты 32 (замер:
@@ -132,7 +148,7 @@ function TableTopSummary({
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>
   )
-}
+})
 
 interface TableTopSummaryItemProps extends React.ComponentProps<"span"> {
   label: React.ReactNode
@@ -148,14 +164,18 @@ interface TableTopSummaryItemProps extends React.ComponentProps<"span"> {
 // служебный текст, а тёмное число выдавало его за содержимое таблицы. Если
 // следующий проход увидит в Figma тёмное число — это ожидаемо, возвращать не
 // нужно.
-function TableTopSummaryItem({
+const TableTopSummaryItem = React.forwardRef<
+  HTMLSpanElement,
+  TableTopSummaryItemProps
+>(function TableTopSummaryItem({
   className,
   label,
   value,
   ...props
-}: TableTopSummaryItemProps) {
+}, ref) {
   return (
     <span
+      ref={ref}
       data-slot="table-top-summary-item"
       className={cn(
         "flex items-center gap-1 text-[var(--table-description-fg)]",
@@ -167,7 +187,7 @@ function TableTopSummaryItem({
       <span>{value}</span>
     </span>
   )
-}
+})
 
 // Один шеврон в конце полосы.
 //
@@ -229,12 +249,15 @@ interface TableTopDetailsProps extends React.ComponentProps<"div"> {
   items: { label: React.ReactNode; value: React.ReactNode }[]
 }
 
-function TableTopDetails({
+const TableTopDetails = React.forwardRef<
+  HTMLDivElement,
+  TableTopDetailsProps
+>(function TableTopDetails({
   className,
   label = "Сводка",
   items,
   ...props
-}: TableTopDetailsProps) {
+}, ref) {
   const trackRef = React.useRef<HTMLDivElement>(null)
   const { scrolledFromStart, scrolledFromEnd } = useHorizontalScrollState(trackRef)
 
@@ -267,6 +290,7 @@ function TableTopDetails({
 
   return (
     <div
+      ref={ref}
       data-slot="table-top-details"
       className={cn("flex min-h-8 items-center gap-4 text-p2-medium", className)}
       {...props}
@@ -329,7 +353,7 @@ function TableTopDetails({
       </div>
     </div>
   )
-}
+})
 
 export {
   TableTop,

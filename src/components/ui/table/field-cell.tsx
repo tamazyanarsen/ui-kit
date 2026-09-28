@@ -29,7 +29,8 @@ import {
  * Порядок разрешения: `render` (своя разметка) → `format` (своё
  * форматирование значения) → форматирование по типу. Пустое значение
  * заменяется прочерком, и знак валюты при этом не рисуется: «— ₽» читается
- * как ноль рублей, которого в данных нет.
+ * как ноль рублей, которого в данных нет. У `render` прочерк ставится по его
+ * собственному пустому ответу, а не по значению поля.
  */
 function fieldCellProps<Row>(
   field: TableField<Row>,
@@ -94,10 +95,20 @@ function fieldCellProps<Row>(
   // подписи — это цветной прямоугольник ни о чём.
   const cellType = type === "tag" ? "text" : spec.cell
 
-  const content = empty
-    ? (field.empty ?? "—")
-    : field.render
-      ? field.render(row)
+  // `render` строит ячейку по СТРОКЕ, а не по значению, поэтому пустота
+  // значения его не отменяет: у вычисляемого столбца (`custom` без `value`)
+  // значения по ключу нет вовсе, и раньше такой столбец целиком рисовался
+  // прочерками. Прочерк остаётся, только если сам `render` ничего не вернул.
+  const rendered = field.render ? field.render(row) : undefined
+  const renderedEmpty =
+    rendered === undefined || rendered === null || rendered === false || rendered === ""
+
+  const content = field.render
+    ? renderedEmpty
+      ? (field.empty ?? "—")
+      : rendered
+    : empty
+      ? (field.empty ?? "—")
       : field.format
         ? field.format(value, row)
         : typeContent(field, row, value)
@@ -196,14 +207,29 @@ function FieldLink({
   onClick?: () => void
   children: React.ReactNode
 }) {
+  const handleClick = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    onClick?.()
+  }
+  // Без `href` ссылка — это действие, а не адрес: `<a>` без `href` не
+  // попадает в обход по Tab и не нажимается с клавиатуры, поэтому такая
+  // «ссылка» рисуется кнопкой с тем же видом.
+  if (!href && onClick) {
+    return (
+      <button
+        type="button"
+        className="cursor-pointer text-link outline-none focus-visible:focus-ring"
+        onClick={handleClick}
+      >
+        {children}
+      </button>
+    )
+  }
   return (
     <a
       href={href}
       className="text-link outline-none focus-visible:focus-ring"
-      onClick={(event) => {
-        event.stopPropagation()
-        onClick?.()
-      }}
+      onClick={handleClick}
     >
       {children}
     </a>

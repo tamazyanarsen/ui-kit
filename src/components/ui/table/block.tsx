@@ -28,9 +28,13 @@ import { cn } from "@/lib/utils"
 // блока — на реестре аккредитивов это 733px ниже нижнего края экрана.
 // `overflow: clip` режет по тому же радиусу, но области прокрутки не
 // создаёт. То же исправлено у `CardBox type="table"` и у песочного блока.
-function TableBlock({ className, ...props }: React.ComponentProps<"div">) {
+const TableBlock = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function TableBlock({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="table-block"
       className={cn(
         "w-full overflow-clip rounded-[16px] bg-[var(--table-bg)]",
@@ -39,7 +43,7 @@ function TableBlock({ className, ...props }: React.ComponentProps<"div">) {
       {...props}
     />
   )
-}
+})
 
 // Слот пустого или нулевого результата — «Нулевой результат фильтрации, нет
 // записей. Замещают собой строки таблицы внутри блока».
@@ -52,9 +56,13 @@ function TableBlock({ className, ...props }: React.ComponentProps<"div">) {
 // без изменений, так как на страницах может быть онбординг на элементы
 // таблиц»), а нижняя линия отделяет пагинатор так же, как это делала бы
 // последняя строка данных.
-function TableBlockEmpty({ className, ...props }: React.ComponentProps<"div">) {
+const TableBlockEmpty = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(function TableBlockEmpty({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="table-block-empty"
       className={cn(
         "flex w-full items-center justify-center border-b border-[var(--table-divider)]",
@@ -63,6 +71,6 @@ function TableBlockEmpty({ className, ...props }: React.ComponentProps<"div">) {
       {...props}
     />
   )
-}
+})
 
 export { TableBlock, TableBlockEmpty }

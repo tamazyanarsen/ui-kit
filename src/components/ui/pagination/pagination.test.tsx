@@ -84,3 +84,16 @@ describe("Pagination", () => {
     expect(screen.getByRole("button", { name: "75" })).toBeInTheDocument()
   })
 })
+
+describe("Pagination — номер страницы за концом списка", () => {
+  // Отбор сузил выдачу до 5 страниц, а родитель оставил `page={7}`:
+  // «Предыдущая» выглядит активной и обязана что-то делать.
+  it("«Предыдущая» ведёт на последнюю существующую страницу", async () => {
+    const user = userEvent.setup()
+    const onPageChange = vi.fn()
+    render(<Pagination page={7} totalPages={5} onPageChange={onPageChange} />)
+
+    await user.click(screen.getByRole("button", { name: "Предыдущая страница" }))
+    expect(onPageChange).toHaveBeenCalledWith(5)
+  })
+})

@@ -1,7 +1,17 @@
+import * as React from "react"
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 
-import { GRID_COLUMNS, Grid, GridCol, GridRow, gridSpanWidth } from "./grid"
+
+import {
+  GRID_COLUMNS,
+  Grid,
+  GridCol,
+  GridGuides,
+  GridRoot,
+  GridRow,
+  gridSpanWidth,
+} from "./grid"
 
 describe("Grid", () => {
   it("рисует полосу и пробрасывает нативные пропсы", () => {
@@ -45,5 +55,22 @@ describe("gridSpanWidth", () => {
 
   it("округляет дробное число колонок", () => {
     expect(gridSpanWidth(5.6)).toBe(gridSpanWidth(6))
+  })
+})
+
+describe("Grid — ref", () => {
+  it("каждая часть сетки отдаёт ref на свой узел", () => {
+    const refs = [0, 1, 2, 3, 4].map(() => React.createRef<HTMLDivElement>())
+    render(
+      <GridRoot ref={refs[0]}>
+        <Grid ref={refs[1]}>
+          <GridRow ref={refs[2]}>
+            <GridCol ref={refs[3]} span={6} />
+          </GridRow>
+          <GridGuides ref={refs[4]} />
+        </Grid>
+      </GridRoot>
+    )
+    for (const ref of refs) expect(ref.current).toBeInstanceOf(HTMLDivElement)
   })
 })

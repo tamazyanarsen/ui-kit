@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/item-information-field"
 import { Pagination } from "@/components/ui/pagination"
 import { ProgressBar } from "@/components/ui/progress-bar"
-import { DataTable, type TableSort } from "@/components/ui/table"
+import {
+  DataTable,
+  sortTableRows,
+  type TableSort,
+} from "@/components/ui/table"
 import {
   TableTop,
   TableTopSummary,
@@ -79,7 +83,14 @@ function BusinessCardDetail() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const safePage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
+  // Сортируется ВЕСЬ отбор, и только потом режется страница: таблице
+  // уходит уже вырезанная страница, и её собственная сортировка
+  // переставляла бы строки лишь внутри неё.
+  const sorted = useMemo(
+    () => sortTableRows(filtered, OPERATION_FIELDS, sort),
+    [filtered, sort]
+  )
+  const pageRows = sorted.slice((safePage - 1) * pageSize, safePage * pageSize)
   const appliedCount = Object.values(chips).filter(Boolean).length
 
   return (
@@ -267,7 +278,11 @@ function BusinessCardDetail() {
               fields={OPERATION_FIELDS}
               rows={pageRows}
               sort={sort}
-              onSortChange={setSort}
+              onSortChange={(next) => {
+                setSort(next)
+                setPage(1)
+              }}
+              manualSort
             />
 
             <Pagination

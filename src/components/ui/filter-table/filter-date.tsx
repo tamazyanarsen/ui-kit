@@ -68,9 +68,13 @@ function FilterDate({
   const applied = value ?? uncontrolled
   const [draft, setDraft] = React.useState<[Date | null, Date | null]>(applied)
 
-  React.useEffect(() => {
-    if (open) setDraft(applied)
-  }, [open, applied])
+  // Черновик берётся в момент открытия, а не эффектом по `applied`: в
+  // управляемом режиме `value` — новый кортеж на каждый рендер, и эффект
+  // сбрасывал выбранные даты при любой перерисовке родителя.
+  function handleOpenChange(next: boolean) {
+    if (next && !open) setDraft(applied)
+    setOpen(next)
+  }
 
   function commit(next: [Date | null, Date | null]) {
     if (value === undefined) setUncontrolled(next)
@@ -97,7 +101,7 @@ function FilterDate({
       onClear={() => commit(EMPTY)}
       disabled={disabled}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       width={560}
       className={className}
     >

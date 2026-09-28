@@ -209,9 +209,14 @@ function Pagination({
   const showNav = totalPages > 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
 
+  // Цель прижимается к существующим страницам, а не отбрасывается. Если
+  // страниц стало меньше, чем номер текущей (отбор сузил выдачу, а родитель
+  // `page` не поправил), «Предыдущая» выглядит активной — и раньше молча
+  // ничего не делала: `page - 1` тоже лежало за концом списка.
   function goTo(next: number) {
-    if (next < 1 || next > totalPages || next === page) return
-    onPageChange?.(next)
+    const target = Math.min(Math.max(next, 1), Math.max(totalPages, 1))
+    if (target === page) return
+    onPageChange?.(target)
   }
 
   return (

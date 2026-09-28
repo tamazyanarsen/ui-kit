@@ -89,6 +89,13 @@ function FilterTableSelect({
     onOpenChange?.(next)
   }
 
+  // См. `FilterShell`: отключение закрывает окно по-настоящему, иначе после
+  // включения оно открывалось бы само.
+  React.useEffect(() => {
+    if (disabled && open) setOpen(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disabled, open])
+
   function commitValue(next: string | null) {
     if (value === undefined) setInternalValue(next)
     onValueChange?.(next)

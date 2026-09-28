@@ -26,7 +26,10 @@ interface FilterBooleanProps
   onValueChange?: (value: boolean) => void
 }
 
-function FilterBoolean({
+const FilterBoolean = React.forwardRef<
+  HTMLButtonElement,
+  FilterBooleanProps
+>(function FilterBoolean({
   className,
   label,
   value,
@@ -35,12 +38,13 @@ function FilterBoolean({
   disabled = false,
   onClick,
   ...props
-}: FilterBooleanProps) {
+}, ref) {
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
   const active = value ?? uncontrolled
 
   return (
     <button
+      ref={ref}
       type="button"
       data-slot="filter-boolean"
       aria-pressed={active}
@@ -61,7 +65,7 @@ function FilterBoolean({
       {label}
     </button>
   )
-}
+})
 
 export { FilterBoolean }
 export type { FilterBooleanProps }

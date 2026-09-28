@@ -61,6 +61,13 @@ function FilterShell({
 }: FilterShellProps) {
   const anchorRef = React.useRef<HTMLDivElement>(null)
 
+  // Отключённый фильтр закрывается по-настоящему, а не только глушится
+  // через `open={false}`: иначе внутреннее `open` владельца оставалось
+  // истинным, и после включения окно открывалось само, без нажатия.
+  React.useEffect(() => {
+    if (disabled && open) onOpenChange(false)
+  }, [disabled, open, onOpenChange])
+
   function renderTriggerAction() {
     if (active && onClear) {
       return (

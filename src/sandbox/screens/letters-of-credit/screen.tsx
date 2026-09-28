@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button"
 import { ButtonMenuBlack } from "@/components/ui/button-menu"
 import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
 import { Pagination } from "@/components/ui/pagination"
-import { DataTable, TableBlock, columnsFromFields } from "@/components/ui/table"
+import {
+  DataTable,
+  TableBlock,
+  columnsFromFields,
+  sortTableRows,
+  type TableSort,
+} from "@/components/ui/table"
 import { Tabs } from "@/components/ui/tabs"
 import { TitleRegistry } from "@/components/ui/title"
 import { TopFixedMessage } from "@/components/ui/top-fixed-message"
@@ -31,6 +37,14 @@ import { LettersTableHeader } from "./table-header"
 
 const PAGE_SIZE_DEFAULT = 25
 
+// Та же сортировка по умолчанию, что взяла бы сама таблица: первый
+// сортируемый столбец по возрастанию. Здесь она задана явно, потому что
+// сортирует экран (см. `sorted` ниже), а не таблица.
+const FIRST_SORTABLE = LETTER_FIELDS.find((field) => field.sortable)
+const DEFAULT_SORT: TableSort | null = FIRST_SORTABLE
+  ? { key: FIRST_SORTABLE.key, direction: "asc" }
+  : null
+
 function LettersOfCreditScreen() {
   const toast = useToast()
 
@@ -40,6 +54,7 @@ function LettersOfCreditScreen() {
   const [selected, setSelected] = useState<string[]>([])
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(PAGE_SIZE_DEFAULT)
+  const [sort, setSort] = useState<TableSort | null>(DEFAULT_SORT)
   const [columns, setColumns] = useState(() => columnsFromFields(LETTER_FIELDS))
   const [messageOpen, setMessageOpen] = useState(true)
 
@@ -95,7 +110,14 @@ function LettersOfCreditScreen() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const safePage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
+  // Сортируется ВЕСЬ отбор, а страница режется потом: таблице уходит уже
+  // вырезанная страница, и её собственная сортировка переставляла бы строки
+  // только внутри неё.
+  const sorted = useMemo(
+    () => sortTableRows(filtered, LETTER_FIELDS, sort),
+    [filtered, sort]
+  )
+  const pageRows = sorted.slice((safePage - 1) * pageSize, safePage * pageSize)
 
   const appliedCount = Object.values(chips).filter(Boolean).length
   // Сумма выбранного считается по ВСЕМУ отбору, а не по странице: кнопка
@@ -207,6 +229,12 @@ function LettersOfCreditScreen() {
         <DataTable
           fields={LETTER_FIELDS}
           rows={pageRows}
+          sort={sort}
+          onSortChange={(next) => {
+            setSort(next)
+            setPage(1)
+          }}
+          manualSort
           columnSettings={columns}
           selectable
           selectedKeys={selected}

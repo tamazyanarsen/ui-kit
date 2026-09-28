@@ -13,6 +13,7 @@ export { columnsFromFields } from "./table-columns"
 export { selectableRowKeys } from "./selectable-keys"
 export type { SelectableRowKeysOptions } from "./selectable-keys"
 export type { TableSort } from "./use-table-sort"
+export { sortTableRows } from "./table-rows"
 export { TABLE_FIELD_TYPES } from "./field-types"
 export type {
   TableField,

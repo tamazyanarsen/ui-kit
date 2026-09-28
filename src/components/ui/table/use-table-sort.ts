@@ -12,7 +12,7 @@ interface TableSort {
 interface TableSortOptions<Row> {
   /** Все объявленные поля — среди них ищется поле активной сортировки. */
   fields: TableField<Row>[]
-  /** Видимые столбцы — по ним выбирается сортировка по умолчанию. */
+  /** Видимые столбцы — сортировка по умолчанию берётся только среди них. */
   columns: TableField<Row>[]
   rows: Row[]
   /** В таблице есть вложенность. */
@@ -48,13 +48,23 @@ function useTableSort<Row>({
 }: TableSortOptions<Row>) {
   const [ownSort, setOwnSort] = React.useState<TableSort | null>(null)
 
+  // ⚠️ Сортировка по умолчанию ищется в порядке ОБЪЯВЛЕНИЯ полей, а не в
+  // порядке столбцов после настройки: иначе перестановка столбцов в
+  // «Настроить столбцы» молча пересортировывала бы строки по другому полю.
+  // Скрытый столбец в расчёт не идёт — сортировку, индикатора которой нигде
+  // не видно, пользователь прочитать не может. По той же причине своя
+  // сортировка по столбцу, который потом скрыли, уступает умолчанию.
+  const visibleKeys = new Set(columns.map((field) => field.key))
   const firstSortable = hierarchical
     ? undefined
-    : columns.find((field) => field.sortable)
+    : fields.find((field) => field.sortable && visibleKeys.has(field.key))
   const fallbackSort: TableSort | null = firstSortable
     ? { key: firstSortable.key, direction: "asc" }
     : null
-  const activeSort = sort !== undefined ? sort : (ownSort ?? fallbackSort)
+  const visibleOwnSort =
+    ownSort && visibleKeys.has(ownSort.key) ? ownSort : null
+  const activeSort =
+    sort !== undefined ? sort : (visibleOwnSort ?? fallbackSort)
 
   function handleSortClick(key: string) {
     const next: TableSort =

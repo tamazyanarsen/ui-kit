@@ -54,11 +54,19 @@ function useTableSelection<Row>({
     !allSelected && selectableRows.some((entry) => selected.has(entry.key))
 
   /** ⚠️ Круг: пусто → всё, частично → ВСЁ, всё → пусто. Добрать до полного
-   * выбора можно из любого состояния, а сбросить — только из полного. */
+   * выбора можно из любого состояния, а сбросить — только из полного.
+   *
+   * ⚠️ Добавляются и снимаются ТОЛЬКО видимые ключи, остальной выбор не
+   * трогается. Раньше набор заменялся целиком, и чекбокс шапки на второй
+   * странице молча стирал выбранное на первой, а снятие его после «Выбрать на
+   * всех страницах» сбрасывало выбор всех страниц сразу. */
   function toggleSelectedAll() {
-    changeSelected(
-      allSelected ? new Set() : new Set(selectableRows.map((entry) => entry.key))
-    )
+    const next = new Set(selected)
+    for (const entry of selectableRows) {
+      if (allSelected) next.delete(entry.key)
+      else next.add(entry.key)
+    }
+    changeSelected(next)
   }
 
   return {

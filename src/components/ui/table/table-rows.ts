@@ -57,5 +57,22 @@ function sortRows<Row>(
   })
 }
 
-export { flatten, sortRows }
+/**
+ * Сортировка строк по конфигу полей — та же, что делает `DataTable`.
+ *
+ * Нужна экрану с пагинацией: таблице туда уходит уже вырезанная страница, и
+ * её собственная сортировка переставляла бы строки только внутри страницы.
+ * Экран сортирует ВЕСЬ отбор этой функцией, режет страницу и отдаёт таблице
+ * `manualSort`. `null` или незнакомый ключ — порядок как есть.
+ */
+function sortTableRows<Row>(
+  rows: Row[],
+  fields: TableField<Row>[],
+  sort: { key: string; direction: "asc" | "desc" } | null
+): Row[] {
+  const field = sort ? fields.find((item) => item.key === sort.key) : undefined
+  return sort && field ? sortRows(rows, field, sort.direction) : rows
+}
+
+export { flatten, sortRows, sortTableRows }
 export type { FlatRow }

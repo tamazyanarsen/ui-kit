@@ -1,6 +1,7 @@
 import type * as React from "react"
 
 import type { TableColumn } from "./column-settings"
+import { isColumnVisible } from "./column-visibility"
 import { TABLE_FIELD_TYPES, type TableField } from "./field-types"
 import { fieldAlign, fieldUnit } from "./field-value"
 import type { FlatRow } from "./table-rows"
@@ -27,7 +28,7 @@ function resolveColumns<Row>(
   const shown = fields.filter((field) => {
     const setting = settings?.find((column) => column.id === field.key)
     if (!setting) return !field.hidden
-    return Boolean(setting.locked || setting.visible)
+    return Boolean(setting.locked) || isColumnVisible(setting)
   })
   if (!settings) return shown
 

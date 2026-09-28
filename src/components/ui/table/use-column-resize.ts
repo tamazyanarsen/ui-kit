@@ -82,13 +82,23 @@ function useColumnResize({
       if (width === undefined) setUncontrolledWidth(next)
       onWidthChange?.(next)
     }
+    // Перетаскивание заканчивается не только отпусканием: системный жест
+    // или потеря захвата присылают `pointercancel` / `lostpointercapture`.
+    // Без них `pointermove` оставался висеть на ручке, и следующее движение
+    // над ней БЕЗ нажатия продолжало менять ширину колонки.
     const onUp = () => {
       handle.removeEventListener("pointermove", onMove)
       handle.removeEventListener("pointerup", onUp)
-      handle.releasePointerCapture(event.pointerId)
+      handle.removeEventListener("pointercancel", onUp)
+      handle.removeEventListener("lostpointercapture", onUp)
+      if (handle.hasPointerCapture?.(event.pointerId)) {
+        handle.releasePointerCapture(event.pointerId)
+      }
     }
     handle.addEventListener("pointermove", onMove)
     handle.addEventListener("pointerup", onUp)
+    handle.addEventListener("pointercancel", onUp)
+    handle.addEventListener("lostpointercapture", onUp)
   }
 
   return { resolvedWidth, startResize }

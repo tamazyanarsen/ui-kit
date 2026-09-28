@@ -79,7 +79,9 @@ interface TableProps extends React.ComponentProps<"table"> {
   containerRef?: React.Ref<HTMLDivElement>
 }
 
-function Table({
+// forwardRef: `ref` уходит на сам `<table>`, окно прокрутки — через
+// `containerRef`. На React 18 обычная функция `ref` молча теряла.
+const Table = React.forwardRef<HTMLTableElement, TableProps>(function Table({
   className,
   fixed = false,
   stickyHeader = false,
@@ -87,7 +89,7 @@ function Table({
   containerClassName,
   containerRef,
   ...props
-}: TableProps) {
+}, ref) {
   const innerRef = React.useRef<HTMLDivElement>(null)
   React.useImperativeHandle(containerRef, () => innerRef.current as HTMLDivElement)
 
@@ -150,6 +152,7 @@ function Table({
           )}
         >
           <table
+            ref={ref}
             data-slot="table"
             data-sticky-header={stickyHeader || undefined}
             data-grid-lines={gridLines || undefined}
@@ -165,15 +168,21 @@ function Table({
       </div>
     </TableScrollContext.Provider>
   )
-}
+})
 
-function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-  return <thead data-slot="table-header" className={className} {...props} />
-}
+const TableHeader = React.forwardRef<
+  HTMLTableSectionElement,
+  React.ComponentProps<"thead">
+>(function TableHeader({ className, ...props }, ref) {
+  return <thead ref={ref} data-slot="table-header" className={className} {...props} />
+})
 
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
-  return <tbody data-slot="table-body" className={className} {...props} />
-}
+const TableBody = React.forwardRef<
+  HTMLTableSectionElement,
+  React.ComponentProps<"tbody">
+>(function TableBody({ className, ...props }, ref) {
+  return <tbody ref={ref} data-slot="table-body" className={className} {...props} />
+})
 
 // Состояния строки («Варианты — Line Fill»): у Default заливки нет, Hover и
 // Active — обычные `:hover` и `:active` в CSS, но *только у строки, которая
@@ -190,59 +199,74 @@ interface TableRowProps extends React.ComponentProps<"tr"> {
    * статично, затем 1000 мс затухает, по разделу «Добавление новой строки/строк». */
   added?: boolean
   /** Строка ведёт на страницу детального просмотра: включает заливки Hover
-   * и Active и курсор-указатель. Без этого макет оставляет строку инертной. */
+   * и Active и курсор-указатель. Без этого макет оставляет строку инертной.
+   * Такая строка встаёт в обход по Tab и открывается по Enter и пробелу. */
   clickable?: boolean
 }
 
-function TableRow({
-  className,
-  selected,
-  added,
-  clickable,
-  ...props
-}: TableRowProps) {
-  return (
-    <tr
-      data-slot="table-row"
-      data-selected={selected || undefined}
-      data-added={added || undefined}
-      data-clickable={clickable || undefined}
-      className={cn(
-        // Каждая строка несёт явную заливку, а не наследует заливку
-        // таблицы: закреплённые ячейки красят себя через `bg-inherit`, и
-        // сквозь прозрачную строку прокручиваемые колонки просвечивали бы.
-        "bg-[var(--table-bg)] transition-colors",
-        // Выбранная чекбоксом строка — Grey 124. Состояния `Selected` в сете
-        // «line fill» нет: цвет снят с макетов режима множественного выбора.
-        selected
-          ? "bg-[var(--table-row-active-bg)]"
-          : added
-            ? "animate-[table-row-added_2000ms_linear_forwards]"
-            : undefined,
-        // ⚠️ Ховер ПЕРЕБИВАЕТ выбор и делает выбранную строку СВЕТЛЕЕ:
-        // покой 124 → наведение 114 → нажатие снова 124. Клиент должен
-        // видеть реакцию строки и понимать, что провалиться можно и при
-        // включённом чекбоксе, — поэтому `selected` тут больше не гасит
-        // ховер. Работает это только благодаря порядку каскада: Tailwind
-        // печатает вариантные утилиты после безвариантных, так что
-        // `hover:` бьёт голый `bg-*` при равной специфичности, а `active:`
-        // бьёт `hover:` и возвращает строку в 124.
-        clickable &&
-          "cursor-pointer hover:bg-[var(--table-row-hover-bg)] active:bg-[var(--table-row-active-bg)]",
-        // «Hover, работа с кнопкой действий (изменения от 19.12.2025):
-        // Строка также меняет цвет — для понимания пользователя, к какой
-        // именно строке относятся раскрытые действия». Заливка обязана
-        // пережить курсор, который уходит со строки на меню в портале,
-        // поэтому она завязана на собственное состояние открытия триггера, а
-        // не на `:hover`. С `clickable` это не связано: речь о том, чтобы
-        // показать принадлежность открытого меню, а не о переходе.
-        "has-[[data-popup-open]]:bg-[var(--table-row-hover-bg)]",
-        className
-      )}
-      {...props}
-    />
-  )
-}
+const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  function TableRow(
+    { className, selected, added, clickable, tabIndex, onKeyDown, ...props },
+    ref
+  ) {
+    // Клавиатура для кликабельной строки: без неё карточку можно было открыть
+    // только мышью. Нажатие ловится лишь на САМОЙ строке — Enter на чекбоксе
+    // или кнопке внутри остаётся их собственным действием.
+    function handleKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>) {
+      onKeyDown?.(event)
+      if (event.defaultPrevented || !clickable) return
+      if (event.target !== event.currentTarget) return
+      if (event.key !== "Enter" && event.key !== " ") return
+      event.preventDefault()
+      event.currentTarget.click()
+    }
+
+    return (
+      <tr
+        ref={ref}
+        tabIndex={tabIndex ?? (clickable ? 0 : undefined)}
+        onKeyDown={handleKeyDown}
+        data-slot="table-row"
+        data-selected={selected || undefined}
+        data-added={added || undefined}
+        data-clickable={clickable || undefined}
+        className={cn(
+          // Каждая строка несёт явную заливку, а не наследует заливку
+          // таблицы: закреплённые ячейки красят себя через `bg-inherit`, и
+          // сквозь прозрачную строку прокручиваемые колонки просвечивали бы.
+          "bg-[var(--table-bg)] transition-colors",
+          // Выбранная чекбоксом строка — Grey 124. Состояния `Selected` в сете
+          // «line fill» нет: цвет снят с макетов режима множественного выбора.
+          selected
+            ? "bg-[var(--table-row-active-bg)]"
+            : added
+              ? "animate-[table-row-added_2000ms_linear_forwards]"
+              : undefined,
+          // ⚠️ Ховер ПЕРЕБИВАЕТ выбор и делает выбранную строку СВЕТЛЕЕ:
+          // покой 124 → наведение 114 → нажатие снова 124. Клиент должен
+          // видеть реакцию строки и понимать, что провалиться можно и при
+          // включённом чекбоксе, — поэтому `selected` тут больше не гасит
+          // ховер. Работает это только благодаря порядку каскада: Tailwind
+          // печатает вариантные утилиты после безвариантных, так что
+          // `hover:` бьёт голый `bg-*` при равной специфичности, а `active:`
+          // бьёт `hover:` и возвращает строку в 124.
+          clickable &&
+            "cursor-pointer outline-none hover:bg-[var(--table-row-hover-bg)] focus-visible:focus-ring-inset active:bg-[var(--table-row-active-bg)]",
+          // «Hover, работа с кнопкой действий (изменения от 19.12.2025):
+          // Строка также меняет цвет — для понимания пользователя, к какой
+          // именно строке относятся раскрытые действия». Заливка обязана
+          // пережить курсор, который уходит со строки на меню в портале,
+          // поэтому она завязана на собственное состояние открытия триггера, а
+          // не на `:hover`. С `clickable` это не связано: речь о том, чтобы
+          // показать принадлежность открытого меню, а не о переходе.
+          "has-[[data-popup-open]]:bg-[var(--table-row-hover-bg)]",
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
 
 export { Table, TableBody, TableHeader, TableRow }
 export type { TableProps, TableRowProps }

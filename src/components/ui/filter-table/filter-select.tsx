@@ -77,12 +77,18 @@ function FilterSelect({
   // Всплывающее окно размонтируется при закрытии, поэтому повторное
   // открытие начинается с того, что действительно применено, а не с
   // брошенного черновика.
-  React.useEffect(() => {
-    if (open) {
+  //
+  // ⚠️ Черновик берётся ровно в МОМЕНТ открытия, а не эффектом по `applied`.
+  // В управляемом режиме `value` — обычно новый массив на каждый рендер
+  // (`value={x ?? []}`), и эффект сбрасывал отмеченные галочки и строку
+  // поиска при любой перерисовке родителя, пока окно открыто.
+  function handleOpenChange(next: boolean) {
+    if (next && !open) {
       setDraft(applied)
       setQuery("")
     }
-  }, [open, applied])
+    setOpen(next)
+  }
 
   const resolvedGroups = React.useMemo<FilterSelectGroup[]>(
     () => groups ?? [{ label: "", options: options ?? [] }],
@@ -165,7 +171,7 @@ function FilterSelect({
       onClear={() => commit([])}
       disabled={disabled}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       width={384}
       className={className}
     >

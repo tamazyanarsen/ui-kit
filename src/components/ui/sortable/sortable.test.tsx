@@ -1,3 +1,4 @@
+import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen } from "@testing-library/react"
 
@@ -223,5 +224,13 @@ describe("useSortable", () => {
     })
     expect(onReorder).toHaveBeenCalledWith(1, 0)
     restore()
+  })
+})
+
+describe("SortableHandle — ref", () => {
+  it("отдаёт ref на кнопку ручки", () => {
+    const ref = React.createRef<HTMLButtonElement>()
+    render(<SortableHandle ref={ref} label="Переместить" />)
+    expect(ref.current?.tagName).toBe("BUTTON")
   })
 })

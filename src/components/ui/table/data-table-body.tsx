@@ -45,53 +45,58 @@ function DataTableBody<Row>({
 
   return (
     <TableBody>
-      {visibleRows.map(({ row, key, level, hasChildren }) => (
-        <TableRow
-          key={key}
-          clickable={Boolean(onRowClick)}
-          selected={selected.has(key)}
-          added={isRowAdded ? isRowAdded(row) : autoAdded.has(key)}
-          onClick={handleRowClick(row, key)}
-        >
-          {selectable && (
-            <TableCell
-              type="checkbox"
-              edge
-              pin={selectionPin}
-              checked={selected.has(key)}
-              onCheckedChange={
-                !isRowSelectable || isRowSelectable(row)
-                  ? () => toggleSelected(key)
-                  : undefined
-              }
-            />
-          )}
+      {visibleRows.map(({ row, key, level, hasChildren }) => {
+        const rowSelectable = !isRowSelectable || isRowSelectable(row)
+        return (
+          <TableRow
+            key={key}
+            clickable={Boolean(onRowClick)}
+            selected={selected.has(key)}
+            added={isRowAdded ? isRowAdded(row) : autoAdded.has(key)}
+            onClick={handleRowClick(row, key)}
+          >
+            {/* У строки, которую выбрать нельзя, чекбокса нет вовсе — так
+                обещает `isRowSelectable`. Раньше рисовался обычный на вид
+                чекбокс без обработчика: он выглядел рабочим и не нажимался. */}
+            {selectable && (
+              <TableCell
+                type="checkbox"
+                edge
+                pin={selectionPin}
+                checked={selected.has(key)}
+                hideCheckbox={!rowSelectable}
+                onCheckedChange={
+                  rowSelectable ? () => toggleSelected(key) : undefined
+                }
+              />
+            )}
 
-          {columns.map((field) => (
-            <TableCell
-              key={field.key}
-              edge={!selectable && field.key === columns[0]?.key}
-              pin={field.pin}
-              unitVariants={unitVariants[field.key]}
-              {...fieldCellProps(field, row)}
-              {...(field.key === hierarchyKey
-                ? {
-                    level,
-                    expandable: hasChildren,
-                    expanded: isExpanded(key),
-                    onExpandedChange: () => toggleExpanded(key),
-                  }
-                : null)}
-            />
-          ))}
+            {columns.map((field) => (
+              <TableCell
+                key={field.key}
+                edge={!selectable && field.key === columns[0]?.key}
+                pin={field.pin}
+                unitVariants={unitVariants[field.key]}
+                {...fieldCellProps(field, row)}
+                {...(field.key === hierarchyKey
+                  ? {
+                      level,
+                      expandable: hasChildren,
+                      expanded: isExpanded(key),
+                      onExpandedChange: () => toggleExpanded(key),
+                    }
+                  : null)}
+              />
+            ))}
 
-          <TableCell type="spacer" />
+            <TableCell type="spacer" />
 
-          {extraActions && rowActions && (
-            <TableCell type="button" pin="right" actions={rowActions(row)} />
-          )}
-        </TableRow>
-      ))}
+            {extraActions && rowActions && (
+              <TableCell type="button" pin="right" actions={rowActions(row)} />
+            )}
+          </TableRow>
+        )
+      })}
 
       {/* Итоговая строка. Стоит ПОСЛЕ строк данных и вне `visibleRows`,
           поэтому сортировка, сворачивание и отбор её не трогают — они

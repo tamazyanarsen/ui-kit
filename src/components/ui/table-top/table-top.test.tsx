@@ -1,11 +1,14 @@
+import * as React from "react"
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
+
 
 import {
   TableTop,
   TableTopTitle,
   TableTopToolbar,
   TableTopSummary,
+  TableTopSummaryItem,
   TableTopDetails,
 } from "./table-top"
 
@@ -93,5 +96,31 @@ describe("TableTopDetails", () => {
       ...container.querySelectorAll("[aria-hidden='true']"),
     ].filter((node) => node.className.includes("--table-summary-divider"))
     expect(separators).toHaveLength(2)
+  })
+})
+
+describe("TableTop — ref", () => {
+  it("каждая часть верха таблицы отдаёт ref на свой узел", () => {
+    const top = React.createRef<HTMLDivElement>()
+    const title = React.createRef<HTMLDivElement>()
+    const toolbar = React.createRef<HTMLDivElement>()
+    const summary = React.createRef<HTMLDivElement>()
+    const item = React.createRef<HTMLSpanElement>()
+    const details = React.createRef<HTMLDivElement>()
+    render(
+      <TableTop ref={top}>
+        <TableTopTitle ref={title} title="Платежи" />
+        <TableTopToolbar ref={toolbar} />
+        <TableTopSummary
+          ref={summary}
+          info={<TableTopSummaryItem ref={item} label="Результатов" value={8} />}
+        />
+        <TableTopDetails ref={details} items={[]} />
+      </TableTop>
+    )
+    for (const ref of [top, title, toolbar, summary, details]) {
+      expect(ref.current).toBeInstanceOf(HTMLDivElement)
+    }
+    expect(item.current).toBeInstanceOf(HTMLSpanElement)
   })
 })

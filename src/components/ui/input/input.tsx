@@ -16,6 +16,7 @@ import { InputTrailingSlot, hasTrailingSlot } from "./trailing-slot"
 import { resolveCaption } from "./caption"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolvePlaceholder, useMask } from "./use-mask"
+import { useStableInputRef } from "./use-stable-input-ref"
 import {
   LEADING_ICON_SIZE,
   floatingLabelVariants,
@@ -89,6 +90,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   const captionId = caption ? `${inputId}-caption` : undefined
   const inputRef = React.useRef<HTMLInputElement>(null)
   const setInputRef = useComposedRefs(inputRef, ref)
+  // Маске — постоянный ref: react-imask вызывает `inputRef` только при
+  // создании (см. use-stable-input-ref.ts).
+  const setMaskInputRef = useStableInputRef(inputRef, ref)
   const [passwordVisible, setPasswordVisible] = React.useState(false)
   const isPassword = type === "password"
 
@@ -188,7 +192,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
         ...getImaskProps(mask),
         ...fieldProps,
         ref: imaskRef,
-        inputRef: setInputRef,
+        inputRef: setMaskInputRef,
         ...valueProps,
         onAccept: handleAccept,
         style:

@@ -1,13 +1,15 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { CalendarDays } from "@/icons"
+import { useComposedRefs } from "@/lib/compose-refs"
 
-import { formatDateRu, MONTHS_RU_FULL, parseDateRu } from "@/lib/calendar"
+import { formatDateRu, parseDateRu } from "@/lib/calendar"
 import { Calendar } from "@/components/ui/calendar"
 import type { CalendarMode } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import type { InputSize } from "@/components/ui/input"
 
+import { formatDisplayValue } from "./display-value"
 import { useFieldPopoverFocus } from "./use-field-popover-focus"
 
 const ICON_SIZE = { sm: "size-3.5", lg: "size-4" } as const
@@ -37,29 +39,6 @@ const DEFAULT_LABEL: Record<CalendarMode, string> = {
 // «single» (тот остаётся редактируемым <Input> с маской и разбирается
 // отдельно — см. mode === "single" ниже). Пустая строка означает «ещё
 // ничего не выбрано».
-function formatDisplayValue(
-  mode: Exclude<CalendarMode, "single">,
-  activeRange: [Date | null, Date | null],
-  activeMonth: { year: number; month: number } | null,
-  activeYear: number | null
-): string {
-  switch (mode) {
-    case "range": {
-      const [start, end] = activeRange
-      if (!start) return ""
-      return end
-        ? `${formatDateRu(start)} — ${formatDateRu(end)}`
-        : `${formatDateRu(start)} — `
-    }
-    case "month":
-      return activeMonth
-        ? `${MONTHS_RU_FULL[activeMonth.month]} ${activeMonth.year}`
-        : ""
-    case "year":
-      return activeYear ? String(activeYear) : ""
-  }
-}
-
 // DatePicker — недостающее звено между Calendar (чистое содержимое, без
 // собственного поповера и триггера — так задумано, см. calendar-demo.tsx) и
 // Input (у которого уже есть и `mask="date"`, и значок календаря). По
@@ -94,6 +73,14 @@ interface DatePickerProps {
   disabled?: boolean
   footer?: boolean
   containerClassName?: string
+  /** Имя поля ввода — для форм и `Controller` из react-hook-form. */
+  name?: string
+  /**
+   * Фокус ушёл из пикера ЦЕЛИКОМ — из поля, значка и календаря. Переход
+   * между ними уходом не считается: иначе `mode: "onTouched"` в
+   * react-hook-form проверял бы поле, едва человек открыл календарь.
+   */
+  onBlur?: () => void
 
   // mode="single"
   value?: Date | null
@@ -114,7 +101,9 @@ interface DatePickerProps {
   onYearChange?: (year: number | null) => void
 }
 
-function DatePicker({
+// `ref` — на текстовое поле: `Controller` из react-hook-form ставит фокус
+// на поле с ошибкой через `field.ref`, и до этой правки ему было некуда.
+const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker({
   mode = "single",
   size = "lg",
   label,
@@ -123,6 +112,8 @@ function DatePicker({
   disabled = false,
   footer = true,
   containerClassName,
+  name,
+  onBlur,
   value,
   onChange,
   rangeValue,
@@ -131,11 +122,36 @@ function DatePicker({
   onMonthChange,
   yearValue,
   onYearChange,
-}: DatePickerProps) {
+}, ref) {
   const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef<HTMLDivElement>(null)
   const popupRef = React.useRef<HTMLDivElement>(null)
   const fieldRef = React.useRef<HTMLInputElement>(null)
+  const setFieldRef = useComposedRefs(fieldRef, ref)
+
+  // Уход фокуса из пикера целиком. Календарь — в портале, но синтетические
+  // события React всплывают по дереву компонентов, поэтому одного
+  // обработчика на корне хватает и для поля, и для календаря. Защитные span
+  // Base UI (переход по Tab между полем и календарём) — тоже «внутри».
+  //
+  // ⚠️ Одно нативное событие из портала React доставляет сюда дважды (его
+  // ловят и контейнер портала Base UI, и body), поэтому повтор того же
+  // события отсекается — иначе `onBlur` звучал бы дважды за один уход.
+  const lastBlur = React.useRef<Event | null>(null)
+  function handlePickerBlur(event: React.FocusEvent) {
+    if (!onBlur || lastBlur.current === event.nativeEvent) return
+    lastBlur.current = event.nativeEvent
+    const next = event.relatedTarget
+    if (
+      next instanceof Element &&
+      (anchorRef.current?.contains(next) ||
+        popupRef.current?.contains(next) ||
+        next.hasAttribute("data-base-ui-focus-guard"))
+    ) {
+      return
+    }
+    onBlur()
+  }
 
   // Запасное неуправляемое состояние: читается и пишется только то, что
   // соответствует активному режиму `mode`.
@@ -284,12 +300,13 @@ function DatePicker({
     // автоматический минимум — это min-content, и он один способен
     // раздвинуть колонку, сколько бы `w-full` ни просил. Сам `Input` внутри
     // и так `w-full`, так что теперь оба ведут себя одинаково.
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0" onBlur={handlePickerBlur}>
       <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={fieldFocus.handleOpenChange}>
         <div ref={anchorRef} className="w-full min-w-0">
           {mode === "single" ? (
             <Input
-              ref={fieldRef}
+              ref={setFieldRef}
+              name={name}
               size={size}
               label={label ?? defaultLabel}
               mask="date"
@@ -305,7 +322,8 @@ function DatePicker({
             />
           ) : (
             <Input
-              ref={fieldRef}
+              ref={setFieldRef}
+              name={name}
               size={size}
               label={label ?? defaultLabel}
               readOnly
@@ -362,7 +380,7 @@ function DatePicker({
       </PopoverPrimitive.Root>
     </div>
   )
-}
+})
 
 export { DatePicker }
 export type { DatePickerProps }

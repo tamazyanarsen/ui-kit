@@ -5,6 +5,7 @@ import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { GROUP_SPACES, formatSignSpacing } from "@/lib/number-format"
 import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
@@ -18,7 +19,7 @@ interface RangeInputOwnProps {
   format?: Intl.NumberFormatOptions
 }
 
-type RangeInputProps = Omit<SliderPrimitive.Root.Props<number>, "children"> &
+type RangeInputProps = Omit<SliderPrimitive.Root.Props<number>, "children" | "ref"> &
   RangeInputOwnProps
 
 // Ползунок с одной ручкой, оформленный как поле в рамке по образцу Input:
@@ -26,9 +27,10 @@ type RangeInputProps = Omit<SliderPrimitive.Root.Props<number>, "children"> &
 // Checkbox и Radio, состояние ошибки НЕ перекрашивает рамку коробки (она
 // остаётся --range-input-border, по конвенции Input) — краснеют только
 // акцент дорожки с ползунком и текст подписи.
-// `forwardRef` — тип пропсов (Root.Props) объявляет `ref`, и без обёртки
-// он на React 18 молча терялся.
-const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function RangeInput({
+// `ref` — на нативный `input` ползунка, а не на корень: `Controller` из
+// react-hook-form ставит фокус на поле с ошибкой через `field.ref.focus()`,
+// а у корня-`div` фокуса нет. Так же устроены Input, Checkbox и Radio.
+const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function RangeInput({
   className,
   label,
   comment,
@@ -52,6 +54,7 @@ const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function Ra
   // поддерживается, а Thumb переносит на input лишь фиксированный набор
   // aria-атрибутов, поэтому — через его `inputRef`.
   const sliderInputRef = React.useRef<HTMLInputElement>(null)
+  const setSliderInputRef = useComposedRefs(sliderInputRef, ref)
   React.useLayoutEffect(() => {
     const input = sliderInputRef.current
     if (!input) return
@@ -68,7 +71,6 @@ const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function Ra
     // gap-[4px] между Range, Indicators и Comment.
     <div className={cn("flex w-full flex-col gap-1", className)}>
       <SliderPrimitive.Root
-        ref={ref}
         data-slot="range-input"
         disabled={disabled}
         format={format}
@@ -189,7 +191,7 @@ const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function Ra
               <SliderPrimitive.Thumb
                 data-slot="range-input-thumb"
                 aria-describedby={hasCaption ? captionId : undefined}
-                inputRef={sliderInputRef}
+                inputRef={setSliderInputRef}
                 className={cn(
                   // Между двумя стрелками зазора нет, а радиус — литеральные
                   // 12px; и то и другое снято прямо со слоя Box у символов

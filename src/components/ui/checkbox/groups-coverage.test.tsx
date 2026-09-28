@@ -15,7 +15,7 @@ describe("form groups coverage", () => {
   it("forwards refs of CheckboxGroup, RadioGroup and RangeInput", () => {
     const checkboxes = React.createRef<HTMLDivElement>()
     const radios = React.createRef<HTMLDivElement>()
-    const range = React.createRef<HTMLDivElement>()
+    const range = React.createRef<HTMLInputElement>()
     const { container } = render(
       <>
         <CheckboxGroup ref={checkboxes} items={[{ value: "a", label: "А" }]} />
@@ -27,7 +27,9 @@ describe("form groups coverage", () => {
     )
     expect(checkboxes.current).toBe(container.querySelector('[data-slot="checkbox-group"]'))
     expect(radios.current).toBe(container.querySelector('[data-slot="radio-group"]'))
-    expect(range.current).toBe(container.querySelector('[data-slot="range-input"]'))
+    // У RangeInput ref — на нативный input ползунка (фокус на ошибке в
+    // react-hook-form), а не на корень.
+    expect(range.current).toBe(container.querySelector('[data-slot="range-input"] input'))
   })
 
   // `typeof error === "boolean" ? null : error` пропускал пустую строку

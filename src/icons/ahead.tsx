@@ -1,11 +1,15 @@
+import { useId } from "react"
 import type { IconProps } from "./types"
 
 // icon / ahead — 10. Fav Like, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Ahead({ size = 16, ...props }: IconProps) {
+  // id внутри svg общие для документа: две одинаковые иконки на
+  // странице иначе ссылались бы на одну маску или обрезку.
+  const uid = useId().replace(/:/g, "")
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-160 -124)"><defs><clipPath id="ahead-24-clip0_70326_26"><path fill="#fff" d="M160 124h24v24h-24z"/></clipPath></defs><g clipPath="url(#ahead-24-clip0_70326_26)"><path fill="currentColor" fillRule="evenodd" d="M175.662 124.113a1 1 0 0 1 .518 1.087l-1.429 7.015 5.595 2.061a1 1 0 0 1 .379 1.627l-11.2 11.786a1 1 0 0 1-1.705-.889l1.429-7.015-5.595-2.061a1 1 0 0 1-.379-1.627l11.2-11.786a1 1 0 0 1 1.187-.198m-9.89 12.26 4.974 1.832a1 1 0 0 1 .634 1.137l-.905 4.444 7.753-8.159-4.974-1.831a1 1 0 0 1-.634-1.138l.905-4.444z" clipRule="evenodd"/></g></g></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-160 -124)"><defs><clipPath id={`${uid}-ahead-24-clip0_70326_26`}><path fill="#fff" d="M160 124h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-ahead-24-clip0_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M175.662 124.113a1 1 0 0 1 .518 1.087l-1.429 7.015 5.595 2.061a1 1 0 0 1 .379 1.627l-11.2 11.786a1 1 0 0 1-1.705-.889l1.429-7.015-5.595-2.061a1 1 0 0 1-.379-1.627l11.2-11.786a1 1 0 0 1 1.187-.198m-9.89 12.26 4.974 1.832a1 1 0 0 1 .634 1.137l-.905 4.444 7.753-8.159-4.974-1.831a1 1 0 0 1-.634-1.138l.905-4.444z" clipRule="evenodd"/></g></g></svg>
     )
   }
 

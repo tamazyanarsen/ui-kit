@@ -20,7 +20,16 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { optimize } from "svgo"
 
+import {
+  dropNoopClips,
+  ensureUidHook,
+  placeholderToUid,
+  uidToPlaceholder,
+} from "./icon-ids.mjs"
+
 const ICONS_DIR = "src/icons"
+/** Сколько раз прогнать SVGO по одному начертанию, пока вывод не устоится. */
+const MAX_PASSES = 5
 const dry = process.argv.includes("--dry")
 
 // JSX-атрибуты не совпадают с SVG-атрибутами: перед SVGO переводим в
@@ -49,7 +58,8 @@ const toSvgAttrs = (s) =>
 const toJsxAttrs = (s) =>
   JSX_TO_SVG.reduce((acc, [jsx, svg]) => acc.replaceAll(`${svg}=`, `${jsx}=`), s)
 
-const config = {
+// Конфиг собирается на каждое начертание: плагину обрезок нужен его viewBox.
+const configFor = (viewBox) => ({
   multipass: true,
   floatPrecision: 3,
   plugins: [
@@ -67,8 +77,11 @@ const config = {
         },
       },
     },
+    // Обрезка по рамке не меньше viewBox ничего не обрезает, а её id
+    // повторяется у каждой копии иконки на странице (см. icon-ids.mjs).
+    dropNoopClips(viewBox),
   ],
-}
+})
 
 let before = 0
 let after = 0
@@ -109,13 +122,25 @@ for (const file of readdirSync(ICONS_DIR)) {
       .replace(/xmlns="[^"]*"/, "")
       .trim()
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" ${toSvgAttrs(rootAttrs)}>${toSvgAttrs(body)}</svg>`
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" ${toSvgAttrs(rootAttrs)}>${toSvgAttrs(uidToPlaceholder(body))}</svg>`
 
     let optimized
     try {
-      optimized = optimize(svg, config).data
+      // До неподвижной точки: снятая обрезка оставляет пустую обёртку
+      // `<g transform>`, которую SVGO сворачивает (и вплавляет сдвиг в путь)
+      // только на следующем запуске. Без цикла второй прогон скрипта менял
+      // бы ещё 70 файлов, то есть скрипт не был бы идемпотентным.
+      optimized = svg
+      for (let pass = 0; pass < MAX_PASSES; pass++) {
+        const next = optimize(optimized, configFor([0, 0, width, height])).data
+        if (next === optimized) break
+        optimized = next
+      }
     } catch (error) {
       console.warn(`пропуск ${file}: SVGO не смог — ${error.message}`)
+      // Пути остаются как есть, но id уникализируются и здесь: иначе
+      // иконка, которую SVGO не разобрал, так и дублировала бы их.
+      result = result.replace(whole, `<svg ${attrs}>${placeholderToUid(inner)}</svg>`)
       continue
     }
 
@@ -131,9 +156,11 @@ for (const file of readdirSync(ICONS_DIR)) {
     )
     result = result.replace(
       whole,
-      `<svg ${newAttrs.trim()}>${toJsxAttrs(optimizedInner)}</svg>`
+      `<svg ${newAttrs.trim()}>${placeholderToUid(toJsxAttrs(optimizedInner))}</svg>`
     )
   }
+  // Оставшиеся id (настоящие обрезки и маски) уникальны на экземпляр.
+  result = ensureUidHook(result)
 
   after += Buffer.byteLength(result)
   if (result !== source) {

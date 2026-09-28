@@ -1,8 +1,12 @@
+import { useId } from "react"
 import type { IconProps } from "./types"
 
 // icon / personnel reserve — 06. Users, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function PersonnelReserve({ size = 16, ...props }: IconProps) {
+  // id внутри svg общие для документа: две одинаковые иконки на
+  // странице иначе ссылались бы на одну маску или обрезку.
+  const uid = useId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M4.235 6.6a5.604 5.604 0 0 1 11.208 0c0 3.1-2.509 5.61-5.604 5.61A5.606 5.606 0 0 1 4.235 6.6m5.604-3.57A3.57 3.57 0 0 0 6.266 6.6c0 1.98 1.599 3.58 3.573 3.58a3.575 3.575 0 0 0 0-7.15m5.128 8.22h3.239c.805 0 1.467.61 1.547 1.4l.001.01.007.15v1.14h1.144c1.157 0 2.095.94 2.095 2.1v4.85c0 1.16-.938 2.1-2.095 2.1h-8.637a2.097 2.097 0 0 1-2.095-2.1v-4.85c0-1.16.938-2.1 2.095-2.1h1.144v-1.14c0-.81.612-1.47 1.396-1.55h.011zm.475 2.03v.67h2.288v-.67zm-5.663.67-.278.34a2.7 2.7 0 0 0-.62 1.5l-.017.19h-5.23a.6.6 0 0 0-.603.6v.63c0 .53.189 1.04.532 1.44 1.222 1.43 2.473 2.22 5.119 2.31l.182.01.015.18c.05.57.275 1.09.621 1.51l.276.34h-.574c-3.435 0-5.441-.99-7.183-3.03A4.25 4.25 0 0 1 1 17.21v-.63c0-1.39 1.083-2.53 2.453-2.62h.007l.174-.01zm2.489 2.03c-.036 0-.064.03-.064.07v4.85c0 .04.028.07.064.07h8.637c.036 0 .064-.03.064-.07v-4.85c0-.04-.028-.07-.064-.07z" clipRule="evenodd"/></svg>
@@ -10,6 +14,6 @@ export function PersonnelReserve({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-112 -1080)"><defs><clipPath id="personnel-reserve-16-clip5_70326_26"><path fill="#fff" d="M112 1080h16v16h-16z"/></clipPath></defs><g clipPath="url(#personnel-reserve-16-clip5_70326_26)"><path fill="currentColor" d="M124 1086c1.105 0 2 .9 2 2v1h1c.552 0 1 .45 1 1v5c0 .55-.448 1-1 1h-8c-.552 0-1-.45-1-1v-5c0-.55.448-1 1-1h1v-1c0-1.1.895-2 2-2zm-5 2c-1.105 0-2 .9-2 2h-3v1c0 1.1.895 2 2 2h1v2h-1a4 4 0 0 1-4-4v-1a2 2 0 0 1 2-2zm1 6h6v-3h-6zm2-5h2v-1h-2zm-4.5-9c1.933 0 3.5 1.57 3.5 3.5s-1.567 3.5-3.5 3.5-3.5-1.57-3.5-3.5 1.567-3.5 3.5-3.5m0 2a1.5 1.5 0 1 0-.001 2.999 1.5 1.5 0 0 0 .001-2.999"/></g></g></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-112 -1080)"><defs><clipPath id={`${uid}-personnel-reserve-16-clip5_70326_26`}><path fill="#fff" d="M112 1080h16v16h-16z"/></clipPath></defs><g clipPath={`url(#${uid}-personnel-reserve-16-clip5_70326_26)`}><path fill="currentColor" d="M124 1086c1.105 0 2 .9 2 2v1h1c.552 0 1 .45 1 1v5c0 .55-.448 1-1 1h-8c-.552 0-1-.45-1-1v-5c0-.55.448-1 1-1h1v-1c0-1.1.895-2 2-2zm-5 2c-1.105 0-2 .9-2 2h-3v1c0 1.1.895 2 2 2h1v2h-1a4 4 0 0 1-4-4v-1a2 2 0 0 1 2-2zm1 6h6v-3h-6zm2-5h2v-1h-2zm-4.5-9c1.933 0 3.5 1.57 3.5 3.5s-1.567 3.5-3.5 3.5-3.5-1.57-3.5-3.5 1.567-3.5 3.5-3.5m0 2a1.5 1.5 0 1 0-.001 2.999 1.5 1.5 0 0 0 .001-2.999"/></g></g></svg>
   )
 }

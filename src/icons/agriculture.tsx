@@ -1,11 +1,15 @@
+import { useId } from "react"
 import type { IconProps } from "./types"
 
 // icon / agriculture — 19. Categories, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Agriculture({ size = 16, ...props }: IconProps) {
+  // id внутри svg общие для документа: две одинаковые иконки на
+  // странице иначе ссылались бы на одну маску или обрезку.
+  const uid = useId().replace(/:/g, "")
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-104 -1716)"><defs><clipPath id="agriculture-24-clip10_70326_26"><path fill="#fff" d="M104 1716h24v24h-24z"/></clipPath></defs><g clipPath="url(#agriculture-24-clip10_70326_26)"><path fill="currentColor" fillRule="evenodd" d="M112 1721c0-.55.448-1 1-1h4c1.657 0 3 1.34 3 3v4h1v-2a1 1 0 0 1 .293-.71l1-1c.212-.21.507-.31.806-.29.298.03.567.2.733.45l4 6c.205.3.224.7.05 1.02a.99.99 0 0 1-.882.53h-5c-.552 0-1-.45-1-1v-1h-1v1.76c.614.55 1 1.35 1 2.24 0 1.66-1.343 3-3 3a2.995 2.995 0 0 1-2.829-2h-4.342a2.995 2.995 0 0 1-2.829 2c-1.657 0-3-1.34-3-3v-7c0-.55.448-1 1-1h6zm0 6h-5v3.17a3.01 3.01 0 0 1 3.829 1.83H112zm2 5h1.171c.412-1.17 1.523-2 2.829-2v-1h-4zm0-5h4v-4c0-.55-.448-1-1-1h-3zm-7 6c0 .55.448 1 1 1s1-.45 1-1-.448-1-1-1-1 .45-1 1m16-4h2.131l-2.131-3.2zm-5 3c-.552 0-1 .45-1 1s.448 1 1 1 1-.45 1-1-.448-1-1-1" clipRule="evenodd"/></g></g></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-104 -1716)"><defs><clipPath id={`${uid}-agriculture-24-clip10_70326_26`}><path fill="#fff" d="M104 1716h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-agriculture-24-clip10_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M112 1721c0-.55.448-1 1-1h4c1.657 0 3 1.34 3 3v4h1v-2a1 1 0 0 1 .293-.71l1-1c.212-.21.507-.31.806-.29.298.03.567.2.733.45l4 6c.205.3.224.7.05 1.02a.99.99 0 0 1-.882.53h-5c-.552 0-1-.45-1-1v-1h-1v1.76c.614.55 1 1.35 1 2.24 0 1.66-1.343 3-3 3a2.995 2.995 0 0 1-2.829-2h-4.342a2.995 2.995 0 0 1-2.829 2c-1.657 0-3-1.34-3-3v-7c0-.55.448-1 1-1h6zm0 6h-5v3.17a3.01 3.01 0 0 1 3.829 1.83H112zm2 5h1.171c.412-1.17 1.523-2 2.829-2v-1h-4zm0-5h4v-4c0-.55-.448-1-1-1h-3zm-7 6c0 .55.448 1 1 1s1-.45 1-1-.448-1-1-1-1 .45-1 1m16-4h2.131l-2.131-3.2zm-5 3c-.552 0-1 .45-1 1s.448 1 1 1 1-.45 1-1-.448-1-1-1" clipRule="evenodd"/></g></g></svg>
     )
   }
 

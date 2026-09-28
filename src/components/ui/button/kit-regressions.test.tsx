@@ -30,7 +30,7 @@ describe("ref доходит до корня", () => {
   const cases: [string, (ref: React.Ref<HTMLElement>) => React.ReactElement, string][] = [
     ["CloseCross", (ref) => <CloseCross ref={ref as React.Ref<HTMLButtonElement>} />, "close-cross"],
     ["IssueItem", (ref) => <IssueItem ref={ref as React.Ref<HTMLDivElement>}>Задача</IssueItem>, "issue-item"],
-    ["ListOfErrors", (ref) => <ListOfErrors ref={ref as React.Ref<HTMLDivElement>} />, "list-of-errors"],
+    ["ListOfErrors", (ref) => <ListOfErrors ref={ref as React.Ref<HTMLDivElement>}><IssueItem>Ошибка</IssueItem></ListOfErrors>, "list-of-errors"],
     ["Shimmer", (ref) => <Shimmer ref={ref as React.Ref<HTMLDivElement>} />, "shimmer"],
     ["TitleCard", (ref) => <TitleCard ref={ref as React.Ref<HTMLDivElement>} title="Карта" />, "title-card"],
     ["TitleRegistry", (ref) => <TitleRegistry ref={ref as React.Ref<HTMLDivElement>} title="Реестр" />, "title-registry"],

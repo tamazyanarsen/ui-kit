@@ -52,9 +52,11 @@ describe("ListOfErrors", () => {
     expect(items[6]).toHaveStyle({ animationDelay: "160ms" })
   })
 
-  it("пустой список не падает", () => {
+  // Аудит 13: пустой список больше не рисует ничего (раньше — одинокий
+  // разделитель и пустой `ul`), см. list-of-errors-empty-r14.test.tsx.
+  it("пустой список не падает и ничего не рисует", () => {
     render(<ListOfErrors data-testid="list" />)
-    expect(screen.getByTestId("list")).toBeInTheDocument()
+    expect(screen.queryByTestId("list")).toBeNull()
     expect(screen.queryAllByRole("listitem")).toHaveLength(0)
   })
 })

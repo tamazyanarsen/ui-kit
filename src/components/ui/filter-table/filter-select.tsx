@@ -187,7 +187,7 @@ function FilterSelect({
         </div>
       )}
 
-      <div className="themed-scrollbar max-h-[336px] overflow-y-auto py-2">
+      <div className="themed-scrollbar max-h-[336px] min-h-0 overflow-y-auto py-2">
         {visibleGroups.map((group, groupIndex) => (
           <div key={group.label || groupIndex} data-slot="filter-select-group">
             {group.label && (

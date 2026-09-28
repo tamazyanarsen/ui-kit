@@ -67,6 +67,11 @@ const ListOfErrors = React.forwardRef<HTMLDivElement, ListOfErrorsProps>(functio
   // анимацией. Ключи раскрытых детей — от `toArray`, стабильные.
   const items = flattenChildren(children)
 
+  // Аудит 13: пустой список (`errors.map(...)` при `errors = []`) рисовал
+  // одинокую линию разделителя и пустой `ul` над формой. Ошибок нет — нет и
+  // списка: потребителю не нужно оборачивать его в условие.
+  if (items.length === 0) return null
+
   return (
     <div
       data-slot="list-of-errors"

@@ -169,13 +169,28 @@ function SidebarGroup({
 }: SidebarGroupProps) {
   const { open, requestOpenGroup } = useSidebarContext()
 
+  // Раскрытие из свёрнутой полосы меняет узел: кнопка-значок снимается,
+  // вместо неё встаёт триггер аккордеона. Фокус со снятой кнопки падал на
+  // body — клавиатурный пользователь терял место. Если фокус был на
+  // значке, после раскрытия он переносится на новый триггер той же группы.
+  const expandedTriggerRef = React.useRef<HTMLDivElement>(null)
+  const refocusAfterOpen = React.useRef(false)
+  React.useLayoutEffect(() => {
+    if (!open || !refocusAfterOpen.current) return
+    refocusAfterOpen.current = false
+    expandedTriggerRef.current?.focus()
+  }, [open])
+
   const collapsedTrigger = (
     <button
       type="button"
       data-slot="sidebar-group-trigger"
       data-active={active || undefined}
       aria-label={typeof label === "string" ? label : undefined}
-      onClick={() => requestOpenGroup(value)}
+      onClick={(event) => {
+        refocusAfterOpen.current = document.activeElement === event.currentTarget
+        requestOpenGroup(value)
+      }}
       className={cn(
         // Дизайн-чек 3/3 №23: та же область 40×40 с 8px отступа, что и у
         // обычного пункта в свёрнутой полосе — `w-full` здесь
@@ -198,6 +213,7 @@ function SidebarGroup({
       <AccordionPrimitive.Header>
         {open ? (
           <AccordionPrimitive.Trigger
+            ref={expandedTriggerRef}
             nativeButton={false}
             render={<div />}
             data-slot="sidebar-group-trigger"

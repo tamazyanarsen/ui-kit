@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Dropdown } from "@/components/ui/dropdown"
+import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
 
@@ -75,9 +76,12 @@ function SegmentButton({
    * заливка остаётся на самом сегменте.
    */
   sharedFill = false,
+  measure = false,
 }: {
   item: SwitcherItem
   active: boolean
+  /** Закадровая копия для замера: состояние выбора ей объявлять незачем. */
+  measure?: boolean
   greyBackground: boolean
   activeVariant: "surface" | "black"
   onClick?: () => void
@@ -109,6 +113,11 @@ function SegmentButton({
       data-slot="switcher-item"
       data-value={item.value}
       data-active={active || undefined}
+      // Выбранный сегмент объявляется как нажатая кнопка: раньше он был
+      // отмечен только `data-active`, и скринридер не мог сказать, какой
+      // вариант выбран. `aria-pressed`, а не радиогруппа: у сегментов
+      // остаются привычные для кнопок Tab, Enter и Space.
+      aria-pressed={measure ? undefined : active}
       className={cn(
         // Насыщенность живёт в text-pN-medium внутри SEGMENT_PADDING (она
         // приходит ниже через `className`), а не здесь: размер и
@@ -147,10 +156,15 @@ function Switcher({
   showMore = true,
   className,
 }: SwitcherProps) {
-  const [internalValue, setInternalValue] = React.useState(
-    defaultValue ?? items[0]?.value
-  )
-  const activeValue = value ?? internalValue
+  const [internalValue, setInternalValue] = React.useState(defaultValue)
+  // Неуправляемое значение, которого нет среди `items` (пункты пришли
+  // асинхронно после пустого массива или набор заменили), откатывается на
+  // первый доступный пункт — как у Tabs. Раньше умолчание считалось один
+  // раз при монтировании, и выбранного сегмента не было вовсе.
+  const fallbackValue = (items.find((item) => !item.disabled) ?? items[0])?.value
+  const activeValue =
+    value ??
+    (items.some((item) => item.value === internalValue) ? internalValue : fallbackValue)
 
   function setValue(next: string) {
     if (value === undefined) setInternalValue(next)
@@ -283,12 +297,10 @@ function Switcher({
 
       {/* Закадровая копия для замеров — см. комментарий в tabs.tsx, здесь
           рассуждение то же: пункты, спрятанные за триггером перекрытия,
-          иначе сообщили бы нулевую ширину при следующем пересчёте. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none invisible absolute top-0 left-0 flex"
-        style={{ gap: GAP_PX[size] }}
-      >
+          иначе сообщили бы нулевую ширину при следующем пересчёте. Слой с
+          обрезкой обязателен: копия шире переключателя, когда часть пунктов
+          ушла в «Ещё», и без обрезки раздвигала бы прокрутку страницы. */}
+      <OverflowMeasureLayer style={{ gap: GAP_PX[size] }}>
         {resolvedItems.map((item, index) => (
           <SegmentButton
             key={item.value}
@@ -297,12 +309,13 @@ function Switcher({
             greyBackground={greyBackground}
             activeVariant={activeVariant}
             className={SEGMENT_PADDING[size]}
+            measure
             innerRef={(el) => {
               itemRefs.current[index] = el
             }}
           />
         ))}
-      </div>
+      </OverflowMeasureLayer>
     </div>
   )
 }

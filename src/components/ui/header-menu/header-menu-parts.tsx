@@ -43,6 +43,8 @@ function PageLink({
       <button
         type="button"
         data-active={active || undefined}
+        // Текущий раздел — `aria-current`, а не только цвет подписи.
+        aria-current={active ? "page" : undefined}
         onClick={link.onClick}
         className={cn(
           "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",

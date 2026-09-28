@@ -67,7 +67,7 @@ function SettingsRow({
 }: {
   link: HeaderMenuLink
   favourite: boolean
-  onToggle: () => void
+  onToggle: (event: React.MouseEvent<HTMLButtonElement>) => void
   sortable?: boolean
   rowProps?: Record<string, unknown>
   handleProps?: Record<string, unknown>
@@ -91,6 +91,8 @@ function SettingsRow({
         leading={
           <button
             type="button"
+            data-slot="favourites-settings-star"
+            data-value={link.value}
             aria-pressed={favourite}
             aria-label={favourite ? "Убрать из избранного" : "Добавить в избранное"}
             onClick={onToggle}
@@ -157,6 +159,28 @@ function FavouritesSettings({
     onReorder: move,
   })
 
+  // Звезда переносит строку между «Добавлено» и «Остальными разделами» —
+  // это разные списки, узел строки пересоздаётся, и кнопка в фокусе
+  // исчезала вместе с ним: фокус падал на body внутри модалки. Если фокус
+  // был на звезде, он возвращается на звезду той же строки на новом месте.
+  const bodyRef = React.useRef<HTMLDivElement>(null)
+  const refocusStar = React.useRef<string | null>(null)
+  function toggle(value: string, event: React.MouseEvent<HTMLButtonElement>) {
+    refocusStar.current = document.activeElement === event.currentTarget ? value : null
+    setDraft((prev) => toggleFavourite(prev, value))
+  }
+  React.useLayoutEffect(() => {
+    const value = refocusStar.current
+    if (value === null) return
+    refocusStar.current = null
+    const stars = bodyRef.current?.querySelectorAll<HTMLElement>(
+      '[data-slot="favourites-settings-star"]'
+    )
+    Array.from(stars ?? [])
+      .find((star) => star.dataset.value === value)
+      ?.focus()
+  }, [draft])
+
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent size="m">
@@ -167,7 +191,7 @@ function FavouritesSettings({
             белую полосу контент уходит, и как только хоть что-то ушло,
             появляется серый разделитель (верхняя грань `ModalBody`). Свой
             `desktop:pt-12` тут больше не нужен — полоса его и заменяет. */}
-        <ModalBody className="flex flex-col gap-8">
+        <ModalBody ref={bodyRef} className="flex flex-col gap-8">
           <ModalTitle className="text-h2-mobile desktop:text-h2">
             Настройка избранного
           </ModalTitle>
@@ -189,7 +213,7 @@ function FavouritesSettings({
                     key={link.value}
                     link={link}
                     favourite
-                    onToggle={() => setDraft((prev) => toggleFavourite(prev, link.value))}
+                    onToggle={(event) => toggle(link.value, event)}
                     sortable
                     rowProps={sortable.itemProps(link.value)}
                     handleProps={sortable.handleProps(link.value)}
@@ -211,7 +235,7 @@ function FavouritesSettings({
                     key={link.value}
                     link={link}
                     favourite={false}
-                    onToggle={() => setDraft((prev) => toggleFavourite(prev, link.value))}
+                    onToggle={(event) => toggle(link.value, event)}
                   />
                 ))}
               </div>

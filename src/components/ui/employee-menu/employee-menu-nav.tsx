@@ -50,6 +50,9 @@ function NavItem({ link, active }: { link: HeaderMenuLink; active: boolean }) {
       type="button"
       data-slot="employee-menu-nav-item"
       data-active={active || undefined}
+      // Активный раздел объявляется и в видимом ряду, а не только когда
+      // пункт спрятан в «Ещё»: раньше там стоял лишь `data-active`.
+      aria-current={active ? "page" : undefined}
       onClick={link.onClick}
       className={cn(
         "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",

@@ -39,6 +39,7 @@ type ButtonElement = React.ReactElement<{
   onClick?: React.MouseEventHandler
   disabled?: boolean
   size?: string
+  "aria-label"?: string
 }>
 
 const isButton = (node: React.ReactNode): node is ButtonElement =>
@@ -95,16 +96,33 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
   const hidden = buttons.slice(visibleCount)
   const ref = useComposedRefs(containerRef, forwardedRef)
 
-  // Спрятанная кнопка становится строкой меню: подпись — её содержимое,
-  // действие — её же обработчик. Ничего третьего у кнопки ряда нет.
-  const hiddenItems = hidden.map((child, index) => (
-    <ButtonMenuOverflowItem
-      key={`overflow-${child.key ?? index}`}
-      text={child.props.children}
-      disabled={child.props.disabled}
-      onClick={child.props.onClick as (() => void) | undefined}
-    />
-  ))
+  function pressMeasured(index: number) {
+    itemRefs.current[index]
+      ?.querySelector<HTMLElement>('button, a, [role="button"]')
+      ?.click()
+  }
+
+  // Спрятанная кнопка становится строкой меню. Подпись — её содержимое, а у
+  // кнопки только со значком — её `aria-label`: иначе строка меню была бы
+  // пустой и безымянной.
+  //
+  // Действие — нажатие САМОЙ кнопки в закадровой копии ряда, а не вызов её
+  // `onClick`. Копия всегда отрисована, лежит в той же форме и несёт все
+  // пропсы кнопки, поэтому вместе с обработчиком сохраняются `type="submit"`
+  // и `form` (форма отправляется), `render` (кнопка-ссылка переходит) —
+  // раньше из всего этого в меню доезжал только `onClick`.
+  const hiddenItems = hidden.map((child, index) => {
+    const label = child.props["aria-label"]
+    return (
+      <ButtonMenuOverflowItem
+        key={`overflow-${child.key ?? index}`}
+        text={child.props.children ?? label}
+        aria-label={label}
+        disabled={child.props.disabled}
+        onClick={() => pressMeasured(visibleCount + index)}
+      />
+    )
+  })
 
   let overflow: React.ReactNode = null
   if (supplied) {
@@ -157,7 +175,14 @@ function MeasureRow({
   size: ButtonRowSize
 }) {
   return (
-    <OverflowMeasureLayer className={ROW_GAP_CLASS[size]}>
+    // Клик по копии (его делает пункт «Ещё») гасится на слое: кнопка своё
+    // `onClick` и действие по умолчанию (отправка формы) уже получила, а
+    // предкам ряда он был бы ВТОРЫМ кликом — пункт меню и так всплывает к
+    // ним через портал.
+    <OverflowMeasureLayer
+      className={ROW_GAP_CLASS[size]}
+      onClick={(event) => event.stopPropagation()}
+    >
       {buttons.map((child, index) => (
         <div
           key={index}

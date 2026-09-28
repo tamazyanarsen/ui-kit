@@ -61,6 +61,31 @@ function HeaderPinnedRow({
 }: HeaderPinnedRowProps) {
   const menuTriggerRef = React.useRef<HTMLButtonElement>(null)
   const createTriggerRef = React.useRef<HTMLButtonElement>(null)
+
+  // Переход по ссылке или плитке закрывает панель. Без этого в SPA шапка
+  // оставалась смонтированной, и панель с затемнением и запертой прокруткой
+  // висела поверх уже открытой новой страницы: закрыть её снаружи нечем,
+  // раскрытость — внутреннее состояние шапки. Обработчик потребителя
+  // вызывается первым, как и раньше.
+  const close = () => onOpenPanelChange(null)
+  const closingGroups = menuGroups.map((group) => ({
+    ...group,
+    links: group.links.map((link) => ({
+      ...link,
+      onClick: () => {
+        link.onClick?.()
+        close()
+      },
+    })),
+  }))
+  const closingCreateItems = createItems.map((item) => ({
+    ...item,
+    onClick: () => {
+      item.onClick?.()
+      close()
+    },
+  }))
+
   return (
     <div
       ref={rowRef}
@@ -103,7 +128,7 @@ function HeaderPinnedRow({
         }
       >
         <HeaderMenu
-          groups={menuGroups}
+          groups={closingGroups}
           banners={menuBanners}
           favourites={favourites}
           activeLink={activeSection}
@@ -133,7 +158,7 @@ function HeaderPinnedRow({
         onClose={() => onOpenPanelChange(null)}
         returnFocusRef={createTriggerRef}
       >
-        <CreateMenu items={createItems} />
+        <CreateMenu items={closingCreateItems} />
       </MenuOverlay>
     </div>
   )

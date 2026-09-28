@@ -59,7 +59,13 @@ function useCounterHighlight(count: number, ms = 1000) {
   React.useEffect(() => {
     const grew = count > previous.current
     previous.current = count
-    if (!grew) return
+    // ⚠️ Без роста подсветка гасится явно. Очистка прошлого эффекта снимает
+    // таймер, который её выключил бы: уведомление пришло и было прочитано
+    // раньше, чем прошла секунда, — и фон Grey 114 оставался навсегда.
+    if (!grew) {
+      setHighlighted(false)
+      return
+    }
     setHighlighted(true)
     const timer = window.setTimeout(() => setHighlighted(false), ms)
     return () => window.clearTimeout(timer)

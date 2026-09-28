@@ -194,6 +194,9 @@ function CardBoxSmall({
           onScroll={update}
           className={cn(
             "min-h-0 flex-1 px-4 pb-4 desktop:pr-6 desktop:pb-8 desktop:pl-8",
+            // Верхний отступ обычно даёт шапка (`p-4 desktop:p-8`). Без неё
+            // контент упирался в верхний край карточки при 16/32 слева и снизу.
+            title == null && "pt-4 desktop:pt-8",
             contentClassName
           )}
         >

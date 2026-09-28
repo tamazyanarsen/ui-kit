@@ -81,7 +81,9 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
           variant="secondary-white"
           size="sm"
           icon={ArrowLeftSmall}
-          iconPosition="left"
+          // Без видимой подписи — кнопка-значок (круг 32), а не «пилюля»
+          // с отступами под текст, которого нет.
+          iconPosition={backHasText ? "left" : "only"}
           onClick={onBack}
           aria-label={backAriaLabel}
         >

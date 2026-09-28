@@ -27,7 +27,7 @@ const buttonVariants = cva(
   // размерного варианта ниже (все Medium, как в макете), а не здесь:
   // отдельный класс font-medium тут лишь продублировал бы насыщенность,
   // уже зашитую в составной класс.
-  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding whitespace-nowrap transition-all outline-none select-none focus-visible:focus-ring active:not-aria-[haspopup]:translate-y-px disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] disabled:!border-transparent [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding whitespace-nowrap transition-all outline-none select-none focus-visible:focus-ring active:not-aria-[haspopup]:translate-y-px disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] disabled:!border-transparent aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] aria-disabled:!border-transparent aria-disabled:active:!translate-y-0 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -40,7 +40,7 @@ const buttonVariants = cva(
         "secondary-white":
           "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-outline":
-          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)]",
+          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)] aria-disabled:!border-[var(--btn-muted-border)]",
         destructive:
           "bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)] enabled:data-popup-open:bg-[var(--btn-destructive-bg-active)]",
         // Типы «Secondary Logo» всегда идут в паре с фиксированным глифом
@@ -210,6 +210,12 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
       ref={ref}
       data-slot="button"
       disabled={disabled || isLoading}
+      // Загрузка выключает кнопку, но НЕ нативным атрибутом: у кнопки в
+      // фокусе Chromium при `disabled` переносит фокус на body, и после
+      // «Сохранить» с клавиатуры пользователь оказывался в начале документа.
+      // С `focusableWhenDisabled` Base UI ставит aria-disabled и сам глушит
+      // клик и Enter/Space. Настоящий `disabled` остаётся нативным.
+      focusableWhenDisabled={isLoading && !disabled}
       aria-busy={isLoading || undefined}
       // `className` у примитива бывает функцией от состояния — `cn` её бы
       // выбросил, см. `stateClassName`.

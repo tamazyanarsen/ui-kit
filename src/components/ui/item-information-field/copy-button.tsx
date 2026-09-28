@@ -2,7 +2,7 @@ import * as React from "react"
 import { Copy } from "@/icons"
 
 import { cn } from "@/lib/utils"
-import { useToast } from "@/components/ui/toast-message"
+import { useToastOptional } from "@/components/ui/toast-message"
 
 import type { FieldType } from "./item-information-field"
 
@@ -47,7 +47,9 @@ function CopyButton({
   copyValue?: string
   type: FieldType
 }) {
-  const toast = useToast()
+  // Провайдера тостов может не быть (поле в чужом приложении, витрина):
+  // тогда копирование работает молча, а не роняет дерево — как у BankCard.
+  const toast = useToastOptional()
   const large = type === "large-value"
 
   // Тост показывается по РЕЗУЛЬТАТУ записи, а не рядом с её вызовом.
@@ -71,13 +73,13 @@ function CopyButton({
       // было бы ложью.
       if (!text) throw new Error("Нечего копировать")
       await navigator.clipboard.writeText(text)
-      toast.add({
+      toast?.add({
         type: "checked",
         title: "Скопировано в буфер обмена",
         behavior: "transient",
       })
     } catch {
-      toast.add({
+      toast?.add({
         type: "error",
         title: "Не удалось скопировать",
         behavior: "transient",

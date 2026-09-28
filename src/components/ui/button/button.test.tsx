@@ -42,7 +42,9 @@ describe("Button", () => {
     render(<Button isLoading aria-label="Submit" />)
 
     const button = screen.getByRole("button", { name: "Submit" })
-    expect(button).toBeDisabled()
+    // Выключена через aria-disabled, а не нативным атрибутом: иначе кнопка
+    // в фокусе теряла бы его на время загрузки (см. button-r5.test.tsx).
+    expect(button).toHaveAttribute("aria-disabled", "true")
     expect(button).toHaveAttribute("aria-busy", "true")
   })
 })

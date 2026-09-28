@@ -130,8 +130,13 @@ function DoubleLayout({ children }: { children?: React.ReactNode }) {
         data-slot="block-widget-columns"
         className="flex w-full items-center gap-4"
       >
+        {/* Ключ — ключ самой колонки (его выдал разбор детей), а не
+            позиция: иначе, когда первая колонка исчезала, вторая
+            перемонтировалась и теряла введённый текст и фокус. */}
         {columns.map((column, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment
+            key={React.isValidElement(column) && column.key != null ? column.key : index}
+          >
             {index > 0 && <Divider orientation="vertical" />}
             {column}
           </React.Fragment>

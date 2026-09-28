@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { flattenChildren } from "@/lib/flatten-children"
 import { cn } from "@/lib/utils"
 
 import {
@@ -48,7 +49,9 @@ const ItemInformationFieldGroup = React.forwardRef<HTMLDivElement, ItemInformati
   children,
   ...props
 }, ref) {
-  const items = React.Children.toArray(children)
+  // Фрагменты раскрываются: иначе последнее поле во фрагменте не
+  // узнавалось, и висящий разделитель под ним возвращался.
+  const items = flattenChildren(children)
   let lastField = -1
   for (let index = items.length - 1; index >= 0; index -= 1) {
     const node = items[index]

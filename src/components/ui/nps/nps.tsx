@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useFloatingCornerInset } from "@/lib/use-floating-corner-inset"
 
 import { FeedbackPanel } from "./feedback-panel"
 import { StarRating } from "./rating"
@@ -126,25 +127,34 @@ function CloseButton({
   )
 }
 
+// `max-w-full`: встроенная карточка не шире своего контейнера — на 375 с
+// полями страницы 360px давали горизонтальную прокрутку.
 const CARD_CLASS =
-  "w-[360px] rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-[0px_8px_12px_rgba(0,0,0,0.06)]"
+  "w-[360px] max-w-full rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-[0px_8px_12px_rgba(0,0,0,0.06)]"
 
 /**
  * Плавающее окно: правый нижний угол, поверх тостов.
  *
  * На мобильном — поля 16px и ширина не больше видимой области: карточка
  * 360px с отступом 40px на экране 375 уходила за левый край на 40px.
+ *
+ * ⚠️ Отступ снизу — над ЗАНЯТЫМ низом вьюпорта (`--viewport-inset-bottom`,
+ * его публикует закреплённая ButtonMenu), как у тостов и кнопки «Наверх».
+ * От кромки экрана карточка ложилась на панель, и её «Отправить» была
+ * недоступна, пока опрос не закрыт.
  */
 const FLOATING_CLASS =
-  "fixed right-4 bottom-4 z-(--z-nps) max-w-[calc(100%_-_32px)] desktop:right-10 desktop:bottom-10 desktop:max-w-none"
+  "fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-w-[calc(100%_-_32px)] desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-w-none"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({
+  cardRef,
   onClose,
   autoCloseMs,
   focusOnMount,
   className,
 }: {
+  cardRef?: React.Ref<HTMLDivElement>
   onClose?: () => void
   autoCloseMs: number
   /** Фокус был внутри формы, которую сменило это состояние. */
@@ -177,6 +187,7 @@ function NpsDone({
 
   return (
     <div
+      ref={cardRef}
       data-slot="nps"
       className={cn(
         CARD_CLASS,
@@ -272,6 +283,10 @@ function Nps({
   // форму сменяет «Спасибо за оценку», то есть до её размонтирования.
   const focusInside = React.useRef(false)
 
+  // Плавающая карточка занимает правый нижний угол — публикует его высоту,
+  // чтобы кнопка «Наверх» вставала над ней, а не под неё.
+  const cardRef = useFloatingCornerInset<HTMLDivElement>(floating)
+
   function handleSubmit() {
     if (!activeValue) return
     onSubmit?.({ value: activeValue, comment: activeComment })
@@ -280,6 +295,7 @@ function Nps({
   if (submitted)
     return (
       <NpsDone
+        cardRef={cardRef}
         onClose={onClose}
         autoCloseMs={autoCloseMs}
         focusOnMount={focusInside.current}
@@ -289,6 +305,7 @@ function Nps({
 
   return (
     <div
+      ref={cardRef}
       data-slot="nps"
       onFocusCapture={() => {
         focusInside.current = true

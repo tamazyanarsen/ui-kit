@@ -122,8 +122,12 @@ function UpButton({
       // свою высоту в `--viewport-inset-bottom`. Без этого кнопка ложилась
       // на правый край панели — у чёрной точно на крестик «Закрыть», и
       // закрыть выделение мышью было нельзя.
+      //
+      // Тот же угол делит плавающая карточка NPS: пока она открыта, она
+      // публикует занятую высоту в `--floating-corner-inset`, и кнопка
+      // встаёт над ней. Без карточки переменной нет — отступ прежний.
       className={cn(
-        "fixed right-6 bottom-[calc(1.5rem+var(--viewport-inset-bottom,0px))] z-40 shadow-[var(--shadow-universal)]",
+        "fixed right-6 bottom-[max(calc(1.5rem+var(--viewport-inset-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-[var(--shadow-universal)]",
         className
       )}
     />

@@ -16,7 +16,7 @@ describe("UpButton: над занятым низом вьюпорта", () => {
     render(<UpButton />)
     act(() => void window.dispatchEvent(new Event("scroll")))
     const button = screen.getByRole("button", { name: "Наверх" })
-    expect(button.className).toContain("bottom-[calc(1.5rem+var(--viewport-inset-bottom,0px))]")
+    expect(button.className).toContain("calc(1.5rem+var(--viewport-inset-bottom,0px))")
     expect(button.className).not.toMatch(/(^|\s)bottom-6(\s|$)/)
   })
 })

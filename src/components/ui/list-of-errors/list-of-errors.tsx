@@ -74,7 +74,11 @@ const ListOfErrors = React.forwardRef<HTMLDivElement, ListOfErrorsProps>(functio
       <ul data-slot="list-of-errors-items" className="flex flex-col gap-2">
         {items.map((child, index) => (
           <li
-            key={index}
+            // Ключ строки — ключ самой ошибки (`toArray` уже выдал его), а не
+            // позиция: иначе ошибка, добавленная выше, переиспользовала бы
+            // чужой `li` — фокус внутри строки падал на body, а анимацию
+            // появления проигрывала не новая строка, а последняя старая.
+            key={React.isValidElement(child) && child.key != null ? child.key : index}
             data-slot="list-of-errors-item"
             className="motion-safe:animate-[issue-item-in_200ms_ease-out_both]"
             // Лесенка 40 мс по первым четырём строкам, дальше задержка

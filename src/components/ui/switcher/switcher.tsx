@@ -11,6 +11,8 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
 
+import { availableWidth } from "./available-width"
+
 // Switcher — «Cell Switcher / Переключатель»: сегментированный контрол
 // (контейнер-таблетка плюс скользящая активная таблетка), в
 // противоположность Tabs с их подчёркиванием. Разделение по применению то
@@ -185,7 +187,11 @@ function Switcher({
     // Зазор обязателен третьим аргументом — без него хук складывает только
     // ширины сегментов и считает переполненный ряд помещающимся (та же
     // ошибка, что нашлась в табах по дизайн-чеку 3/3 №12).
-    GAP_PX[size]
+    GAP_PX[size],
+    false,
+    // Корень — `inline-flex` и ужимается по содержимому: свернувшись, он
+    // мерил бы сам себя и больше не разворачивался. См. `available-width.ts`.
+    availableWidth
   )
 
   const effectiveVisible = showMore ? visibleCount : resolvedItems.length

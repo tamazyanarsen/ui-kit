@@ -76,10 +76,16 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
   const gap = ROW_GAP[size]
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     buttons.length,
-    // Место под «…» резервируется только когда ему есть куда деться: если
-    // вызывающий уже передал меню, оно и так занимает место в ряду.
-    supplied ? 0 : OVERFLOW_WIDTH[size] + gap,
-    gap
+    OVERFLOW_WIDTH[size] + gap,
+    gap,
+    // Переданное меню стоит в ряду ВСЕГДА, поэтому его место входит и в
+    // проверку «помещается всё» — раньше резерв был нулевым, и кнопки,
+    // помещавшиеся впритык, заезжали под переданное «…».
+    //
+    // Сверено вживую (шаг 2 заявки на кредит, 375px): с нулевым резервом
+    // ряд шириной 294 держал «Далее» + «Сохранить» + «…» на 360, и «…»
+    // вылезало за край карточки на 66px. Теперь «Сохранить» уходит в меню.
+    Boolean(supplied)
   )
 
   // Размер кнопкам ряд задаёт САМ, что бы ни передал вызывающий: ряд обязан
@@ -129,7 +135,14 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
     // Переданное меню остаётся тем же инстансом (у него свои Direction и
     // Show Dropdown) — в него лишь дописываются спрятанные команды, причём
     // В НАЧАЛО: они стояли левее в ряду.
-    overflow = React.cloneElement(supplied, { size }, [
+    //
+    // ⚠️ `showDropdown={false}` (голый триггер без списка) при спрятанных
+    // командах не соблюдается: иначе они пропадали бы вовсе — ни мышью, ни с
+    // клавиатуры до них было бы не добраться. Пока всё помещается, флаг
+    // работает как раньше.
+    const props =
+      hiddenItems.length > 0 ? { size, showDropdown: true } : { size }
+    overflow = React.cloneElement(supplied, props, [
       ...hiddenItems,
       ...React.Children.toArray(supplied.props.children),
     ])
@@ -154,6 +167,21 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
     </div>
   )
 })
+
+/**
+ * Копия кнопки для мерного ряда. `ref` и `id` потребителя ей не достаются:
+ * копия монтируется позже видимой кнопки, и ref получал бы невидимый узел
+ * (`focus()` в никуда), а `id` оказывался бы в DOM дважды — `<label for>` и
+ * `getElementById` находили бы не ту кнопку. `form`, `type`, `render` и
+ * обработчики остаются: пункт «Ещё» нажимает именно эту копию.
+ */
+function measureCopy(child: ButtonElement, size: ButtonRowSize) {
+  return React.cloneElement(child, {
+    size,
+    id: undefined,
+    ref: null,
+  } as Partial<ButtonElement["props"]> & { id?: string; ref: null })
+}
 
 /**
  * Всегда отрисованная невидимая копия ряда — источник ширин для
@@ -191,7 +219,7 @@ function MeasureRow({
           }}
           className="shrink-0"
         >
-          {React.cloneElement(child, { size })}
+          {measureCopy(child, size)}
         </div>
       ))}
     </OverflowMeasureLayer>

@@ -32,13 +32,20 @@ import * as React from "react"
 // только при переполнении. Тогда его место входит и в проверку «помещается
 // всё»: иначе ряд из пунктов, которые помещаются ровно впритык, считался
 // помещающимся, а триггер рядом с ними вылезал за контейнер.
+//
+// `measureAvailable` — своя мера доступной ширины вместо `clientWidth`
+// контейнера. Нужна контейнеру, ширина которого подгоняется под
+// содержимое (`inline-flex` у Switcher): свернувшись, он сужается до
+// видимых пунктов и больше не видит места, появившегося у родителя. Вместе с
+// ней наблюдается и родитель контейнера. Должна быть стабильной функцией.
 const FIT_TOLERANCE = 1
 
 export function useOverflowCount(
   itemCount: number,
   reservedWidth: number,
   gap = 0,
-  alwaysReserve = false
+  alwaysReserve = false,
+  measureAvailable?: (container: HTMLDivElement) => number
 ) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
@@ -70,7 +77,9 @@ export function useOverflowCount(
     // У ряда, ширину которого задаёт само содержимое (ячейка матрицы,
     // `w-fit`-обёртка), без допуска выходило «202 ≤ 201»: пункт уезжал в
     // «Ещё», контейнер от этого сужался, и ряд так и оставался свёрнутым.
-    const available = container.clientWidth
+    const available = measureAvailable
+      ? measureAvailable(container)
+      : container.clientWidth
 
     // ⚠️ Нулевая ширина — это «ещё не померили», а не «не помещается».
     // Контейнер бывает нулевым, пока он скрыт, не разложен или отрисован в
@@ -101,7 +110,7 @@ export function useOverflowCount(
       count++
     }
     setVisibleCount(Math.max(1, count))
-  }, [itemCount, reservedWidth, gap, alwaysReserve])
+  }, [itemCount, reservedWidth, gap, alwaysReserve, measureAvailable])
 
   React.useLayoutEffect(() => {
     recompute()
@@ -124,11 +133,16 @@ export function useOverflowCount(
     observerRef.current = observer
     observed.current = new Set()
     observer.observe(container)
+    // Своя мера смотрит на место у родителя — его расширение тоже повод
+    // пересчитать: сам ужатый контейнер от этого не меняется.
+    if (measureAvailable && container.parentElement) {
+      observer.observe(container.parentElement)
+    }
     return () => {
       observer.disconnect()
       observerRef.current = null
     }
-  }, [recompute])
+  }, [recompute, measureAvailable])
 
   // Узлы копий появляются и сменяются на рендерах, поэтому набор
   // наблюдаемых сверяется после каждого: новые подписываются, ушедшие

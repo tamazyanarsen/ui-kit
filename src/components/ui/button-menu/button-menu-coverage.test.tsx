@@ -20,7 +20,7 @@ describe("ButtonMenuBlack: замер после смены узла панел�
     ) {
       if (!this.isConnected) return { top: 0, height: 0 } as DOMRect
       const height = this.dataset.slot === "button-menu-black" ? 72 : 136
-      return { top: window.innerHeight - height, height } as DOMRect
+      return { top: window.innerHeight - height, bottom: window.innerHeight, height } as DOMRect
     })
     const props = { selectAllPagesCount: 10, onSelectAllPages: () => {} }
     const { rerender, container } = render(

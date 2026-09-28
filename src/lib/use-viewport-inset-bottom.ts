@@ -67,10 +67,32 @@ export function useViewportInsetBottom<T extends HTMLElement>(
       const rect = element.getBoundingClientRect()
       // Перекрытие, а не высота: пока панель ещё не доехала до низа экрана
       // (её контейнер целиком в поле зрения), закрывать под ней нечего.
-      const overlap = Math.min(
-        rect.height,
-        Math.max(0, window.innerHeight - rect.top)
-      )
+      //
+      // ⚠️ Считается только полоса, которая КАСАЕТСЯ нижнего края или уходит
+      // за него. Прежняя формула отличала лишь «ниже экрана» от «не ниже», и
+      // полоса посреди короткой страницы или прокрученная выше экрана
+      // публиковала всю свою высоту: тосты и полоса прокрутки таблицы висели
+      // с пустым зазором в 88px. Допуск в пиксель — на дробное округление
+      // sticky-позиции.
+      //
+      // Низ видимой области — `visualViewport`, а без него `clientHeight`
+      // корня. Не `innerHeight`: он включает горизонтальную полосу прокрутки
+      // страницы, и на Windows sticky-панель `bottom: 0` стоит на 15–17px
+      // выше — «не касалась низа» и публиковала 0 (сверено вживую:
+      // innerHeight 900, clientHeight 885, низ панели 885). И не голый
+      // `clientHeight`: на мобильных это высота с ПОКАЗАННОЙ адресной
+      // строкой, а когда строка прячется, fixed-панель уезжает к новому
+      // низу — `visualViewport` его знает. Ноль бывает только без раскладки
+      // — тогда `innerHeight`.
+      const viewport = window.visualViewport
+      const visibleBottom =
+        (viewport ? viewport.height + viewport.offsetTop : 0) ||
+        document.documentElement.clientHeight ||
+        window.innerHeight
+      const touchesBottom = rect.bottom >= visibleBottom - 1
+      const overlap = touchesBottom
+        ? Math.min(rect.height, Math.max(0, visibleBottom - rect.top))
+        : 0
       const previous = bars.get(key)
       if (previous === overlap) return
       bars.set(key, overlap)

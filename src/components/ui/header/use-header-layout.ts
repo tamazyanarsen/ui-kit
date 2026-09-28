@@ -69,6 +69,14 @@ function useHeaderLayout({
     if (!showNavRow) setOpenPanel(null)
   }, [showNavRow])
 
+  // Кнопка «Создать» пропала (выбрали организацию без счетов — шапка
+  // «client-without-account»), а её панель осталась бы открытой: с
+  // плитками, затемнением и запертой прокруткой, но без кнопки, которой её
+  // закрывают. Раньше сбрасывалось только исчезновение всего нижнего ряда.
+  React.useEffect(() => {
+    if (!showCreate) setOpenPanel((open) => (open === "create" ? null : open))
+  }, [showCreate])
+
   // Что именно закрепляется — см. `pinned`. Если нижний ряд есть, липнет
   // только он; если его нет, липнет вся шапка.
   const pinnedRow = pinned && showNavRow

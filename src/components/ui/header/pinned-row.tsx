@@ -85,6 +85,28 @@ function HeaderPinnedRow({
       close()
     },
   }))
+  // Те же правила для остальных входов, откуда уходят на другую страницу,
+  // пока панель открыта: избранный раздел в ряду над затемнением (и в его
+  // «Ещё») и кнопка баннера внутри меню. Раньше закрывали только ссылки
+  // меню и плитки «Создать».
+  const closingNavItems = navItems.map((item) => ({
+    ...item,
+    onClick: () => {
+      item.onClick?.()
+      close()
+    },
+  }))
+  const closingBanners = menuBanners.map((banner) =>
+    banner.onButtonClick
+      ? {
+          ...banner,
+          onButtonClick: () => {
+            banner.onButtonClick?.()
+            close()
+          },
+        }
+      : banner
+  )
 
   return (
     <div
@@ -93,7 +115,7 @@ function HeaderPinnedRow({
       className={cn("relative bg-[var(--header-bg)]", pinned && "sticky top-0 z-40")}
     >
       <NavRow
-        items={navItems}
+        items={closingNavItems}
         activeSection={activeSection}
         menuOpen={openPanel === "menu"}
         onMenuOpenChange={(open) => onOpenPanelChange(open ? "menu" : null)}
@@ -129,7 +151,7 @@ function HeaderPinnedRow({
       >
         <HeaderMenu
           groups={closingGroups}
-          banners={menuBanners}
+          banners={closingBanners}
           favourites={favourites}
           activeLink={activeSection}
           // Звезда работает сразу, без «Сохранить»: подсказка пустого

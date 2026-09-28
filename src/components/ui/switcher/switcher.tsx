@@ -321,7 +321,7 @@ function Switcher({
             >
               <MenuPrimitive.Popup
                 data-slot="switcher-overflow-content"
-                render={<Dropdown className="min-w-48 overflow-hidden" />}
+                render={<Dropdown className="themed-scrollbar min-w-48 max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
               >
                 {hiddenItems.map((item) => {
                   const active = item.value === activeValue

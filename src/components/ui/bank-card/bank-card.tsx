@@ -82,6 +82,14 @@ function BankCard({
   // не объявляет.
   const flippable = type === undefined || onTypeChange !== undefined
   const [revealed, setRevealed] = React.useState<"number" | "cvc" | null>(null)
+  // Раскрытый реквизит живёт, только пока открыт оборот: ушли с него
+  // (переворот, внешняя смена `type`) — при возврате снова маска, а не
+  // полный номер без действия пользователя.
+  const [revealedSide, setRevealedSide] = React.useState(side)
+  if (revealedSide !== side) {
+    setRevealedSide(side)
+    setRevealed(null)
+  }
   // Тост — только сообщение о копировании: без `<ToastProvider>` карта
   // рисуется и копирует молча, а не роняет дерево.
   const toast = useToastOptional()

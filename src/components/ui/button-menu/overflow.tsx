@@ -83,9 +83,12 @@ function ButtonMenuOverflow({
           sideOffset={8}
           className="isolate z-50"
         >
+          {/* Высота — не больше места до края окна: у закреплённой нижней
+              панели длинный список раскрывается вверх, и без ограничения его
+              верхние пункты уходили за экран, прокрутить к ним было нельзя. */}
           <MenuPrimitive.Popup
             data-slot="button-menu-overflow-content"
-            render={<Dropdown className="min-w-56 overflow-hidden" />}
+            render={<Dropdown className="themed-scrollbar min-w-56 max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
           >
             {children}
           </MenuPrimitive.Popup>

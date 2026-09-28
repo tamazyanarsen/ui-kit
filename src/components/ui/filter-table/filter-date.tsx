@@ -152,12 +152,9 @@ function FilterDate({
         )}
       </div>
       {/* Окно уже двух месяцев (560) бывает только на узком экране: там
-          виден один месяц — стрелки листают его, — иначе вторая сетка
-          уходила за край окна вместе с кнопкой «Применить». */}
-      <div
-        data-slot="filter-date-calendar"
-        className="@container/fdate @max-[559px]/fdate:[&_[data-slot=calendar-range-month][data-index='1']]:hidden"
-      >
+          Calendar сам показывает один месяц — стрелки листают его, — иначе
+          вторая сетка уходила за край окна вместе с кнопкой «Применить». */}
+      <div data-slot="filter-date-calendar">
         <Calendar
           mode="range"
           footer={false}

@@ -109,7 +109,11 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
     <label
       htmlFor={toggleId}
       className={cn(
-        "inline-flex items-start gap-4",
+        // `flex`, а не `inline-flex`, как у Checkbox и Radio: строчная
+        // обёртка брала ширину по содержимому, и `flex-1` текстовой колонки
+        // в мобильной форме не прижимал тумблер к правому краю — он стоял
+        // сразу за короткой подписью, а неразрывное слово раздвигало строку.
+        "flex items-start gap-4",
         disabled ? "cursor-not-allowed" : "cursor-pointer"
       )}
     >

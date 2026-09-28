@@ -18,6 +18,8 @@ interface CalendarDesktopProps {
   view: CalendarView
   setView: (view: CalendarView) => void
   focus: CalendarSingleMonth
+  /** Сколько месяцев показывает диапазон: 1 на узком экране, иначе 2. */
+  rangeMonths?: 1 | 2
   today: Date
   decadeEnd: number
 
@@ -47,6 +49,7 @@ export function CalendarDesktop({
   view,
   setView,
   focus,
+  rangeMonths = 2,
   today,
   decadeEnd,
   value,
@@ -80,6 +83,7 @@ export function CalendarDesktop({
       {mode === "range" ? (
         <RangeBody
           focus={focus}
+          count={rangeMonths}
           today={today}
           normStart={normStart}
           normEnd={normEnd}
@@ -276,6 +280,7 @@ function DaysBody({
 
 function RangeBody({
   focus,
+  count,
   today,
   normStart,
   normEnd,
@@ -286,6 +291,7 @@ function RangeBody({
   disabledDate,
 }: {
   focus: CalendarSingleMonth
+  count: 1 | 2
   today: Date
   normStart: Date | null
   normEnd: Date | null
@@ -296,7 +302,7 @@ function RangeBody({
   disabledDate?: (date: Date) => boolean
 }) {
   const next = addMonths(focus.year, focus.month, 1)
-  const months = [focus, next]
+  const months = count === 2 ? [focus, next] : [focus]
   // Одна остановка Tab на обе сетки: стрелка с конца первого месяца
   // переходит во второй, а не в соседнюю сетку по Tab.
   const dayFocus = useDayFocus({
@@ -313,8 +319,6 @@ function RangeBody({
     // вплотную.
     <div ref={dayFocus.containerRef} className="flex">
       {months.map((m, i) => (
-        // Метка месяца: узкий контейнер (окно FilterDate на телефоне) прячет
-        // второй месяц по ней, а не по порядку детей.
         <div key={i} data-slot="calendar-range-month" data-index={i}>
           <NavHeader onPrev={onPrev} onNext={onNext}>
             <HeaderLabel>{MONTHS_RU_FULL[m.month]}</HeaderLabel>

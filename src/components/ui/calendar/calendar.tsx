@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { addMonths, isSameDay, normalizeRange } from "@/lib/calendar"
+import { useMediaQuery } from "@/lib/use-media-query"
 import { CalendarDesktop } from "./calendar-desktop"
 import { CalendarMobile } from "./calendar-mobile"
 import type { CalendarProps, CalendarSingleMonth, CalendarView } from "./types"
@@ -40,6 +41,13 @@ function sameDayOrEmpty(a: Date | null, b: Date | null) {
   return a && b ? isSameDay(a, b) : !a && !b
 }
 
+// Два месяца диапазона — 560px. Окно уже этого (FilterDate и DatePicker на
+// телефоне ограничены экраном минус поля 16) показывает один месяц: вторая
+// сетка уходила за край вместе с «Применить». Порог — по экрану, а не по
+// контейнеру: поповер DatePicker берёт ширину по содержимому, и мерить в нём
+// нечего.
+const NARROW_RANGE_QUERY = "(max-width: 591.98px)"
+
 function Calendar({
   mode = "single",
   layout = "popover",
@@ -62,6 +70,10 @@ function Calendar({
   onYearChange,
 }: CalendarProps) {
   const today = React.useMemo(() => new Date(), [])
+  const narrow = useMediaQuery(NARROW_RANGE_QUERY)
+  // Сколько месяцев диапазона на экране. Шторка листает ленту и считает как
+  // раньше; во всплывающем виде на узком экране — один.
+  const rangeMonths = layout !== "sheet" && narrow ? 1 : 2
 
   // Неуправляемый режим: без `value` / `monthValue` / `yearValue` календарь
   // держит выбор сам. Раньше подсветка читала только пропсы, и в режимах
@@ -140,7 +152,12 @@ function Calendar({
   // начало и перелиставший к концу периода, не должен улетать обратно.
   function reveal(dates: (Date | null)[], anchor: Date | null) {
     if (!anchor) return
-    const shown = mode === "range" ? [focus, addMonths(focus.year, focus.month, 1)] : [focus]
+    // Видимыми считаются только показанные месяцы: на узком экране второй
+    // не рисуется, и дата в нём — за кадром.
+    const shown =
+      mode === "range" && rangeMonths === 2
+        ? [focus, addMonths(focus.year, focus.month, 1)]
+        : [focus]
     const visible = (date: Date | null) =>
       date !== null &&
       shown.some((m) => m.year === date.getFullYear() && m.month === date.getMonth())
@@ -328,6 +345,7 @@ function Calendar({
       view={view}
       setView={setView}
       focus={focus}
+      rangeMonths={rangeMonths}
       today={today}
       decadeEnd={decadeEnd}
       value={activeValue}

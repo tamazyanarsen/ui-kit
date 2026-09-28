@@ -33,8 +33,12 @@
  * порядок обхода с клавиатуры и чтение с экрана, и менять их ради
  * оформления нельзя. `flex-1` в мобильной форме заодно прижимает коробку к
  * правому краю строки, а не оставляет её болтаться сразу за текстом.
+ *
+ * `break-words` — неразрывное слово (номер договора, ссылка) переносится
+ * внутри колонки, а не раздвигает строку: `min-w-0` сжимает колонку, но без
+ * разрешения рвать слово текст всё равно вылезал за её край.
  */
 const CONTROL_TEXT_COLUMN_CLASS =
-  "order-first flex min-w-0 flex-1 flex-col pt-0.5 desktop:order-none desktop:pt-0"
+  "order-first flex min-w-0 flex-1 flex-col break-words pt-0.5 desktop:order-none desktop:pt-0"
 
 export { CONTROL_TEXT_COLUMN_CLASS }

@@ -194,6 +194,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
             // + 20px = 28px, как в мастере Filled.
             hasFloatingLabel &&
               "placeholder:text-transparent focus:pt-5 [&:not(:placeholder-shown)]:pt-5",
+            // Замок стоит в правом верхнем углу коробки. Без подписи текст
+            // начинается на его высоте, и конец первой строки рисовался
+            // прямо под значком — место под него (16 + зазор 8) держит
+            // правый отступ. С подписью первая строка ниже замка.
+            locked && !hasFloatingLabel && "pr-6",
             className
           )}
           {...props}

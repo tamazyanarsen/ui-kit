@@ -32,14 +32,14 @@ describe("Окна фильтров не шире экрана", () => {
     expect(popup().className).toContain("max-w-[calc(100vw-32px)]")
   })
 
-  it("FilterDate: на узком окне второй месяц прячется, поля сжимаются", async () => {
+  // Прятать второй месяц теперь решает сам Calendar (r10, см.
+  // calendar/calendar-range-narrow-r10.test.tsx): на широком экране их два.
+  it("FilterDate: на широком экране два месяца, поля сжимаются", async () => {
     render(<FilterDate label="Дата" />)
     await open("Дата")
     const wrap = popup().querySelector('[data-slot="filter-date-calendar"]') as HTMLElement
-    expect(wrap.className).toContain("@container/fdate")
     const months = wrap.querySelectorAll('[data-slot="calendar-range-month"]')
     expect(months).toHaveLength(2)
-    expect(months[1]).toHaveAttribute("data-index", "1")
     for (const input of screen.getAllByRole("textbox")) {
       expect(input.closest(".min-w-0")).not.toBeNull()
     }

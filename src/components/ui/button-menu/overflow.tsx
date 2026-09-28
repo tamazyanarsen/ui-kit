@@ -102,20 +102,21 @@ interface ButtonMenuOverflowItemProps
   className?: string
 }
 
-function ButtonMenuOverflowItem({
-  className,
-  text,
-  description,
-  ...props
-}: ButtonMenuOverflowItemProps) {
+// forwardRef: тип пропсов унаследован от `Menu.Item` и обещает `ref`, а на
+// React 18 обычная функция его молча теряет.
+const ButtonMenuOverflowItem = React.forwardRef<
+  HTMLDivElement,
+  ButtonMenuOverflowItemProps
+>(function ButtonMenuOverflowItem({ className, text, description, ...props }, ref) {
   return (
     <MenuPrimitive.Item
+      ref={ref}
       data-slot="button-menu-overflow-item"
       render={<DropdownItem text={text} description={description} className={className} />}
       {...props}
     />
   )
-}
+})
 
 export { ButtonMenuOverflow, ButtonMenuOverflowItem }
 export type { ButtonMenuOverflowProps }

@@ -33,19 +33,36 @@ function publish() {
  * Публикует перекрытие нижнего края вьюпорта этим узлом в
  * `--viewport-inset-bottom` на `<html>`.
  *
- * @param ref  сама полоса
+ * Возвращает callback-ref, который вешается на саму полосу. Именно callback,
+ * а не `RefObject`: узел полосы может смениться без смены пропсов хука
+ * (Button Menu Black переносит панель в блок «кнопка + панель» и обратно,
+ * React пересоздаёт её узел), и эффект на `[ref, active]` продолжал бы
+ * мерить старый, уже снятый из DOM узел — публиковал бы 0 или высоту блока.
+ * Узел в состоянии перезапускает замер ровно при смене узла.
+ *
  * @param active выключено — вклад узла снимается (полоса не закреплена)
+ * @param forwardedRef ref потребителя — получает тот же узел
  */
-export function useViewportInsetBottom(
-  ref: React.RefObject<HTMLElement | null>,
-  active = true
-) {
+export function useViewportInsetBottom<T extends HTMLElement>(
+  active = true,
+  forwardedRef?: React.ForwardedRef<T>
+): React.RefCallback<T> {
   const id = React.useRef<symbol>(undefined as unknown as symbol)
   if (id.current === undefined) id.current = Symbol("bottom-bar")
 
+  const [element, setElement] = React.useState<T | null>(null)
+  const forwarded = React.useRef(forwardedRef)
+  forwarded.current = forwardedRef
+
+  const ref = React.useCallback((node: T | null) => {
+    setElement(node)
+    const target = forwarded.current
+    if (typeof target === "function") target(node)
+    else if (target) target.current = node
+  }, [])
+
   React.useLayoutEffect(() => {
     const key = id.current
-    const element = ref.current
     if (!active || !element) return
 
     const measure = () => {
@@ -76,5 +93,7 @@ export function useViewportInsetBottom(
       bars.delete(key)
       publish()
     }
-  }, [ref, active])
+  }, [element, active])
+
+  return ref
 }

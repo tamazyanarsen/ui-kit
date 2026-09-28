@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { useOverflowCount } from "@/lib/use-overflow-count"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { Button } from "@/components/ui/button"
 
@@ -61,12 +62,12 @@ interface ButtonMenuRowProps extends React.ComponentProps<"div"> {
   size?: ButtonRowSize
 }
 
-function ButtonMenuRow({
+const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(function ButtonMenuRow({
   size = "lg",
   className,
   children,
   ...props
-}: ButtonMenuRowProps) {
+}, forwardedRef) {
   const nodes = React.Children.toArray(children)
   const buttons = nodes.filter(isButton)
   const supplied = nodes.find(isOverflow)
@@ -83,17 +84,22 @@ function ButtonMenuRow({
   // Размер кнопкам ряд задаёт САМ, что бы ни передал вызывающий: ряд обязан
   // быть одной высоты, а собственное умолчание кнопки — Medium, то есть не
   // тот размер ни для панели, ни для карточки.
-  const sized = (child: ButtonElement, key: React.Key) =>
-    React.cloneElement(child, { key, size })
+  //
+  // Ключ НЕ подменяется индексом: `Children.toArray` уже выдал каждой кнопке
+  // ключ из её собственного `key`. С индексом кнопка, вставленная в начало,
+  // сдвигала бы все остальные, и React сопоставлял бы DOM и фокус не с теми
+  // кнопками.
+  const sized = (child: ButtonElement) => React.cloneElement(child, { size })
 
   const visible = buttons.slice(0, visibleCount).map(sized)
   const hidden = buttons.slice(visibleCount)
+  const ref = useComposedRefs(containerRef, forwardedRef)
 
   // Спрятанная кнопка становится строкой меню: подпись — её содержимое,
   // действие — её же обработчик. Ничего третьего у кнопки ряда нет.
   const hiddenItems = hidden.map((child, index) => (
     <ButtonMenuOverflowItem
-      key={`overflow-${index}`}
+      key={`overflow-${child.key ?? index}`}
       text={child.props.children}
       disabled={child.props.disabled}
       onClick={child.props.onClick as (() => void) | undefined}
@@ -115,7 +121,7 @@ function ButtonMenuRow({
 
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       data-slot="button-menu-row"
       className={cn(
         "relative flex min-w-0 flex-1 items-center",
@@ -129,7 +135,7 @@ function ButtonMenuRow({
       <MeasureRow buttons={buttons} itemRefs={itemRefs} size={size} />
     </div>
   )
-}
+})
 
 /**
  * Всегда отрисованная невидимая копия ряда — источник ширин для

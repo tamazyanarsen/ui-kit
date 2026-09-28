@@ -32,6 +32,18 @@ export function useOverflowCount(itemCount: number, reservedWidth: number, gap =
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
   const [visibleCount, setVisibleCount] = React.useState(itemCount)
 
+  // Число пунктов сменилось, а ряд до этого помещался целиком — считаем, что
+  // он помещается и теперь, ещё до замера. Иначе на один проход раскладки
+  // счёт отставал бы от нового числа, хвостовой пункт уезжал бы в «Ещё» и
+  // тут же возвращался — то есть пересоздавался, теряя фокус и состояние.
+  const [counted, setCounted] = React.useState(itemCount)
+  if (counted !== itemCount) {
+    setCounted(itemCount)
+    if (visibleCount >= counted || visibleCount > itemCount) {
+      setVisibleCount(itemCount)
+    }
+  }
+
   const recompute = React.useCallback(() => {
     const container = containerRef.current
     if (!container || itemCount === 0) return
@@ -81,13 +93,50 @@ export function useOverflowCount(itemCount: number, reservedWidth: number, gap =
   }, [recompute])
 
   // Контейнер может сузиться и без участия окна — см. пункт 1 выше.
+  //
+  // Наблюдаются и сами мерные копии: ширина пункта меняется без смены их
+  // ЧИСЛА (вырос бейдж таба, сменилась подпись при локализации,
+  // переименовали раздел), и зависимостей `recompute` это не трогает. Без
+  // наблюдения за копиями ряд переставал помещаться, а «Ещё» не появлялось.
+  const observerRef = React.useRef<ResizeObserver | null>(null)
+  const observed = React.useRef(new Set<HTMLElement>())
   React.useEffect(() => {
     const container = containerRef.current
     if (!container) return
     const observer = new ResizeObserver(recompute)
+    observerRef.current = observer
+    observed.current = new Set()
     observer.observe(container)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      observerRef.current = null
+    }
   }, [recompute])
+
+  // Узлы копий появляются и сменяются на рендерах, поэтому набор
+  // наблюдаемых сверяется после каждого: новые подписываются, ушедшие
+  // снимаются. Повторный `observe` того же узла не нужен — отсюда Set.
+  React.useEffect(() => {
+    const observer = observerRef.current
+    if (!observer) return
+    const current = new Set(
+      itemRefs.current
+        .slice(0, itemCount)
+        .filter((el): el is HTMLElement => el !== null)
+    )
+    for (const el of observed.current) {
+      if (!current.has(el)) {
+        observer.unobserve(el)
+        observed.current.delete(el)
+      }
+    }
+    for (const el of current) {
+      if (!observed.current.has(el)) {
+        observer.observe(el)
+        observed.current.add(el)
+      }
+    }
+  })
 
   // Ширины текста до прихода шрифта другие — см. пункт 2 выше.
   React.useEffect(() => {

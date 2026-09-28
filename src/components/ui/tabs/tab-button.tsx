@@ -28,6 +28,12 @@ function TabButton({
    * остаётся выключенным и линия рисуется по-старому.
    */
   sharedUnderline = false,
+  /**
+   * Вкладка в порядке Tab. Лента — это `tablist` с «бегающим» tabindex: в
+   * порядок обхода попадает одна вкладка (активная), между остальными ходят
+   * стрелками. У измерительной копии семантики нет вовсе.
+   */
+  focusable,
 }: {
   item: TabItem
   active: boolean
@@ -35,11 +41,18 @@ function TabButton({
   innerRef?: (el: HTMLButtonElement | null) => void
   medium?: boolean
   sharedUnderline?: boolean
+  focusable?: boolean
 }) {
+  // Семантика вкладки — только у видимого ряда (он же рисует общий бегунок):
+  // закадровая копия под `aria-hidden` и нужна лишь для замеров.
+  const tab = sharedUnderline
   return (
     <button
       ref={innerRef}
       type="button"
+      role={tab ? "tab" : undefined}
+      aria-selected={tab ? active : undefined}
+      tabIndex={tab ? (focusable ? 0 : -1) : -1}
       disabled={item.disabled}
       onClick={onClick}
       data-slot="tabs-item"

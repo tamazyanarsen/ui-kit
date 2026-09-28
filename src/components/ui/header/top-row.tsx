@@ -20,6 +20,16 @@ import { EmployeeUserMenu } from "./top-row-menus"
 // кластера целиком определяется типом шапки — клиент, сотрудник или
 // неавторизованный вход.
 
+/**
+ * Счётчик на колокольчике — только НЕпрочитанные уведомления. Раньше сюда
+ * уходила длина всего списка, и пять уведомлений, четыре из которых уже
+ * просмотрены, показывали «5» (а подсветка счётчика срабатывала и на
+ * добавление прочитанного пункта).
+ */
+function countUnread(items: NotificationMenuItem[]) {
+  return items.filter((item) => !item.viewed).length
+}
+
 function Logo() {
   return (
     <DomRfLogo
@@ -96,13 +106,24 @@ function ClientActions({
   onOrgSettingsClick,
   onLogoutClick,
 }: ClientActionsProps) {
+  // Без `organizationId` выбор организации живёт здесь же: иначе клик по
+  // другой организации вызывал колбэк, а триггер и галочка навсегда
+  // оставались на первой.
+  const [ownOrganizationId, setOwnOrganizationId] = React.useState<string>()
+  const activeOrganizationId =
+    organizationId ?? ownOrganizationId ?? organizations[0]?.id
+  function changeOrganization(id: string) {
+    if (organizationId === undefined) setOwnOrganizationId(id)
+    onOrganizationChange?.(id)
+  }
+
   return (
     <div className="flex shrink-0 items-center">
       {showIcons && (
         <>
           <NotificationMenu
             items={notificationItems}
-            unreadCount={notificationItems.length}
+            unreadCount={countUnread(notificationItems)}
           />
           <MessagesButton count={messageCount} onClick={onMessagesClick} />
           {documentMenuItems.length > 0 && (
@@ -114,10 +135,11 @@ function ClientActions({
       {organizations.length > 0 && (
         <ProfileMenu
           organizations={organizations}
-          value={organizationId ?? organizations[0].id}
-          onValueChange={onOrganizationChange}
+          value={activeOrganizationId}
+          onValueChange={changeOrganization}
           contactPerson={contactPerson}
           showSetting={showOrgSettings}
+          showLogout
           onSettingsClick={onOrgSettingsClick}
           onLogoutClick={onLogoutClick}
         />
@@ -151,7 +173,7 @@ function EmployeeActions({
     <div className="flex shrink-0 items-center">
       <NotificationMenu
         items={notificationItems}
-        unreadCount={notificationItems.length}
+        unreadCount={countUnread(notificationItems)}
       />
       {showDivider && <TopRowDivider />}
       <EmployeeUserMenu name={employeeName} onSettingsClick={onSettingsClick} />

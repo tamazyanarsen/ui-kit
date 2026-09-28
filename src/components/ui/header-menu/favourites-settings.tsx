@@ -124,18 +124,32 @@ function FavouritesSettings({
   onSave,
 }: FavouritesSettingsProps) {
   const [draft, setDraft] = React.useState(favourites)
+  const [wasOpen, setWasOpen] = React.useState(open)
 
-  // Черновик пересобирается на каждое открытие: пока модалка закрыта,
-  // избранное могло измениться звёздами в самом меню.
-  React.useEffect(() => {
+  // Черновик пересобирается на каждое ОТКРЫТИЕ (переход false → true): пока
+  // модалка закрыта, избранное могло измениться звёздами в самом меню. От
+  // идентичности `favourites` синхронизация намеренно не зависит: массив,
+  // вычисленный у потребителя (`favs ?? []`), новый на каждом рендере, и
+  // любой рендер родителя при открытой модалке молча стирал бы перестановки.
+  if (open !== wasOpen) {
+    setWasOpen(open)
     if (open) setDraft(favourites)
-  }, [open, favourites])
+  }
 
   const added = resolveFavouriteLinks(groups, draft)
   const remaining = resolveRemainingLinks(groups, draft)
 
+  // Индексы приходят из видимого списка `added`, а в `draft` могут лежать
+  // значения, которых в меню уже нет (`resolveFavouriteLinks` их
+  // отбрасывает). Поэтому позиции переводятся в значения и ищутся в самом
+  // черновике — иначе переставлялась бы не та строка.
   function move(from: number, to: number) {
-    setDraft((prev) => moveFavourite(prev, from, to))
+    const fromValue = added[from]?.value
+    const toValue = added[to]?.value
+    if (fromValue === undefined || toValue === undefined) return
+    setDraft((prev) =>
+      moveFavourite(prev, prev.indexOf(fromValue), prev.indexOf(toValue))
+    )
   }
 
   const sortable = useSortable({

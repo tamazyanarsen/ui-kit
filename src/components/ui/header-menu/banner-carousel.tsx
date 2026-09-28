@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import { inertProps } from "@/lib/inert"
+
 import { BannerDots } from "./header-menu-parts"
 import {
   MenuBannerContent,
@@ -49,7 +51,13 @@ interface BannerCarouselProps {
 
 function BannerCarousel({ banners }: BannerCarouselProps) {
   const [index, setIndex] = React.useState(0)
-  const [paused, setPaused] = React.useState(false)
+  // Пауза держится ДВУМЯ независимыми источниками — курсором и фокусом.
+  // С одним общим флагом уход мыши снимал паузу, пока фокус оставался на
+  // стрелке (баннер уезжал из-под фокуса), а Tab наружу снимал её под
+  // курсором.
+  const [hovered, setHovered] = React.useState(false)
+  const [focused, setFocused] = React.useState(false)
+  const paused = hovered || focused
   const reducedMotion = usePrefersReducedMotion()
 
   // Набор баннеров может смениться (у разных ролей своя полка) — тогда
@@ -76,10 +84,15 @@ function BannerCarousel({ banners }: BannerCarouselProps) {
     <div
       data-slot="menu-banner-carousel"
       className="flex w-full flex-col gap-2"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        // Переход фокуса между стрелками и кнопкой внутри карусели — не уход.
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocused(false)
+        }
+      }}
     >
       {/* ⚠️ Плашка стоит НА МЕСТЕ, едет только содержимое.
           Дизайн-чек от 13.09, замечание 16: «Сама цветная плашка при смене
@@ -124,7 +137,7 @@ function BannerCarousel({ banners }: BannerCarouselProps) {
                 // Уехавшие блоки прячутся от чтения с экрана и от таба:
                 // визуально их нет, а кнопка внутри осталась бы фокусируемой.
                 aria-hidden={position === index ? undefined : true}
-                {...(position === index ? {} : { inert: "" })}
+                {...inertProps(position !== index)}
               >
                 <MenuBannerContent
                   title={banner.title}

@@ -201,13 +201,25 @@ function Steps({
   const stripRef = React.useRef<HTMLDivElement>(null)
   const activeIndex = steps.findIndex((step) => step.state === "active")
 
+  // Активный шаг выводится в центр ЛЕНТЫ — и только её. `scrollIntoView`
+  // прокручивает всех прокручиваемых предков, включая окно: Steps ниже
+  // первого экрана утаскивал страницу к себе прямо при загрузке. Поэтому
+  // сдвиг считается по коробкам и ставится самой ленте.
   React.useEffect(() => {
     if (activeIndex < 0) return
-    cardRefs.current[activeIndex]?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    })
+    const strip = stripRef.current
+    const card = cardRefs.current[activeIndex]
+    if (!strip || !card) return
+    const stripBox = strip.getBoundingClientRect()
+    const cardBox = card.getBoundingClientRect()
+    const delta =
+      cardBox.left + cardBox.width / 2 - (stripBox.left + stripBox.width / 2)
+    if (delta === 0) return
+    if (typeof strip.scrollBy === "function") {
+      strip.scrollBy({ left: delta, behavior: "smooth" })
+    } else {
+      strip.scrollLeft += delta
+    }
   }, [activeIndex])
 
   // Шаг прокрутки — на одну «страницу» ленты, но не больше её ширины: так

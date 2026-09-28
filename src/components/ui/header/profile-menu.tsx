@@ -30,6 +30,13 @@ interface ProfileMenuProps {
   onValueChange?: (id: string) => void
   contactPerson?: React.ReactNode
   showSetting?: boolean
+  /**
+   * Показывать «Выйти». По умолчанию следует за `showSetting` — в макете это
+   * один опциональный блок. Шапка включает его всегда: у клиента это
+   * единственный путь выхода, и `showOrgSettings={false}` прятал его вместе
+   * с «Профилем и настройками».
+   */
+  showLogout?: boolean
   onSettingsClick?: () => void
   onLogoutClick?: () => void
   className?: string
@@ -118,6 +125,7 @@ function ProfileMenu({
   onValueChange,
   contactPerson,
   showSetting = true,
+  showLogout = showSetting,
   onSettingsClick,
   onLogoutClick,
   className,
@@ -187,8 +195,10 @@ function ProfileMenu({
           </>
         )}
 
-        {showSetting && (
+        {(showSetting || showLogout) && (
           <SettingsBlock
+            showSettings={showSetting}
+            showLogout={showLogout}
             onSettingsClick={onSettingsClick}
             onLogoutClick={onLogoutClick}
           />

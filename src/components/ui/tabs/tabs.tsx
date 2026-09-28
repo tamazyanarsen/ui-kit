@@ -76,10 +76,16 @@ function Tabs({
   // закреплённый размер и в замере переполнения, и в CSS.
   const medium = size === "medium"
   const sizeKey = isDesktop && !medium ? "desktop" : "mobile"
-  const [internalValue, setInternalValue] = React.useState(
-    defaultValue ?? items[0]?.value
-  )
-  const activeValue = value ?? internalValue
+  const [internalValue, setInternalValue] = React.useState(defaultValue)
+  // Неуправляемое значение, которого нет среди `items` (пункты пришли
+  // асинхронно после пустого массива или активный пункт удалили), не
+  // застывает, а откатывается на первую доступную вкладку. Раньше умолчание
+  // считалось один раз при монтировании, и при `items=[]` на старте активной
+  // вкладки не было никогда.
+  const fallbackValue = (items.find((item) => !item.disabled) ?? items[0])?.value
+  const activeValue =
+    value ??
+    (items.some((item) => item.value === internalValue) ? internalValue : fallbackValue)
 
   function setValue(next: string) {
     if (value === undefined) setInternalValue(next)
@@ -102,6 +108,34 @@ function Tabs({
   const hiddenItems = items.slice(visibleCount)
   const hasOverflow = hiddenItems.length > 0
   const showOverflowTab = hasOverflow || showMore
+
+  // В порядок Tab попадает активная вкладка, а если она спрятана за
+  // многоточием — первая доступная видимая: иначе до ленты с клавиатуры было
+  // бы не добраться.
+  const focusValue = visibleItems.some((item) => item.value === activeValue)
+    ? activeValue
+    : visibleItems.find((item) => !item.disabled)?.value
+
+  // Стрелки, Home и End — по видимым доступным вкладкам, с активацией при
+  // переходе (паттерн WAI-ARIA Tabs с автоматической активацией).
+  function onRowKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    const enabled = visibleItems.filter((item) => !item.disabled)
+    const current = enabled.findIndex((item) => item.value === focusValue)
+    let next: number
+    if (event.key === "ArrowRight") next = (current + 1) % enabled.length
+    else if (event.key === "ArrowLeft") next = (current - 1 + enabled.length) % enabled.length
+    else if (event.key === "Home") next = 0
+    else if (event.key === "End") next = enabled.length - 1
+    else return
+    const target = enabled[next]
+    if (!target) return
+    event.preventDefault()
+    setValue(target.value)
+    const tabs = event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')
+    Array.from(tabs)
+      .find((el) => el.dataset.value === target.value)
+      ?.focus()
+  }
 
   const indicator = useActiveIndicator<HTMLDivElement>(activeValue, [
     visibleCount,
@@ -138,6 +172,8 @@ function Tabs({
     >
       <div
         ref={indicator.rowRef}
+        role="tablist"
+        onKeyDown={onRowKeyDown}
         data-slot="tabs-row"
         className={cn(
           "relative flex items-center desktop:shadow-[inset_0_-1px_0_0_var(--tabs-border)]",
@@ -152,6 +188,7 @@ function Tabs({
             active={item.value === activeValue}
             medium={medium}
             sharedUnderline
+            focusable={item.value === focusValue}
             onClick={() => !item.disabled && setValue(item.value)}
           />
         ))}

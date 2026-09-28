@@ -119,7 +119,7 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
   onSelectAllPages?: () => void
 }
 
-function ButtonMenuBlack({
+const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(function ButtonMenuBlack({
   className,
   info,
   onClose,
@@ -134,7 +134,7 @@ function ButtonMenuBlack({
   children,
   style,
   ...props
-}: ButtonMenuBlackProps) {
+}, forwardedRef) {
   // Рассуждение то же, что и в проходе по размерам самого ButtonMenu: макет
   // рисует все действия одинаковой таблеткой 32px (px-16/py-6, радиус 16 —
   // это `sm` у Button).
@@ -173,9 +173,10 @@ function ButtonMenuBlack({
   // Между кнопкой и панелью прозрачный зазор 32, и липкая полоса прокрутки
   // таблицы (8px) помещается в нём целиком. Меряя блок целиком, мы отрывали
   // полосу прокрутки от панели на 64 и подвешивали её в пустоте — поэтому
-  // ref висит на ПАНЕЛИ, а не на внешнем узле.
-  const ref = React.useRef<HTMLDivElement>(null)
-  useViewportInsetBottom(ref, pinned && !detached)
+  // ref висит на ПАНЕЛИ, а не на внешнем узле. Узел панели пересоздаётся,
+  // когда она переезжает в блок «кнопка + панель» и обратно, поэтому хук
+  // отдаёт callback-ref и перемеряет новый узел (см. сам хук).
+  const ref = useViewportInsetBottom(pinned && !detached, forwardedRef)
 
   // Кнопка пропадает, когда выбрано всё, и возвращается, как только снята
   // хотя бы одна галка.
@@ -320,7 +321,7 @@ function ButtonMenuBlack({
     </div>
     </ViewportScope>
   )
-}
+})
 
 export { ButtonMenuBlack }
 export type { ButtonMenuBlackProps, ButtonMenuBlackInfoItem }

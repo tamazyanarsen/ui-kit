@@ -22,9 +22,13 @@ import { cn } from "@/lib/utils"
  */
 interface DropdownFooterProps extends React.ComponentProps<"div"> {}
 
-function DropdownFooter({ className, ...props }: DropdownFooterProps) {
+// forwardRef: тип пропсов обещает `ref`, а на React 18 обычная функция его
+// молча теряет.
+const DropdownFooter = React.forwardRef<HTMLDivElement, DropdownFooterProps>(
+  function DropdownFooter({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       data-slot="dropdown-footer"
       className={cn(
         "sticky bottom-0 z-10 flex w-full shrink-0 items-stretch border-t border-[var(--menu-item-divider)] bg-popover",
@@ -37,7 +41,7 @@ function DropdownFooter({ className, ...props }: DropdownFooterProps) {
       {...props}
     />
   )
-}
+})
 
 /**
  * Кнопка нижней панели. Своя, а не `Button`: у той пилюля с радиусом 16 и
@@ -46,13 +50,13 @@ function DropdownFooter({ className, ...props }: DropdownFooterProps) {
 interface DropdownFooterButtonProps
   extends React.ComponentProps<"button"> {}
 
-function DropdownFooterButton({
-  className,
-  type = "button",
-  ...props
-}: DropdownFooterButtonProps) {
+const DropdownFooterButton = React.forwardRef<
+  HTMLButtonElement,
+  DropdownFooterButtonProps
+>(function DropdownFooterButton({ className, type = "button", ...props }, ref) {
   return (
     <button
+      ref={ref}
       type={type}
       data-slot="dropdown-footer-button"
       className={cn(
@@ -66,7 +70,7 @@ function DropdownFooterButton({
       {...props}
     />
   )
-}
+})
 
 export { DropdownFooter, DropdownFooterButton }
 export type { DropdownFooterProps, DropdownFooterButtonProps }

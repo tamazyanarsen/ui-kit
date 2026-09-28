@@ -60,6 +60,25 @@ function MenuOverlay({
   // каждом закрытии меню.
   usePageScrollLock(open)
 
+  // Escape закрывает панель. Страница под ней заперта, и без этого
+  // пользователь клавиатуры мог закрыть меню только кнопкой «Меню» или
+  // кликом по затемнению. Escape внутри ЧУЖОГО диалога (модалка «Настройка
+  // избранного» открывается поверх меню) — дело того диалога.
+  const onCloseRef = React.useRef(onClose)
+  onCloseRef.current = onClose
+  React.useEffect(() => {
+    if (!open) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return
+      const target = event.target instanceof Element ? event.target : null
+      const dialog = target?.closest('[role="dialog"], [role="alertdialog"]')
+      if (dialog && !ref.current?.contains(dialog)) return
+      onCloseRef.current()
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [open])
+
   // Высота — «до низа экрана», и посчитать её в CSS нечем.
   //
   // Раньше здесь стояло `h-[calc(100vh-8rem)]` — «экран минус шапка 128».

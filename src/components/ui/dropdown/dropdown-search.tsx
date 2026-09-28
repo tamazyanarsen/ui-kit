@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { Search, X } from "@/icons"
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
 
 /**
  * Строка поиска выпадающего списка — свойство `Show Search` компонент-сета
@@ -30,10 +31,35 @@ interface DropdownSearchProps
 
 const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
   function DropdownSearch(
-    { className, containerClassName, placeholder = "Поиск", value, onClear, ...props },
+    {
+      className,
+      containerClassName,
+      placeholder = "Поиск",
+      value,
+      defaultValue,
+      onChange,
+      onClear,
+      ...props
+    },
     ref
   ) {
-    const hasValue = value !== undefined && value !== ""
+    // В неуправляемом режиме (`defaultValue`) пропс `value` пуст всегда, и
+    // крестик по одному ему не появлялся никогда. Поэтому текст поля
+    // отслеживается и сам.
+    const [ownValue, setOwnValue] = React.useState(String(defaultValue ?? ""))
+    const controlled = value !== undefined
+    const hasValue = controlled ? value !== "" : ownValue !== ""
+    const inputRef = React.useRef<HTMLInputElement>(null)
+    const composedRef = useComposedRefs(inputRef, ref)
+
+    function clear() {
+      if (!controlled && inputRef.current) {
+        inputRef.current.value = ""
+        setOwnValue("")
+      }
+      onClear?.()
+      inputRef.current?.focus()
+    }
 
     return (
       <div
@@ -49,9 +75,14 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
           className="size-6 shrink-0 text-[var(--menu-item-description-fg)]"
         />
         <input
-          ref={ref}
+          ref={composedRef}
           type="search"
           value={value}
+          defaultValue={defaultValue}
+          onChange={(event) => {
+            if (!controlled) setOwnValue(event.target.value)
+            onChange?.(event)
+          }}
           placeholder={placeholder}
           className={cn(
             // `[&::-webkit-search-cancel-button]:hidden` — у типа `search`
@@ -70,7 +101,7 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
           <button
             type="button"
             aria-label="Очистить поиск"
-            onClick={onClear}
+            onClick={clear}
             className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-[var(--menu-item-fg)] outline-none focus-visible:focus-ring"
           >
             <X size={24} aria-hidden="true" className="size-6" />
@@ -87,12 +118,13 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
  * стоит на месте списка, пока в строку не ввели минимум три символа:
  * «Начните вводить параметры поиска».
  */
-function DropdownHelp({
-  className,
-  ...props
-}: React.ComponentProps<"p">) {
+const DropdownHelp = React.forwardRef<
+  HTMLParagraphElement,
+  React.ComponentProps<"p">
+>(function DropdownHelp({ className, ...props }, ref) {
   return (
     <p
+      ref={ref}
       data-slot="dropdown-help"
       className={cn(
         "w-full shrink-0 px-4 pt-3 pb-4 text-p2-regular text-[var(--menu-item-description-fg)]",
@@ -101,7 +133,7 @@ function DropdownHelp({
       {...props}
     />
   )
-}
+})
 
 export { DropdownSearch, DropdownHelp }
 export type { DropdownSearchProps }

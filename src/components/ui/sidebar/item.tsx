@@ -20,17 +20,30 @@ const ICON_SIZE = "size-6"
 // длинная подпись выходит за границы по вертикали (scrollHeight), а не по
 // горизонтали. Проверка одной только ширины молча перестала бы показывать
 // подсказку ровно в том случае, который макет и рисует.
-function useTruncated<T extends HTMLElement>() {
-  const ref = React.useRef<T>(null)
+//
+// Замер висит на ResizeObserver, а не на одном рендере: панель
+// разворачивается анимацией ширины (`transition-[width]` в sidebar.tsx), и
+// первый рендер с `open` застаёт подпись ещё сжатой до 56px полосы. Единичный
+// замер фиксировал бы «обрезано» навсегда, и у каждого пункта появлялся бы
+// тултип-дубль видимой подписи.
+function useTruncated<T extends HTMLElement>(content: React.ReactNode) {
+  const [el, setEl] = React.useState<T | null>(null)
   const [truncated, setTruncated] = React.useState(false)
 
   React.useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-    setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight)
-  })
+    if (!el) {
+      setTruncated(false)
+      return
+    }
+    const measure = () =>
+      setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [el, content])
 
-  return { ref, truncated }
+  return { ref: setEl, truncated }
 }
 
 // Подписи боковой панели в макете заданы как `min-h-[24px]
@@ -65,12 +78,28 @@ function SidebarItem({
   className,
 }: SidebarItemProps) {
   const { open } = useSidebarContext()
-  const { ref: labelRef, truncated } = useTruncated<HTMLSpanElement>()
+  const { ref: labelRef, truncated } = useTruncated<HTMLSpanElement>(label)
 
   const content = (
     <a
       href={href}
       onClick={onClick}
+      // Без `href` у `<a>` нет ни места в порядке Tab, ни активации по Enter —
+      // а пункт с одной SPA-навигацией через `onClick` законен. Такой ссылке
+      // возвращаются роль, фокус и Enter вручную.
+      role={href === undefined ? "link" : undefined}
+      tabIndex={href === undefined ? 0 : undefined}
+      onKeyDown={
+        href === undefined
+          ? (event) => {
+              if (event.key === "Enter") {
+                event.preventDefault()
+                event.currentTarget.click()
+              }
+            }
+          : undefined
+      }
+      aria-current={active ? "page" : undefined}
       data-slot="sidebar-item"
       data-active={active || undefined}
       aria-label={!open && typeof label === "string" ? label : undefined}
@@ -106,10 +135,11 @@ function SidebarItem({
     </a>
   )
 
-  if (open && !truncated) return content
-
+  // Обёртка стоит ВСЕГДА, а выключается флагом: переключение «голая ссылка ↔
+  // ссылка в Tooltip» пересоздавало бы узел ссылки, и фокус с неё слетал бы
+  // ровно в момент, когда подпись перестала (или начала) помещаться.
   return (
-    <Tooltip content={label} direction="left">
+    <Tooltip content={label} direction="left" disabled={open && !truncated}>
       {content}
     </Tooltip>
   )

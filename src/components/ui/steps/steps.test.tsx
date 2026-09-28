@@ -1,15 +1,39 @@
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 import { Steps } from "./steps"
 
-// Активный шаг сам подкручивает себя в область видимости — в jsdom это не реализовано.
-beforeAll(() => {
-  Element.prototype.scrollIntoView = vi.fn()
-})
-
 describe("Steps", () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  // `scrollIntoView` крутил и окно: Steps ниже первого экрана утаскивал к
+  // себе страницу при загрузке. Прокручиваться должна только лента.
+  it("выводит активный шаг в центр ленты, не трогая остальные прокрутки", () => {
+    const scrollIntoView = vi.fn()
+    Element.prototype.scrollIntoView = scrollIntoView
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
+      this: HTMLElement
+    ) {
+      if (this.dataset.slot === "steps-strip") {
+        return { left: 0, width: 400 } as DOMRect
+      }
+      // Второй шаг — активный — стоит правее центра ленты на 300px.
+      return { left: 450, width: 100 } as DOMRect
+    })
+    render(
+      <Steps
+        steps={[
+          { title: "Шаг 1", description: "а" },
+          { title: "Шаг 2", description: "б", state: "active" },
+        ]}
+      />
+    )
+    const strip = document.querySelector<HTMLElement>('[data-slot="steps-strip"]')!
+    expect(scrollIntoView).not.toHaveBeenCalled()
+    expect(strip.scrollLeft).toBe(300)
+  })
+
   it("renders each step's title and description", () => {
     render(
       <Steps

@@ -13,7 +13,7 @@ const ITEMS = [
 describe("Tabs", () => {
   it("renders every item and activates the first by default", () => {
     render(<Tabs items={ITEMS} />)
-    expect(screen.getAllByRole("button", { name: "Все" })[0]).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveAttribute(
       "data-active",
       "true"
     )
@@ -23,9 +23,9 @@ describe("Tabs", () => {
     const user = userEvent.setup()
     render(<Tabs items={ITEMS} />)
 
-    await user.click(screen.getAllByRole("button", { name: "Открытые" })[0])
+    await user.click(screen.getByRole("tab", { name: "Открытые" }))
 
-    expect(screen.getAllByRole("button", { name: "Открытые" })[0]).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Открытые" })).toHaveAttribute(
       "data-active",
       "true"
     )
@@ -36,10 +36,10 @@ describe("Tabs", () => {
     const onValueChange = vi.fn()
     render(<Tabs items={ITEMS} value="all" onValueChange={onValueChange} />)
 
-    await user.click(screen.getAllByRole("button", { name: "Открытые" })[0])
+    await user.click(screen.getByRole("tab", { name: "Открытые" }))
 
     expect(onValueChange).toHaveBeenCalledWith("open")
-    expect(screen.getAllByRole("button", { name: "Все" })[0]).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveAttribute(
       "data-active",
       "true"
     )
@@ -50,7 +50,7 @@ describe("Tabs", () => {
     const onValueChange = vi.fn()
     render(<Tabs items={ITEMS} onValueChange={onValueChange} />)
 
-    await user.click(screen.getAllByRole("button", { name: "Закрытые" })[0])
+    await user.click(screen.getByRole("tab", { name: "Закрытые" }))
 
     expect(onValueChange).not.toHaveBeenCalled()
   })
@@ -65,5 +65,57 @@ describe("Tabs", () => {
       <Tabs items={[{ value: "a", label: "Ошибки", status: true }]} />
     )
     expect(container.querySelector('[data-type="point"]')).toBeInTheDocument()
+  })
+
+  it("объявляет ленту как tablist и выбранную вкладку через aria-selected", () => {
+    render(<Tabs items={ITEMS} defaultValue="open" />)
+    expect(screen.getByRole("tablist")).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Открытые" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveAttribute(
+      "aria-selected",
+      "false"
+    )
+  })
+
+  it("переключается стрелками, пропуская выключенные, и держит в Tab одну вкладку", async () => {
+    const user = userEvent.setup()
+    render(<Tabs items={ITEMS} />)
+    await user.tab()
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveFocus()
+
+    await user.keyboard("{ArrowRight}")
+    const open = screen.getByRole("tab", { name: "Открытые" })
+    expect(open).toHaveFocus()
+    expect(open).toHaveAttribute("aria-selected", "true")
+
+    // «Закрытые» выключена — стрелка вправо уходит по кругу на первую.
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveFocus()
+
+    await user.keyboard("{End}")
+    expect(open).toHaveFocus()
+  })
+
+  it("выбирает первую вкладку, когда пункты приходят после пустого списка", () => {
+    const { rerender } = render(<Tabs items={[]} />)
+    rerender(<Tabs items={ITEMS} />)
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+  })
+
+  it("откатывается на доступную вкладку, когда активную удалили", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Tabs items={ITEMS} />)
+    await user.click(screen.getByRole("tab", { name: "Открытые" }))
+    rerender(<Tabs items={ITEMS.filter((item) => item.value !== "open")} />)
+    expect(screen.getByRole("tab", { name: "Все" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
   })
 })

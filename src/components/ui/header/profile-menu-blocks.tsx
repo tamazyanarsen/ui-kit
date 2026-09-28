@@ -115,9 +115,13 @@ function OrganizationList({
 
 /** «Профиль и настройки» + «Выйти» — по спецификации один опциональный блок. */
 function SettingsBlock({
+  showSettings = true,
+  showLogout = true,
   onSettingsClick,
   onLogoutClick,
 }: {
+  showSettings?: boolean
+  showLogout?: boolean
   onSettingsClick?: () => void
   onLogoutClick?: () => void
 }) {
@@ -127,6 +131,7 @@ function SettingsBlock({
           `ELK / divider`, а не рамкой на самом блоке. */}
       <Divider />
       <div className="flex flex-col">
+        {showSettings && (
         <MenuPrimitive.Item
           data-slot="profile-menu-settings-item"
           onClick={onSettingsClick}
@@ -138,6 +143,8 @@ function SettingsBlock({
           <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
           Профиль и настройки
         </MenuPrimitive.Item>
+        )}
+        {showLogout && (
         <MenuPrimitive.Item
           data-slot="profile-menu-logout-item"
           onClick={onLogoutClick}
@@ -149,6 +156,7 @@ function SettingsBlock({
           <LogOut size={24} aria-hidden="true" className="size-6 shrink-0" />
           Выйти
         </MenuPrimitive.Item>
+        )}
       </div>
     </>
   )

@@ -61,7 +61,7 @@ interface ButtonMenuProps extends React.ComponentProps<"div"> {
 // уходят в меню «ещё» — своё, если вызывающий его не передал, или в конец
 // переданного, если передал. Сам механизм с 08.09 живёт в `ButtonMenuRow` и
 // переиспользуется рядами команд вне панели (дизайн-чек от 08.09, №3).
-function ButtonMenu({
+const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function ButtonMenu({
   pinned = true,
   detached = false,
   placement = "full",
@@ -70,7 +70,7 @@ function ButtonMenu({
   style,
   children,
   ...props
-}: ButtonMenuProps) {
+}, forwardedRef) {
   const nodes = React.Children.toArray(children)
   // Всё, что не кнопка и не меню «ещё», рисуется как есть и в замер не
   // входит: панель не берётся угадывать, что это и как оно сжимается.
@@ -79,8 +79,9 @@ function ButtonMenu({
 
   // Та же публикация занятой высоты, что и у чёрной панели: всё, что липнет
   // к низу вьюпорта (полоса прокрутки таблицы), обязано вставать над ней.
-  const ref = React.useRef<HTMLDivElement>(null)
-  useViewportInsetBottom(ref, pinned && !detached)
+  // ref потребителя сливается с внутренним: `forwardRef` забирает его из
+  // пропсов, и `{...props}` ниже уже не может перетереть замер.
+  const ref = useViewportInsetBottom(pinned && !detached, forwardedRef)
 
   return (
     // ⚠️ Панель ВСЕГДА в десктопной форме.
@@ -133,7 +134,7 @@ function ButtonMenu({
       </div>
     </ViewportScope>
   )
-}
+})
 
 export { ButtonMenu }
 export type { ButtonMenuProps }

@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Tag, type TagColor } from "@/components/ui/tag"
+import { Tag, type TagColor, type TagVariant } from "@/components/ui/tag"
 import { Tooltip } from "@/components/ui/tooltip"
 
 import {
@@ -153,9 +153,12 @@ function TableCellValue({
 function TableCellTag({
   children,
   color,
+  variant,
 }: {
   children?: React.ReactNode
   color: TagColor
+  /** Вариант тега (сплошной/контурный). Без него — умолчание самого Tag. */
+  variant?: TagVariant
 }) {
   const tag = useTruncated<HTMLSpanElement>()
 
@@ -165,7 +168,7 @@ function TableCellTag({
         className="flex min-w-0 overflow-hidden"
         data-truncated={tag.truncated || undefined}
       >
-        <Tag color={color} className="min-w-0">
+        <Tag color={color} variant={variant} className="min-w-0">
           <span ref={tag.ref} className="truncate">
             {children}
           </span>

@@ -55,7 +55,11 @@ function headCellType<Row>(
   // действий, но разделитель и линия под шапкой нужны. Меню таблицы, если
   // оно есть, занимает ровно это место.
   if (field.type === "actions") return headMenu ? "button" : "filler"
-  if (field.type === "icon") return field.headIcon ? "icon" : "filler"
+  // Столбец значков — всегда шапка `icon`, даже без `headIcon`: ширина и
+  // отступы шапки должны совпадать с ячейкой тела (32px, px-8 вокруг
+  // глифа 16). Раньше без `headIcon` шапка становилась филлером — 52px
+  // и лишний разделитель, а глиф в теле прижимался влево.
+  if (field.type === "icon") return "icon"
   return fieldAlign(field) === "right" ? "subtitle-right" : "subtitle-left"
 }
 

@@ -90,6 +90,12 @@ interface TableHeadCellProps
   width?: number
   defaultWidth?: number
   onWidthChange?: (width: number) => void
+  /**
+   * Итог перетаскивания границы — один вызов при отпускании. Во время жеста
+   * ширину держит сама ячейка, поэтому тому, кто хранит ширины (DataTable),
+   * не нужно перерисовываться на каждое движение.
+   */
+  onWidthCommit?: (width: number) => void
   /** "Минимальная ширина столбцов — 48px." */
   minWidth?: number
   pin?: TablePin
@@ -125,6 +131,7 @@ const TableHeadCell = React.forwardRef<
   width,
   defaultWidth,
   onWidthChange,
+  onWidthCommit,
   minWidth,
   pin,
   edge = false,
@@ -149,6 +156,7 @@ const TableHeadCell = React.forwardRef<
     width,
     defaultWidth,
     onWidthChange,
+    onWidthCommit,
     minWidth,
     edge,
   })

@@ -86,7 +86,9 @@ function DataTableHead<Row>({
             // не мог ни отклонить изменение, ни сбросить ширины в `{}`.
             width={columnWidth(field.key) ?? columnDefaultWidth(field)}
             defaultWidth={columnDefaultWidth(field)}
-            onWidthChange={(next) => setColumnWidth(field.key, next)}
+            // В модель — итог жеста, а не каждый `pointermove`: иначе на
+            // каждом пикселе перерисовывалось всё тело таблицы.
+            onWidthCommit={(next) => setColumnWidth(field.key, next)}
             minWidth={field.minWidth ?? minColumnWidth}
           >
             {field.title}

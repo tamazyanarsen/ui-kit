@@ -104,6 +104,7 @@ function fieldCellProps<Row>(
     return {
       ...base,
       tagColor: tag.color,
+      tagVariant: tag.variant,
       children: tag.label,
       ...own,
     }

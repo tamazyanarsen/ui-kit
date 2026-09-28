@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import type { TagColor } from "@/components/ui/tag"
+import type { TagColor, TagVariant } from "@/components/ui/tag"
 
 import {
   TableCellAction,
@@ -43,6 +43,12 @@ interface TableCellProps
   descriptionSignTone?: TableSignTone
   icon?: React.ReactNode
   tagColor?: TagColor
+  /**
+   * Вариант тега ячейки `tag`. Раньше `TableFieldTag.variant` считался в
+   * модели, но до Tag не доходил — тег всегда рисовался вариантом по
+   * умолчанию.
+   */
+  tagVariant?: TagVariant
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
   /**
@@ -105,6 +111,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
     descriptionSignTone,
     icon,
     tagColor = "green",
+    tagVariant,
     checked,
     onCheckedChange,
     hideCheckbox = false,
@@ -195,7 +202,10 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
         {/* См. примечание в шапке про `flex` против `inline-flex` и распорку
             интерлиньяжа 20px. */}
         {type === "icon" && (
-          <span className="flex text-[var(--table-fg)]" aria-hidden="true">
+          <span
+            className="flex justify-center text-[var(--table-fg)]"
+            aria-hidden="true"
+          >
             {icon}
           </span>
         )}
@@ -231,7 +241,9 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
         )}
 
         {type === "tag" && (
-          <TableCellTag color={tagColor}>{children}</TableCellTag>
+          <TableCellTag color={tagColor} variant={tagVariant}>
+            {children}
+          </TableCellTag>
         )}
 
         {type === "button" && (

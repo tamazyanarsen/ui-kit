@@ -43,6 +43,11 @@ interface ColumnResizeOptions {
   width?: number
   defaultWidth?: number
   onWidthChange?: (width: number) => void
+  /**
+   * Итог жеста — один раз, при отпускании. В отличие от `onWidthChange`
+   * (на каждый `pointermove`) не будит вызывающего на каждом пикселе.
+   */
+  onWidthCommit?: (width: number) => void
   minWidth?: number
   /** Первая колонка строки: в её коробке лежит ещё и поле строки. */
   edge?: boolean
@@ -62,11 +67,19 @@ function useColumnResize({
   width,
   defaultWidth,
   onWidthChange,
+  onWidthCommit,
   minWidth = MIN_COLUMN_WIDTH,
   edge = false,
 }: ColumnResizeOptions) {
   const [uncontrolledWidth, setUncontrolledWidth] = React.useState(defaultWidth)
-  const resolvedWidth = width ?? uncontrolledWidth ?? CONTROL_COLUMN_WIDTH[type]
+  // Ширина ВО ВРЕМЯ жеста — своё состояние ячейки шапки. Перерисовывается
+  // только она: при `table-layout: fixed` ширину столбца задаёт ячейка
+  // первой строки, тело таблицы следует за ней само. Раньше каждый
+  // `pointermove` уходил в модель DataTable и перерисовывал все ячейки
+  // тела (300 строк × 5 шагов — 1500 вызовов `render`).
+  const [dragWidth, setDragWidth] = React.useState<number | null>(null)
+  const resolvedWidth =
+    dragWidth ?? width ?? uncontrolledWidth ?? CONTROL_COLUMN_WIDTH[type]
 
   const startResize = (event: React.PointerEvent<HTMLSpanElement>) => {
     event.preventDefault()
@@ -86,17 +99,32 @@ function useColumnResize({
     const pinnedMax = pin ? pinnedMaxWidth(cell) : null
     const maxWidth = pinnedMax === null ? null : pinnedMax - edgePadding
 
+    let last: number | null = null
     const onMove = (moveEvent: PointerEvent) => {
       const dragged = Math.max(minWidth, startWidth + moveEvent.clientX - startX)
       const next = maxWidth === null ? dragged : Math.min(dragged, maxWidth)
-      if (width === undefined) setUncontrolledWidth(next)
+      last = next
+      setDragWidth(next)
       onWidthChange?.(next)
     }
     // Перетаскивание заканчивается не только отпусканием: системный жест
     // или потеря захвата присылают `pointercancel` / `lostpointercapture`.
     // Без них `pointermove` оставался висеть на ручке, и следующее движение
     // над ней БЕЗ нажатия продолжало менять ширину колонки.
+    let finished = false
     const onUp = () => {
+      // `pointerup` и следом `lostpointercapture` — один конец жеста.
+      if (finished) return
+      finished = true
+      // Итог — в состояние (неуправляемая) и наружу одним вызовом; снятие
+      // `dragWidth` в том же обработчике, то есть в той же пачке обновлений:
+      // промежуточного кадра со старой шириной нет. Управляемую ширину,
+      // которую родитель не принял, ячейка после этого честно возвращает.
+      if (last !== null) {
+        if (width === undefined) setUncontrolledWidth(last)
+        onWidthCommit?.(last)
+      }
+      setDragWidth(null)
       handle.removeEventListener("pointermove", onMove)
       handle.removeEventListener("pointerup", onUp)
       handle.removeEventListener("pointercancel", onUp)

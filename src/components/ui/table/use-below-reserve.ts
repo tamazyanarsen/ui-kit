@@ -20,12 +20,8 @@ import * as React from "react"
 const VARIABLE = "--table-below"
 
 /**
- * Положение узла в РАЗМЕТКЕ, а не на экране.
- *
- * ⚠️ `getBoundingClientRect()` здесь не годится: липкий узел сдвинут
- * визуально, и любая величина, снятая с его прямоугольника во время
- * прилипания, врёт ровно на этот сдвиг. `offsetTop` — величина разметочная и
- * от прокрутки не зависит.
+ * Положение узла в РАЗМЕТКЕ, а не на экране. Годится только для НЕлипкого
+ * узла — см. {@link naturalBottom}.
  */
 function layoutTop(element: HTMLElement) {
   let top = 0
@@ -61,6 +57,39 @@ function reserveInBlock(root: HTMLElement) {
   return height + gap * siblings + (Number.parseFloat(styles.paddingBottom) || 0)
 }
 
+/**
+ * Низ липкого узла там, где он стоит в РАЗМЕТКЕ, — без сдвига прилипания.
+ *
+ * ⚠️ С самого липкого узла этого не снять: у залипшего узла Chrome включает
+ * сдвиг и в `getBoundingClientRect()`, и в `offsetTop` (замер: 420 вместо
+ * естественных 400 при прокрутке 440). Пересчёт, случившийся во время
+ * прилипания (наблюдатель родителя, ресайз окна, появление нижней панели),
+ * занижал хвост страницы на этот сдвиг, срабатывала ветка «хвост меньше
+ * свободной высоты» — и окно таблицы схлопывалось до нескольких пикселей, а
+ * прокрутка страницы прыгала в начало.
+ *
+ * Поэтому низ считается от РОДИТЕЛЯ, который не липнет: его низ минус его
+ * нижние поле и рамка и всё, что стоит в блоке ниже таблицы, — вместе с
+ * зазорами и внешними отступами соседей.
+ */
+function naturalBottom(root: HTMLElement) {
+  const parent = root.parentElement
+  if (!parent) return layoutTop(root) + root.offsetHeight
+
+  const styles = getComputedStyle(parent)
+  const px = (value: string) => Number.parseFloat(value) || 0
+  const gap = px(styles.rowGap)
+  let below =
+    px(styles.paddingBottom) + px(styles.borderBottomWidth) + px(getComputedStyle(root).marginBottom)
+  for (let node = root.nextElementSibling; node; node = node.nextElementSibling) {
+    const rect = node.getBoundingClientRect()
+    if (rect.height === 0) continue
+    const own = getComputedStyle(node)
+    below += gap + rect.height + px(own.marginTop) + px(own.marginBottom)
+  }
+  return layoutTop(parent) + parent.offsetHeight - below
+}
+
 function measure(root: HTMLElement) {
   const inBlock = reserveInBlock(root)
 
@@ -83,8 +112,7 @@ function measure(root: HTMLElement) {
   // Всё, что лежит ниже таблицы до конца прокручиваемой страницы: пагинатор
   // блока плюс хвост самой страницы. Именно этой величины не хватало
   // странице, чтобы дать липкому узлу доехать до своего `top`.
-  const inDocument =
-    document.documentElement.scrollHeight - (layoutTop(root) + root.offsetHeight)
+  const inDocument = document.documentElement.scrollHeight - naturalBottom(root)
 
   // ⚠️ Хвост страницы учитывается ТОЛЬКО пока он меньше свободной высоты.
   // Если под таблицей лежит ещё пол-страницы содержимого, прокрутки заведомо

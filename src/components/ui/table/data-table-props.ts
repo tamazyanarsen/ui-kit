@@ -119,6 +119,10 @@ interface DataTableProps<Row> {
    * который скрыли в «Настроить столбцы» и показали снова. Управляемый
    * режим (`columnWidths` + `onColumnWidthsChange`) нужен, чтобы сохранить
    * настройку между сеансами.
+   *
+   * `onColumnWidthsChange` зовётся один раз на жест — когда пользователь
+   * отпустил границу, а не на каждое движение: во время тяги ширину держит
+   * сама ячейка шапки.
    */
   columnWidths?: Record<string, number>
   defaultColumnWidths?: Record<string, number>

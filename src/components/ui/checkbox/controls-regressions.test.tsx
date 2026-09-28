@@ -15,9 +15,9 @@ import { Checkbox } from "./checkbox"
 describe("form controls regressions", () => {
   it("forwards refs to the underlying elements", () => {
     const textarea = React.createRef<HTMLTextAreaElement>()
-    const checkbox = React.createRef<HTMLSpanElement>()
-    const toggle = React.createRef<HTMLSpanElement>()
-    const radio = React.createRef<HTMLSpanElement>()
+    const checkbox = React.createRef<HTMLInputElement>()
+    const toggle = React.createRef<HTMLInputElement>()
+    const radio = React.createRef<HTMLInputElement>()
     render(
       <>
         <Textarea ref={textarea} label="Комментарий" />
@@ -29,9 +29,11 @@ describe("form controls regressions", () => {
       </>
     )
     expect(textarea.current).toBe(screen.getByLabelText("Комментарий"))
-    expect(checkbox.current).toBeInstanceOf(HTMLElement)
-    expect(toggle.current).toBeInstanceOf(HTMLElement)
-    expect(radio.current).toBeInstanceOf(HTMLElement)
+    // У Checkbox, Toggle и Radio ref — на скрытом нативном input (см.
+    // `useNativeInputBridge`), а не на span Base UI.
+    expect(checkbox.current).toHaveAttribute("type", "checkbox")
+    expect(toggle.current).toHaveAttribute("type", "checkbox")
+    expect(radio.current).toHaveAttribute("type", "radio")
   })
 
   it.each([false, true, ""] as const)("keeps the comment when error is %j", (error) => {

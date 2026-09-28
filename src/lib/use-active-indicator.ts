@@ -16,13 +16,20 @@ import * as React from "react"
  * Возвращаемый `ready` гасит анимацию на первом замере: без него бегунок при
  * монтировании выезжал бы из левого края к активной вкладке, хотя никто ничего
  * не переключал.
+ *
+ * ⚠️ `ready` включается не в том же коммите, что и первые координаты, а
+ * кадром позже. Переход браузер берёт из стиля ПОСЛЕ изменения: если класс
+ * перехода и новые `left`/`width` приходят вместе, а замер `offsetLeft` уже
+ * заставил браузер посчитать бегунок в нулевой позиции, ширина всё равно
+ * выезжает от 0 (поймано в Chromium: `transitionrun` width 0 → 92px на
+ * загрузке Switcher).
  */
 interface ActiveIndicatorRect {
   left: number
   width: number
   /** Активный сегмент найден в ряду (а не спрятан за многоточием). */
   visible: boolean
-  /** Первый замер уже прошёл — можно анимировать. */
+  /** Бегунок уже отрисован на своём месте — можно анимировать. */
   ready: boolean
 }
 
@@ -60,9 +67,7 @@ function useActiveIndicator<T extends HTMLElement>(
       `:scope > [data-value="${CSS.escape(activeValue)}"]`
     )
     if (!node) {
-      setRect((prev) =>
-        !prev.visible && prev.ready ? prev : { ...prev, visible: false, ready: true }
-      )
+      setRect((prev) => (prev.visible ? { ...prev, visible: false } : prev))
       return
     }
     const left = node.offsetLeft
@@ -73,9 +78,9 @@ function useActiveIndicator<T extends HTMLElement>(
     // состояние изменившимся и перерисовывал бы ряд вхолостую на каждый кадр
     // наблюдателя.
     setRect((prev) =>
-      prev.left === left && prev.width === width && prev.visible && prev.ready
+      prev.left === left && prev.width === width && prev.visible
         ? prev
-        : { left, width, visible: true, ready: true }
+        : { left, width, visible: true, ready: prev.ready }
     )
   }, [activeValue])
 
@@ -86,6 +91,16 @@ function useActiveIndicator<T extends HTMLElement>(
     measure()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [measure, ...deps])
+
+  // Анимация включается кадром позже первой отрисовки на месте — см. шапку.
+  const positioned = rect.visible
+  React.useEffect(() => {
+    if (!positioned || rect.ready) return
+    const frame = requestAnimationFrame(() =>
+      setRect((prev) => (prev.ready ? prev : { ...prev, ready: true }))
+    )
+    return () => cancelAnimationFrame(frame)
+  }, [positioned, rect.ready])
 
   // Ряд меняет ширину не только при смене вьюпорта: сегмент со счётчиком
   // растёт вместе с числом, а шрифт приезжает позже первой отрисовки.

@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { WEEKDAYS_RU, getMonthMatrix, isSameDay, type DayCell } from "@/lib/calendar"
+import { dateKey } from "./use-day-focus"
 
 /** Габариты ячейки дня: десктоп 36px, мобила 48px — с Figma Day (Desktop/
  * Mobile) ELK/calendar. Отсюда же поля карточки и зазоры сетки. */
@@ -48,6 +49,11 @@ interface DayGridProps {
    * 14px; у мобильных — 48px, зазор строк 24px и поле 12px (зазор сетки дат
    * в макете это `8px 0px` на десктопе против `24px 0px` на мобильном). */
   size?: GridSize
+  /** Roving tabindex (`useDayFocus`): единственный день в порядке Tab. Без
+   * него в порядке Tab все дни, как раньше. */
+  tabbableDate?: Date | null
+  onDayKeyDown?: (date: Date, event: React.KeyboardEvent) => void
+  onDayFocus?: (date: Date) => void
 }
 
 function DayGrid({ year, month, size = "desktop", ...day }: DayGridProps) {
@@ -81,6 +87,9 @@ function DayButton({
   isDisabled,
   onSelectDay,
   size = "desktop",
+  tabbableDate,
+  onDayKeyDown,
+  onDayFocus,
 }: { cell: DayCell | null } & Omit<DayGridProps, "year" | "month">) {
   const cellWidth = CELL_WIDTH[size]
   if (!cell) return <span className={cn("h-8 shrink-0", cellWidth)} />
@@ -92,6 +101,8 @@ function DayButton({
   const isToday = isSameDay(cell.date, today)
   const inRangeEdge = rangeStart || rangeEnd
   const disabled = isDisabled?.(cell.date) ?? false
+
+  const roving = tabbableDate != null && isSameDay(cell.date, tabbableDate)
 
   return (
     <span
@@ -105,8 +116,19 @@ function DayButton({
     >
       <button
         type="button"
+        data-slot="calendar-day"
+        data-selected={selected || undefined}
+        data-today={isToday || undefined}
+        data-date={dateKey(cell.date)}
+        // Метка дня-остановки для DatePicker: по ней ставится фокус при
+        // открытии с клавиатуры. По самому `tabindex` искать нельзя — Base UI,
+        // пока фокус вне поповера, переписывает его у всех кнопок на -1.
+        data-roving={roving || undefined}
+        tabIndex={tabbableDate === undefined ? undefined : roving ? 0 : -1}
         disabled={disabled}
         onClick={() => onSelectDay(cell.date)}
+        onKeyDown={onDayKeyDown && ((event) => onDayKeyDown(cell.date, event))}
+        onFocus={onDayFocus && (() => onDayFocus(cell.date))}
         className={cn(
           "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:focus-ring",
           disabled

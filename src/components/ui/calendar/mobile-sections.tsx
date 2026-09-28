@@ -4,6 +4,7 @@ import { DayGrid, WeekdaysRow } from "./day-grid"
 import { MonthPillHeading, SectionHeading } from "./mobile-chrome"
 import { MonthGrid, YearGrid } from "./picker-grid"
 import type { CalendarMode, CalendarSingleMonth } from "./types"
+import { useDayFocus } from "./use-day-focus"
 
 // Повторяющиеся секции бесконечной прокрутки мобильного листа: месяцы (дни),
 // годы (месяцы) и десятилетия (годы). Сколько секций показать, решает
@@ -36,9 +37,20 @@ function SheetMonthSections({
     addMonths(anchor.year, anchor.month, index - 1)
   )
   const isRange = mode === "range"
+  // Одна остановка Tab на всю ленту. Сдвигать ленту некуда — она сама
+  // подгружается при прокрутке, — поэтому на краю показанных месяцев
+  // стрелка останавливается.
+  const dayFocus = useDayFocus({
+    months: sections,
+    preferred: [mode === "single" ? value : null, normStart, normEnd],
+    today,
+    isDisabled: disabledDate,
+  })
 
   return (
-    <>
+    // `contents`: секции остаются прямыми детьми ленты с её зазором 24px, а
+    // обёртка лишь ограничивает поиск дня для фокуса с клавиатуры.
+    <div ref={dayFocus.containerRef} className="contents">
       {sections.map((section, index) => (
         <div key={index}>
           <MonthPillHeading>{MONTHS_RU_FULL[section.month]}</MonthPillHeading>
@@ -60,10 +72,11 @@ function SheetMonthSections({
             onSelectDay={onSelectDay}
             isDisabled={disabledDate}
             size="mobile"
+            {...dayFocus.gridProps}
           />
         </div>
       ))}
-    </>
+    </div>
   )
 }
 

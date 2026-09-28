@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { useComposedRefs } from "@/lib/compose-refs"
 import { cn } from "@/lib/utils"
 import { resolveCaption } from "@/components/ui/input/caption"
 
@@ -22,7 +23,7 @@ interface OtpInputProps
 
 /** Значение из пропа приводим к тем же правилам, что и ввод с клавиатуры:
  *  только цифры и не длиннее `length`. С клавиатуры лишнее не ввести
- *  (maxLength + handleChange), а переданное программно значение рисовалось
+ *  (handleChange), а переданное программно значение рисовалось
  *  целиком — в матрице колонка «4 знака» показывала шестизначный код. */
 function clampCode(
   raw: React.ComponentProps<"input">["value"],
@@ -62,13 +63,92 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
       ? { value: clampCode(value, length) }
       : { defaultValue: clampCode(defaultValue, length) }
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const digits = event.target.value.replace(/\D/g, "").slice(0, length)
-    if (digits !== event.target.value) {
-      event.target.value = digits
+  // Последний код, уже отданный в `onComplete`. Сбрасывается, как только
+  // код стал неполным — в том числе когда его сбросил родитель (управляемый
+  // `value=""` после ошибки сервера) или форма записала `ref.value = ""`:
+  // иначе тот же код, введённый повторно, `onComplete` уже не вызывал.
+  const completedRef = React.useRef<string | null>(null)
+  if (value !== undefined && (clampCode(value, length) ?? "").length < length) {
+    completedRef.current = null
+  }
+
+  // Снимок поля ДО изменения: значение и выделение. Берётся из самого узла
+  // на `beforeinput`/`paste`/`keydown`, а не из того, что компонент видел
+  // последним: неуправляемое поле форма переписывает мимо React
+  // (`reset()` в react-hook-form пишет `ref.value`), и старый код из
+  // памяти компонента отклонял бы новый ввод, возвращая в поле прежний.
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const setRef = useComposedRefs(inputRef, ref)
+  const beforeRef = React.useRef<{ value: string; start: number; end: number } | null>(null)
+  // Запасной вариант, когда снимка нет (изменение без клавиатуры и вставки —
+  // например, программное событие): последний принятый код.
+  const lastRef = React.useRef(clampCode(value ?? defaultValue, length) ?? "")
+  if (value !== undefined) lastRef.current = clampCode(value, length) ?? ""
+
+  React.useEffect(() => {
+    const input = inputRef.current
+    if (!input) return
+    const snapshot = () => {
+      beforeRef.current = {
+        value: input.value,
+        start: input.selectionStart ?? input.value.length,
+        end: input.selectionEnd ?? input.value.length,
+      }
     }
+    // Снимок живёт до ближайшего изменения: клавиша без ввода (стрелка) не
+    // должна оставить устаревший снимок следующему изменению без клавиатуры.
+    const drop = () => {
+      beforeRef.current = null
+    }
+    const events = ["beforeinput", "paste", "keydown"] as const
+    for (const type of events) input.addEventListener(type, snapshot, true)
+    input.addEventListener("keyup", drop)
+    input.addEventListener("blur", drop)
+    return () => {
+      for (const type of events) input.removeEventListener(type, snapshot, true)
+      input.removeEventListener("keyup", drop)
+      input.removeEventListener("blur", drop)
+    }
+  }, [])
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const input = event.target
+    const raw = input.value
+    const all = raw.replace(/\D/g, "")
+    const before = beforeRef.current
+    beforeRef.current = null
+    const previous = before ? before.value.replace(/\D/g, "") : lastRef.current
+    const replacedSelection = before ? before.end > before.start : false
+
+    // Цифра, дописанная в УЖЕ заполненное поле без выделения, отклоняется,
+    // как это делал `maxLength`. Резать по длине здесь нельзя: дописанная в
+    // конец цифра отрезалась бы и повторно вызывала `onComplete` тем же
+    // кодом, а вставленная в середину молча выталкивала бы последнюю цифру.
+    // Вставка поверх выделения — замена, её режем по длине, как в пустом
+    // поле.
+    if (all.length > length && previous.length === length && !replacedSelection) {
+      const caret = before
+        ? before.start
+        : (input.selectionStart ?? raw.length) - (raw.length - previous.length)
+      input.value = before?.value ?? previous
+      input.setSelectionRange(Math.max(0, caret), Math.max(0, caret))
+      return
+    }
+
+    // Вставка длиннее кода («Код: 123-456-7») — берутся первые `length` цифр.
+    const digits = all.slice(0, length)
+    if (digits !== raw) input.value = digits
+    lastRef.current = digits
+    if (previous.length < length) completedRef.current = null
     onChange?.(event)
-    if (digits.length === length) onComplete?.(digits)
+
+    // `onComplete` — один раз на каждый новый полный код: не повторяется на
+    // том же коде, но срабатывает, если человек исправил цифру в полном.
+    if (digits.length < length) completedRef.current = null
+    else if (digits !== completedRef.current) {
+      completedRef.current = digits
+      onComplete?.(digits)
+    }
   }
 
   return (
@@ -76,7 +156,7 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
       className={cn("mx-auto w-full desktop:w-[368px]", containerClassName)}
     >
       <input
-        ref={ref}
+        ref={setRef}
         id={inputId}
         data-slot="otp-input"
         type="text"

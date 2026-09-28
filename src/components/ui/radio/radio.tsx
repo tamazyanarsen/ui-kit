@@ -4,6 +4,9 @@ import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 import { cn } from "@/lib/utils"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
+import { useNativeInputBridge } from "@/components/ui/checkbox/native-input-bridge"
+
+import { RadioGroupSelectContext } from "./group-context"
 
 interface RadioOwnProps {
   label?: React.ReactNode
@@ -12,7 +15,16 @@ interface RadioOwnProps {
   error?: React.ReactNode
 }
 
-type RadioProps = RadioPrimitive.Root.Props & RadioOwnProps
+type RadioProps = Omit<RadioPrimitive.Root.Props, "onChange" | "ref"> &
+  RadioOwnProps & {
+    /**
+     * Имя для скрытого input, если RadioGroup своего `name` не задал, —
+     * так его передаёт `{...register("x")}` на каждую радиокнопку.
+     */
+    name?: string
+    /** Нативный `change` скрытого input — для `register()` и прочих форм. */
+    onChange?: React.ChangeEventHandler<HTMLInputElement>
+  }
 
 // Отдельная радиокнопка, предназначенная для использования внутри
 // <RadioGroup>. Схема подписи, комментария и ошибки та же, что у Checkbox —
@@ -29,17 +41,41 @@ type RadioProps = RadioPrimitive.Root.Props & RadioOwnProps
 // собственных символов анатомии с Error=True (Desktop и Mobile) виден
 // настоящий, полностью оформленный вариант: красная рамка кружка и красный
 // текст подписи, структурно совпадающий с коробкой ошибки у Checkbox.
-// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
-// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
-const Radio = React.forwardRef<HTMLSpanElement, RadioProps>(function Radio({
+// `ref` ведёт на скрытый нативный input, а не на span: так его ждёт
+// react-hook-form — см. `useNativeInputBridge` у Checkbox.
+const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Radio({
   className,
   disabled,
   label,
   comment,
   error,
   id,
+  name,
+  inputRef,
+  onChange,
+  onBlur,
   ...props
 }, ref) {
+  // Запись формы в `ref.checked` — выбор или снятие выбора в группе кита.
+  // `false`, записанное ВЫБРАННОЙ кнопке, — это снятие выбора формой
+  // (`reset()`, `setValue("x", "")`); `false` невыбранной пишет сам React,
+  // когда группа переключилась на другую кнопку.
+  const groupSelect = React.useContext(RadioGroupSelectContext)
+  const bridge = useNativeInputBridge({
+    ref,
+    inputRef,
+    name,
+    onChange,
+    onBlur,
+    radio: true,
+    onExternalChecked: groupSelect
+      ? (checked) => {
+          if (checked) {
+            if (!groupSelect.isSelected(props.value)) groupSelect.select(props.value)
+          } else if (groupSelect.isSelected(props.value)) groupSelect.select(null)
+        }
+      : undefined,
+  })
   const generatedId = React.useId()
   const radioId = id ?? generatedId
   // Дизайн-чек 3/3 №2: состояние ошибки и её текст переключаются отдельно,
@@ -55,7 +91,8 @@ const Radio = React.forwardRef<HTMLSpanElement, RadioProps>(function Radio({
   const circle = (
     <RadioPrimitive.Root
       id={radioId}
-      ref={ref}
+      inputRef={bridge.inputRef}
+      onBlur={bridge.onBlur}
       data-slot="radio"
       disabled={disabled}
       // Ошибку видно не только глазами: без `aria-invalid` скринридер

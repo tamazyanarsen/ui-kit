@@ -6,13 +6,19 @@ import { cn } from "@/lib/utils"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
+import { useBridgedChecked, useNativeInputBridge } from "./native-input-bridge"
+
 interface CheckboxOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
   error?: React.ReactNode
 }
 
-type CheckboxProps = CheckboxPrimitive.Root.Props & CheckboxOwnProps
+type CheckboxProps = Omit<CheckboxPrimitive.Root.Props, "onChange" | "ref"> &
+  CheckboxOwnProps & {
+    /** Нативный `change` скрытого input — для `register()` и прочих форм. */
+    onChange?: React.ChangeEventHandler<HTMLInputElement>
+  }
 
 // Отдельно стоящий интерактивный Checkbox. Checkbox.Root из Base UI рисует
 // <span role="checkbox">, а не нативный input, поэтому варианты состояний
@@ -26,9 +32,9 @@ type CheckboxProps = CheckboxPrimitive.Root.Props & CheckboxOwnProps
 // Input; опустите их, чтобы получить голую коробку 24×24 («Checkbox Without
 // Text» в макете). `error` заменяет собой `comment`, а не складывается с
 // ним, — тоже как у Input.
-// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
-// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
-const Checkbox = React.forwardRef<HTMLSpanElement, CheckboxProps>(function Checkbox({
+// `ref` ведёт на скрытый нативный input, а не на span: так его ждёт
+// react-hook-form (`checked`, фокус на ошибке) — см. `useNativeInputBridge`.
+const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox({
   className,
   disabled,
   indeterminate,
@@ -36,8 +42,24 @@ const Checkbox = React.forwardRef<HTMLSpanElement, CheckboxProps>(function Check
   comment,
   error,
   id,
+  name,
+  inputRef,
+  onChange,
+  onBlur,
+  checked,
+  defaultChecked,
+  onCheckedChange,
   ...props
 }, ref) {
+  const state = useBridgedChecked({ checked, defaultChecked, onCheckedChange })
+  const bridge = useNativeInputBridge({
+    ref,
+    inputRef,
+    name,
+    onChange,
+    onBlur,
+    onExternalChecked: state.onExternalChecked,
+  })
   const generatedId = React.useId()
   const checkboxId = id ?? generatedId
   const { caption } = resolveCaption(error, comment)
@@ -47,7 +69,14 @@ const Checkbox = React.forwardRef<HTMLSpanElement, CheckboxProps>(function Check
   const box = (
     <CheckboxPrimitive.Root
       id={checkboxId}
-      ref={ref}
+      name={name}
+      inputRef={bridge.inputRef}
+      onBlur={bridge.onBlur}
+      checked={state.checked}
+      onCheckedChange={(next, details) => {
+        bridge.beginChange(details.event)
+        state.onCheckedChange(next, details)
+      }}
       data-slot="checkbox"
       disabled={disabled}
       indeterminate={indeterminate}

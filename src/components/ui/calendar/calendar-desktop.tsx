@@ -5,6 +5,7 @@ import { DayGrid, WeekdaysRow } from "./day-grid"
 import { HeaderLabel, NavHeader } from "./nav-header"
 import { MonthGrid, YearGrid } from "./picker-grid"
 import type { CalendarMode, CalendarSingleMonth, CalendarView } from "./types"
+import { useDayFocus } from "./use-day-focus"
 
 interface CalendarDesktopProps {
   mode: CalendarMode
@@ -28,6 +29,8 @@ interface CalendarDesktopProps {
 
   goPrev: () => void
   goNext: () => void
+  /** Сдвиг показанных месяцев с клавиатуры сетки дней (PageUp, стрелки). */
+  shiftMonths: (delta: number) => void
   onSelectDay: (date: Date) => void
   onSelectMonth: (month: number) => void
   onSelectYear: (year: number) => void
@@ -53,6 +56,7 @@ export function CalendarDesktop({
   normEnd,
   goPrev,
   goNext,
+  shiftMonths,
   onSelectDay,
   onSelectMonth,
   onSelectYear,
@@ -82,6 +86,7 @@ export function CalendarDesktop({
           onSelectDay={onSelectDay}
           onPrev={goPrev}
           onNext={goNext}
+          shiftMonths={shiftMonths}
           disabledDate={disabledDate}
         />
       ) : view === "months" ? (
@@ -110,10 +115,12 @@ export function CalendarDesktop({
         <DaysBody
           focus={focus}
           today={today}
+          selected={mode === "single" ? value : null}
           isSelected={monthCardIsSelected}
           setView={setView}
           onPrev={goPrev}
           onNext={goNext}
+          shiftMonths={shiftMonths}
           onSelectDay={onSelectDay}
           disabledDate={disabledDate}
         />
@@ -213,22 +220,34 @@ function YearsBody({
 function DaysBody({
   focus,
   today,
+  selected,
   isSelected,
   setView,
   onPrev,
   onNext,
+  shiftMonths,
   onSelectDay,
   disabledDate,
 }: {
   focus: CalendarSingleMonth
   today: Date
+  selected: Date | null
   isSelected: (date: Date) => boolean
   setView: (view: CalendarView) => void
   onPrev: () => void
   onNext: () => void
+  shiftMonths: (delta: number) => void
   onSelectDay: (date: Date) => void
   disabledDate?: (date: Date) => boolean
 }) {
+  const dayFocus = useDayFocus({
+    months: [focus],
+    preferred: [selected],
+    today,
+    isDisabled: disabledDate,
+    onShiftMonths: shiftMonths,
+  })
+
   return (
     <>
       <NavHeader onPrev={onPrev} onNext={onNext}>
@@ -237,15 +256,20 @@ function DaysBody({
         </HeaderLabel>
         <HeaderLabel onClick={() => setView("years")}>{focus.year}</HeaderLabel>
       </NavHeader>
-      <WeekdaysRow />
-      <DayGrid
-        year={focus.year}
-        month={focus.month}
-        today={today}
-        isSelected={isSelected}
-        onSelectDay={onSelectDay}
-        isDisabled={disabledDate}
-      />
+      {/* Обёртка — граница поиска дня для фокуса с клавиатуры: на странице
+          бывает несколько календарей с одними и теми же датами. */}
+      <div ref={dayFocus.containerRef}>
+        <WeekdaysRow />
+        <DayGrid
+          year={focus.year}
+          month={focus.month}
+          today={today}
+          isSelected={isSelected}
+          onSelectDay={onSelectDay}
+          isDisabled={disabledDate}
+          {...dayFocus.gridProps}
+        />
+      </div>
     </>
   )
 }
@@ -258,6 +282,7 @@ function RangeBody({
   onSelectDay,
   onPrev,
   onNext,
+  shiftMonths,
   disabledDate,
 }: {
   focus: CalendarSingleMonth
@@ -267,16 +292,26 @@ function RangeBody({
   onSelectDay: (date: Date) => void
   onPrev: () => void
   onNext: () => void
+  shiftMonths: (delta: number) => void
   disabledDate?: (date: Date) => boolean
 }) {
   const next = addMonths(focus.year, focus.month, 1)
   const months = [focus, next]
+  // Одна остановка Tab на обе сетки: стрелка с конца первого месяца
+  // переходит во второй, а не в соседнюю сетку по Tab.
+  const dayFocus = useDayFocus({
+    months,
+    preferred: [normStart, normEnd],
+    today,
+    isDisabled: disabledDate,
+    onShiftMonths: shiftMonths,
+  })
 
   return (
     // Дизайн-чек, замечание 10: вертикального разделителя между двумя
     // сетками месяцев нет — в собственной анатомии Range в макете они идут
     // вплотную.
-    <div className="flex">
+    <div ref={dayFocus.containerRef} className="flex">
       {months.map((m, i) => (
         <div key={i}>
           <NavHeader onPrev={onPrev} onNext={onNext}>
@@ -294,6 +329,7 @@ function RangeBody({
             isRangeMiddle={(d) => isInRange(d, normStart, normEnd)}
             onSelectDay={onSelectDay}
             isDisabled={disabledDate}
+            {...dayFocus.gridProps}
           />
         </div>
       ))}

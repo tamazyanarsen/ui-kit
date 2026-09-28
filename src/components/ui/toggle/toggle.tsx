@@ -3,6 +3,7 @@ import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
 
 import { cn } from "@/lib/utils"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
+import { useBridgedChecked, useNativeInputBridge } from "@/components/ui/checkbox/native-input-bridge"
 
 interface ToggleOwnProps {
   label?: React.ReactNode
@@ -11,24 +12,44 @@ interface ToggleOwnProps {
   error?: React.ReactNode
 }
 
-type ToggleProps = SwitchPrimitive.Root.Props & ToggleOwnProps
+type ToggleProps = Omit<SwitchPrimitive.Root.Props, "onChange" | "ref"> &
+  ToggleOwnProps & {
+    /** Нативный `change` скрытого input — для `register()` и прочих форм. */
+    onChange?: React.ChangeEventHandler<HTMLInputElement>
+  }
 
 // Дорожка никогда не меняет цвет из-за `error` (это делает только коробка
 // у Checkbox и Radio): по макету ошибка влияет лишь на подпись снизу. И, в
 // отличие от Checkbox и Radio, `comment` и `error` здесь складываются, а не
 // заменяют друг друга (см. ряд «Error» в анатомии: «Comment» и красная
 // строка ошибки рисуются вместе).
-// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
-// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
-const Toggle = React.forwardRef<HTMLSpanElement, ToggleProps>(function Toggle({
+// `ref` ведёт на скрытый нативный input, а не на span: так его ждёт
+// react-hook-form — см. `useNativeInputBridge` у Checkbox.
+const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
   className,
   disabled,
   label,
   comment,
   error,
   id,
+  name,
+  inputRef,
+  onChange,
+  onBlur,
+  checked,
+  defaultChecked,
+  onCheckedChange,
   ...props
 }, ref) {
+  const state = useBridgedChecked({ checked, defaultChecked, onCheckedChange })
+  const bridge = useNativeInputBridge({
+    ref,
+    inputRef,
+    name,
+    onChange,
+    onBlur,
+    onExternalChecked: state.onExternalChecked,
+  })
   const generatedId = React.useId()
   const toggleId = id ?? generatedId
   // Дизайн-чек 3/3 №6: `error` принимает и `true` — состояние ошибки без
@@ -43,7 +64,14 @@ const Toggle = React.forwardRef<HTMLSpanElement, ToggleProps>(function Toggle({
   const track = (
     <SwitchPrimitive.Root
       id={toggleId}
-      ref={ref}
+      name={name}
+      inputRef={bridge.inputRef}
+      onBlur={bridge.onBlur}
+      checked={state.checked}
+      onCheckedChange={(next, details) => {
+        bridge.beginChange(details.event)
+        state.onCheckedChange(next, details)
+      }}
       data-slot="toggle"
       disabled={disabled}
       // Ошибку видно не только глазами: без `aria-invalid` скринридер

@@ -94,11 +94,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
 
   const {
     maskValue,
+    valueProps,
+    imaskRef,
+    clearMask,
     handleAccept,
     amountWidth,
     measureRef,
     showAmountSuffix,
-  } = useMask({ mask, value, defaultValue, onChange })
+  } = useMask({ mask, value, defaultValue, onChange, inputRef })
 
   // Плавающей подписи нужно состояние :placeholder-shown соседа, поэтому
   // на размере S, где плавающей подписи нет, пропс label просто становится
@@ -119,13 +122,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
     valueKey: `${value ?? ""}|${defaultValue ?? ""}|${maskValue}`,
   })
 
-  // Очистка идёт через настоящее событие `input` и для маскированного поля
-  // тоже: imask ловит его, как ввод с клавиатуры, и отдаёт в `onAccept` с
-  // событием — а значит, `onChange` родителя вызывается. Раньше маска
-  // чистила только своё состояние, и в форме оставался старый номер.
+  // Обычное поле чистится настоящим событием `input`: React видит его как
+  // ввод, и `onChange` родителя вызывается. Маскированное — через API маски
+  // (см. `clearMask`): событие imask считает от сохранённой каретки.
   function handleClear() {
     const input = inputRef.current
-    if (input) {
+    if (input && mask && clearMask(input)) {
+      input.focus()
+    } else if (input) {
       const setter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
         "value"
@@ -183,8 +187,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
     ? ({
         ...getImaskProps(mask),
         ...fieldProps,
+        ref: imaskRef,
         inputRef: setInputRef,
-        value: maskValue,
+        ...valueProps,
         onAccept: handleAccept,
         style:
           showAmountSuffix && amountWidth !== undefined

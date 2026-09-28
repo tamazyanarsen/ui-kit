@@ -8,6 +8,8 @@ import type { CalendarMode } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import type { InputSize } from "@/components/ui/input"
 
+import { useFieldPopoverFocus } from "./use-field-popover-focus"
+
 const ICON_SIZE = { sm: "size-3.5", lg: "size-4" } as const
 
 // ⚠️ Минимальной ширины у поля БОЛЬШЕ НЕТ — дизайн-чек от 08.09, замечание
@@ -70,12 +72,12 @@ function formatDisplayValue(
 // монтируется заново (перечитывая текущее значение как свой `defaultMonth`),
 // и возвращать ему фокус вручную не нужно.
 //
-// Popover.Trigger — это всё поле целиком, а не только значок. Триггер из
-// Base UI сам открывается и по клику, и по фокусу (не навешивайте поверх
-// свои onFocus и onClick: они вызовут второе, отдельно отслеживаемое
-// открытие, которое собственное определение нажатия снаружи у Base UI тут
-// же закроет, потому что не признает это открытие пришедшим от своего
-// триггера).
+// Поповер открывается кликом по полю или стрелкой вниз, но само поле — НЕ
+// Popover.Trigger. Раньше триггером было всё поле (`div role=button` с
+// textbox внутри): лишняя остановка Tab, вложенный интерактив, и клик
+// уводил фокус в календарь, так что дату было не напечатать. Теперь поле
+// обычное, поповер привязан к нему через `anchor`, а клик по полю при
+// открытом календаре отсекается в `handleOpenChange`.
 //
 // Ручной ввод (mask="date") подключён только для `mode="single"` — ровно
 // как в самом макете, где пометка «ручной ввод доступен» стоит лишь у поля
@@ -132,6 +134,8 @@ function DatePicker({
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef<HTMLDivElement>(null)
+  const popupRef = React.useRef<HTMLDivElement>(null)
+  const fieldRef = React.useRef<HTMLInputElement>(null)
 
   // Запасное неуправляемое состояние: читается и пишется только то, что
   // соответствует активному режиму `mode`.
@@ -152,8 +156,6 @@ function DatePicker({
 
   const defaultLabel = DEFAULT_LABEL[mode]
 
-  // Чисто декоративный: целью клика служит всё поле (см. оборачивающий его
-  // Trigger ниже), а не только этот глиф.
   const icon = <CalendarDays aria-hidden="true" className={ICON_SIZE[size]} />
 
   // Текст поля одиночной даты — своё состояние, а не производное от даты:
@@ -204,8 +206,45 @@ function DatePicker({
     else handleSelectDay(null)
   }
 
+  // Текст поля приводится к выбранной дате, когда ввод закончен: на уходе
+  // фокуса и на «Применить». Эффект выше срабатывает только на СМЕНУ даты —
+  // недописанное «15.0» оставалось в поле, если человек выбирал в
+  // календаре тот же день, что уже стоял.
+  function normalizeText() {
+    if (mode !== "single") return
+    setText(activeValue ? formatDateRu(activeValue) : "")
+  }
+
+  const fieldFocus = useFieldPopoverFocus({
+    open,
+    setOpen,
+    disabled,
+    single: mode === "single",
+    popupRef,
+    anchorRef,
+    fieldRef,
+    onClose: normalizeText,
+  })
+
+  // Значок — настоящий Trigger поповера: на него Base UI опирает защитные
+  // span (Tab с последней кнопки календаря ведёт к элементу после пикера).
+  // ⚠️ В обходе по Tab он только пока календарь открыт (`triggerTabIndex`):
+  // защитный span ищет «следующий после триггера» среди доступных по Tab.
+  // У закрытого пикера остановка одна — поле; с клавиатуры календарь
+  // открывает стрелка вниз.
+  const trigger = (
+    <PopoverPrimitive.Trigger
+      disabled={disabled}
+      tabIndex={fieldFocus.triggerTabIndex}
+      aria-label="Открыть календарь"
+      render={<button type="button" className="flex outline-none" />}
+    >
+      {icon}
+    </PopoverPrimitive.Trigger>
+  )
+
   function handleApply() {
-    setOpen(false)
+    fieldFocus.close("return")
   }
 
   // Неполная строка («15.0») дату не меняет, а полностью стёртое поле —
@@ -227,8 +266,8 @@ function DatePicker({
 
   return (
     // У Popover.Root нет собственного узла DOM, поэтому его дети — включая
-    // защитные span для фокуса, которые Base UI вставляет и убирает рядом с
-    // Trigger при открытии, — иначе попадали бы прямо в то, во что
+    // защитные span для фокуса, которые Base UI вставляет и убирает при
+    // открытии, — иначе попадали бы прямо в то, во что
     // вызывающий код обернул DatePicker. Раскладка, разводящая детей
     // внешними отступами (например, space-y-* в Tailwind), приняла бы эти
     // защитные элементы за дополнительные пункты и заметно выросла бы при
@@ -246,17 +285,11 @@ function DatePicker({
     // раздвинуть колонку, сколько бы `w-full` ни просил. Сам `Input` внутри
     // и так `w-full`, так что теперь оба ведут себя одинаково.
     <div className="w-full min-w-0">
-      <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
-        {/* Триггер — всё поле целиком, а не только значок: тогда Base UI
-            считает клики и фокус на нём «внутренними», и они не вызывают
-            его же закрытие по нажатию снаружи против самих себя. */}
-        <PopoverPrimitive.Trigger
-          disabled={disabled}
-          nativeButton={false}
-          render={<div ref={anchorRef} className="w-full min-w-0" />}
-        >
+      <PopoverPrimitive.Root open={disabled ? false : open} onOpenChange={fieldFocus.handleOpenChange}>
+        <div ref={anchorRef} className="w-full min-w-0">
           {mode === "single" ? (
             <Input
+              ref={fieldRef}
               size={size}
               label={label ?? defaultLabel}
               mask="date"
@@ -266,11 +299,13 @@ function DatePicker({
               comment={comment}
               error={error}
               clearable={false}
-              trailingIcon={icon}
+              trailingIcon={trigger}
               containerClassName={containerClassName}
+              {...fieldFocus.fieldProps}
             />
           ) : (
             <Input
+              ref={fieldRef}
               size={size}
               label={label ?? defaultLabel}
               readOnly
@@ -280,11 +315,12 @@ function DatePicker({
               comment={comment}
               error={error}
               clearable={false}
-              trailingIcon={icon}
+              trailingIcon={trigger}
               containerClassName={containerClassName}
+              {...fieldFocus.fieldProps}
             />
           )}
-        </PopoverPrimitive.Trigger>
+        </div>
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Positioner
             anchor={anchorRef}
@@ -294,6 +330,13 @@ function DatePicker({
             className="z-50"
           >
             <PopoverPrimitive.Popup
+              ref={popupRef}
+              // Куда уходит фокус при открытии и куда возвращается при
+              // закрытии — см. `useFieldPopoverFocus`.
+              initialFocus={fieldFocus.initialFocus}
+              // В поле фокус возвращается только после Escape, «Применить» и
+              // значка; закрытие уходом его не трогает.
+              finalFocus={fieldFocus.finalFocus}
               data-slot="date-picker-content"
               className="outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
             >

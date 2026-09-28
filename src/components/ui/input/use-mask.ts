@@ -1,6 +1,19 @@
 import * as React from "react"
 
+import { createChangeEvent } from "./change-event"
 import { formatWithMask, getMaskPlaceholder, type MaskName } from "./mask"
+
+/** То немногое из экземпляра imask, чем пользуется поле. */
+interface MaskHandle {
+  value: string
+  readonly displayValue: string
+}
+
+/** Экземпляр `IMaskInput` (классовый компонент react-imask). */
+interface IMaskComponent {
+  maskRef?: MaskHandle
+}
+
 
 /**
  * Состояние поля под маской.
@@ -20,12 +33,15 @@ function useMask({
   value,
   defaultValue,
   onChange,
+  inputRef,
 }: {
   mask?: MaskName
   value?: React.ComponentProps<"input">["value"]
   defaultValue?: React.ComponentProps<"input">["defaultValue"]
   onChange?: React.ChangeEventHandler<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement | null>
 }) {
+  const imaskRef = React.useRef<IMaskComponent>(null)
   // ⚠️ Значение, пришедшее СНАРУЖИ, кладётся в состояние уже отформатированным
   // маской. С клавиатуры маску накладывает сам imask и отдаёт готовую строку в
   // `onAccept`, а на `value`/`defaultValue` он её не зовёт — поле показывало
@@ -50,6 +66,69 @@ function useMask({
   // react-imask подставляет `value` на каждой перерисовке, поэтому
   // достаточно перерисоваться.
   const [, rerender] = React.useReducer((n: number) => n + 1, 0)
+
+  // Неуправляемому полю `value` в imask НЕ передаётся — только начальное
+  // `defaultValue`. Иначе react-imask при монтировании затирал бы значение,
+  // которое успели записать в узел до него: react-hook-form кладёт
+  // `defaultValues` через `ref.value = …` прямо в ref-колбэке.
+  const [initialValue] = React.useState(internalValue)
+  const valueProps = controlled
+    ? { value: maskValue }
+    : { defaultValue: initialValue }
+
+  // Запись `input.value = …` снаружи (react-hook-form: `setValue`, `reset`)
+  // imask не видит: поле показывало новое значение, а маска помнила старое,
+  // и следующий ввод считался от него. Поэтому у узла свой сеттер `value`,
+  // который отдаёт чужую запись маске. Собственную запись imask узнаём по
+  // совпадению с его `displayValue` и пропускаем.
+  React.useLayoutEffect(() => {
+    const input = inputRef.current
+    if (!mask || !input) return
+    // Оборачивается дескриптор самого узла, если он есть: React вешает на
+    // input свой (`value`-трекер для onChange) — его нельзя ни потерять, ни
+    // удалить при снятии обёртки.
+    const own = Object.getOwnPropertyDescriptor(input, "value")
+    const native =
+      own ?? Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")
+    if (!native?.get || !native.set) return
+    const { get, set } = native
+    Object.defineProperty(input, "value", {
+      configurable: true,
+      get() {
+        return get.call(this)
+      },
+      set(next: string) {
+        set.call(this, next)
+        const handle = imaskRef.current?.maskRef
+        if (!handle || next === handle.displayValue) return
+        handle.value = String(next ?? "")
+      },
+    })
+    return () => {
+      if (own) Object.defineProperty(input, "value", own)
+      else delete (input as { value?: string }).value
+    }
+  }, [mask, inputRef])
+
+  /**
+   * Очистка крестиком. Через API маски, а не событием `input`: imask
+   * считает удалённое от последней сохранённой позиции каретки, и событие
+   * с пустым значением стирало только символы ДО каретки («+7 912 345-67-89»
+   * с кареткой в середине превращалось в «+7 456 789»). Родителю —
+   * ровно один `onChange` с опустевшим полем.
+   */
+  function clearMask(input: HTMLInputElement) {
+    const handle = imaskRef.current?.maskRef
+    if (!handle) return false
+    handle.value = ""
+    if (controlled) rerender()
+    // Событие нужно ради `event.target` у `onChange`: imask на него не
+    // реагирует — значение в узле уже совпадает с его собственным.
+    const event = new Event("input", { bubbles: true })
+    input.dispatchEvent(event)
+    onChange?.(createChangeEvent(input, event))
+    return true
+  }
 
   const measureRef = React.useRef<HTMLSpanElement>(null)
   const [amountWidth, setAmountWidth] = React.useState<number>()
@@ -93,6 +172,9 @@ function useMask({
 
   return {
     maskValue,
+    valueProps,
+    imaskRef,
+    clearMask,
     handleAccept,
     /** Ширина числа в px, пока её ещё не померили — `undefined`. */
     amountWidth,

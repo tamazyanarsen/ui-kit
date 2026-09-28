@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { addMonths, normalizeRange } from "@/lib/calendar"
+import { addMonths, isSameDay, normalizeRange } from "@/lib/calendar"
 import { CalendarDesktop } from "./calendar-desktop"
 import { CalendarMobile } from "./calendar-mobile"
 import type { CalendarProps, CalendarSingleMonth, CalendarView } from "./types"
@@ -10,6 +10,10 @@ import type { CalendarProps, CalendarSingleMonth, CalendarView } from "./types"
 // 2015–2026 открывалось без выбора, и найти его можно было только листанием.
 function decadeEndFor(year: number, currentYear: number) {
   return year > currentYear - 12 ? Math.max(year, currentYear) : year
+}
+
+function sameDayOrEmpty(a: Date | null, b: Date | null) {
+  return a && b ? isSameDay(a, b) : !a && !b
 }
 
 function Calendar({
@@ -104,6 +108,10 @@ function Calendar({
     else setDecadeEnd((y) => y + 12)
   }
 
+  function shiftMonths(delta: number) {
+    setFocus((f) => addMonths(f.year, f.month, delta))
+  }
+
   function handleSelectDay(date: Date) {
     if (mode === "range") {
       if (!normStart || (normStart && normEnd)) {
@@ -124,9 +132,22 @@ function Calendar({
     if (mode === "single") {
       // «Сбросить» → «Применить» — это подтверждённый сброс: родитель
       // должен о нём узнать и без `onReset`.
-      if (draftValue) onChange?.(draftValue)
-      else if (value) onChange?.(null)
-    } else if (mode === "range") onRangeChange?.(draftRange)
+      // `onChange` — «подтверждённое значение изменилось». Черновик, равный
+      // уже подтверждённому, повторно не отдаётся: DatePicker сообщает дату
+      // ещё при ручном вводе, и «Применить» после ввода давал второй
+      // `onChange` с той же датой. `onApply` при этом вызывается всегда.
+      if (draftValue) {
+        if (!isSameDay(draftValue, value)) onChange?.(draftValue)
+      } else if (value) onChange?.(null)
+    } else if (mode === "range") {
+      // То же для управляемого диапазона; в неуправляемом сравнивать не с
+      // чем — подтверждённое значение знает только родитель.
+      const same =
+        rangeValue !== undefined &&
+        sameDayOrEmpty(draftRange[0], rangeValue[0]) &&
+        sameDayOrEmpty(draftRange[1], rangeValue[1])
+      if (!same) onRangeChange?.(draftRange)
+    }
     onApply?.()
   }
 
@@ -205,6 +226,7 @@ function Calendar({
       normEnd={normEnd}
       goPrev={goPrev}
       goNext={goNext}
+      shiftMonths={shiftMonths}
       onSelectDay={handleSelectDay}
       onSelectMonth={handleSelectMonth}
       onSelectYear={handleSelectYear}

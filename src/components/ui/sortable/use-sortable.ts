@@ -138,6 +138,27 @@ function useSortable({
 
   React.useEffect(() => reset, [reset])
 
+  /** Перетаскивание уже началось: `pointercancel` от его старта не снимает взвод. */
+  const draggingRef = React.useRef(false)
+
+  // Взвод держится, только пока нажатие, начатое на ручке, не отпущено.
+  // Раньше его снимал лишь `pointerup` на самой ручке: отпущенная за ней
+  // кнопка или `pointercancel` (палец начал прокрутку списка) оставляли
+  // строку `draggable`, и следующий `dragstart` с её текста переносил
+  // строку — вопреки правилу макета «захват по иконке».
+  React.useEffect(() => {
+    if (armedId === null) return
+    const disarm = () => {
+      if (!draggingRef.current) setArmedId(null)
+    }
+    window.addEventListener("pointerup", disarm)
+    window.addEventListener("pointercancel", disarm)
+    return () => {
+      window.removeEventListener("pointerup", disarm)
+      window.removeEventListener("pointercancel", disarm)
+    }
+  }, [armedId])
+
   // Автопрокрутка у границ видимой области — «при перетаскивании объекта к
   // нижней границе видимой области происходит прокрутка вниз, к верхней —
   // вверх» (кадр 6 макета). Механика в `autoscroll.ts`.
@@ -280,9 +301,13 @@ function useSortable({
           event.dataTransfer.setData("text/plain", id)
           event.dataTransfer.effectAllowed = "move"
         }
+        draggingRef.current = true
         setDragId(id)
       },
-      onDragEnd: reset,
+      onDragEnd: () => {
+        draggingRef.current = false
+        reset()
+      },
     }
   }
 

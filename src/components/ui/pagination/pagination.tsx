@@ -1,9 +1,10 @@
-import type * as React from "react"
+import * as React from "react"
 import { ChevronLeft, ChevronRight, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
 import { useNavFocusHandoff } from "./use-nav-focus"
+import { getCompactPageList, useCompactPages } from "./use-compact-pages"
 
 // Pagination («Paginator») — навигация по номерам страниц плюс выбор
 // размера страницы справа. По макету две раскладки: «L» (одна строка,
@@ -30,6 +31,8 @@ import { useNavFocusHandoff } from "./use-nav-focus"
 // - текущая рядом с началом («Begin»): 1 2 3 4 5 … последняя
 // - текущая рядом с концом («End»):    1 … п-4 п-3 п-2 п-1 последняя
 // - иначе («Middle»):                  1 … т-1 текущая т+1 … последняя
+// - полоса уже полного ряда (узкий экран): 1 … текущая … последняя
+//   (см. use-compact-pages).
 
 /**
  * Дизайн-чек №4 №7: элемент «Page Count (ELK)» имеет
@@ -212,10 +215,21 @@ function Pagination({
   size = "L",
   className,
 }: PaginationProps) {
-  const pages = totalPages > 0 ? getPageList(page, totalPages) : [1]
   const showNav = totalPages > 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
   const { listRef, navFocusProps } = useNavFocusHandoff(page, totalPages)
+  const rootRef = React.useRef<HTMLDivElement>(null)
+  const compact = useCompactPages(rootRef, listRef, {
+    enabled: showPages,
+    page,
+    totalPages,
+  })
+  const pages =
+    totalPages <= 0
+      ? [1]
+      : compact
+        ? getCompactPageList(page, totalPages)
+        : getPageList(page, totalPages)
 
   // Цель прижимается к существующим страницам, а не отбрасывается. Если
   // страниц стало меньше, чем номер текущей (отбор сузил выдачу, а родитель
@@ -229,8 +243,10 @@ function Pagination({
 
   return (
     <div
+      ref={rootRef}
       data-slot="pagination"
       data-size={size}
+      data-compact={compact || undefined}
       className={cn(
         "flex border-t border-[var(--pagination-border)] bg-white px-4 py-1",
         // Size=M: выбор числа записей уходит на вторую строку и влево.
@@ -241,7 +257,7 @@ function Pagination({
       )}
     >
       {showPages && (
-        <div ref={listRef} className="flex items-center gap-1">
+        <div ref={listRef} data-slot="pagination-pages" className="flex items-center gap-1">
           {showNav && (
             <NavButton
               icon={ChevronLeft}

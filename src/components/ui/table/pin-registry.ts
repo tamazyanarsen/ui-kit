@@ -15,6 +15,12 @@
 // отслеживает один MutationObserver на всё дерево таблицы, с отсевом
 // записей, которые строк не касаются. Замер — один проход по всем
 // зарегистрированным ячейкам с кэшем ширин по строкам.
+//
+// ⚠️ Тот же наблюдатель следит и за атрибутом `data-pin` ячеек. Сняли или
+// поставили закреп у соседней колонки — ширины и состав строк не меняются,
+// и ни один наблюдатель раньше не срабатывал: линия-разделитель
+// закреплённого блока оставалась на старой колонке (пропадала вовсе или
+// их становилось две).
 
 type Pin = "left" | "right"
 
@@ -83,11 +89,19 @@ class PinRegistry {
     this.root = root
     this.resize = new ResizeObserver(() => this.measureAll())
     this.mutations = new MutationObserver((records) => {
-      if (!records.some((record) => STRUCTURE.has(record.target.nodeName))) return
+      const relevant = records.some(
+        (record) => record.type === "attributes" || STRUCTURE.has(record.target.nodeName)
+      )
+      if (!relevant) return
       this.observeWidths()
       this.measureAll()
     })
-    this.mutations.observe(root, { childList: true, subtree: true })
+    this.mutations.observe(root, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-pin"],
+    })
     this.observeWidths()
   }
 

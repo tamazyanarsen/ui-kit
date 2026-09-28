@@ -218,6 +218,11 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       if (event.target !== event.currentTarget) return
       if (event.key !== "Enter" && event.key !== " ") return
       event.preventDefault()
+      // Автоповтор пробела не открывает карточку снова: нативная кнопка
+      // срабатывает на пробел один раз. `preventDefault` выше остаётся —
+      // иначе удержание пробела прокручивало бы страницу. Enter повторяется,
+      // как у кнопки.
+      if (event.key === " " && event.repeat) return
       event.currentTarget.click()
     }
 

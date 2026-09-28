@@ -112,6 +112,17 @@ interface DataTableProps<Row> {
    * них фиксированная ширина из мастера.
    */
   resizable?: boolean
+  /**
+   * Ширины столбцов, заданные пользователем тягой, по ключу поля.
+   *
+   * Без этих пропсов таблица помнит ширины сама — в том числе у столбца,
+   * который скрыли в «Настроить столбцы» и показали снова. Управляемый
+   * режим (`columnWidths` + `onColumnWidthsChange`) нужен, чтобы сохранить
+   * настройку между сеансами.
+   */
+  columnWidths?: Record<string, number>
+  defaultColumnWidths?: Record<string, number>
+  onColumnWidthsChange?: (widths: Record<string, number>) => void
 
   /**
    * Итоговая строка («Итого» по ведомости).

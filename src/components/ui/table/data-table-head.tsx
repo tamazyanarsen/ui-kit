@@ -38,6 +38,8 @@ function DataTableHead<Row>({
     toggleSelectedAll,
     columnDefaultWidth,
     columnResizable,
+    columnWidth,
+    setColumnWidth,
     minColumnWidth,
   } = model
 
@@ -75,7 +77,16 @@ function DataTableHead<Row>({
             }
             onSortClick={() => handleSortClick(field.key)}
             resizable={columnResizable(field)}
+            // Ширина, заданная тягой, хранится в модели по ключу поля, а не
+            // в ячейке: скрытый и снова показанный столбец её не теряет.
+            //
+            // ⚠️ Ячейка управляется моделью ВСЕГДА — с шириной по умолчанию,
+            // пока ключа в карте нет. С `undefined` ячейка писала тягу ещё и
+            // в своё состояние и показывала его: родитель с `columnWidths`
+            // не мог ни отклонить изменение, ни сбросить ширины в `{}`.
+            width={columnWidth(field.key) ?? columnDefaultWidth(field)}
             defaultWidth={columnDefaultWidth(field)}
+            onWidthChange={(next) => setColumnWidth(field.key, next)}
             minWidth={field.minWidth ?? minColumnWidth}
           >
             {field.title}

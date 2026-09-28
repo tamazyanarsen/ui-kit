@@ -13,6 +13,7 @@ import {
 } from "./table-columns"
 import { flatten } from "./table-rows"
 import { useAddedRows } from "./use-added-rows"
+import { useColumnWidths } from "./use-column-widths"
 import { useTableExpansion } from "./use-table-expansion"
 import { useTableSelection } from "./use-table-selection"
 import { useTableSort } from "./use-table-sort"
@@ -66,8 +67,16 @@ function useDataTableModel<Row>({
   rowActions,
   columnSettings,
   resizable = true,
+  columnWidths,
+  defaultColumnWidths,
+  onColumnWidthsChange,
   total,
 }: DataTableProps<Row>) {
+  const { columnWidth, setColumnWidth } = useColumnWidths({
+    columnWidths,
+    defaultColumnWidths,
+    onColumnWidthsChange,
+  })
   const childrenOf = React.useCallback(
     (row: Row) =>
       getChildren ? getChildren(row) : (row as { children?: Row[] }).children,
@@ -277,6 +286,8 @@ function useDataTableModel<Row>({
     handleRowClick,
     columnDefaultWidth,
     columnResizable,
+    columnWidth,
+    setColumnWidth,
     minColumnWidth: MIN_COLUMN_WIDTH,
   }
 }

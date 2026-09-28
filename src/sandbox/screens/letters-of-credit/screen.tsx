@@ -24,6 +24,12 @@ import { LETTER_FIELDS } from "./fields"
 import { visibleSort } from "./sort"
 import { LettersTableHeader } from "./table-header"
 
+/** «2026-03-05» → «05.03.2026» — без `Date`, чтобы не зависеть от пояса. */
+function ruDate(iso: string) {
+  const [year, month, day] = iso.split("-")
+  return `${day}.${month}.${year}`
+}
+
 // D2. «Реестр заявок на аккредитив» — инстанс конструктора.
 //
 // Самый плотный табличный экран пачки и главный носитель разделов B1–B3
@@ -84,6 +90,13 @@ function LettersOfCreditScreen() {
         byType &&
         !row.requestType.toLowerCase().includes(byType.toLowerCase())
       ) {
+        return false
+      }
+      // Дата в данных — ISO «гггг-мм-дд», а в чип её вводят так, как видят в
+      // колонке, — «дд.мм.гггг» (можно началом: «05.03»). Раньше этот чип
+      // считался в «Выбрано фильтров», но отбор его не читал вовсе.
+      const byDate = chips["Дата"]?.trim()
+      if (byDate && !ruDate(row.date).startsWith(byDate)) {
         return false
       }
       const byStatus = chips["Статус"]

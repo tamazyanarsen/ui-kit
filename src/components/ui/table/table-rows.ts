@@ -59,7 +59,13 @@ function sortRows<Row>(
     if (typeof left === "number" && typeof right === "number") {
       return (left - right) * sign
     }
-    return String(left).localeCompare(String(right), "ru") * sign
+    // Число и текст в одной колонке: числа — одной группой перед текстом.
+    // Раньше пара «число — текст» сравнивалась текстом, а пара чисел —
+    // числом, и порядок выходил нетранзитивным (5 < 300 числом, но
+    // «300» < «40» < «5» текстом), то есть зависел от алгоритма сортировки.
+    if (typeof left === "number") return -1 * sign
+    if (typeof right === "number") return 1 * sign
+    return left.localeCompare(right, "ru", { numeric: true }) * sign
   })
 }
 

@@ -22,6 +22,24 @@ function toNumber(value: unknown): number | null {
 }
 
 /**
+ * Число из УЖЕ ОТФОРМАТИРОВАННОЙ строки — только для сортировки: «10 000,00»,
+ * «−5,5 %», «+31 922 980 133 515,05 ₽». Показывается такая строка как
+ * пришла (см. `toNumber`), а сравниваться обязана числом: текстом «100 000»
+ * стояло раньше «20 000». Разряды — любые пробелы, минус — и дефис, и
+ * типографский, хвост без цифр (валюта, «%», «шт.») отбрасывается. Всё, что
+ * числом не читается целиком, — `null`.
+ */
+function parseNumericText(value: unknown): number | null {
+  if (typeof value !== "string") return null
+  // `\s` в JS покрывает и NBSP, и узкий U+202F; минус — U+2212 и тире U+2013.
+  const compact = value.replace(/\s/g, "").replace(/[\u2212\u2013]/g, "-")
+  const match = /^([+-]?)(\d+(?:[.,]\d+)?)\D*$/.exec(compact)
+  if (!match) return null
+  const number = Number(match[2].replace(",", "."))
+  return match[1] === "-" ? -number : number
+}
+
+/**
  * Число с разрядами по-русски. `decimals` фиксирует и минимум, и максимум
  * знаков после запятой: в колонке денег «10 000,00» и «10 000,5» друг под
  * другом не выравниваются, поэтому дробная часть у всей колонки одна.
@@ -130,6 +148,7 @@ export {
   formatTime,
   normalizeSpaces,
   parseDate,
+  parseNumericText,
   toNumber,
   withSign,
 }

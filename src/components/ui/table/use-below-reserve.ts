@@ -123,6 +123,40 @@ function measure(root: HTMLElement) {
 }
 
 /**
+ * Есть ли в блоке ниже таблицы видимые соседи (пагинатор, «показать ещё»).
+ *
+ * ⚠️ Пока они есть, липкость узла гасится. `sticky` ограничен коробкой
+ * родителя, а не «до следующего соседа»: прилипший узел ехал вниз ровно на
+ * высоту всего, что под ним в блоке, и НАКРЫВАЛ пагинатор — итоговая
+ * проверка №5, 1400×800: при прокрутке 300…600 клик по кнопкам страниц
+ * попадал в ячейку таблицы. Весь его ход приходится на соседей, поэтому
+ * ограничить сдвиг «до верха пагинатора» значит просто не сдвигаться.
+ * Страница при этом не страдает: окно уже короче на `--table-below`, и
+ * блок в самом низу страницы укладывается целиком без прилипания.
+ */
+function hasSiblingsBelow(root: HTMLElement) {
+  for (let node = root.nextElementSibling; node; node = node.nextElementSibling) {
+    if (node.getBoundingClientRect().height > 0) return true
+  }
+  return false
+}
+
+/**
+ * Гасит липкость. ⚠️ `top` обнуляется вместе с `position`: отступ липкости
+ * (`--viewport-inset-top`, у песочных экранов 64) у `relative` становится
+ * СДВИГОМ, и таблица съезжала бы на пагинатор уже без всякой прокрутки.
+ */
+function unstick(root: HTMLElement) {
+  root.style.setProperty("position", "relative")
+  root.style.setProperty("top", "0px")
+}
+
+function restoreSticky(root: HTMLElement) {
+  root.style.removeProperty("position")
+  root.style.removeProperty("top")
+}
+
+/**
  * Держит `--table-below` на узле из `ref` в актуальном состоянии, пока
  * `enabled`. Выключенный хук переменную снимает — иначе окно осталось бы с
  * запасом под соседей, которых больше нет.
@@ -136,11 +170,15 @@ function useBelowReserve(
     if (!root) return
     if (!enabled) {
       root.style.removeProperty(VARIABLE)
+      restoreSticky(root)
       return
     }
 
     const update = () => {
       root.style.setProperty(VARIABLE, `${Math.round(measure(root))}px`)
+      // См. `hasSiblingsBelow`: встроенный стиль бьёт утилиту `sticky`.
+      if (hasSiblingsBelow(root)) unstick(root)
+      else restoreSticky(root)
     }
 
     update()
@@ -162,6 +200,7 @@ function useBelowReserve(
       children.disconnect()
       window.removeEventListener("resize", update)
       root.style.removeProperty(VARIABLE)
+      restoreSticky(root)
     }
   }, [ref, enabled])
 }

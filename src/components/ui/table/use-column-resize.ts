@@ -78,8 +78,19 @@ function useColumnResize({
   // `pointermove` уходил в модель DataTable и перерисовывал все ячейки
   // тела (300 строк × 5 шагов — 1500 вызовов `render`).
   const [dragWidth, setDragWidth] = React.useState<number | null>(null)
+  // ⚠️ Родитель, который держит `width` И слушает каждое движение
+  // (`onWidthChange`), управляет шириной и во время жеста: он вправе её
+  // ограничить или отклонить, и ячейка обязана показать ЕГО число. Раньше
+  // своя ширина жеста перебивала управляемую — колонка тянулась шире
+  // предела родителя и отскакивала только при отпускании. Своя ширина
+  // остаётся тому, кто ждёт лишь итог (`onWidthCommit`, так делает
+  // DataTable), и неуправляемой ячейке.
+  const liveControlled = width !== undefined && onWidthChange !== undefined
   const resolvedWidth =
-    dragWidth ?? width ?? uncontrolledWidth ?? CONTROL_COLUMN_WIDTH[type]
+    (liveControlled ? null : dragWidth) ??
+    width ??
+    uncontrolledWidth ??
+    CONTROL_COLUMN_WIDTH[type]
 
   const startResize = (event: React.PointerEvent<HTMLSpanElement>) => {
     event.preventDefault()

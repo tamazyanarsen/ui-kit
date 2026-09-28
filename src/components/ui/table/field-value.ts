@@ -1,4 +1,4 @@
-import { parseDate, toNumber } from "./field-format"
+import { parseDate, parseNumericText, toNumber } from "./field-format"
 import { TABLE_FIELD_TYPES, type TableField } from "./field-types"
 
 // Чтение значения поля и приведение его к тексту, числу или тегу. Здесь нет
@@ -90,13 +90,17 @@ function fieldSortValue<Row>(
   field: TableField<Row>,
   row: Row
 ): number | string | null {
+  const type = field.type ?? "text"
+  // Чекбокс с `checked` показывает не значение поля, а его — и сортироваться
+  // обязан по нему же. Раньше сортировка читала значение поля (у такого
+  // поля его часто нет вовсе), и все строки считались пустыми.
+  if (type === "checkbox" && field.checked) return field.checked(row) ? 1 : 0
+
   const value = fieldValue(field, row)
   if (isEmptyValue(value)) return null
-  const type = field.type ?? "text"
 
   if (type === "number" || type === "money" || type === "percent") {
-    const numeric = toNumber(value)
-    return numeric ?? fieldText(field, row)
+    return toNumber(value) ?? parseNumericText(value) ?? fieldText(field, row)
   }
   if (type === "date" || type === "datetime" || type === "time") {
     return parseDate(value)?.getTime() ?? fieldText(field, row)

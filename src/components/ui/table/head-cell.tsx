@@ -257,8 +257,10 @@ const TableHeadCell = React.forwardRef<
           фактическая коробка значка 16px выросла бы до 20px независимо от
           объявленных отступов самой ячейки. `flex` делает её блочной, а на
           блочную распорка не действует. */}
+      {/* `justify-center` — как у значка в теле: в колонке шире 32 значок
+          шапки стоял у левого края, а значки строк — по центру. */}
       {type === "icon" && (
-        <span className="flex text-[var(--table-fg)]" aria-hidden="true">
+        <span className="flex justify-center text-[var(--table-fg)]" aria-hidden="true">
           {icon}
         </span>
       )}
@@ -292,16 +294,21 @@ const TableHeadCell = React.forwardRef<
       )}
 
       {canResize && (
-        // Сидит прямо на границе колонок, наполовину в каждом соседе,
-        // чтобы курсор менялся сразу при касании линии. Зона захвата 9px:
-        // сама линия шириной 1px, и в зону уже этой попасть по-настоящему
-        // трудно.
+        // Зона захвата 9px у правого края СВОЕЙ ячейки, линия колонки — её
+        // последний пиксель, так что курсор меняется сразу при касании линии.
+        // Сама линия шириной 1px, и в зону уже этой попасть трудно.
+        //
+        // ⚠️ Не наполовину в соседе, как раньше: у каждой ячейки шапки свой
+        // `z-index` (см. `usePinPresentation`), то есть свой контекст
+        // наложения, и следующая ячейка рисовалась поверх вылезшей половины —
+        // из 9px хватались только 4 (итоговая проверка №5, замер
+        // `elementFromPoint`).
         <span
           role="separator"
           aria-orientation="vertical"
           data-slot="table-resize-handle"
           onPointerDown={startResize}
-          className="absolute inset-y-0 -right-[4.5px] z-10 w-[9px] cursor-col-resize touch-none select-none"
+          className="absolute inset-y-0 right-0 z-10 w-[9px] cursor-col-resize touch-none select-none"
         />
       )}
 

@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { LoaderCircle, Search, X } from "@/icons"
 
@@ -53,11 +54,16 @@ export function ComboboxContent({
 // значок поиска слева, крутилка на время запроса (показывается *вместе* с
 // кнопкой очистки, а не вместо неё) и кнопка очистки, когда есть текст.
 
-export function ComboboxSearchInput({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+export const ComboboxSearchInput = React.forwardRef<
+  HTMLInputElement,
+  ComboboxPrimitive.Input.Props & { loading?: boolean }
+>(function ComboboxSearchInput({
   className,
   loading = false,
   ...props
-}: ComboboxPrimitive.Input.Props & { loading?: boolean }) {
+}, ref) {
   return (
     // Второй проход: совпадает с литеральной строкой поиска
     // «ELK / input», снятой с собственных инстансов выпадающего списка, —
@@ -72,6 +78,7 @@ export function ComboboxSearchInput({
         className="size-6 shrink-0 text-[var(--select-icon-fg)]"
       />
       <ComboboxPrimitive.Input
+        ref={ref}
         data-slot="combobox-search"
         className={cn(
           // В строке поиска «ELK / dropdown» текст поиска лежит в обёртке
@@ -96,7 +103,7 @@ export function ComboboxSearchInput({
       </ComboboxPrimitive.Clear>
     </div>
   )
-}
+})
 
 // Status и Empty — текст подсказки, отсутствия результатов или ошибки,
 // который показывается между полем поиска и списком («Начните вводить

@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { ChevronDown, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import {
   SELECT_ICON_SIZE,
   selectFloatingLabelClassName,
@@ -26,7 +27,12 @@ interface ComboboxTriggerOwnProps {
   placeholder?: boolean
 }
 
-export function ComboboxTrigger({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+export const ComboboxTrigger = React.forwardRef<
+  HTMLButtonElement,
+  Omit<ComboboxPrimitive.Trigger.Props, "render"> & ComboboxTriggerOwnProps
+>(function ComboboxTrigger({
   className,
   size = "lg",
   label,
@@ -37,12 +43,14 @@ export function ComboboxTrigger({
   placeholder = false,
   children,
   id,
+  disabled,
   ...props
-}: Omit<ComboboxPrimitive.Trigger.Props, "render"> & ComboboxTriggerOwnProps) {
+}, ref) {
   const generatedId = React.useId()
   const triggerId = id ?? generatedId
   const invalid = Boolean(error)
-  const captionId = comment || error ? `${triggerId}-caption` : undefined
+  const { caption } = resolveCaption(error, comment)
+  const captionId = caption ? `${triggerId}-caption` : undefined
   const floating = size === "lg"
   // Место резервируется только тогда, когда есть чему всплывать: без
   // подписи над значением ничего не появится.
@@ -52,12 +60,14 @@ export function ComboboxTrigger({
     <div className="flex w-full flex-col gap-1">
       <ComboboxPrimitive.Trigger
         id={triggerId}
+        ref={ref}
         data-slot="combobox-trigger"
         data-placeholder={placeholder ? "" : undefined}
         aria-invalid={invalid || undefined}
         aria-describedby={captionId}
         nativeButton={false}
         render={<div className={cn(selectTriggerVariants({ size, invalid }), className)} />}
+        disabled={disabled}
         {...props}
       >
         {label && (
@@ -93,13 +103,17 @@ export function ComboboxTrigger({
             <button
               type="button"
               aria-label="Очистить"
+              // Как у SelectTrigger: у заблокированного поля кнопки нет. Мышь
+              // её и так не доставала (`pointer-events-none` у коробки), а
+              // Tab + Enter вызывали `onClear`.
+              disabled={disabled}
               onMouseDown={(event) => event.stopPropagation()}
               onClick={(event) => {
                 event.stopPropagation()
                 onClear?.()
               }}
               className={cn(
-                "text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring",
+                "text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring group-data-disabled/trigger:!hidden",
                 placeholder && "hidden"
               )}
             >
@@ -111,7 +125,7 @@ export function ComboboxTrigger({
           </ComboboxPrimitive.Icon>
         </span>
       </ComboboxPrimitive.Trigger>
-      {(comment || error) && (
+      {caption && (
         <p
           id={captionId}
           className={cn(
@@ -124,9 +138,9 @@ export function ComboboxTrigger({
               : "text-[var(--select-caption-fg)]"
           )}
         >
-          {error ?? comment}
+          {caption}
         </p>
       )}
     </div>
   )
-}
+})

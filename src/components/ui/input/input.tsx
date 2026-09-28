@@ -13,6 +13,8 @@ import {
   type MaskName,
 } from "./mask"
 import { InputTrailingSlot, hasTrailingSlot } from "./trailing-slot"
+import { resolveCaption } from "./caption"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { resolvePlaceholder, useMask } from "./use-mask"
 import {
   LEADING_ICON_SIZE,
@@ -52,7 +54,11 @@ type InputProps = Omit<React.ComponentProps<"input">, "size"> &
   Omit<VariantProps<typeof inputBoxVariants>, "invalid" | "interactive"> &
   InputOwnProps
 
-function Input({
+// `forwardRef` — чтобы ref потребителя доезжал до нативного `<input>`:
+// `<Input {...register("x")} />` из react-hook-form держится именно на нём
+// (фокус на ошибке, чтение значения). На React 18 обычная функция его молча
+// теряет, хотя тип `ComponentProps<"input">` его и объявляет.
+const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   className,
   containerClassName,
   size = "lg",
@@ -75,18 +81,19 @@ function Input({
   defaultValue,
   value,
   ...props
-}: InputProps) {
+}, ref) {
   const generatedId = React.useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
-  const captionId = comment || error ? `${inputId}-caption` : undefined
+  const { caption } = resolveCaption(error, comment)
+  const captionId = caption ? `${inputId}-caption` : undefined
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const setInputRef = useComposedRefs(inputRef, ref)
   const [passwordVisible, setPasswordVisible] = React.useState(false)
   const isPassword = type === "password"
 
   const {
     maskValue,
-    setMaskValue,
     handleAccept,
     amountWidth,
     measureRef,
@@ -112,13 +119,11 @@ function Input({
     valueKey: `${value ?? ""}|${defaultValue ?? ""}|${maskValue}`,
   })
 
+  // Очистка идёт через настоящее событие `input` и для маскированного поля
+  // тоже: imask ловит его, как ввод с клавиатуры, и отдаёт в `onAccept` с
+  // событием — а значит, `onChange` родителя вызывается. Раньше маска
+  // чистила только своё состояние, и в форме оставался старый номер.
   function handleClear() {
-    if (mask) {
-      setMaskValue("")
-      inputRef.current?.focus()
-      onClear?.()
-      return
-    }
     const input = inputRef.current
     if (input) {
       const setter = Object.getOwnPropertyDescriptor(
@@ -178,7 +183,7 @@ function Input({
     ? ({
         ...getImaskProps(mask),
         ...fieldProps,
-        inputRef,
+        inputRef: setInputRef,
         value: maskValue,
         onAccept: handleAccept,
         style:
@@ -240,7 +245,7 @@ function Input({
             </>
           ) : (
             <input
-              ref={inputRef}
+              ref={setInputRef}
               {...fieldProps}
               type={isPassword ? (passwordVisible ? "text" : "password") : type}
               value={value}
@@ -298,7 +303,7 @@ function Input({
         </div>
       </FieldTooltip>
 
-      {(comment || error) && (
+      {caption && (
         <p
           id={captionId}
           className={cn(
@@ -315,12 +320,12 @@ function Input({
               : "text-[var(--input-caption-fg)]"
           )}
         >
-          {error ?? comment}
+          {caption}
         </p>
       )}
     </div>
   )
-}
+})
 
 export { Input }
 export type { InputProps }

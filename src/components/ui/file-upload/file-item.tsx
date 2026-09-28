@@ -1,4 +1,4 @@
-import type * as React from "react"
+import * as React from "react"
 import {
   CircleAlert,
   Download,
@@ -50,11 +50,20 @@ interface FileListItemProps extends Omit<React.ComponentProps<"div">, "id"> {
   showErrorText?: boolean
   showEdit?: boolean
   showCross?: boolean
+  /** Кнопка свойства `Show Edit`: меню действий у L, скачивание у S. */
+  onEdit?: () => void
+  /** @deprecated Прежнее имя обработчика кнопки `Show Edit` — у S это
+   * «Скачать файл», а не повтор. Используйте `onEdit`. */
   onRetry?: () => void
   onRemove?: () => void
 }
 
-export function FileListItem({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+export const FileListItem = React.forwardRef<
+  HTMLDivElement,
+  FileListItemProps
+>(function FileListItem({
   className,
   name,
   meta,
@@ -65,10 +74,11 @@ export function FileListItem({
   showErrorText = true,
   showEdit = true,
   showCross = true,
+  onEdit,
   onRetry,
   onRemove,
   ...props
-}: FileListItemProps) {
+}, ref) {
   const disabled = state === "disabled"
   const error = state === "error"
   const loading = state === "loading"
@@ -102,6 +112,7 @@ export function FileListItem({
 
   return (
     <div
+      ref={ref}
       data-slot="file-item"
       data-size={size}
       data-disabled={disabled || undefined}
@@ -193,7 +204,10 @@ export function FileListItem({
           <button
             type="button"
             aria-label={small ? "Скачать файл" : "Действия с файлом"}
-            onClick={onRetry}
+            // `disabled`, а не только `pointer-events-none` у строки:
+            // иначе Tab + Enter срабатывали у заблокированного файла.
+            disabled={disabled}
+            onClick={onEdit ?? onRetry}
             className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
           >
             <EditGlyph aria-hidden="true" className="size-4" />
@@ -203,6 +217,7 @@ export function FileListItem({
           <button
             type="button"
             aria-label="Удалить файл"
+            disabled={disabled}
             onClick={onRemove}
             className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
           >
@@ -212,4 +227,4 @@ export function FileListItem({
       </span>
     </div>
   )
-}
+})

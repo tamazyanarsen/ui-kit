@@ -32,21 +32,24 @@ function useMask({
   // «30 000 000», а состояние держало «30000000». На состоянии висит замер
   // ширины числа, поэтому поле получалось на два пробела уже показанного
   // текста и знак «₽» садился на последнюю цифру (дизайн-чек от 13.09, №1).
-  const [maskValue, setMaskValue] = React.useState(() => {
+  const [internalValue, setInternalValue] = React.useState(() => {
     const raw = String(value ?? defaultValue ?? "")
     return mask ? formatWithMask(mask, raw) : raw
   })
 
-  // Пересинхронизируется, когда *управляемое* значение меняется снаружи
-  // (например, выбор даты проталкивает день, который пользователь только
-  // что нажал в календаре). Для неуправляемого использования (только
-  // defaultValue) пропускается, чтобы не бороться с набором текста на
-  // каждую отрисовку.
-  React.useEffect(() => {
-    if (mask && value !== undefined) {
-      setMaskValue(formatWithMask(mask, String(value)))
-    }
-  }, [mask, value])
+  // В управляемом режиме показывается ровно `value`, а не копия в
+  // состоянии. Копия расходилась с родителем: крестик очищал её, а если
+  // родитель оставлял то же `value`, эффект синхронизации не перезапускался
+  // и поле так и оставалось пустым при непустом значении формы.
+  const controlled = value !== undefined
+  const maskValue =
+    mask && controlled ? formatWithMask(mask, String(value)) : internalValue
+
+  // Родитель, не принявший ввод (не обновивший `value`), должен вернуть
+  // поле к своему значению — как у нативного управляемого `<input>`.
+  // react-imask подставляет `value` на каждой перерисовке, поэтому
+  // достаточно перерисоваться.
+  const [, rerender] = React.useReducer((n: number) => n + 1, 0)
 
   const measureRef = React.useRef<HTMLSpanElement>(null)
   const [amountWidth, setAmountWidth] = React.useState<number>()
@@ -77,15 +80,19 @@ function useMask({
   }, [mask, maskValue])
 
   function handleAccept(next: string, _maskRef: unknown, event?: InputEvent) {
-    setMaskValue(next)
-    if (event) {
-      onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
+    // Без события — это imask применил `value`, пришедшее сверху: сообщать
+    // родителю его же значение незачем.
+    if (!event) {
+      if (!controlled) setInternalValue(next)
+      return
     }
+    if (controlled) rerender()
+    else setInternalValue(next)
+    onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
   }
 
   return {
     maskValue,
-    setMaskValue,
     handleAccept,
     /** Ширина числа в px, пока её ещё не померили — `undefined`. */
     amountWidth,

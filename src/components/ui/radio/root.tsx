@@ -35,9 +35,20 @@ interface RadioGroupProps
   children?: React.ReactNode
 }
 
-function RadioGroup({ className, items, children, ...props }: RadioGroupProps) {
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const RadioGroup = React.forwardRef<
+  HTMLDivElement,
+  RadioGroupProps
+>(function RadioGroup({
+  className,
+  items,
+  children,
+  ...props
+}, ref) {
   return (
     <RadioGroupPrimitive
+      ref={ref}
       data-slot="radio-group"
       className={cn("flex flex-col gap-6", className)}
       {...props}
@@ -55,7 +66,7 @@ function RadioGroup({ className, items, children, ...props }: RadioGroupProps) {
         : children}
     </RadioGroupPrimitive>
   )
-}
+})
 
 export { RadioGroup }
 export type { RadioGroupProps, RadioGroupItem }

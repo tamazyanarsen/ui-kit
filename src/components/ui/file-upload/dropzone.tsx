@@ -3,6 +3,8 @@ import { CirclePlus } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
+import { splitFiles, toFileList } from "./accept"
+
 // FileUploadDropzone — цель для перетаскивания файлов. Состояния: обычное,
 // наведение (файл тащат над зоной — по макету заливается Grey 100),
 // выключенное и ошибка.
@@ -34,9 +36,17 @@ interface FileUploadDropzoneProps
   multiple?: boolean
   accept?: string
   onFilesSelected?: (files: FileList) => void
+  /** Файлы, отброшенные по `accept` или `multiple` (перетаскивание или
+   * «Все файлы» в окне выбора) — чтобы показать пользователю причину. */
+  onFilesRejected?: (files: File[]) => void
 }
 
-export function FileUploadDropzone({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+export const FileUploadDropzone = React.forwardRef<
+  HTMLDivElement,
+  FileUploadDropzoneProps
+>(function FileUploadDropzone({
   className,
   subtitle,
   error = false,
@@ -44,15 +54,27 @@ export function FileUploadDropzone({
   multiple = true,
   accept,
   onFilesSelected,
+  onFilesRejected,
   children,
+  onClick,
+  onDragOver,
+  onDragLeave,
   ...props
-}: FileUploadDropzoneProps) {
+}, ref) {
   const [dragOver, setDragOver] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const inputId = React.useId()
 
   function openPicker() {
     if (!disabled) inputRef.current?.click()
+  }
+
+  function deliver(files: FileList) {
+    const { accepted, rejected } = splitFiles(files, accept, multiple)
+    if (accepted.length > 0) {
+      onFilesSelected?.(rejected.length > 0 ? toFileList(accepted) : files)
+    }
+    if (rejected.length > 0) onFilesRejected?.(rejected)
   }
 
   const tone: DropzoneTone = disabled ? "disabled" : error ? "error" : "default"
@@ -81,6 +103,7 @@ export function FileUploadDropzone({
 
   return (
     <div
+      ref={ref}
       data-slot="file-upload-dropzone"
       data-disabled={disabled || undefined}
       aria-disabled={disabled || undefined}
@@ -99,22 +122,31 @@ export function FileUploadDropzone({
         containerToneClass,
         className
       )}
+      // ⚠️ Обработчики потребителя вызываются ВМЕСТЕ с внутренними, а не
+      // вместо них: `{...props}` стоял после, и `onClick` для аналитики
+      // отключал окно выбора, а свой `onDragOver` снимал `preventDefault` —
+      // и бросить файл становилось нельзя.
+      {...props}
       onDragOver={(event) => {
+        onDragOver?.(event)
         if (disabled) return
         event.preventDefault()
         setDragOver(true)
       }}
-      onDragLeave={() => setDragOver(false)}
+      onDragLeave={(event) => {
+        onDragLeave?.(event)
+        setDragOver(false)
+      }}
       onDrop={(event) => {
         if (disabled) return
         event.preventDefault()
         setDragOver(false)
-        if (event.dataTransfer.files.length > 0) {
-          onFilesSelected?.(event.dataTransfer.files)
-        }
+        if (event.dataTransfer.files.length > 0) deliver(event.dataTransfer.files)
       }}
-      onClick={openPicker}
-      {...props}
+      onClick={(event) => {
+        onClick?.(event)
+        if (!event.defaultPrevented) openPicker()
+      }}
     >
       <input
         ref={inputRef}
@@ -129,7 +161,7 @@ export function FileUploadDropzone({
         className="sr-only"
         onChange={(event) => {
           if (event.target.files && event.target.files.length > 0) {
-            onFilesSelected?.(event.target.files)
+            deliver(event.target.files)
           }
           event.target.value = ""
         }}
@@ -155,4 +187,4 @@ export function FileUploadDropzone({
       )}
     </div>
   )
-}
+})

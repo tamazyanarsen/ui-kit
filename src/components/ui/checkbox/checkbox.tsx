@@ -3,6 +3,7 @@ import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import { Check, Minus } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 interface CheckboxOwnProps {
@@ -25,7 +26,9 @@ type CheckboxProps = CheckboxPrimitive.Root.Props & CheckboxOwnProps
 // Input; опустите их, чтобы получить голую коробку 24×24 («Checkbox Without
 // Text» в макете). `error` заменяет собой `comment`, а не складывается с
 // ним, — тоже как у Input.
-function Checkbox({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const Checkbox = React.forwardRef<HTMLSpanElement, CheckboxProps>(function Checkbox({
   className,
   disabled,
   indeterminate,
@@ -34,15 +37,17 @@ function Checkbox({
   error,
   id,
   ...props
-}: CheckboxProps) {
+}, ref) {
   const generatedId = React.useId()
   const checkboxId = id ?? generatedId
-  const hasCaption = Boolean(comment || error)
+  const { caption } = resolveCaption(error, comment)
+  const hasCaption = Boolean(caption)
   const captionId = hasCaption ? `${checkboxId}-caption` : undefined
 
   const box = (
     <CheckboxPrimitive.Root
       id={checkboxId}
+      ref={ref}
       data-slot="checkbox"
       disabled={disabled}
       indeterminate={indeterminate}
@@ -142,13 +147,13 @@ function Checkbox({
                   : "text-[var(--checkbox-caption-fg)]"
             )}
           >
-            {error ?? comment}
+            {caption}
           </span>
         )}
       </span>
     </label>
   )
-}
+})
 
 export { Checkbox }
 export type { CheckboxProps }

@@ -12,12 +12,16 @@ export function useInfiniteCount(
   step: number
 ) {
   const [count, setCount] = React.useState(initial)
-  const sentinelRef = React.useRef<HTMLDivElement>(null)
+  // ⚠️ Маркер хранится в состоянии через ref-колбэк, а не в `useRef`: при
+  // переходе через выбор года старый маркер размонтируется и появляется
+  // новый узел. Наблюдатель на `useRef` продолжал бы следить за
+  // отсоединённым узлом, и после перехода подгружались бы только первые
+  // секции.
+  const [sentinel, sentinelRef] = React.useState<HTMLDivElement | null>(null)
 
   React.useEffect(() => {
-    const sentinel = sentinelRef.current
     const root = scrollRef.current
-    if (!sentinel || !root) return
+    if (!sentinel || !root || typeof IntersectionObserver === "undefined") return
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) setCount((c) => c + step)
@@ -26,7 +30,7 @@ export function useInfiniteCount(
     )
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [step, scrollRef])
+  }, [sentinel, step, scrollRef])
 
   const reset = React.useCallback(() => setCount(initial), [initial])
 

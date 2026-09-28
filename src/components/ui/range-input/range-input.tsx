@@ -5,6 +5,7 @@ import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import { GROUP_SPACES, formatSignSpacing } from "@/lib/number-format"
 import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
 
@@ -25,7 +26,9 @@ type RangeInputProps = Omit<SliderPrimitive.Root.Props<number>, "children"> &
 // Checkbox и Radio, состояние ошибки НЕ перекрашивает рамку коробки (она
 // остаётся --range-input-border, по конвенции Input) — краснеют только
 // акцент дорожки с ползунком и текст подписи.
-function RangeInput({
+// `forwardRef` — тип пропсов (Root.Props) объявляет `ref`, и без обёртки
+// он на React 18 молча терялся.
+const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function RangeInput({
   className,
   label,
   comment,
@@ -34,13 +37,15 @@ function RangeInput({
   format,
   disabled,
   ...props
-}: RangeInputProps) {
+}, ref) {
   // Дизайн-чек 3/3 №3: состояние ошибки и её текст переключаются отдельно,
   // поэтому `error` принимает и `true` — красная шкала без подписи.
   const invalid = Boolean(error)
-  const errorText = typeof error === "boolean" ? null : error
-  const caption = errorText ?? comment
+  const { caption } = resolveCaption(error, comment)
   const hasCaption = Boolean(caption)
+  // Подпись связана с ползунком: без `aria-describedby` скринридер не
+  // зачитывал ни комментарий, ни текст ошибки.
+  const captionId = `${React.useId()}-caption`
   // Разрядный пробел — отбивка по 3 разряда, а не символ значения: в буфер
   // уходит «5000000», а не «5 000 000».
   const copyWithoutSeparators = useCopyWithoutSeparators(GROUP_SPACES)
@@ -51,6 +56,7 @@ function RangeInput({
     // gap-[4px] между Range, Indicators и Comment.
     <div className={cn("flex w-full flex-col gap-1", className)}>
       <SliderPrimitive.Root
+        ref={ref}
         data-slot="range-input"
         disabled={disabled}
         format={format}
@@ -174,6 +180,7 @@ function RangeInput({
               />
               <SliderPrimitive.Thumb
                 data-slot="range-input-thumb"
+                aria-describedby={hasCaption ? captionId : undefined}
                 className={cn(
                   // Между двумя стрелками зазора нет, а радиус — литеральные
                   // 12px; и то и другое снято прямо со слоя Box у символов
@@ -237,6 +244,7 @@ function RangeInput({
       )}
       {hasCaption && (
         <p
+          id={captionId}
           className={cn(
             "px-4 text-p3-medium",
             invalid
@@ -249,7 +257,7 @@ function RangeInput({
       )}
     </div>
   )
-}
+})
 
 export { RangeInput }
 export type { RangeInputProps }

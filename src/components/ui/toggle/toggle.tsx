@@ -18,7 +18,9 @@ type ToggleProps = SwitchPrimitive.Root.Props & ToggleOwnProps
 // отличие от Checkbox и Radio, `comment` и `error` здесь складываются, а не
 // заменяют друг друга (см. ряд «Error» в анатомии: «Comment» и красная
 // строка ошибки рисуются вместе).
-function Toggle({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const Toggle = React.forwardRef<HTMLSpanElement, ToggleProps>(function Toggle({
   className,
   disabled,
   label,
@@ -26,7 +28,7 @@ function Toggle({
   error,
   id,
   ...props
-}: ToggleProps) {
+}, ref) {
   const generatedId = React.useId()
   const toggleId = id ?? generatedId
   // Дизайн-чек 3/3 №6: `error` принимает и `true` — состояние ошибки без
@@ -41,6 +43,7 @@ function Toggle({
   const track = (
     <SwitchPrimitive.Root
       id={toggleId}
+      ref={ref}
       data-slot="toggle"
       disabled={disabled}
       // Ошибку видно не только глазами: без `aria-invalid` скринридер
@@ -123,7 +126,7 @@ function Toggle({
       </span>
     </label>
   )
-}
+})
 
 export { Toggle }
 export type { ToggleProps }

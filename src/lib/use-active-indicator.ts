@@ -45,8 +45,12 @@ function useActiveIndicator<T extends HTMLElement>(
 
   const measure = React.useCallback(() => {
     const row = rowRef.current
+    // ⚠️ Во всех ветках — возврат прежнего объекта, если ничего не
+    // изменилось. Иначе при не найденном активном сегменте каждый замер давал
+    // новый объект, а эффект замера перезапускался от пересоздаваемых `deps`
+    // — и рендеры не останавливались («Maximum update depth exceeded»).
     if (!row || activeValue === undefined) {
-      setRect((prev) => ({ ...prev, visible: false }))
+      setRect((prev) => (prev.visible ? { ...prev, visible: false } : prev))
       return
     }
     // Выбор по `data-value`, а не по индексу: за многоточием часть сегментов
@@ -56,7 +60,9 @@ function useActiveIndicator<T extends HTMLElement>(
       `:scope > [data-value="${CSS.escape(activeValue)}"]`
     )
     if (!node) {
-      setRect((prev) => ({ ...prev, visible: false, ready: true }))
+      setRect((prev) =>
+        !prev.visible && prev.ready ? prev : { ...prev, visible: false, ready: true }
+      )
       return
     }
     const left = node.offsetLeft

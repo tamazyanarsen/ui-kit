@@ -5,6 +5,13 @@ import { CalendarDesktop } from "./calendar-desktop"
 import { CalendarMobile } from "./calendar-mobile"
 import type { CalendarProps, CalendarSingleMonth, CalendarView } from "./types"
 
+// Конец окна из 12 лет. Обычно окно доходит до текущего года (свежие годы
+// под рукой), но выбранный год обязан в него попасть: при 1990 окно
+// 2015–2026 открывалось без выбора, и найти его можно было только листанием.
+function decadeEndFor(year: number, currentYear: number) {
+  return year > currentYear - 12 ? Math.max(year, currentYear) : year
+}
+
 function Calendar({
   mode = "single",
   layout = "popover",
@@ -27,7 +34,17 @@ function Calendar({
   onYearChange,
 }: CalendarProps) {
   const today = React.useMemo(() => new Date(), [])
-  const initial = defaultMonth ?? value ?? today
+  // Открывается на выбранном значении в любом режиме: раньше `monthValue` и
+  // `yearValue` не учитывались, и сетка месяцев или лет открывалась на
+  // текущем годе без подсвеченного выбора.
+  const initial =
+    defaultMonth ??
+    value ??
+    (mode === "month" && monthValue
+      ? new Date(monthValue.year, monthValue.month, 1)
+      : mode === "year" && yearValue != null
+        ? new Date(yearValue, 0, 1)
+        : today)
   const [view, setView] = React.useState<CalendarView>(
     mode === "month" ? "months" : mode === "year" ? "years" : "days"
   )
@@ -35,8 +52,8 @@ function Calendar({
     year: initial.getFullYear(),
     month: initial.getMonth(),
   })
-  const [decadeEnd, setDecadeEnd] = React.useState(
-    Math.max(initial.getFullYear(), today.getFullYear())
+  const [decadeEnd, setDecadeEnd] = React.useState(() =>
+    decadeEndFor(initial.getFullYear(), today.getFullYear())
   )
 
   // Выбор дня и диапазона остаётся локальным черновиком, пока «Применить»
@@ -104,8 +121,12 @@ function Calendar({
   }
 
   function handleApply() {
-    if (mode === "single" && draftValue) onChange?.(draftValue)
-    else if (mode === "range") onRangeChange?.(draftRange)
+    if (mode === "single") {
+      // «Сбросить» → «Применить» — это подтверждённый сброс: родитель
+      // должен о нём узнать и без `onReset`.
+      if (draftValue) onChange?.(draftValue)
+      else if (value) onChange?.(null)
+    } else if (mode === "range") onRangeChange?.(draftRange)
     onApply?.()
   }
 

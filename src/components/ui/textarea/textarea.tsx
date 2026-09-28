@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Information, Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import { Hint } from "@/components/ui/tooltip"
 import { FieldTooltip } from "@/components/ui/input/hover-tooltip"
 
@@ -96,7 +97,9 @@ type TextareaProps = Omit<React.ComponentProps<"textarea">, "size"> &
   Omit<VariantProps<typeof textareaBoxVariants>, "invalid" | "interactive"> &
   TextareaOwnProps
 
-function Textarea({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({
   className,
   containerClassName,
   label,
@@ -111,11 +114,12 @@ function Textarea({
   rows = 3,
   placeholder,
   ...props
-}: TextareaProps) {
+}, ref) {
   const generatedId = React.useId()
   const textareaId = id ?? generatedId
   const invalid = Boolean(error)
-  const captionId = comment || error ? `${textareaId}-caption` : undefined
+  const { caption } = resolveCaption(error, comment)
+  const captionId = caption ? `${textareaId}-caption` : undefined
 
   // Плавающая подпись, как у Input: пока поле пусто и не в фокусе, подпись
   // играет роль его placeholder (крупная, серая); как только появляется
@@ -131,10 +135,13 @@ function Textarea({
   // не раскладка, а верхний отступ самой textarea. Родной placeholder при
   // этом делается прозрачным — иначе он дублировал бы подпись.
   const hasFloatingLabel = Boolean(label)
+  // У нестроковой подписи без `placeholder` плейсхолдер всё равно нужен —
+  // пробел: без атрибута `:placeholder-shown` не срабатывает никогда, и
+  // подпись навсегда оставалась «поднятой» над пустым полем.
   const resolvedPlaceholder = hasFloatingLabel
     ? typeof label === "string"
       ? label
-      : placeholder
+      : (placeholder ?? " ")
     : placeholder
 
   return (
@@ -156,6 +163,7 @@ function Textarea({
       >
         <textarea
           id={textareaId}
+          ref={ref}
           data-slot="textarea"
           rows={rows}
           // ⚠️ Заблокированная область ПРИНИМАЕТ TAB — блокировка это пара
@@ -227,7 +235,7 @@ function Textarea({
         )}
       </div>
       </FieldTooltip>
-      {(comment || error) && (
+      {caption && (
         // Исправление второго прохода: не хватало px-4 и font-medium — ряды
         // Comment и Error в макете оба используют px-[16px] (встают по
         // внутреннему отступу самой коробки) и font-['Object_Sans:Medium'],
@@ -246,7 +254,7 @@ function Textarea({
                 : "text-[var(--input-caption-fg)]"
             )}
           >
-            {error ?? comment}
+            {caption}
           </p>
           {showCommentIcon &&
             (commentHint ? (
@@ -269,7 +277,7 @@ function Textarea({
       )}
     </div>
   )
-}
+})
 
 export { Textarea, textareaBoxVariants }
 export type { TextareaProps }

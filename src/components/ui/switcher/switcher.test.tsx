@@ -75,4 +75,11 @@ describe("Switcher", () => {
 
     expect(onValueChange).not.toHaveBeenCalled()
   })
+
+  // Регрессия: при `disabled` и ненайденном активном сегменте бегунок
+  // перерисовывал ряд без конца («Maximum update depth exceeded»).
+  it("renders disabled with an unknown value without a render loop", () => {
+    expect(() => render(<Switcher disabled value="zzz" items={ITEMS} />)).not.toThrow()
+    expect(() => render(<Switcher disabled items={[]} />)).not.toThrow()
+  })
 })

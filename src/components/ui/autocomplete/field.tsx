@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { Loader2, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import {
   inputBoxVariants,
   inputFieldVariants,
@@ -26,7 +27,12 @@ interface AutocompleteFieldOwnProps {
   clearable?: boolean
 }
 
-function AutocompleteField({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const AutocompleteField = React.forwardRef<
+  HTMLInputElement,
+  Omit<ComboboxPrimitive.Input.Props, "size"> & AutocompleteFieldOwnProps
+>(function AutocompleteField({
   className,
   size = "lg",
   label,
@@ -37,11 +43,12 @@ function AutocompleteField({
   id,
   placeholder,
   ...props
-}: Omit<ComboboxPrimitive.Input.Props, "size"> & AutocompleteFieldOwnProps) {
+}, ref) {
   const generatedId = React.useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
-  const captionId = comment || error ? `${inputId}-caption` : undefined
+  const { caption } = resolveCaption(error, comment)
+  const captionId = caption ? `${inputId}-caption` : undefined
   const floating = Boolean(label) && size !== "sm"
   const anchorRef = useAutocompleteAnchor()
 
@@ -50,8 +57,16 @@ function AutocompleteField({
       <div ref={anchorRef} className={cn(inputBoxVariants({ size, invalid, interactive: true }))}>
         <ComboboxPrimitive.Input
           id={inputId}
+          ref={ref}
           data-slot="autocomplete-field"
-          placeholder={floating ? " " : placeholder}
+          // Как у Input: на размере S плавающей подписи нет, и `label`
+          // становится плейсхолдером и доступным именем поля. Раньше он
+          // здесь просто пропадал — у поля не было ни видимой подписи, ни
+          // имени для скринридера.
+          placeholder={
+            floating ? " " : (placeholder ?? (typeof label === "string" ? label : undefined))
+          }
+          aria-label={!floating && typeof label === "string" ? label : undefined}
           aria-invalid={invalid || undefined}
           aria-describedby={captionId}
           className={cn(inputFieldVariants({ size, floating }), className)}
@@ -77,7 +92,7 @@ function AutocompleteField({
           </ComboboxPrimitive.Clear>
         )}
       </div>
-      {(comment || error) && (
+      {caption && (
         <p
           id={captionId}
           className={cn(
@@ -88,11 +103,11 @@ function AutocompleteField({
             error ? "text-[var(--input-caption-error-fg)]" : "text-[var(--input-caption-fg)]"
           )}
         >
-          {error ?? comment}
+          {caption}
         </p>
       )}
     </div>
   )
-}
+})
 
 export { AutocompleteField }

@@ -40,7 +40,9 @@ interface CheckboxGroupProps
   selectAllLabel?: React.ReactNode
 }
 
-function CheckboxGroup({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(function CheckboxGroup({
   className,
   items,
   value,
@@ -49,7 +51,7 @@ function CheckboxGroup({
   disabled = false,
   selectAllLabel,
   ...props
-}: CheckboxGroupProps) {
+}, ref) {
   const [uncontrolled, setUncontrolled] = React.useState<string[]>(defaultValue)
   const selected = value ?? uncontrolled
 
@@ -87,6 +89,7 @@ function CheckboxGroup({
 
   return (
     <div
+      ref={ref}
       data-slot="checkbox-group"
       role="group"
       className={cn("flex flex-col gap-6", className)}
@@ -114,7 +117,7 @@ function CheckboxGroup({
       ))}
     </div>
   )
-}
+})
 
 export { CheckboxGroup }
 export type { CheckboxGroupProps, CheckboxGroupItem }

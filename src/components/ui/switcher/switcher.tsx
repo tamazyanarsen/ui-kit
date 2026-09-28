@@ -160,7 +160,10 @@ function Switcher({
   // `disabled` на всём переключателе (по собственному примеру «Disabled» в
   // макете, где разом гаснут все сегменты) накладывается поверх
   // собственного `disabled` каждого пункта, а не заменяет его.
-  const resolvedItems = disabled ? items.map((item) => ({ ...item, disabled: true })) : items
+  const resolvedItems = React.useMemo(
+    () => (disabled ? items.map((item) => ({ ...item, disabled: true })) : items),
+    [disabled, items]
+  )
 
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     resolvedItems.length,

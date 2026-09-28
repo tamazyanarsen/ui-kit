@@ -2,6 +2,7 @@ import * as React from "react"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 interface RadioOwnProps {
@@ -28,7 +29,9 @@ type RadioProps = RadioPrimitive.Root.Props & RadioOwnProps
 // собственных символов анатомии с Error=True (Desktop и Mobile) виден
 // настоящий, полностью оформленный вариант: красная рамка кружка и красный
 // текст подписи, структурно совпадающий с коробкой ошибки у Checkbox.
-function Radio({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+const Radio = React.forwardRef<HTMLSpanElement, RadioProps>(function Radio({
   className,
   disabled,
   label,
@@ -36,7 +39,7 @@ function Radio({
   error,
   id,
   ...props
-}: RadioProps) {
+}, ref) {
   const generatedId = React.useId()
   const radioId = id ?? generatedId
   // Дизайн-чек 3/3 №2: состояние ошибки и её текст переключаются отдельно,
@@ -45,14 +48,14 @@ function Radio({
   // Error=True/False), который просто краснеет, поэтому текст ошибки и
   // комментарий делят одну строку, а не стакаются.
   const invalid = Boolean(error)
-  const errorText = typeof error === "boolean" ? null : error
-  const caption = errorText ?? comment
+  const { caption } = resolveCaption(error, comment)
   const hasCaption = Boolean(caption)
   const captionId = hasCaption ? `${radioId}-caption` : undefined
 
   const circle = (
     <RadioPrimitive.Root
       id={radioId}
+      ref={ref}
       data-slot="radio"
       disabled={disabled}
       // Ошибку видно не только глазами: без `aria-invalid` скринридер
@@ -134,7 +137,7 @@ function Radio({
       </span>
     </label>
   )
-}
+})
 
 export { Radio }
 export type { RadioProps }

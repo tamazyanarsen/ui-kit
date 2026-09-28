@@ -51,6 +51,8 @@ function PickerGrid<T extends string | number>({
           <button
             key={value}
             type="button"
+            // Выбор виден не только цветом: скринридер объявляет его.
+            aria-pressed={isSelected}
             onClick={() => onSelect(value)}
             className={cn(
               "flex items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:focus-ring",

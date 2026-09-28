@@ -31,7 +31,8 @@ export interface CalendarProps {
 
   // mode="single"
   value?: Date | null
-  onChange?: (date: Date) => void
+  /** `null` — дата сброшена: «Сбросить», затем «Применить». */
+  onChange?: (date: Date | null) => void
 
   // mode="range"
   rangeValue?: [Date | null, Date | null]

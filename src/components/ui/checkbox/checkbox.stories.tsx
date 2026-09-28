@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ComponentProps, type ComponentType } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
@@ -23,7 +23,9 @@ import { Checkbox, type CheckboxProps } from "./checkbox"
    `size` (Desktop/Mobile в Figma) — это `viewport` + <ViewportScope>:
    дизайн-чек №3 №19, «пропс на мобайл должен быть в панели стори». */
 
-type PlaygroundArgs = Omit<CheckboxProps, "error"> & {
+// Пропсы берутся с самого компонента (после forwardRef), а не из CheckboxProps:
+// иначе тип `ref` у Args и у компонента расходится и `component:` не сходится.
+type PlaygroundArgs = Omit<ComponentProps<typeof Checkbox>, "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
   error?: boolean
@@ -34,7 +36,10 @@ type PlaygroundArgs = Omit<CheckboxProps, "error"> & {
 
 const meta = {
   title: "Компоненты/Checkbox",
-  component: Checkbox,
+  // Приведение: у forwardRef-компонента `propTypes` сравниваются по типу
+  // пропсов, а в Playground `error` сужен до флага (текст — отдельный
+  // контрол). Рисует историю всё равно `render`.
+  component: Checkbox as ComponentType<PlaygroundArgs>,
   parameters: { layout: "centered" },
   argTypes: {
     viewport: sizeArgType,

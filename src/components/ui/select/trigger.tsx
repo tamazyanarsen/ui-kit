@@ -3,6 +3,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { ChevronDownIcon, Lock, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 import {
   SELECT_ICON_SIZE,
   selectFloatingLabelClassName,
@@ -19,7 +20,12 @@ interface SelectTriggerOwnProps {
   onClear?: () => void
 }
 
-export function SelectTrigger({
+// `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
+// его молча теряет — ref потребителя (фокус, react-hook-form) не доезжал.
+export const SelectTrigger = React.forwardRef<
+  HTMLButtonElement,
+  Omit<SelectPrimitive.Trigger.Props, "render"> & SelectTriggerOwnProps
+>(function SelectTrigger({
   className,
   size = "lg",
   label,
@@ -30,11 +36,12 @@ export function SelectTrigger({
   children,
   id,
   ...props
-}: Omit<SelectPrimitive.Trigger.Props, "render"> & SelectTriggerOwnProps) {
+}, ref) {
   const generatedId = React.useId()
   const triggerId = id ?? generatedId
   const invalid = Boolean(error)
-  const captionId = comment || error ? `${triggerId}-caption` : undefined
+  const { caption } = resolveCaption(error, comment)
+  const captionId = caption ? `${triggerId}-caption` : undefined
   const floating = size === "lg"
   // Место резервируется только тогда, когда есть чему всплывать: без
   // подписи над значением ничего не появится, и прибавка отступа просто
@@ -45,6 +52,7 @@ export function SelectTrigger({
     <div className="flex w-full flex-col gap-1">
       <SelectPrimitive.Trigger
         id={triggerId}
+        ref={ref}
         data-slot="select-trigger"
         aria-invalid={invalid || undefined}
         aria-describedby={captionId}
@@ -122,7 +130,7 @@ export function SelectTrigger({
           />
         </span>
       </SelectPrimitive.Trigger>
-      {(comment || error) && (
+      {caption && (
         <p
           id={captionId}
           className={cn(
@@ -137,9 +145,9 @@ export function SelectTrigger({
               : "text-[var(--select-caption-fg)]"
           )}
         >
-          {error ?? comment}
+          {caption}
         </p>
       )}
     </div>
   )
-}
+})

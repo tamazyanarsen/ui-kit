@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ComponentProps, type ComponentType } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
@@ -13,7 +13,9 @@ import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Toggle, type ToggleProps } from "./toggle"
 
-type PlaygroundArgs = Omit<ToggleProps, "error"> & {
+// Пропсы берутся с самого компонента (после forwardRef), а не из ToggleProps:
+// иначе тип `ref` у Args и у компонента расходится и `component:` не сходится.
+type PlaygroundArgs = Omit<ComponentProps<typeof Toggle>, "error"> & {
   state?: PlaygroundState
   viewport?: Viewport
   // Дизайн-чек 3/3 №6: состояние ошибки, её текст и комментарий
@@ -31,7 +33,10 @@ type PlaygroundArgs = Omit<ToggleProps, "error"> & {
    что видит дизайнер в правой панели Figma при настройке инстанса. */
 const meta = {
   title: "Компоненты/Toggle",
-  component: Toggle,
+  // Приведение: у forwardRef-компонента `propTypes` сравниваются по типу
+  // пропсов, а в Playground `error` сужен до флага (текст — отдельный
+  // контрол). Рисует историю всё равно `render`.
+  component: Toggle as ComponentType<PlaygroundArgs>,
   parameters: { layout: "centered" },
   argTypes: {
     // В Figma размер и форма — одно свойство Size с двумя значениями;

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ComponentType } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
@@ -69,7 +69,10 @@ type PlaygroundArgs = Omit<RangeInputProps, "error"> & {
 
 const meta = {
   title: "Компоненты/Range Input",
-  component: RangeInput,
+  // Приведение: у forwardRef-компонента `propTypes` сравниваются по типу
+  // пропсов, а в Playground `error` сужен до флага (текст — отдельный
+  // контрол). Рисует историю всё равно `render`.
+  component: RangeInput as ComponentType<PlaygroundArgs>,
   parameters: { layout: "padded" },
   argTypes: {
     // Дизайн-чек №3 №19: «Пропс на мобайл должен быть в панели стори, не

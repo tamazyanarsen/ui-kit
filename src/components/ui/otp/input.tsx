@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { resolveCaption } from "@/components/ui/input/caption"
 
 // OtpInput — один нативный <input>, а не OTPField из Base UI (шесть
 // отдельных полей-позиций). Макет показывает одно непрерывное
@@ -32,7 +33,9 @@ function clampCode(
     : String(raw).replace(/\D/g, "").slice(0, length)
 }
 
-function OtpInput({
+// `forwardRef` — ref потребителя доезжает до нативного поля (фокус при
+// открытии карточки, react-hook-form).
+const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpInput({
   length = 6,
   error,
   className,
@@ -45,11 +48,13 @@ function OtpInput({
   value,
   defaultValue,
   ...props
-}: OtpInputProps) {
+}, ref) {
   const generatedId = React.useId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
-  const captionId = error ? `${inputId}-caption` : undefined
+  // `error={true}` — только красный цвет кода, без пустой строки подписи.
+  const { errorText } = resolveCaption(error, undefined)
+  const captionId = errorText ? `${inputId}-caption` : undefined
   // Отдаём инпуту ровно один из value/defaultValue — иначе React ругается на
   // одновременно контролируемое и неконтролируемое поле.
   const codeProps =
@@ -71,12 +76,15 @@ function OtpInput({
       className={cn("mx-auto w-full desktop:w-[368px]", containerClassName)}
     >
       <input
+        ref={ref}
         id={inputId}
         data-slot="otp-input"
         type="text"
         inputMode="numeric"
         autoComplete="one-time-code"
-        maxLength={length}
+        // ⚠️ Без `maxLength`: браузер режет вставку по нему ДО `onChange`,
+        // то есть до чистки от нецифр, — «123-456» превращалось в «12345»,
+        // а «Код: 123456» в «1». Длину ограничивает `handleChange`.
         disabled={disabled}
         placeholder={placeholder}
         aria-invalid={invalid || undefined}
@@ -102,16 +110,16 @@ function OtpInput({
         )}
         {...props}
       />
-      {error && (
+      {errorText && (
         <p
           id={captionId}
           className="mt-4 text-center text-p3-medium text-[var(--otp-error-fg)] desktop:mt-2"
         >
-          {error}
+          {errorText}
         </p>
       )}
     </div>
   )
-}
+})
 
 export { OtpInput }

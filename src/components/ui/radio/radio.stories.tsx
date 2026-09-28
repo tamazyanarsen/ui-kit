@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ComponentProps, type ComponentType } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
@@ -18,7 +18,9 @@ import { RadioGroup } from "./root"
 // Size / State / Error), поэтому в контролах оно должно быть, как и у
 // Checkbox. У самого Radio такого пропа нет: выбранность живёт в группе,
 // поэтому контрол управляет значением обёртки.
-type PlaygroundArgs = Omit<RadioProps, "error"> & {
+// Пропсы берутся с самого компонента (после forwardRef), а не из RadioProps:
+// иначе тип `ref` у Args и у компонента расходится и `component:` не сходится.
+type PlaygroundArgs = Omit<ComponentProps<typeof Radio>, "error"> & {
   state?: PlaygroundState
   checked?: boolean
   viewport?: Viewport
@@ -40,7 +42,10 @@ type PlaygroundArgs = Omit<RadioProps, "error"> & {
    оси нет, она попала в документацию копипастой из Checkbox. */
 const meta = {
   title: "Компоненты/Radio",
-  component: Radio,
+  // Приведение: у forwardRef-компонента `propTypes` сравниваются по типу
+  // пропсов, а в Playground `error` сужен до флага (текст — отдельный
+  // контрол). Рисует историю всё равно `render`.
+  component: Radio as ComponentType<PlaygroundArgs>,
   parameters: { layout: "centered" },
   argTypes: {
     // Size=Desktop/Mobile — свойство компонент-сета в Figma, поэтому форма

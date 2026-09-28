@@ -103,11 +103,13 @@ interface DatePickerProps {
 
   // mode="month"
   monthValue?: { year: number; month: number } | null
-  onMonthChange?: (value: { year: number; month: number }) => void
+  /** `null` — месяц сброшен кнопкой «Сбросить». */
+  onMonthChange?: (value: { year: number; month: number } | null) => void
 
   // mode="year"
   yearValue?: number | null
-  onYearChange?: (year: number) => void
+  /** `null` — год сброшен кнопкой «Сбросить». */
+  onYearChange?: (year: number | null) => void
 }
 
 function DatePicker({
@@ -154,7 +156,24 @@ function DatePicker({
   // Trigger ниже), а не только этот глиф.
   const icon = <CalendarDays aria-hidden="true" className={ICON_SIZE[size]} />
 
-  function handleSelectDay(date: Date) {
+  // Текст поля одиночной даты — своё состояние, а не производное от даты:
+  // пока пользователь набирает «15.0», даты ещё нет, но и затирать
+  // набранное нельзя. С датой текст сверяется при каждой её смене снаружи
+  // (выбор в календаре, «Сбросить», новое `value` от родителя); набранный
+  // руками текст, который уже разбирается в ту же дату, не трогается.
+  const [text, setText] = React.useState(() =>
+    activeValue ? formatDateRu(activeValue) : ""
+  )
+  const activeTime = activeValue ? activeValue.getTime() : null
+  React.useEffect(() => {
+    setText((prev) => {
+      const typed = parseDateRu(prev)
+      if ((typed ? typed.getTime() : null) === activeTime) return prev
+      return activeTime === null ? "" : formatDateRu(new Date(activeTime))
+    })
+  }, [activeTime])
+
+  function handleSelectDay(date: Date | null) {
     if (value === undefined) setInternalValue(date)
     onChange?.(date)
   }
@@ -164,37 +183,39 @@ function DatePicker({
     onRangeChange?.(range)
   }
 
-  function handleMonthChange(next: { year: number; month: number }) {
+  function handleMonthChange(next: { year: number; month: number } | null) {
     if (monthValue === undefined) setInternalMonth(next)
     onMonthChange?.(next)
   }
 
-  function handleYearChange(next: number) {
+  function handleYearChange(next: number | null) {
     if (yearValue === undefined) setInternalYear(next)
     onYearChange?.(next)
   }
 
   // Сброс очищает черновой выбор, но — по паре с «Применить» из макета —
-  // оставляет список открытым для нового выбора.
+  // оставляет список открытым для нового выбора. ⚠️ Во всех режимах сброс
+  // идёт через колбэк: раньше месяц и год чистили только внутреннее
+  // состояние, и в управляемом режиме «Сбросить» не делал ничего.
   function handleReset() {
     if (mode === "range") handleRangeChange([null, null])
-    else if (mode === "month") setInternalMonth(null)
-    else if (mode === "year") setInternalYear(null)
-    else {
-      if (value === undefined) setInternalValue(null)
-      onChange?.(null)
-    }
+    else if (mode === "month") handleMonthChange(null)
+    else if (mode === "year") handleYearChange(null)
+    else handleSelectDay(null)
   }
 
   function handleApply() {
     setOpen(false)
   }
 
+  // Неполная строка («15.0») дату не меняет, а полностью стёртое поле —
+  // это сброс даты: иначе родитель держал бы старую дату при пустом поле.
   function handleMaskChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const parsed = parseDateRu(e.target.value)
-    if (!parsed) return
-    if (value === undefined) setInternalValue(parsed)
-    onChange?.(parsed)
+    const next = e.target.value
+    setText(next)
+    const parsed = parseDateRu(next)
+    if (parsed) handleSelectDay(parsed)
+    else if (next.replace(/[\s._]/g, "") === "" && activeValue) handleSelectDay(null)
   }
 
   const defaultMonth =
@@ -239,7 +260,7 @@ function DatePicker({
               size={size}
               label={label ?? defaultLabel}
               mask="date"
-              value={activeValue ? formatDateRu(activeValue) : undefined}
+              value={text}
               onChange={handleMaskChange}
               disabled={disabled}
               comment={comment}

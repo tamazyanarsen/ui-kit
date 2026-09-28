@@ -23,6 +23,12 @@ interface ComboboxTriggerOwnProps {
   comment?: React.ReactNode
   error?: React.ReactNode
   clearable?: boolean
+  /**
+   * Сброс выбора по «Очистить». Кнопка показывается только вместе с ним:
+   * значение этого поля — сводка потребителя (черновик и применённый выбор
+   * живут у него), и сбросить его сама кнопка не может. Без обработчика
+   * крестик был пустышкой — виден, но ничего не делал.
+   */
   onClear?: () => void
   placeholder?: boolean
 }
@@ -110,7 +116,7 @@ export const ComboboxTrigger = React.forwardRef<
           {children}
         </span>
         <span className="flex shrink-0 items-center gap-1">
-          {clearable && (
+          {clearable && onClear && (
             <button
               type="button"
               aria-label="Очистить"

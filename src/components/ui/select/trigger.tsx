@@ -10,6 +10,7 @@ import {
   selectStaticLabelClassName,
   selectTriggerVariants,
 } from "./variants"
+import { useSelectClear } from "./root"
 
 interface SelectTriggerOwnProps {
   size?: "sm" | "lg"
@@ -17,6 +18,11 @@ interface SelectTriggerOwnProps {
   comment?: React.ReactNode
   error?: React.ReactNode
   clearable?: boolean
+  /**
+   * Дополнительное уведомление о нажатии «Очистить». Сбрасывает значение
+   * сама кнопка (через `Select`: неуправляемый очищается сам, управляемый
+   * получает `onValueChange(null)`), поэтому передавать его не обязательно.
+   */
   onClear?: () => void
 }
 
@@ -39,6 +45,7 @@ export const SelectTrigger = React.forwardRef<
 }, ref) {
   const generatedId = React.useId()
   const triggerId = id ?? generatedId
+  const clearValue = useSelectClear()
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
   const captionId = caption ? `${triggerId}-caption` : undefined
@@ -125,6 +132,9 @@ export const SelectTrigger = React.forwardRef<
               }}
               onClick={(event) => {
                 event.stopPropagation()
+                // Раньше крестик только звал `onClear`, и без него значение
+                // оставалось на месте (сортировка TableTop).
+                clearValue?.(event.nativeEvent)
                 onClear?.()
               }}
               className="hidden text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring group-[&:not([data-placeholder])]/trigger:flex group-data-disabled/trigger:!hidden"

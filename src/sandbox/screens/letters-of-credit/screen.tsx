@@ -21,6 +21,7 @@ import { SandboxPage, money } from "../../shell"
 
 import { LETTERS_OF_CREDIT, STATUS_LABELS } from "./data"
 import { LETTER_FIELDS } from "./fields"
+import { visibleSort } from "./sort"
 import { LettersTableHeader } from "./table-header"
 
 // D2. «Реестр заявок на аккредитив» — инстанс конструктора.
@@ -37,14 +38,6 @@ import { LettersTableHeader } from "./table-header"
 
 const PAGE_SIZE_DEFAULT = 25
 
-// Та же сортировка по умолчанию, что взяла бы сама таблица: первый
-// сортируемый столбец по возрастанию. Здесь она задана явно, потому что
-// сортирует экран (см. `sorted` ниже), а не таблица.
-const FIRST_SORTABLE = LETTER_FIELDS.find((field) => field.sortable)
-const DEFAULT_SORT: TableSort | null = FIRST_SORTABLE
-  ? { key: FIRST_SORTABLE.key, direction: "asc" }
-  : null
-
 function LettersOfCreditScreen() {
   const toast = useToast()
 
@@ -54,7 +47,7 @@ function LettersOfCreditScreen() {
   const [selected, setSelected] = useState<string[]>([])
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(PAGE_SIZE_DEFAULT)
-  const [sort, setSort] = useState<TableSort | null>(DEFAULT_SORT)
+  const [ownSort, setSort] = useState<TableSort | null>(null)
   const [columns, setColumns] = useState(() => columnsFromFields(LETTER_FIELDS))
   const [messageOpen, setMessageOpen] = useState(true)
 
@@ -113,6 +106,10 @@ function LettersOfCreditScreen() {
   // Сортируется ВЕСЬ отбор, а страница режется потом: таблице уходит уже
   // вырезанная страница, и её собственная сортировка переставляла бы строки
   // только внутри неё.
+  const sort = useMemo(
+    () => visibleSort(LETTER_FIELDS, ownSort, columns),
+    [ownSort, columns]
+  )
   const sorted = useMemo(
     () => sortTableRows(filtered, LETTER_FIELDS, sort),
     [filtered, sort]
@@ -235,6 +232,9 @@ function LettersOfCreditScreen() {
             setPage(1)
           }}
           manualSort
+          // Страницу режет сам экран: расширение окна (размер страницы,
+          // стёртый символ поиска) таблица приняла бы за новые строки.
+          highlightAddedRows={false}
           columnSettings={columns}
           selectable
           selectedKeys={selected}

@@ -60,6 +60,33 @@ interface UseSortableOptions {
   /** Задержка раскрытия группы. По макету — 0,5 с. */
   expandDelay?: number
   disabled?: boolean
+  /**
+   * Дополнительный запрет переноса сверх `locked` (индексы в `items`).
+   * Нужен, когда `items` — отфильтрованный вид, а неподвижная строка скрыта
+   * между видимыми: без него линия вставки рисовалась бы над местом,
+   * бросок на которое `onReorder` всё равно отклонит.
+   */
+  canMove?: (from: number, to: number) => boolean
+}
+
+/**
+ * Перенос `from` → `to` не сдвигает ни одной закреплённой строки. Перенос
+ * смещает на одну позицию ВСЕ строки между двумя индексами, поэтому
+ * закреплённая мешает, где бы в этом отрезке она ни стояла, а не только
+ * вплотную к переносимой: иначе стрелка или бросок над ней выдавливали бы
+ * `locked`-строку с её места.
+ *
+ * `locked` здесь — только «строку нельзя двигать»; с закрепом колонки
+ * (`pin`) он сам по себе не связан. Но в настройке столбцов неподвижными
+ * обычно делают как раз закреплённые колонки — и если такую выдавить, перед
+ * ней встаёт подвижная, а закреп считает отступ по всем предыдущим ячейкам
+ * и едет вместе с ней.
+ */
+function canReorder(items: SortableEntry[], from: number, to: number) {
+  if (from === to || items[from]?.locked) return false
+  const [start, end] = from < to ? [from + 1, to] : [to, from - 1]
+  for (let i = start; i <= end; i += 1) if (items[i]?.locked) return false
+  return true
 }
 
 function useSortable({
@@ -69,7 +96,14 @@ function useSortable({
   onExpandGroup,
   expandDelay = 500,
   disabled = false,
+  canMove,
 }: UseSortableOptions) {
+  // Последний `canMove` — в ref: колбэки ниже не должны пересоздаваться
+  // из-за новой функции на каждом рендере потребителя.
+  const canMoveRef = React.useRef(canMove)
+  canMoveRef.current = canMove
+  const allowed = (entries: SortableEntry[], from: number, to: number) =>
+    canReorder(entries, from, to) && (canMoveRef.current?.(from, to) ?? true)
   const listRef = React.useRef<HTMLDivElement>(null)
   const rowRefs = React.useRef(new Map<string, HTMLElement>())
   const [armedId, setArmedId] = React.useState<string | null>(null)
@@ -159,7 +193,17 @@ function useSortable({
         setDropIntoId(null)
       }
 
-      dropIndex.current = half === "top" ? hoverIndex : hoverIndex + 1
+      // Место вставки, которое сдвинуло бы закреплённую строку, запрещено:
+      // линии нет, бросок ничего не делает.
+      const insertAt = half === "top" ? hoverIndex : hoverIndex + 1
+      const from = items.findIndex((item) => item.id === dragId)
+      const target = insertAt > from ? insertAt - 1 : insertAt
+      if (target !== from && !allowed(items, from, target)) {
+        setIndicator(null)
+        dropIndex.current = null
+        return
+      }
+      dropIndex.current = insertAt
       setIndicator({
         // Линия НЕ раздвигает список: её место считается от границы строки, а
         // 1px вычитается, чтобы двухпиксельная полоса села на границу
@@ -211,7 +255,7 @@ function useSortable({
         // Индекс вставки посчитан ДО изъятия элемента, поэтому при движении
         // вниз он на единицу больше конечного.
         const to = dropIndex.current > from ? dropIndex.current - 1 : dropIndex.current
-        if (to !== from) onReorder(from, to)
+        if (allowed(items, from, to)) onReorder(from, to)
       }
       reset()
     },
@@ -256,13 +300,11 @@ function useSortable({
       onKeyDown: (event: React.KeyboardEvent) => {
         if (!movable) return
         const index = items.findIndex((entry) => entry.id === id)
-        if (event.key === "ArrowUp" && index > 0) {
-          event.preventDefault()
-          onReorder(index, index - 1)
-        } else if (event.key === "ArrowDown" && index < items.length - 1) {
-          event.preventDefault()
-          onReorder(index, index + 1)
-        }
+        const to =
+          event.key === "ArrowUp" ? index - 1 : event.key === "ArrowDown" ? index + 1 : -1
+        if (to < 0 || to >= items.length) return
+        event.preventDefault()
+        if (allowed(items, index, to)) onReorder(index, to)
       },
     }
   }
@@ -270,5 +312,5 @@ function useSortable({
   return { listProps, itemProps, handleProps, indicator, dragId, dropIntoId }
 }
 
-export { useSortable }
+export { useSortable, canReorder }
 export type { SortableEntry, SortableIndicator, UseSortableOptions }

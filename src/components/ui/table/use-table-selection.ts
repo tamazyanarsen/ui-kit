@@ -52,6 +52,9 @@ function useTableSelection<Row>({
     selectableRows.every((entry) => selected.has(entry.key))
   const someSelected =
     !allSelected && selectableRows.some((entry) => selected.has(entry.key))
+  // Выбирать на виду нечего (строк нет или все `isRowSelectable=false`) —
+  // чекбокс шапки выключается, а не остаётся живым на вид и мёртвым по клику.
+  const selectAllDisabled = selectableRows.length === 0
 
   /** ⚠️ Круг: пусто → всё, частично → ВСЁ, всё → пусто. Добрать до полного
    * выбора можно из любого состояния, а сбросить — только из полного.
@@ -71,6 +74,7 @@ function useTableSelection<Row>({
 
   return {
     allSelected,
+    selectAllDisabled,
     selected,
     someSelected,
     toggleSelected,

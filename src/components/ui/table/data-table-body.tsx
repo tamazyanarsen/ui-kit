@@ -124,7 +124,7 @@ function DataTableBody<Row>({
               key={field.key}
               pin={field.pin}
               unitVariants={unitVariants[field.key]}
-              {...fieldCellProps(field, total.row)}
+              {...fieldCellProps(field, total.row, { total: true })}
             />
           ))}
 

@@ -48,10 +48,16 @@ function useTableExpansion<Row>({
     if (defaultCollapsed) setCollapsed(new Set([...collapsed, ...unseen]))
   }
 
+  // Набор, а не `includes` по массиву: `isExpanded` зовётся на каждую
+  // группу и каждую видимую строку, и поиск по массиву давал
+  // O(строк × раскрытых) на рендер.
+  const expandedSet = React.useMemo(
+    () => (expandedKeys ? new Set(expandedKeys) : null),
+    [expandedKeys]
+  )
   const isExpanded = React.useCallback(
-    (key: string) =>
-      expandedKeys ? expandedKeys.includes(key) : !collapsed.has(key),
-    [expandedKeys, collapsed]
+    (key: string) => (expandedSet ? expandedSet.has(key) : !collapsed.has(key)),
+    [expandedSet, collapsed]
   )
 
   function changeExpanded(nextCollapsed: ReadonlySet<string>) {

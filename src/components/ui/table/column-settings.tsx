@@ -11,6 +11,7 @@ import {
   SortableHandle,
   SortableList,
   sortableRowClass,
+  canReorder,
   useSortable,
 } from "@/components/ui/sortable"
 
@@ -95,13 +96,31 @@ function TableColumnSettings({
   // должен поставить перетаскиваемую колонку на настоящее место этой
   // строки. Хук отдаёт индексы в ВИДИМОМ списке — поэтому здесь они
   // переводятся обратно в индексы `columns`.
-  function move(from: number, to: number) {
+  function fullIndices(from: number, to: number) {
     const fromId = visibleRows[from]?.id
     const toId = visibleRows[to]?.id
-    if (!fromId || !toId || fromId === toId) return
+    if (!fromId || !toId || fromId === toId) return null
     const fromIndex = columns.findIndex((column) => column.id === fromId)
     const toIndex = columns.findIndex((column) => column.id === toId)
-    if (fromIndex < 0 || toIndex < 0) return
+    if (fromIndex < 0 || toIndex < 0) return null
+    return [fromIndex, toIndex] as const
+  }
+
+  // Проверка по ПОЛНОМУ списку: при активном поиске закреплённая колонка
+  // может быть скрыта из вида, но стоять между двумя найденными — перенос
+  // сдвинул бы и её. Та же проверка уходит в хук (`canMove`), иначе он
+  // рисовал бы линию над местом, бросок на которое здесь отклоняется.
+  function canMoveColumn(from: number, to: number) {
+    const indices = fullIndices(from, to)
+    if (!indices) return false
+    const entries = columns.map((column) => ({ id: column.id, locked: dragDisabled(column) }))
+    return canReorder(entries, indices[0], indices[1])
+  }
+
+  function move(from: number, to: number) {
+    const indices = fullIndices(from, to)
+    if (!indices || !canMoveColumn(from, to)) return
+    const [fromIndex, toIndex] = indices
     const next = [...columns]
     const [moved] = next.splice(fromIndex, 1)
     next.splice(toIndex, 0, moved)
@@ -114,6 +133,7 @@ function TableColumnSettings({
       locked: dragDisabled(column),
     })),
     onReorder: move,
+    canMove: canMoveColumn,
     disabled: !reorderable,
   })
 

@@ -62,6 +62,7 @@ function useDataTableModel<Row>({
   manualSort = false,
   onRowClick,
   isRowAdded,
+  highlightAddedRows = true,
   rowActions,
   columnSettings,
   resizable = true,
@@ -88,26 +89,30 @@ function useDataTableModel<Row>({
   // Все строки дерева — независимо от того, свёрнуты они сейчас или нет.
   // Отсюда берутся ширина слота знака и список сворачиваемых ключей: и то, и
   // другое не должно меняться от раскрытия строки.
-  const allRows = React.useMemo(
-    () => flatten(rows, childrenOf, keyOf),
-    [rows, childrenOf, keyOf]
-  )
-  const hierarchical = allRows.some((entry) => entry.hasChildren)
-
   // Ключ строки фиксируется по её месту в ИСХОДНЫХ данных. У строки без `id`
   // и без `getRowKey` ключ — это путь по индексам, и считай его после
   // сортировки, он переезжал бы на ту строку, что встала на её место:
   // выбор, подсветка и `key` React прыгали бы на соседнюю строку.
-  const keyByRow = React.useMemo(() => {
-    const map = new Map<Row, string>()
-    for (const entry of allRows) map.set(entry.row, entry.key)
-    return map
-  }, [allRows])
-  const stableKeyOf = React.useCallback(
-    (row: Row, index: number, path: string) =>
-      keyByRow.get(row) ?? keyOf(row, index, path),
-    [keyByRow, keyOf]
-  )
+  //
+  // ⚠️ Исходные ключи хранятся СПИСКОМ на объект и по родителю: один и тот же
+  // объект вправе стоять в `rows` несколько раз (`Array(n).fill(row)`, общий
+  // ребёнок у двух групп). Отображение «объект → один ключ» выдавало всем его
+  // вхождениям ключ последнего — одинаковые `key` у React и выбор, который
+  // отмечал сразу все копии.
+  const { allRows, originalKeys } = React.useMemo(() => {
+    const index = new Map<string, Map<Row, string[]>>()
+    const flat = flatten(rows, childrenOf, (row, i, path, parentKey) => {
+      const key = keyOf(row, i, path)
+      let siblings = index.get(parentKey)
+      if (!siblings) index.set(parentKey, (siblings = new Map()))
+      const keys = siblings.get(row)
+      if (keys) keys.push(key)
+      else siblings.set(row, [key])
+      return key
+    })
+    return { allRows: flat, originalKeys: index }
+  }, [rows, childrenOf, keyOf])
+  const hierarchical = allRows.some((entry) => entry.hasChildren)
 
   const { activeSort, handleSortClick, sortedRows } = useTableSort({
     fields,
@@ -127,24 +132,41 @@ function useDataTableModel<Row>({
       defaultCollapsed,
     })
 
-  const visibleRows = React.useMemo(
-    () => flatten(sortedRows, childrenOf, stableKeyOf, isExpanded),
-    [sortedRows, childrenOf, stableKeyOf, isExpanded]
-  )
+  // Вхождения одного объекта у одного родителя разбирают его исходные ключи
+  // по очереди — так у каждой копии свой ключ, и он не зависит от сортировки.
+  const visibleRows = React.useMemo(() => {
+    const used = new Map<string, Map<Row, number>>()
+    return flatten(
+      sortedRows,
+      childrenOf,
+      (row, index, path, parentKey) => {
+        const keys = originalKeys.get(parentKey)?.get(row)
+        if (!keys) return keyOf(row, index, path)
+        let counts = used.get(parentKey)
+        if (!counts) used.set(parentKey, (counts = new Map()))
+        const taken = counts.get(row) ?? 0
+        counts.set(row, taken + 1)
+        return keys[Math.min(taken, keys.length - 1)]
+      },
+      isExpanded
+    )
+  }, [sortedRows, childrenOf, originalKeys, keyOf, isExpanded])
 
   // Появившиеся строки подсвечиваются САМИ — корневое правило таблиц
   // (дизайн-чек от 08.09, замечание 30). `isRowAdded` остаётся ручным
   // перекрытием: экран, который знает про «новизну» больше таблицы
   // (например, отличает свою только что созданную заявку от чужой,
   // приехавшей обновлением), решает сам, и автоопределение ему мешать не
-  // должно.
+  // должно. `highlightAddedRows={false}` выключает автоопределение для
+  // экрана, который режет страницу сам (см. проп).
   const autoAdded = useAddedRows(
     React.useMemo(() => allRows.map((entry) => entry.key), [allRows]),
-    isRowAdded === undefined
+    isRowAdded === undefined && highlightAddedRows
   )
 
   const {
     allSelected,
+    selectAllDisabled,
     selected,
     someSelected,
     toggleSelected,
@@ -203,7 +225,11 @@ function useDataTableModel<Row>({
       // Нажатие по чекбоксу, ссылке или кнопке действий — это не переход на
       // карточку: без проверки одно нажатие делало бы и то, и другое.
       if (fromNestedControl(event)) return
-      if ((event.target as Element).closest(INTERACTIVE_SELECTOR)) return
+      // ⚠️ Поиск ограничен самой строкой: без этого `closest` уходил к
+      // предкам таблицы, и внутри кликабельного блока (`role="button"`),
+      // `<label>` или `[role=option]` строка не открывалась никогда.
+      const hit = (event.target as Element).closest(INTERACTIVE_SELECTOR)
+      if (hit && event.currentTarget.contains(hit)) return
       onRowClick(row, key)
     }
   }
@@ -240,6 +266,7 @@ function useDataTableModel<Row>({
     toggleExpandedAll,
     allSelected,
     someSelected,
+    selectAllDisabled,
     selected,
     toggleSelected,
     toggleSelectedAll,

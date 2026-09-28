@@ -55,12 +55,14 @@ function List({
   items,
   onReorder,
   onExpandGroup,
+  canMove,
 }: {
   items: SortableEntry[]
   onReorder: (from: number, to: number) => void
   onExpandGroup?: (id: string) => void
+  canMove?: (from: number, to: number) => boolean
 }) {
-  const sortable = useSortable({ items, onReorder, onExpandGroup })
+  const sortable = useSortable({ items, onReorder, onExpandGroup, canMove })
   return (
     <SortableList data-testid="list" {...sortable.listProps}>
       {items.map((item) => (
@@ -223,6 +225,32 @@ describe("useSortable", () => {
       key: "ArrowUp",
     })
     expect(onReorder).toHaveBeenCalledWith(1, 0)
+    restore()
+  })
+  // `canMove` — запрет сверх `locked`: так «Настроить столбцы» при поиске
+  // сообщает о закреплённой колонке, скрытой между видимыми строками. Без
+  // него хук рисовал линию и брал стрелку, а перенос молча отклонялся.
+  it("canMove запрещает перенос стрелкой на ручке", () => {
+    const onReorder = vi.fn()
+    render(<List items={FLAT} onReorder={onReorder} canMove={() => false} />)
+
+    fireEvent.keyDown(screen.getByRole("button", { name: "Переместить a" }), {
+      key: "ArrowDown",
+    })
+    expect(onReorder).not.toHaveBeenCalled()
+  })
+
+  it("canMove убирает линию вставки над запрещённым местом", () => {
+    const restore = withGeometry(FLAT)
+    const onReorder = vi.fn()
+    const { container } = render(
+      <List items={FLAT} onReorder={onReorder} canMove={(_, to) => to !== 2} />
+    )
+
+    startDrag("a")
+    // Нижняя половина `c` — перенос `a` на позицию 2, её canMove запрещает.
+    dragOverAt(2 * ROW_HEIGHT + 50)
+    expect(container.querySelector('[data-slot="sortable-drop-indicator"]')).toBeNull()
     restore()
   })
 })

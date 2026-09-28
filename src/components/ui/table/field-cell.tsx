@@ -29,12 +29,19 @@ import {
  * Порядок разрешения: `render` (своя разметка) → `format` (своё
  * форматирование значения) → форматирование по типу. Пустое значение
  * заменяется прочерком, и знак валюты при этом не рисуется: «— ₽» читается
- * как ноль рублей, которого в данных нет. У `render` прочерк ставится по его
- * собственному пустому ответу, а не по значению поля.
+ * как ноль рублей, которого в данных нет. У `render` прочерк ставится, только
+ * когда пусты И его ответ, И значение поля: пустой ответ при непустом
+ * значении — осознанное «здесь ничего», и ячейка остаётся пустой.
+ *
+ * `total` — итоговая строка. Её запись синтетическая (`total.row` несёт
+ * только суммы), поэтому `render` зовётся на ней лишь для столбцов, у
+ * которых в итоге есть значение: иначе `render`, читающий поля записи
+ * (`row.client.name`), падал бы на ней.
  */
 function fieldCellProps<Row>(
   field: TableField<Row>,
-  row: Row
+  row: Row,
+  { total = false }: { total?: boolean } = {}
 ): Partial<TableCellProps> {
   const type = field.type ?? "text"
   const spec = TABLE_FIELD_TYPES[type]
@@ -98,13 +105,14 @@ function fieldCellProps<Row>(
   // `render` строит ячейку по СТРОКЕ, а не по значению, поэтому пустота
   // значения его не отменяет: у вычисляемого столбца (`custom` без `value`)
   // значения по ключу нет вовсе, и раньше такой столбец целиком рисовался
-  // прочерками. Прочерк остаётся, только если сам `render` ничего не вернул.
-  const rendered = field.render ? field.render(row) : undefined
+  // прочерками.
+  const render = field.render && !(total && empty) ? field.render : undefined
+  const rendered = render ? render(row) : undefined
   const renderedEmpty =
     rendered === undefined || rendered === null || rendered === false || rendered === ""
 
-  const content = field.render
-    ? renderedEmpty
+  const content = render
+    ? renderedEmpty && empty
       ? (field.empty ?? "—")
       : rendered
     : empty

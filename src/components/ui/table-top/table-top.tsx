@@ -1,10 +1,10 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "@/icons"
 
-import { Button } from "@/components/ui/button"
 import { useHorizontalScrollState } from "@/components/ui/table"
 
 import { cn } from "@/lib/utils"
+
+import { DetailsArrow, useArrowFocusHandoff } from "./details-arrow"
 
 // Table Top — «Блок верха таблицы» (ui/table-top). По собственному макету
 // это сосед `Table`, а не обёртка над ним: в макете «Использование в
@@ -189,52 +189,6 @@ const TableTopSummaryItem = React.forwardRef<
   )
 })
 
-// Один шеврон в конце полосы.
-//
-// ⚠️ Это НЕ своя плашка, а инстанс кнопки кита: в сете под стрелкой
-// лежит `ELK / button` — белый круг
-// 32 × 32, радиус 16, поле 8, глиф 16. Свёрстанная по замеру пикселя
-// «таблетка» совпала бы по картинке и разошлась бы по состояниям, фокусу и
-// поведению в темах. Правило общее: прежде чем верстать вложенный узел,
-// проверьте, не инстанс ли это компонента кита.
-//
-// Стрелка ЛЕЖИТ НА ленте у кромки, а не встаёт рядом с ней: иначе её
-// появление съедало бы ширину ленты и пересчитывало переполнение по кругу.
-// Текст под стрелкой поэтому обрезан — так же, как в сете.
-function DetailsArrow({
-  direction,
-  onClick,
-}: {
-  direction: "left" | "right"
-  onClick: () => void
-}) {
-  return (
-    <Button
-      variant="secondary-white"
-      size="sm"
-      icon={direction === "left" ? ChevronLeft : ChevronRight}
-      iconPosition="only"
-      data-slot="table-top-details-arrow"
-      data-direction={direction}
-      aria-label={
-        direction === "left" ? "Прокрутить сводку назад" : "Прокрутить сводку вперёд"
-      }
-      onClick={onClick}
-      className={cn(
-        // `motion-safe`: `prefers-reduced-motion` гасит и плавную прокрутку
-        // ленты (см. scrollToNeighbour), и проявление самой стрелки.
-        "absolute top-1/2 z-10 -translate-y-1/2 motion-safe:animate-in motion-safe:fade-in",
-        // Дизайн-чек «Storybook 3», замечание 1: «скорректировать отступ
-        // кнопки до края элемента, поправить и правую, и левую». Обе стрелки
-        // стояли вплотную к кромке ленты (`left-0`/`right-0`) — замер по
-        // скриншоту чека это подтвердил (левая на 835 при кромке 832, правая
-        // на 1800 при кромке 1804 в пикселях снимка). Отступ — китовые 8.
-        direction === "left" ? "left-2" : "right-2"
-      )}
-    />
-  )
-}
-
 // TableTopDetails — «Сводка», последняя строка внутри `ELK / table-top`
 // (его слот `Details`). Слева закреплена приглушённая подпись «Сводка», за
 // ней — прокручиваемая лента пар «подпись: значение», разделённых линией
@@ -260,6 +214,11 @@ const TableTopDetails = React.forwardRef<
 }, ref) {
   const trackRef = React.useRef<HTMLDivElement>(null)
   const { scrolledFromStart, scrolledFromEnd } = useHorizontalScrollState(trackRef)
+  const { leftArrowRef, rightArrowRef, focusedArrow } = useArrowFocusHandoff(
+    trackRef,
+    scrolledFromStart,
+    scrolledFromEnd
+  )
 
   // Перелистывание идёт ПО ЗНАЧЕНИЯМ, а не на произвольное число пикселей:
   // ищем первую пару, целиком не поместившуюся с нужной стороны, и подводим
@@ -306,7 +265,13 @@ const TableTopDetails = React.forwardRef<
           поэтому переиспользуется их хук прокрутки. */}
       <div className="relative flex min-w-0 flex-1 items-center">
         {scrolledFromStart && (
-          <DetailsArrow direction="left" onClick={() => scrollToNeighbour(-1)} />
+          <DetailsArrow
+            ref={leftArrowRef}
+            direction="left"
+            onClick={() => scrollToNeighbour(-1)}
+            onFocus={() => (focusedArrow.current = "left")}
+            onBlur={() => (focusedArrow.current = null)}
+          />
         )}
         {/* rounded-[16px] вместе с обрезкой на дорожке — это собственный
             кадр Row в макете: он подрезает концы ленты вровень с радиусом
@@ -348,7 +313,13 @@ const TableTopDetails = React.forwardRef<
           ))}
         </div>
         {scrolledFromEnd && (
-          <DetailsArrow direction="right" onClick={() => scrollToNeighbour(1)} />
+          <DetailsArrow
+            ref={rightArrowRef}
+            direction="right"
+            onClick={() => scrollToNeighbour(1)}
+            onFocus={() => (focusedArrow.current = "right")}
+            onBlur={() => (focusedArrow.current = null)}
+          />
         )}
       </div>
     </div>

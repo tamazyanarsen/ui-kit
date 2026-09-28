@@ -4,7 +4,7 @@ export {
   SortableHandle,
   sortableRowClass,
 } from "./sortable"
-export { useSortable } from "./use-sortable"
+export { canReorder, useSortable } from "./use-sortable"
 export type {
   SortableEntry,
   SortableIndicator,

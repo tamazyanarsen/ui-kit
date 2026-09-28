@@ -75,12 +75,18 @@ function useTableSort<Row>({
     onSortChange?.(next)
   }
 
+  // ⚠️ Зависимости — ключ и направление, а не сам объект сортировки:
+  // `fallbackSort` собирается заново на каждом рендере, и с ним в
+  // зависимостях строки пересортировывались бы на любой ховер, выбор или
+  // раскрытие — на тысячах строк это тысячи `localeCompare` на каждый рендер.
+  const sortKey = activeSort?.key
+  const sortDirection = activeSort?.direction
   const sortedRows = React.useMemo(() => {
-    if (manualSort || !activeSort || hierarchical) return rows
-    const field = fields.find((item) => item.key === activeSort.key)
+    if (manualSort || !sortKey || !sortDirection || hierarchical) return rows
+    const field = fields.find((item) => item.key === sortKey)
     if (!field) return rows
-    return sortRows(rows, field, activeSort.direction)
-  }, [rows, fields, activeSort, manualSort, hierarchical])
+    return sortRows(rows, field, sortDirection)
+  }, [rows, fields, sortKey, sortDirection, manualSort, hierarchical])
 
   return { activeSort, handleSortClick, sortedRows }
 }

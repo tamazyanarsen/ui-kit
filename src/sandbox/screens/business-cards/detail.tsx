@@ -283,6 +283,9 @@ function BusinessCardDetail() {
                 setPage(1)
               }}
               manualSort
+              // Страницу режет сам экран: расширение окна (размер страницы,
+              // стёртый символ поиска) таблица приняла бы за новые строки.
+              highlightAddedRows={false}
             />
 
             <Pagination

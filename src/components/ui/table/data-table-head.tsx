@@ -34,6 +34,7 @@ function DataTableHead<Row>({
     toggleExpandedAll,
     allSelected,
     someSelected,
+    selectAllDisabled,
     toggleSelectedAll,
     columnDefaultWidth,
     columnResizable,
@@ -50,6 +51,7 @@ function DataTableHead<Row>({
             pin={selectionPin}
             checked={allSelected}
             indeterminate={someSelected}
+            checkboxDisabled={selectAllDisabled}
             onCheckedChange={toggleSelectedAll}
           />
         )}

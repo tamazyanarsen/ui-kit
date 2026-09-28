@@ -12,24 +12,30 @@ interface FlatRow<Row> {
   hasChildren: boolean
 }
 
-/** Дерево строк в плоский список: уровень вложенности и наличие детей. */
+/**
+ * Дерево строк в плоский список: уровень вложенности и наличие детей.
+ *
+ * `keyOf` получает и ключ родителя (`""` у корня) — по нему таблица ищет
+ * исходное место строки среди детей ТОГО ЖЕ родителя.
+ */
 function flatten<Row>(
   rows: Row[],
   childrenOf: (row: Row) => Row[] | undefined,
-  keyOf: (row: Row, index: number, path: string) => string,
+  keyOf: (row: Row, index: number, path: string, parentKey: string) => string,
   isExpanded?: (key: string) => boolean,
   level = 0,
-  parentPath = ""
+  parentPath = "",
+  parentKey = ""
 ): FlatRow<Row>[] {
   const result: FlatRow<Row>[] = []
   rows.forEach((row, index) => {
     const path = parentPath ? `${parentPath}.${index}` : String(index)
-    const key = keyOf(row, index, path)
+    const key = keyOf(row, index, path, parentKey)
     const children = childrenOf(row) ?? []
     result.push({ row, key, level, hasChildren: children.length > 0 })
     if (children.length > 0 && (!isExpanded || isExpanded(key))) {
       result.push(
-        ...flatten(children, childrenOf, keyOf, isExpanded, level + 1, path)
+        ...flatten(children, childrenOf, keyOf, isExpanded, level + 1, path, key)
       )
     }
   })

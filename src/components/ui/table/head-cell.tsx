@@ -51,6 +51,8 @@ interface TableHeadCellProps
   icon?: React.ReactNode
   checked?: boolean
   indeterminate?: boolean
+  /** Чекбокс «выбрать всё» выключен — выбирать нечего. */
+  checkboxDisabled?: boolean
   /**
    * ⚠️ Круг чекбокса «выбрать всё»: **пусто → всё, частично → ВСЁ, всё →
    * пусто**. То есть добрать до полного выбора можно из любого состояния, а
@@ -113,6 +115,7 @@ const TableHeadCell = React.forwardRef<
   icon,
   checked,
   indeterminate,
+  checkboxDisabled,
   onCheckedChange,
   menu,
   collapsible = false,
@@ -229,6 +232,7 @@ const TableHeadCell = React.forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
+          disabled={checkboxDisabled}
           onCheckedChange={onCheckedChange}
           aria-label="Выбрать все строки"
         />

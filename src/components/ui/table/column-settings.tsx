@@ -43,6 +43,14 @@ interface TableColumn {
   visible?: boolean
   /** Показывается всегда, флажок выключен (серые строки во всплывающем окне макета). */
   locked?: boolean
+  /**
+   * Столбец закреплён в таблице (`pin`): его нельзя перетащить, и никакой
+   * перенос не проходит через него — иначе обычный столбец вставал внутрь
+   * закреплённого блока, отступ закрепа считался и по нему, и на прокрутке
+   * закреплённая колонка висела со сдвигом. Скрывать его при этом можно:
+   * блок от скрытия остаётся сплошным.
+   */
+  pinned?: boolean
 }
 
 interface TableColumnSettingsProps {
@@ -269,7 +277,7 @@ function TableColumnSettings({
 // Закреплённая колонка не только всегда видима, но и зафиксирована на
 // месте: у серых строк макета ручка приглушённая, а не активная.
 function dragDisabled(column: TableColumn) {
-  return Boolean(column.locked)
+  return Boolean(column.locked || column.pinned)
 }
 
 export { TableColumnSettings }

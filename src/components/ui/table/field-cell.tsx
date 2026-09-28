@@ -34,9 +34,14 @@ import {
  * значении — осознанное «здесь ничего», и ячейка остаётся пустой.
  *
  * `total` — итоговая строка. Её запись синтетическая (`total.row` несёт
- * только суммы), поэтому `render` зовётся на ней лишь для столбцов, у
- * которых в итоге есть значение: иначе `render`, читающий поля записи
- * (`row.client.name`), падал бы на ней.
+ * только суммы), поэтому построчные функции поля на ней не зовутся:
+ * `description`, `descriptionSign`, `descriptionSignTone`, `cellProps`,
+ * `tone`, `unit`-функция, `tag`, `href`/`onLinkClick`, а ячейки `checkbox`,
+ * `icon` и `actions` остаются пустыми. Иначе поле, читающее запись
+ * (`r => r.meta.note`), роняло всю таблицу, а в строке «Итого» появлялось
+ * живое меню действий над несуществующей записью. `render` зовётся лишь для
+ * столбцов, у которых в итоге есть значение; `value` и `format` работают —
+ * ими суммы итога и форматируются.
  */
 function fieldCellProps<Row>(
   field: TableField<Row>,
@@ -51,10 +56,16 @@ function fieldCellProps<Row>(
   const base: Partial<TableCellProps> = {
     type: spec.cell,
     align: fieldAlign(field),
-    description: field.description?.(row),
-    descriptionSign: field.descriptionSign?.(row),
-    descriptionSignTone: field.descriptionSignTone?.(row),
+    description: total ? undefined : field.description?.(row),
+    descriptionSign: total ? undefined : field.descriptionSign?.(row),
+    descriptionSignTone: total ? undefined : field.descriptionSignTone?.(row),
   }
+
+  // Итог: слотовые ячейки пустые, а отданные строке `cellProps` не зовутся.
+  if (total && (type === "checkbox" || type === "icon" || type === "actions")) {
+    return type === "checkbox" ? { ...base, hideCheckbox: true } : base
+  }
+  const own = total ? undefined : field.cellProps?.(row)
 
   // Слотовые типы значение не показывают — они его отдают компоненту.
   if (type === "checkbox") {
@@ -64,7 +75,7 @@ function fieldCellProps<Row>(
       onCheckedChange: field.onCheckedChange
         ? (checked) => field.onCheckedChange?.(row, checked)
         : undefined,
-      ...field.cellProps?.(row),
+      ...own,
     }
   }
 
@@ -75,7 +86,7 @@ function fieldCellProps<Row>(
       // строки пиктограммы нет». С `??` пустой ответ откатывался бы к
       // значению поля, и в ячейке появлялся бы сырой ноль вместо пустоты.
       icon: field.icon ? field.icon(row) : (value as React.ReactNode),
-      ...field.cellProps?.(row),
+      ...own,
     }
   }
 
@@ -84,17 +95,17 @@ function fieldCellProps<Row>(
       ...base,
       action: field.action?.(row),
       actions: field.actions?.(row),
-      ...field.cellProps?.(row),
+      ...own,
     }
   }
 
   if (type === "tag" && !empty) {
-    const tag = fieldTag(field, row, value)
+    const tag = fieldTag(total ? { ...field, tag: undefined } : field, row, value)
     return {
       ...base,
       tagColor: tag.color,
       children: tag.label,
-      ...field.cellProps?.(row),
+      ...own,
     }
   }
 
@@ -119,7 +130,11 @@ function fieldCellProps<Row>(
       ? (field.empty ?? "—")
       : field.format
         ? field.format(value, row)
-        : typeContent(field, row, value)
+        : typeContent(
+            total ? { ...field, href: undefined, onLinkClick: undefined } : field,
+            row,
+            value
+          )
 
   const numeric = cellType === "number"
 
@@ -129,10 +144,18 @@ function fieldCellProps<Row>(
     children: content,
     // Знак живёт при значении: у пустой ячейки его нет, иначе колонка
     // показывала бы «— ₽».
-    unit: empty ? undefined : fieldUnit(field, row),
-    tone: numeric ? fieldTone(field, row, value) : undefined,
-    ...field.cellProps?.(row),
+    unit: empty ? undefined : fieldUnit(total ? totalUnitField(field) : field, row),
+    tone: numeric ? fieldTone(total ? { ...field, tone: undefined } : field, row, value) : undefined,
+    ...own,
   }
+}
+
+/**
+ * Поле для знака единицы в итоге: `unit`-функция построчная и на
+ * синтетической записи не зовётся — знак берётся из типа (`₽`, `%`).
+ */
+function totalUnitField<Row>(field: TableField<Row>): TableField<Row> {
+  return typeof field.unit === "function" ? { ...field, unit: undefined } : field
 }
 
 /** Цвет числа: своё правило `tone` либо зелёный плюс у `signed`. */

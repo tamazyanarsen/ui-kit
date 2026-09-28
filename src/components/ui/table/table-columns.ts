@@ -128,6 +128,7 @@ function columnsFromFields<Row>(fields: TableField<Row>[]): TableColumn[] {
       label: field.title,
       visible: !field.hidden,
       locked: field.locked,
+      pinned: Boolean(field.pin),
     }))
 }
 

@@ -19,6 +19,7 @@ import { useToast } from "@/components/ui/toast-message"
 
 import { SandboxPage, money } from "../../shell"
 
+import { amountQuery, matchesAmount } from "./amount-filter"
 import { LETTERS_OF_CREDIT, STATUS_LABELS } from "./data"
 import { LETTER_FIELDS } from "./fields"
 import { visibleSort } from "./sort"
@@ -106,10 +107,8 @@ function LettersOfCreditScreen() {
       ) {
         return false
       }
-      const byAmount = chips["Сумма"]
-      if (byAmount && !String(row.amount).startsWith(byAmount.replace(/\D/g, ""))) {
-        return false
-      }
+      const byAmount = amountQuery(chips["Сумма"])
+      if (byAmount && !matchesAmount(row.amount, byAmount)) return false
       return true
     })
   }, [chips, search])
@@ -129,7 +128,11 @@ function LettersOfCreditScreen() {
   )
   const pageRows = sorted.slice((safePage - 1) * pageSize, safePage * pageSize)
 
-  const appliedCount = Object.values(chips).filter(Boolean).length
+  // Чип «Сумма» без единой цифры ничего не отбирает — и применённым не
+  // считается.
+  const appliedCount = Object.entries(chips).filter(([label, value]) =>
+    label === "Сумма" ? amountQuery(value) !== null : Boolean(value)
+  ).length
   // Сумма выбранного считается по ВСЕМУ отбору, а не по странице: кнопка
   // «Выбрать на всех страницах» кладёт в выбор ключи со всех страниц, и
   // панель обязана уметь их сложить.

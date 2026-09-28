@@ -4,7 +4,7 @@ import { NESTED_CONTROL_SELECTOR, fromNestedControl } from "@/lib/press"
 
 import type { DataTableProps } from "./data-table-props"
 import { TABLE_FIELD_TYPES } from "./field-types"
-import { DEFAULT_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from "./geometry"
+import { CONTROL_COLUMN_WIDTH, DEFAULT_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from "./geometry"
 import type { TablePin } from "./pin"
 import {
   collectUnitVariants,
@@ -246,6 +246,10 @@ function useDataTableModel<Row>({
   /** Ширина столбца по умолчанию: служебные типы берут свою из мастера. */
   function columnDefaultWidth(field: (typeof columns)[number]) {
     if (field.width !== undefined) return field.width
+    // Поле-флажок стоит под обычной шапкой `subtitle-left`, у которой своей
+    // служебной ширины нет: без неё при `table-layout: fixed` столбец делил
+    // остаток блока с хвостовым spacer и забирал половину свободной ширины.
+    if (field.type === "checkbox") return CONTROL_COLUMN_WIDTH.checkbox
     return TABLE_FIELD_TYPES[field.type ?? "text"].control
       ? undefined
       : DEFAULT_COLUMN_WIDTH

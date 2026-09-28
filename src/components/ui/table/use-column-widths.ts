@@ -35,9 +35,17 @@ function useColumnWidths({
 
   const setColumnWidth = React.useCallback(
     (key: string, width: number) => {
+      // Управляемый режим: карта строится от ширин, которые родитель ПРИНЯЛ.
+      // Раньше она достраивала собственную последнюю запись, и отклонённое
+      // родителем значение (например, `name: 500` при пределе 400) уезжало в
+      // каждое следующее изменение — остальные столбцы переставали тянуться.
+      if (columnWidths !== undefined) {
+        onColumnWidthsChange?.({ ...columnWidths, [key]: width })
+        return
+      }
       const next = { ...latest.current, [key]: width }
       latest.current = next
-      if (columnWidths === undefined) setOwn(next)
+      setOwn(next)
       onColumnWidthsChange?.(next)
     },
     [columnWidths, onColumnWidthsChange]

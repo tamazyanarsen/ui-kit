@@ -56,6 +56,16 @@ import { CARD_LIMITS, OPERATIONS, OPERATION_FIELDS } from "./data"
 // есть тем самым, что документация кита и описывает.
 
 const CHIPS = ["Вид операции", "Дата операции", "Статус"]
+
+/**
+ * Статус операции для чипа «Статус». Своего поля статуса у строки нет, но
+ * проводка видна по дате транзакции: без неё операция ещё в обработке.
+ * Раньше чип считался применённым («Выбрано фильтров: 1»), а отбор его не
+ * читал — результат не менялся.
+ */
+function operationStatus(row: { transactionDate?: string }) {
+  return row.transactionDate ? "Проведена" : "В обработке"
+}
 const PAGE_SIZE_DEFAULT = 25
 
 function BusinessCardDetail() {
@@ -77,6 +87,13 @@ function BusinessCardDetail() {
       }
       const byDate = chips["Дата операции"]
       if (byDate && !row.date.includes(byDate)) return false
+      const byStatus = chips["Статус"]
+      if (
+        byStatus &&
+        !operationStatus(row).toLowerCase().includes(byStatus.trim().toLowerCase())
+      ) {
+        return false
+      }
       return true
     })
   }, [chips, search])

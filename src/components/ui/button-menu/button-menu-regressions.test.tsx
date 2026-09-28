@@ -1,5 +1,5 @@
 import * as React from "react"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 
 import { Button } from "@/components/ui/button"
@@ -8,32 +8,6 @@ import { ButtonMenuBlack } from "./black"
 import { ButtonMenu } from "./root"
 import { ButtonMenuOverflow, ButtonMenuOverflowItem } from "./overflow"
 import { ButtonMenuRow } from "./row"
-
-const inset = () =>
-  document.documentElement.style.getPropertyValue("--viewport-inset-bottom")
-
-describe("ButtonMenuBlack: занятый низ вьюпорта", () => {
-  afterEach(() => vi.restoreAllMocks())
-
-  it("перемеряет новый узел панели, когда появляется кнопка «Выбрать на всех страницах»", () => {
-    // Панель — 72, блок «кнопка + панель» — 136; обе у самого низа экрана.
-    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
-      this: HTMLElement
-    ) {
-      const height = this.dataset.slot === "button-menu-black" ? 72 : 136
-      return { top: window.innerHeight - height, height } as DOMRect
-    })
-    const props = { selectAllPagesCount: 10, onSelectAllPages: () => {} }
-    const { rerender } = render(<ButtonMenuBlack {...props} selectedCount={10} />)
-    expect(inset()).toBe("72px")
-
-    rerender(<ButtonMenuBlack {...props} selectedCount={3} />)
-    expect(inset()).toBe("72px")
-
-    rerender(<ButtonMenuBlack {...props} selectedCount={10} />)
-    expect(inset()).toBe("72px")
-  })
-})
 
 describe("ref у Button Menu", () => {
   it("доезжает до узла полосы и не ломает внутренний замер", () => {

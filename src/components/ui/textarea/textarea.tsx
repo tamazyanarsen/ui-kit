@@ -148,7 +148,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
   const fieldRef = React.useRef<HTMLTextAreaElement>(null)
   const composedRef = useComposedRefs(fieldRef, ref)
 
-  // Нажатие в любую точку коробки ставит каретку в конец поля. Место под
+  // Нажатие в любую точку коробки ставит фокус и каретку в конец поля. Место под
   // поднятую подпись — внешний отступ поля (см. `mt-5` ниже), а не часть
   // самой textarea, как раньше `pt-5`, поэтому щелчок в эту полосу (и по
   // подписи — у неё `pointer-events-none`) попадал в коробку и фокуса не
@@ -160,6 +160,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
     // `readOnly` + `aria-disabled`, поле остаётся в обходе и под щелчком.
     if (!field || event.button !== 0 || event.target === field) return
     event.preventDefault()
+    // Поле уже в фокусе — каретку не трогаем: пользователь правит середину
+    // текста, и щелчок мимо строк не должен уводить её в конец (и
+    // перематывать прокрученное поле).
+    if (document.activeElement === field) return
     field.focus()
     const end = field.value.length
     field.setSelectionRange(end, end)

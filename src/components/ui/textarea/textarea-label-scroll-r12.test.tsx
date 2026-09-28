@@ -69,4 +69,16 @@ describe("Textarea: нажатие в коробку ставит фокус в 
     fireEvent.mouseDown(box())
     expect(document.activeElement).toBe(screen.getByRole("textbox"))
   })
+
+  // Аудит 13: каретка уводилась в конец при каждом нажатии в коробку — и
+  // когда пользователь уже правил середину текста.
+  it("в сфокусированном поле щелчок в коробку не двигает каретку", () => {
+    render(<Textarea label="Комментарий" defaultValue="Длинный текст комментария" />)
+    const field = screen.getByRole("textbox") as HTMLTextAreaElement
+    field.focus()
+    field.setSelectionRange(3, 3)
+    fireEvent.mouseDown(screen.getByText("Комментарий"))
+    expect(document.activeElement).toBe(field)
+    expect(field.selectionStart).toBe(3)
+  })
 })

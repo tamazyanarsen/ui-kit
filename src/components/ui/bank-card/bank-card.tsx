@@ -90,6 +90,15 @@ function BankCard({
     setRevealedSide(side)
     setRevealed(null)
   }
+  // То же при смене самих реквизитов: экземпляр, в который пришла другая
+  // карта (переключение карт без `key`), не должен показывать её номер
+  // раскрытым — раскрывали и копировали номер прежней.
+  const detailsKey = `${cardNumber}|${cvc}|${last4}`
+  const [revealedDetails, setRevealedDetails] = React.useState(detailsKey)
+  if (revealedDetails !== detailsKey) {
+    setRevealedDetails(detailsKey)
+    setRevealed(null)
+  }
   // Тост — только сообщение о копировании: без `<ToastProvider>` карта
   // рисуется и копирует молча, а не роняет дерево.
   const toast = useToastOptional()

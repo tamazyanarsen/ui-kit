@@ -70,6 +70,14 @@ const AutocompleteField = React.forwardRef<
           aria-invalid={invalid || undefined}
           aria-describedby={captionId}
           className={cn(inputFieldVariants({ size, floating }), className)}
+          // Вид выключенного поля у Input и коробки идёт по `aria-disabled`
+          // (см. input/variants.ts), а Base UI на `<Autocomplete disabled>`
+          // ставит полю только нативный `disabled` и `data-disabled` — поле
+          // не редактировалось, но выглядело рабочим. Атрибут берётся из
+          // состояния примитива, куда сводятся и корень, и Field.
+          render={(inputProps, state) => (
+            <input {...inputProps} aria-disabled={state.disabled || undefined} />
+          )}
           {...props}
         />
         {floating && (

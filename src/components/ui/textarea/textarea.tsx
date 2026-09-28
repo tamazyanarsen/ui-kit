@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Information, Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { Hint } from "@/components/ui/tooltip"
 import { FieldTooltip } from "@/components/ui/input/hover-tooltip"
@@ -144,6 +145,26 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
       : (placeholder ?? " ")
     : placeholder
 
+  const fieldRef = React.useRef<HTMLTextAreaElement>(null)
+  const composedRef = useComposedRefs(fieldRef, ref)
+
+  // Нажатие в любую точку коробки ставит каретку в конец поля. Место под
+  // поднятую подпись — внешний отступ поля (см. `mt-5` ниже), а не часть
+  // самой textarea, как раньше `pt-5`, поэтому щелчок в эту полосу (и по
+  // подписи — у неё `pointer-events-none`) попадал в коробку и фокуса не
+  // давал. Нажатие в самом поле не трогается: выделение текста работает
+  // как обычно.
+  function focusFromBox(event: React.MouseEvent<HTMLDivElement>) {
+    const field = fieldRef.current
+    // Выключенное поле тоже фокусируется, как и раньше: выключение в ките —
+    // `readOnly` + `aria-disabled`, поле остаётся в обходе и под щелчком.
+    if (!field || event.button !== 0 || event.target === field) return
+    event.preventDefault()
+    field.focus()
+    const end = field.value.length
+    field.setSelectionRange(end, end)
+  }
+
   return (
     // Исправление второго прохода: зазор стоял gap-1.5 (6px), а корневой
     // кадр макета для вариантов Comment и Error — это flex-col с
@@ -160,10 +181,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
             "has-[textarea:not(:placeholder-shown)]:py-2 has-[textarea:focus]:py-2",
           containerClassName
         )}
+        onMouseDown={focusFromBox}
       >
         <textarea
           id={textareaId}
-          ref={ref}
+          ref={composedRef}
           data-slot="textarea"
           rows={rows}
           // ⚠️ Заблокированная область ПРИНИМАЕТ TAB — блокировка это пара
@@ -187,13 +209,19 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
             // placeholder-подписи при наведении уходит с #999 на #6D6D6D —
             // тот же тон, что и --textarea-border-hover, — чего этот
             // компонент раньше не делал вовсе.
-            "order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring desktop:text-p1-medium",
+            "themed-scrollbar order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring desktop:text-p1-medium",
             // Плавающая подпись перекрывает первую строку, поэтому в
             // «поднятом» состоянии текст уходит вниз ровно на её высоту
             // (16px строка + 4px зазор): 8px внутреннего отступа коробки
             // + 20px = 28px, как в мастере Filled.
+            //
+            // ⚠️ Внешний отступ, а не внутренний: `padding` входит в
+            // прокручиваемую область, и при прокрутке длинного текста строки
+            // проезжали через место подписи и рисовались поверх неё (аудит
+            // 11). `margin` лежит вне прокрутки, а геометрия та же: высота
+            // поля по `rows` без отступа плюс те же 20px сверху.
             hasFloatingLabel &&
-              "placeholder:text-transparent focus:pt-5 [&:not(:placeholder-shown)]:pt-5",
+              "placeholder:text-transparent focus:mt-5 [&:not(:placeholder-shown)]:mt-5",
             // Замок стоит в правом верхнем углу коробки. Без подписи текст
             // начинается на его высоте, и конец первой строки рисовался
             // прямо под значком — место под него (16 + зазор 8) держит

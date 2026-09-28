@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
+import { OverflowItemText } from "@/components/ui/button-menu/overflow-item-text"
 import { Dropdown } from "@/components/ui/dropdown"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
@@ -210,6 +211,7 @@ function Switcher({
   const visibleItems = resolvedItems.slice(0, effectiveVisible)
   const hiddenItems = resolvedItems.slice(effectiveVisible)
   const hasOverflow = hiddenItems.length > 0
+  const activeHidden = hiddenItems.some((item) => item.value === activeValue)
 
   const indicator = useActiveIndicator<HTMLDivElement>(activeValue, [
     effectiveVisible,
@@ -226,6 +228,12 @@ function Switcher({
       : greyBackground
         ? "bg-[var(--switcher-active-bg)]"
         : "bg-[var(--switcher-active-bg-on-white)]"
+  // Цвет подписи активного сегмента: на заливке бегунка серое многоточие
+  // «…» (активный сегмент спрятан) почти не читалось, особенно на чёрной.
+  const indicatorFg =
+    activeVariant === "black"
+      ? "text-[var(--switcher-active-black-fg)]"
+      : "text-[var(--switcher-fg)]"
 
   return (
     <div
@@ -282,7 +290,16 @@ function Switcher({
                 type="button"
                 aria-label="Ещё"
                 data-slot="switcher-overflow-trigger"
-                className="flex shrink-0 cursor-pointer items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors hover:bg-[var(--switcher-hover-bg)]"
+                data-active={activeHidden || undefined}
+                // Активный сегмент ушёл в «Ещё» — бегунок в ряду погас, и
+                // заливка переезжает на многоточие: иначе в ряду не было бы
+                // видно, что выбрано вообще что-то.
+                className={cn(
+                  "flex shrink-0 cursor-pointer items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors",
+                  activeHidden
+                    ? cn(indicatorBg, indicatorFg)
+                    : "hover:bg-[var(--switcher-hover-bg)]"
+                )}
               />
             }
           >
@@ -299,14 +316,30 @@ function Switcher({
                 data-slot="switcher-overflow-content"
                 render={<Dropdown className="min-w-48 overflow-hidden" />}
               >
-                {hiddenItems.map((item) => (
-                  <ButtonMenuOverflowItem
-                    key={item.value}
-                    text={item.label}
-                    disabled={item.disabled}
-                    onClick={() => !item.disabled && setValue(item.value)}
-                  />
-                ))}
+                {hiddenItems.map((item) => {
+                  const active = item.value === activeValue
+                  return (
+                    <ButtonMenuOverflowItem
+                      key={item.value}
+                      aria-current={active ? "true" : undefined}
+                      text={
+                        <OverflowItemText
+                          label={item.label}
+                          badge={item.badge}
+                          status={item.status}
+                          active={active}
+                          disabled={item.disabled}
+                          // Счётчик — как у сегмента в ряду: светло-серый,
+                          // выключен только у выключенного пункта.
+                          badgeColor="light-grey"
+                          badgeDisabled={Boolean(item.disabled)}
+                        />
+                      }
+                      disabled={item.disabled}
+                      onClick={() => !item.disabled && setValue(item.value)}
+                    />
+                  )
+                })}
               </MenuPrimitive.Popup>
             </MenuPrimitive.Positioner>
           </MenuPrimitive.Portal>

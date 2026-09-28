@@ -116,8 +116,14 @@ function UpButton({
       // чёрную тень. Макет выгружает её фильтром `drop-shadow`, у которого
       // размытие в CSS вдвое меньше радиуса в макете, поэтому в сырой
       // выгрузке и читается 6px.
+      //
+      // ⚠️ Отступ снизу — над ЗАНЯТЫМ низом вьюпорта, а не над кромкой
+      // экрана: закреплённая панель (ButtonMenu, ButtonMenuBlack) публикует
+      // свою высоту в `--viewport-inset-bottom`. Без этого кнопка ложилась
+      // на правый край панели — у чёрной точно на крестик «Закрыть», и
+      // закрыть выделение мышью было нельзя.
       className={cn(
-        "fixed right-6 bottom-6 z-40 shadow-[var(--shadow-universal)]",
+        "fixed right-6 bottom-[calc(1.5rem+var(--viewport-inset-bottom,0px))] z-40 shadow-[var(--shadow-universal)]",
         className
       )}
     />

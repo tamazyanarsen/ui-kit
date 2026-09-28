@@ -4,6 +4,7 @@ import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
+import { OverflowItemText } from "@/components/ui/button-menu/overflow-item-text"
 import { Dropdown } from "@/components/ui/dropdown"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
@@ -121,6 +122,7 @@ function Tabs({
   const visibleItems = items.slice(0, visibleCount)
   const hiddenItems = items.slice(visibleCount)
   const hasOverflow = hiddenItems.length > 0
+  const activeHidden = hiddenItems.some((item) => item.value === activeValue)
   const showOverflowTab = hasOverflow || showMore
 
   // В порядок Tab попадает активная вкладка, а если она спрятана за
@@ -253,6 +255,7 @@ function Tabs({
                 type="button"
                 aria-label="Ещё"
                 data-slot="tabs-overflow-trigger"
+                data-active={activeHidden || undefined}
                 // Таб виден по `showMore`, но открывать пустой Dropdown
                 // незачем — пока за многоточием ничего не спрятано, он
                 // просто не раскрывается.
@@ -277,9 +280,17 @@ function Tabs({
               aria-hidden="true"
               className={cn("size-4", !medium && "desktop:size-6")}
             />
+            {/* Активная вкладка ушла в «Ещё» — бегунок в ряду погас, и её
+                подчёркивание переезжает на многоточие: иначе в ленте не
+                было бы видно, что выбрано вообще что-то. */}
             <span
               aria-hidden="true"
-              className="h-1 w-full shrink-0 rounded-t-[4px] bg-transparent transition-colors group-hover:bg-[var(--tabs-underline-hover)]"
+              className={cn(
+                "h-1 w-full shrink-0 rounded-t-[4px] transition-colors",
+                activeHidden
+                  ? "bg-[var(--tabs-underline-active)]"
+                  : "bg-transparent group-hover:bg-[var(--tabs-underline-hover)]"
+              )}
             />
           </MenuPrimitive.Trigger>
           <MenuPrimitive.Portal>
@@ -293,14 +304,26 @@ function Tabs({
                 data-slot="tabs-overflow-content"
                 render={<Dropdown className="min-w-48 overflow-hidden" />}
               >
-                {hiddenItems.map((item) => (
-                  <ButtonMenuOverflowItem
-                    key={item.value}
-                    text={item.label}
-                    disabled={item.disabled}
-                    onClick={() => !item.disabled && setValue(item.value)}
-                  />
-                ))}
+                {hiddenItems.map((item) => {
+                  const active = item.value === activeValue
+                  return (
+                    <ButtonMenuOverflowItem
+                      key={item.value}
+                      aria-current={active ? "true" : undefined}
+                      text={
+                        <OverflowItemText
+                          label={item.label}
+                          badge={item.badge}
+                          status={item.status}
+                          active={active}
+                          disabled={item.disabled}
+                        />
+                      }
+                      disabled={item.disabled}
+                      onClick={() => !item.disabled && setValue(item.value)}
+                    />
+                  )
+                })}
               </MenuPrimitive.Popup>
             </MenuPrimitive.Positioner>
           </MenuPrimitive.Portal>

@@ -63,10 +63,21 @@ const isOverflow = (
 interface ButtonMenuRowProps extends React.ComponentProps<"div"> {
   /** Размер кнопок ряда. Панель — `lg`, ряд в карточке — `sm`. */
   size?: ButtonRowSize
+  /** Фон под рядом: `dark` — чёрная ButtonMenuBlack, «…» там белое.
+   *  Проставляется самой панелью, руками передавать не нужно. */
+  tone?: "light" | "dark"
+  /**
+   * Сколько кнопок ряд оставляет видимыми, даже когда они не помещаются.
+   * По умолчанию 1. Чёрная панель передаёт 0: на узкой сетке её ряд сжат
+   * до одного «…», и всё уходит туда, а не ложится поверх информации.
+   */
+  minVisible?: number
 }
 
 const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(function ButtonMenuRow({
   size = "lg",
+  tone,
+  minVisible = 1,
   className,
   children,
   ...props
@@ -113,7 +124,8 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
     // Зазор — по наличию обёртки, а не по её ширине: ребёнок, который
     // отрисовал `null` (компонент прав без доступа), оставляет обёртку
     // нулевой ширины, но флекс-зазор перед ней всё равно есть.
-    hasOthers ? othersWidth + gap : 0
+    hasOthers ? othersWidth + gap : 0,
+    minVisible
   )
 
   // Размер кнопкам ряд задаёт САМ, что бы ни передал вызывающий: ряд обязан
@@ -177,7 +189,11 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
       ...React.Children.toArray(supplied.props.children),
     ])
   } else if (hiddenItems.length > 0) {
-    overflow = <ButtonMenuOverflow size={size}>{hiddenItems}</ButtonMenuOverflow>
+    overflow = (
+      <ButtonMenuOverflow size={size} tone={tone}>
+        {hiddenItems}
+      </ButtonMenuOverflow>
+    )
   }
 
   return (

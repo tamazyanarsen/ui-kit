@@ -45,6 +45,13 @@ import * as React from "react"
 // карточке — заезжал на них и вылезал за рамку. Теперь их меряет хук, для
 // всех, при каждом пересчёте: потребитель может переопределить отступы
 // классом.
+//
+// `minVisible` — сколько пунктов ряд держит видимыми, даже когда они не
+// помещаются. По умолчанию 1: у Tabs, Switcher и шапки ряд без единого
+// пункта бессмыслен, и это известный нижний предел. Ряду, у которого «…»
+// способно взять ВСЕ команды (чёрная панель на узкой сетке), нужен 0 —
+// иначе единственная «обязательная» кнопка вылезала из ряда шириной 32 и
+// ложилась поверх соседей.
 const FIT_TOLERANCE = 1
 
 /** Сумма горизонтальных внутренних отступов элемента. */
@@ -58,7 +65,8 @@ export function useOverflowCount(
   reservedWidth: number,
   gap = 0,
   alwaysReserve = false,
-  occupiedWidth = 0
+  occupiedWidth = 0,
+  minVisible = 1
 ) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
@@ -120,8 +128,8 @@ export function useOverflowCount(
       if (used > available + FIT_TOLERANCE) break
       count++
     }
-    setVisibleCount(Math.max(1, count))
-  }, [itemCount, reservedWidth, gap, alwaysReserve, occupiedWidth])
+    setVisibleCount(Math.max(minVisible, count))
+  }, [itemCount, reservedWidth, gap, alwaysReserve, occupiedWidth, minVisible])
 
   React.useLayoutEffect(() => {
     recompute()

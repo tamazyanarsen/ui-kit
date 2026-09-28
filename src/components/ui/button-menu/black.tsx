@@ -8,6 +8,7 @@ import { ViewportScope } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
 
 import { ButtonMenuOverflow } from "./overflow"
+import { ButtonMenuRow } from "./row"
 import { PINNED_CLASS, barShapeClass } from "./pinning"
 import {
   BAR_PLACEMENT_CLASS,
@@ -169,6 +170,12 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
     return child
   })
 
+  const onlyButtons = sizedChildren.every(
+    (child) =>
+      React.isValidElement(child) &&
+      (child.type === Button || child.type === ButtonMenuOverflow)
+  )
+
   // Пока панель закреплена, она публикует занятую высоту в
   // `--viewport-inset-bottom`: горизонтальная полоса прокрутки таблицы липнет
   // к низу СВОБОДНОЙ части вьюпорта, а не к кромке экрана, — иначе она
@@ -205,7 +212,11 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
       data-detached={detached || undefined}
       data-placement={placement}
       className={cn(
-        "flex max-h-[72px] min-h-[72px] items-center justify-between bg-[var(--button-menu-black-bg)] px-6 py-4",
+        // `@container/black` — от ширины панели (а не окна) зависит, есть
+        // ли место под информацию, см. правую группу ниже. Зазор 32 между
+        // действиями и правой группой — её `ml-8`, а не `gap-8` панели:
+        // свой зазор контейнер по собственному запросу менять не может.
+        "@container/black flex max-h-[72px] min-h-[72px] items-center justify-between bg-[var(--button-menu-black-bg)] px-6 py-4",
         withSelectAll ? "w-full" : outerPlacementClass,
         barShapeClass({ detached }),
         // Приём указателя возвращается панели: внешний узел его не
@@ -219,35 +230,74 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
       }
       {...props}
     >
-      <div
-        data-slot="button-menu-black-actions"
-        className="flex shrink-0 items-start gap-2"
-      >
-        {sizedChildren}
-      </div>
+      {/* Действия — тот же ряд, что у белой панели: не поместившиеся
+          уходят в «…». Раньше они стояли `shrink-0`, и панель на части
+          сетки (`placement="left"`, `span={6}`) выталкивала информацию и
+          крестик за свой край на белый фон — вживую на 195px. Ряд берёт
+          оставшееся место (`flex-1 min-w-0`), правая группа — нет. */}
+      {/* ⚠️ Ряд собирает сначала кнопки, потом прочих детей, потом «…» —
+          то есть переставляет их. Поэтому он берётся, только когда в
+          действиях одни кнопки (и переданное «…»): кнопка в своей обёртке
+          (`<PermissionGate>`) иначе уезжала бы в конец. Со «своими» детьми
+          действия стоят как есть, но сжимаются и обрезаются — за край
+          панели они всё равно не выходят. Основа у них, как у ряда, 0
+          (`flex-1`): сжимаются они раньше информации. */}
+      {/* ⚠️ На узкой панели (375, сетка на 6 колонок) правая группа
+          съедала всё место, ряд сжимался до нуля — а нулевую ширину хук
+          ряда считает «ещё не померили» и показывает ВСЕ кнопки. Они
+          ложились поверх информации и уходили за край панели. Поэтому у
+          ряда с кнопками есть минимум — место под «…» (32), и ряд может
+          оставить видимыми ноль кнопок (`minVisible={0}`): сначала всё
+          уходит в «…», и лишь потом сжимается информация. */}
+      {onlyButtons ? (
+        <ButtonMenuRow
+          size="sm"
+          tone="dark"
+          minVisible={0}
+          data-slot="button-menu-black-actions"
+          className={cn("items-start", sizedChildren.length > 0 && "min-w-8")}
+        >
+          {sizedChildren}
+        </ButtonMenuRow>
+      ) : (
+        <div
+          data-slot="button-menu-black-actions"
+          className="flex min-w-0 flex-1 items-start gap-2 overflow-hidden"
+        >
+          {sizedChildren}
+        </div>
+      )}
 
-      <div className="flex shrink-0 items-center justify-end gap-8">
+      {/* Правая группа сжимается ПОСЛЕ действий (у ряда основа 0, он
+          уже отдал всё до своих 32). Крестик виден всегда. Информация
+          теряет колонки с конца: они переносятся на вторую строку, а та
+          срезана высотой одной колонки (40); оставшаяся одна колонка
+          обрезается многоточием. Совсем узкой панели (контент уже 180)
+          информации не показать — она прячется, а зазор ужимается до 16,
+          чтобы «…» и крестик помещались даже на 6 колонках при 375. */}
+      <div className="ml-8 flex min-w-0 items-center justify-end gap-8 @max-[180px]/black:ml-4">
         {info && info.length > 0 && (
           <div
             data-slot="button-menu-black-info"
-            className="flex items-center gap-8 text-p2-medium"
+            className="flex max-h-10 min-w-0 flex-wrap content-start items-center justify-end gap-8 overflow-clip text-p2-medium [overflow-clip-margin:4px] @max-[180px]/black:hidden"
           >
             {info.map((item, index) => (
               // Дизайн-чек от 07.09, замечание 4: перенос не допускается,
-              // ширина колонки динамическая. `shrink-0` + `whitespace-nowrap`
-              // — это и есть «в одну строку»: без первого колонка сжималась
-              // соседями, без второго рвалась по пробелам.
+              // ширина колонки динамическая. `whitespace-nowrap` — это и
+              // есть «в одну строку». Соседи колонку не сжимают: не
+              // поместившаяся уезжает на срезанную вторую строку. Сжимается
+              // (с многоточием) только колонка, оставшаяся одна.
               <div
                 key={index}
                 className={cn(
-                  "flex shrink-0 flex-col items-start whitespace-nowrap",
+                  "flex min-w-0 flex-col items-start whitespace-nowrap",
                   item.className
                 )}
               >
-                <span className="text-[var(--button-menu-black-muted-fg)]">
+                <span className="max-w-full overflow-clip text-ellipsis [overflow-clip-margin:4px] text-[var(--button-menu-black-muted-fg)]">
                   {item.label}
                 </span>
-                <span className="text-[var(--button-menu-black-fg)]">
+                <span className="max-w-full overflow-clip text-ellipsis [overflow-clip-margin:4px] text-[var(--button-menu-black-fg)]">
                   {item.value}
                 </span>
               </div>

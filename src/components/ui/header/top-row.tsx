@@ -126,8 +126,13 @@ function ClientActions({
     onOrganizationChange?.(id)
   }
 
+  // Кластер сжимаемый (`min-w-0`, без `shrink-0`): плитка профиля умеет
+  // обрезать название многоточием (`max-w-[304px] min-w-0` + `truncate`),
+  // но жёсткий кластер вокруг не давал ей сжаться — на узкой шапке она
+  // целиком уезжала за край и раздвигала страницу вбок (реестр аккредитивов
+  // на 375: ширина документа 623). Иконки остаются `shrink-0` каждая.
   return (
-    <div className="flex shrink-0 items-center">
+    <div data-slot="header-client-actions" className="flex min-w-0 items-center">
       {showIcons && (
         <>
           <NotificationMenu

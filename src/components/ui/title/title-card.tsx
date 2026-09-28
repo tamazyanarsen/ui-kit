@@ -123,7 +123,9 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
       {(tag || information) && (
         <div
           data-slot="title-card-status"
-          className="flex w-full items-center gap-4"
+          // Перенос: тег и длинная информация на узкой полосе не помещались в
+          // одну строку и уходили за край.
+          className="flex w-full flex-wrap items-center gap-x-4 gap-y-2"
         >
           {tag && <Tag color={tagColor}>{tag}</Tag>}
           {information}

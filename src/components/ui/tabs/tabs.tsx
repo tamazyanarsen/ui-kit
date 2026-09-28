@@ -266,7 +266,10 @@ function Tabs({
                 // 18px, чтобы триггер сохранил полные 40px, — иначе его
                 // подчёркивание всплывает над нижней рамкой полосы.
                 className={cn(
-                  "group flex shrink-0 cursor-pointer flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none focus-visible:focus-ring",
+                  "group flex shrink-0 flex-col items-center gap-[18px] pt-0.5 text-[var(--tabs-fg)] outline-none focus-visible:focus-ring",
+                  // Прятать нечего — кнопка выключена: ни руки, ни подсветки
+                  // подчёркивания при наведении.
+                  hasOverflow ? "cursor-pointer" : "cursor-default",
                   // Варианты `desktop:` при закреплённом размере не
                   // подмешиваются вовсе: медиазапрос перебил бы флаг, а не
                   // наоборот — `twMerge` разные префиксы не схлопывает.
@@ -292,7 +295,9 @@ function Tabs({
                 "h-1 w-full shrink-0 rounded-t-[4px] transition-colors",
                 activeHidden
                   ? "bg-[var(--tabs-underline-active)]"
-                  : "bg-transparent group-hover:bg-[var(--tabs-underline-hover)]"
+                  : hasOverflow
+                    ? "bg-transparent group-hover:bg-[var(--tabs-underline-hover)]"
+                    : "bg-transparent"
               )}
             />
           </MenuPrimitive.Trigger>

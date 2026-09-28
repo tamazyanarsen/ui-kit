@@ -216,8 +216,11 @@ function ProgressBar({
         // «Status Line (ELK)» — зазор 16px, замыкающее описание тянется и
         // прижимается вправо.
         <div className="flex items-center gap-4 text-p2-medium desktop:text-p1-medium">
+          {/* Подпись статуса, как и заголовок выше, переносится по словам:
+              с `shrink-0` длинный статус шёл одной строкой за контейнер (до
+              549px при полосе 343). Описание справа сжимается первым. */}
           {showSubtitle && (
-            <span className="shrink-0" style={{ color: STATUS_FG[status] }}>
+            <span className="min-w-0 break-words" style={{ color: STATUS_FG[status] }}>
               {subtitle}
             </span>
           )}

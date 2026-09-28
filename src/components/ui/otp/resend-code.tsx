@@ -19,33 +19,45 @@ interface ResendCodeProps {
 function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
   const [remaining, setRemaining] = React.useState(seconds)
   const statusRef = React.useRef<HTMLDivElement>(null)
-  const focusStatus = React.useRef(false)
+  const buttonRef = React.useRef<HTMLButtonElement>(null)
+  // Куда перевести фокус после смены узла: таблетка и кнопка сменяют друг
+  // друга, и узел с фокусом уходит из DOM.
+  const focusNext = React.useRef<"status" | "button" | null>(null)
 
   // Кнопка «Отправить повторно» после нажатия сменяется таблеткой отсчёта —
   // нажатый узел уходит из DOM, и фокус падал на body: клавиатурный
   // пользователь терял место в окне. Поэтому фокус переезжает на таблетку
   // (она программно фокусируемая, `tabIndex={-1}`, в обход Tab не попадает).
+  // Обратный переход тот же: по окончании отсчёта таблетка с фокусом
+  // сменяется кнопкой, и фокус переходит на кнопку, а не падает на body.
   React.useLayoutEffect(() => {
-    if (!focusStatus.current) return
-    focusStatus.current = false
-    statusRef.current?.focus()
+    const target = focusNext.current
+    if (!target) return
+    focusNext.current = null
+    ;(target === "status" ? statusRef : buttonRef).current?.focus()
   })
 
   React.useEffect(() => {
     if (remaining <= 0) return
-    const timeout = window.setTimeout(() => setRemaining((s) => s - 1), 1000)
+    const timeout = window.setTimeout(() => {
+      if (remaining <= 1 && document.activeElement === statusRef.current) {
+        focusNext.current = "button"
+      }
+      setRemaining((s) => s - 1)
+    }, 1000)
     return () => window.clearTimeout(timeout)
   }, [remaining])
 
   function handleResend() {
     onResend?.()
-    focusStatus.current = true
+    focusNext.current = "status"
     setRemaining(seconds)
   }
 
   if (remaining <= 0) {
     return (
       <Button
+        ref={buttonRef}
         type="button"
         variant="secondary-black"
         size="lg"

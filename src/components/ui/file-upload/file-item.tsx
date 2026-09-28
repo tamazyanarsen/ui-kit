@@ -69,7 +69,9 @@ export const FileListItem = React.forwardRef<
   meta,
   size = "l",
   state = "default",
-  errorText = "Text about error here",
+  // Без умолчания: английская заглушка из макета («Text about error
+  // here») доезжала до пользователя, если текст ошибки не передали.
+  errorText,
   showDescription = true,
   showErrorText = true,
   showEdit = true,
@@ -107,7 +109,7 @@ export const FileListItem = React.forwardRef<
   // иначе под именем оставался бы её межстрочный интервал.
   let secondLine: React.ReactNode = null
   if (loading) secondLine = "Загрузка"
-  else if (error) secondLine = showErrorText ? errorText : null
+  else if (error) secondLine = showErrorText ? (errorText ?? null) : null
   else if (showDescription) secondLine = meta
 
   return (

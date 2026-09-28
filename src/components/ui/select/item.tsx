@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { CheckIcon } from "@/icons"
 
@@ -48,8 +49,23 @@ export function SelectItem({
       )}
       {...props}
     >
-      <SelectPrimitive.ItemText className="flex flex-1 shrink-0 gap-2 whitespace-nowrap">
-        {children}
+      {/* Длинная подпись обрезается многоточием до галочки: раньше текст был
+          `shrink-0`, шёл под галочку и срезался краем списка без многоточия.
+          Голый текст во флексе — анонимный блок, многоточия он не получает,
+          поэтому строки и числа обёрнуты в свой узел с многоточием.
+          `overflow-clip` с запасом, а не `truncate`: `overflow-hidden`
+          срезал у «Д» выносной элемент левее начала строки, и короткие
+          пункты переставали совпадать с прежними до пикселя. */}
+      <SelectPrimitive.ItemText className="flex min-w-0 flex-1 gap-2 whitespace-nowrap">
+        {React.Children.map(children, (child) =>
+          typeof child === "string" || typeof child === "number" ? (
+            <span className="min-w-0 overflow-clip text-ellipsis [overflow-clip-margin:4px]">
+              {child}
+            </span>
+          ) : (
+            child
+          )
+        )}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
         render={

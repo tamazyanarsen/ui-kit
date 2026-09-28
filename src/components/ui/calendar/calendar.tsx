@@ -17,6 +17,20 @@ function dayKey(date: Date | null | undefined) {
   return date ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}` : ""
 }
 
+function viewFor(mode: CalendarProps["mode"]): CalendarView {
+  return mode === "month" ? "months" : mode === "year" ? "years" : "days"
+}
+
+function monthOf(date: Date): CalendarSingleMonth {
+  return { year: date.getFullYear(), month: date.getMonth() }
+}
+
+/** Первая дата диапазона: начало, а без него — конец. */
+function rangeAnchor(range: [Date | null, Date | null] | undefined) {
+  const [start, end] = normalizeRange(range?.[0] ?? null, range?.[1] ?? null)
+  return start ?? end
+}
+
 function sameDayOrEmpty(a: Date | null, b: Date | null) {
   return a && b ? isSameDay(a, b) : !a && !b
 }
@@ -61,14 +75,24 @@ function Calendar({
   const initial =
     defaultMonth ??
     value ??
+    // Диапазон открывается на своём начале: раньше `rangeValue` не
+    // учитывался, и фильтр по дате открывался на текущем месяце без
+    // видимого выбранного периода.
+    (mode === "range" ? rangeAnchor(rangeValue) : null) ??
     (mode === "month" && monthValue
       ? new Date(monthValue.year, monthValue.month, 1)
       : mode === "year" && yearValue != null
         ? new Date(yearValue, 0, 1)
         : today)
-  const [view, setView] = React.useState<CalendarView>(
-    mode === "month" ? "months" : mode === "year" ? "years" : "days"
-  )
+  const [view, setView] = React.useState<CalendarView>(viewFor(mode))
+  // Вид следует за сменой `mode` на лету: раньше он задавался только при
+  // монтировании, и календарь, переключённый в режим месяцев, продолжал
+  // показывать сетку дней.
+  const [syncedMode, setSyncedMode] = React.useState(mode)
+  if (syncedMode !== mode) {
+    setSyncedMode(mode)
+    setView(viewFor(mode))
+  }
   const [focus, setFocus] = React.useState<CalendarSingleMonth>({
     year: initial.getFullYear(),
     month: initial.getMonth(),
@@ -98,9 +122,27 @@ function Calendar({
   // перерисовке отдаёт новый объект того же дня — и черновик стирался.
   const valueKey = dayKey(value)
   const [syncedValue, setSyncedValue] = React.useState(valueKey)
+  // Выбор, пришедший снаружи за пределы показанных месяцев (заготовка
+  // периода, дата, введённая руками, переоткрытый фильтр), переводит
+  // календарь на свой месяц — иначе его было не видно. Если на экране уже
+  // есть хоть одна дата выбора, вид не трогается: пользователь, отметивший
+  // начало и перелиставший к концу периода, не должен улетать обратно.
+  function reveal(dates: (Date | null)[], anchor: Date | null) {
+    if (!anchor) return
+    const shown = mode === "range" ? [focus, addMonths(focus.year, focus.month, 1)] : [focus]
+    const visible = (date: Date | null) =>
+      date !== null &&
+      shown.some((m) => m.year === date.getFullYear() && m.month === date.getMonth())
+    if (dates.some(visible)) return
+    const target = monthOf(anchor)
+    setFocus(target)
+    setDecadeEnd(decadeEndFor(target.year, today.getFullYear()))
+  }
+
   if (syncedValue !== valueKey) {
     setSyncedValue(valueKey)
     setDraftValue(value)
+    if (mode === "single") reveal([value], value)
   }
 
   const rangeKey = rangeValue ? `${dayKey(rangeValue[0])}|${dayKey(rangeValue[1])}` : null
@@ -108,6 +150,7 @@ function Calendar({
   if (syncedRange !== rangeKey) {
     setSyncedRange(rangeKey)
     if (rangeValue) setDraftRange(rangeValue)
+    if (mode === "range" && rangeValue) reveal(rangeValue, rangeAnchor(rangeValue))
   }
 
   const activeValue = footer ? draftValue : value

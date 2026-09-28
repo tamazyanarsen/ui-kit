@@ -72,7 +72,11 @@ function FileUploadDemo() {
             </div>
             <div>
               <RowLabel>Состояние ошибки</RowLabel>
-              <FileListItem name="File.doc" state="error" />
+              <FileListItem
+                name="File.doc"
+                state="error"
+                errorText="Не удалось загрузить файл"
+              />
             </div>
           </div>
         </AccordionPanel>

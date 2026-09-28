@@ -1,7 +1,10 @@
 import * as React from "react"
+import { flushSync } from "react-dom"
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
+import { useFormReset } from "@/components/ui/checkbox/use-form-reset"
 
 import { RadioGroupSelectContext } from "./group-context"
 import { Radio } from "./radio"
@@ -73,9 +76,25 @@ const RadioGroup = React.forwardRef<
     []
   )
 
+  // Нативный сброс формы браузер делает мимо сеттеров: скрытые input
+  // теряли выбор, а на экране оставалась прежняя кнопка, и в `FormData`
+  // уходило не то, что видно. Неуправляемая группа возвращается к
+  // `defaultValue`, после чего каждый input получает выбор своей кнопки
+  // (узел кнопки стоит прямо перед своим input).
+  const [node, setNode] = React.useState<HTMLDivElement | null>(null)
+  const composedRef = useComposedRefs(ref, setNode)
+  const defaultRef = React.useRef(defaultValue ?? null)
+  useFormReset(node, () => {
+    if (!node) return
+    if (!controlled) flushSync(() => selectApi.select(defaultRef.current))
+    node.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach((input) => {
+      input.checked = input.previousElementSibling?.getAttribute("aria-checked") === "true"
+    })
+  })
+
   const group = (
     <RadioGroupPrimitive
-      ref={ref}
+      ref={composedRef}
       data-slot="radio-group"
       className={cn("flex flex-col gap-6", className)}
       value={controlled ? value : own}

@@ -59,6 +59,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
     onChange,
     onBlur,
     onExternalChecked: state.onExternalChecked,
+    resetChecked: state.resetChecked,
   })
   const generatedId = React.useId()
   const checkboxId = id ?? generatedId

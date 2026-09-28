@@ -49,6 +49,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
     onChange,
     onBlur,
     onExternalChecked: state.onExternalChecked,
+    resetChecked: state.resetChecked,
   })
   const generatedId = React.useId()
   const toggleId = id ?? generatedId

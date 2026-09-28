@@ -1,8 +1,10 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
 
 import { Checkbox } from "./checkbox"
+import { useFormReset } from "./use-form-reset"
 
 // CheckboxGroup — набор флажков, которым правит один массив выбранных
 // значений, с необязательной родительской строкой «выбрать всё».
@@ -55,6 +57,17 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
   const [uncontrolled, setUncontrolled] = React.useState<string[]>(defaultValue)
   const selected = value ?? uncontrolled
 
+  // Нативный сброс формы возвращает неуправляемую группу к `defaultValue`.
+  // Флажки внутри управляемые (им правит массив группы), и их собственный
+  // сброс держал бы текущий выбор — на экране и в форме оставалось
+  // отмеченным то, что пользователь выбрал до сброса.
+  const [node, setNode] = React.useState<HTMLDivElement | null>(null)
+  const composedRef = useComposedRefs(ref, setNode)
+  const defaultRef = React.useRef(defaultValue)
+  useFormReset(node, () => {
+    if (value === undefined) setUncontrolled(defaultRef.current)
+  })
+
   function commit(next: string[]) {
     if (value === undefined) setUncontrolled(next)
     onValueChange?.(next)
@@ -89,7 +102,7 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
 
   return (
     <div
-      ref={ref}
+      ref={composedRef}
       data-slot="checkbox-group"
       role="group"
       className={cn("flex flex-col gap-6", className)}

@@ -3,6 +3,7 @@ import * as React from "react"
 import { assignRef } from "@/lib/compose-refs"
 
 import { createChangeEvent } from "../input/change-event"
+import { useFormReset } from "./use-form-reset"
 
 /**
  * Мост от контролов Base UI (Checkbox, Switch, Radio) к библиотекам форм.
@@ -47,6 +48,7 @@ function useNativeInputBridge({
   onBlur,
   onExternalChecked,
   radio = false,
+  resetChecked,
 }: {
   ref: React.ForwardedRef<HTMLInputElement>
   inputRef?: React.Ref<HTMLInputElement>
@@ -57,6 +59,12 @@ function useNativeInputBridge({
   onExternalChecked?: (checked: boolean) => void
   /** Радиокнопка: изменение из нативного `change`, без сверки с применённым. */
   radio?: boolean
+  /**
+   * Значение после нативного сброса формы: `defaultChecked` у неуправляемого
+   * контрола, текущий `checked` у управляемого. Радиокнопке не нужно — её
+   * сбрасывает группа.
+   */
+  resetChecked?: boolean
 }) {
   const [input, setInput] = React.useState<HTMLInputElement | null>(null)
   const onChangeRef = React.useRef(onChange)
@@ -108,6 +116,17 @@ function useNativeInputBridge({
     input.addEventListener("change", handle)
     return () => input.removeEventListener("change", handle)
   }, [input, radio])
+
+  const resetRef = React.useRef(resetChecked)
+  resetRef.current = resetChecked
+  // Нативный сброс формы (`form.reset()`, `<button type="reset">`) браузер
+  // делает мимо сеттера: скрытый input терял отметку, а контрол её
+  // показывал, и в `FormData` уходило не то, что на экране. Значение
+  // сброса пишется в узел через тот же сеттер: у неуправляемого контрола
+  // оно доходит до состояния, у управляемого — возвращает узлу `checked`.
+  useFormReset(radio ? null : input, () => {
+    if (input && resetRef.current !== undefined) input.checked = resetRef.current
+  })
 
   // Radio получает `name` только от RadioGroup; `name` из `register()`,
   // переданный самой радиокнопке, до input иначе не доходит — а без него
@@ -198,6 +217,7 @@ function useBridgedChecked<Details extends { isCanceled: boolean }>({
       if (!controlled && !details.isCanceled) setOwn(next)
     },
     onExternalChecked: controlled ? undefined : setOwn,
+    resetChecked: controlled ? checked : Boolean(defaultChecked),
   }
 }
 

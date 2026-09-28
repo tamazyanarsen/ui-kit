@@ -3,7 +3,10 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { LoaderCircle, Search, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { Dropdown } from "@/components/ui/dropdown"
+
+import { useComboboxSearchText } from "./root"
 
 // Portal, Positioner и Popup. По макету: зазор до триггера 8px, ширина
 // равна ширине триггера, высота зажата между 168 и 504px (и всё равно
@@ -62,8 +65,30 @@ export const ComboboxSearchInput = React.forwardRef<
 >(function ComboboxSearchInput({
   className,
   loading = false,
+  onChange,
   ...props
 }, ref) {
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const setRef = useComposedRefs(inputRef, ref)
+  // Текст поиска — из корня кита. Вне него (голый Root Base UI) — из
+  // собственного ввода: хотя бы набранное с клавиатуры кнопка увидит.
+  const rootText = useComboboxSearchText()
+  const [typed, setTyped] = React.useState("")
+  const hasText = (rootText ?? typed) !== ""
+
+  // ⚠️ Не `Combobox.Clear` Base UI: в множественном выборе он виден только
+  // при непустом ВЫБОРЕ и стирает разом поиск и все отмеченные пункты. Здесь
+  // очищается только строка — нативным событием ввода, чтобы Base UI сам
+  // обновил поиск и фильтр, как при наборе с клавиатуры.
+  function clearSearch() {
+    const input = inputRef.current
+    if (!input) return
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set
+    setter?.call(input, "")
+    input.dispatchEvent(new Event("input", { bubbles: true }))
+    input.focus()
+  }
+
   return (
     // Второй проход: совпадает с литеральной строкой поиска
     // «ELK / input», снятой с собственных инстансов выпадающего списка, —
@@ -78,7 +103,7 @@ export const ComboboxSearchInput = React.forwardRef<
         className="size-6 shrink-0 text-[var(--select-icon-fg)]"
       />
       <ComboboxPrimitive.Input
-        ref={ref}
+        ref={setRef}
         data-slot="combobox-search"
         className={cn(
           // В строке поиска «ELK / dropdown» текст поиска лежит в обёртке
@@ -87,6 +112,10 @@ export const ComboboxSearchInput = React.forwardRef<
           "h-6 w-full min-w-0 border-0 bg-transparent text-p1-medium text-[var(--select-fg)] outline-none focus-visible:focus-ring placeholder:text-[var(--select-label-fg)]",
           className
         )}
+        onChange={(event) => {
+          setTyped(event.currentTarget.value)
+          onChange?.(event)
+        }}
         {...props}
       />
       {loading && (
@@ -95,12 +124,16 @@ export const ComboboxSearchInput = React.forwardRef<
           className="size-4 shrink-0 animate-spin text-[var(--btn-primary-bg-hover)]"
         />
       )}
-      <ComboboxPrimitive.Clear
-        aria-label="Очистить поиск"
-        className="flex shrink-0 items-center justify-center text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring"
-      >
-        <X aria-hidden="true" className="size-4" />
-      </ComboboxPrimitive.Clear>
+      {hasText && (
+        <button
+          type="button"
+          aria-label="Очистить поиск"
+          onClick={clearSearch}
+          className="flex shrink-0 items-center justify-center text-[var(--select-icon-fg)] outline-none focus-visible:focus-ring"
+        >
+          <X aria-hidden="true" className="size-4" />
+        </button>
+      )}
     </div>
   )
 })

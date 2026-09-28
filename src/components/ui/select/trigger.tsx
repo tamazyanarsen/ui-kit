@@ -42,6 +42,12 @@ export const SelectTrigger = React.forwardRef<
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
   const captionId = caption ? `${triggerId}-caption` : undefined
+  const labelId = label ? `${triggerId}-label` : undefined
+  // Имя поля — подпись: роль combobox своё имя из содержимого не берёт,
+  // и без связи скринридер объявлял «поле со списком» без названия.
+  // `aria-labelledby` потребителя (в `props`) главнее; `aria-label` — тоже,
+  // кроме поля внутри Field.Root с Field.Label: там Base UI сам ставит
+  // `aria-labelledby` на подпись Field, а она по правилам имени сильнее.
   const floating = size === "lg"
   // Место резервируется только тогда, когда есть чему всплывать: без
   // подписи над значением ничего не появится, и прибавка отступа просто
@@ -54,6 +60,10 @@ export const SelectTrigger = React.forwardRef<
         id={triggerId}
         ref={ref}
         data-slot="select-trigger"
+        // Ключ передаётся, только когда своя подпись есть: `aria-labelledby=
+        // {undefined}` в mergeProps Base UI затёр бы связь с внешним
+        // Field.Label, и поле снова осталось бы без имени.
+        {...(labelId && !props["aria-label"] ? { "aria-labelledby": labelId } : {})}
         aria-invalid={invalid || undefined}
         aria-describedby={captionId}
         nativeButton={false}
@@ -62,6 +72,7 @@ export const SelectTrigger = React.forwardRef<
       >
         {label && (
           <span
+            id={labelId}
             className={
               floating
                 ? selectFloatingLabelClassName

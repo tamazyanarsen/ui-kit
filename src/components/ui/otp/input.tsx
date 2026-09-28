@@ -137,7 +137,15 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
 
     // Вставка длиннее кода («Код: 123-456-7») — берутся первые `length` цифр.
     const digits = all.slice(0, length)
-    if (digits !== raw) input.value = digits
+    if (digits !== raw) {
+      // Каретка остаётся за теми же цифрами, что и до вычистки: запись
+      // `value` сама по себе уводит её в конец поля, и правка посередине
+      // продолжалась бы уже не там.
+      const caret = input.selectionStart ?? raw.length
+      const kept = Math.min(raw.slice(0, caret).replace(/\D/g, "").length, digits.length)
+      input.value = digits
+      input.setSelectionRange(kept, kept)
+    }
     lastRef.current = digits
     if (previous.length < length) completedRef.current = null
     onChange?.(event)

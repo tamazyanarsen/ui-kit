@@ -46,6 +46,18 @@ const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function Ra
   // Подпись связана с ползунком: без `aria-describedby` скринридер не
   // зачитывал ни комментарий, ни текст ошибки.
   const captionId = `${React.useId()}-caption`
+  // Ошибку видно не только глазами: без `aria-invalid` скринридер объявляет
+  // ползунок обычным, сколько бы красного вокруг ни нарисовали. Ставится на
+  // сам `input role=slider`: корень — `role=group`, у которого атрибут не
+  // поддерживается, а Thumb переносит на input лишь фиксированный набор
+  // aria-атрибутов, поэтому — через его `inputRef`.
+  const sliderInputRef = React.useRef<HTMLInputElement>(null)
+  React.useLayoutEffect(() => {
+    const input = sliderInputRef.current
+    if (!input) return
+    if (invalid) input.setAttribute("aria-invalid", "true")
+    else input.removeAttribute("aria-invalid")
+  }, [invalid])
   // Разрядный пробел — отбивка по 3 разряда, а не символ значения: в буфер
   // уходит «5000000», а не «5 000 000».
   const copyWithoutSeparators = useCopyWithoutSeparators(GROUP_SPACES)
@@ -60,10 +72,6 @@ const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function Ra
         data-slot="range-input"
         disabled={disabled}
         format={format}
-        // Ошибку видно не только глазами: без `aria-invalid` скринридер
-        // объявляет ползунок обычным, сколько бы красного вокруг ни
-        // нарисовали.
-        aria-invalid={invalid || undefined}
         {...props}
       >
         <div
@@ -181,6 +189,7 @@ const RangeInput = React.forwardRef<HTMLDivElement, RangeInputProps>(function Ra
               <SliderPrimitive.Thumb
                 data-slot="range-input-thumb"
                 aria-describedby={hasCaption ? captionId : undefined}
+                inputRef={sliderInputRef}
                 className={cn(
                   // Между двумя стрелками зазора нет, а радиус — литеральные
                   // 12px; и то и другое снято прямо со слоя Box у символов

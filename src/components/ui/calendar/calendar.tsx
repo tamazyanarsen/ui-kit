@@ -12,6 +12,11 @@ function decadeEndFor(year: number, currentYear: number) {
   return year > currentYear - 12 ? Math.max(year, currentYear) : year
 }
 
+/** Ключ календарного дня: два объекта Date одного дня дают один ключ. */
+function dayKey(date: Date | null | undefined) {
+  return date ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}` : ""
+}
+
 function sameDayOrEmpty(a: Date | null, b: Date | null) {
   return a && b ? isSameDay(a, b) : !a && !b
 }
@@ -75,13 +80,23 @@ function Calendar({
     rangeValue ?? [null, null]
   )
 
-  React.useEffect(() => {
+  // ⚠️ Сверка по ДНЮ, а не по ссылке. Родитель, собирающий значение в
+  // рендере (`value={iso ? new Date(iso) : null}` в Controller из
+  // react-hook-form, `rangeValue={[null, null]}` прямо в JSX), на каждой
+  // перерисовке отдаёт новый объект того же дня — и черновик стирался.
+  const valueKey = dayKey(value)
+  const [syncedValue, setSyncedValue] = React.useState(valueKey)
+  if (syncedValue !== valueKey) {
+    setSyncedValue(valueKey)
     setDraftValue(value)
-  }, [value])
+  }
 
-  React.useEffect(() => {
+  const rangeKey = rangeValue ? `${dayKey(rangeValue[0])}|${dayKey(rangeValue[1])}` : null
+  const [syncedRange, setSyncedRange] = React.useState(rangeKey)
+  if (syncedRange !== rangeKey) {
+    setSyncedRange(rangeKey)
     if (rangeValue) setDraftRange(rangeValue)
-  }, [rangeValue])
+  }
 
   const activeValue = footer ? draftValue : value
   const activeRange = footer ? draftRange : (rangeValue ?? draftRange)

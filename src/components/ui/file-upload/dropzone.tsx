@@ -65,8 +65,19 @@ export const FileUploadDropzone = React.forwardRef<
   const inputRef = React.useRef<HTMLInputElement>(null)
   const inputId = React.useId()
 
+  // Программный `input.click()` всплывает обратно в `onClick` зоны. Метка
+  // отличает этот отражённый клик от настоящего: иначе потребитель получал
+  // два клика на одно нажатие.
+  const openingRef = React.useRef(false)
+
   function openPicker() {
-    if (!disabled) inputRef.current?.click()
+    if (disabled) return
+    openingRef.current = true
+    try {
+      inputRef.current?.click()
+    } finally {
+      openingRef.current = false
+    }
   }
 
   function deliver(files: FileList) {
@@ -119,6 +130,9 @@ export const FileUploadDropzone = React.forwardRef<
         // подсказкой о форматах; прежние 16px по бокам и зазор 4px были
         // теснее макета.
         "relative flex w-full flex-col items-center gap-2 rounded-[24px] border border-dashed p-6 text-center transition-colors",
+        // Tab попадает на скрытый `sr-only` input — кольцо рисует зона,
+        // иначе клавиатурный пользователь не видит, где фокус.
+        "has-[:focus-visible]:focus-ring",
         containerToneClass,
         className
       )}
@@ -144,7 +158,12 @@ export const FileUploadDropzone = React.forwardRef<
         if (event.dataTransfer.files.length > 0) deliver(event.dataTransfer.files)
       }}
       onClick={(event) => {
+        // Отражение собственного `input.click()` — не новое нажатие.
+        if (openingRef.current) return
         onClick?.(event)
+        // Клик по самому input (Space/Enter с клавиатуры) окно выбора уже
+        // открыл: второй `input.click()` открыл бы его повторно.
+        if (event.target === inputRef.current) return
         if (!event.defaultPrevented) openPicker()
       }}
     >

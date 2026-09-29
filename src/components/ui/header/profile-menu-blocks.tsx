@@ -24,9 +24,14 @@ interface ProfileMenuOrganization {
  * у действий и `pl-32 pr-16 py-16` у организаций (см. ORG_ITEM ниже), gap 8,
  * `items-start`. Поэтому строка тянется во всю ширину панели и подсветка
  * идёт от края до края — скругления у неё нет.
+ *
+ * Подсветка — ДВУМЯ селекторами, как у Dropdown кита: `data-highlighted`
+ * ставит Base UI (клавиатура и наведение), а `hover:` нужен, когда
+ * наведение подсветку не ставит — при поиске организаций у меню
+ * `highlightItemOnHover={false}`, иначе фокус уходил из поля (аудит 14).
  */
 const MENU_ITEM =
-  "flex w-full cursor-default items-start gap-2 p-4 outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+  "flex w-full cursor-default items-start gap-2 p-4 outline-none select-none hover:bg-[var(--header-item-hover-bg)] data-highlighted:bg-[var(--header-item-hover-bg)]"
 
 /**
  * Строка организации.

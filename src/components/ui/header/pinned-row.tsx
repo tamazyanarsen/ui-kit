@@ -180,7 +180,12 @@ function HeaderPinnedRow({
         onClose={() => onOpenPanelChange(null)}
         returnFocusRef={createTriggerRef}
       >
-        <CreateMenu items={closingCreateItems} />
+        {/* Аудит 14: предел высоты тот же, что у меню навигации, — иначе в
+            низком окне нижние плитки обрезались и были недостижимы. */}
+        <CreateMenu
+          items={closingCreateItems}
+          maxHeight="var(--menu-overlay-panel, calc(100vh - 14rem))"
+        />
       </MenuOverlay>
     </div>
   )

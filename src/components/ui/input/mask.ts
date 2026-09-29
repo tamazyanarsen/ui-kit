@@ -128,12 +128,30 @@ function preparePhone(
  * Как у телефона — только ввод целым куском в пустое поле (вставка,
  * автозаполнение, значение снаружи); набор с клавиатуры не трогается.
  */
+const DATE_SEPARATORS = [".", "/", "-"]
+
 function prepareDate(
   chars: string,
-  masked: { unmaskedValue: string },
+  masked: { unmaskedValue: string; value: string },
   flags?: { tail?: boolean }
-): string {
-  if (flags?.tail || masked.unmaskedValue) return chars
+): string | [string, InstanceType<typeof IMask.ChangeDetails>] {
+  if (flags?.tail) return chars
+  const typed = masked.unmaskedValue
+  // Набор с клавиатуры: разделитель после одной цифры дня или месяца
+  // дописывает к ней ведущий ноль — «10.1.2026» это 10.01.2026. Раньше
+  // маска отбрасывала разделитель (блок ещё не заполнен), и цифры уезжали в
+  // соседний блок: «10.1.2026» становилось «10.12.026», а DatePicker молча
+  // терял дату (аудит 22). Цифра уже стоит в поле, поэтому значение
+  // переписывается, а каретка сдвигается на дописанный ноль — как у часа во
+  // времени (`prepareTime`).
+  if (chars.length === 1 && DATE_SEPARATORS.includes(chars)) {
+    if (typed.length === 1 || typed.length === 3) {
+      masked.value = typed.slice(0, -1) + "0" + typed.slice(-1)
+      return ["", new IMask.ChangeDetails({ tailShift: 1 })]
+    }
+    return chars
+  }
+  if (typed) return chars
   const text = chars.trim()
   const pad = (part: string) => part.padStart(2, "0")
   // Год в начале — с любым из разделителей «-», «/», «.»: «2026-01-10»,

@@ -53,7 +53,10 @@ const NUMERIC_LIKE = /^[+\-−]?\d[\d   ]*(?:[.,]\d+)?[   ]*₽?$/
  * вставится в поле, где ждут 20 цифр (аудит 23). Так уже копируют BankCard,
  * ячейка таблицы и поля ввода. Свободный текст (имя, адрес) — как есть.
  */
-function toCopyText(text: string): string {
+function toCopyText(raw: string): string {
+  // Крайние пробелы снимаются и у строки из пропса, как у прочитанной из DOM:
+  // « 1 200 ₽ » иначе не узнавалось числом и уходило в буфер как есть.
+  const text = raw.trim()
   if (!NUMERIC_LIKE.test(text)) return text
   return stripGroupSeparators(text.replace(/[   ]*₽$/, "")).trim()
 }

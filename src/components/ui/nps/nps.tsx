@@ -304,9 +304,17 @@ function Nps({
   // чтобы кнопка «Наверх» вставала над ней, а не под неё.
   const cardRef = useFloatingCornerInset<HTMLDivElement>(floating)
 
+  // Пустые подписи отбрасываются до среза: пустая плашка занимала место
+  // в наборе и уменьшала число настоящих.
+  const visibleChips =
+    showChips === "none"
+      ? []
+      : chips.filter((chip) => typeof chip === "string" && chip.trim() !== "").slice(0, showChips)
+
   function handleSubmit() {
     if (!activeValue) return
-    onSubmit?.({ value: activeValue, comment: activeComment })
+    // Наружу — обрезанный комментарий: «   » — это пустой комментарий.
+    onSubmit?.({ value: activeValue, comment: activeComment.trim() })
   }
 
   if (submitted)
@@ -358,8 +366,8 @@ function Nps({
         question={
           question ?? (activeValue ? ratingQuestion(activeValue) : undefined)
         }
-        showChips={showChips !== "none"}
-        chips={showChips === "none" ? [] : chips.slice(0, showChips)}
+        showChips={visibleChips.length > 0}
+        chips={visibleChips}
         activeChip={activeChip}
         onChipSelect={selectChip}
         comment={activeComment}

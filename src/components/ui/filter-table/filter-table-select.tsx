@@ -131,7 +131,10 @@ function FilterTableSelect({
   // для того, чтобы виды с множественным выбором могли сообщить, сколько
   // опций охватывает черновик.
   const selectedCount = draft.trim() ? 1 : 0
-  const hasValue = Boolean(activeValue)
+  // Значение снаружи из пробелов — это пустой фильтр, а не выбранный с
+  // пустой подписью; в чипе показывается обрезанная строка.
+  const shownValue = activeValue?.trim() || null
+  const hasValue = shownValue !== null
 
   return (
     <div className="w-fit">
@@ -146,7 +149,7 @@ function FilterTableSelect({
           disabled={disabled}
           checked={hasValue}
           open={open}
-          activeValue={activeValue}
+          activeValue={shownValue}
           onClear={handleClear}
           anchorRef={anchorRef}
           className={className}
@@ -162,7 +165,7 @@ function FilterTableSelect({
             <PopoverPrimitive.Popup
               data-slot="filter-content"
               // Не шире видимой области минус поля — как у окон `FilterShell`.
-              render={<Dropdown className="w-96 max-w-[calc(100vw-32px)] overflow-hidden" />}
+              render={<Dropdown className="flex max-h-(--available-height) w-96 max-w-[calc(100vw-32px)] flex-col overflow-hidden" />}
             >
               {/* Исправление второго прохода: внешний отступ равен 16px
                   (обёртка «Input area» в макете), а не 12px, — и сама

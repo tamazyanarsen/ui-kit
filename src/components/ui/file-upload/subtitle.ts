@@ -30,8 +30,13 @@ export function buildFileUploadSubtitle({
         ? "Любое количество файлов"
         : `До ${maxFiles} файлов`
 
+  // Пустые названия форматов отбрасываются: «PDF /  / DOC» и «Файл  без
+  // ограничений» выглядели опиской.
+  const shownFormats = (formats ?? []).filter(
+    (format) => typeof format === "string" && format.trim() !== ""
+  )
   const formatClause =
-    formats && formats.length > 0 ? formats.join(" / ") : undefined
+    shownFormats.length > 0 ? shownFormats.join(" / ") : undefined
 
   const head = [countClause, formatClause].filter(Boolean).join(" ")
 

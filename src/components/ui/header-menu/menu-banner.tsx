@@ -3,6 +3,7 @@ import type * as React from "react"
 import { ArrowBackChevron, ArrowNextChevron } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { Button } from "@/components/ui/button"
 
 // MenuBanner — «Баннер в меню ЕЛК»: промо-карточка в
@@ -116,9 +117,9 @@ function MenuBannerContent({
           и рассчитана на 2 + 2 строки. */}
       <div className="flex w-full flex-col gap-2 overflow-hidden text-[var(--header-fg)]">
         <p className="w-full text-h4">{title}</p>
-        {subtitle && <p className="w-full text-p2-medium">{subtitle}</p>}
+        {hasContent(subtitle) && <p className="w-full text-p2-medium">{subtitle}</p>}
       </div>
-      {buttonLabel && (
+      {hasContent(buttonLabel) && (
         <Button
           variant="secondary-black"
           size="sm"

@@ -250,7 +250,9 @@ function FavouritesSettings({
           <Button
             variant="primary"
             onClick={() => {
-              onSave(draft)
+              // Повторы не сохраняются; значения, которых сейчас нет в меню,
+              // остаются (меню могло не догрузиться или зависеть от прав).
+              onSave([...new Set(draft)])
               onOpenChange(false)
             }}
           >

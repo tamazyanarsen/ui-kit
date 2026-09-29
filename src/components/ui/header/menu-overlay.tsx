@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { usePageScrollLock } from "@/lib/use-page-scroll-lock"
 import { usePresence } from "@/lib/use-presence"
 
@@ -222,7 +223,7 @@ function MenuOverlay({
         )}
       >
         {children}
-        {footer && (
+        {hasContent(footer) && (
           <div ref={footerRef} className="flex justify-center pt-8">
             {footer}
           </div>

@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
 import { Bell } from "@/icons"
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { Badge } from "@/components/ui/badge"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
@@ -100,7 +101,7 @@ function NotificationRow({ item }: { item: NotificationMenuItem }) {
             {item.title}
           </span>
         </span>
-        {item.status && (
+        {hasContent(item.status) && (
           <span className="shrink-0 text-p2-medium text-[var(--header-fg)]">
             {item.status}
           </span>

@@ -4,6 +4,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Briefcase, ChevronDown, Search } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
+import { hasContent } from "@/lib/has-content"
 
 import { HeaderMenuPopup } from "./menu-popup"
 import {
@@ -99,7 +100,7 @@ function ProfileMenuTrigger({
           <span className="min-w-0 truncate text-p1-medium text-[var(--header-fg)] group-hover:text-[var(--header-hover-fg)]">
             {organization?.name}
           </span>
-          {contactPerson && (
+          {hasContent(contactPerson) && (
             // У подзаголовка «ИНН ... • Оператор» в ProfileMenuElk
             // подтверждено Object Sans Medium (P3 Medium), а не Regular,
             // для этой второстепенной строки.
@@ -209,7 +210,9 @@ function ProfileMenu({
             </p>
             <OrganizationList
               organizations={filtered}
-              value={value}
+              // Отмечена та же организация, что показана в триггере: при
+              // незнакомом `value` это первая, а не «никакая».
+              value={activeOrg?.id ?? value}
               onValueChange={onValueChange}
             />
           </>

@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { Calendar } from "@/components/ui/calendar"
 import { ComboboxFooter } from "@/components/ui/combobox"
 import { filterTablePillClass } from "./filter-table"
@@ -63,6 +64,7 @@ function FilterDate({
   className,
 }: FilterDateProps) {
   const [open, setOpen] = React.useState(false)
+  const shownPresets = compactList(presets) ?? []
   const [uncontrolled, setUncontrolled] =
     React.useState<[Date | null, Date | null]>(defaultValue)
   const applied = value ?? uncontrolled
@@ -130,12 +132,12 @@ function FilterDate({
             />
           </div>
         </div>
-        {presets.length > 0 && (
+        {shownPresets.length > 0 && (
           <div
             data-slot="filter-date-presets"
             className="flex flex-wrap items-center gap-2"
           >
-            {presets.map((preset) => (
+            {shownPresets.map((preset) => (
               <button
                 key={preset.label}
                 type="button"

@@ -6,6 +6,11 @@ import type {
   MenuBannerProps,
 } from "@/components/ui/header-menu"
 
+import {
+  compactGroups,
+  compactList,
+} from "@/components/ui/header-menu/compact-list"
+
 import type { HeaderNavItem } from "./nav-row"
 import type { NotificationMenuItem } from "./notification-menu"
 import type { ProfileMenuOrganization } from "./profile-menu"
@@ -85,4 +90,19 @@ interface HeaderProps {
   className?: string
 }
 
+/** Свойства шапки со списками без пустых элементов. */
+function compactHeaderProps(props: HeaderProps): HeaderProps {
+  return {
+    ...props,
+    navItems: compactList(props.navItems),
+    menuGroups: compactGroups(props.menuGroups),
+    menuBanners: compactList(props.menuBanners),
+    createItems: compactList(props.createItems),
+    documentMenuItems: compactList(props.documentMenuItems),
+    notificationItems: compactList(props.notificationItems),
+    organizations: compactList(props.organizations),
+  }
+}
+
+export { compactHeaderProps }
 export type { ClientHeaderType, HeaderProps, HeaderType }

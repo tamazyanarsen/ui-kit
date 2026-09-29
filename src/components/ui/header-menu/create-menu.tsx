@@ -1,6 +1,7 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { compactList } from "./compact-list"
 import { withIconSize } from "@/lib/icon-size"
 import { Grid } from "@/components/ui/grid"
 import { Scrollbar } from "@/components/ui/scrollbar"
@@ -44,7 +45,7 @@ function CreateMenu({ items = [], maxHeight, className }: CreateMenuProps) {
       )}
     >
       <div className="flex w-full flex-wrap content-start items-start gap-6">
-        {items.map((item) => (
+        {(compactList(items) ?? []).map((item) => (
           <button
             key={item.value}
             type="button"

@@ -1,10 +1,16 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { EmployeeMenuNav } from "@/components/ui/employee-menu"
 import { FavouritesSettings } from "@/components/ui/header-menu"
 
-import type { ClientHeaderType, HeaderProps, HeaderType } from "./header-props"
+import {
+  compactHeaderProps,
+  type ClientHeaderType,
+  type HeaderProps,
+  type HeaderType,
+} from "./header-props"
 import { LogoutModal } from "./logout-modal"
 import type { HeaderNavItem } from "./nav-row"
 import { HeaderPinnedRow } from "./pinned-row"
@@ -41,7 +47,8 @@ import { useHeaderLayout } from "./use-header-layout"
 // Сам компонент — только верхняя полоса и модалки: правила раскладки живут в
 // `useHeaderLayout`, нижний ряд с панелями — в `HeaderPinnedRow`, а пропы —
 // в `header-props.ts`. Раньше всё это было одной функцией на 266 строк.
-function Header(props: HeaderProps) {
+function Header(rawProps: HeaderProps) {
+  const props = compactHeaderProps(rawProps)
   const {
     type = "client",
     clientHeaderType = "client",
@@ -157,7 +164,7 @@ function Header(props: HeaderProps) {
           />
         )}
 
-        {type === "sign-out" && phoneNumber && (
+        {type === "sign-out" && hasContent(phoneNumber) && (
           <SignOutPhone phoneNumber={phoneNumber} />
         )}
       </TopRow>

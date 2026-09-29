@@ -2,6 +2,7 @@ import * as React from "react"
 import { CirclePlus } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 
 import { splitFiles, toFileList } from "./accept"
 
@@ -201,7 +202,7 @@ export const FileUploadDropzone = React.forwardRef<
           )}
         </span>
       </span>
-      {subtitle && (
+      {hasContent(subtitle) && (
         // Подзаголовок — элемент колонки `items-center`, его ширина по
         // содержимому: без `max-w-full` и `anywhere` (он уменьшает и
         // min-content) неразрывное имя файла вылезало в обе стороны.

@@ -9,6 +9,7 @@ import {
   type HeaderMenuLink,
 } from "./header-menu-parts"
 import { BannerCarousel } from "./banner-carousel"
+import { compactGroups, compactList } from "./compact-list"
 import type { MenuBannerProps } from "./menu-banner"
 
 // HeaderMenu — «Раскрытое меню навигации» (MENU DOCS):
@@ -86,9 +87,9 @@ function distribute(groups: HeaderMenuGroup[], columns: number, offsets: number[
 const WIDE_MENU_QUERY = "(min-width: 1536px)"
 
 function HeaderMenu({
-  groups = [],
+  groups: rawGroups = [],
   columns: columnsProp,
-  banners = [],
+  banners: rawBanners = [],
   favourites = [],
   onFavouriteToggle,
   activeLink,
@@ -96,6 +97,9 @@ function HeaderMenu({
   maxHeight,
   className,
 }: HeaderMenuProps) {
+  // Пустые элементы списков отбрасываются: `[cond && group]` не роняет меню.
+  const groups = compactGroups(rawGroups) ?? []
+  const banners = compactList(rawBanners) ?? []
   const wide = useMediaQuery(WIDE_MENU_QUERY)
   // Четыре колонки по три колонки грида (12/4) с 1536; ниже — три по четыре.
   const columns = columnsProp ?? (wide ? 4 : 3)

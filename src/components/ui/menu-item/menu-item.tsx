@@ -2,6 +2,7 @@ import * as React from "react"
 import type { ClassValue } from "clsx"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 
 /**
  * MenuItem — централизованная строка выпадающего списка.
@@ -80,7 +81,7 @@ function MenuItemContent({
     <>
       {leading}
       <span className="flex min-w-0 flex-1 flex-col gap-1">
-        {label && (
+        {hasContent(label) && (
           <span className="truncate text-p2-medium text-[var(--menu-item-description-fg)]">
             {label}
           </span>
@@ -88,7 +89,7 @@ function MenuItemContent({
         <span className="truncate text-p1-medium text-[var(--menu-item-fg)]">
           {children}
         </span>
-        {description && (
+        {hasContent(description) && (
           <span className="truncate text-p3-medium text-[var(--menu-item-description-fg)]">
             {description}
           </span>

@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { pressHandlers } from "@/lib/press"
 
 import { RightElement, type RightElementType } from "./right-element"
@@ -146,7 +147,7 @@ function Item({
   onCheckboxChange,
   className,
 }: ItemProps) {
-  const hasThumbnail = thumbnail !== undefined && thumbnail !== false
+  const hasThumbnail = thumbnail === true || hasContent(thumbnail)
   const valueColor = disabled ? DISABLED_FG : "text-[var(--item-value-fg)]"
 
   // Toggle, Checkbox и «i» внутри строки — свои кнопки: Enter/Space на них
@@ -212,7 +213,7 @@ function Item({
             верхней кромке. */}
         <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 self-stretch">
           <span className="flex min-w-0 flex-col">
-            {text && (
+            {hasContent(text) && (
               <span
                 className={cn(
                   "truncate text-p3-medium desktop:text-p2-medium",
@@ -235,7 +236,7 @@ function Item({
               {value}
             </span>
           </span>
-          {comment && (
+          {hasContent(comment) && (
             <span
               className={cn(
                 "line-clamp-5 text-p3-medium desktop:text-p2-medium",

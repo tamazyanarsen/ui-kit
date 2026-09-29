@@ -122,7 +122,7 @@ function RightElement({
       return (
         // Мобильная форма — ступенью ниже, как и весь текст строки
         // (дизайн-чек от 13.09, замечание 4).
-        <span className="shrink-0 text-p2-medium text-[var(--item-right-text-fg)] desktop:text-p1-medium">
+        <span className="max-w-[50%] shrink-0 text-right text-p2-medium [overflow-wrap:anywhere] text-[var(--item-right-text-fg)] desktop:text-p1-medium">
           {rightText}
         </span>
       )

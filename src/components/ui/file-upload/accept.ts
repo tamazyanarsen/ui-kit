@@ -69,15 +69,18 @@ function matchesAccept(file: File, accept: string | undefined) {
   const type = file.type.toLowerCase()
   const dot = name.lastIndexOf(".")
   const byExtension = dot >= 0 ? MIME_BY_EXTENSION[name.slice(dot + 1)] : undefined
-  return accept
+  const tokens = accept
     .split(",")
     .map((token) => token.trim().toLowerCase())
     .filter(Boolean)
-    .some((token) => {
-      if (token.startsWith(".")) return name.endsWith(token)
-      if (type && matchesMime(type, token)) return true
-      return byExtension ? matchesMime(byExtension, token) : false
-    })
+  // Из одних пробелов и запятых («  », «,») ограничения нет, а не «ничего
+  // не подходит»: иначе поле отвергало каждый файл.
+  if (tokens.length === 0) return true
+  return tokens.some((token) => {
+    if (token.startsWith(".")) return name.endsWith(token)
+    if (type && matchesMime(type, token)) return true
+    return byExtension ? matchesMime(byExtension, token) : false
+  })
 }
 
 function splitFiles(files: FileList, accept: string | undefined, multiple: boolean) {

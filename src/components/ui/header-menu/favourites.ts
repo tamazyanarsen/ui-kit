@@ -13,7 +13,8 @@ import type { HeaderMenuGroup, HeaderMenuLink } from "./header-menu"
 
 /** Все ссылки раскрытого меню одним списком, в порядке групп. */
 function collectMenuLinks(groups: HeaderMenuGroup[]): HeaderMenuLink[] {
-  return groups.flatMap((group) => group.links)
+  // Пустые группы и ссылки (`false`/`null` из `cond && …`) отбрасываются.
+  return groups.flatMap((group) => (group?.links ?? []).filter(Boolean))
 }
 
 /**
@@ -33,6 +34,8 @@ function resolveFavouriteLinks(
   return favourites
     .map((value) => byValue.get(value))
     .filter((link): link is HeaderMenuLink => link !== undefined)
+    // Повтор в списке избранного — одна ссылка, а не две с одним ключом.
+    .filter((link, index, all) => all.indexOf(link) === index)
 }
 
 /** Остальные разделы — не добавленные в избранное, по алфавиту. */

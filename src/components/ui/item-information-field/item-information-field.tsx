@@ -2,6 +2,7 @@ import * as React from "react"
 import { Info } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { NoOrphan } from "@/lib/no-orphan"
 import { Tooltip } from "@/components/ui/tooltip"
 
@@ -172,7 +173,7 @@ function ItemInformationField({
   const labelRow = (
     <span className="block min-w-0 [overflow-wrap:anywhere] text-p2-medium text-[var(--ifield-label-fg)] desktop:text-p1-medium">
       {label}
-      {labelInfo && <InfoIcon content={labelInfo} />}
+      {hasContent(labelInfo) && <InfoIcon content={labelInfo} />}
     </span>
   )
 
@@ -190,7 +191,7 @@ function ItemInformationField({
     >
       {/* Обёртка — источник текста для копирования, если `copyValue` нет. */}
       <span data-slot="item-information-field-value">{value}</span>
-      {valueInfo && <InfoIcon content={valueInfo} large={large} />}
+      {hasContent(valueInfo) && <InfoIcon content={valueInfo} large={large} />}
     </span>
   )
 

@@ -74,17 +74,17 @@ function EmployeeUserMenu({
             // Заливки на наведении нет — у `Profile Employee (ELK)` в Hover
             // фон прозрачен, брендовыми становятся только
             // подпись и знаки.
-            className="group flex h-16 shrink-0 cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]"
+            className="group flex h-16 max-w-[304px] min-w-0 shrink cursor-pointer items-center gap-4 px-4 text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]"
           />
         }
       >
-        <span className="flex items-center gap-3">
+        <span className="flex min-w-0 items-center gap-3">
           {/* `Profile Employee (ELK)` рисует человека в
               круге, а не кейс: кейс (`icon / company`) стоит в клиентской
               шапке, где подпись — организация, а здесь подпись — ФИО
               сотрудника банка. */}
-          <CircleUser size={24} aria-hidden="true" className="size-6" />
-          <span className="text-p1-medium">{name}</span>
+          <CircleUser size={24} aria-hidden="true" className="size-6 shrink-0" />
+          <span className="min-w-0 truncate text-p1-medium">{name}</span>
         </span>
         <ChevronDown
           aria-hidden="true"

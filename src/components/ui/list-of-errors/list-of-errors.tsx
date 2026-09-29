@@ -65,7 +65,7 @@ const ListOfErrors = React.forwardRef<HTMLDivElement, ListOfErrorsProps>(functio
   // Фрагменты раскрываются: `{has && <><IssueItem/><IssueItem/></>}` иначе
   // давал одну строку `li` на две ошибки — без зазора между ними и с общей
   // анимацией. Ключи раскрытых детей — от `toArray`, стабильные.
-  const items = flattenChildren(children)
+  const items = flattenChildren(children).filter((child) => child !== "")
 
   // Аудит 13: пустой список (`errors.map(...)` при `errors = []`) рисовал
   // одинокую линию разделителя и пустой `ul` над формой. Ошибок нет — нет и

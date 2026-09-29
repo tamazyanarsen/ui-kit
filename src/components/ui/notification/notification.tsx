@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
+import { hasContent } from "@/lib/has-content"
 import { useScrollEdges } from "@/lib/use-scroll-edges"
 import { Button } from "@/components/ui/button"
 import { Scrollbar } from "@/components/ui/scrollbar"
@@ -92,24 +93,24 @@ function NotificationItem({
             </p>
           )}
         </div>
-        {status && (
+        {hasContent(status) && (
           <p className="text-p2-medium text-[var(--notification-meta-fg)]">
             {status}
           </p>
         )}
-        {description && (
+        {hasContent(description) && (
           <p className="text-p2-medium text-[var(--notification-meta-fg)]">
             {description}
           </p>
         )}
 
-        {(buttonLabel || timestamp) && (
+        {(hasContent(buttonLabel) || hasContent(timestamp)) && (
           // Перенос: строка вне панели (NotificationItem экспортируется сам
           // по себе) на телефоне не вмещала кнопку и время рядом — время
           // уходило за край на 3–58px (аудит 23). Не поместилось — время
           // встаёт под кнопку; в панели 480 ряд прежний.
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pt-2">
-            {buttonLabel ? (
+            {hasContent(buttonLabel) ? (
               <Button
                 type="button"
                 variant="secondary-grey"
@@ -124,7 +125,7 @@ function NotificationItem({
             ) : (
               <span />
             )}
-            {timestamp && (
+            {hasContent(timestamp) && (
               <span className="shrink-0 text-p2-medium text-[var(--notification-timestamp-fg)]">
                 {timestamp}
               </span>
@@ -202,12 +203,12 @@ function NotificationPanel({
         )}
         style={{ maxHeight }}
       >
-        {items.map((item, index) => (
+        {items.filter(Boolean).map((item, index) => (
           <NotificationItem key={index} {...item} />
         ))}
       </Scrollbar>
 
-      {(primaryButtonLabel || secondaryButtonLabel) && (
+      {(hasContent(primaryButtonLabel) || hasContent(secondaryButtonLabel)) && (
         // Дизайн-чек, замечание 41: каждая кнопка занимает половину
         // строки (раньше размер шёл по собственному тексту, и «Прочитать
         // все» с «Настройками» получались заметно разной ширины).
@@ -217,7 +218,7 @@ function NotificationPanel({
             !scrolledToEnd && "border-t-[var(--notification-divider)]"
           )}
         >
-          {primaryButtonLabel && (
+          {hasContent(primaryButtonLabel) && (
             <Button
               type="button"
               variant="secondary-black"
@@ -227,7 +228,7 @@ function NotificationPanel({
               {primaryButtonLabel}
             </Button>
           )}
-          {secondaryButtonLabel && (
+          {hasContent(secondaryButtonLabel) && (
             <Button
               type="button"
               variant="secondary-grey"

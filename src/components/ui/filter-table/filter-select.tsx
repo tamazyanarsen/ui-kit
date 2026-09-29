@@ -2,6 +2,7 @@ import * as React from "react"
 import { Search } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ComboboxFooter } from "@/components/ui/combobox"
 import { Input } from "@/components/ui/input"
@@ -91,7 +92,12 @@ function FilterSelect({
   }
 
   const resolvedGroups = React.useMemo<FilterSelectGroup[]>(
-    () => groups ?? [{ label: "", options: options ?? [] }],
+    // Пустые элементы (`cond && group`) отбрасываются, иначе `group.label`
+    // падало на `null`.
+    () =>
+      (compactList(groups) ?? [{ label: "", options: options ?? [] }]).map(
+        (group) => ({ ...group, options: compactList(group.options) ?? [] })
+      ),
     [groups, options]
   )
 

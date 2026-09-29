@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { pressHandlers } from "@/lib/press"
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -104,7 +105,7 @@ function MailFeed({
 
       <div className="flex w-full flex-col gap-1 text-p3-medium">
         <span className="text-[var(--mail-feed-fg)]">{message}</span>
-        {preview && <span className="line-clamp-1 text-[var(--mail-feed-meta-fg)]">{preview}</span>}
+        {hasContent(preview) && <span className="line-clamp-1 text-[var(--mail-feed-meta-fg)]">{preview}</span>}
       </div>
     </div>
   )

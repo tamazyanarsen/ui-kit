@@ -9,6 +9,7 @@ import {
 } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 
 // FileListItem — строка одного загруженного или загружаемого файла. Значок
 // плюс имя (с подсказкой через `title` для обрезанных имён) плюс строка
@@ -186,7 +187,7 @@ export const FileListItem = React.forwardRef<
         >
           {name}
         </span>
-        {secondLine != null && (
+        {hasContent(secondLine) && (
           <span
             // Аудит 17: текст ошибки обрезался в одну строку без подсказки —
             // причину отказа («Файл слишком большо…») было не прочитать. В L

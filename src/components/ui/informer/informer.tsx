@@ -2,6 +2,7 @@ import * as React from "react"
 import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { Button } from "@/components/ui/button"
 import { Icon as KitIcon, type IconName } from "@/components/ui/icon"
 
@@ -133,19 +134,19 @@ function Informer({
               <span className="text-p2-medium text-[var(--informer-title-fg)] desktop:text-p1-medium">
                 {title}
               </span>
-              {date && (
+              {hasContent(date) && (
                 <span className="text-p3-medium text-[var(--informer-meta-fg)] desktop:text-p2-medium">
                   {date}
                 </span>
               )}
             </div>
-            {description && (
+            {hasContent(description) && (
               <span className="text-p3-medium text-[var(--informer-description-fg)] desktop:text-p2-medium">
                 {description}
               </span>
             )}
           </div>
-          {(mainButtonLabel || additionalButtonLabel) && (
+          {(hasContent(mainButtonLabel) || hasContent(additionalButtonLabel)) && (
             // Перенос: две длинные подписи на узкой полосе уходили за край
             // (до 436px при полосе 343). `w-max max-w-full` вместо запрета
             // переноса на десктопе: в контейнере по содержимому (колонка auto,
@@ -156,7 +157,7 @@ function Informer({
             // кнопки переносятся — `desktop:flex-nowrap` выпускал их за
             // колонку 288 на 89px (аудит 22).
             <div className="flex w-max max-w-full flex-wrap items-center gap-2">
-              {mainButtonLabel && (
+              {hasContent(mainButtonLabel) && (
                 <Button
                   type="button"
                   variant="secondary-black"
@@ -166,7 +167,7 @@ function Informer({
                   {mainButtonLabel}
                 </Button>
               )}
-              {additionalButtonLabel && (
+              {hasContent(additionalButtonLabel) && (
                 <Button
                   type="button"
                   variant="secondary-grey"

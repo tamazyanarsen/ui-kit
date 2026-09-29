@@ -184,7 +184,7 @@ function EmployeeActions({
   showDivider?: boolean
 }) {
   return (
-    <div className="flex shrink-0 items-center">
+    <div className="flex min-w-0 items-center">
       <NotificationMenu
         items={notificationItems}
         unreadCount={countUnread(notificationItems)}

@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { Button } from "@/components/ui/button"
 import {
   Modal,
@@ -75,6 +76,12 @@ function OtpConfirmCard({
   onSubmit,
   className,
 }: OtpConfirmCardProps) {
+  // Пустой подзаголовок не рисуется вовсе: иначе пустой абзац занимал место
+  // в колонке с зазором.
+  const description =
+    subtitle ??
+    (phone ? `Код подтверждения отправлен на номер ${phone}` : null)
+
   return (
     <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       {trigger && <ModalTrigger render={trigger} />}
@@ -87,12 +94,9 @@ function OtpConfirmCard({
         >
           <div className="flex flex-col gap-4 desktop:gap-2">
             <ModalTitle>{title}</ModalTitle>
-            <ModalDescription>
-              {subtitle ??
-                (phone
-                  ? `Код подтверждения отправлен на номер ${phone}`
-                  : null)}
-            </ModalDescription>
+            {hasContent(description) && (
+              <ModalDescription>{description}</ModalDescription>
+            )}
           </div>
 
           <OtpConfirmForm
@@ -131,7 +135,10 @@ function OtpConfirmForm({
   Pick<OtpConfirmCardProps, "value" | "onValueChange" | "error" | "onResend" | "onSubmit">) {
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
   const code = value ?? uncontrolled
-  const complete = code.length === length
+  // Полнота и уходящий наружу код считаются по цифрам, как их читает поле:
+  // «12 34 56» из внешнего значения — это шесть цифр, а не восемь знаков.
+  const digits = code.replace(/\D/g, "").slice(0, length)
+  const complete = digits.length === length
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const next = event.target.value
@@ -144,7 +151,7 @@ function OtpConfirmForm({
       className="flex flex-col gap-12"
       onSubmit={(event) => {
         event.preventDefault()
-        if (complete) onSubmit?.(code)
+        if (complete) onSubmit?.(digits)
       }}
     >
       <OtpInput length={length} value={code} onChange={handleChange} error={error} />

@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { inertProps } from "@/lib/inert"
 
+import { compactList } from "./compact-list"
 import { BannerDots } from "./header-menu-parts"
 import {
   MenuBannerContent,
@@ -49,7 +50,8 @@ interface BannerCarouselProps {
   banners: MenuBannerProps[]
 }
 
-function BannerCarousel({ banners }: BannerCarouselProps) {
+function BannerCarousel({ banners: rawBanners }: BannerCarouselProps) {
+  const banners = compactList(rawBanners) ?? []
   const [index, setIndex] = React.useState(0)
   // Пауза держится ДВУМЯ независимыми источниками — курсором и фокусом.
   // С одним общим флагом уход мыши снимал паузу, пока фокус оставался на

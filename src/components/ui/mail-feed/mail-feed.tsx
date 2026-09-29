@@ -104,7 +104,7 @@ function MailFeed({
       <p className="w-full truncate text-p2-medium text-[var(--mail-feed-fg)]">{subject}</p>
 
       <div className="flex w-full flex-col gap-1 text-p3-medium">
-        <span className="text-[var(--mail-feed-fg)]">{message}</span>
+        <span className="[overflow-wrap:anywhere] text-[var(--mail-feed-fg)]">{message}</span>
         {hasContent(preview) && <span className="line-clamp-1 text-[var(--mail-feed-meta-fg)]">{preview}</span>}
       </div>
     </div>

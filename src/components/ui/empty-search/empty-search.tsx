@@ -115,11 +115,11 @@ function EmptySearchResults({
           внутри карточки 680px), без отдельного ограничения в 384px: оно
           заставляло длинные описания переноситься на строку раньше макета. */}
       <div className="flex w-full flex-col gap-1">
-        <h3 className="text-h4-mobile text-[var(--empty-search-title-fg)] desktop:text-h4">
+        <h3 className="text-h4-mobile [overflow-wrap:anywhere] text-[var(--empty-search-title-fg)] desktop:text-h4">
           {title}
         </h3>
         {hasValue(description) && (
-          <p className="text-p2-medium text-[var(--empty-search-description-fg)] desktop:text-p1-medium">
+          <p className="text-p2-medium [overflow-wrap:anywhere] text-[var(--empty-search-description-fg)] desktop:text-p1-medium">
             {description}
           </p>
         )}

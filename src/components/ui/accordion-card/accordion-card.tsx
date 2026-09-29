@@ -92,7 +92,7 @@ function AccordionCard({
               />
             </span>
             {hasValue(subtitle) && (
-              <span className="text-p2-medium text-[var(--accordion-card-subtitle-fg)] desktop:text-p1-medium">
+              <span className="text-p2-medium [overflow-wrap:anywhere] text-[var(--accordion-card-subtitle-fg)] desktop:text-p1-medium">
                 {subtitle}
               </span>
             )}

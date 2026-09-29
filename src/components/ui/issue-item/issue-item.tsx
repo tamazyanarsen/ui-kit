@@ -94,7 +94,7 @@ const IssueItem = React.forwardRef<HTMLDivElement, IssueItemProps>(function Issu
       >
         <Icon className="size-4" />
       </span>
-      <span className="min-w-0 text-p2-medium text-[var(--issue-fg)] desktop:text-p1-medium">
+      <span className="min-w-0 text-p2-medium [overflow-wrap:anywhere] text-[var(--issue-fg)] desktop:text-p1-medium">
         {children}
       </span>
     </div>

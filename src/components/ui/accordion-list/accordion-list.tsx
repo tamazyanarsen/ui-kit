@@ -221,7 +221,7 @@ function AccordionListItem({
               </span>
               {hasValue(subtitle) && (
                 // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
-                <span className="text-p1-medium text-[var(--accordion-list-subtitle-fg)]">
+                <span className="text-p1-medium [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)]">
                   {subtitle}
                 </span>
               )}

@@ -200,7 +200,7 @@ function ItemInformationField({
   const subTextRow = subText != null && subText !== false && subText !== "" && (
     <span
       className={cn(
-        "text-p3-medium desktop:text-p2-medium",
+        "text-p3-medium [overflow-wrap:anywhere] desktop:text-p2-medium",
         SUBTEXT_COLOR[subTextStatus]
       )}
     >

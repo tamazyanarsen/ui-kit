@@ -65,14 +65,14 @@ function StatusScreen({
       <StatusIllustration status={status} />
 
       <div className="flex w-full flex-col gap-4">
-        <h2 className="text-h3 text-[var(--status-screen-title-fg)]">
+        <h2 className="text-h3 [overflow-wrap:anywhere] text-[var(--status-screen-title-fg)]">
           {title}
         </h2>
 
         {withSubtitle && (
           // Колонка Title/Subtitle в макете `w-full` внутри 768px-экрана —
           // ограничение в 384px переносило подзаголовок на строку раньше.
-          <p className="w-full text-p1-medium text-[var(--status-screen-title-fg)]">
+          <p className="w-full text-p1-medium [overflow-wrap:anywhere] text-[var(--status-screen-title-fg)]">
             {subtitle}
           </p>
         )}

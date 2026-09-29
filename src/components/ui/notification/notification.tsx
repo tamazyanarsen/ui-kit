@@ -71,7 +71,7 @@ function NotificationItem({
         <div className="flex flex-col gap-1">
           <span
             className={cn(
-              "text-p1-medium",
+              "text-p1-medium [overflow-wrap:anywhere]",
               viewed
                 ? "text-[var(--notification-meta-fg)]"
                 : "text-[var(--notification-title-fg)]"
@@ -83,7 +83,7 @@ function NotificationItem({
           {sum != null && sum !== false && sum !== "" && (
             <p
               className={cn(
-                "text-p2-medium",
+                "text-p2-medium [overflow-wrap:anywhere]",
                 viewed
                   ? "text-[var(--notification-meta-fg)]"
                   : "text-[var(--notification-title-fg)]"
@@ -94,12 +94,12 @@ function NotificationItem({
           )}
         </div>
         {hasContent(status) && (
-          <p className="text-p2-medium text-[var(--notification-meta-fg)]">
+          <p className="text-p2-medium [overflow-wrap:anywhere] text-[var(--notification-meta-fg)]">
             {status}
           </p>
         )}
         {hasContent(description) && (
-          <p className="text-p2-medium text-[var(--notification-meta-fg)]">
+          <p className="text-p2-medium [overflow-wrap:anywhere] text-[var(--notification-meta-fg)]">
             {description}
           </p>
         )}
@@ -187,7 +187,7 @@ function NotificationPanel({
             scrolledFromTop && "border-b-[var(--notification-divider)]"
           )}
         >
-          <p className="text-h3 text-[var(--notification-title-fg)]">
+          <p className="text-h3 [overflow-wrap:anywhere] text-[var(--notification-title-fg)]">
             {title}
           </p>
         </div>

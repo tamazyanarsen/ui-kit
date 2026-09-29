@@ -234,7 +234,7 @@ function Event({
 
         {hasValue(comment) && (
           <div className="text-p1-medium">
-            <p className="text-[var(--event-meta-fg)]">{commentLabel}</p>
+            <p className="[overflow-wrap:anywhere] text-[var(--event-meta-fg)]">{commentLabel}</p>
             <p className="[overflow-wrap:anywhere] text-[var(--event-title-fg)]">{comment}</p>
           </div>
         )}

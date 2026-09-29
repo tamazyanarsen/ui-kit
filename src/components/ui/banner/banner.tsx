@@ -183,7 +183,7 @@ function Banner({
         <>
           <div className="flex min-h-[380px] flex-1 flex-col justify-center gap-8 py-14 pl-14">
             <div className="flex flex-col gap-6">
-              <p className="text-h2">
+              <p className="text-h2 [overflow-wrap:anywhere]">
                 {title}
               </p>
               {hasDescription && (
@@ -209,7 +209,7 @@ function Banner({
           )}
           <div className="flex flex-1 items-center gap-8">
             <div className="flex flex-1 flex-col gap-2">
-              <p className="text-h3">{title}</p>
+              <p className="text-h3 [overflow-wrap:anywhere]">{title}</p>
               {/* Массив строк раскладывается по строкам, как у desktop и
                   mobile: внутри одного `<p>` строки сливались в одну, а
                   React ругался на ключи. Строка с `bullet` идёт тем же
@@ -220,7 +220,7 @@ function Banner({
                 (Array.isArray(lines) || bullet ? (
                   <BannerDescription description={lines} bullet={bullet} />
                 ) : (
-                  <p className="text-p1-medium">{lines}</p>
+                  <p className="text-p1-medium [overflow-wrap:anywhere]">{lines}</p>
                 ))}
             </div>
             {cta}
@@ -241,7 +241,7 @@ function Banner({
                   «Mobile. Заголовок/H3 Medium Mobile», то есть ровно то,
                   что прежняя связка text-lg и leading-6 выписывала
                   вручную. */}
-              <p className="text-h3-mobile">{title}</p>
+              <p className="text-h3-mobile [overflow-wrap:anywhere]">{title}</p>
               {hasDescription && (
                 // Зазор между строками остаётся общим по умолчанию (8px,
                 // как на десктопе) — на мобильном по литеральному

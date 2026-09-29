@@ -354,7 +354,7 @@ function Nps({
         <CloseButton onClose={onClose} />
       </div>
 
-      <p className="flex min-h-12 w-full items-center justify-center text-center text-p1-medium text-[var(--nps-title-fg)]">
+      <p className="flex min-h-12 w-full items-center justify-center text-center text-p1-medium [overflow-wrap:anywhere] text-[var(--nps-title-fg)]">
         {title}
       </p>
 

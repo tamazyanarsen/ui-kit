@@ -115,7 +115,7 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
           )}
         </div>
         {hasNode(description) && (
-          <p className="w-full text-p2-medium text-[var(--title-description-fg)]">
+          <p className="w-full text-p2-medium [overflow-wrap:anywhere] text-[var(--title-description-fg)]">
             {description}
           </p>
         )}

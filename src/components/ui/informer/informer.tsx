@@ -97,7 +97,7 @@ function Informer({
       style={{ backgroundColor: SOLID_BG[solid] }}
     >
       <div className="flex items-start gap-4">
-        {customIcon === undefined ? (
+        {customIcon == null || customIcon === false || customIcon === "" ? (
           <Icon
             size={24}
             aria-hidden="true"
@@ -131,17 +131,17 @@ function Informer({
               {/* Мобильная форма опускает весь текстовый блок на ступень:
                   заголовок 14/20 и дата с описанием 12/16 при Size=Mobile
                   против 16/24 и 14/20 на десктопе. */}
-              <span className="text-p2-medium text-[var(--informer-title-fg)] desktop:text-p1-medium">
+              <span className="text-p2-medium [overflow-wrap:anywhere] text-[var(--informer-title-fg)] desktop:text-p1-medium">
                 {title}
               </span>
               {hasContent(date) && (
-                <span className="text-p3-medium text-[var(--informer-meta-fg)] desktop:text-p2-medium">
+                <span className="text-p3-medium [overflow-wrap:anywhere] text-[var(--informer-meta-fg)] desktop:text-p2-medium">
                   {date}
                 </span>
               )}
             </div>
             {hasContent(description) && (
-              <span className="text-p3-medium text-[var(--informer-description-fg)] desktop:text-p2-medium">
+              <span className="text-p3-medium [overflow-wrap:anywhere] text-[var(--informer-description-fg)] desktop:text-p2-medium">
                 {description}
               </span>
             )}

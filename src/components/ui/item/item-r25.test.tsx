@@ -36,7 +36,7 @@ describe("Item", () => {
     expect(container.querySelector("svg")).not.toBeNull()
   })
 
-  it("длинный правый текст ограничен половиной строки и переносится", () => {
+  it("длинный правый текст сжимается и переносится, а не выдавливает значение", () => {
     render(
       <Item
         value="Значение"
@@ -45,7 +45,8 @@ describe("Item", () => {
       />
     )
     const right = screen.getByText(/ОченьДлинный/)
-    expect(right.className).toContain("max-w-[50%]")
+    expect(right.className).toContain("min-w-0")
+    expect(right.className).not.toContain("shrink-0")
     expect(right.className).toContain("[overflow-wrap:anywhere]")
   })
 })

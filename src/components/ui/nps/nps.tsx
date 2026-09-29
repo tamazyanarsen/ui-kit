@@ -265,7 +265,14 @@ function Nps({
   className,
 }: NpsProps) {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
-  const activeValue = value !== undefined ? value : internalValue
+  // Оценка вне 1–5 (0 из формы по умолчанию, NaN, строка «5» из URL) — это
+  // «оценки нет»: ноль раскрывал форму и рисовал под звёздами голый «0».
+  const rawValue = value !== undefined ? value : internalValue
+  const numericValue = Math.round(Number(rawValue))
+  const activeValue: NpsEstimateType | null =
+    rawValue !== null && numericValue >= 1 && numericValue <= TOP_RATING
+      ? (numericValue as NpsEstimateType)
+      : null
   const [internalComment, setInternalComment] = React.useState("")
   const activeComment = comment ?? internalComment
   // Дизайн-чек №3 №15: «Чипсы должны отрабатывать по одной. Сейчас можно
@@ -280,6 +287,20 @@ function Nps({
   // отдельного «снятия выбора» не нужно.
   const [selectedChip, setSelectedChip] = React.useState<string | null>(null)
   const activeChip = selectedChip === activeComment ? selectedChip : null
+
+  // «Спасибо» → снова форма (управляемый `submitted` вернули в false): новый
+  // опрос не должен открываться с оценкой и комментарием прошлого. Сбрасывается
+  // только собственное состояние; управляемые `value`/`comment` остаются за
+  // потребителем. Корректировка во время рендера — без кадра со старой формой.
+  const [wasSubmitted, setWasSubmitted] = React.useState(submitted)
+  if (wasSubmitted !== submitted) {
+    setWasSubmitted(submitted)
+    if (wasSubmitted && !submitted) {
+      setInternalValue(defaultValue)
+      setInternalComment("")
+      setSelectedChip(null)
+    }
+  }
 
   function setRating(next: NpsEstimateType) {
     if (value === undefined) setInternalValue(next)

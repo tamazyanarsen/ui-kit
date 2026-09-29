@@ -48,6 +48,19 @@ function readRenderedValue(button: HTMLElement): string {
 const NUMERIC_LIKE = /^[+\-−]?\d[\d   ]*(?:[.,]\d+)?[   ]*₽?$/
 
 /**
+ * Телефон записывается теми же цифрами с пробелами, что и сумма: «+7 900 123
+ * 45 67» узнавался числом и терял пробелы. Признак телефона — хвост из двух
+ * пар цифр («…45 67») или ведущий «+» при группах не по три цифры; сумма
+ * «+1 200 000» и номер счёта «40702 810 7 00590062544» сюда не попадают.
+ */
+const PHONE_TAIL = /(?:^|[   ])\d{2}[   ]\d{2}$/
+const PLUS_AMOUNT = /^\+\d{1,3}(?:[   ]\d{3})*(?:[.,]\d+)?[   ]*₽?$/
+function isPhoneLike(text: string): boolean {
+  if (text.startsWith("+")) return !PLUS_AMOUNT.test(text)
+  return PHONE_TAIL.test(text)
+}
+
+/**
  * Показанное значение в буфер: у номеров и сумм разрядные пробелы и «₽»
  * снимаются — номер счёта «40702 810 7 00590062544» с пробелами не
  * вставится в поле, где ждут 20 цифр (аудит 23). Так уже копируют BankCard,
@@ -57,7 +70,7 @@ function toCopyText(raw: string): string {
   // Крайние пробелы снимаются и у строки из пропса, как у прочитанной из DOM:
   // « 1 200 ₽ » иначе не узнавалось числом и уходило в буфер как есть.
   const text = raw.trim()
-  if (!NUMERIC_LIKE.test(text)) return text
+  if (!NUMERIC_LIKE.test(text) || isPhoneLike(text)) return text
   return stripGroupSeparators(text.replace(/[   ]*₽$/, "")).trim()
 }
 

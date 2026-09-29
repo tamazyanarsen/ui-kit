@@ -147,6 +147,13 @@ const GridRow = React.forwardRef<
   )
 })
 
+// `NaN` (пустое поле, `Number("")`) — это «не задано»: вся строка, а не
+// невалидное `span NaN`, из-за которого колонка теряла размещение.
+function clampSpan(span: number): number {
+  if (Number.isNaN(span)) return GRID_COLUMNS
+  return Math.min(Math.max(Math.round(span), 1), GRID_COLUMNS)
+}
+
 interface GridColProps extends React.ComponentProps<"div"> {
   /** Ширина в колонках, 1…12. */
   span?: number
@@ -157,7 +164,7 @@ const GridCol = React.forwardRef<
   HTMLDivElement,
   GridColProps
 >(function GridCol({ span = GRID_COLUMNS, className, style, ...props }, ref) {
-  const width = Math.min(Math.max(Math.round(span), 1), GRID_COLUMNS)
+  const width = clampSpan(span)
 
   return (
     <div
@@ -188,7 +195,7 @@ const GridCol = React.forwardRef<
  * желобов делят полосу, N колонок забирают N долей и N−1 желобов.
  */
 function gridSpanWidth(span: number): string {
-  const width = Math.min(Math.max(Math.round(span), 1), GRID_COLUMNS)
+  const width = clampSpan(span)
   if (width === GRID_COLUMNS) return "100%"
   return `calc((100% - ${GRID_COLUMNS - 1} * var(--grid-gutter)) / ${GRID_COLUMNS} * ${width} + var(--grid-gutter) * ${width - 1})`
 }

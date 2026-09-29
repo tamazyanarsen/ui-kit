@@ -179,9 +179,12 @@ function Thumbnail({
         >
           <span className="absolute right-1 bottom-1 flex flex-col items-end gap-0.5">
             <PaymentLogo system={paymentSystem} disabled={disabled} size="sm" />
-            <span className="text-p4-medium text-white">
-              · {last4 ?? "0000"}
-            </span>
+            {/* Пустые цифры — «·» без числа; не заданные — заглушка. */}
+            {last4?.trim() !== "" && (
+              <span className="text-p4-medium text-white">
+                · {last4 ?? "0000"}
+              </span>
+            )}
           </span>
         </span>
       )}

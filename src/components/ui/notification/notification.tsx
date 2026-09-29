@@ -3,6 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
 import { hasContent } from "@/lib/has-content"
+import { hasNode } from "@/lib/has-node"
 import { useScrollEdges } from "@/lib/use-scroll-edges"
 import { Button } from "@/components/ui/button"
 import { Scrollbar } from "@/components/ui/scrollbar"
@@ -180,7 +181,7 @@ function NotificationPanel({
         className
       )}
     >
-      {title && (
+      {hasNode(title) && (
         <div
           className={cn(
             "border-b border-transparent px-4 pt-4 pb-3",

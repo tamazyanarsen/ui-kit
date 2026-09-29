@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { Button } from "@/components/ui/button"
 import {
   ARROW_BASE,
@@ -191,13 +192,16 @@ function FadeArrow({
 }
 
 function Steps({
-  steps,
+  steps: rawSteps,
   showLeftFade = false,
   showRightFade = false,
   onClickLeft,
   onClickRight,
   className,
 }: StepsProps) {
+  // `[cond && step]` даёт в списке false/null: без отбора карточка падала на
+  // разборе шага, а `findIndex` — на чтении `state`.
+  const steps = compactList(rawSteps) ?? []
   const cardRefs = React.useRef<Array<HTMLDivElement | null>>([])
   const stripRef = React.useRef<HTMLDivElement>(null)
   const activeIndex = steps.findIndex((step) => step.state === "active")

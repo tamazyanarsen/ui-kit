@@ -10,6 +10,7 @@ import type { PaymentSystem } from "@/components/ui/thumbnail"
 // Дизайн-чек №15: пиктограмма карты больше не собирается здесь локально —
 // это отдельный компонент со своей историей, подключённый как зависимость.
 import { CardAccount } from "@/components/ui/card-account"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 
 // Card — строка банковской карты «ELK / card». Каждый текстовый блок
 // (заголовок, подзаголовок, значение) по макету строго однострочный (раздел
@@ -66,6 +67,8 @@ function Card({
   className,
 }: CardProps) {
   const clickable = Boolean(onClick)
+  // `[can && item]` с одними false — пунктов нет, и кнопки «…» тоже.
+  const items = compactList(menuItems)
 
   return (
     <div
@@ -132,8 +135,8 @@ function Card({
         )}
       </div>
 
-      {menuItems && menuItems.length > 0 && (
-        <SelectionButton items={menuItems} size="sm" direction="down-left" />
+      {items && items.length > 0 && (
+        <SelectionButton items={items} size="sm" direction="down-left" />
       )}
     </div>
   )

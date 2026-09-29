@@ -109,7 +109,7 @@ function ErrorPageIllustration({
       >
         <div
           role="presentation"
-          className="error-page-mascot-image mx-auto block aspect-[700/484] h-40 bg-contain bg-center bg-no-repeat"
+          className="error-page-mascot-image mx-auto block aspect-[700/484] w-[calc(160px*700/484)] max-w-full bg-contain bg-center bg-no-repeat"
         />
       </div>
     )

@@ -316,7 +316,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "bootstrap": "npm install && npm run storybook",
-    "update": "git pull && npm install"
+    "update": "git pull && npm install",
+    "qa": "node scripts/qa/run.mjs"
   },
   "peerDependencies": {
     "@base-ui/react": "^1.6.0",
@@ -347,6 +348,9 @@
     "echarts": "^6.1.0",
     "jsdom": "^29.1.1",
     "oxlint": "^1.71.0",
+    "pixelmatch": "^7.2.0",
+    "playwright-core": "^1.63.0",
+    "pngjs": "^7.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "shadcn": "^4.14.0",

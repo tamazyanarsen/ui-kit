@@ -46,3 +46,6 @@ storybook-static
 .env
 .env.*
 !.env.example
+
+# QA в браузере (scripts/qa)
+.qa

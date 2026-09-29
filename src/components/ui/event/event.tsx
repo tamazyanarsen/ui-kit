@@ -233,12 +233,14 @@ function Event({
             <p className="text-p1-medium text-[var(--event-meta-fg)]">
               Приложенные документы:
             </p>
-            {/* Две колонки — по ширине самого блока (контейнерный запрос), а
-                не по экрану (`sm:`, аудит 14) и не по форме кита: в узком
-                контейнере на широком экране колонки по ~155px обрезали имя
-                файла до ~10 знаков. Вторая колонка — от 480px блока. */}
-            <div className="@container/event-docs">
-            <div className="grid grid-cols-1 gap-4 @min-[480px]/event-docs:grid-cols-2">
+            {/* Не больше двух колонок, и вторая — только когда каждой
+                достаётся от 240px: считается по ширине самого блока, а не по
+                экрану (`sm:`, аудит 14) и не по форме кита. Контейнерный
+                запрос (r15) для этого не годится: `container-type` обнуляет
+                ширину по содержимому, и Event в контейнере по содержимому
+                (inline-block, колонка грида auto) сжимался до ~230px и резал
+                имена файлов (аудит 15, тот же урок, что Informer в r9). */}
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(max(min(100%,240px),calc((100%_-_1rem)/2)),1fr))] gap-4">
               {documents.map((doc, index) => (
                 <button
                   key={index}
@@ -272,7 +274,6 @@ function Event({
                   </span>
                 </button>
               ))}
-            </div>
             </div>
           </div>
         )}

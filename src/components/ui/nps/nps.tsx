@@ -152,8 +152,15 @@ const CARD_CLASS =
 // при подложке `z-50`): иначе он лежал поверх окна и на телефоне
 // закрывал «Подтвердить». Слой по-прежнему выше тостов, когда окна нет
 // (дизайн-чек от 07.09, замечание 21), — см. styles/tokens-surfaces.css.
+//
+// Так же он уходит под любой открытый всплывающий слой и под меню шапки
+// (`z-[35]`: ниже оверлея меню `z-40` и попапов `z-50`, выше нижней панели
+// `z-30`). Открытый попап Base UI — это позиционер и попап с
+// `[data-side][data-open]` (списки «…», Select, фильтры, подсказки).
+// Раньше раскрытый вверх список «…» у закреплённой панели и разделы меню
+// шапки оказывались под опросом и не нажимались (аудит 15).
 const FLOATING_CLASS =
-  "[:root:has([data-slot=modal-backdrop])_&]:z-40 fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))] desktop:max-w-none"
+  "[:root:has([data-slot=modal-backdrop])_&]:z-40 [:root:has([data-side][data-open],[data-slot=header-menu-overlay])_&]:z-[35] fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))] desktop:max-w-none"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({

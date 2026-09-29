@@ -133,13 +133,26 @@ function useDataTableModel<Row>({
     manualSort,
   })
 
-  const { anyExpanded, isExpanded, toggleExpanded, toggleExpandedAll } =
+  const { anyExpanded, isExpanded: isExpandedByState, toggleExpanded, toggleExpandedAll } =
     useTableExpansion({
       allRows,
       expandedKeys,
       onExpandedKeysChange,
       defaultCollapsed,
     })
+
+  const hierarchyKey = React.useMemo(
+    () => hierarchyColumnKey(columns, hierarchical),
+    [columns, hierarchical]
+  )
+  // Столбца, который несёт шевроны, нет (столбец дерева скрыт через
+  // `columnSettings`, и другого текстового не осталось) — дерево
+  // показывается раскрытым: иначе вложенные строки свёрнутого дерева было
+  // нечем раскрыть, и они пропадали из таблицы (аудит 18).
+  const isExpanded = React.useCallback(
+    (key: string) => (hierarchical && hierarchyKey === undefined) || isExpandedByState(key),
+    [hierarchical, hierarchyKey, isExpandedByState]
+  )
 
   // Вхождения одного объекта у одного родителя разбирают его исходные ключи
   // по очереди — так у каждой копии свой ключ, и он не зависит от сортировки.
@@ -188,10 +201,6 @@ function useDataTableModel<Row>({
     isRowSelectable,
   })
 
-  const hierarchyKey = React.useMemo(
-    () => hierarchyColumnKey(columns, hierarchical),
-    [columns, hierarchical]
-  )
   const unitVariants = React.useMemo(
     () => collectUnitVariants(columns, allRows),
     [columns, allRows]

@@ -91,6 +91,16 @@ function BannerImage({
   )
 }
 
+/**
+ * Строка описания, которую стоит рисовать. Потребитель собирает массив
+ * условиями (`["До 10 млн", hasB && "Решение за день", null]`), и пустые
+ * значения раньше становились пунктами — маркер без текста; пустой массив
+ * давал пустой блок и лишний зазор под заголовком (аудит 18).
+ */
+function isFilled(line: React.ReactNode) {
+  return line != null && line !== false && line !== true && line !== ""
+}
+
 function BannerDescription({
   description,
   bullet,
@@ -105,7 +115,7 @@ function BannerDescription({
   // `className` достаёт только до зазора между строками, а не до этого).
   itemGap?: string
 }) {
-  const lines = Array.isArray(description) ? description : [description]
+  const lines = (Array.isArray(description) ? description : [description]).filter(isFilled)
 
   return (
     <div
@@ -138,6 +148,10 @@ function Banner({
   className,
 }: BannerProps) {
   const fg = bannerForegroundClassName(color)
+  // Пустые строки описания отбрасываются здесь, чтобы и проверка «есть ли
+  // описание», и выбор раскладки (массив или одна строка) видели одно и то же.
+  const lines = Array.isArray(description) ? description.filter(isFilled) : description
+  const hasDescription = Array.isArray(lines) ? lines.length > 0 : isFilled(lines)
   // По мастерам «mobile» и «desktop small» (compact): у мобильного кнопка
   // с той же синей заливкой `primary`, что и у десктопного (фон #80E3FF), и
   // только у compact кнопка белая, `secondary-white`. Размер «lg» сам по
@@ -172,8 +186,8 @@ function Banner({
               <p className="text-h2">
                 {title}
               </p>
-              {description && (
-                <BannerDescription description={description} bullet={bullet} />
+              {hasDescription && (
+                <BannerDescription description={lines} bullet={bullet} />
               )}
             </div>
             {cta}
@@ -202,11 +216,11 @@ function Banner({
                   путём — иначе compact единственный терял маркер. Строка
                   без маркера остаётся простым `<p>`: её вёрстка не
                   меняется. */}
-              {description &&
-                (Array.isArray(description) || bullet ? (
-                  <BannerDescription description={description} bullet={bullet} />
+              {hasDescription &&
+                (Array.isArray(lines) || bullet ? (
+                  <BannerDescription description={lines} bullet={bullet} />
                 ) : (
-                  <p className="text-p1-medium">{description}</p>
+                  <p className="text-p1-medium">{lines}</p>
                 ))}
             </div>
             {cta}
@@ -228,14 +242,14 @@ function Banner({
                   что прежняя связка text-lg и leading-6 выписывала
                   вручную. */}
               <p className="text-h3-mobile">{title}</p>
-              {description && (
+              {hasDescription && (
                 // Зазор между строками остаётся общим по умолчанию (8px,
                 // как на десктопе) — на мобильном по литеральному
                 // компоненту макета уже только зазор между маркером и
                 // текстом (itemGap). Прежний проход путал эти два зазора и
                 // ужимал до 4px оба.
                 <BannerDescription
-                  description={description}
+                  description={lines}
                   bullet={bullet}
                   className="text-p2-medium"
                   itemGap="gap-1"

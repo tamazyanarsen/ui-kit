@@ -10,6 +10,7 @@ import {
   TableBlock,
   TableColumnSettings,
   columnsFromFields,
+  treeRequiredColumnIds,
   selectableRowKeys,
   type TableField,
 } from "@/components/ui/table"
@@ -136,6 +137,9 @@ function TableFieldsExample({
                 <TableColumnSettings
                   columns={columns}
                   onColumnsChange={setColumns}
+                  // Столбец дерева скрыть нельзя — только пока таблица и
+                  // правда дерево (`nested`).
+                  requiredIds={treeRequiredColumnIds(fields, rows)}
                 />
               </>
             }

@@ -51,6 +51,14 @@ interface TableColumn {
    * блок от скрытия остаётся сплошным.
    */
   pinned?: boolean
+  /**
+   * Столбец нельзя скрыть, но можно переставить: он несёт дерево таблицы
+   * (шевроны и отступы уровней). Без него вложенные строки свёрнутого дерева
+   * было нечем раскрыть (аудит 18). Для дерева удобнее проп окна
+   * `requiredIds` (его считает `treeRequiredColumnIds` по строкам). Уже
+   * скрытый столбец включить можно.
+   */
+  required?: boolean
 }
 
 interface TableColumnSettingsProps {
@@ -66,6 +74,13 @@ interface TableColumnSettingsProps {
   label?: React.ReactNode
   /** Replaces the default "Настроить столбцы" trigger button. */
   trigger?: React.ReactElement
+  /**
+   * Столбцы, которые нельзя скрыть (как `required` у столбца), — например
+   * столбец дерева из `treeRequiredColumnIds`. Отдельный проп, а не поле
+   * столбца: признак считается из данных при отрисовке и не оседает в
+   * списке столбцов через `onColumnsChange`.
+   */
+  requiredIds?: string[]
   className?: string
 }
 
@@ -78,6 +93,7 @@ function TableColumnSettings({
   searchPlaceholder = "Поиск",
   label = "Настроить столбцы",
   trigger,
+  requiredIds,
   className,
 }: TableColumnSettingsProps) {
   const [query, setQuery] = React.useState("")
@@ -97,8 +113,11 @@ function TableColumnSettings({
   ).length
   const isLastShown = (column: TableColumn) =>
     !column.locked && isColumnVisible(column) && shownCount <= 1
+  const isRequiredShown = (column: TableColumn) =>
+    Boolean(column.required || requiredIds?.includes(column.id)) &&
+    isColumnVisible(column)
   const canToggle = (column: TableColumn) =>
-    hideable && !column.locked && !isLastShown(column)
+    hideable && !column.locked && !isLastShown(column) && !isRequiredShown(column)
 
   function toggle(id: string) {
     const target = columns.find((column) => column.id === id)
@@ -259,7 +278,9 @@ function TableColumnSettings({
                     >
                       <Checkbox
                         checked={column.locked || isColumnVisible(column)}
-                        disabled={column.locked || isLastShown(column)}
+                        disabled={
+                          column.locked || isLastShown(column) || isRequiredShown(column)
+                        }
                         onCheckedChange={() => toggle(column.id)}
                         aria-label={`Показывать столбец «${nodeText(column.label)}»`}
                       />

@@ -136,10 +136,33 @@ function columnsFromFields<Row>(fields: TableField<Row>[]): TableColumn[] {
     }))
 }
 
+/**
+ * Столбцы, которые нельзя скрыть, потому что таблица рисует дерево: столбец
+ * иерархии, если хотя бы у одной строки есть вложенные. Без него свёрнутые
+ * вложенные строки было нечем раскрыть (аудит 18). Результат передаётся в
+ * `requiredIds` окна «Настроить столбцы».
+ *
+ * Считается при отрисовке из строк, а не пишется в список столбцов: список
+ * обычно живёт в состоянии, а плоская это таблица или дерево, зависит от
+ * данных. В плоской таблице тот же столбец скрывается как обычный.
+ */
+function treeRequiredColumnIds<Row>(
+  fields: TableField<Row>[],
+  rows: Row[],
+  getChildren: (row: Row) => Row[] | undefined = (row) =>
+    (row as { children?: Row[] }).children
+): string[] {
+  const tree = rows.some((row) => (getChildren(row)?.length ?? 0) > 0)
+  if (!tree) return []
+  const key = hierarchyColumnKey(fields, true)
+  return key === undefined ? [] : [key]
+}
+
 export {
   collectUnitVariants,
   columnsFromFields,
   headCellType,
   hierarchyColumnKey,
+  treeRequiredColumnIds,
   resolveColumns,
 }

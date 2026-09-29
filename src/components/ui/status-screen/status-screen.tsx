@@ -80,9 +80,13 @@ function StatusScreen({
       {withButtons && (
         // Кнопки, которые не помещаются рядом, переносятся на свою строку:
         // без переноса «В центр уведомлений» + «Прочитать все (23)» на 375
-        // уходили за край на 35px. Только в мобильной форме: на десктопе ряд
-        // задаёт минимальную ширину экрана в контейнере по содержимому.
-        <div className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-4 desktop:flex-nowrap">
+        // уходили за край на 35px. `w-max max-w-full` вместо запрета
+        // переноса на десктопе: в контейнере по содержимому ряд, как и без
+        // переноса, задаёт ширину экрана (процентный max-width в расчёте
+        // вклада не действует), а в узкой колонке фиксированной ширины
+        // переносится — `desktop:flex-nowrap` выпускал кнопки за колонку 288
+        // на 85px (аудит 22). По центру ряд ставит `items-center` родителя.
+        <div className="flex w-max max-w-full flex-wrap items-center justify-center gap-x-6 gap-y-4">
           {primaryButtonLabel && (
             <Button
               type="button"

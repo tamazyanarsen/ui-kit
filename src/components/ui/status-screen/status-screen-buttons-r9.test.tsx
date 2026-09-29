@@ -18,8 +18,8 @@ describe("StatusScreen: кнопки не уходят за край", () => {
     )
     const row = screen.getByRole("button", { name: "В центр уведомлений" }).parentElement!
     expect(row.className.split(/\s+/)).toContain("flex-wrap")
-    // Сверка r9: на десктопе ряд без переноса — в контейнере по содержимому
-    // перенос сжимал экран и ронял кнопки в столбик.
-    expect(row.className.split(/\s+/)).toContain("desktop:flex-nowrap")
+    // Ширина по содержимому — рядом (w-max), а не запретом переноса на
+    // десктопе: см. informer-buttons-r23 / status-screen-buttons-r23.
+    expect(row.className.split(/\s+/)).toContain("w-max")
   })
 })

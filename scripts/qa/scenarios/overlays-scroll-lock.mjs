@@ -49,4 +49,26 @@ export default [
       expect.eq(await bodyOverflow(page), 'hidden', 'панель ещё открыта — страница всё ещё заперта; состояние ' + JSON.stringify(st))
     },
   },
+  {
+    name: 'блокировка прокрутки: отступ body на ширину полосы применяется только при признаке полосы (в собранном CSS)',
+    story: HEADER,
+    run: async ({ page, expect }) => {
+      // Поведение в Storybook не воспроизвести: его .sb-main-fullscreen перебивает отступ body по специфичности.
+      // Регрессия r27: правило `html[data-page-scroll-lock] body { padding-right: var(--scroll-lock-gap, 0px) }`
+      // обнуляло собственный отступ страницы там, где полосы прокрутки нет. Проверяем собранные правила.
+      const rules = await page.evaluate(() => {
+        const out = []
+        for (const sh of document.styleSheets) {
+          try {
+            for (const r of sh.cssRules) {
+              if (r.selectorText && r.selectorText.includes('data-page-scroll-lock') && /padding-right/.test(r.cssText)) out.push(r.selectorText)
+            }
+          } catch { /* чужие таблицы */ }
+        }
+        return out
+      })
+      expect(rules.length > 0, 'правило отступа замка есть в собранном CSS')
+      expect(rules.every((r) => r.includes('data-page-scroll-lock-gap')), 'отступ зависит от признака полосы: ' + rules.join(' | '))
+    },
+  },
 ]

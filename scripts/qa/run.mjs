@@ -3,6 +3,8 @@
 //   npm run qa -- audit <имя> [base|hard]  прогнать все истории (по умолчанию base), результат в .qa/out/<имя>-<режим>
 //   npm run qa -- compare <а> <б>          сверить скриншоты двух прогонов (.qa/out/<а>, .qa/out/<б>)
 //   npm run qa -- drill <имя> <id...>      какой текстовый аргумент растягивает страницу на 375
+//   npm run qa -- scenarios <имя> [--filter текст]   записанные сценарии взаимодействия (scripts/qa/scenarios)
+//   npm run qa -- fuzz <имя> [--iterations 25 --seed 1]  случайные сочетания пропсов по argTypes
 // Типичный цикл: build before → audit before base → правка → build after → audit after base → compare before-base after-base.
 import { spawn, spawnSync } from 'node:child_process'
 import http from 'node:http'
@@ -33,7 +35,7 @@ function serve(dir) {
 if (cmd === 'build') {
   const name = rest[0] || 'head'
   process.exit(spawnSync('npx', ['storybook', 'build', '-o', path.join(ROOT, name), '--quiet'], { stdio: 'inherit', shell: true }).status ?? 0)
-} else if (cmd === 'audit' || cmd === 'drill') {
+} else if (cmd === 'audit' || cmd === 'drill' || cmd === 'scenarios' || cmd === 'fuzz') {
   const [name, ...more] = rest
   const dir = path.resolve(ROOT, name)
   if (!fs.existsSync(dir)) { console.error(`Нет сборки ${dir}: сначала npm run qa -- build ${name}`); process.exit(1) }
@@ -42,6 +44,10 @@ if (cmd === 'build') {
   if (cmd === 'audit') {
     const mode = more[0] === 'hard' ? 'hard' : 'base'
     code = await node('audit.mjs', ['--sb', url, '--mode', mode, '--out', path.join(ROOT, 'out', `${name}-${mode}`), ...more.slice(1)])
+  } else if (cmd === 'scenarios') {
+    code = await node('scenarios.mjs', ['--sb', url, ...more])
+  } else if (cmd === 'fuzz') {
+    code = await node('fuzz.mjs', ['--sb', url, '--out', path.join(ROOT, 'out', `${name}-fuzz`), ...more])
   } else {
     process.env.SB = url
     code = await node('drill.mjs', more)
@@ -51,6 +57,6 @@ if (cmd === 'build') {
 } else if (cmd === 'compare') {
   process.exit(await node('compare.mjs', [path.join(ROOT, 'out', rest[0]), path.join(ROOT, 'out', rest[1])]))
 } else {
-  console.error('Команды: build <имя> | audit <имя> [base|hard] | compare <а> <б> | drill <имя> <id...>')
+  console.error('Команды: build <имя> | audit <имя> [base|hard] | compare <а> <б> | drill <имя> <id...> | scenarios <имя> | fuzz <имя>')
   process.exit(1)
 }

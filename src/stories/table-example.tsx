@@ -159,6 +159,7 @@ function TableExample({
                 edge={!selectable}
                 pin={leftPin}
                 level={nested ? row.level : 0}
+                hierarchy={nested}
                 expandable={
                   nested && TABLE_ROWS.some((r) => r.parent === row.id)
                 }

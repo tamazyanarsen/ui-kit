@@ -81,6 +81,7 @@ function DataTableBody<Row>({
                 {...(field.key === hierarchyKey
                   ? {
                       level,
+                      hierarchy: true,
                       expandable: hasChildren,
                       expanded: isExpanded(key),
                       onExpandedChange: () => toggleExpanded(key),

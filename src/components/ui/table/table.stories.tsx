@@ -239,6 +239,7 @@ export const Matrix: Story = {
               <TableRow key={row.id}>
                 <TableCell
                   level={row.level}
+                  hierarchy
                   expandable={TABLE_ROWS.some((r) => r.parent === row.id)}
                   expanded
                 >

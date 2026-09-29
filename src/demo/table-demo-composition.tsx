@@ -155,6 +155,7 @@ function TableCompositionDemo() {
                 <TableCell
                   pin="left"
                   level={row.level}
+                  hierarchy
                   expandable={hasParent(row.id)}
                   expanded={expanded.has(row.id)}
                   onExpandedChange={() => toggleExpanded(row.id)}

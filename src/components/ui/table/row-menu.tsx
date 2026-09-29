@@ -4,6 +4,8 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { Dropdown } from "@/components/ui/dropdown"
+import { cn } from "@/lib/utils"
+import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 // Триггер действий «...» для типа Button у ячейки заголовка — это Menu,
 // собранное так же, как `ButtonMenuOverflow`, размером icon-sm и в варианте
@@ -41,8 +43,9 @@ function TableRowMenu({
         >
           <MenuPrimitive.Popup
             data-slot="table-row-menu-content"
-            // Не выше места до края окна, как списки «…» (r11).
-            render={<Dropdown className="min-w-48 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
+            // Не выше места до края окна, как списки «…» (r11), и не шире
+            // 400px и окна без полей, как меню навигации (аудит 17).
+            render={<Dropdown className={cn("min-w-48 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
           >
             {menu}
           </MenuPrimitive.Popup>

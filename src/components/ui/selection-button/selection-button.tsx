@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
+import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 // SelectionButton — «Кнопка выбора»: триггер в паре со всплывающим
 // списком в стиле Select или Dropdown, которым прячут не поместившуюся в
@@ -132,7 +133,9 @@ function SelectionButton({
         >
           <MenuPrimitive.Popup
             data-slot="selection-button-content"
-            render={<Dropdown className={cn("min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", className)} />}
+            // Не шире 400px и окна без полей — как меню навигации (аудит 17):
+            // длинная подпись действия раздвигала страницу вбок.
+            render={<Dropdown className={cn("min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH, className)} />}
           >
             {items.map((item, index) => (
               <MenuPrimitive.Item

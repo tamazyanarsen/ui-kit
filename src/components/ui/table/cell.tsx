@@ -64,6 +64,15 @@ interface TableCellProps
   /** Рисует шеврон сворачивания строки перед содержимым. На самом
    * глубоком уровне его опускают: макет оставляет отступ, но убирает контрол. */
   expandable?: boolean
+  /**
+   * Ячейка колонки иерархии: строка без вложенных (`expandable={false}`)
+   * держит на месте шеврона пустую коробку той же ширины. Без неё лист
+   * уезжал левее соседа с шевроном, а вложенный уровень оказывался левее
+   * собственного родителя (аудит 17; пакет дизайнера,
+   * 05-geometry-and-colors: «ур. 4 — кнопки нет, текст x 80»). В плоской
+   * таблице не передаётся — там места под шеврон нет.
+   */
+  hierarchy?: boolean
   expanded?: boolean
   onExpandedChange?: (expanded: boolean) => void
   /** Красит значение ячейки Number: приходящие деньги идут зелёным цветом
@@ -121,6 +130,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
     align = "left",
     level = 0,
     expandable = false,
+    hierarchy = false,
     expanded = true,
     onExpandedChange,
     tone = "default",
@@ -143,6 +153,13 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
       />
     )
     const indent = level ? { paddingLeft: level * NESTING_INDENT } : undefined
+    // Шеврон или, у строки без вложенных в колонке иерархии, пустая коробка
+    // той же ширины (глиф 16px) — см. `hierarchy`.
+    const toggleSlot = expandable ? (
+      collapseToggle
+    ) : hierarchy ? (
+      <span aria-hidden="true" data-slot="table-collapse-spacer" className="size-4 shrink-0" />
+    ) : null
 
     return (
       <td
@@ -212,7 +229,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
 
         {type === "collapse" && (
           <span className="flex" style={indent}>
-            {expandable && collapseToggle}
+            {toggleSlot}
           </span>
         )}
 
@@ -224,7 +241,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
             )}
             style={type === "text" ? indent : undefined}
           >
-            {expandable && type === "text" && collapseToggle}
+            {type === "text" && toggleSlot}
             <TableCellValue
               description={description}
               descriptionSign={descriptionSign}

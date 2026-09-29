@@ -181,9 +181,18 @@ function useDataTableModel<Row>({
   // приехавшей обновлением), решает сам, и автоопределение ему мешать не
   // должно. `highlightAddedRows={false}` выключает автоопределение для
   // экрана, который режет страницу сам (см. проп).
+  //
+  // ⚠️ У строк без `id` и без `getRowKey` ключ — позиция. По позиционным
+  // ключам появление не определить: строка, вставленная в начало, сдвигает
+  // остальные, и «новым» оказывается ключ последней позиции — подсвечивалась
+  // старая строка, а новая нет (аудит 21). Такой таблице автоподсветку не
+  // включаем; экран, которому она нужна, даёт строкам `id` или `getRowKey`.
+  const positionalKeys =
+    !getRowKey &&
+    allRows.some((entry) => (entry.row as { id?: string | number }).id == null)
   const autoAdded = useAddedRows(
     React.useMemo(() => allRows.map((entry) => entry.key), [allRows]),
-    isRowAdded === undefined && highlightAddedRows
+    isRowAdded === undefined && highlightAddedRows && !positionalKeys
   )
 
   const {

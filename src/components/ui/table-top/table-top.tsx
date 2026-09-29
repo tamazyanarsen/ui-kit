@@ -198,6 +198,9 @@ const TableTopSummaryItem = React.forwardRef<
 // разработке конкретного продукта» и показано тремя состояниями ленты
 // (Начало / Середина / Конец ленты): когда пары не помещаются, лента
 // прокручивается по горизонтали сама, независимо от таблицы под ней.
+/** Зона стрелки ленты: поле `left-2`/`right-2` (8) + кнопка S (32). */
+const ARROW_ZONE = 40
+
 interface TableTopDetailsProps extends React.ComponentProps<"div"> {
   label?: React.ReactNode
   items: { label: React.ReactNode; value: React.ReactNode }[]
@@ -233,17 +236,23 @@ const TableTopDetails = React.forwardRef<
       track.querySelectorAll<HTMLElement>("[data-slot='table-top-details-item']")
     )
     const trackBox = track.getBoundingClientRect()
+    // Видимая часть ленты — без зон стрелок: стрелка лежит НА ленте (поле 8 +
+    // кнопка 32), и пара, подведённая к самой кромке, оказывалась значением
+    // под стрелкой (аудит 21: «…740740 [›] ₽»). Поэтому и «не поместилась»,
+    // и подводка считаются от кромки зоны стрелки.
+    const visibleLeft = trackBox.left + ARROW_ZONE
+    const visibleRight = trackBox.right - ARROW_ZONE
     // Допуск в 1px: субпиксельные ширины иначе выдают за «не поместилась»
     // пару, которая на экране стоит вплотную к кромке.
     const next = direction === 1
-      ? pairs.find((pair) => pair.getBoundingClientRect().right > trackBox.right + 1)
+      ? pairs.find((pair) => pair.getBoundingClientRect().right > visibleRight + 1)
       : [...pairs].reverse().find(
-          (pair) => pair.getBoundingClientRect().left < trackBox.left - 1
+          (pair) => pair.getBoundingClientRect().left < visibleLeft - 1
         )
     if (!next) return
     const delta = direction === 1
-      ? next.getBoundingClientRect().right - trackBox.right
-      : next.getBoundingClientRect().left - trackBox.left
+      ? next.getBoundingClientRect().right - visibleRight
+      : next.getBoundingClientRect().left - visibleLeft
     track.scrollBy({ left: delta, behavior })
   }
 

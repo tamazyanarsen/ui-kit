@@ -231,6 +231,12 @@ const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(function 
     setText(activeValue ? formatDateRu(activeValue) : "")
   }
 
+  // Блокировка на лету закрывает календарь и в состоянии: иначе `open`
+  // оставался true, и после снятия блокировки календарь открывался сам (r27).
+  React.useEffect(() => {
+    if (disabled) setOpen(false)
+  }, [disabled])
+
   const fieldFocus = useFieldPopoverFocus({
     open,
     setOpen,

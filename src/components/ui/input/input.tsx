@@ -3,6 +3,7 @@ import type { VariantProps } from "class-variance-authority"
 import { IMaskInput } from "react-imask"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
 
 import { AmountSuffix } from "./amount-suffix"
@@ -91,7 +92,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const captionId = caption ? `${inputId}-caption` : undefined
+  const captionId = hasNode(caption) ? `${inputId}-caption` : undefined
   const inputRef = React.useRef<HTMLInputElement>(null)
   const setInputRef = useComposedRefs(inputRef, ref)
   // Маске — постоянный ref: react-imask вызывает `inputRef` только при
@@ -114,7 +115,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   // Плавающей подписи нужно состояние :placeholder-shown соседа, поэтому
   // на размере S, где плавающей подписи нет, пропс label просто становится
   // нативным placeholder.
-  const floating = Boolean(label) && size !== "sm"
+  const floating = hasNode(label) && size !== "sm"
   const resolvedPlaceholder = resolvePlaceholder({
     mask,
     floating,
@@ -342,7 +343,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
         </div>
       </FieldTooltip>
 
-      {caption && (
+      {hasNode(caption) && (
         <p
           id={captionId}
           className={cn(

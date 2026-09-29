@@ -191,6 +191,31 @@ function useMask({
       if (!controlled) setInternalValue(next)
       return
     }
+    // Пустой телефон — это «», а не остаток шаблона «+7 »: после стирания
+    // единственной цифры или вставки «abc» поле выглядело пустым, но не было
+    // им, и `required` видел значение (r27). Литерал «+7» без пробела
+    // (набран или вставлен самим человеком) не трогается.
+    const handle = _maskRef as MaskHandle & { unmaskedValue?: string }
+    if (mask === "phone" && next === "+7 " && !handle.unmaskedValue) {
+      handle.value = ""
+      next = ""
+    }
+    // Ведущие нули суммы, набранные с клавиатуры, убираются сразу, как у
+    // вставки: «007» показывалось «007», а вставленное «007» — «7» (r27).
+    if (mask === "amount" && /^0\d/.test(next.replace(/\s/g, ""))) {
+      const input = event.target as HTMLInputElement
+      // Каретка остаётся за теми же цифрами: запись значения уводит её в
+      // конец, и «0», набранный в начале, тянул за собой следующие цифры.
+      const digitsBefore = input.value.slice(0, input.selectionStart ?? 0).replace(/\D/g, "")
+      const before = input.value.replace(/\D/g, "").length
+      handle.value = handle.unmaskedValue ?? ""
+      next = handle.displayValue
+      // Убраны только ведущие нули, то есть цифры левее каретки.
+      let keep = Math.max(0, digitsBefore.length - (before - next.replace(/\D/g, "").length))
+      let at = 0
+      while (at < next.length && keep > 0) if (/\d/.test(next[at++])) keep--
+      input.setSelectionRange(at, at)
+    }
     if (controlled) rerender()
     else setInternalValue(next)
     onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)

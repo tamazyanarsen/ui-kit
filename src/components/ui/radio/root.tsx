@@ -35,7 +35,8 @@ interface RadioGroupItem {
 
 interface RadioGroupProps
   extends Omit<RadioGroupPrimitive.Props, "children"> {
-  items?: RadioGroupItem[]
+  /** `null` и `false` среди пунктов пропускаются: `[cond && { … }]`. */
+  items?: (RadioGroupItem | null | false)[]
   children?: React.ReactNode
 }
 
@@ -105,7 +106,7 @@ const RadioGroup = React.forwardRef<
       {...props}
     >
       {items
-        ? items.map((item) => (
+        ? items.filter((item): item is RadioGroupItem => !!item).map((item) => (
             <Radio
               key={item.value}
               value={item.value}

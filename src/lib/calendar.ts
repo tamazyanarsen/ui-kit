@@ -114,7 +114,10 @@ export function addMonths(year: number, month: number, delta: number) {
 export function formatDateRu(date: Date): string {
   const dd = String(date.getDate()).padStart(2, "0")
   const mm = String(date.getMonth() + 1).padStart(2, "0")
-  return `${dd}.${mm}.${date.getFullYear()}`
+  // Год добивается нулями до четырёх знаков: «01.01.999» ни маска, ни
+  // `parseDateRu` не читают обратно.
+  const yyyy = String(date.getFullYear()).padStart(4, "0")
+  return `${dd}.${mm}.${yyyy}`
 }
 
 /** Обратная к formatDateRu. Отвергает и неверно составленные строки, и

@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { Loader2, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { resolveCaption } from "@/components/ui/input/caption"
 import {
   inputBoxVariants,
@@ -48,8 +49,8 @@ const AutocompleteField = React.forwardRef<
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const captionId = caption ? `${inputId}-caption` : undefined
-  const floating = Boolean(label) && size !== "sm"
+  const captionId = hasNode(caption) ? `${inputId}-caption` : undefined
+  const floating = hasNode(label) && size !== "sm"
   const anchorRef = useAutocompleteAnchor()
 
   return (
@@ -109,7 +110,7 @@ const AutocompleteField = React.forwardRef<
           </ComboboxPrimitive.Clear>
         )}
       </div>
-      {caption && (
+      {hasNode(caption) && (
         <p
           id={captionId}
           className={cn(

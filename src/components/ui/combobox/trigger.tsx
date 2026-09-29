@@ -61,7 +61,7 @@ export const ComboboxTrigger = React.forwardRef<
   const triggerId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const captionId = caption ? `${triggerId}-caption` : undefined
+  const captionId = hasValue(caption) ? `${triggerId}-caption` : undefined
   const labelId = hasValue(label) ? `${triggerId}-label` : undefined
   // Имя поля — подпись: роль combobox своё имя из содержимого не берёт,
   // и без связи скринридер объявлял «поле со списком» без названия.
@@ -149,7 +149,7 @@ export const ComboboxTrigger = React.forwardRef<
           </ComboboxPrimitive.Icon>
         </span>
       </ComboboxPrimitive.Trigger>
-      {caption && (
+      {hasValue(caption) && (
         <p
           id={captionId}
           className={cn(

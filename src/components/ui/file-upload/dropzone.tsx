@@ -59,10 +59,22 @@ export const FileUploadDropzone = React.forwardRef<
   children,
   onClick,
   onDragOver,
+  onDragEnter,
   onDragLeave,
   ...props
 }, ref) {
   const [dragOver, setDragOver] = React.useState(false)
+  // Глубина вложенности перетаскивания: `dragleave` приходит и при переходе
+  // с зоны на её дочерний узел (значок, текст), и зона гасла на каждом таком
+  // переходе, мигая до следующего `dragover` (r27). Гаснет она, когда
+  // покинуты все узлы, в которые успели войти.
+  const dragDepth = React.useRef(0)
+  React.useEffect(() => {
+    if (disabled) {
+      dragDepth.current = 0
+      setDragOver(false)
+    }
+  }, [disabled])
   const inputRef = React.useRef<HTMLInputElement>(null)
   const inputId = React.useId()
 
@@ -144,6 +156,11 @@ export const FileUploadDropzone = React.forwardRef<
       // отключал окно выбора, а свой `onDragOver` снимал `preventDefault` —
       // и бросить файл становилось нельзя.
       {...props}
+      onDragEnter={(event) => {
+        onDragEnter?.(event)
+        if (disabled) return
+        dragDepth.current += 1
+      }}
       onDragOver={(event) => {
         onDragOver?.(event)
         if (disabled) return
@@ -152,9 +169,11 @@ export const FileUploadDropzone = React.forwardRef<
       }}
       onDragLeave={(event) => {
         onDragLeave?.(event)
-        setDragOver(false)
+        dragDepth.current = Math.max(0, dragDepth.current - 1)
+        if (dragDepth.current === 0) setDragOver(false)
       }}
       onDrop={(event) => {
+        dragDepth.current = 0
         if (disabled) return
         event.preventDefault()
         setDragOver(false)

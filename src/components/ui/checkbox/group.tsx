@@ -32,7 +32,7 @@ interface CheckboxGroupProps
   extends Omit<React.ComponentProps<"div">, "onChange" | "defaultValue"> {
   items: (CheckboxGroupItem | null | false)[]
   /** Controlled set of checked values. */
-  value?: string[]
+  value?: string[] | null
   defaultValue?: string[]
   onValueChange?: (value: string[]) => void
   disabled?: boolean
@@ -71,11 +71,13 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
   const composedRef = useComposedRefs(ref, setNode)
   const defaultRef = React.useRef(defaultValue)
   useFormReset(node, () => {
-    if (value === undefined) setUncontrolled(defaultRef.current)
+    if (value == null) setUncontrolled(defaultRef.current)
   })
 
   function commit(next: string[]) {
-    if (value === undefined) setUncontrolled(next)
+    // Всегда пишем и в своё состояние: если родитель позже вернёт `null`, покажется
+    // последний выбор, а не устаревший (r27).
+    setUncontrolled(next)
     onValueChange?.(next)
   }
 

@@ -132,7 +132,12 @@ const DATE_SEPARATORS = [".", "/", "-"]
 
 function prepareDate(
   chars: string,
-  masked: { unmaskedValue: string; value: string },
+  masked: {
+    unmaskedValue: string
+    value: string
+    editHasTail?: boolean
+    editDeleted?: number
+  },
   flags?: { tail?: boolean }
 ): string | [string, InstanceType<typeof IMask.ChangeDetails>] {
   if (flags?.tail) return chars
@@ -146,17 +151,41 @@ function prepareDate(
   // времени (`prepareTime`).
   if (chars.length === 1 && DATE_SEPARATORS.includes(chars)) {
     // Одинокий «0» ведущим нулём не дополняется: «00» — не день и не месяц.
-    if ((typed.length === 1 || typed.length === 3) && typed.slice(-1) !== "0") {
+    // В середине строки значение не переписывается: хвост справа пропал бы.
+    if (
+      !masked.editHasTail &&
+      (typed.length === 1 || typed.length === 3) &&
+      typed.slice(-1) !== "0"
+    ) {
       masked.value = typed.slice(0, -1) + "0" + typed.slice(-1)
       return ["", new IMask.ChangeDetails({ tailShift: 1 })]
     }
     return chars
   }
-  // Первая цифра дня 4–9 и месяца 2–9 без ведущего нуля недопустима: «4» — это
-  // «04», а не начало «4x». Дописывает `prepareDate`, как `prepareTime` у часа.
+  // Диапазоны дня 01–31 и месяца 01–12 держатся здесь, а не блоками
+  // `MaskedRange`: блок заново прогонял через себя хвост, оставшийся правее
+  // правки, и отбрасывал «невалидные» промежуточные цифры — правка в середине
+  // заполненной даты теряла год («12.05.2024», день → «15» давало «05.02.4»,
+  // r27). Проверяются только набранные цифры (голова перед кареткой), хвост
+  // маска сдвигает как обычный шаблон, и следующее нажатие возвращает его на
+  // место.
   if (/^\d$/.test(chars)) {
-    if (typed.length === 0 && chars >= "4") return "0" + chars
-    if (typed.length === 2 && chars >= "2") return "0" + chars
+    // Первая цифра дня 4–9 и месяца 2–9 без ведущего нуля недопустима: «4» —
+    // это «04», а не начало «4x». Ноль дописывается, когда сдвигать нечего
+    // (набор в конец) или когда правка стёрла ровно две цифры — тогда два
+    // знака заменяют два. Одна цифра поверх одной и вставка внутрь идут как
+    // есть: лишний ноль сдвинул бы хвост, а отказ уже после стирания
+    // выделенного потерял бы цифру.
+    const first = (typed.length === 0 && chars >= "4") || (typed.length === 2 && chars >= "2")
+    if (first) {
+      return !masked.editHasTail || masked.editDeleted === 2 ? "0" + chars : chars
+    }
+    // Вторая цифра дня и месяца не даёт невозможного значения: «35», «00»,
+    // «13» не принимаются.
+    const day = Number(typed + chars)
+    if (typed.length === 1 && (day < 1 || day > 31)) return ""
+    const month = Number(typed.slice(2) + chars)
+    if (typed.length === 3 && (month < 1 || month > 12)) return ""
   }
   if (typed) return chars
   const text = chars.trim()
@@ -280,6 +309,10 @@ function prepareAmount(
   flags?: { tail?: boolean }
 ): string {
   if (flags?.tail) return chars
+  // Отрицательная сумма, вставленная целым куском («-12»): минимум поля 0, и
+  // imask молча отбрасывал минус, а число приходило положительным — сумма
+  // менялась на другую (r27). Такая вставка не принимается вовсе.
+  if (chars.length > 1 && /^\s*[-−–]\s*\d/.test(chars)) return ""
   if (chars === "," || chars === ".") {
     watchAmountFocus()
     amountSeparatorAt.set(masked, masked.value)
@@ -290,6 +323,60 @@ function prepareAmount(
   if (/^\d+$/.test(chars) && guard === masked.value) return ""
   amountSeparatorAt.delete(masked)
   return chars
+}
+
+/** То немногое от `MaskedPattern` из imask, чем пользуется шаблон даты. */
+interface PatternMasked {
+  value: string
+  maskEquals(mask: unknown): boolean
+  splice(
+    start: number,
+    deleteCount: number,
+    inserted?: string,
+    removeDirection?: unknown,
+    flags?: unknown
+  ): unknown
+}
+
+// Тип `IMask` из react-imask не объявляет `MaskedPattern`, хотя во время
+// выполнения он есть (тот же экземпляр библиотеки, что и у react-imask).
+const PatternBase = (
+  IMask as unknown as { MaskedPattern: new (opts?: object) => PatternMasked }
+).MaskedPattern
+
+/**
+ * Шаблон даты, который знает, что именно правит человек: есть ли справа от
+ * правки хвост и сколько цифр она стёрла. Набор в конец строки и правка в
+ * середине заполненной даты требуют разного (см. `prepareDate`), а imask
+ * отделяет хвост от вставляемых знаков уже в `splice` — `prepare` его не
+ * видит.
+ */
+class DateMasked extends PatternBase {
+  editHasTail = false
+  editDeleted = 0
+
+  constructor(opts?: object) {
+    super({ ...opts, mask: PATTERNS.date })
+  }
+
+  // react-imask на каждой отрисовке сверяет `mask` из пропсов (этот класс) с
+  // шаблоном экземпляра и иначе записывает класс в `mask` вместо строки.
+  maskEquals(mask: unknown) {
+    return mask === DateMasked || super.maskEquals(mask)
+  }
+
+  splice(
+    start: number,
+    deleteCount: number,
+    inserted?: string,
+    removeDirection?: unknown,
+    flags?: unknown
+  ) {
+    const removed = this.value.slice(start, start + deleteCount)
+    this.editHasTail = start + deleteCount < this.value.length
+    this.editDeleted = removed.replace(/\D/g, "").length
+    return super.splice(start, deleteCount, inserted, removeDirection, flags)
+  }
 }
 
 // Пропсы для подстановки в <IMaskInput mask={...} /> из react-imask.
@@ -326,27 +413,7 @@ export function getImaskProps(name: MaskName) {
   // молча подменял «13» месяцем «12»); ведущий ноль дописывает `prepareDate`.
   // Год — четыре произвольные цифры; несуществующие сочетания вроде 31.02
   // отсеивает разбор даты (`parseDateRu`).
-  if (name === "date") {
-    return {
-      mask: "DD.MM.YYYY",
-      prepare: prepareDate,
-      blocks: {
-        DD: {
-          mask: IMask.MaskedRange,
-          from: 1,
-          to: 31,
-          maxLength: 2,
-        },
-        MM: {
-          mask: IMask.MaskedRange,
-          from: 1,
-          to: 12,
-          maxLength: 2,
-        },
-        YYYY: { mask: "0000" },
-      },
-    }
-  }
+  if (name === "date") return { mask: DateMasked, prepare: prepareDate }
   if (name === "amount") {
     return {
       mask: IMask.MaskedNumber,

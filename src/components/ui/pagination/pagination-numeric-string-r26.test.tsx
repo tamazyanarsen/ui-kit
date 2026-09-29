@@ -26,3 +26,12 @@ describe("Pagination: числовые строки", () => {
     expect(screen.queryByText("NaN")).toBeNull()
   })
 })
+
+describe("Pagination: пустые значения page", () => {
+  it.each([null, "", " "])("page=%j откатывается на первую страницу", (page) => {
+    render(
+      <Pagination totalPages={5} page={page as unknown as number} onPageChange={() => {}} />
+    )
+    expect(screen.getByRole("button", { name: "1" })).toHaveAttribute("aria-current", "page")
+  })
+})

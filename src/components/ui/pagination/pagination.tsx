@@ -229,7 +229,8 @@ function Pagination({
   // Числовые строки из query-параметров или JSON ("5") приводятся к числу, а не
   // отбрасываются: без этого «5» показывало бы одну страницу без стрелок.
   const totalPagesNum = Number(totalPagesProp)
-  const pageNum = Number(pageProp)
+  // null, "" и " " дают Number = 0 — это «страницы нет», а не нулевая страница.
+  const pageNum = pageProp == null || String(pageProp).trim() === "" ? NaN : Number(pageProp)
   const totalPages = Number.isFinite(totalPagesNum) ? Math.max(0, Math.ceil(totalPagesNum)) : 0
   const page = Number.isFinite(pageNum) ? pageNum : 1
   const showNav = totalPages > 1

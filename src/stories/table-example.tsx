@@ -69,6 +69,10 @@ function TableExample({
   empty = false,
 }: TableExampleProps = {}) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Страница и её размер живые: статичный `page={1}` делал кнопки пагинатора
+  // мёртвыми — нажатие на «2» ничего не меняло.
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
   const [expanded, setExpanded] = useState<Set<string>>(
     new Set(["1", "1.1", "1.1.1"])
   )
@@ -225,7 +229,13 @@ function TableExample({
       )}
 
       {showPagination && (
-        <Pagination page={1} totalPages={26} onPageChange={() => {}} />
+        <Pagination
+          page={page}
+          totalPages={26}
+          onPageChange={setPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
       )}
     </>
   )

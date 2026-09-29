@@ -100,8 +100,12 @@ function useCompactPages(
     }
     const check = () => {
       const list = listRef.current
-      // Полоса не разложена (скрыта) — мерить нечего, режим не трогаем.
-      if (!list || root.clientWidth === 0) return
+      // Полоса не разложена (скрыта, `display: none`) — мерить нечего, режим
+      // не трогаем. Полоса, сжатая соседями до нуля, коробку имеет
+      // (`getClientRects` непуст): там ряд обязан сжаться, а не остаться
+      // полным и торчать за краем.
+      const hasBox = root.getClientRects().length > 0
+      if (!list || (root.clientWidth === 0 && !hasBox)) return
       const style = getComputedStyle(root)
       // Полпикселя допуска — дробные ширины кнопок не должны качать режим.
       const available =

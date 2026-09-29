@@ -137,7 +137,13 @@ function FilterTableSelect({
   const hasValue = shownValue !== null
 
   return (
-    <div className="w-fit">
+    // ⚠️ Обёртка — флекс-контейнер с `max-w-full`, чтобы пилюля (её потолок
+    // 256 задан в `filterTablePillClass`) СЖИМАЛАСЬ до колонки, а не торчала
+    // из неё: в блочном `w-fit` минимальная ширина пилюли — вся её подпись
+    // без переноса, и колонка уже 256 (или 288 с соседями) выпускала чип за
+    // край. Процент в `max-w` самой пилюли не годится: в контейнере по
+    // ширине содержимого он считается «нет предела» и снимает потолок 256.
+    <div className="flex w-fit max-w-full min-w-0">
       <PopoverPrimitive.Root
         open={disabled ? false : open}
         onOpenChange={setOpen}

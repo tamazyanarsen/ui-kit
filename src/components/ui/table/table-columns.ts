@@ -21,9 +21,20 @@ import type { TableHeadCellType } from "./types"
  * использования забыло перечислить их в списке настройки.
  */
 function resolveColumns<Row>(
-  fields: TableField<Row>[],
+  fieldsProp: TableField<Row>[],
   settings: TableColumn[] | undefined
 ): TableField<Row>[] {
+  // Поле-действия по типу живёт «в правом закрепе» (см. `TableFieldType`):
+  // без явного `pin` оно оставалось обычным столбцом, а закреплённый левее
+  // получал отступ справа на его ширину — между закрепом и краем блока
+  // зияла дыра, а сам столбец уезжал при прокрутке.
+  const fields = fieldsProp.some((field) => field.type === "actions" && field.pin === undefined)
+    ? fieldsProp.map((field) =>
+        field.type === "actions" && field.pin === undefined
+          ? { ...field, pin: "right" as const }
+          : field
+      )
+    : fieldsProp
   const managed = (field: TableField<Row>) =>
     Boolean(settings?.some((column) => column.id === field.key))
 

@@ -251,9 +251,15 @@ const TableTopDetails = React.forwardRef<
           (pair) => pair.getBoundingClientRect().left < visibleLeft - 1
         )
     if (!next) return
-    const delta = direction === 1
+    const raw = direction === 1
       ? next.getBoundingClientRect().right - visibleRight
       : next.getBoundingClientRect().left - visibleLeft
+    // ⚠️ Пара шире видимой зоны между стрелками (узкая колонка, длинная
+    // подпись) подводилась кромкой целиком, и середина пары проскакивала,
+    // ни разу не показавшись: шаг не длиннее самой зоны. Обычные пары
+    // (уже зоны) этим не затрагиваются — им нужен шаг короче.
+    const zone = Math.max(1, visibleRight - visibleLeft)
+    const delta = Math.max(-zone, Math.min(zone, raw))
     track.scrollBy({ left: delta, behavior })
   }
 

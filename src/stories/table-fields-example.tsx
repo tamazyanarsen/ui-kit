@@ -70,6 +70,10 @@ function TableFieldsExample({
   total = false,
 }: TableFieldsExampleProps = {}) {
   const [selected, setSelected] = useState<string[]>([])
+  // Страница и её размер живые: статичный `page={1}` делал кнопки пагинатора
+  // мёртвыми — нажатие на «2» ничего не меняло.
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
   const [approved, setApproved] = useState<Set<string>>(new Set(["1", "2"]))
   const [columns, setColumns] = useState(() =>
     columnsFromFields(CONTRACT_FIELDS)
@@ -198,7 +202,13 @@ function TableFieldsExample({
       />
 
       {showPagination && (
-        <Pagination page={1} totalPages={26} onPageChange={() => {}} />
+        <Pagination
+          page={page}
+          totalPages={26}
+          onPageChange={setPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
       )}
     </>
   )

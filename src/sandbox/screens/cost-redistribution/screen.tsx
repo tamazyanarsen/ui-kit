@@ -15,7 +15,7 @@ import { useToast } from "@/components/ui/toast-message"
 
 import { SandboxBlock, SandboxSection, SandboxPage } from "../../shell"
 
-import { COST_ITEMS, type CostItem } from "./data"
+import { COST_ITEMS, totals, type CostItem } from "./data"
 import { CostTable } from "./table"
 
 // D13. «Перераспределение ССР», шаг 1 — секция, кадр
@@ -223,15 +223,31 @@ function findItem(items: CostItem[], id: string): CostItem | undefined {
 function filterTree(items: CostItem[], query: string): CostItem[] {
   const needle = query.trim().toLowerCase()
   if (!needle) return items
+  // ⚠️ Сумму ищут так, как видят в колонке, — «90 000 000» (пробелы
+  // разрядов, в том числе неразрывные): по сырому «90000000» такой запрос
+  // не находил ничего. Цифровой образец сверяется с суммой листа и с итогом
+  // ветки, который показывает строка главы.
+  // Запрос С разрядами — полная сумма, и сравнение точное: подстрока находила
+  // бы «70 000 000» в 270 000 000 (та же ловушка, что у чипа «Сумма» на
+  // реестре аккредитивов). По началу набора без разрядов ищется, как и
+  // раньше, подстрокой — пока пользователь ещё печатает.
+  const digits = needle.replace(/\s/g, "")
+  const amountNeedle = /^\d+$/.test(digits) ? digits : null
+  const grouped = /\d\s+\d/.test(needle)
 
   const result: CostItem[] = []
   for (const item of items) {
     const children = item.children ? filterTree(item.children, needle) : undefined
+    const sums = totals(item)
     const own =
       item.number.toLowerCase().includes(needle) ||
       item.title.toLowerCase().includes(needle) ||
       String(item.borrowed ?? "").includes(needle) ||
-      String(item.own ?? "").includes(needle)
+      String(item.own ?? "").includes(needle) ||
+      (amountNeedle !== null &&
+        [sums.borrowed, sums.own, sums.borrowed + sums.own].some((sum) =>
+          grouped ? String(sum) === amountNeedle : String(sum).includes(amountNeedle)
+        ))
     if (!own && !children?.length) continue
     result.push({ ...item, children: own ? item.children : children })
   }

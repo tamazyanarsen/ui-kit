@@ -247,6 +247,10 @@ function TableScrollbar({ scrollRef }: TableScrollbarProps) {
           onPointerMove={onThumbPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
+          // Захват могут отобрать без pointerup (элемент убрали из DOM, вкладка
+          // потеряла фокус, жест перехвачен браузером): без этого перетаскивание
+          // залипало, бегунок продолжал идти за курсором.
+          onLostPointerCapture={endDrag}
           // Перетаскивание бегунка — прямое манипулирование, оно НЕ
           // анимируется: позиция обязана идти за курсором пиксель в пиксель.
           // Анимируется только цвет.

@@ -25,50 +25,75 @@ function getCompactPageList(page: number, totalPages: number): (number | "ellips
 }
 
 /**
- * Не помещается ли полный ряд страниц в полосу пагинатора.
+ * Самый узкий список: текущая и последняя страница («‹ 10 … 20 ›»), на
+ * последней — первая и последняя. Аудит 20: на телефоне 320 (полоса 256)
+ * даже «‹ 1 … т … N ›» — это 300px, и «Следующая страница» уходила за край.
+ * Ячейки те же, что у сжатого списка, новых форм нет.
+ */
+function getMinimalPageList(page: number, totalPages: number): (number | "ellipsis")[] {
+  const anchors = page >= totalPages ? [1, totalPages] : [page, totalPages]
+  const list: (number | "ellipsis")[] = []
+  ;[...new Set(anchors)].forEach((entry, index, all) => {
+    const previous = all[index - 1]
+    if (previous !== undefined && entry - previous === 2) list.push(previous + 1)
+    if (previous !== undefined && entry - previous > 2) list.push("ellipsis")
+    list.push(entry)
+  })
+  return list
+}
+
+/** 0 — полный ряд, 1 — сжатый, 2 — самый узкий. */
+type CompactLevel = 0 | 1 | 2
+
+/**
+ * Какой список страниц помещается в полосу пагинатора.
  *
  * Аудит r7: ряд номеров не переносится и не сжимается, и при `totalPages=20`
  * на ширине 375 «Следующая страница» уходила за правый край на 45px (в
  * `TableBlock` её обрезало). Макет Paginator описан только для десктопа,
- * поэтому раскладка там не меняется: сжатый список включается, лишь когда
- * полный ряд шире полосы.
+ * поэтому раскладка там не меняется: сжатие включается, лишь когда полный
+ * ряд шире полосы. Аудит 20: на 320 не помещался и сжатый — добавлен
+ * третий, самый узкий уровень.
  *
- * Ширина полного ряда запоминается, пока он на экране: в сжатом виде его не
- * измерить, а без неё не понять, когда полоса снова стала достаточно
+ * Ширина каждого уровня запоминается, пока он на экране: в более узком виде
+ * её не измерить, а без неё не понять, когда полоса снова стала достаточно
  * широкой.
  *
- * ⚠️ Запомненная ширина верна, только пока не менялось число страниц и
- * размер: после смены режим сбрасывается в полный, и ряд перемеряется в том
- * же проходе раскладки (без мелькания). Раньше отбор, сузивший выдачу с 20
- * страниц до 5, оставлял «1 2 … 5» — сравнение шло со старой шириной ряда
- * на 20 страниц.
+ * ⚠️ Запомненные ширины верны только для той же формы ряда: числа страниц,
+ * размера и ТЕКУЩЕЙ страницы (от неё зависят набор номеров и число цифр).
+ * При смене уровень сбрасывается в полный и ряд перемеряется в тех же
+ * проходах раскладки, до отрисовки (без мелькания). Раньше ширина
+ * запоминалась без текущей страницы: после визита на 6000-ю страница 5
+ * оставалась сжатой, хотя полный ряд помещался; а отбор, сузивший выдачу с
+ * 20 страниц до 5, оставлял «1 2 … 5».
  */
 function useCompactPages(
   rootRef: React.RefObject<HTMLElement | null>,
   listRef: React.RefObject<HTMLElement | null>,
   deps: { enabled: boolean; page: number; totalPages: number; size?: string }
-) {
-  const [compact, setCompact] = React.useState(false)
-  const compactRef = React.useRef(compact)
-  compactRef.current = compact
-  const fullWidth = React.useRef(0)
+): CompactLevel {
+  const [level, setLevel] = React.useState<CompactLevel>(0)
+  const levelRef = React.useRef(level)
+  levelRef.current = level
+  // Ширины полного и сжатого ряда для текущей формы; 0 — ещё не мерили.
+  const widths = React.useRef<[number, number]>([0, 0])
   const { enabled, page, totalPages, size } = deps
-  const shape = `${totalPages}|${size}`
+  const shape = `${totalPages}|${size}|${page}`
   const measuredShape = React.useRef(shape)
 
   React.useLayoutEffect(() => {
     const root = rootRef.current
     if (!enabled || !root) {
-      setCompact(false)
+      setLevel(0)
       return
     }
     if (measuredShape.current !== shape) {
       measuredShape.current = shape
-      fullWidth.current = 0
-      if (compactRef.current) {
+      widths.current = [0, 0]
+      if (levelRef.current !== 0) {
         // Полный ряд отрисуется этим же сбросом, и следующий проход его
         // перемеряет.
-        setCompact(false)
+        setLevel(0)
         return
       }
     }
@@ -77,21 +102,30 @@ function useCompactPages(
       // Полоса не разложена (скрыта) — мерить нечего, режим не трогаем.
       if (!list || root.clientWidth === 0) return
       const style = getComputedStyle(root)
+      // Полпикселя допуска — дробные ширины кнопок не должны качать режим.
       const available =
         root.clientWidth -
         (parseFloat(style.paddingLeft) || 0) -
-        (parseFloat(style.paddingRight) || 0)
-      if (!compactRef.current) fullWidth.current = list.getBoundingClientRect().width
-      // Полпикселя допуска — дробные ширины кнопок не должны качать режим.
-      setCompact(fullWidth.current > available + 0.5)
+        (parseFloat(style.paddingRight) || 0) +
+        0.5
+      const current = levelRef.current
+      const fits = (width: number) => width > 0 && width <= available
+      if (current !== 2) widths.current[current] = list.getBoundingClientRect().width
+      const [full, compact] = widths.current
+      let next: CompactLevel = current
+      if (current === 0) next = fits(full) ? 0 : 1
+      else if (current === 1) next = fits(full) ? 0 : fits(compact) ? 1 : 2
+      else if (fits(compact)) next = fits(full) ? 0 : 1
+      if (next !== current) setLevel(next)
     }
     check()
     const observer = new ResizeObserver(check)
     observer.observe(root)
     return () => observer.disconnect()
-  }, [rootRef, listRef, enabled, page, shape, compact])
+  }, [rootRef, listRef, enabled, shape, level])
 
-  return compact
+  return level
 }
 
-export { getCompactPageList, useCompactPages }
+export { getCompactPageList, getMinimalPageList, useCompactPages }
+export type { CompactLevel }

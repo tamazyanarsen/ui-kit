@@ -33,6 +33,21 @@ interface ActiveIndicatorRect {
   ready: boolean
 }
 
+/**
+ * Бегунок без активного сегмента в ряду (спрятан за многоточием или значения
+ * нет): координаты обнуляются, а не остаются от прошлого замера. Аудит 20:
+ * первый замер делается, пока видны все сегменты, и прозрачный бегунок
+ * оставался на `left` 1625px — абсолютный элемент за краем ряда входил в
+ * ширину прокрутки документа, и страница получала горизонтальную прокрутку.
+ * `ready` сбрасывается тоже: когда сегмент снова виден, бегунок встаёт на
+ * место без анимации (выезжать ему не из чего), а переход включается кадром
+ * позже, как при монтировании.
+ */
+const hide = (prev: ActiveIndicatorRect): ActiveIndicatorRect =>
+  prev.visible || prev.ready || prev.left !== 0 || prev.width !== 0
+    ? { left: 0, width: 0, visible: false, ready: false }
+    : prev
+
 function useActiveIndicator<T extends HTMLElement>(
   activeValue: string | undefined,
   /**
@@ -57,7 +72,7 @@ function useActiveIndicator<T extends HTMLElement>(
     // новый объект, а эффект замера перезапускался от пересоздаваемых `deps`
     // — и рендеры не останавливались («Maximum update depth exceeded»).
     if (!row || activeValue === undefined) {
-      setRect((prev) => (prev.visible ? { ...prev, visible: false } : prev))
+      setRect(hide)
       return
     }
     // Выбор по `data-value`, а не по индексу: за многоточием часть сегментов
@@ -67,7 +82,7 @@ function useActiveIndicator<T extends HTMLElement>(
       `:scope > [data-value="${CSS.escape(activeValue)}"]`
     )
     if (!node) {
-      setRect((prev) => (prev.visible ? { ...prev, visible: false } : prev))
+      setRect(hide)
       return
     }
     const left = node.offsetLeft

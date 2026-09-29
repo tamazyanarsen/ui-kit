@@ -200,7 +200,10 @@ function FilterSelect({
                 key={option.value}
                 data-slot="filter-select-option"
                 className={cn(
-                  "flex cursor-pointer items-center gap-4 p-4",
+                  // `items-start`: у двухстрочного варианта флажок стоит у первой
+                  // строки, как у Checkbox и ComboboxItem. Однострочные не
+                  // меняются — флажок и строка одной высоты (24px).
+                  "flex cursor-pointer items-start gap-4 p-4",
                   option.disabled && "pointer-events-none opacity-50"
                 )}
                 style={
@@ -214,7 +217,14 @@ function FilterSelect({
                   disabled={option.disabled}
                   onCheckedChange={() => toggle(option.value)}
                 />
-                <span className="min-w-0 flex-1 truncate text-p1-medium text-[var(--filter-fg)]">
+                {/* Две строки с переносом, а не одна с многоточием: варианты вида
+                    «Расчётный счёт в рублях № 40702810000000001234» различаются
+                    хвостом, и в одну строку они обрезались одинаково — выбрать
+                    нужный было невозможно (аудит 20). Полный текст — в `title`. */}
+                <span
+                  title={option.label}
+                  className="line-clamp-2 min-w-0 flex-1 break-words text-p1-medium text-[var(--filter-fg)]"
+                >
                   {option.label}
                 </span>
               </label>

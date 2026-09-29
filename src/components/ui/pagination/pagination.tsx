@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 
 import { useNavFocusHandoff } from "./use-nav-focus"
-import { getCompactPageList, useCompactPages } from "./use-compact-pages"
+import { getCompactPageList, getMinimalPageList, useCompactPages } from "./use-compact-pages"
 
 // Pagination («Paginator») — навигация по номерам страниц плюс выбор
 // размера страницы справа. По макету две раскладки: «L» (одна строка,
@@ -227,7 +227,7 @@ function Pagination({
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
   const { listRef, navFocusProps } = useNavFocusHandoff(page, totalPages)
   const rootRef = React.useRef<HTMLDivElement>(null)
-  const compact = useCompactPages(rootRef, listRef, {
+  const compactLevel = useCompactPages(rootRef, listRef, {
     enabled: showPages,
     page,
     totalPages,
@@ -236,9 +236,11 @@ function Pagination({
   const pages =
     totalPages <= 0
       ? [1]
-      : compact
-        ? getCompactPageList(page, totalPages)
-        : getPageList(page, totalPages)
+      : compactLevel === 2
+        ? getMinimalPageList(page, totalPages)
+        : compactLevel === 1
+          ? getCompactPageList(page, totalPages)
+          : getPageList(page, totalPages)
 
   // Цель прижимается к существующим страницам, а не отбрасывается. Если
   // страниц стало меньше, чем номер текущей (отбор сузил выдачу, а родитель
@@ -255,7 +257,7 @@ function Pagination({
       ref={rootRef}
       data-slot="pagination"
       data-size={size}
-      data-compact={compact || undefined}
+      data-compact={compactLevel === 2 ? "minimal" : compactLevel === 1 ? "true" : undefined}
       className={cn(
         "flex border-t border-[var(--pagination-border)] bg-white px-4 py-1",
         // Size=M: выбор числа записей уходит на вторую строку и влево.

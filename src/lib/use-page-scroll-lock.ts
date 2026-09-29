@@ -12,11 +12,20 @@ import * as React from "react"
 // делает за нас Base UI в модалке; здесь слой свой, поэтому и компенсация
 // своя.
 //
+// ⚠️ Блокировка — АТРИБУТ `data-page-scroll-lock` на `<html>` и правило в
+// `base.css`, а не `body.style.overflow`. Base UI держит свой замок в
+// инлайн-стиле `body` и снимает его отложенно (`setTimeout(0)`), возвращая
+// значение, запомненное при установке. Оба замка писали в одно свойство:
+// при быстрых `Esc`, `Esc` (модалка над панелью меню) наш замок возвращал
+// `""`, а через мгновение Base UI записывал обратно запомненное `hidden` —
+// страница оставалась запертой навсегда. Свои пути записи не пересекаются.
+//
 // ⚠️ Замки СЧИТАЮТСЯ, а не переключаются. Из меню открывается модалка
 // «Настройка избранного», у неё замок свой: без счётчика та из них, что
 // закроется первой, разблокировала бы страницу под всё ещё открытой второй.
 
 const SCROLL_LOCK_GAP = "--scroll-lock-gap"
+const SCROLL_LOCK_ATTR = "data-page-scroll-lock"
 
 // ⚠️ Счётчик замков общий для ВСЕХ копий кита на странице. В микрофронтах
 // у каждого приложения свой экземпляр пакета, а значит и свой модульный
@@ -42,23 +51,17 @@ function lock() {
   shared.locks += 1
   if (shared.locks > 1) return
 
-  const { style } = document.body
-  const previousOverflow = style.overflow
-  const previousPadding = style.paddingRight
-  const gap = window.innerWidth - document.documentElement.clientWidth
-
-  style.overflow = "hidden"
-  if (gap > 0) style.paddingRight = `${gap}px`
-  // `fixed`-слоям (кнопка «Наверх») отступ `body` не помогает: они
-  // привязаны к вьюпорту и уезжали вправо на ширину пропавшей полосы
-  // (аудит 23). Ширину публикуем — такие слои прибавляют её к `right`.
-  const root = document.documentElement.style
-  if (gap > 0) root.setProperty(SCROLL_LOCK_GAP, `${gap}px`)
+  const html = document.documentElement
+  const gap = window.innerWidth - html.clientWidth
+  // Ширину снятой полосы публикуем до установки атрибута: правило `base.css`
+  // берёт из неё отступ `body`, а `fixed`-слои (кнопка «Наверх»), которым
+  // отступ `body` не помогает, прибавляют её к `right` (аудит 23).
+  if (gap > 0) html.style.setProperty(SCROLL_LOCK_GAP, `${gap}px`)
+  html.setAttribute(SCROLL_LOCK_ATTR, "")
 
   shared.restore = () => {
-    style.overflow = previousOverflow
-    style.paddingRight = previousPadding
-    root.removeProperty(SCROLL_LOCK_GAP)
+    html.removeAttribute(SCROLL_LOCK_ATTR)
+    html.style.removeProperty(SCROLL_LOCK_GAP)
   }
 }
 

@@ -94,6 +94,13 @@
     --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Блокировка прокрутки страницы слоем кита (см. lib/use-page-scroll-lock.ts): атрибут, а не инлайн-стиль body,
+   чтобы не пересекаться с замком Base UI. Вне @layer: правило должно побеждать утилиты страницы. */
+html[data-page-scroll-lock] body {
+  overflow: hidden;
+  padding-right: var(--scroll-lock-gap, 0px);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

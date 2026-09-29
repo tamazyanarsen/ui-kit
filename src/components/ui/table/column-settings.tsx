@@ -89,7 +89,20 @@ function TableColumnSettings({
       )
     : columns
 
+  // Последний видимый столбец не снимается: иначе таблица оставалась с
+  // одной колонкой флажков и без данных, а вернуть столбцы можно было
+  // только отсюда же. Закреплённая колонка видна всегда и считается.
+  const shownCount = columns.filter(
+    (column) => column.locked || isColumnVisible(column)
+  ).length
+  const isLastShown = (column: TableColumn) =>
+    !column.locked && isColumnVisible(column) && shownCount <= 1
+  const canToggle = (column: TableColumn) =>
+    hideable && !column.locked && !isLastShown(column)
+
   function toggle(id: string) {
+    const target = columns.find((column) => column.id === id)
+    if (!target || !canToggle(target)) return
     onColumnsChange(
       columns.map((column) =>
         column.id === id
@@ -172,7 +185,13 @@ function TableColumnSettings({
             data-slot="table-column-settings"
             render={
               <Dropdown
-                className={cn("w-70 overflow-hidden p-0", className)}
+                // Окно не выше места до края экрана: в низком окне список
+                // сжимается и прокручивается сам, иначе нижние строки
+                // уходили за край, а позиционер держал окно у верха.
+                className={cn(
+                  "flex w-70 max-h-(--available-height) flex-col overflow-hidden p-0",
+                  className
+                )}
               />
             }
           >
@@ -198,7 +217,7 @@ function TableColumnSettings({
             )}
 
             <SortableList
-              className="themed-scrollbar max-h-[392px] overflow-y-auto"
+              className="themed-scrollbar max-h-[392px] min-h-0 overflow-y-auto"
               {...sortable.listProps}
             >
               {visibleRows.map((column) => (
@@ -212,18 +231,14 @@ function TableColumnSettings({
                   // раз. Роль не `checkbox`: настоящий чекбокс уже стоит
                   // внутри, и вторая такая роль в дереве доступности лишняя —
                   // строка здесь просто увеличенная площадь нажатия.
-                  onClick={
-                    hideable && !column.locked
-                      ? () => toggle(column.id)
-                      : undefined
-                  }
+                  onClick={canToggle(column) ? () => toggle(column.id) : undefined}
                   // Взятая строка красится в Active (Grey 124) — общий вид
                   // перетаскивания по макету. Раньше здесь была
                   // своя полупрозрачность, и то же действие в трёх списках
                   // кита выглядело тремя разными способами.
                   className={sortableRowClass(
                     "flex items-center gap-4 bg-[var(--table-bg)] p-4",
-                    hideable && !column.locked && "cursor-pointer"
+                    canToggle(column) && "cursor-pointer"
                   )}
                 >
                   {hideable && (
@@ -236,15 +251,15 @@ function TableColumnSettings({
                     // чекбокс ниже по дереву и успевает до остановки.
                     <span
                       onClick={
-                        column.locked
-                          ? undefined
-                          : (event) => event.stopPropagation()
+                        canToggle(column)
+                          ? (event) => event.stopPropagation()
+                          : undefined
                       }
                       className="flex shrink-0"
                     >
                       <Checkbox
                         checked={column.locked || isColumnVisible(column)}
-                        disabled={column.locked}
+                        disabled={column.locked || isLastShown(column)}
                         onCheckedChange={() => toggle(column.id)}
                         aria-label={`Показывать столбец «${nodeText(column.label)}»`}
                       />

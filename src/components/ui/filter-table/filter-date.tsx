@@ -173,7 +173,13 @@ function FilterDate({
           className="w-full"
         />
       </div>
+      {/* Подвал — над календарём (`relative z-10`): поле -mb-4 под тень
+          заходит на подвал, и в низком окне прокрученные дни рисовались
+          поверх его линии, а щелчок в «Сбросить» попадал в день — ячейки
+          дней позиционированы и шли в слое выше подвала. Кнопки подвала
+          непрозрачные, так что при обычной высоте вид прежний. */}
       <ComboboxFooter
+        className="relative z-10"
         applyLabel={filterApplyLabel(filled(draft))}
         onReset={() => {
           setDraft(EMPTY)

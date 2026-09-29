@@ -66,14 +66,17 @@ function FilterRange({
 
   const active = filled(applied) > 0
   // "Выбрано одно значение ОТ" / "ДО" / "Выбран диапазон" — the chip reports
-  // whichever half is filled.
+  // whichever half is filled. Поле из одних пробелов — пустое, как и в
+  // счётчике выше: иначе в триггере стояло «     – 100».
+  const from = applied.from.trim()
+  const to = applied.to.trim()
   const valueLabel =
-    applied.from && applied.to
-      ? `${applied.from} – ${applied.to}`
-      : applied.from
-        ? `${fromLabel} ${applied.from}`
-        : applied.to
-          ? `${toLabel} ${applied.to}`
+    from && to
+      ? `${from} – ${to}`
+      : from
+        ? `${fromLabel} ${from}`
+        : to
+          ? `${toLabel} ${to}`
           : undefined
 
   return (
@@ -113,7 +116,8 @@ function FilterRange({
           setOpen(false)
         }}
         onApply={() => {
-          commit(draft)
+          // Наружу уходят обрезанные значения: «   » — это пустое поле.
+          commit({ from: draft.from.trim(), to: draft.to.trim() })
           setOpen(false)
         }}
       />

@@ -145,21 +145,37 @@ function prepareDate(
   // переписывается, а каретка сдвигается на дописанный ноль — как у часа во
   // времени (`prepareTime`).
   if (chars.length === 1 && DATE_SEPARATORS.includes(chars)) {
-    if (typed.length === 1 || typed.length === 3) {
+    // Одинокий «0» ведущим нулём не дополняется: «00» — не день и не месяц.
+    if ((typed.length === 1 || typed.length === 3) && typed.slice(-1) !== "0") {
       masked.value = typed.slice(0, -1) + "0" + typed.slice(-1)
       return ["", new IMask.ChangeDetails({ tailShift: 1 })]
     }
     return chars
+  }
+  // Первая цифра дня 4–9 и месяца 2–9 без ведущего нуля недопустима: «4» — это
+  // «04», а не начало «4x». Дописывает `prepareDate`, как `prepareTime` у часа.
+  if (/^\d$/.test(chars)) {
+    if (typed.length === 0 && chars >= "4") return "0" + chars
+    if (typed.length === 2 && chars >= "2") return "0" + chars
   }
   if (typed) return chars
   const text = chars.trim()
   const pad = (part: string) => part.padStart(2, "0")
   // Год в начале — с любым из разделителей «-», «/», «.»: «2026-01-10»,
   // «2026/01/10», «2026.1.5».
+  // Целая дата с днём вне 1–31 или месяцем вне 1–12 не принимается вовсе:
+  // разложенная по блокам, она превращалась бы в другую, но правдоподобную
+  // дату («45.13.2024» → «13.02.4»).
+  const whole = (day: string, month: string, year: string) =>
+    Number(day) >= 1 && Number(day) <= 31 && Number(month) >= 1 && Number(month) <= 12
+      ? pad(day) + pad(month) + year
+      : ""
   const iso = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[T\s].*)?$/.exec(text)
-  if (iso) return pad(iso[3]) + pad(iso[2]) + iso[1]
+  if (iso) return whole(iso[3], iso[2], iso[1])
   const ru = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/.exec(text)
-  if (ru) return pad(ru[1]) + pad(ru[2]) + ru[3]
+  if (ru) return whole(ru[1], ru[2], ru[3])
+  const digits = /^(\d{2})(\d{2})(\d{4})$/.exec(text)
+  if (digits) return whole(digits[1], digits[2], digits[3])
   return chars
 }
 
@@ -188,6 +204,15 @@ function prepareTime(
 ): string | [string, InstanceType<typeof IMask.ChangeDetails>] {
   if (flags?.tail) return chars
   const initial = masked.unmaskedValue
+  // Целое время вне 00:00–23:59, вставленное в пустое поле («24:00»,
+  // «25:61», «2460»), не принимается вовсе: разложенное по блокам, оно
+  // превращалось в другое правдоподобное («24:00» → «02:40»).
+  if (!initial) {
+    const whole =
+      /^\s*(\d{1,2})\s*[:.\-\s]\s*(\d{1,2})\s*$/.exec(chars) ??
+      /^(\d{2})(\d{2})$/.exec(chars)
+    if (whole && (Number(whole[1]) > 23 || Number(whole[2]) > 59)) return ""
+  }
   let accepted = initial
   let out = ""
   // Ноль, дописанный перед уже стоящей в поле цифрой, сдвигает каретку:
@@ -296,7 +321,32 @@ export function getImaskProps(name: MaskName) {
     }
   }
   if (name === "phone") return { mask: PATTERNS.phone, prepare: preparePhone }
-  if (name === "date") return { mask: PATTERNS.date, prepare: prepareDate }
+  // Дата, как и время, держит диапазоны на вводе: день 01–31, месяц 01–12
+  // Лишнюю цифру блок отвергает, как у времени (`autofix` не нужен: он бы
+  // молча подменял «13» месяцем «12»); ведущий ноль дописывает `prepareDate`.
+  // Год — четыре произвольные цифры; несуществующие сочетания вроде 31.02
+  // отсеивает разбор даты (`parseDateRu`).
+  if (name === "date") {
+    return {
+      mask: "DD.MM.YYYY",
+      prepare: prepareDate,
+      blocks: {
+        DD: {
+          mask: IMask.MaskedRange,
+          from: 1,
+          to: 31,
+          maxLength: 2,
+        },
+        MM: {
+          mask: IMask.MaskedRange,
+          from: 1,
+          to: 12,
+          maxLength: 2,
+        },
+        YYYY: { mask: "0000" },
+      },
+    }
+  }
   if (name === "amount") {
     return {
       mask: IMask.MaskedNumber,

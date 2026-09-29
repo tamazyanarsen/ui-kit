@@ -7,11 +7,15 @@ import { CalendarFooter } from "./footer"
 // кнопки ростом 56 выступали за него на 1px. Пока календарь обрезал всё
 // сам, этого не было видно; но когда календарь стал прокручиваемым (низкое
 // окно), у него появлялась полоса прокрутки на 1px даже в высоком окне.
-// `overflow-hidden` у подвала гасит выступ, не меняя картинки.
+// Кнопки берут высоту подвала (`h-full`), а не свою: `overflow-hidden` срезал
+// бы верх кольца фокуса (регрессия, найденная проверкой r26).
 
 describe("CalendarFooter: выступ кнопок", () => {
-  it.each([false, true])("compact=%s: подвал обрезает своё содержимое", (compact) => {
+  it.each([false, true])("compact=%s: кнопки по высоте подвала, без обрезки", (compact) => {
     const { container } = render(<CalendarFooter compact={compact} />)
-    expect(container.firstElementChild).toHaveClass("overflow-hidden", "border-t")
+    expect(container.firstElementChild).not.toHaveClass("overflow-hidden")
+    for (const b of container.querySelectorAll("button")) {
+      expect(b).toHaveClass("h-full")
+    }
   })
 })

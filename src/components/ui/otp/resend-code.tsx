@@ -37,20 +37,34 @@ function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
     ;(target === "status" ? statusRef : buttonRef).current?.focus()
   })
 
+  // ⚠️ Остаток считается от срока, а не от числа срабатываний таймера. Пока
+  // вкладка или приложение в фоне (человек читает СМС в другом окне),
+  // браузер замораживает таймеры, и счёт по тикам показывал прежние секунды,
+  // хотя время давно вышло.
+  const deadlineRef = React.useRef(Date.now() + seconds * 1000)
+
   React.useEffect(() => {
     if (remaining <= 0) return
+    // Тик выравнивается по сроку: задержка не копит дрейф `setTimeout`.
+    const delay = Math.max(
+      0,
+      deadlineRef.current - Date.now() - (remaining - 1) * 1000
+    )
     const timeout = window.setTimeout(() => {
-      if (remaining <= 1 && document.activeElement === statusRef.current) {
+      const left = Math.ceil((deadlineRef.current - Date.now()) / 1000)
+      const next = Math.max(0, Math.min(left, remaining - 1))
+      if (next <= 0 && document.activeElement === statusRef.current) {
         focusNext.current = "button"
       }
-      setRemaining((s) => s - 1)
-    }, 1000)
+      setRemaining(next)
+    }, delay)
     return () => window.clearTimeout(timeout)
   }, [remaining])
 
   function handleResend() {
     onResend?.()
     focusNext.current = "status"
+    deadlineRef.current = Date.now() + seconds * 1000
     setRemaining(seconds)
   }
 

@@ -33,9 +33,9 @@ import { Divider } from "@/components/ui/divider"
 const FOOTER_BUTTON = "min-w-0 flex-1 rounded-none"
 const FOOTER_SIZE = {
   regular:
-    "h-14 px-2 text-p1-medium desktop:h-14 desktop:px-2 desktop:text-p1-medium",
+    "h-full px-2 text-p1-medium desktop:h-full desktop:px-2 desktop:text-p1-medium",
   compact:
-    "h-12 px-2 text-p2-medium desktop:h-12 desktop:px-2 desktop:text-p2-medium",
+    "h-full px-2 text-p2-medium desktop:h-full desktop:px-2 desktop:text-p2-medium",
 }
 
 function CalendarFooter({
@@ -65,7 +65,7 @@ function CalendarFooter({
   return (
     <div
       className={cn(
-        "flex overflow-hidden border-t border-[var(--calendar-divider)]",
+        "flex border-t border-[var(--calendar-divider)]",
         compact ? "h-12" : "h-14"
       )}
     >

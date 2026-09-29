@@ -3,6 +3,7 @@ import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { ChevronDownIcon, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -260,7 +261,7 @@ function AccordionListItem({
           </AccordionPrimitive.Trigger>
         </AccordionPrimitive.Header>
 
-        {children && (
+        {hasContent(children) && (
           <AccordionPrimitive.Panel
             data-slot="accordion-list-panel"
             className="h-(--accordion-panel-height) overflow-hidden text-p2-medium transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"

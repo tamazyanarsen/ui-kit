@@ -143,9 +143,9 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         )}
         {...props}
       >
-        <span className="text-p1-medium text-[var(--menu-item-fg)]">{text}</span>
+        <span className="text-p1-medium [overflow-wrap:anywhere] text-[var(--menu-item-fg)]">{text}</span>
         {description && (
-          <span className="text-p3-medium text-[var(--menu-item-description-fg)]">{description}</span>
+          <span className="text-p3-medium [overflow-wrap:anywhere] text-[var(--menu-item-description-fg)]">{description}</span>
         )}
         {children}
       </div>

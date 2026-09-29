@@ -10,6 +10,7 @@ import {
   selectStaticLabelClassName,
   selectTriggerVariants,
 } from "../select"
+import { clipText } from "../select/clip-text"
 
 // Коробка, подпись и кнопка очистки оформлены точно как у SelectTrigger
 // (тот же макет: L 48→56px, S 32px, плавающая подпись только у L).
@@ -113,7 +114,9 @@ export const ComboboxTrigger = React.forwardRef<
               "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
           )}
         >
-          {children}
+          {/* Сводка («Выбрано: …») обычно приходит голым текстом, а во
+              флексе он многоточия не получает — оборачиваем в свой узел. */}
+          {clipText(children)}
         </span>
         <span className="flex shrink-0 items-center gap-1">
           {clearable && onClear && (

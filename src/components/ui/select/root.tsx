@@ -3,6 +3,8 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 
 import { cn } from "@/lib/utils"
 
+import { clipText } from "./clip-text"
+
 // Сброс значения для кнопки «Очистить» в SelectTrigger. Base UI не даёт
 // публичного способа сбросить выбор снаружи, поэтому значение держит обёртка:
 // неуправляемый Select хранит его сам, управляемый просит родителя через
@@ -95,6 +97,12 @@ export function SelectValue({ className, ...props }: SelectPrimitive.Value.Props
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left", className)}
+      // Подпись значения (или несколько через запятую) Base UI кладёт голым
+      // текстом прямо во флекс — анонимный блок, которому многоточие не
+      // достаётся: длинное значение срезалось посреди буквы. Текст
+      // оборачивается в свой узел с многоточием; разметка из
+      // `children`-функции потребителя (логотип + подписи) проходит как есть.
+      render={(renderProps) => <span {...renderProps}>{clipText(renderProps.children)}</span>}
       {...props}
     />
   )

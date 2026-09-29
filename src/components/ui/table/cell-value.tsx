@@ -72,10 +72,15 @@ function TableCellValue({
         className={cn("flex min-w-0 flex-col", alignRight && "items-end")}
         data-truncated={truncated || undefined}
       >
+        {/* `max-w-full` у обеих строк обязателен: при `items-end` (правая
+            выключка чисел) ширина строки считается по содержимому, текст
+            без переноса занимал её целиком, `truncate` не срабатывал, и
+            длинная сумма или пояснение выезжали влево — на соседние
+            столбцы. Теперь строка не шире ячейки и режется многоточием. */}
         <span
           ref={value.ref}
           className={cn(
-            "truncate font-medium",
+            "max-w-full truncate font-medium",
             // "Ячейка для финансовых показателей использует моноширинный
             // шрифт для всех символов, обеспечивая выравнивание чисел по
             // разрядам («запятая под запятой»)". Второе шрифтовое семейство
@@ -113,7 +118,7 @@ function TableCellValue({
           <span
             ref={sub.ref}
             className={cn(
-              "truncate text-p3-regular text-[var(--table-description-fg)]",
+              "max-w-full truncate text-p3-regular text-[var(--table-description-fg)]",
               numeric && "tabular-nums"
             )}
           >

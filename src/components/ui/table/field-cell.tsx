@@ -7,6 +7,7 @@ import {
   formatNumber,
   formatTime,
   parseDate,
+  parseNumericText,
   toNumber,
   withSign,
 } from "./field-format"
@@ -144,8 +145,12 @@ function fieldCellProps<Row>(
     type: cellType,
     children: content,
     // Знак живёт при значении: у пустой ячейки его нет, иначе колонка
-    // показывала бы «— ₽».
-    unit: empty ? undefined : fieldUnit(total ? totalUnitField(field) : field, row),
+    // показывала бы «— ₽». Готовая строка со своим знаком («5 000 ₽»,
+    // «−5,5 %») второй раз его не получает — было «−5,5 %%».
+    unit:
+      empty || (!render && !field.format && hasOwnUnit(value))
+        ? undefined
+        : fieldUnit(total ? totalUnitField(field) : field, row),
     tone: numeric ? fieldTone(total ? { ...field, tone: undefined } : field, row, value) : undefined,
     ...own,
   }
@@ -159,6 +164,15 @@ function totalUnitField<Row>(field: TableField<Row>): TableField<Row> {
   return typeof field.unit === "function" ? { ...field, unit: undefined } : field
 }
 
+/**
+ * Готовая строка числа уже несёт единицу: после цифр идёт что-то ещё
+ * («₽», «%», «шт.»). «10 000,00» единицы не несёт — её добавит колонка.
+ */
+function hasOwnUnit(value: unknown) {
+  if (typeof value !== "string" || parseNumericText(value) === null) return false
+  return /\D$/.test(value.trim())
+}
+
 /** Цвет числа: своё правило `tone` либо зелёный плюс у `signed`. */
 function fieldTone<Row>(
   field: TableField<Row>,
@@ -167,7 +181,12 @@ function fieldTone<Row>(
 ): "default" | "positive" {
   if (field.tone) return field.tone(row)
   if (!field.signed) return "default"
-  const numeric = toNumber(value)
+  // Готовая строка красится, только если плюс в ней виден: «+31 922 ₽»
+  // зелёная, как число `signed`, а «100» без плюса — нет, иначе цвет
+  // противоречил бы тексту.
+  const numeric =
+    toNumber(value) ??
+    (typeof value === "string" && /^\s*\+/.test(value) ? parseNumericText(value) : null)
   return numeric !== null && numeric > 0 ? "positive" : "default"
 }
 

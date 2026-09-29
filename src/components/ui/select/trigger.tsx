@@ -82,7 +82,16 @@ export const SelectTrigger = React.forwardRef<
             id={labelId}
             className={
               floating
-                ? selectFloatingLabelClassName
+                ? cn(
+                    selectFloatingLabelClassName,
+                    // Без крестика место под него не держим: иначе длинная
+                    // подпись обрезалась на 24px раньше, чем могла. Крестика
+                    // нет и у выключенного поля, и у поля только для чтения —
+                    // селекторы составные, чтобы перебить `right-16`.
+                    !clearable && "group-[&:not([data-placeholder])]/trigger:right-10",
+                    "group-[&:not([data-placeholder])[data-disabled]]/trigger:right-10",
+                    "group-[&:not([data-placeholder])[data-readonly]]/trigger:right-10"
+                  )
                 : selectStaticLabelClassName
             }
           >

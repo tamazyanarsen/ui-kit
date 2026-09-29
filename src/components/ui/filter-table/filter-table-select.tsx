@@ -102,7 +102,9 @@ function FilterTableSelect({
   }
 
   function handleApply() {
-    commitValue(draft.trim() ? draft : null)
+    // Наружу — обрезанная строка (как у FilterRange): «  ООО  » из буфера
+    // иначе давало поиску пустую выдачу.
+    commitValue(draft.trim() ? draft.trim() : null)
     setOpen(false)
   }
 

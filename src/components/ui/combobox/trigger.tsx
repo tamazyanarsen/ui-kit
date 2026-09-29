@@ -18,6 +18,10 @@ import { clipText } from "../select/clip-text"
 // сводка («Выбрано документов: 5»), дети пробрасываются напрямую, а не
 // требуют привязки к `Combobox.Value`.
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface ComboboxTriggerOwnProps {
   size?: "sm" | "lg"
   label?: React.ReactNode
@@ -58,7 +62,7 @@ export const ComboboxTrigger = React.forwardRef<
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
   const captionId = caption ? `${triggerId}-caption` : undefined
-  const labelId = label ? `${triggerId}-label` : undefined
+  const labelId = hasValue(label) ? `${triggerId}-label` : undefined
   // Имя поля — подпись: роль combobox своё имя из содержимого не берёт,
   // и без связи скринридер объявлял «поле со списком» без названия.
   // `aria-labelledby` потребителя (в `props`) главнее; `aria-label` — тоже,
@@ -67,7 +71,7 @@ export const ComboboxTrigger = React.forwardRef<
   const floating = size === "lg"
   // Место резервируется только тогда, когда есть чему всплывать: без
   // подписи над значением ничего не появится.
-  const hasFloatingLabel = floating && Boolean(label)
+  const hasFloatingLabel = floating && hasValue(label)
 
   return (
     <div className="flex w-full flex-col gap-1">
@@ -87,7 +91,7 @@ export const ComboboxTrigger = React.forwardRef<
         disabled={disabled}
         {...props}
       >
-        {label && (
+        {hasValue(label) && (
           <span
             id={labelId}
             className={

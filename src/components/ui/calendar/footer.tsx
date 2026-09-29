@@ -65,7 +65,7 @@ function CalendarFooter({
   return (
     <div
       className={cn(
-        "flex border-t border-[var(--calendar-divider)]",
+        "flex overflow-hidden border-t border-[var(--calendar-divider)]",
         compact ? "h-12" : "h-14"
       )}
     >

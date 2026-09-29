@@ -47,6 +47,10 @@ interface CardProps {
   className?: string
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 function Card({
   title,
   titleSuffix,
@@ -103,13 +107,13 @@ function Card({
             <span className="min-w-0 truncate text-[var(--card-title-fg)]">
               {title}
             </span>
-            {titleSuffix && (
+            {hasValue(titleSuffix) && (
               <span className="shrink-0 font-medium text-[var(--card-meta-fg)]">
                 • {titleSuffix}
               </span>
             )}
           </span>
-          {tag && (
+          {hasValue(tag) && (
             <Tag color={tagColor} className="shrink-0">
               {tag}
             </Tag>
@@ -121,7 +125,7 @@ function Card({
             </span>
           )}
         </div>
-        {subtitle && (
+        {hasValue(subtitle) && (
           <span className="truncate text-p2-medium text-[var(--card-meta-fg)]">
             {subtitle}
           </span>

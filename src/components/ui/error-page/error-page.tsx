@@ -46,6 +46,10 @@ interface ErrorPageProps {
   className?: string
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 function ErrorPage({
   type = "image",
   title,
@@ -63,20 +67,20 @@ function ErrorPage({
         className
       )}
     >
-      {title && (
-        <h1 className="text-h2 text-[var(--error-page-title-fg)]">
+      {hasValue(title) && (
+        <h1 className="max-w-full text-h2 [overflow-wrap:anywhere] text-[var(--error-page-title-fg)]">
           {title}
         </h1>
       )}
-      {description && (
+      {hasValue(description) && (
         // 592px — ширина, которую макет даёт этому абзацу внутри
         // текстовой колонки 1008px; `max-w-md` (448) переносил его на
         // строку раньше.
-        <p className="mt-2 max-w-[592px] text-p1-medium text-[var(--error-page-description-fg)]">
+        <p className="mt-2 max-w-[592px] text-p1-medium [overflow-wrap:anywhere] text-[var(--error-page-description-fg)]">
           {description}
         </p>
       )}
-      {buttonLabel && (
+      {hasValue(buttonLabel) && (
         <Button
           type="button"
           variant="primary"

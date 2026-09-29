@@ -53,6 +53,14 @@ interface EventDocument {
  */
 type EventStepType = "first" | "middle" | "end"
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
+/** Без пустых элементов: массив собирают условиями, и `null` в нём — обычное дело. */
+const present = <T,>(items: (T | null | undefined | false)[] | undefined): T[] =>
+  (items ?? []).filter((item): item is T => item != null && item !== false)
+
 interface EventProps {
   type?: "text" | "tag"
   stepType?: EventStepType
@@ -60,11 +68,11 @@ interface EventProps {
   status?: EventStatus
   timestamp?: React.ReactNode
   author?: React.ReactNode
-  signatories?: EventSignatory[]
-  info?: EventInfoRow[]
+  signatories?: (EventSignatory | null | false)[]
+  info?: (EventInfoRow | null | false)[]
   commentLabel?: React.ReactNode
   comment?: React.ReactNode
-  documents?: EventDocument[]
+  documents?: (EventDocument | null | false)[]
   buttonLabel?: React.ReactNode
   onButtonClick?: () => void
   showConnector?: boolean
@@ -90,6 +98,9 @@ function Event({
 }: EventProps) {
   // `stepType` — свойство макета, `showConnector` — прежний булев проп той же
   // оси. Задан явный тип шага — он и решает.
+  const signatoryList = present(signatories)
+  const infoRows = present(info)
+  const documentList = present(documents)
   const step: EventStepType = stepType ?? (showConnector ? "first" : "end")
   const lineAbove = step !== "first"
   const lineBelow = step !== "end"
@@ -148,27 +159,27 @@ function Event({
                 {title}
               </Tag>
             ) : (
-              <span className="text-p1-medium text-[var(--event-title-fg)]">
+              <span className="min-w-0 text-p1-medium [overflow-wrap:anywhere] text-[var(--event-title-fg)]">
                 {title}
               </span>
             )}
-            {timestamp && (
+            {hasValue(timestamp) && (
               <span className="shrink-0 text-p2-medium text-[var(--event-meta-fg)]">
                 {timestamp}
               </span>
             )}
           </div>
 
-          {author && (
-            <p className="text-p1-medium text-[var(--event-author-fg)]">
+          {hasValue(author) && (
+            <p className="text-p1-medium [overflow-wrap:anywhere] text-[var(--event-author-fg)]">
               {author}
             </p>
           )}
         </div>
 
-        {signatories && signatories.length > 0 && (
+        {signatoryList.length > 0 && (
           <div className="flex flex-col gap-2">
-            {signatories.map((signatory, index) => {
+            {signatoryList.map((signatory, index) => {
               const Icon =
                 signatory.status === "success"
                   ? CircleCheck
@@ -185,9 +196,9 @@ function Event({
                     className="size-4 shrink-0"
                     style={{ color: SIGNATORY_STATUS_COLOR[signatory.status] }}
                   />
-                  <span className="text-[var(--event-title-fg)]">
+                  <span className="min-w-0 [overflow-wrap:anywhere] text-[var(--event-title-fg)]">
                     {signatory.name}
-                    {signatory.attribute && (
+                    {hasValue(signatory.attribute) && (
                       <span className="text-[var(--event-meta-fg)]">
                         {" "}
                         — {signatory.attribute}
@@ -206,14 +217,14 @@ function Event({
             один строчный абзац. Поэтому значение, достаточно длинное для
             переноса, остаётся в своей колонке, а не убегает обратно под
             подпись. */}
-        {info && info.length > 0 && (
+        {infoRows.length > 0 && (
           <div className="flex flex-col gap-1 text-p1-medium">
-            {info.map((row, index) => (
+            {infoRows.map((row, index) => (
               <div key={index} className="flex items-start gap-1">
                 <span className="shrink-0 whitespace-nowrap text-[var(--event-meta-fg)]">
                   {row.label}
                 </span>
-                <span className="min-w-0 flex-1 text-[var(--event-title-fg)]">
+                <span className="min-w-0 flex-1 [overflow-wrap:anywhere] text-[var(--event-title-fg)]">
                   {row.value}
                 </span>
               </div>
@@ -221,14 +232,14 @@ function Event({
           </div>
         )}
 
-        {comment && (
+        {hasValue(comment) && (
           <div className="text-p1-medium">
             <p className="text-[var(--event-meta-fg)]">{commentLabel}</p>
-            <p className="text-[var(--event-title-fg)]">{comment}</p>
+            <p className="[overflow-wrap:anywhere] text-[var(--event-title-fg)]">{comment}</p>
           </div>
         )}
 
-        {documents && documents.length > 0 && (
+        {documentList.length > 0 && (
           <div className="flex flex-col gap-2">
             <p className="text-p1-medium text-[var(--event-meta-fg)]">
               Приложенные документы:
@@ -241,7 +252,7 @@ function Event({
                 (inline-block, колонка грида auto) сжимался до ~230px и резал
                 имена файлов (аудит 15, тот же урок, что Informer в r9). */}
             <div className="grid grid-cols-[repeat(auto-fit,minmax(max(min(100%,240px),calc((100%_-_1rem)/2)),1fr))] gap-4">
-              {documents.map((doc, index) => (
+              {documentList.map((doc, index) => (
                 <button
                   key={index}
                   type="button"
@@ -278,7 +289,7 @@ function Event({
           </div>
         )}
 
-        {buttonLabel && (
+        {hasValue(buttonLabel) && (
           <div className="pt-1">
             <Button
               type="button"

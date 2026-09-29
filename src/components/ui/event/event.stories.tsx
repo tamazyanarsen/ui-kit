@@ -11,7 +11,13 @@ import {
 } from "@/stories/matrix"
 import type { Viewport } from "@/lib/viewport"
 
-import { Event, type EventProps, type EventSignatory } from "./event"
+import {
+  Event,
+  type EventDocument,
+  type EventInfoRow,
+  type EventProps,
+  type EventSignatory,
+} from "./event"
 import type { EventStatus } from "./variants"
 
 const STATUSES: EventStatus[] = ["default", "success", "attention", "error"]
@@ -20,19 +26,19 @@ const STATUSES: EventStatus[] = ["default", "success", "attention", "error"]
    раньше правились JSON-редактором. Теперь у каждого — счётчик, а сами
    массивы собираются из пулов ниже. Ноль означает «блок выключен», что и
    есть настоящая проверяемая вариация компонента. */
-const SIGNATORY_POOL: NonNullable<EventProps["signatories"]> = [
+const SIGNATORY_POOL: EventSignatory[] = [
   { status: "success", name: "Иванов И.И.", attribute: "Первая подпись" },
   { status: "attention", name: "Петров П.П.", attribute: "Вторая подпись" },
   { status: "success", name: "Сидоров С.С.", attribute: "Единственная подпись" },
 ]
 
-const INFO_POOL: NonNullable<EventProps["info"]> = [
+const INFO_POOL: EventInfoRow[] = [
   { label: "Сумма:", value: "10 000 ₽" },
   { label: "Счёт:", value: "40702810...1234" },
   { label: "Период:", value: "Сокращённый" },
 ]
 
-const DOCUMENT_POOL: NonNullable<EventProps["documents"]> = [
+const DOCUMENT_POOL: EventDocument[] = [
   { name: "Договор.pdf", meta: "1.2 МБ" },
   { name: "Приложение.pdf", meta: "512 КБ" },
   { name: "Акт.pdf", meta: "128 КБ" },

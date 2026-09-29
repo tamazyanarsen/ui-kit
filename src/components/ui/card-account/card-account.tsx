@@ -37,6 +37,10 @@ interface CardAccountProps {
   className?: string
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 function CardAccount({
   paymentSystem = "mir",
   number,
@@ -61,7 +65,7 @@ function CardAccount({
           `IB / card account`: единственный текст в нём —
           `Object_Sans:Regular`, «Desktop. Параграф/P4 Regular». Разница в
           одном шаге веса, на 10 пикселях её видно только рядом с эталоном. */}
-      {number && (
+      {hasValue(number) && (
         <span className="absolute right-[3px] bottom-[3px] text-p4-regular text-[var(--card-thumb-fg)]">
           {number}
         </span>

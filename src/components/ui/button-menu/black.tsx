@@ -58,7 +58,7 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
   /** Полоса «Information (ELK)» — пары «подпись/значение», описывающие
    * текущее выделение. Опустите её целиком, чтобы получить форму
    * `showBar = false`. */
-  info?: ButtonMenuBlackInfoItem[]
+  info?: (ButtonMenuBlackInfoItem | null | false)[]
   /** Закрывает панель. В макете это голый `icon / close cross` 24px, а не
    * инстанс `ELK / button`, — то есть это ПЛОСКИЙ крестик кита
    * (`CloseCross`), а не кнопка на плашке. */
@@ -150,6 +150,8 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   // Дети раскрываются вместе с фрагментами: `{canSign && <><Button/>…</>}`
   // иначе проходил мимо принудительного размера и варианта, и «Подписать»
   // снова становилась голубой на чёрной панели (дефект дизайн-чека №12).
+  // Пары собирают условиями: `null`/`false` среди них отбрасываются.
+  const infoItems = (info ?? []).filter((item): item is ButtonMenuBlackInfoItem => !!item)
   const sizedChildren = flattenChildren(children).map((child) => {
     if (React.isValidElement(child) && child.type === Button) {
       const element = child as React.ReactElement<{
@@ -285,12 +287,12 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
           информации не показать — она прячется, а зазор ужимается до 16,
           чтобы «…» и крестик помещались даже на 6 колонках при 375. */}
       <div className="ml-8 flex min-w-0 items-center justify-end gap-8 @max-[180px]/black:ml-4">
-        {info && info.length > 0 && (
+        {infoItems.length > 0 && (
           <div
             data-slot="button-menu-black-info"
             className="flex max-h-10 min-w-0 flex-wrap content-start items-center justify-end gap-8 overflow-clip text-p2-medium [overflow-clip-margin:4px] @max-[180px]/black:hidden"
           >
-            {info.map((item, index) => (
+            {infoItems.map((item, index) => (
               // Дизайн-чек от 07.09, замечание 4: перенос не допускается,
               // ширина колонки динамическая. `whitespace-nowrap` — это и
               // есть «в одну строку». Соседи колонку не сжимают: не

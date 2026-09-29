@@ -46,6 +46,10 @@ const TITLE_BLOCK_PT: Record<BlockWidgetTitleType, string> = {
   small: "pt-1",
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface BlockWidgetHeadProps
   extends Omit<React.ComponentProps<"div">, "title"> {
   title: React.ReactNode
@@ -96,7 +100,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
 }, ref) {
   const isDesktop = useIsDesktop()
 
-  const infoIcon = info ? (
+  const infoIcon = hasValue(info) ? (
     <Tooltip content={info}>
       <button
         type="button"
@@ -108,7 +112,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
     </Tooltip>
   ) : null
 
-  const statusNode = status ? (
+  const statusNode = hasValue(status) ? (
     <div
       data-slot="block-widget-status"
       className={cn(
@@ -137,7 +141,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       >
         {title}
       </span>
-      {isDesktop && subtitle && (
+      {isDesktop && hasValue(subtitle) && (
         <span
           className={cn(
             "min-w-0 truncate text-[var(--block-widget-muted-fg)]",
@@ -170,7 +174,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       )}
     >
       {titleRow}
-      {!isDesktop && subtitle && (
+      {!isDesktop && hasValue(subtitle) && (
         <span
           className={cn(
             "min-w-0 truncate text-[var(--block-widget-muted-fg)]",
@@ -180,7 +184,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
           {subtitle}
         </span>
       )}
-      {description && (
+      {hasValue(description) && (
         <p
           className={cn(
             "w-full break-words text-[var(--block-widget-muted-fg)]",
@@ -216,7 +220,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       ref={ref}
       {...props}
     >
-      {leading && (
+      {hasValue(leading) && (
         <div
           data-slot="block-widget-leading"
           className={cn(

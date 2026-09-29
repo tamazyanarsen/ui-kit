@@ -8,6 +8,10 @@ import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 import { useBridgedChecked, useNativeInputBridge } from "./native-input-bridge"
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface CheckboxOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
@@ -118,7 +122,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
     </CheckboxPrimitive.Root>
   )
 
-  if (!label && !hasCaption) {
+  if (!hasValue(label) && !hasCaption) {
     return box
   }
 
@@ -155,7 +159,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
           перестановка в разметке, и остальные правила колонки — в
           `lib/control-text-column.ts`. */}
       <span className={CONTROL_TEXT_COLUMN_CLASS}>
-        {label && (
+        {hasValue(label) && (
           <span
             className={cn(
               "text-p2-medium text-[var(--checkbox-label-fg)] desktop:text-p1-medium",

@@ -186,7 +186,7 @@ function AccordionListItem({
                 <span
                   id={titleId}
                   className={cn(
-                    "min-w-0 flex-1 text-[var(--accordion-list-title-fg)]",
+                    "min-w-0 flex-1 [overflow-wrap:anywhere] text-[var(--accordion-list-title-fg)]",
                     TITLE_SIZE[titleAs]
                   )}
                 >

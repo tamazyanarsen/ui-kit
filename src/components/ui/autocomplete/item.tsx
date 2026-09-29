@@ -11,6 +11,10 @@ import { highlightMatch } from "./highlight"
 // Флажка нет: выбор здесь одиночный, и выбранный результат просто
 // заполняет поле, а не набирает список чипов.
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface AutocompleteItemOwnProps {
   subtitle?: React.ReactNode
   /** Текущая строка поиска. В заголовке и подзаголовке отмечается каждое
@@ -48,7 +52,7 @@ function AutocompleteItem({
       <span className="font-semibold text-[var(--autocomplete-title-fg)] [overflow-wrap:anywhere]">
         {highlightMatch(children, match)}
       </span>
-      {subtitle && (
+      {hasValue(subtitle) && (
         // Второй проход: добавлен font-medium — каждая литеральная строка
         // «Description», снятая с инстансов Menu Point (ELK), использует
         // Object Sans Medium (500), а не Regular, при том же размере 12px.

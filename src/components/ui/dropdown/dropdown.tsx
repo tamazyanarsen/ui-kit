@@ -93,6 +93,10 @@ function DropdownHeader({
   )
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface DropdownItemProps extends React.ComponentProps<"div"> {
   text: React.ReactNode
   description?: React.ReactNode
@@ -144,7 +148,7 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         {...props}
       >
         <span className="text-p1-medium [overflow-wrap:anywhere] text-[var(--menu-item-fg)]">{text}</span>
-        {description && (
+        {hasValue(description) && (
           <span className="text-p3-medium [overflow-wrap:anywhere] text-[var(--menu-item-description-fg)]">{description}</span>
         )}
         {children}

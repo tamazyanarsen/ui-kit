@@ -127,7 +127,7 @@ function BannerDescription({
       {lines.map((line, index) => (
         <div key={index} className={cn("flex items-start", itemGap)}>
           {bullet && <BannerBullet />}
-          <p className="flex-1">{line}</p>
+          <p className="min-w-0 flex-1 [overflow-wrap:anywhere]">{line}</p>
         </div>
       ))}
     </div>
@@ -160,7 +160,7 @@ function Banner({
   // уже воспроизводит и мобильные литеральные размеры (48/24/14), и
   // десктопные вместе с compact (56/32/16) — ветвиться по size здесь не
   // нужно.
-  const cta = ctaLabel && (
+  const cta = isFilled(ctaLabel) && (
     <Button
       variant={size === "compact" ? "secondary-white" : "primary"}
       size="lg"

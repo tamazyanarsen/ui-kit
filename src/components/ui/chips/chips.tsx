@@ -66,6 +66,10 @@ const HAS_SUBTITLE: Record<ChipsType, boolean> = {
   "filter-subtitle-grey": true,
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface ChipsProps {
   children: React.ReactNode
   /** Свойство `Type` компонент-сета. По умолчанию — `Type=Chips`. */
@@ -129,7 +133,7 @@ function Chips({
   className,
 }: ChipsProps) {
   const isFilter = type !== "chips"
-  const withSubtitle = HAS_SUBTITLE[type] && Boolean(subtitle)
+  const withSubtitle = HAS_SUBTITLE[type] && hasValue(subtitle)
   const tone = CHIPS_TONE[type]
 
   return (
@@ -188,7 +192,7 @@ function Chips({
         {count !== undefined && (
           <Badge type="counter" value={count} color="light-grey" disabled={disabled} />
         )}
-        {icon && (
+        {hasValue(icon) && (
           <span
             aria-hidden="true"
             className={cn(

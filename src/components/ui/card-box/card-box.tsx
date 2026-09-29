@@ -59,7 +59,7 @@ interface CardBoxProps {
 
 // Общий корень: белая заливка + радиус 16px во всех типах и формах.
 const ROOT = "w-full rounded-[16px] bg-[var(--card-box-bg)]"
-const TITLE = "text-h3-mobile text-[var(--card-box-title-fg)] desktop:text-h3"
+const TITLE = "text-h3-mobile [overflow-wrap:anywhere] text-[var(--card-box-title-fg)] desktop:text-h3"
 
 function CardBox({
   type = "large",

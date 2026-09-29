@@ -30,7 +30,7 @@ interface CheckboxGroupItem {
 
 interface CheckboxGroupProps
   extends Omit<React.ComponentProps<"div">, "onChange" | "defaultValue"> {
-  items: CheckboxGroupItem[]
+  items: (CheckboxGroupItem | null | false)[]
   /** Controlled set of checked values. */
   value?: string[]
   defaultValue?: string[]
@@ -91,7 +91,9 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
   // пользователь может дотянуться: выключенную строку родитель не должен ни
   // переключать, ни удерживать себя из-за неё от состояния «отмечено
   // полностью».
-  const selectable = items.filter((item) => !item.disabled).map((i) => i.value)
+  // Пункты собирают условиями: `null`/`false` среди них отбрасываются.
+  const rows = items.filter((item): item is CheckboxGroupItem => !!item)
+  const selectable = rows.filter((item) => !item.disabled).map((i) => i.value)
   const selectedCount = selectable.filter((entry) =>
     selected.includes(entry)
   ).length
@@ -124,7 +126,7 @@ const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(funct
           onCheckedChange={toggleAll}
         />
       )}
-      {items.map((item) => (
+      {rows.map((item) => (
         <Checkbox
           key={item.value}
           name={name}

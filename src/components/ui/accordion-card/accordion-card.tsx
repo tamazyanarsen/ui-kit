@@ -17,6 +17,10 @@ import { hasContent } from "@/lib/has-content"
 // странице открываются и закрываются независимо.
 const ITEM_VALUE = "item"
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 interface AccordionCardProps {
   title: React.ReactNode
   subtitle?: React.ReactNode
@@ -79,7 +83,7 @@ function AccordionCard({
                 самой карточки), а не отцентрован по строке высотой 28px —
                 центрирование опускало его на 6px ниже, чем у мастера. */}
             <span className="flex items-start justify-between gap-4 desktop:gap-6">
-              <span className="text-h4-mobile text-[var(--accordion-card-title-fg)] desktop:text-h4">
+              <span className="min-w-0 text-h4-mobile [overflow-wrap:anywhere] text-[var(--accordion-card-title-fg)] desktop:text-h4">
                 {title}
               </span>
               <ChevronDownIcon
@@ -87,7 +91,7 @@ function AccordionCard({
                 className="size-4 shrink-0 text-[var(--accordion-card-icon-fg)] transition-transform duration-200"
               />
             </span>
-            {subtitle && (
+            {hasValue(subtitle) && (
               <span className="text-p2-medium text-[var(--accordion-card-subtitle-fg)] desktop:text-p1-medium">
                 {subtitle}
               </span>

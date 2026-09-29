@@ -361,6 +361,7 @@ const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(function 
               <Calendar
                 mode={mode}
                 layout="popover"
+                className="themed-scrollbar max-h-(--available-height) overflow-y-auto"
                 footer={footer}
                 defaultMonth={defaultMonth}
                 value={mode === "single" ? activeValue : undefined}

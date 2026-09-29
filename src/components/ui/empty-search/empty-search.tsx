@@ -63,6 +63,10 @@ interface EmptySearchResultsProps {
   className?: string
 }
 
+/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
+const hasValue = (node: React.ReactNode) =>
+  node != null && node !== false && node !== ""
+
 function EmptySearchResults({
   icon,
   thumbnailType = "icon",
@@ -114,7 +118,7 @@ function EmptySearchResults({
         <h3 className="text-h4-mobile text-[var(--empty-search-title-fg)] desktop:text-h4">
           {title}
         </h3>
-        {description && (
+        {hasValue(description) && (
           <p className="text-p2-medium text-[var(--empty-search-description-fg)] desktop:text-p1-medium">
             {description}
           </p>

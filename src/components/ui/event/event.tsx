@@ -171,7 +171,9 @@ function Event({
           </div>
 
           {hasValue(author) && (
-            <p className="text-p1-medium [overflow-wrap:anywhere] text-[var(--event-author-fg)]">
+            // В мастере строка автора — `whitespace-nowrap` + ellipsis, а не
+            // перенос: длинное «ФИО • должность» обрезается многоточием.
+            <p className="truncate text-p1-medium text-[var(--event-author-fg)]">
               {author}
             </p>
           )}
@@ -196,7 +198,9 @@ function Event({
                     className="size-4 shrink-0"
                     style={{ color: SIGNATORY_STATUS_COLOR[signatory.status] }}
                   />
-                  <span className="min-w-0 [overflow-wrap:anywhere] text-[var(--event-title-fg)]">
+                  {/* Мастер `Signatory`: `whitespace-nowrap`, имя и подпись в
+                      одну строку, хвост обрезается многоточием. */}
+                  <span className="min-w-0 flex-1 truncate text-[var(--event-title-fg)]">
                     {signatory.name}
                     {hasValue(signatory.attribute) && (
                       <span className="text-[var(--event-meta-fg)]">
@@ -234,14 +238,16 @@ function Event({
 
         {hasValue(comment) && (
           <div className="text-p1-medium">
-            <p className="[overflow-wrap:anywhere] text-[var(--event-meta-fg)]">{commentLabel}</p>
+            {/* Подпись — nowrap + ellipsis, текст комментария переносится
+                (мастер `Comment`). */}
+            <p className="truncate text-[var(--event-meta-fg)]">{commentLabel}</p>
             <p className="[overflow-wrap:anywhere] text-[var(--event-title-fg)]">{comment}</p>
           </div>
         )}
 
         {documentList.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-p1-medium text-[var(--event-meta-fg)]">
+            <p className="truncate text-p1-medium text-[var(--event-meta-fg)]">
               Приложенные документы:
             </p>
             {/* Не больше двух колонок, и вторая — только когда каждой

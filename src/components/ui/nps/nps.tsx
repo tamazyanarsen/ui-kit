@@ -127,10 +127,16 @@ function CloseButton({
   )
 }
 
+// Рамка 1px в макете лежит ВНУТРИ размера карточки (обводка Figma
+// внутренняя), и контент при этом 312px, а размеры 360×668, 360×232 и
+// 360×356. CSS-рамка занимает место, поэтому отступы карточки на 1px
+// меньше макетных (23 вместо 24, 39 вместо 40): иначе контент выходил 310px,
+// а карточка на 2px выше (670, 234, 358).
+//
 // `max-w-full`: встроенная карточка не шире своего контейнера — на 375 с
 // полями страницы 360px давали горизонтальную прокрутку.
 const CARD_CLASS =
-  "w-[360px] max-w-full rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-[0px_8px_12px_rgba(0,0,0,0.06)]"
+  "w-[360px] max-w-full rounded-[16px] border border-[var(--nps-card-border)] bg-[var(--nps-card-bg)] shadow-big-blur"
 
 /**
  * Плавающее окно: правый нижний угол, поверх тостов.
@@ -208,7 +214,7 @@ function NpsDone({
       data-slot="nps"
       className={cn(
         CARD_CLASS,
-        "flex flex-col items-center gap-8 pt-6 pr-6 pb-10 pl-6",
+        "flex flex-col items-center gap-8 pt-[23px] pr-[23px] pb-[39px] pl-[23px]",
         className
       )}
     >
@@ -362,8 +368,8 @@ function Nps({
       }}
       className={cn(
         CARD_CLASS,
-        "flex flex-col items-start gap-8 pt-6 pr-6 pl-6",
-        activeValue !== null ? "pb-6" : "pb-10",
+        "flex flex-col items-start gap-8 pt-[23px] pr-[23px] pl-[23px]",
+        activeValue !== null ? "pb-[23px]" : "pb-[39px]",
         floating && FLOATING_CLASS,
         className
       )}

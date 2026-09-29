@@ -78,10 +78,15 @@ function ProfileMenuTrigger({
             // `truncate` на подписях уже умеет, ему не хватало только
             // предела у самой плитки.
             //
+            // Только `pl-4`: в мастере `Profile Client (ELK)` отступ есть
+            // лишь слева (`pl-[16px]`), а шеврон стоит у самого края
+            // плитки. Прежние `px-4` съедали справа 16px, и название
+            // получало 204px вместо 220, а шеврон уходил на 16px левее.
+            //
             // Заливки на наведении нет: у `Profile Client Header (ELK)` в
             // Hover фон прозрачен, меняется только цвет
             // названия и знаков — его дают `group-hover` ниже.
-            "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 px-4 text-left outline-none focus-visible:focus-ring transition-colors",
+            "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 pl-4 text-left outline-none focus-visible:focus-ring transition-colors",
             className
           )}
         />

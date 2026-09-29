@@ -247,7 +247,12 @@ function TopRow({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-16 w-full shrink-0 border-b border-[var(--header-border)] bg-[var(--header-bg)]">
+    // Нижняя линия — 1px ВНУТРИ 64px (в мастере `Header` обводка Figma
+    // внутренняя: `h-[64px] border-b`, плитки высотой 64 стоят на y=0).
+    // CSS-`border-b` отнимал у контента 1px, сетка становилась 63px и
+    // центрировала 64-пиксельные плитки на y=-0,5, поэтому линия рисуется
+    // поверх слоем `after`, а сетка остаётся 64.
+    <div className="relative flex h-16 w-full shrink-0 bg-[var(--header-bg)] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-[var(--header-border)]">
       <Grid className={cn("flex min-w-0 items-center gap-3", className)}>
         {children}
       </Grid>

@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Button } from "@/components/ui/button"
 
@@ -99,12 +100,12 @@ function ToastCard({
               делает Informer: заголовок 14/20 и описание 12/16 против
               16/24 и 14/20 при Size=Desktop (мастер `ELK / toast message`
               v2.0.0). */}
-          <span className="text-p2-medium text-[var(--toast-title-fg)] desktop:text-p1-medium">
+          <span className="text-p2-medium break-words text-[var(--toast-title-fg)] desktop:text-p1-medium">
             {toast.title}
           </span>
 
-          {toast.description && (
-            <p className="text-p3-medium text-[var(--toast-description-fg)] desktop:text-p2-medium">
+          {hasNode(toast.description) && (
+            <p className="text-p3-medium break-words text-[var(--toast-description-fg)] desktop:text-p2-medium">
               {toast.description}
             </p>
           )}
@@ -283,7 +284,7 @@ function ToastRow({
       data-slot="toast-row"
       data-closing={closing || undefined}
       className={cn(
-        "pointer-events-auto relative grid transition-all duration-300 ease-out",
+        "pointer-events-auto relative grid grid-cols-[minmax(0,1fr)] transition-all duration-300 ease-out",
         "after:absolute after:inset-x-0 after:top-full after:h-6 after:content-['']",
         closing ? "-mb-6 grid-rows-[0fr]" : "grid-rows-[1fr]"
       )}

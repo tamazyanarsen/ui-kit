@@ -2,6 +2,7 @@ import * as React from "react"
 import { ArrowLeftSmall, CircleHelp } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 import { Tag, type TagColor } from "@/components/ui/tag"
 
@@ -113,21 +114,21 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
             </div>
           )}
         </div>
-        {description && (
+        {hasNode(description) && (
           <p className="w-full text-p2-medium text-[var(--title-description-fg)]">
             {description}
           </p>
         )}
       </div>
 
-      {(tag || information) && (
+      {(hasNode(tag) || information) && (
         <div
           data-slot="title-card-status"
           // Перенос: тег и длинная информация на узкой полосе не помещались в
           // одну строку и уходили за край.
           className="flex w-full flex-wrap items-center gap-x-4 gap-y-2"
         >
-          {tag && <Tag color={tagColor}>{tag}</Tag>}
+          {hasNode(tag) && <Tag color={tagColor}>{tag}</Tag>}
           {information}
         </div>
       )}

@@ -213,8 +213,8 @@ function SizeButton({
  * вылезает. Так же устроено ограничение Switcher.
  */
 function Pagination({
-  page,
-  totalPages,
+  page: pageProp,
+  totalPages: totalPagesProp,
   onPageChange,
   pageSize = 25,
   pageCount = "100 (Without 75)",
@@ -223,6 +223,11 @@ function Pagination({
   size = "L",
   className,
 }: PaginationProps) {
+  // `totalPages = Math.ceil(count / size)` при не пришедших данных даёт NaN или
+  // Infinity, и ряд номеров рисовал «NaN» и «Infinity» кнопками. Нечисло —
+  // «страниц нет»; дробное число страниц — неполная последняя страница.
+  const totalPages = Number.isFinite(totalPagesProp) ? Math.max(0, Math.ceil(totalPagesProp)) : 0
+  const page = Number.isFinite(pageProp) ? pageProp : 1
   const showNav = totalPages > 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
   const { listRef, navFocusProps } = useNavFocusHandoff(page, totalPages)

@@ -2,6 +2,7 @@ import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 
 import {
   ARROW_BASE,
@@ -89,8 +90,8 @@ function Tooltip({
               data-slot="tooltip-content"
               render={(popupProps, state) => (
                 <div {...popupProps}>
-                  <div className="flex min-w-0 flex-1 flex-col gap-2 pr-1">
-                    {title && <p className="font-medium">{title}</p>}
+                  <div className="themed-scrollbar -m-1 flex max-h-[calc(var(--available-height)-1.5rem)] min-w-0 flex-1 flex-col gap-2 overflow-y-auto p-1 pr-2 [overflow-wrap:anywhere]">
+                    {hasNode(title) && <p className="font-medium">{title}</p>}
                     <div>{content}</div>
                   </div>
                   {showCross && (

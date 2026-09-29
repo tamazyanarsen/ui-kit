@@ -2,6 +2,7 @@ import * as React from "react"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 import { useNativeInputBridge } from "@/components/ui/checkbox/native-input-bridge"
@@ -85,7 +86,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Radio({
   // комментарий делят одну строку, а не стакаются.
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const hasCaption = Boolean(caption)
+  const hasCaption = hasNode(caption)
   const captionId = hasCaption ? `${radioId}-caption` : undefined
 
   const circle = (
@@ -128,7 +129,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Radio({
     </RadioPrimitive.Root>
   )
 
-  if (!label && !hasCaption) {
+  if (!hasNode(label) && !hasCaption) {
     return circle
   }
 
@@ -148,7 +149,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Radio({
           `lib/control-text-column.ts`; на собственных инстансах Radio
           проверено, что они совпадают с Checkbox. */}
       <span className={CONTROL_TEXT_COLUMN_CLASS}>
-        {label && (
+        {hasNode(label) && (
           <span className="text-p2-medium text-[var(--radio-label-fg)] desktop:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
             {label}
           </span>

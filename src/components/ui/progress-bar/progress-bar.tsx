@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 
 import {
   STATUS_FG,
@@ -174,9 +175,9 @@ function ProgressBar({
   // Status Line: `statusLine` решает, какие слоты группы видны, `showStatus`
   // гасит группу целиком (Figma "Show Status").
   const showSubtitle =
-    showStatus && statusLine !== "description" && Boolean(subtitle)
+    showStatus && statusLine !== "description" && hasNode(subtitle)
   const showStatusDescription =
-    showStatus && statusLine !== "subtitle" && Boolean(statusDescription)
+    showStatus && statusLine !== "subtitle" && hasNode(statusDescription)
   // Сама шкала — `role="progressbar"`: раньше все её полосы были под
   // `aria-hidden`, и прогресс скринридеру не сообщался вовсе.
   const generatedId = React.useId()
@@ -197,7 +198,7 @@ function ProgressBar({
             описание сжимается до нуля первым (у него нулевая основа). */}
         <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
           <span id={generatedId} className="min-w-0 break-words">{title}</span>
-          {showDescription && description && (
+          {showDescription && hasNode(description) && (
             <span className="min-w-0 flex-1 truncate text-right">
               {description}
             </span>

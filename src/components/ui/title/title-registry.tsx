@@ -2,6 +2,7 @@ import * as React from "react"
 import { CircleHelp } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 
 import { TitleHeading } from "./heading"
@@ -78,7 +79,7 @@ const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(funct
           </div>
         )}
       </div>
-      {description && (
+      {hasNode(description) && (
         <p className="w-full text-p2-medium text-[var(--title-description-fg)]">
           {description}
         </p>

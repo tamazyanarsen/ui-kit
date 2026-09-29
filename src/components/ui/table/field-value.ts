@@ -23,10 +23,28 @@ function readPath(source: unknown, path: string): unknown {
     )
 }
 
-/** Пусто — это `null`, `undefined`, пустая строка и пустой массив. */
-function isEmptyValue(value: unknown) {
-  if (value == null || value === "") return true
-  return Array.isArray(value) && value.length === 0
+/**
+ * Пусто — это `null`, `undefined`, `NaN`/`Infinity`, недействительная дата,
+ * строка из одних пробелов и массив без единого непустого элемента (`[]`,
+ * `[null]`, `["", "  "]`).
+ */
+function isEmptyValue(value: unknown): boolean {
+  if (value == null) return true
+  if (typeof value === "string") return value.trim() === ""
+  // `NaN` (0/0, разбор пустого поля), `Infinity` (деление на ноль) и
+  // `Invalid Date` — это «значения нет», а не текст «NaN ₽» в ячейке.
+  if (typeof value === "number") return !Number.isFinite(value)
+  if (value instanceof Date) return Number.isNaN(value.getTime())
+  return Array.isArray(value) && listValues(value).length === 0
+}
+
+/**
+ * Элементы списка без пустых. `[null, "Первый"]` — один плательщик, а не
+ * «Несколько (2)», а в тексте не должно появляться слов «null» и
+ * «undefined».
+ */
+function listValues(values: unknown[]): unknown[] {
+  return values.filter((item) => !isEmptyValue(item))
 }
 
 /** Выключка столбца: из конфига, иначе из типа поля. */
@@ -46,7 +64,8 @@ function fieldUnit<Row>(field: TableField<Row>, row: Row): string | undefined {
  * «Несколько (N)». Одно значение показывается само собой — правило про
  * количество включается со второго.
  */
-function listContent<Row>(field: TableField<Row>, values: unknown[]) {
+function listContent<Row>(field: TableField<Row>, all: unknown[]) {
+  const values = listValues(all)
   if (values.length === 1) return String(values[0])
   return field.listLabel?.(values.length) ?? `Несколько (${values.length})`
 }
@@ -71,7 +90,7 @@ function fieldText<Row>(field: TableField<Row>, row: Row): string {
   if (isEmptyValue(value)) return ""
   const type = field.type ?? "text"
 
-  if (Array.isArray(value)) return value.map(String).join(", ")
+  if (Array.isArray(value)) return listValues(value).map(String).join(", ")
   if (type === "tag") return String(fieldTag(field, row, value).label)
   if (type === "boolean") {
     const labels = field.booleanLabels
@@ -120,4 +139,5 @@ export {
   fieldValue,
   isEmptyValue,
   listContent,
+  listValues,
 }

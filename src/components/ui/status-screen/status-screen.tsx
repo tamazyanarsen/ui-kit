@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 
 import { StatusIllustration } from "./illustration"
@@ -48,9 +49,9 @@ function StatusScreen({
   onSecondaryClick,
   className,
 }: StatusScreenProps) {
-  const withSubtitle = showSubtitle && Boolean(subtitle)
+  const withSubtitle = showSubtitle && hasNode(subtitle)
   const withButtons =
-    showButtons && Boolean(primaryButtonLabel || secondaryButtonLabel)
+    showButtons && (hasNode(primaryButtonLabel) || hasNode(secondaryButtonLabel))
 
   return (
     <div
@@ -87,7 +88,7 @@ function StatusScreen({
         // переносится — `desktop:flex-nowrap` выпускал кнопки за колонку 288
         // на 85px (аудит 22). По центру ряд ставит `items-center` родителя.
         <div className="flex w-max max-w-full flex-wrap items-center justify-center gap-x-6 gap-y-4">
-          {primaryButtonLabel && (
+          {hasNode(primaryButtonLabel) && (
             <Button
               type="button"
               variant="primary"
@@ -97,7 +98,7 @@ function StatusScreen({
               {primaryButtonLabel}
             </Button>
           )}
-          {secondaryButtonLabel && (
+          {hasNode(secondaryButtonLabel) && (
             <Button
               type="button"
               variant="secondary-grey"

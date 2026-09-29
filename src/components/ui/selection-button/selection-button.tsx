@@ -137,7 +137,7 @@ function SelectionButton({
             // длинная подпись действия раздвигала страницу вбок.
             render={<Dropdown className={cn("min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH, className)} />}
           >
-            {items.map((item, index) => (
+            {items.filter(Boolean).map((item, index) => (
               <MenuPrimitive.Item
                 key={index}
                 disabled={item.disabled}

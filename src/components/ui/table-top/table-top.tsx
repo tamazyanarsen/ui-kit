@@ -3,6 +3,7 @@ import * as React from "react"
 import { useHorizontalScrollState } from "@/components/ui/table"
 
 import { cn } from "@/lib/utils"
+import { hasContent } from "@/lib/has-content"
 
 import { DetailsArrow, useArrowFocusHandoff } from "./details-arrow"
 
@@ -145,7 +146,7 @@ const TableTopSummary = React.forwardRef<
       <div className="flex flex-wrap items-center gap-4 text-p2-medium">
         {info}
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {hasContent(actions) && <div className="flex items-center gap-2">{actions}</div>}
     </div>
   )
 })
@@ -295,7 +296,7 @@ const TableTopDetails = React.forwardRef<
           data-scroll-window=""
           className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto rounded-[16px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {items.map((item, index) => (
+          {items.filter(Boolean).map((item, index) => (
             <span
               key={index}
               data-slot="table-top-details-item"

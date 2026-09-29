@@ -3,6 +3,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Button } from "@/components/ui/button"
 import {
@@ -88,9 +89,9 @@ function Hint({
           data-slot="hint-sheet"
           // Иначе у Hint без заголовка шторка осталась бы без доступного
           // имени: основной текст — это описание, а не подпись.
-          aria-label={title ? undefined : "Подсказка"}
+          aria-label={hasNode(title) ? undefined : "Подсказка"}
         >
-          {title && (
+          {hasNode(title) && (
             <ModalHeader>
               <ModalTitle>{title}</ModalTitle>
             </ModalHeader>
@@ -105,7 +106,7 @@ function Hint({
               "px-6 pb-5 desktop:px-8 desktop:pb-6",
               // Без шапки над собой тексту нужен её верхний отступ, иначе
               // он налезет на скруглённый верхний край шторки.
-              !title && "pt-5 desktop:pt-6"
+              !hasNode(title) && "pt-5 desktop:pt-6"
             )}
           >
             {content}
@@ -160,8 +161,8 @@ function Hint({
                на центр якоря штатным `<Popover.Arrow>`. */
             render={(popupProps, state) => (
               <div {...popupProps}>
-                <div className="flex min-w-0 flex-1 flex-col gap-2 pr-1">
-                  {title && (
+                <div className="themed-scrollbar -m-1 flex max-h-[calc(var(--available-height)-1.5rem)] min-w-0 flex-1 flex-col gap-2 overflow-y-auto p-1 pr-2 [overflow-wrap:anywhere]">
+                  {hasNode(title) && (
                     <PopoverPrimitive.Title className="font-medium">
                       {title}
                     </PopoverPrimitive.Title>

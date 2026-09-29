@@ -80,7 +80,7 @@ const TitleInformationText = React.forwardRef<HTMLDivElement, TitleInformationTe
           </button>
         )
       ) : (
-        items.map((item, index) => (
+        items.filter(Boolean).map((item, index) => (
           <span key={index} className="flex shrink-0 items-center gap-1">
             <span className="text-[var(--title-muted-fg)]">{item.label}</span>
             <span className="text-[var(--title-fg)]">{item.value}</span>

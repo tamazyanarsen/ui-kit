@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Tag, type TagColor, type TagVariant } from "@/components/ui/tag"
 import { Tooltip } from "@/components/ui/tooltip"
 
@@ -57,7 +58,7 @@ function TableCellValue({
   return (
     <Tooltip
       content={
-        description ? (
+        hasNode(description) ? (
           <span className="flex flex-col gap-2">
             <span className="text-p3-medium">{children}</span>
             <span>{description}</span>
@@ -114,7 +115,7 @@ function TableCellValue({
             есть тот самый подзаголовок ячейки. Всё остальное в ките с той же
             правки переведено на Medium — не возвращать сюда Regular по
             аналогии. */}
-        {description && (
+        {hasNode(description) && (
           <span
             ref={sub.ref}
             className={cn(

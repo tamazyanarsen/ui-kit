@@ -94,5 +94,5 @@ export type TooltipWidth = "base" | "auto"
 
 export const TOOLTIP_WIDTH: Record<TooltipWidth, string> = {
   base: "max-w-64",
-  auto: "max-w-[592px]",
+  auto: "max-w-[min(592px,var(--available-width))]",
 }

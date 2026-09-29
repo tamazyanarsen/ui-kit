@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Information, Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { Hint } from "@/components/ui/tooltip"
@@ -120,7 +121,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
   const textareaId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const captionId = caption ? `${textareaId}-caption` : undefined
+  const captionId = hasNode(caption) ? `${textareaId}-caption` : undefined
 
   // Плавающая подпись, как у Input: пока поле пусто и не в фокусе, подпись
   // играет роль его placeholder (крупная, серая); как только появляется
@@ -135,7 +136,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
   // между двумя точками (`transition-all`), а место под текст освобождает
   // не раскладка, а верхний отступ самой textarea. Родной placeholder при
   // этом делается прозрачным — иначе он дублировал бы подпись.
-  const hasFloatingLabel = Boolean(label)
+  const hasFloatingLabel = hasNode(label)
   // У нестроковой подписи без `placeholder` плейсхолдер всё равно нужен —
   // пробел: без атрибута `:placeholder-shown` не срабатывает никогда, и
   // подпись навсегда оставалась «поднятой» над пустым полем.
@@ -235,7 +236,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
           )}
           {...props}
         />
-        {label && (
+        {hasNode(label) && (
           // Исправление второго прохода: убрано переопределение цвета по
           // group-has-disabled — у символов Disabled/Filled и
           // Disabled+Locked маленькая подпись 12px в выключенном состоянии
@@ -272,7 +273,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
         )}
       </div>
       </FieldTooltip>
-      {caption && (
+      {hasNode(caption) && (
         // Исправление второго прохода: не хватало px-4 и font-medium — ряды
         // Comment и Error в макете оба используют px-[16px] (встают по
         // внутреннему отступу самой коробки) и font-['Object_Sans:Medium'],

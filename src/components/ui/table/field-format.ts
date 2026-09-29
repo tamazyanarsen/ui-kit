@@ -45,12 +45,14 @@ function parseNumericText(value: unknown): number | null {
  * другом не выравниваются, поэтому дробная часть у всей колонки одна.
  */
 function formatNumber(value: number, decimals?: number) {
-  return normalizeSpaces(
-    new Intl.NumberFormat(LOCALE, {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    }).format(value)
-  )
+  const format = new Intl.NumberFormat(LOCALE, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })
+  const text = normalizeSpaces(format.format(value))
+  // ⚠️ `-0` и малое отрицательное, округлившееся до нуля, ICU печатает со
+  // знаком: «−0,00 ₽». Нуль знака не имеет.
+  return /^[-−]0(?:[.,]0+)?$/.test(text) ? normalizeSpaces(format.format(0)) : text
 }
 
 /**

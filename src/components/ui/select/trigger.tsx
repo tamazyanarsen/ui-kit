@@ -3,6 +3,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { ChevronDownIcon, Lock, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { resolveCaption } from "@/components/ui/input/caption"
 import {
   SELECT_ICON_SIZE,
@@ -48,8 +49,8 @@ export const SelectTrigger = React.forwardRef<
   const clearValue = useSelectClear()
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const captionId = caption ? `${triggerId}-caption` : undefined
-  const labelId = label ? `${triggerId}-label` : undefined
+  const captionId = hasNode(caption) ? `${triggerId}-caption` : undefined
+  const labelId = hasNode(label) ? `${triggerId}-label` : undefined
   // Имя поля — подпись: роль combobox своё имя из содержимого не берёт,
   // и без связи скринридер объявлял «поле со списком» без названия.
   // `aria-labelledby` потребителя (в `props`) главнее; `aria-label` — тоже,
@@ -59,7 +60,7 @@ export const SelectTrigger = React.forwardRef<
   // Место резервируется только тогда, когда есть чему всплывать: без
   // подписи над значением ничего не появится, и прибавка отступа просто
   // утопила бы текст в его коробке без всякой причины.
-  const hasFloatingLabel = floating && Boolean(label)
+  const hasFloatingLabel = floating && hasNode(label)
 
   return (
     <div className="flex w-full flex-col gap-1">
@@ -77,7 +78,7 @@ export const SelectTrigger = React.forwardRef<
         render={<div className={cn(selectTriggerVariants({ size, invalid }), className)} />}
         {...props}
       >
-        {label && (
+        {hasNode(label) && (
           <span
             id={labelId}
             className={
@@ -105,7 +106,7 @@ export const SelectTrigger = React.forwardRef<
             "*:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate",
             // Плавающая подпись уже занимает «пустую» позицию — не дадим
             // собственному тексту-заглушке SelectValue показаться под ней.
-            label &&
+            hasNode(label) &&
               "group-data-placeholder/trigger:*:data-[slot=select-value]:text-transparent",
             // Отступ живёт здесь, на строке значения, а не на самой
             // коробке триггера: коробка использует `items-center` по всей
@@ -160,7 +161,7 @@ export const SelectTrigger = React.forwardRef<
           />
         </span>
       </SelectPrimitive.Trigger>
-      {caption && (
+      {hasNode(caption) && (
         <p
           id={captionId}
           className={cn(

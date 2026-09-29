@@ -2,6 +2,7 @@ import * as React from "react"
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 import { useBridgedChecked, useNativeInputBridge } from "@/components/ui/checkbox/native-input-bridge"
 
@@ -57,9 +58,9 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
   // текста (у тогла трек не краснеет, поэтому визуально это ничего не
   // добавляет, но контрол «Error» остаётся независимым от «Show Error Text»).
   const errorText = typeof error === "boolean" ? null : error
-  const hasCaption = Boolean(comment || errorText)
-  const commentId = comment ? `${toggleId}-comment` : undefined
-  const errorId = errorText ? `${toggleId}-error` : undefined
+  const hasCaption = hasNode(comment) || hasNode(errorText)
+  const commentId = hasNode(comment) ? `${toggleId}-comment` : undefined
+  const errorId = hasNode(errorText) ? `${toggleId}-error` : undefined
   const describedBy = [commentId, errorId].filter(Boolean).join(" ") || undefined
 
   const track = (
@@ -101,7 +102,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
     </SwitchPrimitive.Root>
   )
 
-  if (!label && !hasCaption) {
+  if (!hasNode(label) && !hasCaption) {
     return track
   }
 
@@ -125,7 +126,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
       {/* Текстовая колонка контрола — правила переворота, отступов и
           переноса см. в `lib/control-text-column.ts`. */}
       <span className={CONTROL_TEXT_COLUMN_CLASS}>
-        {label && (
+        {hasNode(label) && (
           <span
             className={cn(
               "text-p2-medium text-[var(--toggle-label-fg)] desktop:text-p1-medium",
@@ -135,7 +136,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
             {label}
           </span>
         )}
-        {comment && (
+        {hasNode(comment) && (
           <span
             id={commentId}
             className={cn(
@@ -148,7 +149,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
             {comment}
           </span>
         )}
-        {errorText && (
+        {hasNode(errorText) && (
           <span
             id={errorId}
             className="text-p3-medium text-[var(--toggle-caption-error-fg)]"

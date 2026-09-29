@@ -5,6 +5,7 @@ import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { GROUP_SPACES, formatSignSpacing } from "@/lib/number-format"
@@ -44,7 +45,10 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
   // поэтому `error` принимает и `true` — красная шкала без подписи.
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)
-  const hasCaption = Boolean(caption)
+  const hasCaption = hasNode(caption)
+  // `scaleLabels={["0", cond && "50", "100"]}`: пустые метки (`null`, `false`) не
+  // рисуются пустыми `<span>`, иначе `justify-between` оставлял под ними дыру.
+  const scale = (scaleLabels ?? []).filter((label) => label != null && typeof label !== "boolean")
   // Подпись связана с ползунком: без `aria-describedby` скринридер не
   // зачитывал ни комментарий, ни текст ошибки.
   const captionId = `${React.useId()}-caption`
@@ -106,7 +110,7 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
             "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:!border-[var(--range-input-border-disabled)] has-[[data-disabled]]:!bg-[var(--range-input-bg-disabled)]"
           )}
         >
-          {label && (
+          {hasNode(label) && (
             <SliderPrimitive.Label
               data-slot="range-input-label"
               // Одна строка с многоточием, как подпись Input: у коробки
@@ -251,9 +255,9 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
           gap-4, которого у Comment нет. Разделено на два соседних узла,
           чтобы отступы каждого ряда совпадали со своим оригиналом
           независимо. */}
-      {scaleLabels && scaleLabels.length > 0 && (
+      {scale.length > 0 && (
         <div className="flex items-center justify-between px-4 pt-2 text-p3-medium text-[var(--range-input-scale-fg)]">
-          {scaleLabels.map((scaleLabel, index) => (
+          {scale.map((scaleLabel, index) => (
             <span key={index}>{scaleLabel}</span>
           ))}
         </div>

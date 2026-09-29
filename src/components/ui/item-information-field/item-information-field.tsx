@@ -163,8 +163,14 @@ function ItemInformationField({
   // (например ИНН из семидесяти цифр одной строкой) больше не уезжает в
   // правый край и не перекрывает иконку копирования: сплошной «слово» без
   // пробелов теперь переносится.
+  //
+  // `[overflow-wrap:anywhere]`, а не `break-words`: колонка значения —
+  // `items-start`, строка в ней берёт ширину по содержимому, а `break-word`
+  // не уменьшает минимальную ширину. В узкой десктопной колонке слово
+  // «корпоративного» не переносилось и выталкивало строку за поле (аудит 21).
+  // `anywhere` рвёт слово, только когда оно одно не помещается в строку.
   const labelRow = (
-    <span className="block min-w-0 break-words text-p2-medium text-[var(--ifield-label-fg)] desktop:text-p1-medium">
+    <span className="block min-w-0 [overflow-wrap:anywhere] text-p2-medium text-[var(--ifield-label-fg)] desktop:text-p1-medium">
       {label}
       {labelInfo && <InfoIcon content={labelInfo} />}
     </span>
@@ -177,7 +183,7 @@ function ItemInformationField({
         // отдельный font-medium ему не нужен — в отличие от ветки text-p1,
         // которой он нужен. На мобильном: 22/30 у большого значения и
         // 14/20 у остальных.
-        "block min-w-0 break-words",
+        "block min-w-0 [overflow-wrap:anywhere]",
         large ? "text-h2-mobile desktop:text-h2" : "text-p2-medium desktop:text-p1-medium",
         VALUE_COLOR[valueStatus]
       )}

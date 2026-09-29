@@ -161,6 +161,8 @@ function prepareDate(
  * пришла в этом же куске (вставка), ноль дописывается перед ней; если она
  * уже в поле (набор по символу), значение поля переписывается на «0X».
  */
+const TIME_SEPARATORS = [":", ".", "-", " "]
+
 function prepareTime(
   chars: string,
   masked: { unmaskedValue: string; value: string },
@@ -176,7 +178,9 @@ function prepareTime(
   let shift = 0
   for (const ch of chars) {
     const n = accepted.length
-    if (ch === ":" && n === 1) {
+    // Разделителем часов и минут пишут не только «:», но и «.», «-» или
+    // пробел: «1.05» — это тоже 01:05, а не «10:5» (аудит 21).
+    if (TIME_SEPARATORS.includes(ch) && n === 1) {
       if (initial.length === 0) {
         const at = out.lastIndexOf(accepted)
         out = out.slice(0, at) + "0" + out.slice(at)
@@ -197,6 +201,52 @@ function prepareTime(
     }
   }
   return shift ? [out, new IMask.ChangeDetails({ tailShift: shift })] : out
+}
+
+/**
+ * Сумма без копеек (`scale: 0`): набранные с клавиатуры «,» или «.» маска
+ * отбрасывала, а следующие цифры дописывала к целой части — «1234,56»
+ * становилось «123 456», сумма молча вырастала в 100 раз (аудит 21). При
+ * вставке той же строки imask копейки просто отбрасывает («1 234»), так что
+ * набор приведён к тому же: после разделителя цифры в конец не принимаются,
+ * пока значение не изменилось иначе (стёрли цифру, правка в середине —
+ * тогда значение перед вставкой уже другое, и запрет снимается).
+ *
+ * Запрет живёт и только пока фокус не ушёл: иначе «1234,», уход из поля,
+ * возврат и «5» молча не принимали цифру (проверка правок r22). Снимается
+ * любым `focusout` в документе — маска не знает своего поля.
+ */
+let amountSeparatorAt = new WeakMap<object, string>()
+let amountFocusWatch = false
+
+function watchAmountFocus() {
+  if (amountFocusWatch || typeof document === "undefined") return
+  amountFocusWatch = true
+  document.addEventListener(
+    "focusout",
+    () => {
+      amountSeparatorAt = new WeakMap()
+    },
+    true
+  )
+}
+
+function prepareAmount(
+  chars: string,
+  masked: { value: string },
+  flags?: { tail?: boolean }
+): string {
+  if (flags?.tail) return chars
+  if (chars === "," || chars === ".") {
+    watchAmountFocus()
+    amountSeparatorAt.set(masked, masked.value)
+    return chars
+  }
+  const guard = amountSeparatorAt.get(masked)
+  if (guard === undefined) return chars
+  if (/^\d+$/.test(chars) && guard === masked.value) return ""
+  amountSeparatorAt.delete(masked)
+  return chars
 }
 
 // Пропсы для подстановки в <IMaskInput mask={...} /> из react-imask.
@@ -232,6 +282,7 @@ export function getImaskProps(name: MaskName) {
   if (name === "amount") {
     return {
       mask: IMask.MaskedNumber,
+      prepare: prepareAmount,
       thousandsSeparator: " ",
       scale: 0,
       min: 0,

@@ -100,30 +100,38 @@ function Card({
         <CardAccount
           number={thumbnailNumber}
           paymentSystem={paymentSystem}
-          className="self-center"
+          // `py-px` фрейма `Card` в мастере: 34 + 2 = 36, без подзаголовка
+          // карточка выходит 84, а не 82.
+          className="my-px self-center"
         />
       )}
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex min-w-0 items-center gap-4">
+          {/* Порядок сжатия при нехватке места: сначала заголовок (у него
+              `min-w-0`), суффикс держит свою ширину (`shrink-0`, как в
+              мастере) и режется многоточием, только когда не помещается
+              один в группе (`max-w-full`); сумма справа не сжимается вовсе. */}
           <span className="flex min-w-0 items-center gap-2 text-h4">
             <span className="min-w-0 truncate text-[var(--card-title-fg)]">
               {title}
             </span>
             {hasValue(titleSuffix) && (
-              <span className="max-w-[50%] truncate font-medium text-[var(--card-meta-fg)]">
+              <span className="max-w-full shrink-0 truncate font-medium text-[var(--card-meta-fg)]">
                 • {titleSuffix}
               </span>
             )}
           </span>
           {hasValue(tag) && (
-            <Tag color={tagColor} className="shrink-0">
-              {tag}
-            </Tag>
+            // `Box` тега в мастере: `self-stretch` и `pt-2` — тег сидит на
+            // y+2 от верха ряда, а не по центру (там y+3).
+            <span className="flex shrink-0 items-start self-stretch pt-0.5">
+              <Tag color={tagColor}>{tag}</Tag>
+            </span>
           )}
           {/* Не `value &&`: номер `0` рисовался голым нулём вне колонки. */}
           {value != null && value !== false && value !== "" && (
-            <span className="min-w-0 flex-1 truncate text-right text-p1-medium text-[var(--card-meta-fg)]">
+            <span className="max-w-full min-w-0 flex-auto shrink-0 truncate text-right text-p1-medium text-[var(--card-meta-fg)]">
               {value}
             </span>
           )}

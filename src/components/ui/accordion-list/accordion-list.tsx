@@ -195,8 +195,11 @@ function AccordionListItem({
                     aria-hidden="true"
                     data-slot="accordion-list-chevron"
                     className={cn(
-                      "inline-block size-4 shrink-0 align-middle text-[var(--accordion-list-icon-fg)] transition-transform duration-200",
-                      titleAs === "h4" ? "ml-2" : "ml-3"
+                      // Верх иконки в мастере: 8px от верха строки H3
+                      // (Box `py-2` при строке 32) и 6px на H4 (строка 28).
+                      // `align-middle` ставил её выше на ~3px.
+                      "relative inline-block size-4 shrink-0 align-top text-[var(--accordion-list-icon-fg)] transition-transform duration-200",
+                      titleAs === "h4" ? "top-1.5 ml-2" : "top-2 ml-3"
                     )}
                   />
                 </span>

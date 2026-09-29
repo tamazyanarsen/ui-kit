@@ -59,47 +59,57 @@ function ErrorPage({
   className,
 }: ErrorPageProps) {
   const showCode = type === "403" || type === "404"
+  const hasTitle = hasValue(title)
+  const hasDescription = hasValue(description)
+  const hasButton = hasValue(buttonLabel)
   return (
+    // Мобильная форма (мастер `Size=Mobile`): боковые 16, сверху 88, кадр не
+    // ниже 640; заголовок 22/30, описание 14/20, зазор до кнопки 24.
+    // Десктоп: боковые 24, сверху 40, зазор до кнопки 32. Зазоры между
+    // слотами дают `gap-*` контейнеров, а не `mt-*` у самих слотов, поэтому
+    // пустой слот не оставляет после себя отступа.
     <div
       data-slot="error-page"
       className={cn(
-        "flex flex-col items-center rounded-[8px] bg-[var(--error-page-bg)] px-6 pt-10 pb-10 text-center",
+        "flex min-h-[640px] flex-col items-center gap-12 rounded-[8px] bg-[var(--error-page-bg)] px-4 pt-[88px] pb-10 text-center desktop:min-h-0 desktop:px-6 desktop:pt-10",
         className
       )}
     >
-      {hasValue(title) && (
-        <h1 className="max-w-full text-h2 [overflow-wrap:anywhere] text-[var(--error-page-title-fg)]">
-          {title}
-        </h1>
-      )}
-      {hasValue(description) && (
-        // 592px — ширина, которую макет даёт этому абзацу внутри
-        // текстовой колонки 1008px; `max-w-md` (448) переносил его на
-        // строку раньше.
-        <p className="mt-2 max-w-[592px] text-p1-medium [overflow-wrap:anywhere] text-[var(--error-page-description-fg)]">
-          {description}
-        </p>
-      )}
-      {hasValue(buttonLabel) && (
-        <Button
-          type="button"
-          variant="primary"
-          size="lg"
-          onClick={onButtonClick}
-          className="mt-8"
-        >
-          {buttonLabel}
-        </Button>
+      {(hasTitle || hasDescription || hasButton) && (
+        <div className="flex w-full flex-col items-center gap-6 desktop:gap-8">
+          {(hasTitle || hasDescription) && (
+            <div className="flex w-full flex-col items-center gap-2">
+              {hasTitle && (
+                <h1 className="max-w-full text-h2-mobile [overflow-wrap:anywhere] text-[var(--error-page-title-fg)] desktop:text-h2">
+                  {title}
+                </h1>
+              )}
+              {hasDescription && (
+                // 592px — ширина, которую макет даёт этому абзацу внутри
+                // текстовой колонки 1008px; `max-w-md` (448) переносил его на
+                // строку раньше.
+                <p className="max-w-[592px] text-p2-medium [overflow-wrap:anywhere] text-[var(--error-page-description-fg)] desktop:text-p1-medium">
+                  {description}
+                </p>
+              )}
+            </div>
+          )}
+          {hasButton && (
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              onClick={onButtonClick}
+            >
+              {buttonLabel}
+            </Button>
+          )}
+        </div>
       )}
       {/* Дизайн-чек №28: иллюстрация целиком вынесена в `Image Error (ELK)`
-          и собрана по мастеру — см. illustration.tsx. Раньше цифры
-          рисовались текстом (не тем шрифтом), а «ноль» вставлялся отдельной
-          мелкой картинкой. Отступ 48px — `gap-[48px]` блока Box в
-          мастере. */}
-      <ErrorPageIllustration
-        type={showCode ? type : "image"}
-        className="mt-12"
-      />
+          и собрана по мастеру — см. illustration.tsx. Отступ 48px до неё —
+          `gap-[48px]` блока Box в мастере (`gap-12` корня). */}
+      <ErrorPageIllustration type={showCode ? type : "image"} />
     </div>
   )
 }

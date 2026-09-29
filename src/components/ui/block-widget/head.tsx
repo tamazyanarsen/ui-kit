@@ -18,9 +18,13 @@ import { Tooltip } from "@/components/ui/tooltip"
 //
 // ⚠️ Мобильная форма РЕСТРУКТУРИРУЕТСЯ, а не сжимается, поэтому ветка идёт
 // через `useIsDesktop`, а не через `desktop:`:
-//   1. приписка и кнопка уезжают из верхнего ряда в отдельный нижний ряд,
-//      который на десктопе не существует вовсе, — а между ними стоит слот
-//      содержимого, то есть CSS-порядком это не выражается;
+//   1. приписка и кнопка уезжают из верхнего ряда в отдельный нижний ряд
+//      `Bottom`, которого на десктопе нет вовсе. В мастере мобильной формы
+//      он идёт ПОСЛЕ слота содержимого (Top, Slot 1, Bottom), поэтому на
+//      мобиле шапка «растворяется» (`display: contents`), и группа
+//      приписки с кнопкой встаёт в колонку блока после слота через
+//      `order`. Раньше она шла до слота: шапка — сосед слота, а не его
+//      родитель, и порядок казался невыразимым;
 //   2. подзаголовок уходит из строки заголовка на свою строку под ним.
 
 /** `Type` сета `Title Block`: две ступени типографики заголовка. */
@@ -200,12 +204,13 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
   return (
     <div
       data-slot="block-widget-head"
-      // Перенос строки вместо второго ряда-соседа: на мобиле группа
-      // приписки и кнопки уходит на свою строку (`basis-full`), на
-      // десктопе стоит в той же. Раньше это были два РАЗНЫХ родителя по
-      // `useIsDesktop`, и `action` перемонтировался при каждом переходе
-      // через брейкпоинт, теряя состояние (например, открытое меню).
-      // Зазор строк 8 — тот же, что был между рядами у BlockWidget на мобиле.
+      // На мобиле `contents`: верхний ряд и нижняя группа становятся
+      // прямыми детьми колонки блока (зазор 8 задаёт сам блок), а нижняя
+      // уходит за слот через `order-1`. На десктопе шапка — ряд с
+      // переносом, и группа приписки и кнопки стоит в той же строке.
+      // Раньше это были два РАЗНЫХ родителя по `useIsDesktop`, и `action`
+      // перемонтировался при каждом переходе через брейкпоинт, теряя
+      // состояние (например, открытое меню).
       //
       // На десктопе перенос тоже включён, но срабатывает только в узкой
       // колонке: заголовок держит порог 200px, и лишь когда рядом с
@@ -214,33 +219,37 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       // заголовку — в колонке 400 от него оставалось 44px, в 343 и 288 он
       // исчезал, а приписки вылезали за блок (аудит 23).
       className={cn(
-        "flex w-full flex-wrap items-start gap-x-4 gap-y-2",
+        "contents desktop:flex desktop:w-full desktop:flex-wrap desktop:items-start desktop:gap-x-4 desktop:gap-y-2",
         className
       )}
       ref={ref}
       {...props}
     >
-      {hasValue(leading) && (
-        <div
-          data-slot="block-widget-leading"
-          className={cn(
-            "flex h-14 shrink-0 self-stretch",
-            leadingAlign === "center"
-              ? "flex-col justify-center"
-              : // Опускание на 2 — только на десктопе: там строка
-                // заголовка 28, и без него управление сидит выше
-                // прописных. На мобильной строке 24 оно уже совпадает.
-                "items-start desktop:pt-0.5"
-          )}
-        >
-          {leading}
-        </div>
-      )}
-      {titleBlock}
+      {/* Верхний ряд мобильной формы (`Top`); на десктопе он «прозрачен»,
+          и левый слот с заголовком — прямые дети ряда шапки. */}
+      <div className="flex w-full items-start gap-4 desktop:contents">
+        {hasValue(leading) && (
+          <div
+            data-slot="block-widget-leading"
+            className={cn(
+              "flex h-14 shrink-0 self-stretch",
+              leadingAlign === "center"
+                ? "flex-col justify-center"
+                : // Опускание на 2 — только на десктопе: там строка
+                  // заголовка 28, и без него управление сидит выше
+                  // прописных. На мобильной строке 24 оно уже совпадает.
+                  "items-start desktop:pt-0.5"
+            )}
+          >
+            {leading}
+          </div>
+        )}
+        {titleBlock}
+      </div>
       {(statusNode || action) && (
         <div
           data-slot="block-widget-trailing"
-          className="flex basis-full items-center justify-end gap-4 desktop:ml-auto desktop:max-w-full desktop:shrink-0 desktop:basis-auto desktop:flex-wrap desktop:items-start"
+          className="order-1 flex w-full items-center justify-end gap-4 desktop:order-none desktop:ml-auto desktop:w-auto desktop:max-w-full desktop:shrink-0 desktop:flex-wrap desktop:items-start"
         >
           {statusNode}
           {action}

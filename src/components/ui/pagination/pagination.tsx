@@ -269,7 +269,9 @@ function Pagination({
       data-size={size}
       data-compact={compactLevel === 2 ? "minimal" : compactLevel === 1 ? "true" : undefined}
       className={cn(
-        "flex border-t border-[var(--pagination-border)] bg-white px-4 py-1",
+        // Штрих в макете лежит ВНУТРИ высоты 44 (и 88 у Size=M), поверх
+        // верхнего поля 4px, поэтому сверху 3px + рамка 1px = те же 4px.
+        "flex border-t border-[var(--pagination-border)] bg-white px-4 pt-[3px] pb-1",
         // Size=M: выбор числа записей уходит на вторую строку и влево.
         size === "M"
           ? "flex-col items-start gap-y-2"

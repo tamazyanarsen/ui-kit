@@ -54,7 +54,15 @@ export function ComboboxFooter({
         disabled={resetDisabled}
         className="min-w-0 flex-1 rounded-none whitespace-nowrap"
       >
-        {resetLabel}
+        {/* Своим узлом: текст прямо во флексе кнопки — анонимный элемент,
+            многоточия он не получает, и в узком поле подпись срезалась
+            краем без него (аудит 18). `-mx-4` / `desktop:-mx-6` отдают
+            подписи боковые поля кнопки (24/32px → 8px): без этого короткое
+            «Сбросить» в поле 200px обрезалось, хотя раньше помещалось,
+            заходя в поле. Отступы симметричны — подпись стоит по центру.
+            `overflow-clip` с запасом 4px, а не `truncate`: тот срезает
+            сглаживание последней буквы. */}
+        <span className="-mx-4 min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px] desktop:-mx-6">{resetLabel}</span>
       </Button>
       {/* Макет рисует разделение собственным элементом «Devider» толщиной
           1px, а не рамкой на одной из кнопок; да и border-r здесь всё равно
@@ -68,7 +76,7 @@ export function ComboboxFooter({
         disabled={applyDisabled}
         className="min-w-0 flex-1 rounded-none whitespace-nowrap"
       >
-        {applyLabel}
+        <span className="-mx-4 min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px] desktop:-mx-6">{applyLabel}</span>
       </Button>
     </div>
   )

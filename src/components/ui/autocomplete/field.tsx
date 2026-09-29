@@ -117,6 +117,9 @@ const AutocompleteField = React.forwardRef<
             // Object Sans Medium подтверждён по собственному инстансу
             // Comment у ELK/input, а не браузерное умолчание.
             "text-p3-medium",
+            // `break-words`: неразрывное слово (номер договора, имя файла)
+            // переносится внутри подписи, а не выходит за поле (аудит 18).
+            "break-words",
             error ? "text-[var(--input-caption-error-fg)]" : "text-[var(--input-caption-fg)]"
           )}
         >

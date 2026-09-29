@@ -285,7 +285,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
           <p
             id={captionId}
             className={cn(
-              "min-w-0 flex-1 text-p3-medium",
+              // `break-words`: неразрывное слово (номер договора, имя файла)
+              // переносится внутри подписи, а не выходит за поле (аудит 18).
+              "min-w-0 flex-1 text-p3-medium break-words",
               error
                 ? "text-[var(--input-caption-error-fg)]"
                 : "text-[var(--input-caption-fg)]"

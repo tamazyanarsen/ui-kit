@@ -42,7 +42,10 @@ function AutocompleteItem({
       )}
       {...props}
     >
-      <span className="font-semibold text-[var(--autocomplete-title-fg)]">
+      {/* `anywhere`, а не `break-words`: ширина списка берётся по
+          содержимому, и только `anywhere` уменьшает min-content —
+          иначе неразрывное слово давало прокрутку вбок (аудит 18). */}
+      <span className="font-semibold text-[var(--autocomplete-title-fg)] [overflow-wrap:anywhere]">
         {highlightMatch(children, match)}
       </span>
       {subtitle && (
@@ -52,7 +55,7 @@ function AutocompleteItem({
         // Отдельного кадра Autocomplete, однако, не существует, поэтому это
         // перенос с общего компонента пункта списка у Select и Combobox, а
         // не значение, подтверждённое по собственному макету Autocomplete.
-        <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)]">
+        <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)] [overflow-wrap:anywhere]">
           {highlightMatch(subtitle, match)}
         </span>
       )}

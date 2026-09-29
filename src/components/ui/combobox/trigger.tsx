@@ -152,7 +152,9 @@ export const ComboboxTrigger = React.forwardRef<
             "text-p3-medium",
             // Горизонтальный отступ совпадает с собственным px-4 у
             // триггера на обоих размерах (см. select/variants.ts).
-            "px-4",
+            // `break-words`: неразрывное слово (номер договора, имя файла)
+            // переносится внутри подписи, а не выходит за поле (аудит 18).
+            "px-4 break-words",
             error
               ? "text-[var(--select-caption-error-fg)]"
               : "text-[var(--select-caption-fg)]"

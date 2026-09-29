@@ -353,7 +353,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
             // `px-4`: кадр «Comment (ELK)» в макете сдвинут на 16px, чтобы
             // подпись встала по тексту самого поля, а не по внешнему краю
             // коробки.
-            "px-4 text-p3-medium",
+            // `break-words`: неразрывное слово (номер договора, имя файла)
+            // переносится внутри подписи, а не выходит за поле (аудит 18).
+            "px-4 text-p3-medium break-words",
             error
               ? "text-[var(--input-caption-error-fg)]"
               : "text-[var(--input-caption-fg)]"

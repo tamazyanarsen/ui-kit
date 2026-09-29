@@ -169,7 +169,9 @@ export const SelectTrigger = React.forwardRef<
             // а не по внешнему краю коробки: совпадает с собственными
             // горизонтальными отступами триггера, а это px-4 на обоих
             // размерах (см. variants.ts).
-            "px-4",
+            // `break-words`: неразрывное слово (номер договора, имя файла)
+            // переносится внутри подписи, а не выходит за поле (аудит 18).
+            "px-4 break-words",
             error
               ? "text-[var(--select-caption-error-fg)]"
               : "text-[var(--select-caption-fg)]"

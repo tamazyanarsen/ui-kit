@@ -109,7 +109,12 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
           {label && (
             <SliderPrimitive.Label
               data-slot="range-input-label"
-              className="text-p3-medium text-[var(--range-input-label-fg)]"
+              // Одна строка с многоточием, как подпись Input: у коробки
+              // фиксированная высота, и перенос длинной подписи ложился
+              // поверх значения, а третья строка вылезала за рамку
+              // (аудит 18). `overflow-clip` с запасом 4px, а не `truncate`:
+              // тот срезает выступы глифов у края.
+              className="min-w-0 overflow-clip text-ellipsis whitespace-nowrap text-p3-medium text-[var(--range-input-label-fg)] [overflow-clip-margin:4px]"
             >
               {label}
             </SliderPrimitive.Label>
@@ -257,7 +262,9 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
         <p
           id={captionId}
           className={cn(
-            "px-4 text-p3-medium",
+            // `break-words`: неразрывное слово (номер договора, имя файла)
+            // переносится внутри подписи, а не выходит за поле (аудит 18).
+            "px-4 text-p3-medium break-words",
             invalid
               ? "text-[var(--range-input-caption-error-fg)]"
               : "text-[var(--range-input-caption-fg)]"

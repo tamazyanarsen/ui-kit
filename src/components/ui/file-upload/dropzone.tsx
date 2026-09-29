@@ -202,7 +202,10 @@ export const FileUploadDropzone = React.forwardRef<
         </span>
       </span>
       {subtitle && (
-        <span className={cn("text-p3-medium", SUBTITLE_COLOR[tone])}>
+        // Подзаголовок — элемент колонки `items-center`, его ширина по
+        // содержимому: без `max-w-full` и `anywhere` (он уменьшает и
+        // min-content) неразрывное имя файла вылезало в обе стороны.
+        <span className={cn("max-w-full text-p3-medium [overflow-wrap:anywhere]", SUBTITLE_COLOR[tone])}>
           {subtitle}
         </span>
       )}

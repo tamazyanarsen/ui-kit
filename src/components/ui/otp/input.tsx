@@ -201,7 +201,9 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
       {errorText && (
         <p
           id={captionId}
-          className="mt-4 text-center text-p3-medium text-[var(--otp-error-fg)] desktop:mt-2"
+          // `break-words`: неразрывное слово в тексте ошибки переносится,
+          // а не выходит за ячейки (аудит 18).
+          className="mt-4 text-center text-p3-medium break-words text-[var(--otp-error-fg)] desktop:mt-2"
         >
           {errorText}
         </p>

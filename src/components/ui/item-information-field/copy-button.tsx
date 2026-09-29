@@ -2,6 +2,7 @@ import * as React from "react"
 import { Copy } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { stripGroupSeparators } from "@/lib/number-format"
 import { useToastOptional } from "@/components/ui/toast-message"
 
 import type { FieldType } from "./item-information-field"
@@ -39,12 +40,33 @@ function readRenderedValue(button: HTMLElement): string {
   return value?.textContent?.trim() ?? ""
 }
 
+/**
+ * Число со знаком валюты или без: цифры, разрядные пробелы (обычный, NBSP,
+ * узкий NBSP), не больше одной дробной части и «₽» в конце. Дата
+ * («10.01.2026» — две точки) и телефон (дефисы) сюда не попадают.
+ */
+const NUMERIC_LIKE = /^[+\-−]?\d[\d   ]*(?:[.,]\d+)?[   ]*₽?$/
+
+/**
+ * Показанное значение в буфер: у номеров и сумм разрядные пробелы и «₽»
+ * снимаются — номер счёта «40702 810 7 00590062544» с пробелами не
+ * вставится в поле, где ждут 20 цифр (аудит 23). Так уже копируют BankCard,
+ * ячейка таблицы и поля ввода. Свободный текст (имя, адрес) — как есть.
+ */
+function toCopyText(text: string): string {
+  if (!NUMERIC_LIKE.test(text)) return text
+  return stripGroupSeparators(text.replace(/[   ]*₽$/, "")).trim()
+}
+
 function CopyButton({
   copyValue,
+  plainValue,
   type,
 }: {
-  /** Не задано — копируется видимый текст значения. */
+  /** Явное значение для буфера — копируется слово в слово. */
   copyValue?: string
+  /** Строка или число из `value`. Не задано — берётся видимый текст. */
+  plainValue?: string
   type: FieldType
 }) {
   // Провайдера тостов может не быть (поле в чужом приложении, витрина):
@@ -68,7 +90,8 @@ function CopyButton({
       // Вне безопасного контекста `navigator.clipboard` нет вовсе, и
       // `clipboard?.writeText` молча давал `undefined` — то есть «успех».
       if (!navigator.clipboard) throw new Error("Clipboard API недоступен")
-      const text = copyValue ?? readRenderedValue(event.currentTarget)
+      const text =
+        copyValue ?? toCopyText(plainValue ?? readRenderedValue(event.currentTarget))
       // Значение — разметка без текста: копировать нечего, и «Скопировано»
       // было бы ложью.
       if (!text) throw new Error("Нечего копировать")

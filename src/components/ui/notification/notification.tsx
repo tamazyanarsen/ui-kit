@@ -104,7 +104,11 @@ function NotificationItem({
         )}
 
         {(buttonLabel || timestamp) && (
-          <div className="flex items-center justify-between gap-6 pt-2">
+          // Перенос: строка вне панели (NotificationItem экспортируется сам
+          // по себе) на телефоне не вмещала кнопку и время рядом — время
+          // уходило за край на 3–58px (аудит 23). Не поместилось — время
+          // встаёт под кнопку; в панели 480 ряд прежний.
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pt-2">
             {buttonLabel ? (
               <Button
                 type="button"

@@ -293,7 +293,8 @@ function ItemInformationField({
 
           {copyable && sideBySide && (
             <CopyButton
-              copyValue={copyValue ?? plainValue}
+              copyValue={copyValue}
+              plainValue={plainValue}
               type={type}
             />
           )}
@@ -302,7 +303,8 @@ function ItemInformationField({
 
       {copyable && !sideBySide && (
         <CopyButton
-          copyValue={copyValue ?? plainValue}
+          copyValue={copyValue}
+          plainValue={plainValue}
           type={type}
         />
       )}

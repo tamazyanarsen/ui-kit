@@ -48,7 +48,8 @@ describe("ItemInformationField: копирование", () => {
 
     await user.click(screen.getByRole("button", { name: "Копировать" }))
 
-    expect(writeText).toHaveBeenCalledWith("40702 810")
+    // Разрядный пробел номера снимается (аудит 23, см. copy-r24).
+    expect(writeText).toHaveBeenCalledWith("40702810")
   })
 
   it("число копируется строкой", async () => {

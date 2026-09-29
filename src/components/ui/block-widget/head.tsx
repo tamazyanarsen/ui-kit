@@ -156,7 +156,16 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
     <div
       data-slot="block-widget-title-block"
       className={cn(
-        "flex min-w-0 flex-1 flex-col justify-end gap-1",
+        // Порог на десктопе: меньше него рядом с приписками заголовку не
+        // остаётся — они уходят на свою строку (см. `block-widget-head`).
+        // Порог — автоматический минимум флекс-элемента: `min-width: auto`
+        // при заданной ширине даёт МЕНЬШЕЕ из этой ширины (200px, но не
+        // шире шапки) и ширины самого заголовка. Короткий «Title» поэтому
+        // держит порог по себе, а не 200px: в контейнере по содержимому
+        // (витрина `w-fit`) шапка остаётся в один ряд, как раньше. Сама
+        // ширина на раскладку не влияет — основа `flex-1` нулевая, и
+        // заголовок растягивается на всё свободное место.
+        "flex min-w-0 flex-1 flex-col justify-end gap-1 desktop:w-[min(200px,100%)] desktop:min-w-auto",
         TITLE_BLOCK_PT[titleType]
       )}
     >
@@ -193,8 +202,15 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       // `useIsDesktop`, и `action` перемонтировался при каждом переходе
       // через брейкпоинт, теряя состояние (например, открытое меню).
       // Зазор строк 8 — тот же, что был между рядами у BlockWidget на мобиле.
+      //
+      // На десктопе перенос тоже включён, но срабатывает только в узкой
+      // колонке: заголовок держит порог 200px, и лишь когда рядом с
+      // приписками он не помещается, они уходят вниз (прижатые вправо
+      // `ml-auto`). Раньше `desktop:flex-nowrap` отдавал всё сжатие
+      // заголовку — в колонке 400 от него оставалось 44px, в 343 и 288 он
+      // исчезал, а приписки вылезали за блок (аудит 23).
       className={cn(
-        "flex w-full flex-wrap items-start gap-x-4 gap-y-2 desktop:flex-nowrap",
+        "flex w-full flex-wrap items-start gap-x-4 gap-y-2",
         className
       )}
       ref={ref}
@@ -220,7 +236,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       {(statusNode || action) && (
         <div
           data-slot="block-widget-trailing"
-          className="flex basis-full items-center justify-end gap-4 desktop:shrink-0 desktop:basis-auto desktop:items-start"
+          className="flex basis-full items-center justify-end gap-4 desktop:ml-auto desktop:max-w-full desktop:shrink-0 desktop:basis-auto desktop:flex-wrap desktop:items-start"
         >
           {statusNode}
           {action}

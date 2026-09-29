@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Icon, type IconName } from "@/components/ui/icon"
 
+import { PaymentIcon } from "./payment-icon"
 import { PaymentLogo } from "./payment-logo"
 import {
   CARD_TYPES,
@@ -147,7 +148,12 @@ function Thumbnail({
             icon
           ))}
 
-        {(type === "card" || type === "sticker") && (
+        {/* Type=Card — значок 24×24 из макета по центру плитки; у Sticker
+            мастер — целиком картинка плитки, её здесь нет, остаётся знак. */}
+        {type === "card" && (
+          <PaymentIcon system={paymentSystem} size="24" disabled={disabled} />
+        )}
+        {type === "sticker" && (
           <PaymentLogo system={paymentSystem} disabled={disabled} />
         )}
 
@@ -180,15 +186,31 @@ function Thumbnail({
           )}
           style={{ backgroundColor: "var(--tag-black-bg)" }}
         >
-          <span className="absolute right-1 bottom-1 flex flex-col items-end gap-0.5">
-            <PaymentLogo system={paymentSystem} disabled={disabled} size="sm" />
-            {/* Пустые цифры — «·» без числа; не заданные — заглушка. */}
-            {last4Text !== "" && (
-              <span className="text-p4-medium text-white">
-                · {last4Text}
-              </span>
+          {/* Мастер SBP Card: значок 24×6 и цифры прижаты к правому краю
+              на 4px, отсчёт от НИЗА плитки — значок стоит на 24px выше
+              низа, цифры на 8px (`bottom-20` + `translate-y-full` при
+              высоте строки 12). У SBP Card Account плитка короче на 10%,
+              и те же отступы там 22.2 и 6.2. Цифры — P4 Regular. */}
+          <PaymentIcon
+            system={paymentSystem}
+            size="24x6"
+            disabled={disabled}
+            className={cn(
+              "absolute right-1",
+              type === "sbp-card-account" ? "bottom-[22.2px]" : "bottom-6"
             )}
-          </span>
+          />
+          {/* Пустые цифры — «·» без числа; не заданные — заглушка. */}
+          {last4Text !== "" && (
+            <span
+              className={cn(
+                "absolute right-1 text-p4-regular whitespace-nowrap text-white",
+                type === "sbp-card-account" ? "bottom-[6.2px]" : "bottom-2"
+              )}
+            >
+              · {last4Text}
+            </span>
+          )}
         </span>
       )}
 

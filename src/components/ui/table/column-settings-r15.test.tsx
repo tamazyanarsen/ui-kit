@@ -25,7 +25,7 @@ describe("TableColumnSettings: окно не выше доступного ме�
     }))
     render(<TableColumnSettings columns={columns} onColumnsChange={vi.fn()} />)
     await open()
-    expect(popup()).toHaveClass("max-h-(--available-height)", "flex", "flex-col")
+    expect(popup()).toHaveClass("max-h-[min(504px,var(--available-height,504px))]", "flex", "flex-col")
     const list = screen.getByText("Столбец 1").closest(".overflow-y-auto") as HTMLElement
     expect(list).toHaveClass("min-h-0")
   })

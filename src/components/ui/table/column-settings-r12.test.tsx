@@ -42,7 +42,8 @@ describe("TableRowMenu: высота не больше места до края 
     render(<TableRowMenu menu={<div>Пункт</div>} />)
     await user.click(screen.getByRole("button", { name: "Открыть меню строки" }))
     const list = await screen.findByRole("menu")
-    expect(list).toHaveClass("max-h-(--available-height)", "overflow-y-auto", "themed-scrollbar")
+    // Предел `min(504, --available-height)` живёт в базе Dropdown.
+    expect(list).toHaveClass("max-h-[min(504px,var(--available-height,504px))]", "overflow-y-auto", "themed-scrollbar")
     expect(list).not.toHaveClass("overflow-hidden")
   })
 })

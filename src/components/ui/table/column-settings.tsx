@@ -211,7 +211,7 @@ function TableColumnSettings({
                 // сжимается и прокручивается сам, иначе нижние строки
                 // уходили за край, а позиционер держал окно у верха.
                 className={cn(
-                  "flex w-70 max-h-(--available-height) flex-col overflow-hidden p-0",
+                  "flex w-70 flex-col overflow-hidden p-0",
                   className
                 )}
               />

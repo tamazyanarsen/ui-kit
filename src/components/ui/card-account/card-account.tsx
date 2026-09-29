@@ -1,7 +1,7 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { PaymentLogo, type PaymentSystem } from "@/components/ui/thumbnail"
+import { PaymentIcon, type PaymentSystem } from "@/components/ui/thumbnail"
 
 /**
  * CardAccount — миниатюра банковской карты 48×34: платёжная система
@@ -55,9 +55,12 @@ function CardAccount({
         className
       )}
     >
-      <PaymentLogo
+      {/* Мастер `IB / card account`: значок `icon / mastercard` 14×6 на
+          (3, 3). Для остальных систем в мастере значка этого размера нет —
+          для них остаётся запасной знак `PaymentLogo`. */}
+      <PaymentIcon
         system={paymentSystem}
-        size="sm"
+        size="14x6"
         className="absolute top-[3px] left-[3px]"
       />
       {/* Дизайн-чек «Storybook 3», замечание 10: окончание номера — P4

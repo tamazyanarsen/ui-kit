@@ -100,16 +100,26 @@ function ErrorPageIllustration({
 }) {
   if (type === "image") {
     // Вариант `Type=Image` — обобщённая иллюстрация без цифр, для всех
-    // прочих ошибок (500, техработы и т.д.).
+    // прочих ошибок (500, техработы и т.д.). Мастер `Type=Image` — тот же
+    // кадр 1216×488, что и у 403/404, а внутри него слой IMG 1139×562 со
+    // сдвигом x +28.78 (от центра), y −40: два слоя — тень (opacity 0.2) и
+    // маскот. Ассет здесь — обрезка IMG по видимой части обоих слоёв
+    // (1304×790 при масштабе 2048/1139), тень уже впечатана. Позиция обрезки
+    // в кадре: left 17.88%, top 6.40%, w 59.64%, h 90.08% — в процентах, как и
+    // у 403/404, поэтому мобильный кадр 328px получается тем же макетом.
     return (
       <div
         data-slot="error-page-illustration"
         data-type="image"
-        className={cn("relative w-full overflow-hidden", className)}
+        className={cn(
+          "relative w-full max-w-[1216px] aspect-[1216/488] overflow-hidden",
+          className
+        )}
       >
         <div
           role="presentation"
-          className="error-page-mascot-image mx-auto block aspect-[700/484] w-[calc(160px*700/484)] max-w-full bg-contain bg-center bg-no-repeat"
+          className="error-page-mascot-image absolute bg-contain bg-center bg-no-repeat"
+          style={{ left: "17.88%", top: "6.4%", width: "59.64%", height: "90.08%" }}
         />
       </div>
     )

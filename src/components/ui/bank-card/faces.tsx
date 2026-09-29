@@ -3,9 +3,9 @@ import { Eye, EyeOff } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { inertProps } from "@/lib/inert"
-import { PaymentLogo } from "@/components/ui/thumbnail"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 
+import { CardPs } from "./card-ps"
 import { SKIN_STYLES, type BankCardSkin } from "./variants"
 
 // Две стороны карты и поле с раскрытием значения. Вынесены из
@@ -148,10 +148,7 @@ function CardFace({
             size === "mobile" ? "gap-1" : "gap-1.5"
           )}
         >
-          <PaymentLogo
-            system={paymentSystem}
-            size={size === "mobile" ? "md" : "lg"}
-          />
+          <CardPs system={paymentSystem} skin={skin} size={size} />
           {showCardNumber && (
             // У мастера «Face, Style=Mono» строка маскированного номера —
             // Medium (500), а не браузерное умолчание.

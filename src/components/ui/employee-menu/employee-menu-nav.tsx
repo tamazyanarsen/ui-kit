@@ -133,7 +133,7 @@ function NavOverflow({
             data-slot="employee-menu-nav-overflow-content"
             // Не выше места до края окна: шапка сотрудника липкая, и
             // прокрутка страницы до нижних разделов не дотягивалась.
-            render={<Dropdown className={cn(MORE_WIDTH, NAV_POPUP_WIDTH, "themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto")} />}
+            render={<Dropdown className={cn(MORE_WIDTH, NAV_POPUP_WIDTH, "themed-scrollbar overflow-x-hidden overflow-y-auto")} />}
           >
             {links.map((link) => (
               <MenuPrimitive.Item

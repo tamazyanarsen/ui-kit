@@ -29,8 +29,17 @@ import { cn } from "@/lib/utils"
  */
 type DropdownSize = "desktop" | "mobile-full-screen" | "mobile-bottom-sheet"
 
+// Десктоп — габариты мастера `ELK / dropdown`: min-w 280, max-w 1008,
+// max-h 504 (у мастера `min-h 56` тоже, но пустой список кит не показывает).
+// Высота — меньшее из 504 и места до края окна (`--available-height`
+// проставляет позиционер Base UI): у окна вне позиционера переменной нет, и
+// без запасного значения `min()` целиком признавался бы недействительным.
+// Прокрутка — у самого окна; потребитель с внутренним списком (`flex-col` и
+// `overflow-hidden`) перекрывает её своей. Потребитель, которому нужна
+// другая ширина, перекрывает `min-w-*`/`max-w-*` через `className`.
 const DROPDOWN_SIZE: Record<DropdownSize, string> = {
-  desktop: "rounded-[16px] shadow-universal",
+  desktop:
+    "max-h-[min(504px,var(--available-height,504px))] max-w-[1008px] min-w-70 overflow-x-hidden overflow-y-auto rounded-[16px] shadow-universal",
   "mobile-full-screen": "flex h-full w-full flex-col rounded-none",
   "mobile-bottom-sheet":
     "flex max-h-[80vh] w-full flex-col rounded-t-[16px] shadow-universal",

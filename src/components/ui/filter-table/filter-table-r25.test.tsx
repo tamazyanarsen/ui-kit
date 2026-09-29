@@ -15,7 +15,7 @@ describe("FilterTableSelect", () => {
     render(<FilterTableSelect label="Поиск" />)
     await user.click(screen.getByText("Поиск"))
     const popup = document.querySelector('[data-slot="filter-content"]') as HTMLElement
-    expect(popup.className).toContain("max-h-(--available-height)")
+    expect(popup.className).toContain("max-h-[min(504px,var(--available-height,504px))]")
     expect(popup.className).toContain("max-w-[calc(100vw-32px)]")
   })
 

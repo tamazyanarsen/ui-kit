@@ -109,7 +109,7 @@ function DropdownDemo({
   const mobile = size !== "desktop"
 
   const surface = (
-    <Dropdown size={size} className={cn("overflow-hidden", !mobile && "w-96")}>
+    <Dropdown size={size} className={cn("overflow-hidden", !mobile && "w-96 max-w-full")}>
       {mobile && <DropdownHeader title="Выберите раздел" />}
       {showSearch && (
         <DropdownSearch
@@ -229,7 +229,7 @@ export const Examples: Story = {
         title="Add = One Button / Two Buttons"
         description="Панель действий вплотную к нижним углам: кнопки — настоящие ELK / button, разделённые вертикальным ELK / divider."
       >
-        <div className="flex items-start gap-6">
+        <div className="flex flex-wrap items-start gap-6">
           <DropdownDemo value={3} add="One Button" showDescription={false} />
           <DropdownDemo value={3} add="Two Buttons" showDescription={false} />
         </div>
@@ -239,7 +239,7 @@ export const Examples: Story = {
         title="Show Search + Show Text Help"
         description="Строка поиска — часть самого списка: 56 в высоту, глиф 24, нижний разделитель Grey 134 и никакой собственной коробки. Подсказка занимает место списка, пока в поиск не ввели три символа."
       >
-        <div className="flex items-start gap-6">
+        <div className="flex flex-wrap items-start gap-6">
           <DropdownDemo value={4} showSearch showDescription={false} />
           <DropdownDemo value={0} showSearch showTextHelp showList={false} />
         </div>

@@ -91,7 +91,7 @@ function ButtonMenuOverflow({
               верхние пункты уходили за экран, прокрутить к ним было нельзя. */}
           <MenuPrimitive.Popup
             data-slot="button-menu-overflow-content"
-            render={<Dropdown className={cn("themed-scrollbar min-w-56 max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
+            render={<Dropdown className={cn("themed-scrollbar min-w-56 overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
           >
             {children}
           </MenuPrimitive.Popup>

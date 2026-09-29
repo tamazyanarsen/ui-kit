@@ -156,7 +156,7 @@ function FilterShell({
               // до края окна; сжимается и прокручивается средняя часть
               // (список FilterSelect, календарь FilterDate), а поиск, поля и
               // подвал с кнопками остаются целиком.
-              render={<Dropdown className="flex max-h-(--available-height) flex-col overflow-hidden" />}
+              render={<Dropdown className="flex flex-col overflow-hidden" />}
               // Ширина из макета — не больше видимой области минус поля по
               // 16px: на узком экране окно 384 (а у FilterDate 560) выходило
               // за правый край и давало горизонтальную прокрутку страницы.

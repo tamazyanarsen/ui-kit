@@ -84,7 +84,7 @@ function HeaderMenuPopup({
           render={
             <Dropdown
               className={cn(
-                "min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto bg-[var(--header-bg)]",
+                "min-w-56 themed-scrollbar overflow-x-hidden overflow-y-auto bg-[var(--header-bg)]",
                 NAV_POPUP_WIDTH,
                 className
               )}

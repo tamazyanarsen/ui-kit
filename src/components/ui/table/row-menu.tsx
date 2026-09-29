@@ -45,7 +45,7 @@ function TableRowMenu({
             data-slot="table-row-menu-content"
             // Не выше места до края окна, как списки «…» (r11), и не шире
             // 400px и окна без полей, как меню навигации (аудит 17).
-            render={<Dropdown className={cn("min-w-48 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
+            render={<Dropdown className={cn("themed-scrollbar overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
           >
             {menu}
           </MenuPrimitive.Popup>

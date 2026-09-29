@@ -212,7 +212,7 @@ export const Examples: Story = {
           disabled: false,
         }}
         render={(props) => (
-          <Dropdown className="w-full overflow-hidden">
+          <Dropdown className="w-full min-w-0 overflow-hidden">
             <Row {...(props as Omit<PlaygroundArgs, "state">)} />
           </Dropdown>
         )}

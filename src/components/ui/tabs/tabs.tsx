@@ -329,7 +329,7 @@ function Tabs({
             >
               <MenuPrimitive.Popup
                 data-slot="tabs-overflow-content"
-                render={<Dropdown className={cn("themed-scrollbar min-w-48 max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
+                render={<Dropdown className={cn("themed-scrollbar min-w-48 overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
               >
                 {hiddenItems.map((item) => {
                   const active = item.value === activeValue

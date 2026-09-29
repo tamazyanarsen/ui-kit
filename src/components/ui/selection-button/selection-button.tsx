@@ -135,7 +135,7 @@ function SelectionButton({
             data-slot="selection-button-content"
             // Не шире 400px и окна без полей — как меню навигации (аудит 17):
             // длинная подпись действия раздвигала страницу вбок.
-            render={<Dropdown className={cn("min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH, className)} />}
+            render={<Dropdown className={cn("themed-scrollbar overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH, className)} />}
           >
             {items.filter(Boolean).map((item, index) => (
               <MenuPrimitive.Item

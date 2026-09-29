@@ -7,8 +7,8 @@ const MODAL = 'компоненты-modal--playground'
 const MODALS = 'компоненты-modal--examples'
 const dlgOpen = (page) => wait(page, () => { const d = document.querySelector('[role=dialog]'); return !!d && d.getBoundingClientRect().width > 0 }, null, 'открытие диалога')
 const dlgGone = (page) => wait(page, () => !document.querySelector('[role=dialog]'), null, 'закрытие диалога')
-const pageUnlocked = (page) => wait(page, () => document.body.style.overflow !== 'hidden' && document.body.style.paddingRight === '' && document.documentElement.style.getPropertyValue('--scroll-lock-gap') === '', null, 'снятие блокировки прокрутки страницы')
-const pageLocked = (page) => wait(page, () => document.body.style.overflow === 'hidden', null, 'блокировка прокрутки страницы')
+const pageUnlocked = (page) => wait(page, () => getComputedStyle(document.body).overflow !== 'hidden' && document.body.style.paddingRight === '' && document.documentElement.style.getPropertyValue('--scroll-lock-gap') === '', null, 'снятие блокировки прокрутки страницы')
+const pageLocked = (page) => wait(page, () => getComputedStyle(document.body).overflow === 'hidden', null, 'блокировка прокрутки страницы')
 const activeIn = (page) => page.evaluate(() => !!document.activeElement?.closest('[role=dialog]'))
 const activeName = (page) => page.evaluate(() => document.activeElement?.getAttribute('aria-label') || document.activeElement?.textContent?.trim().slice(0, 30))
 const trigger = (page, name) => page.getByRole('button', { name, exact: true })
@@ -56,7 +56,7 @@ export default [
       await page.getByRole('button', { name: 'Закрыть' }).click()
       await dlgGone(page)
       await wait(page, () => document.activeElement?.getAttribute('aria-haspopup') === 'dialog', null, 'фокус на кнопке после крестика')
-      expect.eq(await page.evaluate(() => document.body.style.overflow), '', 'страница не заблокирована')
+      expect.eq(await page.evaluate(() => getComputedStyle(document.body).overflow), 'visible', 'страница не заблокирована')
     },
   },
   {

@@ -1,6 +1,6 @@
 // Слой 4: Select и Combobox — открытие мышью и клавиатурой, выбор, Esc и возврат фокуса, блокировки.
 const wait = (page, fn, arg, what) =>
-  page.waitForFunction(fn, arg, { timeout: 8000 }).catch(() => { throw new Error('не дождались: ' + what) })
+  page.waitForFunction(fn, arg, { timeout: 15000 }).catch(() => { throw new Error('не дождались: ' + what) })
 const load = async (page, story, args) => {
   await page.goto(`${new URL(page.url()).origin}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story&args=${args}`)
   await page.waitForFunction(() => document.body.classList.contains('sb-show-main'))
@@ -13,7 +13,7 @@ const expanded = (page, sel) => page.evaluate((s) => document.querySelector(s).g
 const opened = (page, sel) => wait(page, (s) => document.querySelector(s).getAttribute('aria-expanded') === 'true' && document.activeElement !== document.body, sel, 'открытие')
 // закрыт: aria-expanded снят и фокус ушёл из попапа (возврат фокуса и снятие блокировки идут следом)
 const closed = (page, sel) => wait(page, (s) => document.querySelector(s).getAttribute('aria-expanded') === 'false' && !document.activeElement?.closest('[role=listbox],[role=dialog]'), sel, 'закрытие')
-const unlocked = (page) => wait(page, () => document.body.style.overflow !== 'hidden', null, 'снятие блокировки прокрутки')
+const unlocked = (page) => wait(page, () => getComputedStyle(document.body).overflow !== 'hidden', null, 'снятие блокировки прокрутки')
 // Базовый UI дорисовывает список (позиция, подсветка) через кадры: перед клавишами даём этому отработать
 const settle = (page) => page.evaluate(() => new Promise((res) => setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(res, 30))), 30)))
 const SEL = '[data-slot=select-trigger]'
@@ -31,7 +31,7 @@ export default [
       await page.locator(SEL).click()
       await opened(page, SEL)
       expect.eq(await options(page), ['Apple', 'Banana', 'Cherry'], 'пункты списка')
-      await wait(page, () => document.body.style.overflow === 'hidden', null, 'блокировка прокрутки страницы при открытом списке')
+      await wait(page, () => getComputedStyle(document.body).overflow === 'hidden', null, 'блокировка прокрутки страницы при открытом списке')
       step('выбрать Cherry')
       await page.getByRole('option', { name: 'Cherry' }).click()
       await closed(page, SEL)

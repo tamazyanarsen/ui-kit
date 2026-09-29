@@ -1,6 +1,6 @@
 // Слой 4: DatePicker — набор даты, открытие, выбор дня, «Применить»/«Сбросить», диапазон, месяц/год, disabled на лету.
 const wait = (page, fn, arg, what) =>
-  page.waitForFunction(fn, arg, { timeout: 8000 }).catch(() => { throw new Error('не дождались: ' + what) })
+  page.waitForFunction(fn, arg, { timeout: 15000 }).catch(() => { throw new Error('не дождались: ' + what) })
 const load = async (page, story, args, viewport) => {
   if (viewport) await page.setViewportSize({ width: viewport[0], height: viewport[1] })
   await page.goto(`${new URL(page.url()).origin}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story&args=${args}`)

@@ -161,7 +161,7 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
 
   return (
     <div
-      className={cn("mx-auto w-full desktop:w-[368px]", containerClassName)}
+      className={cn("mx-auto w-full max-w-full desktop:w-[368px]", containerClassName)}
     >
       <input
         ref={setRef}

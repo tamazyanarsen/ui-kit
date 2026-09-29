@@ -119,6 +119,31 @@ function preparePhone(
 }
 
 /**
+ * Дата, вставленная целым куском в другом формате: ISO «2026-01-10» (в том
+ * числе со временем «2026-01-10T12:00») и «1.1.2026» / «1/1/2026» без
+ * ведущих нулей. Шаблон «00.00.0000» раскладывал такие строки по цифрам
+ * подряд — «2026-01-10» становилось «20.26.0110», а DatePicker при уходе с
+ * поля молча отбрасывал значение.
+ *
+ * Как у телефона — только ввод целым куском в пустое поле (вставка,
+ * автозаполнение, значение снаружи); набор с клавиатуры не трогается.
+ */
+function prepareDate(
+  chars: string,
+  masked: { unmaskedValue: string },
+  flags?: { tail?: boolean }
+): string {
+  if (flags?.tail || masked.unmaskedValue) return chars
+  const text = chars.trim()
+  const pad = (part: string) => part.padStart(2, "0")
+  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s].*)?$/.exec(text)
+  if (iso) return pad(iso[3]) + pad(iso[2]) + iso[1]
+  const ru = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/.exec(text)
+  if (ru) return pad(ru[1]) + pad(ru[2]) + ru[3]
+  return chars
+}
+
+/**
  * Время: первая цифра, с которой двузначного значения не бывает, получает
  * ведущий ноль — час 3–9 становится «03»–«09», первая цифра минут 6–9 —
  * «06»–«09». «930» даёт «09:30». Без этого час одной цифрой не принимался
@@ -181,6 +206,7 @@ export function getImaskProps(name: MaskName) {
     }
   }
   if (name === "phone") return { mask: PATTERNS.phone, prepare: preparePhone }
+  if (name === "date") return { mask: PATTERNS.date, prepare: prepareDate }
   if (name === "amount") {
     return {
       mask: IMask.MaskedNumber,

@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
 import { cn } from "@/lib/utils"
 import { Dropdown } from "@/components/ui/dropdown"
+import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 /**
  * Плитка панели иконок в шапке — только геометрия, без реакции на курсор.
@@ -84,6 +85,7 @@ function HeaderMenuPopup({
             <Dropdown
               className={cn(
                 "min-w-56 themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto bg-[var(--header-bg)]",
+                NAV_POPUP_WIDTH,
                 className
               )}
             />

@@ -2,6 +2,8 @@ import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 
+import { cn } from "@/lib/utils"
+
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
 import {
@@ -9,6 +11,7 @@ import {
   type SelectionButtonDirection,
   type SelectionButtonSize,
 } from "@/components/ui/selection-button/selection-button"
+import { NAV_POPUP_WIDTH } from "./popup-width"
 
 // Триггер перекрытия «...» и его выпадающее меню. По макету это тот же
 // компонент Dropdown, что и у Select («Больше информации о выпадающем
@@ -88,7 +91,7 @@ function ButtonMenuOverflow({
               верхние пункты уходили за экран, прокрутить к ним было нельзя. */}
           <MenuPrimitive.Popup
             data-slot="button-menu-overflow-content"
-            render={<Dropdown className="themed-scrollbar min-w-56 max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
+            render={<Dropdown className={cn("themed-scrollbar min-w-56 max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
           >
             {children}
           </MenuPrimitive.Popup>

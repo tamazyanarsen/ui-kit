@@ -7,6 +7,7 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { Dropdown } from "@/components/ui/dropdown"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 import type { HeaderMenuLink } from "@/components/ui/header-menu"
+import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 // «Избранное в навигации» — полоса закреплённых разделов в верхнем ряду
 // шапки сотрудника.
@@ -130,7 +131,7 @@ function NavOverflow({
             data-slot="employee-menu-nav-overflow-content"
             // Не выше места до края окна: шапка сотрудника липкая, и
             // прокрутка страницы до нижних разделов не дотягивалась.
-            render={<Dropdown className={cn(MORE_WIDTH, "themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto")} />}
+            render={<Dropdown className={cn(MORE_WIDTH, NAV_POPUP_WIDTH, "themed-scrollbar max-h-(--available-height) overflow-x-hidden overflow-y-auto")} />}
           >
             {links.map((link) => (
               <MenuPrimitive.Item

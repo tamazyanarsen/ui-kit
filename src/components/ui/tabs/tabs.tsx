@@ -13,6 +13,8 @@ import { useActiveIndicator } from "@/lib/use-active-indicator"
 
 import { TabButton } from "./tab-button"
 import type { TabItem, TabsSize } from "./types"
+import { useItemsValue } from "./use-items-value"
+import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 // Tabs — «Табы»: полоса вкладок с подчёркиванием. Значение — буквальное
 // количество пунктов (2–12), но это ограничение содержания, а не то, что
@@ -88,21 +90,9 @@ function Tabs({
   // закреплённый размер и в замере переполнения, и в CSS.
   const medium = size === "medium"
   const sizeKey = isDesktop && !medium ? "desktop" : "mobile"
-  const [internalValue, setInternalValue] = React.useState(defaultValue)
-  // Неуправляемое значение, которого нет среди `items` (пункты пришли
-  // асинхронно после пустого массива или активный пункт удалили), не
-  // застывает, а откатывается на первую доступную вкладку. Раньше умолчание
-  // считалось один раз при монтировании, и при `items=[]` на старте активной
-  // вкладки не было никогда.
-  const fallbackValue = (items.find((item) => !item.disabled) ?? items[0])?.value
-  const activeValue =
-    value ??
-    (items.some((item) => item.value === internalValue) ? internalValue : fallbackValue)
-
-  function setValue(next: string) {
-    if (value === undefined) setInternalValue(next)
-    onValueChange?.(next)
-  }
+  // Откат неуправляемого значения на первый доступный пункт — в общем
+  // хуке: он фиксирует откат и сообщает его через `onValueChange`.
+  const { activeValue, setValue } = useItemsValue(items, value, defaultValue, onValueChange)
 
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     items.length,
@@ -321,7 +311,7 @@ function Tabs({
             >
               <MenuPrimitive.Popup
                 data-slot="tabs-overflow-content"
-                render={<Dropdown className="themed-scrollbar min-w-48 max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
+                render={<Dropdown className={cn("themed-scrollbar min-w-48 max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
               >
                 {hiddenItems.map((item) => {
                   const active = item.value === activeValue

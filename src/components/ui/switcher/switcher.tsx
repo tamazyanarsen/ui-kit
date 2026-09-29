@@ -11,6 +11,9 @@ import { Dropdown } from "@/components/ui/dropdown"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
+import { useItemsValue } from "@/components/ui/tabs/use-items-value"
+import { useOverflowFocusRescue } from "./overflow-focus"
+import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 // Switcher — «Cell Switcher / Переключатель»: сегментированный контрол
 // (контейнер-таблетка плюс скользящая активная таблетка), в
@@ -171,20 +174,9 @@ function Switcher({
   showMore = true,
   className,
 }: SwitcherProps) {
-  const [internalValue, setInternalValue] = React.useState(defaultValue)
-  // Неуправляемое значение, которого нет среди `items` (пункты пришли
-  // асинхронно после пустого массива или набор заменили), откатывается на
-  // первый доступный пункт — как у Tabs. Раньше умолчание считалось один
-  // раз при монтировании, и выбранного сегмента не было вовсе.
-  const fallbackValue = (items.find((item) => !item.disabled) ?? items[0])?.value
-  const activeValue =
-    value ??
-    (items.some((item) => item.value === internalValue) ? internalValue : fallbackValue)
-
-  function setValue(next: string) {
-    if (value === undefined) setInternalValue(next)
-    onValueChange?.(next)
-  }
+  // Откат неуправляемого значения на первый доступный пункт — в общем
+  // хуке: он фиксирует откат и сообщает его через `onValueChange`.
+  const { activeValue, setValue } = useItemsValue(items, value, defaultValue, onValueChange)
 
   // `disabled` на всём переключателе (по собственному примеру «Disabled» в
   // макете, где разом гаснут все сегменты) накладывается поверх
@@ -219,6 +211,8 @@ function Switcher({
     hasOverflow,
     resolvedItems,
   ])
+  // «Ещё» снялось с фокусом внутри — фокус переходит на ряд, а не на body.
+  const focusSentinel = useOverflowFocusRescue(hasOverflow, indicator.rowRef)
 
   // Дизайн-чек от 08.09, замечание 21: «В свитчере ездит заливка». Цвет
   // бегунка — ровно те же три варианта, что раньше стояли на самом сегменте.
@@ -282,6 +276,7 @@ function Switcher({
         ))}
       </div>
 
+      {hasOverflow && focusSentinel}
       {hasOverflow && (
         <MenuPrimitive.Root modal={false}>
           <MenuPrimitive.Trigger
@@ -321,7 +316,7 @@ function Switcher({
             >
               <MenuPrimitive.Popup
                 data-slot="switcher-overflow-content"
-                render={<Dropdown className="themed-scrollbar min-w-48 max-h-(--available-height) overflow-x-hidden overflow-y-auto" />}
+                render={<Dropdown className={cn("themed-scrollbar min-w-48 max-h-(--available-height) overflow-x-hidden overflow-y-auto", NAV_POPUP_WIDTH)} />}
               >
                 {hiddenItems.map((item) => {
                   const active = item.value === activeValue

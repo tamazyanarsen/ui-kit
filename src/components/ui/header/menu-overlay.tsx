@@ -87,6 +87,22 @@ function MenuOverlay({
     return () => document.removeEventListener("keydown", onKeyDown)
   }, [open, returnFocusRef])
 
+  // Закрытие не по Escape — выбор ссылки, плитки, пункта ряда, щелчок по
+  // затемнению — тоже возвращает фокус на кнопку, открывшую панель. Раньше
+  // это делал только Escape: после выбора пункта панель снималась через
+  // 160 мс вместе с узлом, на котором стоял фокус, и он падал на body.
+  // Если действие само увело фокус наружу (в модалку, на другой триггер),
+  // его не трогаем.
+  const wasOpenRef = React.useRef(open)
+  React.useLayoutEffect(() => {
+    const closing = wasOpenRef.current && !open
+    wasOpenRef.current = open
+    if (!closing) return
+    const active = document.activeElement
+    const lost = !active || active === document.body || ref.current?.contains(active)
+    if (lost) returnFocusRef?.current?.focus()
+  }, [open, returnFocusRef])
+
   // Высота — «до низа экрана», и посчитать её в CSS нечем.
   //
   // Раньше здесь стояло `h-[calc(100vh-8rem)]` — «экран минус шапка 128».

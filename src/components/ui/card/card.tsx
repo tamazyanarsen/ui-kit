@@ -111,7 +111,7 @@ function Card({
               {title}
             </span>
             {hasValue(titleSuffix) && (
-              <span className="shrink-0 font-medium text-[var(--card-meta-fg)]">
+              <span className="max-w-[50%] truncate font-medium text-[var(--card-meta-fg)]">
                 • {titleSuffix}
               </span>
             )}

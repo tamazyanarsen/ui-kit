@@ -207,9 +207,9 @@ export const FileUploadDropzone = React.forwardRef<
           event.target.value = ""
         }}
       />
-      <span className="flex items-center gap-2">
-        <CirclePlus size={24} aria-hidden="true" className={cn("size-6", CONTENT_COLOR[tone])} />
-        <span className={cn("text-p2-medium desktop:text-p1-medium", CONTENT_COLOR[tone])}>
+      <span className="flex min-w-0 items-center gap-2">
+        <CirclePlus size={24} aria-hidden="true" className={cn("size-6 shrink-0", CONTENT_COLOR[tone])} />
+        <span className={cn("min-w-0 text-p2-medium [overflow-wrap:anywhere] desktop:text-p1-medium", CONTENT_COLOR[tone])}>
           {children ?? (
             <>
               {"Перетащите или "}

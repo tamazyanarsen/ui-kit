@@ -53,10 +53,13 @@ function ToastCard({
       role="status"
       // Size=Mobile — это карточка 328px с отступом 16px и крестиком 16px;
       // Size=Desktop — 480px с отступом 24px и крестиком 24px.
+      // Минимум 320px — только на десктопе (аудит 14): в мобильной колонке
+      // `inset-x-4` на телефоне 320 он был шире колонки (288), и крестик
+      // уезжал за край экрана.
       // Появление общее у всех, уход — по судьбе сообщения. Числа и кадры —
       // в styles/base.css, длительности в tokens-motion.css.
       className={cn(
-        "w-full min-w-[320px] shrink-0 rounded-[16px] p-4 shadow-universal desktop:p-6",
+        "w-full shrink-0 rounded-[16px] p-4 shadow-universal desktop:min-w-[320px] desktop:p-6",
         "motion-safe:animate-[toast-in_var(--duration-overlay)_var(--ease-out)_both]",
         toast.closing &&
           (behavior === "collected"
@@ -107,7 +110,10 @@ function ToastCard({
           )}
 
           {(data?.primaryButtonLabel || data?.secondaryButtonLabel) && (
-            <div className="flex items-center gap-2 pt-2">
+            // Кнопки в мобильной форме переносятся: «Перейти в документ» и
+            // «Скрыть» в одну строку не помещаются на телефоне 320–360 и
+            // раздвигали карточку. На десктопе ряд без переноса.
+            <div className="flex flex-wrap items-center gap-2 pt-2 desktop:flex-nowrap">
               {data?.primaryButtonLabel && (
                 <Button
                   type="button"
@@ -220,7 +226,7 @@ function Toaster() {
       // шапки (16 / 32). Из-за него «информирующий» тост, уходящий вверх на
       // 200 px, виден до самой кромки шапки и там пропадает — то есть уходит
       // ПОД ШАПКУ, как и написано в документации, хотя лежит слоем выше неё
-      // (`--z-toast` 50 против `z-40` у шапки).
+      // (`--z-toast` 70 против `z-40` у шапки).
       //
       // ⚠️ Правый отступ — ПО СЕТКЕ, а не фиксированные 40 px. «Финальная
       // позиция с отступом от правого края 40 px по сетке страницы»

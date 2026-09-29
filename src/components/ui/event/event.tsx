@@ -233,7 +233,12 @@ function Event({
             <p className="text-p1-medium text-[var(--event-meta-fg)]">
               Приложенные документы:
             </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Две колонки — по ширине самого блока (контейнерный запрос), а
+                не по экрану (`sm:`, аудит 14) и не по форме кита: в узком
+                контейнере на широком экране колонки по ~155px обрезали имя
+                файла до ~10 знаков. Вторая колонка — от 480px блока. */}
+            <div className="@container/event-docs">
+            <div className="grid grid-cols-1 gap-4 @min-[480px]/event-docs:grid-cols-2">
               {documents.map((doc, index) => (
                 <button
                   key={index}
@@ -267,6 +272,7 @@ function Event({
                   </span>
                 </button>
               ))}
+            </div>
             </div>
           </div>
         )}

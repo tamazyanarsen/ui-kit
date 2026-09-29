@@ -148,8 +148,12 @@ const CARD_CLASS =
  * (оценка + чипсы + комментарий) выше 600px, и на невысоком экране верх
  * карточки уходил за экран вместе с крестиком — закрыть опрос было нечем.
  */
+// Пока открыта модалка, плавающий опрос уходит под её подложку (`z-40`
+// при подложке `z-50`): иначе он лежал поверх окна и на телефоне
+// закрывал «Подтвердить». Слой по-прежнему выше тостов, когда окна нет
+// (дизайн-чек от 07.09, замечание 21), — см. styles/tokens-surfaces.css.
 const FLOATING_CLASS =
-  "fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))] desktop:max-w-none"
+  "[:root:has([data-slot=modal-backdrop])_&]:z-40 fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))] desktop:max-w-none"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({

@@ -79,8 +79,14 @@ const ModalContent = React.forwardRef<HTMLDivElement, ModalContentProps>(functio
   // Поэтому `ModalHeader` передаётся прямым ребёнком `ModalContent`, без
   // собственных обёрток. Фрагмент обёрткой не считается — он раскрывается:
   // условная разметка `<>{header}{body}</>` давала шапку И холдер над ней.
+  //
+  // Явно переданный `ModalTopHolder` (вариант «Modal Top: None» из JSDoc)
+  // тоже засчитывается — иначе полоса вставала второй (аудит 14: тело
+  // начиналось на 96px вместо 48).
   const hasHeader = flattenChildren(children).some(
-    (node) => React.isValidElement(node) && node.type === ModalHeader
+    (node) =>
+      React.isValidElement(node) &&
+      (node.type === ModalHeader || node.type === ModalTopHolder)
   )
 
   return (

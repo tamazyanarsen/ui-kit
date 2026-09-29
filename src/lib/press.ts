@@ -60,14 +60,38 @@ function isOwnActivationKey(event: React.KeyboardEvent): boolean {
 }
 
 /**
+ * Клик завершил выделение текста внутри блока: пользователь протянул мышью
+ * по номеру счёта, чтобы скопировать его, — это не нажатие на блок.
+ *
+ * Браузер шлёт `click` и после протяжки, если нажатие и отпускание пришлись
+ * на один элемент. Обычный щелчок выделение сворачивает ещё на `mousedown`,
+ * поэтому к `click` оно пустое. Двойной щелчок по слову даёт один `onPress`
+ * (от первого щелчка): ко второму слово уже выделено.
+ */
+function endsTextSelection(event: PressEvent): boolean {
+  const selection =
+    typeof window !== "undefined" && typeof window.getSelection === "function"
+      ? window.getSelection()
+      : null
+  if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false
+  const root = event.currentTarget as Node
+  for (let index = 0; index < selection.rangeCount; index++) {
+    if (selection.getRangeAt(index).intersectsNode(root)) return true
+  }
+  return false
+}
+
+/**
  * Обработчики «весь блок — кнопка»: клик мимо вложенного управления и
- * Enter/Space на самом блоке вызывают `onPress`.
+ * Enter/Space на самом блоке вызывают `onPress`. Клик, которым закончилось
+ * выделение текста в блоке, нажатием не считается.
  */
 function pressHandlers<T extends Element>(onPress: (() => void) | undefined) {
   if (!onPress) return {}
   return {
     onClick(event: React.MouseEvent<T>) {
       if (fromNestedControl(event)) return
+      if (endsTextSelection(event)) return
       onPress()
     },
     onKeyDown(event: React.KeyboardEvent<T>) {

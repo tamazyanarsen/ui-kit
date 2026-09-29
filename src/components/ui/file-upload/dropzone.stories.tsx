@@ -58,6 +58,11 @@ function withUploadLink(title: string) {
 
 const CONTENT = { table: { category: "Контент" } }
 
+/** Десктопная подпись мастера. Пока Title равен ей, история отдаёт
+    компоненту штатный текст, а не строку: штатный у мобильной формы
+    свой («Загрузите файлы»), перетаскивать на телефоне нечего. */
+const DESKTOP_TITLE = "Перетащите или загрузите файлы"
+
 const meta = {
   // Дизайн-чек №26: компонент назывался «Dropzone», в Figma он —
   // «ELK / file-upload» на канвасе «File Upload». Имя в
@@ -83,7 +88,7 @@ const meta = {
   args: {
     viewport: "desktop" as Viewport,
     state: "default" as PlaygroundState,
-    title: "Перетащите или загрузите файлы",
+    title: DESKTOP_TITLE,
     subtitle: "PDF, DOCX до 10 МБ",
   },
 } satisfies Meta<PlaygroundArgs>
@@ -99,7 +104,7 @@ export const Playground: Story = {
         error={state === "error"}
         disabled={state === "disabled"}
       >
-        {withUploadLink(title ?? "")}
+        {title === DESKTOP_TITLE ? undefined : withUploadLink(title ?? "")}
       </FileUploadDropzone>
     </PseudoBox>
   ),

@@ -14,8 +14,8 @@ describe("Textarea: прокрутка не заезжает под подпис
   it("место под подпись — внешний отступ, вне прокрутки", () => {
     render(<Textarea label="Комментарий" defaultValue="Текст" />)
     const field = classes(screen.getByRole("textbox"))
-    expect(field).toContain("[&:not(:placeholder-shown)]:mt-5")
-    expect(field).toContain("focus:mt-5")
+    expect(field).toContain("[&:not(:placeholder-shown)]:mt-4")
+    expect(field).toContain("focus:mt-4")
     expect(field.some((c) => /(^|:)pt-5$/.test(c))).toBe(false)
   })
 
@@ -27,7 +27,7 @@ describe("Textarea: прокрутка не заезжает под подпис
   it("без подписи отступа сверху нет", () => {
     render(<Textarea placeholder="Текст" />)
     const field = classes(screen.getByRole("textbox"))
-    expect(field.some((c) => /(^|:)m[ty]-5$/.test(c))).toBe(false)
+    expect(field.some((c) => /(^|:)m[ty]-[45]$/.test(c))).toBe(false)
   })
 })
 

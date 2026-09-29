@@ -169,17 +169,23 @@ export const FileListItem = React.forwardRef<
         </span>
       )}
 
+      {/* Колонка текста L: зазор между именем и второй строкой 4px (Text
+          в `ELK / files` — flex-col с gap-[4px]), то есть на 48px строки
+          имя стоит на y=2, а вторая строка на y=30. У S зазора нет: 12/16
+          плюс 10/12 ровно заполняют высоту 28. */}
       <span
         className={cn(
           "flex min-w-0 flex-1 flex-col",
-          small && "h-7 justify-center"
+          small ? "h-7 justify-center" : "gap-1"
         )}
       >
         <span
           title={typeof name === "string" ? name : undefined}
           className={cn(
             "truncate",
-            small ? "text-p3-medium" : "text-p1-medium",
+            // L на мобильном: имя P1 Medium Mobile 14/20 (строка 40 =
+            // 20 + 4 + 16), на десктопе 16/24.
+            small ? "text-p3-medium" : "text-p2-medium desktop:text-p1-medium",
             disabled
               ? "text-[var(--file-item-fg-disabled)]"
               : "text-[var(--file-item-fg)]"

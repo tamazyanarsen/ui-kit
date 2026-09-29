@@ -212,11 +212,19 @@ export const FileUploadDropzone = React.forwardRef<
         <span className={cn("min-w-0 text-p2-medium [overflow-wrap:anywhere] desktop:text-p1-medium", CONTENT_COLOR[tone])}>
           {children ?? (
             <>
-              {"Перетащите или "}
-              {/* Эту половину подписи макет подчёркивает оформлением
-                  «Ссылка/» — толщина from-font, пропуск засечек выключен,
-                  — а это и есть `text-link`. */}
-              <span className="text-link">загрузите файлы</span>
+              {/* Мобильная форма макета (M / Mobile) — просто «Загрузите
+                  файлы» без подчёркивания: перетаскивать на телефоне
+                  нечего. Десктопная — «Перетащите или загрузите файлы».
+                  Форма выбирается вариантом `desktop:`, а не медиазапросом,
+                  поэтому её переключают и ViewportScope, и контрол истории. */}
+              <span className="desktop:hidden">Загрузите файлы</span>
+              <span className="hidden desktop:inline">
+                {"Перетащите или "}
+                {/* Эту половину подписи макет подчёркивает оформлением
+                    «Ссылка/» — толщина from-font, пропуск засечек выключен,
+                    — а это и есть `text-link`. */}
+                <span className="text-link">загрузите файлы</span>
+              </span>
             </>
           )}
         </span>
@@ -225,7 +233,7 @@ export const FileUploadDropzone = React.forwardRef<
         // Подзаголовок — элемент колонки `items-center`, его ширина по
         // содержимому: без `max-w-full` и `anywhere` (он уменьшает и
         // min-content) неразрывное имя файла вылезало в обе стороны.
-        <span className={cn("max-w-full text-p3-medium [overflow-wrap:anywhere]", SUBTITLE_COLOR[tone])}>
+        <span className={cn("max-w-full text-p3-regular [overflow-wrap:anywhere]", SUBTITLE_COLOR[tone])}>
           {subtitle}
         </span>
       )}

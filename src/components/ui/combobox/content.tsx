@@ -96,7 +96,11 @@ export const ComboboxSearchInput = React.forwardRef<
     // size-4), текст 16px (а не text-sm), и нижняя рамка самой строки —
     // литеральный grey-134 #DEDEDE из макета, а не общий токен кита
     // --border (#E5E5E5, близко, но не точное совпадение).
-    <div className="flex shrink-0 items-center gap-2 border-b border-[var(--menu-item-divider)] p-4">
+    //
+    // Высота строки 56 (16 + 24 + 16): в макете рамка лежит ВНУТРИ
+    // размера, а в CSS нижняя рамка добавляется сверху, поэтому нижний
+    // отступ 15px, а не 16 — иначе строка была бы 57.
+    <div className="flex shrink-0 items-center gap-2 border-b border-[var(--menu-item-divider)] p-4 pb-[15px]">
       <Search
         size={24}
         aria-hidden="true"
@@ -228,7 +232,9 @@ export function ComboboxList({
   return (
     <ComboboxPrimitive.List
       data-slot="combobox-list"
-      className={cn("themed-scrollbar flex-1 overflow-y-auto py-1", className)}
+      // Отступов у списка нет: блок Lines в макете начинается сразу под
+      // строкой поиска, а первая строка несёт свои 16px сама.
+      className={cn("themed-scrollbar flex-1 overflow-y-auto", className)}
       {...props}
     />
   )

@@ -150,7 +150,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
   const composedRef = useComposedRefs(fieldRef, ref)
 
   // Нажатие в любую точку коробки ставит фокус и каретку в конец поля. Место под
-  // поднятую подпись — внешний отступ поля (см. `mt-5` ниже), а не часть
+  // поднятую подпись — внешний отступ поля (см. `mt-4` ниже), а не часть
   // самой textarea, как раньше `pt-5`, поэтому щелчок в эту полосу (и по
   // подписи — у неё `pointer-events-none`) попадал в коробку и фокуса не
   // давал. Нажатие в самом поле не трогается: выделение текста работает
@@ -217,16 +217,17 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
             "themed-scrollbar order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring desktop:text-p1-medium",
             // Плавающая подпись перекрывает первую строку, поэтому в
             // «поднятом» состоянии текст уходит вниз ровно на её высоту
-            // (16px строка + 4px зазор): 8px внутреннего отступа коробки
-            // + 20px = 28px, как в мастере Filled.
+            // (строка 16px, зазора нет): 8px внутреннего отступа коробки
+            // + 16px = 24px — в мастере Filled подпись стоит на y=8, а
+            // значение на y=24 (плюс рамка 1px, как и у самой подписи).
             //
             // ⚠️ Внешний отступ, а не внутренний: `padding` входит в
             // прокручиваемую область, и при прокрутке длинного текста строки
             // проезжали через место подписи и рисовались поверх неё (аудит
             // 11). `margin` лежит вне прокрутки, а геометрия та же: высота
-            // поля по `rows` без отступа плюс те же 20px сверху.
+            // поля по `rows` без отступа плюс те же 16px сверху.
             hasFloatingLabel &&
-              "placeholder:text-transparent focus:mt-5 [&:not(:placeholder-shown)]:mt-5",
+              "placeholder:text-transparent focus:mt-4 [&:not(:placeholder-shown)]:mt-4",
             // Замок стоит в правом верхнем углу коробки. Без подписи текст
             // начинается на его высоте, и конец первой строки рисовался
             // прямо под значком — место под него (16 + зазор 8) держит

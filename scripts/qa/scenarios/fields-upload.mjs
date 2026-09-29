@@ -115,7 +115,7 @@ const all = [
       await input.waitFor({ state: 'attached' })
       expect.eq(await input.getAttribute('multiple'), '', 'multiple по умолчанию')
       step('щелчок по подписи')
-      const [chooser] = await Promise.all([page.waitForEvent('filechooser', { timeout: 10000 }), page.getByText('загрузите файлы').click()])
+      const [chooser] = await Promise.all([page.waitForEvent('filechooser', { timeout: 10000 }), page.getByText('загрузите файлы', { exact: true }).click()])
       expect.eq(chooser.isMultiple(), true, 'окно выбора нескольких файлов')
       await chooser.setFiles([]) // закрыть окно: неотвеченное окно выбора мешает открыть следующее
       step('клавиатура: Tab, Space')
@@ -144,7 +144,7 @@ const all = [
       await setArgs(page, { id: PLAY }, { accept: '.pdf,.docx', multiple: false })
       expect.eq(await input.getAttribute('accept'), '.pdf,.docx', 'accept')
       expect.eq(await input.getAttribute('multiple'), null, 'multiple снят')
-      const [chooser] = await Promise.all([page.waitForEvent('filechooser', { timeout: 10000 }), page.getByText('загрузите файлы').click()])
+      const [chooser] = await Promise.all([page.waitForEvent('filechooser', { timeout: 10000 }), page.getByText('загрузите файлы', { exact: true }).click()])
       expect.eq(chooser.isMultiple(), false, 'окно выбора одного файла')
       await chooser.setFiles([])
     },

@@ -59,6 +59,6 @@ describe("FileListItem: пустая вторая строка", () => {
 describe("FileUploadDropzone: подзаголовок 0", () => {
   it("subtitle = 0 рисуется в оформленной строке", () => {
     const { getByText } = render(<FileUploadDropzone subtitle={0} />)
-    expect(getByText("0").className).toContain("text-p3-medium")
+    expect(getByText("0").className).toContain("text-p3-regular")
   })
 })

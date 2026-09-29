@@ -39,9 +39,11 @@ function AutocompleteItem({
       // собственными пунктами Select и Combobox, которые делят ровно эту
       // же оболочку Dropdown (см. dropdown.tsx): скруглён только контейнер
       // всплывающего окна, а пункты идут от края до края без собственного
-      // радиуса.
+      // радиуса. Метрики — «Menu Point (ELK)»: заголовок P1 Medium 16/24,
+      // зазор до подписи 4, подпись P3 Medium 12/16; строка с подписью
+      // 16 + 24 + 4 + 16 + 16 = 76.
       className={cn(
-        "flex w-full cursor-default flex-col gap-0.5 p-4 text-p2-medium outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "flex w-full cursor-default flex-col gap-1 p-4 text-p1-medium outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       {...props}
@@ -49,7 +51,7 @@ function AutocompleteItem({
       {/* `anywhere`, а не `break-words`: ширина списка берётся по
           содержимому, и только `anywhere` уменьшает min-content —
           иначе неразрывное слово давало прокрутку вбок (аудит 18). */}
-      <span className="font-semibold text-[var(--autocomplete-title-fg)] [overflow-wrap:anywhere]">
+      <span className="text-p1-medium text-[var(--autocomplete-title-fg)] [overflow-wrap:anywhere]">
         {highlightMatch(children, match)}
       </span>
       {hasValue(subtitle) && (

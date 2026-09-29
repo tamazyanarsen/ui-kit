@@ -198,9 +198,20 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
           // Focus нарисовано в мастере). Рамка вокруг 368-пиксельной строки
           // была бы не «кольцом вокруг контрола», а рамкой вокруг половины
           // окна.
-          "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em]",
-          "desktop:@max-[367px]/otp:text-[28px] desktop:@max-[367px]/otp:leading-[38px] desktop:@max-[367px]/otp:tracking-[0.29em] desktop:@max-[367px]/otp:indent-[0.29em]",
-          "placeholder:text-p2-medium placeholder: placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",
+          //
+          // Геометрия — кадр Code мастера: высота 56 (десктоп, цифры H1
+          // 44/56) и 48 (мобильная, 28/38), подчёркивание входит в высоту.
+          // Собственная высота задана явно, иначе поле выходило 71px: у
+          // input строка равна максимуму из line-height и естественной
+          // высоты шрифта. Нижние отступы подобраны замером чернил
+          // против формулы Figma (цифры: десктоп центр строки на 24 при
+          // высоте 56, мобильная 19 при 48). У пустого поля отступ иной:
+          // placeholder в Chrome ложится на базовую линию строки поля
+          // (44px или 28px), поэтому иначе он оказывался на 11 и 6px ниже
+          // центра, а в мастере стоит по центру (y=16 при 56, y=8 при 48).
+          "box-border h-12 w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-[10px] text-center text-h1-mobile tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none placeholder-shown:pb-[23px] desktop:h-14 desktop:pb-[7px] desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em] desktop:placeholder-shown:pb-[21px]",
+          "desktop:@max-[367px]/otp:h-12 desktop:@max-[367px]/otp:pb-[10px] desktop:@max-[367px]/otp:text-h1-mobile desktop:@max-[367px]/otp:tracking-[0.29em] desktop:@max-[367px]/otp:indent-[0.29em] desktop:@max-[367px]/otp:placeholder-shown:pb-[23px]",
+          "placeholder:text-p2-medium placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",
           invalid && "text-[var(--otp-error-fg)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className

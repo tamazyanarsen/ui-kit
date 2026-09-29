@@ -86,11 +86,18 @@ function OtpConfirmCard({
     <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       {trigger && <ModalTrigger render={trigger} />}
       <ModalContent size="m" data-slot="otp-confirm-card">
-        {/* Отступы тела у маленького окна в макете — 48px со всех сторон
-            (и Texts, и Slot начинаются с x=48 внутри карточки 592px), то
-            есть шире, чем десктопные 32px у ModalBody по умолчанию. */}
+        {/* Тело маленького окна в макете: слева и справа 48px (Texts и Slot
+            начинаются с x=48 внутри карточки 592px), СВЕРХУ отступа нет —
+            заголовок стоит сразу под полосой Modal Top (y=48), а 48px снизу
+            даёт нижний Holder. Высота карточки 48 + 392 + 48 = 488.
+            `-my-px` гасит две прозрачные рамки ModalBody: в макете
+            разделители Scroll Divider лежат поверх краёв (y=-1) и места не
+            занимают, а рамка кита занимает по пикселю сверху и снизу. */}
         <ModalBody
-          className={cn("flex flex-col gap-8 desktop:px-12 desktop:py-12", className)}
+          className={cn(
+            "flex flex-col gap-8 desktop:-my-px desktop:px-12 desktop:pt-0 desktop:pb-12",
+            className
+          )}
         >
           <div className="flex flex-col gap-4 desktop:gap-2">
             <ModalTitle>{title}</ModalTitle>

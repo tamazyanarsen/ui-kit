@@ -1,5 +1,6 @@
 import { useMediaQuery } from "@/lib/use-media-query"
 import { GridCol, GridRow } from "@/components/ui/grid"
+import { compactGroups } from "@/components/ui/header-menu/compact-list"
 import {
   distributeMenuGroups,
   type HeaderMenuGroup,
@@ -62,7 +63,7 @@ const WIDE_MENU_QUERY = "(min-width: 1536px)"
 const COLUMN_SPAN: Record<2 | 3 | 4, number> = { 2: 6, 3: 4, 4: 3 }
 
 function EmployeeMenu({
-  groups = [],
+  groups: rawGroups = [],
   columns: columnsProp,
   favourites = [],
   onFavouriteToggle,
@@ -70,6 +71,8 @@ function EmployeeMenu({
   showFavourites = true,
   className,
 }: EmployeeMenuProps) {
+  // Пустые группы и ссылки (`[cond && {...}]`) отбрасываются, как в HeaderMenu.
+  const groups = compactGroups(rawGroups) ?? []
   const wide = useMediaQuery(WIDE_MENU_QUERY)
   const columns = columnsProp ?? (wide ? 4 : 3)
 

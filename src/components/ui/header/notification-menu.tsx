@@ -4,6 +4,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Bell } from "@/icons"
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { Badge } from "@/components/ui/badge"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
@@ -115,10 +116,12 @@ function NotificationRow({ item }: { item: NotificationMenuItem }) {
 }
 
 function NotificationMenu({
-  items,
+  items: rawItems,
   unreadCount = 0,
   className,
 }: NotificationMenuProps) {
+  // Меню экспортируется отдельно от Header: пустые элементы отбрасываются и здесь.
+  const items = compactList(rawItems) ?? []
   const highlighted = useCounterHighlight(unreadCount)
 
   return (

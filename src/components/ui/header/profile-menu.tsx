@@ -5,6 +5,7 @@ import { Briefcase, ChevronDown, Search } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { hasContent } from "@/lib/has-content"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 
 import { HeaderMenuPopup } from "./menu-popup"
 import {
@@ -124,7 +125,7 @@ function ProfileMenuTrigger({
 }
 
 function ProfileMenu({
-  organizations,
+  organizations: rawOrganizations,
   value,
   onValueChange,
   contactPerson,
@@ -134,6 +135,12 @@ function ProfileMenu({
   onLogoutClick,
   className,
 }: ProfileMenuProps) {
+  // Меню экспортируется отдельно от Header: пустые элементы (`[cond && {...}]`)
+  // отбрасываются и здесь, иначе `org.id` падал бы на `false`.
+  const organizations = React.useMemo(
+    () => compactList(rawOrganizations) ?? [],
+    [rawOrganizations]
+  )
   const [query, setQuery] = React.useState("")
   const activeOrg =
     organizations.find((org) => org.id === value) ?? organizations[0]

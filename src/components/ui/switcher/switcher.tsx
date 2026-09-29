@@ -12,6 +12,7 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
 import { useItemsValue } from "@/components/ui/tabs/use-items-value"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { useOverflowFocusRescue } from "@/lib/overflow-focus-rescue"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
@@ -166,7 +167,7 @@ function SegmentButton({
 }
 
 function Switcher({
-  items,
+  items: rawItems,
   value,
   defaultValue,
   onValueChange,
@@ -177,6 +178,9 @@ function Switcher({
   showMore = true,
   className,
 }: SwitcherProps) {
+  // Пустые элементы (`[cond && {...}]`) отбрасываются: иначе `false` в массиве
+  // ронял переключатель на `item.value`.
+  const items = React.useMemo(() => compactList(rawItems) ?? [], [rawItems])
   // Откат неуправляемого значения на первый доступный пункт — в общем
   // хуке: он фиксирует откат и сообщает его через `onValueChange`.
   const { activeValue, setValue } = useItemsValue(items, value, defaultValue, onValueChange)

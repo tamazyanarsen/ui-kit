@@ -47,7 +47,7 @@ function PageLink({
         aria-current={active ? "page" : undefined}
         onClick={link.onClick}
         className={cn(
-          "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
+          "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium [overflow-wrap:anywhere] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
           active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
         )}
       >
@@ -101,7 +101,7 @@ function PageGroup({
             {group.icon}
           </span>
         )}
-        <p className="min-w-0 flex-1 text-p1-medium text-[var(--header-menu-group-fg)]">
+        <p className="min-w-0 flex-1 text-p1-medium [overflow-wrap:anywhere] text-[var(--header-menu-group-fg)]">
           {group.title}
         </p>
       </div>

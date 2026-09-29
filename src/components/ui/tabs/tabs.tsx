@@ -15,6 +15,7 @@ import { useOverflowFocusRescue } from "@/lib/overflow-focus-rescue"
 import { TabButton } from "./tab-button"
 import type { TabItem, TabsSize } from "./types"
 import { useItemsValue } from "./use-items-value"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 const TABS_OVERFLOW_SELECTOR =
@@ -80,7 +81,7 @@ const ELLIPSIS_RESERVED = {
 }
 
 function Tabs({
-  items,
+  items: rawItems,
   value,
   defaultValue,
   onValueChange,
@@ -88,6 +89,9 @@ function Tabs({
   showMore = true,
   className,
 }: TabsProps) {
+  // `[cond && {...}]` кладёт в массив `false`: пустые элементы отбрасываются, как
+  // в меню шапки, иначе лента падала бы на `item.value`.
+  const items = React.useMemo(() => compactList(rawItems) ?? [], [rawItems])
   const isDesktop = useIsDesktop()
   // `medium` держит «мобильные» числа и на десктопе, поэтому ключ размера
   // считается ДО вьюпорта, а не после: иначе десктопная ветка перебивала бы

@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
 import { Check, ChevronDown, Star } from "@/icons"
@@ -7,6 +8,7 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { Dropdown } from "@/components/ui/dropdown"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 import type { HeaderMenuLink } from "@/components/ui/header-menu"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
 
 // «Избранное в навигации» — полоса закреплённых разделов в верхнем ряду
@@ -183,11 +185,13 @@ interface EmployeeMenuNavProps {
 }
 
 function EmployeeMenuNav({
-  links = [],
+  links: rawLinks = [],
   activeLink,
   showHint = true,
   className,
 }: EmployeeMenuNavProps) {
+  // Пустые ссылки (`[cond && {...}]`) отбрасываются: иначе `link.value` падал.
+  const links = React.useMemo(() => compactList(rawLinks) ?? [], [rawLinks])
   const { containerRef, itemRefs, visibleCount } = useOverflowCount(
     links.length,
     MORE_RESERVED,

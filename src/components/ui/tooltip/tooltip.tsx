@@ -73,7 +73,14 @@ function Tooltip({
   return (
     <TooltipPrimitive.Provider delay={400} closeDelay={0}>
       <TooltipPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
-        <TooltipPrimitive.Trigger render={children} />
+        {/* ⚠️ Id ребёнка отдаётся самому триггеру. Base UI регистрирует триггер
+            под своим id, а собственный `id` у ребёнка (`<Button id="save">`)
+            перекрывает его в DOM: реестр «терял» триггер, и подсказка,
+            открывшись, тут же закрывалась сама. */}
+        <TooltipPrimitive.Trigger
+          id={(children.props as { id?: string }).id}
+          render={children}
+        />
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Positioner
             side={side}

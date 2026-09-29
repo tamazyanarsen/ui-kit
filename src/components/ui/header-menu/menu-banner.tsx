@@ -116,8 +116,8 @@ function MenuBannerContent({
           `overflow-hidden` стоит только страховкой — карточка ровно 240px
           и рассчитана на 2 + 2 строки. */}
       <div className="flex w-full flex-col gap-2 overflow-hidden text-[var(--header-fg)]">
-        <p className="w-full text-h4">{title}</p>
-        {hasContent(subtitle) && <p className="w-full text-p2-medium">{subtitle}</p>}
+        <p className="w-full text-h4 [overflow-wrap:anywhere]">{title}</p>
+        {hasContent(subtitle) && <p className="w-full text-p2-medium [overflow-wrap:anywhere]">{subtitle}</p>}
       </div>
       {hasContent(buttonLabel) && (
         <Button

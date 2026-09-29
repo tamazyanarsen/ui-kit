@@ -47,7 +47,7 @@ function EmployeeMenuGroup({
         className
       )}
     >
-      <p className="w-full text-p1-medium text-[var(--employee-menu-group-fg)]">
+      <p className="w-full text-p1-medium [overflow-wrap:anywhere] text-[var(--employee-menu-group-fg)]">
         {group.title}
       </p>
       <div className="flex w-full flex-col gap-4">

@@ -17,9 +17,9 @@ describe("Nps: над занятым низом и не под кнопкой «
   it("отступ плавающей карточки считается от --viewport-inset-bottom", () => {
     const { container } = render(<Nps floating />)
     const classes = (container.firstElementChild as HTMLElement).className.split(/\s+/)
-    expect(classes).toContain("bottom-[calc(1rem+var(--viewport-inset-bottom,0px))]")
+    expect(classes).toContain("bottom-[calc(1rem+var(--floating-bottom,0px))]")
     expect(classes).toContain(
-      "desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))]"
+      "desktop:bottom-[calc(2.5rem+var(--floating-bottom,0px))]"
     )
     expect(classes).not.toContain("bottom-4")
   })
@@ -36,7 +36,7 @@ describe("Nps: над занятым низом и не под кнопкой «
     const { unmount } = render(<Nps floating />)
     // Отступ карточки в jsdom не вычисляется (CSS кита не подключён) — 0;
     // высота 300 + зазор 16.
-    expect(cornerInset()).toBe("calc(var(--viewport-inset-bottom, 0px) + 316px)")
+    expect(cornerInset()).toBe("calc(var(--floating-bottom, 0px) + 316px)")
     unmount()
     expect(cornerInset()).toBe("")
   })

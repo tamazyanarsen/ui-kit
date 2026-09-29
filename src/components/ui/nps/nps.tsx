@@ -138,8 +138,9 @@ const CARD_CLASS =
  * На мобильном — поля 16px и ширина не больше видимой области: карточка
  * 360px с отступом 40px на экране 375 уходила за левый край на 40px.
  *
- * ⚠️ Отступ снизу — над ЗАНЯТЫМ низом вьюпорта (`--viewport-inset-bottom`,
- * его публикует закреплённая ButtonMenu), как у тостов и кнопки «Наверх».
+ * ⚠️ Отступ снизу — над ЗАНЯТЫМ низом вьюпорта (`--floating-bottom`: максимум
+ * из `--viewport-inset-bottom` закреплённой панели и блока ButtonMenuBlack с
+ * «Выбрать на всех страницах», см. base.css), как у кнопки «Наверх».
  * От кромки экрана карточка ложилась на панель, и её «Отправить» была
  * недоступна, пока опрос не закрыт.
  *
@@ -160,7 +161,7 @@ const CARD_CLASS =
 // Раньше раскрытый вверх список «…» у закреплённой панели и разделы меню
 // шапки оказывались под опросом и не нажимались (аудит 15).
 const FLOATING_CLASS =
-  "[:root:has([data-slot=modal-backdrop])_&]:z-40 [:root:has([data-side][data-open],[data-slot=header-menu-overlay])_&]:z-[35] fixed right-4 bottom-[calc(1rem+var(--viewport-inset-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))] desktop:max-w-none"
+  "[:root:has([data-slot=modal-backdrop])_&]:z-40 [:root:has([data-side][data-open],[data-slot=header-menu-overlay])_&]:z-[35] fixed right-4 bottom-[calc(1rem+var(--floating-bottom,0px))] z-(--z-nps) max-h-[calc(100dvh_-_2rem_-_var(--floating-bottom,0px))] max-w-[calc(100%_-_32px)] overflow-y-auto desktop:right-10 desktop:bottom-[calc(2.5rem+var(--floating-bottom,0px))] desktop:max-h-[calc(100dvh_-_5rem_-_var(--floating-bottom,0px))] desktop:max-w-none"
 
 /** Состояние «Спасибо за оценку». */
 function NpsDone({

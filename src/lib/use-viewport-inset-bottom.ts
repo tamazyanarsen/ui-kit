@@ -22,13 +22,21 @@ import { useComposedRefs } from "@/lib/compose-refs"
 
 const VARIABLE = "--viewport-inset-bottom"
 
-/** Все живые полосы и их вклад. Максимум из них и есть занятая высота: две
- * полосы одновременно стоят друг на друге, а не складываются. */
-const bars = new Map<symbol, number>()
+/** Живые полосы и их вклад — по каждой переменной отдельно. Максимум из них
+ * и есть занятая высота: две полосы одновременно стоят друг на друге, а не
+ * складываются. */
+const registries = new Map<string, Map<symbol, number>>()
 
-function publish() {
+function barsOf(variable: string) {
+  let bars = registries.get(variable)
+  if (!bars) registries.set(variable, (bars = new Map()))
+  return bars
+}
+
+function publish(variable: string) {
+  const bars = barsOf(variable)
   const inset = bars.size === 0 ? 0 : Math.max(0, ...bars.values())
-  document.documentElement.style.setProperty(VARIABLE, `${Math.round(inset)}px`)
+  document.documentElement.style.setProperty(variable, `${Math.round(inset)}px`)
 }
 
 /**
@@ -44,10 +52,14 @@ function publish() {
  *
  * @param active выключено — вклад узла снимается (полоса не закреплена)
  * @param forwardedRef ref потребителя — получает тот же узел
+ * @param variable куда публиковать; по умолчанию `--viewport-inset-bottom`.
+ *   Button Menu Black дополнительно публикует блок «кнопка + панель» в
+ *   `--floating-inset-bottom` — для плавающих слоёв, см. base.css.
  */
 export function useViewportInsetBottom<T extends HTMLElement>(
   active = true,
-  forwardedRef?: React.ForwardedRef<T>
+  forwardedRef?: React.ForwardedRef<T>,
+  variable: string = VARIABLE
 ): React.RefCallback<T> {
   const id = React.useRef<symbol>(undefined as unknown as symbol)
   if (id.current === undefined) id.current = Symbol("bottom-bar")
@@ -93,10 +105,11 @@ export function useViewportInsetBottom<T extends HTMLElement>(
       const overlap = touchesBottom
         ? Math.min(rect.height, Math.max(0, visibleBottom - rect.top))
         : 0
+      const bars = barsOf(variable)
       const previous = bars.get(key)
       if (previous === overlap) return
       bars.set(key, overlap)
-      publish()
+      publish(variable)
     }
 
     measure()
@@ -120,10 +133,10 @@ export function useViewportInsetBottom<T extends HTMLElement>(
       window.removeEventListener("scroll", measure, { capture: true })
       window.removeEventListener("resize", measure)
       observer.disconnect()
-      bars.delete(key)
-      publish()
+      barsOf(variable).delete(key)
+      publish(variable)
     }
-  }, [element, active])
+  }, [element, active, variable])
 
   return ref
 }

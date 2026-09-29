@@ -16,10 +16,10 @@ describe("Nps floating: не шире узкого экрана", () => {
       expect.arrayContaining([
         "fixed",
         "right-4",
-        "bottom-[calc(1rem+var(--viewport-inset-bottom,0px))]",
+        "bottom-[calc(1rem+var(--floating-bottom,0px))]",
         "max-w-[calc(100%_-_32px)]",
         "desktop:right-10",
-        "desktop:bottom-[calc(2.5rem+var(--viewport-inset-bottom,0px))]",
+        "desktop:bottom-[calc(2.5rem+var(--floating-bottom,0px))]",
         "desktop:max-w-none",
       ])
     )

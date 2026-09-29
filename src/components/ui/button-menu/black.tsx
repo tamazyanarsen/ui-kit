@@ -202,6 +202,15 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   // кнопка «Выбрать на всех страницах» центрировалась бы по всей полосе, а
   // панель под ней стояла бы в своих шести колонках.
   const outerPlacementClass = BAR_PLACEMENT_CLASS[placement]
+  // Плавающим слоям (NPS, «Наверх») занятый низ — весь блок «кнопка +
+  // панель», иначе они ложились на кнопку «Выбрать на всех страницах»
+  // (аудит 21, на 320–700). Это отдельная переменная: полоса прокрутки
+  // таблицы по-прежнему липнет к самой панели (см. ref выше).
+  const blockRef = useViewportInsetBottom<HTMLDivElement>(
+    pinned && !detached && withSelectAll,
+    undefined,
+    "--floating-inset-bottom"
+  )
   const outerPlacementStyle = barPlacementStyle(placement, span)
 
   const panel = (
@@ -350,6 +359,7 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
         путать их нельзя: занятый низ вьюпорта публикует панель (см. ref
         выше), а место в потоке занимает этот узел. */}
     <div
+      ref={blockRef}
       data-slot={withSelectAll ? "button-menu-black-block" : undefined}
       data-placement={withSelectAll ? placement : undefined}
       className={cn(

@@ -17,7 +17,7 @@ describe("UpButton: над плавающей карточкой в углу", (
     act(() => void window.dispatchEvent(new Event("scroll")))
     const button = screen.getByRole("button", { name: "Наверх" })
     expect(button.className.split(/\s+/)).toContain(
-      "bottom-[max(calc(1.5rem+var(--viewport-inset-bottom,0px)),var(--floating-corner-inset,0px))]"
+      "bottom-[max(calc(1.5rem+var(--floating-bottom,0px)),var(--floating-corner-inset,0px))]"
     )
   })
 })

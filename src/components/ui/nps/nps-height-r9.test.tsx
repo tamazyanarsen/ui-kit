@@ -12,10 +12,10 @@ describe("Nps: плавающая карточка не выше видимой 
     const { container } = render(<Nps floating defaultValue={4} onClose={() => {}} />)
     const classes = (container.firstElementChild as HTMLElement).className.split(/\s+/)
     expect(classes).toContain(
-      "max-h-[calc(100dvh_-_2rem_-_var(--viewport-inset-bottom,0px))]"
+      "max-h-[calc(100dvh_-_2rem_-_var(--floating-bottom,0px))]"
     )
     expect(classes).toContain(
-      "desktop:max-h-[calc(100dvh_-_5rem_-_var(--viewport-inset-bottom,0px))]"
+      "desktop:max-h-[calc(100dvh_-_5rem_-_var(--floating-bottom,0px))]"
     )
     expect(classes).toContain("overflow-y-auto")
   })

@@ -119,7 +119,9 @@ function UpButton({
       //
       // ⚠️ Отступ снизу — над ЗАНЯТЫМ низом вьюпорта, а не над кромкой
       // экрана: закреплённая панель (ButtonMenu, ButtonMenuBlack) публикует
-      // свою высоту в `--viewport-inset-bottom`. Без этого кнопка ложилась
+      // свою высоту в `--viewport-inset-bottom` (здесь читается
+      // `--floating-bottom` — с блоком «Выбрать на всех страницах», см.
+      // base.css). Без этого кнопка ложилась
       // на правый край панели — у чёрной точно на крестик «Закрыть», и
       // закрыть выделение мышью было нельзя.
       //
@@ -127,7 +129,7 @@ function UpButton({
       // публикует занятую высоту в `--floating-corner-inset`, и кнопка
       // встаёт над ней. Без карточки переменной нет — отступ прежний.
       className={cn(
-        "fixed right-6 bottom-[max(calc(1.5rem+var(--viewport-inset-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-[var(--shadow-universal)]",
+        "fixed right-6 bottom-[max(calc(1.5rem+var(--floating-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-[var(--shadow-universal)]",
         className
       )}
     />

@@ -47,11 +47,22 @@ const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(funct
       ref={ref}
       {...props}
     >
-      <div className="flex w-full items-start gap-12">
-        <TitleHeading>{title}</TitleHeading>
+      {/* Действия не должны съедать заголовок (аудит 20): ряд кнопок стоял
+          `shrink-0` без переноса, и на узкой ширине заголовок сжимался до
+          пары букв, а две кнопки вылезали за край.
+          - В мобильной форме действия идут под заголовком.
+          - На десктопе ряд прежний, пока всё помещается; если заголовку
+            не остаётся хотя бы 200px, кнопки переносятся на свою строку.
+            Зазор по горизонтали прежний (48px), поэтому в широком
+            контейнере раскладка не меняется. */}
+      <div className="flex w-full flex-col items-start gap-2 desktop:flex-row desktop:flex-wrap desktop:gap-x-12">
+        <TitleHeading className="w-full flex-none desktop:w-auto desktop:min-w-[min(100%,200px)] desktop:flex-1">
+          {title}
+        </TitleHeading>
         {showButtons && (
-          // Тот же оптический `pt-6`, что и у кнопки справки в Title Card.
-          <div className="flex shrink-0 items-center gap-2 pt-1.5">
+          // Тот же оптический `pt-6`, что и у кнопки справки в Title Card,
+          // — только рядом с заголовком, на десктопе.
+          <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2 desktop:pt-1.5">
             {showHelp && (
               <Button
                 variant="secondary-white"

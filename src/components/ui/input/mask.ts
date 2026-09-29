@@ -136,7 +136,9 @@ function prepareDate(
   if (flags?.tail || masked.unmaskedValue) return chars
   const text = chars.trim()
   const pad = (part: string) => part.padStart(2, "0")
-  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s].*)?$/.exec(text)
+  // Год в начале — с любым из разделителей «-», «/», «.»: «2026-01-10»,
+  // «2026/01/10», «2026.1.5».
+  const iso = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[T\s].*)?$/.exec(text)
   if (iso) return pad(iso[3]) + pad(iso[2]) + iso[1]
   const ru = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/.exec(text)
   if (ru) return pad(ru[1]) + pad(ru[2]) + ru[3]
@@ -152,18 +154,38 @@ function prepareDate(
  * Только дополнение: недопустимая вторая цифра («24», «25») отвергается
  * блоками MaskedRange как раньше. Поэтому ведётся счёт уже принятых цифр,
  * а отвергнутые символы передаются маске как есть.
+ *
+ * Двоеточие после одной цифры часа тоже дополняет её нулём: «1:05» — это
+ * 01:05. Раньше маска отбрасывала «:» (блок часов ещё не заполнен), и
+ * следующие цифры уходили в часы — «1:05» становилось «10:5». Если цифра
+ * пришла в этом же куске (вставка), ноль дописывается перед ней; если она
+ * уже в поле (набор по символу), значение поля переписывается на «0X».
  */
 function prepareTime(
   chars: string,
-  masked: { unmaskedValue: string },
+  masked: { unmaskedValue: string; value: string },
   flags?: { tail?: boolean }
-): string {
+): string | [string, InstanceType<typeof IMask.ChangeDetails>] {
   if (flags?.tail) return chars
-  let accepted = masked.unmaskedValue
+  const initial = masked.unmaskedValue
+  let accepted = initial
   let out = ""
+  // Ноль, дописанный перед уже стоящей в поле цифрой, сдвигает каретку:
+  // без этого она оставалась между «0» и цифрой, и следующие цифры
+  // вставлялись туда же («1:05» → «00:51»).
+  let shift = 0
   for (const ch of chars) {
     const n = accepted.length
-    if (!/\d/.test(ch)) out += ch
+    if (ch === ":" && n === 1) {
+      if (initial.length === 0) {
+        const at = out.lastIndexOf(accepted)
+        out = out.slice(0, at) + "0" + out.slice(at)
+      } else {
+        masked.value = "0" + accepted
+        shift += 1
+      }
+      accepted = "0" + accepted
+    } else if (!/\d/.test(ch)) out += ch
     else if ((n === 0 && ch >= "3") || (n === 2 && ch >= "6")) {
       out += "0" + ch
       accepted += "0" + ch
@@ -174,7 +196,7 @@ function prepareTime(
       accepted += ch
     }
   }
-  return out
+  return shift ? [out, new IMask.ChangeDetails({ tailShift: shift })] : out
 }
 
 // Пропсы для подстановки в <IMaskInput mask={...} /> из react-imask.

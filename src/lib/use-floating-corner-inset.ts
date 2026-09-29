@@ -15,6 +15,22 @@ import { useComposedRefs } from "@/lib/compose-refs"
 
 const VARIABLE = "--floating-corner-inset"
 const INSET = "--floating-bottom"
+/**
+ * Составляющие `--floating-bottom`. Саму её числом не прочитать: это
+ * незарегистрированное свойство со значением `max(…)`, и getComputedStyle
+ * отдаёт строку «max(89px, 0px)» без вычисления — parseFloat давал NaN, inset
+ * считался нулём, и высота панели входила в угол дважды (проверка правок r22:
+ * «Наверх» висел над NPS на 89px выше). Читаем обе и берём большую.
+ */
+const INSET_PARTS = ["--viewport-inset-bottom", "--floating-inset-bottom"]
+
+function readInset(): number {
+  const style = getComputedStyle(document.documentElement)
+  return Math.max(
+    0,
+    ...INSET_PARTS.map((name) => Number.parseFloat(style.getPropertyValue(name)) || 0)
+  )
+}
 /** Зазор между верхом карточки и тем, что встаёт над ней. */
 const GAP = 16
 
@@ -60,10 +76,7 @@ export function useFloatingCornerInset<T extends HTMLElement>(
       // остаётся собственный отступ карточки (16 на мобильном, 40 на
       // десктопе). Оба значения читаются в одном состоянии стилей.
       const bottom = Number.parseFloat(getComputedStyle(element).bottom) || 0
-      const inset =
-        Number.parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue(INSET)
-        ) || 0
+      const inset = readInset()
       const height = element.getBoundingClientRect().height
       const occupied = Math.max(0, bottom - inset) + height + GAP
       if (cards.get(key) === occupied) return

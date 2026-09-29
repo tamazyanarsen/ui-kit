@@ -225,7 +225,17 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       // иначе удержание пробела прокручивало бы страницу. Enter повторяется,
       // как у кнопки.
       if (event.key === " " && event.repeat) return
-      event.currentTarget.click()
+      // Метка на время клика: обработчик строки различает по ней нажатие
+      // клавиши и «клик после протяжки по тексту» — выделение, оставшееся в
+      // строке, не должно глушить Enter (иначе строку с выделенным текстом
+      // с клавиатуры не открыть, пока выделение не снято).
+      const row = event.currentTarget
+      row.setAttribute("data-key-activation", "")
+      try {
+        row.click()
+      } finally {
+        row.removeAttribute("data-key-activation")
+      }
     }
 
     return (

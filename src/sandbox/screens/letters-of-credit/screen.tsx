@@ -256,7 +256,18 @@ function LettersOfCreditScreen() {
           selectedKeys={selected}
           onSelectedKeysChange={setSelected}
           resizable
-          empty={<EmptySearchResults {...EMPTY_FILTERED} />}
+          empty={
+            <EmptySearchResults
+              {...EMPTY_FILTERED}
+              // Кнопка «Сбросить фильтры» под пустым результатом обязана
+              // сбрасывать и поиск, и чипы — иначе она ничего не делает.
+              onButtonClick={() => {
+                setSearch("")
+                setChips({})
+                resetPaging()
+              }}
+            />
+          }
         />
 
         <Pagination

@@ -1,3 +1,5 @@
+import { compactList } from "@/components/ui/header-menu/compact-list"
+
 import type { TableField } from "./field-types"
 import { fieldSortValue } from "./field-value"
 
@@ -82,8 +84,9 @@ function sortTableRows<Row>(
   fields: TableField<Row>[],
   sort: { key: string; direction: "asc" | "desc" } | null
 ): Row[] {
-  const field = sort ? fields.find((item) => item.key === sort.key) : undefined
-  return sort && field ? sortRows(rows, field, sort.direction) : rows
+  const field = sort ? compactList(fields)?.find((item) => item.key === sort.key) : undefined
+  const list = compactList(rows) ?? []
+  return sort && field ? sortRows(list, field, sort.direction) : list
 }
 
 export { flatten, sortRows, sortTableRows }

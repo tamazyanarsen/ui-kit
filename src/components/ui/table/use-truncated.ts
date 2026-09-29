@@ -35,6 +35,19 @@ function useTruncated<T extends HTMLElement>() {
     return () => observer.disconnect()
   }, [measure])
 
+  // ...и третий — шрифт. Object Sans грузится асинхронно и меняет ширину
+  // текста при той же коробке: наблюдатель молчит, отрисовки нет, и ячейка
+  // навсегда оставалась с признаком, снятым со шрифта запасной гарнитуры.
+  React.useEffect(() => {
+    let alive = true
+    void document.fonts?.ready.then(() => {
+      if (alive) measure()
+    })
+    return () => {
+      alive = false
+    }
+  }, [measure])
+
   return { ref, truncated }
 }
 

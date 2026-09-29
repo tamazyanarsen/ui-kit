@@ -226,8 +226,12 @@ function Pagination({
   // `totalPages = Math.ceil(count / size)` при не пришедших данных даёт NaN или
   // Infinity, и ряд номеров рисовал «NaN» и «Infinity» кнопками. Нечисло —
   // «страниц нет»; дробное число страниц — неполная последняя страница.
-  const totalPages = Number.isFinite(totalPagesProp) ? Math.max(0, Math.ceil(totalPagesProp)) : 0
-  const page = Number.isFinite(pageProp) ? pageProp : 1
+  // Числовые строки из query-параметров или JSON ("5") приводятся к числу, а не
+  // отбрасываются: без этого «5» показывало бы одну страницу без стрелок.
+  const totalPagesNum = Number(totalPagesProp)
+  const pageNum = Number(pageProp)
+  const totalPages = Number.isFinite(totalPagesNum) ? Math.max(0, Math.ceil(totalPagesNum)) : 0
+  const page = Number.isFinite(pageNum) ? pageNum : 1
   const showNav = totalPages > 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
   const { listRef, navFocusProps } = useNavFocusHandoff(page, totalPages)

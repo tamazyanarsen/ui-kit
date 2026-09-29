@@ -199,6 +199,7 @@ function CostRedistributionScreen() {
           edits={edits}
           onEdit={handleEdit}
           funds={funds}
+          onResetSearch={() => setSearch("")}
         />
       </TableBlock>
     </SandboxPage>

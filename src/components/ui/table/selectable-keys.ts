@@ -1,3 +1,5 @@
+import { compactList } from "@/components/ui/header-menu/compact-list"
+
 import { flatten } from "./table-rows"
 
 // Разделение обязанностей у массового выбора:
@@ -39,7 +41,7 @@ function selectableRowKeys<Row>(
   { getRowKey, getChildren, isRowSelectable }: SelectableRowKeysOptions<Row> = {}
 ): string[] {
   const childrenOf = (row: Row) =>
-    getChildren ? getChildren(row) : (row as { children?: Row[] }).children
+    compactList(getChildren ? getChildren(row) : (row as { children?: Row[] }).children)
   const keyOf = (row: Row, index: number, path: string) =>
     getRowKey
       ? getRowKey(row, index)
@@ -47,7 +49,7 @@ function selectableRowKeys<Row>(
 
   // `flatten` без `isExpanded` раскладывает дерево целиком — свёрнутость
   // строки на отбор не влияет.
-  return flatten(rows, childrenOf, keyOf)
+  return flatten(compactList(rows) ?? [], childrenOf, keyOf)
     .filter((entry) => !isRowSelectable || isRowSelectable(entry.row))
     .map((entry) => entry.key)
 }

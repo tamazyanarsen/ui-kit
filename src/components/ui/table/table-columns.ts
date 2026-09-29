@@ -1,5 +1,7 @@
 import type * as React from "react"
 
+import { compactList } from "@/components/ui/header-menu/compact-list"
+
 import type { TableColumn } from "./column-settings"
 import { isColumnVisible } from "./column-visibility"
 import { TABLE_FIELD_TYPES, type TableField } from "./field-types"
@@ -125,7 +127,7 @@ function collectUnitVariants<Row>(
  * пришлось бы вслепую.
  */
 function columnsFromFields<Row>(fields: TableField<Row>[]): TableColumn[] {
-  return fields
+  return (compactList(fields) ?? [])
     .filter((field) => field.type !== "actions" && field.title !== undefined)
     .map((field) => ({
       id: field.key,
@@ -152,9 +154,11 @@ function treeRequiredColumnIds<Row>(
   getChildren: (row: Row) => Row[] | undefined = (row) =>
     (row as { children?: Row[] }).children
 ): string[] {
-  const tree = rows.some((row) => (getChildren(row)?.length ?? 0) > 0)
+  const tree = (compactList(rows) ?? []).some(
+    (row) => (getChildren(row)?.length ?? 0) > 0
+  )
   if (!tree) return []
-  const key = hierarchyColumnKey(fields, true)
+  const key = hierarchyColumnKey(compactList(fields) ?? [], true)
   return key === undefined ? [] : [key]
 }
 

@@ -8,6 +8,7 @@ import {
   ButtonMenuOverflowItem,
   ButtonMenuRow,
 } from "@/components/ui/button-menu"
+import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
 import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Input } from "@/components/ui/input"
 import {
@@ -303,6 +304,18 @@ function BusinessCardDetail() {
               // Страницу режет сам экран: расширение окна (размер страницы,
               // стёртый символ поиска) таблица приняла бы за новые строки.
               highlightAddedRows={false}
+              // Отбор мог не оставить ни одной операции: без этого под шапкой
+              // таблицы было пусто и непонятно почему.
+              empty={
+                <EmptySearchResults
+                  {...EMPTY_FILTERED}
+                  onButtonClick={() => {
+                    setSearch("")
+                    setChips({})
+                    setPage(1)
+                  }}
+                />
+              }
             />
 
             <Pagination

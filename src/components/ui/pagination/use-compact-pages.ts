@@ -80,6 +80,7 @@ function useCompactPages(
   const { enabled, page, totalPages, size } = deps
   const shape = `${totalPages}|${size}|${page}`
   const measuredShape = React.useRef(shape)
+  const fontsDone = React.useRef(false)
 
   React.useLayoutEffect(() => {
     const root = rootRef.current
@@ -121,7 +122,24 @@ function useCompactPages(
     check()
     const observer = new ResizeObserver(check)
     observer.observe(root)
-    return () => observer.disconnect()
+    // Object Sans грузится асинхронно и меняет ширину ряда, а полоса при этом
+    // не меняется — наблюдатель молчит. Запомненные ширины сняты со шрифта
+    // запасной гарнитуры, поэтому со шрифтом они сбрасываются, и ряд
+    // перемеряется с полного вида.
+    // Один раз на жизнь хука: эффект перезапускается на каждой смене уровня,
+    // а уже разрешённый `ready` сработал бы снова и зациклил бы сброс.
+    let alive = true
+    if (!fontsDone.current) void document.fonts?.ready.then(() => {
+      if (!alive) return
+      fontsDone.current = true
+      widths.current = [0, 0]
+      if (levelRef.current !== 0) setLevel(0)
+      else check()
+    })
+    return () => {
+      alive = false
+      observer.disconnect()
+    }
   }, [rootRef, listRef, enabled, shape, level])
 
   return level

@@ -183,7 +183,13 @@ function BusinessCardsRegistry() {
 
             {pageRows.length === 0 ? (
               <div className="px-4 py-16">
-                <EmptySearchResults {...EMPTY_FILTERED} />
+                <EmptySearchResults
+                  {...EMPTY_FILTERED}
+                  onButtonClick={() => {
+                    setChips({})
+                    setPage(1)
+                  }}
+                />
               </div>
             ) : (
               <div className="flex flex-col gap-2 p-4">

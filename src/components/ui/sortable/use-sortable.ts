@@ -126,9 +126,16 @@ function useSortable({
     stopScroll.current = null
   }, [])
 
+  /** Перетаскивание уже началось: `pointercancel` от его старта не снимает взвод. */
+  const draggingRef = React.useRef(false)
+
   const reset = React.useCallback(() => {
     cancelExpand()
     stopAutoscroll()
+    // Бросок мог перенести строку в другой родитель (в группу): узел
+    // пересоздан, и `dragend` до React не доходит — флаг без сброса навсегда
+    // отключал снятие взвода по `pointerup`.
+    draggingRef.current = false
     setArmedId(null)
     setDragId(null)
     setDropIntoId(null)
@@ -137,9 +144,6 @@ function useSortable({
   }, [cancelExpand, stopAutoscroll])
 
   React.useEffect(() => reset, [reset])
-
-  /** Перетаскивание уже началось: `pointercancel` от его старта не снимает взвод. */
-  const draggingRef = React.useRef(false)
 
   // Взвод держится, только пока нажатие, начатое на ручке, не отпущено.
   // Раньше его снимал лишь `pointerup` на самой ручке: отпущенная за ней

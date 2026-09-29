@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dropdown, DropdownSearch } from "@/components/ui/dropdown"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import {
   SortableDropIndicator,
   SortableHandle,
@@ -85,7 +86,7 @@ interface TableColumnSettingsProps {
 }
 
 function TableColumnSettings({
-  columns,
+  columns: columnsProp,
   onColumnsChange,
   reorderable = true,
   hideable = true,
@@ -96,6 +97,8 @@ function TableColumnSettings({
   requiredIds,
   className,
 }: TableColumnSettingsProps) {
+  // Пустые элементы (`cond && column`) отбрасываются: иначе `column.id` падало.
+  const columns = compactList(columnsProp) ?? []
   const [query, setQuery] = React.useState("")
 
   const normalized = query.trim().toLowerCase()

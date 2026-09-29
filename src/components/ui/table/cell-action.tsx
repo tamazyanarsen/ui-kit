@@ -6,6 +6,7 @@ import {
   type SelectionButtonItem,
 } from "@/components/ui/selection-button"
 import { Tooltip } from "@/components/ui/tooltip"
+import { compactList } from "@/components/ui/header-menu/compact-list"
 
 import { TableRowMenu } from "./row-menu"
 
@@ -48,10 +49,13 @@ function TableCellAction({ action, actions, menu }: TableCellActionProps) {
     )
   }
 
-  if (actions && actions.length > 0) {
+  // `[cond && item]` даёт `false` в списке: без настоящих пунктов кнопки «…»
+  // с пустым меню быть не должно.
+  const items = compactList(actions)
+  if (items && items.length > 0) {
     return (
       <SelectionButton
-        items={actions}
+        items={items}
         size="sm"
         direction="down-left"
         triggerLabel="Действия со строкой"

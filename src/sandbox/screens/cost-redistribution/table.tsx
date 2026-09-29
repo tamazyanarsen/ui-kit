@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
 import { DataTable, type TableField } from "@/components/ui/table"
 
 import { money } from "../../shell"
@@ -22,6 +23,8 @@ interface CostTableProps {
   onEdit: (id: string, patch: { borrowed?: number; own?: number }) => void
   /** Какие столбцы средств показывать (радиогруппа «Все средства…»). */
   funds: "all" | "borrowed" | "own"
+  /** Кнопка «Сбросить фильтры» под пустым результатом поиска. */
+  onResetSearch?: () => void
 }
 
 /** Суммы строки с учётом сделанных правок. */
@@ -45,7 +48,7 @@ function resolved(
   )
 }
 
-function CostTable({ items, edits, onEdit, funds }: CostTableProps) {
+function CostTable({ items, edits, onEdit, funds, onResetSearch }: CostTableProps) {
   const fields = React.useMemo<TableField<CostItem>[]>(() => {
     const isGroup = (row: CostItem) => Boolean(row.children?.length)
 
@@ -153,6 +156,9 @@ function CostTable({ items, edits, onEdit, funds }: CostTableProps) {
       // Сортировки у расчёта нет: порядок статей задан самим ССР и менять его
       // нельзя — «2.1.1» обязана стоять под «2.1».
       manualSort
+      // Поиск по статьям мог не найти ничего: пустая шапка без пояснения
+      // читалась как сломанная таблица.
+      empty={<EmptySearchResults {...EMPTY_FILTERED} onButtonClick={onResetSearch} />}
     />
   )
 }

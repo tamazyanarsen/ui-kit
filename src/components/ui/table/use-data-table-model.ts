@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { compactList } from "@/components/ui/header-menu/compact-list"
 import { NESTED_CONTROL_SELECTOR, endsTextSelection, fromNestedControl } from "@/lib/press"
 
 import type { DataTableProps } from "./data-table-props"
@@ -46,8 +47,8 @@ const INTERACTIVE_SELECTOR = [
 ].join(", ")
 
 function useDataTableModel<Row>({
-  fields,
-  rows,
+  fields: fieldsProp,
+  rows: rowsProp,
   getRowKey,
   getChildren,
   selectable = false,
@@ -65,13 +66,19 @@ function useDataTableModel<Row>({
   isRowAdded,
   highlightAddedRows = true,
   rowActions,
-  columnSettings,
+  columnSettings: columnSettingsProp,
   resizable = true,
   columnWidths,
   defaultColumnWidths,
   onColumnWidthsChange,
   total,
 }: DataTableProps<Row>) {
+  // Пустые элементы (`cond && field`, `cond && row`) отбрасываются: иначе
+  // `field.hidden` и `row.id` падали на `false`/`null`. Без пустых отдаётся
+  // тот же массив — ссылка для `useMemo` остаётся стабильной.
+  const fields = compactList(fieldsProp) ?? []
+  const rows = compactList(rowsProp) ?? []
+  const columnSettings = compactList(columnSettingsProp)
   const { columnWidth, setColumnWidth } = useColumnWidths({
     columnWidths,
     defaultColumnWidths,
@@ -79,7 +86,7 @@ function useDataTableModel<Row>({
   })
   const childrenOf = React.useCallback(
     (row: Row) =>
-      getChildren ? getChildren(row) : (row as { children?: Row[] }).children,
+      compactList(getChildren ? getChildren(row) : (row as { children?: Row[] }).children),
     [getChildren]
   )
   const keyOf = React.useCallback(
@@ -231,10 +238,10 @@ function useDataTableModel<Row>({
   // Геометрия итоговой строки. `span` считается по КОЛОНКАМ конфига, а
   // служебный столбец выбора добавляется сам: место применения про него не
   // знает, он включается пропом `selectable`.
-  const totalSpanColumns = Math.min(
-    Math.max(total?.span ?? 1, 1),
-    columns.length
-  )
+  // `span` из расчёта (`0/0`, не пришедшее число) не должен давать NaN: он шёл
+  // в `colSpan` и в `slice`, и хвост итога повторял все колонки.
+  const requestedSpan = Number.isFinite(total?.span) ? Math.floor(total?.span ?? 1) : 1
+  const totalSpanColumns = Math.min(Math.max(requestedSpan, 1), columns.length)
   const totalLeadingSpan = totalSpanColumns + (selectable ? 1 : 0)
   const totalTailColumns = columns.slice(totalSpanColumns)
   // Первая ячейка живёт в левом закрепе только если он и правда закрывает
@@ -259,7 +266,9 @@ function useDataTableModel<Row>({
       if (hit && event.currentTarget.contains(hit)) return
       // Протяжка мышью по тексту строки (номер счёта — скопировать) — не
       // переход: та же проверка, что у кликабельных карточек (press.ts).
-      if (endsTextSelection(event)) return
+      // Enter/Space на строке — не протяжка: выделение тут ни при чём.
+      if (!event.currentTarget.hasAttribute("data-key-activation") && endsTextSelection(event))
+        return
       onRowClick(row, key)
     }
   }

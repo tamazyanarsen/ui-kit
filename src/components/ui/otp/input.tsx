@@ -161,7 +161,15 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
 
   return (
     <div
-      className={cn("mx-auto w-full max-w-full desktop:w-[368px]", containerClassName)}
+      // `desktop:@container/otp` — только в десктопной форме: там у поля
+      // своя ширина 368, а в колонке уже неё крупные цифры не помещались
+      // (8 знаков в 288 — «1234567», аудит 23). В узкой колонке поле берёт
+      // мобильный кегль и разрядку. В мобильной форме контейнера нет,
+      // ширина по содержимому не обнуляется.
+      className={cn(
+        "mx-auto w-full max-w-full desktop:w-[368px] desktop:@container/otp",
+        containerClassName
+      )}
     >
       <input
         ref={setRef}
@@ -191,6 +199,7 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
           // была бы не «кольцом вокруг контрола», а рамкой вокруг половины
           // окна.
           "w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-3 text-center text-[28px] leading-[38px] font-medium tracking-[0.29em] indent-[0.29em] text-[var(--otp-fg)] outline-none desktop:text-h1 desktop:tracking-[0.35em] desktop:indent-[0.35em]",
+          "desktop:@max-[367px]/otp:text-[28px] desktop:@max-[367px]/otp:leading-[38px] desktop:@max-[367px]/otp:tracking-[0.29em] desktop:@max-[367px]/otp:indent-[0.29em]",
           "placeholder:text-p2-medium placeholder: placeholder:tracking-normal placeholder:indent-0 placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",
           invalid && "text-[var(--otp-error-fg)]",
           "disabled:cursor-not-allowed disabled:opacity-50",

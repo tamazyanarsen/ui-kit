@@ -16,6 +16,8 @@ import * as React from "react"
 // «Настройка избранного», у неё замок свой: без счётчика та из них, что
 // закроется первой, разблокировала бы страницу под всё ещё открытой второй.
 
+const SCROLL_LOCK_GAP = "--scroll-lock-gap"
+
 let locks = 0
 let restore: (() => void) | undefined
 
@@ -30,10 +32,16 @@ function lock() {
 
   style.overflow = "hidden"
   if (gap > 0) style.paddingRight = `${gap}px`
+  // `fixed`-слоям (кнопка «Наверх») отступ `body` не помогает: они
+  // привязаны к вьюпорту и уезжали вправо на ширину пропавшей полосы
+  // (аудит 23). Ширину публикуем — такие слои прибавляют её к `right`.
+  const root = document.documentElement.style
+  if (gap > 0) root.setProperty(SCROLL_LOCK_GAP, `${gap}px`)
 
   restore = () => {
     style.overflow = previousOverflow
     style.paddingRight = previousPadding
+    root.removeProperty(SCROLL_LOCK_GAP)
   }
 }
 

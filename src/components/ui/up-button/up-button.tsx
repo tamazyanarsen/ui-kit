@@ -129,7 +129,11 @@ function UpButton({
       // публикует занятую высоту в `--floating-corner-inset`, и кнопка
       // встаёт над ней. Без карточки переменной нет — отступ прежний.
       className={cn(
-        "fixed right-6 bottom-[max(calc(1.5rem+var(--floating-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-[var(--shadow-universal)]",
+        // Открытая панель шапки или попап — кнопка уходит под них (как NPS):
+        // иначе она лежала поверх меню и прокручивала скрытую страницу
+        // (аудит 23). `right` компенсирует полосу прокрутки, снятую
+        // блокировкой страницы (`--scroll-lock-gap`).
+        "[:root:has([data-side][data-open],[data-slot=header-menu-overlay])_&]:z-[35] fixed right-[calc(1.5rem+var(--scroll-lock-gap,0px))] bottom-[max(calc(1.5rem+var(--floating-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-[var(--shadow-universal)]",
         className
       )}
     />

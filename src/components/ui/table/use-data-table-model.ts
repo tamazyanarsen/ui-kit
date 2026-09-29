@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { NESTED_CONTROL_SELECTOR, fromNestedControl } from "@/lib/press"
+import { NESTED_CONTROL_SELECTOR, endsTextSelection, fromNestedControl } from "@/lib/press"
 
 import type { DataTableProps } from "./data-table-props"
 import { TABLE_FIELD_TYPES } from "./field-types"
@@ -257,6 +257,9 @@ function useDataTableModel<Row>({
       // `<label>` или `[role=option]` строка не открывалась никогда.
       const hit = (event.target as Element).closest(INTERACTIVE_SELECTOR)
       if (hit && event.currentTarget.contains(hit)) return
+      // Протяжка мышью по тексту строки (номер счёта — скопировать) — не
+      // переход: та же проверка, что у кликабельных карточек (press.ts).
+      if (endsTextSelection(event)) return
       onRowClick(row, key)
     }
   }

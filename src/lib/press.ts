@@ -131,4 +131,10 @@ function pressHandlers<T extends Element>(onPress: (() => void) | undefined) {
   }
 }
 
-export { NESTED_CONTROL_SELECTOR, fromNestedControl, isOwnActivationKey, pressHandlers }
+export {
+  NESTED_CONTROL_SELECTOR,
+  endsTextSelection,
+  fromNestedControl,
+  isOwnActivationKey,
+  pressHandlers,
+}

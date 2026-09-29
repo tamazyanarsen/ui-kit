@@ -29,6 +29,14 @@ const ITEM_POOL = [
   { value: "more", icon: Settings, label: "Ещё" },
 ]
 
+/* Подписи для строки состояния под панелью: значение активного пункта
+   само по себе ни о чём не говорит, а вложенным нужны свои названия. */
+const ACTIVE_LABELS: Record<string, string> = {
+  ...Object.fromEntries(ITEM_POOL.map((item) => [item.value, item.label])),
+  sbp: "СБП",
+  qr: "QR-коды СБП",
+}
+
 interface DemoSidebarProps {
   defaultOpen?: boolean
   activeItem?: boolean
@@ -55,6 +63,15 @@ function DemoSidebar({
     setOpen(defaultOpen)
   }
 
+  // Активный пункт живёт здесь: клик по пункту (и Enter на нём) переносит
+  // выделение. Контрол `State: Active` задаёт начальный: главная или никакой.
+  const [active, setActive] = useState<string | null>(activeItem ? "main" : null)
+  const [lastActiveItem, setLastActiveItem] = useState(activeItem)
+  if (activeItem !== lastActiveItem) {
+    setLastActiveItem(activeItem)
+    setActive(activeItem ? "main" : null)
+  }
+
   const [expanded, setExpanded] = useState<string[]>(
     expandGroup ? ["payments"] : []
   )
@@ -65,34 +82,54 @@ function DemoSidebar({
   }
 
   return (
-    <div className="h-96">
-      <Sidebar
-        open={open}
-        onOpenChange={setOpen}
-        expandedGroups={expanded}
-        onExpandedGroupsChange={setExpanded}
+    <div className="flex h-96 flex-col">
+      <div className="min-h-0 flex-1">
+        <Sidebar
+          open={open}
+          onOpenChange={setOpen}
+          expandedGroups={expanded}
+          onExpandedGroupsChange={setExpanded}
+        >
+          {ITEM_POOL.slice(0, itemsCount).map((item) =>
+            item.group ? (
+              <SidebarGroup
+                key={item.value}
+                value={item.value}
+                icon={item.icon}
+                label={item.label}
+                active={active === "sbp" || active === "qr"}
+              >
+                <SidebarItem
+                  label="СБП"
+                  nested
+                  active={active === "sbp"}
+                  onClick={() => setActive("sbp")}
+                />
+                <SidebarItem
+                  label="QR-коды СБП"
+                  nested
+                  active={active === "qr"}
+                  onClick={() => setActive("qr")}
+                />
+              </SidebarGroup>
+            ) : (
+              <SidebarItem
+                key={item.value}
+                icon={item.icon}
+                label={item.label}
+                active={active === item.value}
+                onClick={() => setActive(item.value)}
+              />
+            )
+          )}
+        </Sidebar>
+      </div>
+      <p
+        data-slot="story-status"
+        className="mt-2 text-p3-medium text-[var(--nav-sidebar-fg)]"
       >
-        {ITEM_POOL.slice(0, itemsCount).map((item, index) =>
-          item.group ? (
-            <SidebarGroup
-              key={item.value}
-              value={item.value}
-              icon={item.icon}
-              label={item.label}
-            >
-              <SidebarItem label="СБП" nested />
-              <SidebarItem label="QR-коды СБП" nested />
-            </SidebarGroup>
-          ) : (
-            <SidebarItem
-              key={item.value}
-              icon={item.icon}
-              label={item.label}
-              active={index === 0 && activeItem}
-            />
-          )
-        )}
-      </Sidebar>
+        Активный пункт: {ACTIVE_LABELS[active ?? ""] ?? "нет"}
+      </p>
     </div>
   )
 }

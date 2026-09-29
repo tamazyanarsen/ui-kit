@@ -1,5 +1,7 @@
+import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
+import { Button } from "@/components/ui/button"
 import { StatesMatrix } from "@/stories/matrix"
 import { orderedOptionLabels } from "@/stories/options"
 
@@ -48,6 +50,11 @@ const meta = {
       options: SHOW_CHIPS,
     },
     submitted: { control: "boolean" },
+    autoCloseMs: {
+      control: { type: "number", min: 0, step: 500 },
+      description:
+        "Через сколько мс после «Спасибо за оценку» вызвать onClose. 0 — не закрывать",
+    },
     title: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
     // Дизайн-чек от 07.09, замечания 21 и 22.
@@ -71,26 +78,108 @@ const meta = {
     showChips: 5,
     submitted: false,
     floating: false,
-    // Строка «Окно закроется автоматически» рисуется, только когда закрывать
-    // есть чем: без `onClose` таймер ничего бы не сделал. Витрина карточку
-    // не убирает, но строку из макета показывает.
-    onClose: () => {},
+    autoCloseMs: 2000,
+    // `onClose` Playground подключает сам (см. NpsLive): без него не было бы
+    // ни строки «Окно закроется автоматически», ни самого закрытия.
   },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
 type Story = StoryObj<PlaygroundArgs>
 
+/* Живая карточка: отправка переводит её в «Спасибо за оценку», а по таймеру
+   (`autoCloseMs`) и по крестику вызывается `onClose` — карточка убирается, на
+   её месте кнопка «Показать снова». Так же ведёт себя продукт: компонент
+   только зовёт `onClose`, убирает ли его из DOM, решает потребитель.
+   Строки под карточкой показывают то, что пришло в колбэки, — по ним
+   поведение проверяется без внутренностей компонента. */
+function NpsLive({
+  estimateType = "None",
+  submitted: submittedArg = false,
+  ...args
+}: Omit<PlaygroundArgs, "value" | "defaultValue">) {
+  const [closed, setClosed] = React.useState(false)
+  const [closes, setCloses] = React.useState(0)
+  const [session, setSession] = React.useState(0)
+  const [submitted, setSubmitted] = React.useState(submittedArg)
+  const [rating, setRating] = React.useState<number | null>(null)
+  const [sent, setSent] = React.useState<{ value: number; comment: string } | null>(null)
+  const restoreRef = React.useRef<HTMLButtonElement>(null)
+  const cardBoxRef = React.useRef<HTMLDivElement>(null)
+  const wasClosed = React.useRef(false)
+
+  // Контрол `submitted` переключили — карточка следует за ним.
+  const [lastArg, setLastArg] = React.useState(submittedArg)
+  if (lastArg !== submittedArg) {
+    setLastArg(submittedArg)
+    setSubmitted(submittedArg)
+  }
+
+  // Фокус с убранной карточки уходит на «Показать снова», а не на body; при
+  // возврате — на первую кнопку карточки (крестик).
+  React.useEffect(() => {
+    if (closed && !wasClosed.current) restoreRef.current?.focus()
+    if (!closed && wasClosed.current) {
+      cardBoxRef.current?.querySelector<HTMLElement>("button")?.focus()
+    }
+    wasClosed.current = closed
+  }, [closed])
+
+  function restore() {
+    setClosed(false)
+    setSession((n) => n + 1)
+    setSubmitted(submittedArg)
+    setRating(null)
+    setSent(null)
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      {closed ? (
+        <Button
+          ref={restoreRef}
+          type="button"
+          variant="secondary-grey"
+          size="sm"
+          onClick={restore}
+        >
+          Показать снова
+        </Button>
+      ) : (
+        // Оценка приходит контролом, но звёзды должны оставаться живыми,
+        // поэтому она задаётся начальным значением, а история пересоздаётся
+        // по ключу.
+        <div ref={cardBoxRef}>
+          <Nps
+            key={`${String(estimateType)}-${session}`}
+            {...args}
+            defaultValue={estimateType === "None" ? null : (estimateType as NpsEstimateType)}
+            submitted={submitted}
+            onValueChange={setRating}
+            onSubmit={(data) => {
+              setSent(data)
+              setSubmitted(true)
+            }}
+            onClose={() => {
+              setClosed(true)
+              setCloses((n) => n + 1)
+            }}
+          />
+        </div>
+      )}
+      <div className="flex flex-col items-center text-p3-medium text-[var(--nps-subtitle-fg)]">
+        <p data-slot="story-status-rating">Оценка: {rating ?? "нет"}</p>
+        <p data-slot="story-status-sent">
+          {sent ? `Отправлено: ${sent.value}, «${sent.comment}»` : "Не отправлено"}
+        </p>
+        <p data-slot="story-status-closed">Закрыто раз: {closes}</p>
+      </div>
+    </div>
+  )
+}
+
 export const Playground: Story = {
-  // Оценка приходит контролом, но звёзды должны оставаться живыми, поэтому
-  // она задаётся начальным значением, а история пересоздаётся по ключу.
-  render: ({ estimateType = "None", value: _value, defaultValue: _default, ...args }) => (
-    <Nps
-      key={String(estimateType)}
-      {...args}
-      defaultValue={estimateType === "None" ? null : (estimateType as NpsEstimateType)}
-    />
-  ),
+  render: ({ value: _value, defaultValue: _default, ...args }) => <NpsLive {...args} />,
 }
 
 export const Matrix: Story = {

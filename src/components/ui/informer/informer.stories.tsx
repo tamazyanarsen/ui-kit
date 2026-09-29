@@ -7,6 +7,7 @@ import {
   toggleArgType,
 } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
+import { Dismissible } from "@/stories/dismissible"
 
 import { Informer, type InformerProps } from "./informer"
 import type { InformerIcon, InformerSolid } from "./variants"
@@ -130,20 +131,27 @@ export const Playground: Story = {
     additionalButtonLabel,
     ...args
   }) => (
+    // Крестик убирает информер, а «Показать снова» возвращает: сам компонент
+    // себя не скрывает, только зовёт `onClose`.
     <ViewportScope viewport={viewport}>
-      <Informer
-        {...args}
-        date={showDate ? args.date : undefined}
-        description={showDescription ? args.description : undefined}
-        mainButtonLabel={
-          add === "main" || add === "both" ? mainButtonLabel : undefined
-        }
-        additionalButtonLabel={
-          add === "additional" || add === "both"
-            ? additionalButtonLabel
-            : undefined
-        }
-      />
+      <Dismissible>
+        {(close) => (
+          <Informer
+            {...args}
+            onClose={close}
+            date={showDate ? args.date : undefined}
+            description={showDescription ? args.description : undefined}
+            mainButtonLabel={
+              add === "main" || add === "both" ? mainButtonLabel : undefined
+            }
+            additionalButtonLabel={
+              add === "additional" || add === "both"
+                ? additionalButtonLabel
+                : undefined
+            }
+          />
+        )}
+      </Dismissible>
     </ViewportScope>
   ),
 }

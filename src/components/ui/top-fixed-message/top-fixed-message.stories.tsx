@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { StatesMatrix, optionsArgType, sizeArgType, toggleArgType } from "@/stories/matrix"
 import { ViewportScope, type Viewport } from "@/lib/viewport"
+import { Dismissible } from "@/stories/dismissible"
 
 import { TopFixedMessage, type TopFixedMessageProps } from "./top-fixed-message"
 
@@ -84,8 +85,10 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: ({ viewport, ...args }) => (
+    // Крестик (на мобайле — кнопка «Закрыть») убирает сообщение,
+    // «Показать снова» возвращает его.
     <Frame viewport={viewport}>
-      <TopFixedMessage {...args} />
+      <Dismissible>{(close) => <TopFixedMessage {...args} onClose={close} />}</Dismissible>
     </Frame>
   ),
 }

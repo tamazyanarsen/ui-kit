@@ -11,7 +11,13 @@ import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { Combobox } from "./root"
 import { ComboboxTrigger } from "./trigger"
-import { ComboboxContent, ComboboxList, ComboboxCollection } from "./content"
+import {
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxEmpty,
+  ComboboxSearchInput,
+} from "./content"
 import { ComboboxItem, ComboboxGroupRow } from "./item"
 import { ComboboxFooter } from "./footer"
 import { useComboboxSelection } from "./use-combobox-selection"
@@ -37,6 +43,13 @@ interface DocumentsMultiSelectProps {
   comment?: string
   error?: string
   disabled?: boolean
+  /** Поле поиска над списком (ComboboxSearchInput). */
+  search?: boolean
+  searchPlaceholder?: string
+  /** Крутилка в строке поиска на время запроса. */
+  searchLoading?: boolean
+  /** Текст, когда поиск ничего не нашёл. */
+  emptyText?: string
 }
 
 function DocumentsMultiSelect({
@@ -46,6 +59,10 @@ function DocumentsMultiSelect({
   comment,
   error,
   disabled,
+  search = false,
+  searchPlaceholder = "Поиск",
+  searchLoading = false,
+  emptyText = "Ничего не найдено",
 }: DocumentsMultiSelectProps) {
   const sel = useComboboxSelection<Doc>([])
   const atMax = max !== undefined && sel.draft.length >= max
@@ -73,6 +90,8 @@ function DocumentsMultiSelect({
         {sel.committed.length > 0 ? `Выбрано документов: ${sel.committed.length}` : ""}
       </ComboboxTrigger>
       <ComboboxContent>
+        {search && <ComboboxSearchInput placeholder={searchPlaceholder} loading={searchLoading} />}
+        {search && <ComboboxEmpty>{emptyText}</ComboboxEmpty>}
         <ComboboxList>
           <ComboboxCollection>
             {(doc: Doc) => (
@@ -180,12 +199,23 @@ const meta = {
       control: { type: "number", min: 1, max: 5 },
       table: { category: "Контент" },
     },
+    // Поиск по умолчанию выключен: с ним фокус при открытии уходит в поле, а
+    // не в список, и сценарии клавиатуры без поиска (overlays-select) ждут
+    // прежнего поведения. Включается контролом Search.
+    search: { control: "boolean", name: "Search", table: { category: "Поиск" } },
+    searchPlaceholder: { control: "text", table: { category: "Поиск" } },
+    searchLoading: { control: "boolean", table: { category: "Поиск" } },
+    emptyText: { control: "text", table: { category: "Поиск" } },
   },
   args: {
     viewport: "desktop" as Viewport,
     size: "lg",
     disabled: false,
     label: "Название",
+    search: false,
+    searchPlaceholder: "Поиск",
+    searchLoading: false,
+    emptyText: "Ничего не найдено",
   },
   // Дизайн-чек №3 №19: контрол `viewport` из панели истории форсирует
   // десктопную/мобильную форму, не трогая размер вьюпорта. Обёртка общая
@@ -205,7 +235,7 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: (args) => (
-    <div className="w-96">
+    <div className="w-96 max-w-full">
       <DocumentsMultiSelect {...args} />
     </div>
   ),
@@ -247,6 +277,14 @@ export const Matrix: Story = {
         >
           <div className="h-96 w-96">
             <DocumentsMultiSelect />
+          </div>
+        </StorySection>
+        <StorySection
+          title="С полем поиска"
+          description="Строка поиска над списком фильтрует пункты; крестик очищает только текст, отмеченное остаётся."
+        >
+          <div className="h-96 w-96">
+            <DocumentsMultiSelect search />
           </div>
         </StorySection>
         <StorySection

@@ -2,6 +2,7 @@ import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
 // ⚠️ У компонента НЕТ истории в Storybook, и это намеренно.
+// (Для проверок в браузере есть QA-истории в src/qa-stories, они в каталог не входят: см. .storybook/main.ts.)
 //
 // Дизайн-чек Storybook (Аня Багрова) №7: «в UI Kit Web LK не существует как
 // такового компонента — у нас есть отдельно Input + Dropdown». То есть в

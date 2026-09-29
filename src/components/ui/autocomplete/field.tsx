@@ -81,7 +81,16 @@ const AutocompleteField = React.forwardRef<
           {...props}
         />
         {floating && (
-          <label htmlFor={inputId} className={cn(floatingLabelVariants, "left-4 desktop:left-5")}>
+          <label
+            htmlFor={inputId}
+            className={cn(
+              floatingLabelVariants,
+              "left-4 desktop:left-5",
+              // Правая граница — как у Input: без неё абсолютная подпись
+              // растёт под свой текст и уходит под значки и за край поля.
+              clearable || loading ? "right-10" : "right-4"
+            )}
+          >
             {label}
           </label>
         )}

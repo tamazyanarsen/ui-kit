@@ -96,6 +96,62 @@ export function formatWithMask(name: MaskName, raw: string): string {
   }
 }
 
+/**
+ * Ведущая «8» в номере телефона — это префикс междугородней связи, а не
+ * первая цифра кода: «89123456789» значит «+7 912 345-67-89». Шаблон
+ * «+7 000…» об этом не знает и клал «8» в код оператора, теряя последнюю
+ * цифру, — номер молча становился другим.
+ *
+ * Нормализуется только ввод целым куском: вставка, автозаполнение и
+ * значение снаружи — 11 цифр, начинающихся с 8 (или 7), в пустое поле.
+ * Набор с клавиатуры не трогается: по одной цифре не отличить префикс от
+ * кода на 8 (800, 812), и лишняя цифра в конце полного номера должна
+ * отбрасываться, а не сдвигать его в другой номер.
+ */
+function preparePhone(
+  chars: string,
+  masked: { unmaskedValue: string },
+  flags?: { tail?: boolean }
+): string {
+  if (flags?.tail || masked.unmaskedValue) return chars
+  const digits = chars.replace(/\D/g, "")
+  return digits.length === 11 && /^[78]/.test(digits) ? digits.slice(1) : chars
+}
+
+/**
+ * Время: первая цифра, с которой двузначного значения не бывает, получает
+ * ведущий ноль — час 3–9 становится «03»–«09», первая цифра минут 6–9 —
+ * «06»–«09». «930» даёт «09:30». Без этого час одной цифрой не принимался
+ * вовсе, а остаток ввода превращался в мусор («930» → «0»).
+ *
+ * Только дополнение: недопустимая вторая цифра («24», «25») отвергается
+ * блоками MaskedRange как раньше. Поэтому ведётся счёт уже принятых цифр,
+ * а отвергнутые символы передаются маске как есть.
+ */
+function prepareTime(
+  chars: string,
+  masked: { unmaskedValue: string },
+  flags?: { tail?: boolean }
+): string {
+  if (flags?.tail) return chars
+  let accepted = masked.unmaskedValue
+  let out = ""
+  for (const ch of chars) {
+    const n = accepted.length
+    if (!/\d/.test(ch)) out += ch
+    else if ((n === 0 && ch >= "3") || (n === 2 && ch >= "6")) {
+      out += "0" + ch
+      accepted += "0" + ch
+    } else if (n >= 4 || (n === 1 && accepted === "2" && ch > "3")) {
+      out += ch
+    } else {
+      out += ch
+      accepted += ch
+    }
+  }
+  return out
+}
+
 // Пропсы для подстановки в <IMaskInput mask={...} /> из react-imask.
 // Amount маскирует только само число (MaskedNumber из imask — правильная
 // разбивка по тысячам и обработка каретки), а «₽» рисует Input отдельным
@@ -112,15 +168,19 @@ export function getImaskProps(name: MaskName) {
   // MaskedRange в imask. Вдобавок они удерживают значение настоящим
   // временем, отказываясь принять час больше 23 или минуту больше 59, тогда
   // как плоский цифровой шаблон спокойно принял бы 99:99.
+  //
+  // Ведущий ноль у часа и минут дописывает `prepareTime`.
   if (name === "time") {
     return {
       mask: "HH:MM",
+      prepare: prepareTime,
       blocks: {
         HH: { mask: IMask.MaskedRange, from: 0, to: 23, maxLength: 2 },
         MM: { mask: IMask.MaskedRange, from: 0, to: 59, maxLength: 2 },
       },
     }
   }
+  if (name === "phone") return { mask: PATTERNS.phone, prepare: preparePhone }
   if (name === "amount") {
     return {
       mask: IMask.MaskedNumber,

@@ -81,7 +81,9 @@ function StepCard({
           : undefined
       }
       className={cn(
-        "w-60 shrink-0 rounded-[16px] border-2 border-transparent bg-[var(--steps-bg)] px-6 py-4",
+        // Рамка активной карточки внутри размера 240×104 (мастер 5582:8756: Default и Active одной высоты), поэтому
+        // её 2px вычтены из отступов, а не прибавлены к ним.
+        "w-60 shrink-0 rounded-[16px] border-2 border-transparent bg-[var(--steps-bg)] px-[calc(--spacing(6)-2px)] py-[calc(--spacing(4)-2px)]",
         clickable && "cursor-pointer",
         disabled && "cursor-not-allowed",
         active && "border-[var(--steps-active-ring)]"

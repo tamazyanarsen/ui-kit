@@ -78,6 +78,9 @@ function Thumbnail({
   alt = "",
   className,
 }: ThumbnailProps) {
+  // Цифры карты: не заданные — заглушка «0000», пустая строка — без цифр, числа (слабо типизированный
+  // вызов) приводятся к строке, а не роняют рендер.
+  const last4Text = last4 == null ? "0000" : String(last4).trim()
   const isCardFamily = CARD_TYPES.has(type)
   const isSbp = SBP_TYPES.has(type)
   const isIconStatus = isIconStatusType(type)
@@ -180,9 +183,9 @@ function Thumbnail({
           <span className="absolute right-1 bottom-1 flex flex-col items-end gap-0.5">
             <PaymentLogo system={paymentSystem} disabled={disabled} size="sm" />
             {/* Пустые цифры — «·» без числа; не заданные — заглушка. */}
-            {last4?.trim() !== "" && (
+            {last4Text !== "" && (
               <span className="text-p4-medium text-white">
-                · {last4 ?? "0000"}
+                · {last4Text}
               </span>
             )}
           </span>

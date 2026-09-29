@@ -23,8 +23,10 @@ interface PictureProps extends Omit<React.ComponentProps<"img">, "src"> {
 function Picture({ avif, webp, ...img }: PictureProps) {
   return (
     <picture className="contents">
-      <source srcSet={avif} type="image/avif" />
-      <source srcSet={webp} type="image/webp" />
+      {/* `hidden`: `source` в `display: contents`-обёртке становился флекс-элементом родителя и
+          добавлял зазор (StatusScreen получал лишние 64px сверху). */}
+      <source srcSet={avif} type="image/avif" className="hidden" />
+      <source srcSet={webp} type="image/webp" className="hidden" />
       <img src={webp} {...img} />
     </picture>
   )

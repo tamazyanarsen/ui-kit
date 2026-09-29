@@ -190,7 +190,8 @@ function Banner({
                 <BannerDescription description={lines} bullet={bullet} />
               )}
             </div>
-            {cta}
+            {/* Кнопка по ширине содержимого (мастер 694:121375: items-start), а не на всю колонку. */}
+            {cta && <div className="flex">{cta}</div>}
           </div>
           {image && (
             <div className="w-[538px] shrink-0 self-stretch">

@@ -12,8 +12,11 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
 import { useItemsValue } from "@/components/ui/tabs/use-items-value"
-import { useOverflowFocusRescue } from "./overflow-focus"
+import { useOverflowFocusRescue } from "@/lib/overflow-focus-rescue"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
+
+const SWITCHER_OVERFLOW_SELECTOR =
+  '[data-slot="switcher-overflow-trigger"], [data-slot="switcher-overflow-content"]'
 
 // Switcher — «Cell Switcher / Переключатель»: сегментированный контрол
 // (контейнер-таблетка плюс скользящая активная таблетка), в
@@ -212,7 +215,13 @@ function Switcher({
     resolvedItems,
   ])
   // «Ещё» снялось с фокусом внутри — фокус переходит на ряд, а не на body.
-  const focusSentinel = useOverflowFocusRescue(hasOverflow, indicator.rowRef)
+  const focusSentinel = useOverflowFocusRescue({
+    hasOverflow,
+    rowRef: indicator.rowRef,
+    overflowSelector: SWITCHER_OVERFLOW_SELECTOR,
+    itemSelector: "button",
+    isActive: (button) => button.getAttribute("aria-pressed") === "true",
+  })
 
   // Дизайн-чек от 08.09, замечание 21: «В свитчере ездит заливка». Цвет
   // бегунка — ровно те же три варианта, что раньше стояли на самом сегменте.

@@ -9,8 +9,12 @@ import { Divider } from "@/components/ui/divider"
 import { Grid } from "@/components/ui/grid"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
+import { useOverflowFocusRescue } from "@/lib/overflow-focus-rescue"
 
 import { HeaderMenuPopup } from "./menu-popup"
+
+const NAV_OVERFLOW_SELECTOR =
+  '[data-slot="header-nav-overflow-trigger"], [data-slot="header-nav-overflow-content"]'
 
 // Нижний ряд шапки — кнопки «Меню»/«Создать», разделитель и пункты
 // навигации. Собран не «на глаз», а по макету `Menu Header (ELK)`: группа
@@ -116,6 +120,7 @@ function NavOverflow({
         render={
           <button
             type="button"
+            data-slot="header-nav-overflow-trigger"
             // Раскрытое «Ещё» — брендового цвета вместе с шевроном (макет
             // «Свёрнутое меню — избранные разделы уходят в „Ещё“»).
             className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
@@ -197,6 +202,15 @@ function NavRow({
   const visibleItems = items.slice(0, visibleCount)
   const hiddenItems = items.slice(visibleCount)
   const isActive = (item: HeaderNavItem) => item.active ?? item.value === activeSection
+  // «Ещё» снялось с фокусом внутри (ряд расширился) — фокус переходит на
+  // раздел ряда, а не на body (аудит 17).
+  const focusSentinel = useOverflowFocusRescue({
+    hasOverflow: hiddenItems.length > 0,
+    rowRef: containerRef,
+    overflowSelector: NAV_OVERFLOW_SELECTOR,
+    itemSelector: '[data-slot="header-nav-item"]',
+    isActive: (item) => item.getAttribute("aria-current") === "page",
+  })
 
   return (
     <div
@@ -273,6 +287,7 @@ function NavRow({
             />
           ))}
 
+          {hiddenItems.length > 0 && focusSentinel}
           {hiddenItems.length > 0 && (
             <NavOverflow items={hiddenItems} isActive={isActive} />
           )}

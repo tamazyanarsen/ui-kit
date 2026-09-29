@@ -10,11 +10,15 @@ import { OverflowMeasureLayer } from "@/lib/overflow-measure"
 import { useOverflowCount } from "@/lib/use-overflow-count"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { useActiveIndicator } from "@/lib/use-active-indicator"
+import { useOverflowFocusRescue } from "@/lib/overflow-focus-rescue"
 
 import { TabButton } from "./tab-button"
 import type { TabItem, TabsSize } from "./types"
 import { useItemsValue } from "./use-items-value"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
+
+const TABS_OVERFLOW_SELECTOR =
+  '[data-slot="tabs-overflow-trigger"], [data-slot="tabs-overflow-content"]'
 
 // Tabs — «Табы»: полоса вкладок с подчёркиванием. Значение — буквальное
 // количество пунктов (2–12), но это ограничение содержания, а не то, что
@@ -162,6 +166,15 @@ function Tabs({
     showOverflowTab,
     items,
   ])
+  // «…» погасло или снялось с фокусом внутри (ряд расширился) — фокус
+  // переходит на вкладку ряда, а не на body (аудит 17).
+  const focusSentinel = useOverflowFocusRescue({
+    hasOverflow,
+    rowRef: indicator.rowRef,
+    overflowSelector: TABS_OVERFLOW_SELECTOR,
+    itemSelector: '[role="tab"]',
+    isActive: (tab) => tab.getAttribute("aria-selected") === "true",
+  })
 
   return (
     <div
@@ -241,6 +254,7 @@ function Tabs({
         {/* Зазор до «…» — отступом самого триггера, а не `gap` ряда: при
             `items=[]` пустой `tablist` всё равно flex-элемент, и `gap`
             отодвигал многоточие от начала ряда на пустом месте. */}
+        {hasOverflow && focusSentinel}
         {showOverflowTab && (
         <MenuPrimitive.Root
           modal={false}

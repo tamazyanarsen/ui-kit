@@ -188,8 +188,13 @@ export const FileListItem = React.forwardRef<
         </span>
         {secondLine != null && (
           <span
+            // Аудит 17: текст ошибки обрезался в одну строку без подсказки —
+            // причину отказа («Файл слишком большо…») было не прочитать. В L
+            // он переносится до двух строк, в S (строка фиксированной высоты
+            // `h-7`) остаётся в одну; в обоих случаях полный текст — в `title`.
+            title={typeof secondLine === "string" ? secondLine : undefined}
             className={cn(
-              "truncate",
+              small ? "truncate" : "line-clamp-2 break-words",
               small ? "text-p4-medium" : "text-p3-medium",
               error
                 ? "text-[var(--file-item-error-fg)]"

@@ -69,16 +69,38 @@ function isOwnActivationKey(event: React.KeyboardEvent): boolean {
  * (от первого щелчка): ко второму слово уже выделено.
  */
 function endsTextSelection(event: PressEvent): boolean {
+  const root = event.currentTarget as Node
+  if (selectsInField(root)) return true
   const selection =
     typeof window !== "undefined" && typeof window.getSelection === "function"
       ? window.getSelection()
       : null
   if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false
-  const root = event.currentTarget as Node
   for (let index = 0; index < selection.rangeCount; index++) {
     if (selection.getRangeAt(index).intersectsNode(root)) return true
   }
   return false
+}
+
+/**
+ * Выделение внутри поля ввода блока. Chrome показывает выделение в
+ * `<input>`/`<textarea>` свёрнутым для документа, поэтому протяжка по тексту
+ * поля, отпущенная уже на самом блоке, считалась нажатием (аудит 17).
+ * Смотрим на само поле в фокусе: `selectionStart !== selectionEnd`.
+ */
+function selectsInField(root: Node): boolean {
+  if (typeof document === "undefined") return false
+  const field = document.activeElement
+  if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) return false
+  if (!root.contains(field)) return false
+  try {
+    // У части типов (`number`, `checkbox`…) чтение выделения бросает или
+    // даёт `null` — такое поле текст не выделяет.
+    const { selectionStart, selectionEnd } = field
+    return selectionStart != null && selectionEnd != null && selectionStart !== selectionEnd
+  } catch {
+    return false
+  }
 }
 
 /**

@@ -192,7 +192,7 @@ function EmployeeMenuNav({
 }: EmployeeMenuNavProps) {
   // Пустые ссылки (`[cond && {...}]`) отбрасываются: иначе `link.value` падал.
   const links = React.useMemo(() => compactList(rawLinks) ?? [], [rawLinks])
-  const { containerRef, itemRefs, visibleCount } = useOverflowCount(
+  const { containerRef, itemRefs, visibleCount, minFitWidth } = useOverflowCount(
     links.length,
     MORE_RESERVED,
     NAV_GAP
@@ -204,8 +204,20 @@ function EmployeeMenuNav({
     <div
       ref={containerRef}
       data-slot="employee-menu-nav"
+      // Пока часть пунктов спрятана, ряду гарантировано место под один пункт
+      // и «Ещё»: остальное отдаёт подпись сотрудника (она обрезается
+      // многоточием). Без пола на узкой шапке ряд сжимался до нуля, а
+      // обязательный пункт с «Ещё» ложились на колокольчик и значок профиля.
+      // Пол действует на любой ширине: у шапки нет мобильной формы, и ниже
+      // ~480px она шире экрана и прокручивается вбок (как шапка клиента на
+      // 375) — но пункты и «Ещё» не ложатся на колокольчик и профиль.
+      style={
+        hiddenLinks.length > 0
+          ? ({ "--nav-min-width": `${minFitWidth}px` } as React.CSSProperties)
+          : undefined
+      }
       className={cn(
-        "relative flex h-16 min-w-0 flex-1 items-center gap-8",
+        "relative flex h-16 min-w-0 flex-1 items-center gap-8 min-w-[var(--nav-min-width,0px)]",
         className
       )}
     >

@@ -59,6 +59,11 @@ function BannerCarousel({ banners: rawBanners }: BannerCarouselProps) {
   // курсором.
   const [hovered, setHovered] = React.useState(false)
   const [focused, setFocused] = React.useState(false)
+  // Фокус, пришедший от щелчка мышью (стрелка, точка), паузу НЕ держит: на
+  // нём остаётся кнопка, и после ухода курсора карусель навсегда замирала
+  // (до щелчка мимо), хотя читать баннер под фокусом некому. Пауза по
+  // фокусу — для клавиатуры; так же устроена пауза колонки тостов.
+  const pointerFocus = React.useRef(false)
   const paused = hovered || focused
   const reducedMotion = usePrefersReducedMotion()
 
@@ -88,7 +93,19 @@ function BannerCarousel({ banners: rawBanners }: BannerCarouselProps) {
       className="flex w-full flex-col gap-2"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onFocusCapture={() => setFocused(true)}
+      onPointerDownCapture={() => {
+        pointerFocus.current = true
+      }}
+      onPointerUpCapture={() => {
+        pointerFocus.current = false
+      }}
+      onFocusCapture={() => {
+        setFocused(!pointerFocus.current)
+        pointerFocus.current = false
+      }}
+      // Клавиша на кнопке, куда фокус пришёл мышью, возвращает паузу: с
+      // клавиатуры баннер листает читающий, и уезжать из-под него нельзя.
+      onKeyDownCapture={() => setFocused(true)}
       onBlurCapture={(event) => {
         // Переход фокуса между стрелками и кнопкой внутри карусели — не уход.
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {

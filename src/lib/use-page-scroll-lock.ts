@@ -18,12 +18,29 @@ import * as React from "react"
 
 const SCROLL_LOCK_GAP = "--scroll-lock-gap"
 
-let locks = 0
-let restore: (() => void) | undefined
+// ⚠️ Счётчик замков общий для ВСЕХ копий кита на странице. В микрофронтах
+// у каждого приложения свой экземпляр пакета, а значит и свой модульный
+// счётчик: первый замок одной копии запоминал `overflow: ""`, второй замок
+// другой копии — уже `"hidden"`. Снятый первым «чужой» замок возвращал
+// прокрутку под всё ещё открытым слоем, а снятый последним — навсегда
+// оставлял страницу запертой. Состояние поэтому лежит на `window` под
+// общим ключом, а не в переменных модуля.
+interface ScrollLockState {
+  locks: number
+  restore?: () => void
+}
+
+const STATE_KEY = Symbol.for("core-ui-kit.page-scroll-lock")
+
+function state(): ScrollLockState {
+  const holder = window as unknown as Record<symbol, ScrollLockState | undefined>
+  return (holder[STATE_KEY] ??= { locks: 0 })
+}
 
 function lock() {
-  locks += 1
-  if (locks > 1) return
+  const shared = state()
+  shared.locks += 1
+  if (shared.locks > 1) return
 
   const { style } = document.body
   const previousOverflow = style.overflow
@@ -38,7 +55,7 @@ function lock() {
   const root = document.documentElement.style
   if (gap > 0) root.setProperty(SCROLL_LOCK_GAP, `${gap}px`)
 
-  restore = () => {
+  shared.restore = () => {
     style.overflow = previousOverflow
     style.paddingRight = previousPadding
     root.removeProperty(SCROLL_LOCK_GAP)
@@ -46,10 +63,11 @@ function lock() {
 }
 
 function unlock() {
-  locks = Math.max(0, locks - 1)
-  if (locks > 0) return
-  restore?.()
-  restore = undefined
+  const shared = state()
+  shared.locks = Math.max(0, shared.locks - 1)
+  if (shared.locks > 0) return
+  shared.restore?.()
+  shared.restore = undefined
 }
 
 /** Держит прокрутку страницы заблокированной, пока `active`. */

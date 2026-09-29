@@ -71,6 +71,11 @@ export function useOverflowCount(
   const containerRef = React.useRef<HTMLDivElement>(null)
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
   const [visibleCount, setVisibleCount] = React.useState(itemCount)
+  // Ширина, ниже которой ряд не сжать без наложения: `minVisible` пунктов,
+  // место под «Ещё» и внутренние отступы. Нужна соседям по флекс-строке: ряд,
+  // которому не оставили этого места, показывает обязательный пункт поверх
+  // соседних блоков (шапка сотрудника на 600px: «Ещё» лежало на колокольчике).
+  const [minFitWidth, setMinFitWidth] = React.useState(0)
 
   // Число пунктов сменилось, а ряд до этого помещался целиком — считаем, что
   // он помещается и теперь, ещё до замера. Иначе на один проход раскладки
@@ -120,6 +125,12 @@ export function useOverflowCount(
       setVisibleCount(itemCount)
       return
     }
+
+    let minItems = reservedWidth + horizontalPadding(container) + occupiedWidth
+    for (let i = 0; i < Math.min(minVisible, itemCount); i++) {
+      minItems += widthOf(itemRefs.current[i]) + (i > 0 ? gap : 0)
+    }
+    setMinFitWidth(Math.ceil(minItems))
 
     const fitsAll =
       itemsWidth + gap * (itemCount - 1) + (alwaysReserve ? reservedWidth : 0)
@@ -222,5 +233,5 @@ export function useOverflowCount(
     }
   }, [recompute])
 
-  return { containerRef, itemRefs, visibleCount }
+  return { containerRef, itemRefs, visibleCount, minFitWidth }
 }

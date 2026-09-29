@@ -48,7 +48,22 @@ interface TooltipProps {
   disabled?: boolean
 }
 
-function Tooltip({
+// ⚠️ Tooltip умеет быть целью `render` чужого триггера. `SelectionButton`
+// принимает `trigger`, и потребитель кладёт туда `<Tooltip><Button/></Tooltip>`,
+// чтобы у кнопки меню была подсказка: примитив меню клонирует элемент,
+// отдавая ему ref и свои обработчики. Компонент без forwardRef ref терял, а
+// обработчики оставались на нём самом — меню не открывалось вовсе. Теперь
+// лишние пропсы и ref уходят на триггер подсказки, то есть на сам дочерний
+// элемент.
+type TooltipRestProps = Omit<
+  React.HTMLAttributes<HTMLElement>,
+  "content" | "title" | "children" | "className"
+>
+
+const Tooltip = React.forwardRef<
+  HTMLElement,
+  TooltipProps & TooltipRestProps
+>(function Tooltip({
   content,
   title,
   showCross = false,
@@ -57,8 +72,14 @@ function Tooltip({
   children,
   className,
   disabled = false,
-}: TooltipProps) {
+  ...triggerProps
+}, ref) {
   const { side, align } = DIRECTION_PLACEMENT[direction]
+  // `{cond && <Button/>}` отдаёт сюда false/null, а текст — строку: id
+  // читается только у настоящего элемента.
+  const childId = React.isValidElement(children)
+    ? (children.props as { id?: string }).id
+    : undefined
   // Состояние открытия управляемое всегда, а не по условию: передавать
   // Root пропс `open` только в выключенном состоянии значило бы
   // переключать его между неуправляемым и управляемым, а Base UI
@@ -70,6 +91,12 @@ function Tooltip({
   // всплывала сама, без наведения.
   if (disabled && open) setOpen(false)
 
+  // Прикрепить подсказку не к чему (`{cond && <Button/>}` дало false) — не
+  // рисуем ничего: пустой триггер был бы лишней фокусируемой кнопкой.
+  if (children == null || (children as unknown) === false || (children as unknown) === true) {
+    return null
+  }
+
   return (
     <TooltipPrimitive.Provider delay={400} closeDelay={0}>
       <TooltipPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
@@ -78,9 +105,15 @@ function Tooltip({
             перекрывает его в DOM: реестр «терял» триггер, и подсказка,
             открывшись, тут же закрывалась сама. */}
         <TooltipPrimitive.Trigger
-          id={(children.props as { id?: string }).id}
-          render={children}
-        />
+          {...triggerProps}
+          ref={ref as React.Ref<HTMLButtonElement>}
+          id={childId ?? triggerProps.id}
+          // Строка или число вместо элемента: Base UI отвергает такой
+          // `render` ошибкой, поэтому текст становится содержимым триггера.
+          render={React.isValidElement(children) ? children : undefined}
+        >
+          {React.isValidElement(children) ? undefined : (children as React.ReactNode)}
+        </TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Positioner
             side={side}
@@ -129,7 +162,7 @@ function Tooltip({
       </TooltipPrimitive.Root>
     </TooltipPrimitive.Provider>
   )
-}
+})
 
 export { Tooltip }
 export type { TooltipProps }

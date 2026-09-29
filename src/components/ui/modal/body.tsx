@@ -37,10 +37,18 @@ const ModalBody = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
         onScroll?.(event)
       }}
       data-slot="modal-body"
+      data-divider-top={scrolledFromTop ? "" : undefined}
+      data-divider-bottom={!scrolledToEnd ? "" : undefined}
+      // Разделители — внутренняя тень по краю, а не рамка: в макете
+      // `Scroll Divider` лежит поверх края тела (y=-1) и места не занимает,
+      // а рамка в CSS отнимала бы по пикселю сверху и снизу у КАЖДОГО окна.
+      // Две тени складываются через переменные: обычный `shadow-*` у
+      // верхнего и нижнего краёв перебивал бы друг друга.
       className={cn(
-        "min-h-0 flex-1 border-y border-transparent px-6 py-5 desktop:px-(--modal-px) desktop:py-4",
-        scrolledFromTop && "border-t-[var(--modal-divider)]",
-        !scrolledToEnd && "border-b-[var(--modal-divider)]",
+        "min-h-0 flex-1 px-6 py-5 desktop:px-(--modal-px) desktop:py-4",
+        "[box-shadow:var(--divider-top,0_0_#0000),var(--divider-bottom,0_0_#0000)]",
+        scrolledFromTop && "[--divider-top:inset_0_1px_0_var(--modal-divider)]",
+        !scrolledToEnd && "[--divider-bottom:inset_0_-1px_0_var(--modal-divider)]",
         className
       )}
     >

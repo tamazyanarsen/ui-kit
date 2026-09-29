@@ -90,12 +90,11 @@ function OtpConfirmCard({
             начинаются с x=48 внутри карточки 592px), СВЕРХУ отступа нет —
             заголовок стоит сразу под полосой Modal Top (y=48), а 48px снизу
             даёт нижний Holder. Высота карточки 48 + 392 + 48 = 488.
-            `-my-px` гасит две прозрачные рамки ModalBody: в макете
-            разделители Scroll Divider лежат поверх краёв (y=-1) и места не
-            занимают, а рамка кита занимает по пикселю сверху и снизу. */}
+            Разделители ModalBody места не занимают (внутренняя тень), поэтому
+            компенсации отступа не нужно. */}
         <ModalBody
           className={cn(
-            "flex flex-col gap-8 desktop:-my-px desktop:px-12 desktop:pt-0 desktop:pb-12",
+            "flex flex-col gap-8 desktop:px-12 desktop:pt-0 desktop:pb-12",
             className
           )}
         >

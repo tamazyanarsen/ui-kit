@@ -22,7 +22,7 @@ describe("Event: нулевые значения", () => {
     render(
       <Event title="Событие" signatories={[{ status: "success", name: "Иванов", attribute: 0 }]} />
     )
-    expect(screen.getByText(/Иванов/)).toHaveTextContent("Иванов — 0")
+    expect(screen.getByText(/Иванов/)).toHaveTextContent("Иванов – 0")
   })
 
   it("comment 0 — абзацем комментария под подписью", () => {

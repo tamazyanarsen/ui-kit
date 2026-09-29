@@ -43,7 +43,7 @@ describe("Event", () => {
       />
     )
     expect(screen.getByText("Иванов")).toBeInTheDocument()
-    expect(screen.getByText("— Первая подпись")).toBeInTheDocument()
+    expect(screen.getByText("– Первая подпись")).toBeInTheDocument()
   })
 
   it("renders info rows", () => {

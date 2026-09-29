@@ -22,7 +22,7 @@ describe("Modal: регрессии", () => {
     fireEvent.scroll(body)
 
     expect(onScroll).toHaveBeenCalledTimes(1)
-    expect(body.className).toContain("border-t-[var(--modal-divider)]")
+    expect(body).toHaveAttribute("data-divider-top")
   })
 
   it("ref доходит до ModalHeader, ModalFooter и ModalTitle", () => {

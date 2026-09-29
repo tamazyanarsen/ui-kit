@@ -188,3 +188,15 @@
     background-color: var(--table-bg);
   }
 }
+
+/* Мигание каретки OtpInput (ui/otp): поле кода прозрачно, каретку рисует
+   слой ячеек. Период 1 с, половина видна — как у нативной каретки. */
+@keyframes otp-caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

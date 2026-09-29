@@ -30,7 +30,7 @@ interface EventSignatory {
   name: React.ReactNode
   // Дизайн-чек, замечание 21: в собственном примере подписанта из макета
   // после имени идёт второй, более светлый признак (например, «Петров П.П.
-  // — Первая подпись»). Раньше он был запечён в один обычный узел `text`,
+  // – Первая подпись»). Раньше он был запечён в один обычный узел `text`,
   // и задать ему цвет, отличный от имени, было нечем.
   attribute?: React.ReactNode
 }
@@ -205,7 +205,7 @@ function Event({
                     {hasValue(signatory.attribute) && (
                       <span className="text-[var(--event-meta-fg)]">
                         {" "}
-                        — {signatory.attribute}
+                        – {signatory.attribute}
                       </span>
                     )}
                   </span>

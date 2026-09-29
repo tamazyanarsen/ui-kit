@@ -158,7 +158,13 @@ export const InputCodeMatrix: Story = {
         },
         { label: "Disabled", props: { defaultValue: "1234", disabled: true } },
       ]}
-      render={(props) => <OtpInput {...props} />}
+      // Подпись ошибки в мастере стоит абсолютно и высоты поля не меняет, так что
+      // ряду матрицы под неё нужен свой запас — иначе она ложится на линию ряда.
+      render={(props) => (
+        <div className={props.error ? "pb-6" : undefined}>
+          <OtpInput {...props} />
+        </div>
+      )}
     />
   ),
 }

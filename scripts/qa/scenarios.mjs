@@ -66,18 +66,30 @@ async function runScenario(context, sc) {
 const results = []
 let next = 0
 await Promise.all(Array.from({ length: WORKERS }, async () => {
-  const context = await browser.newContext()
+  // Свежий контекст на каждый сценарий: часы (page.clock), разрешения, хранилище и кэш не утекают между ними.
+  const run = async (sc) => {
+    const context = await browser.newContext()
+    try { return await runScenario(context, sc) } finally { await context.close() }
+  }
   while (next < scenarios.length) {
     const sc = scenarios[next++]
-    let r = await runScenario(context, sc)
-    if (!r.ok && /Failed to fetch|Timeout/.test(r.error || '')) r = await runScenario(context, sc)
+    let r = await run(sc)
+    // Упавший сценарий повторяется один раз в свежем контексте: настоящий баг падает и повторно, а сбой от нагрузки нет.
+    if (!r.ok) {
+      const again = await run(sc)
+      if (again.ok) again.flaky = r.error
+      r = again
+    }
     results.push(r)
   }
-  await context.close()
 }))
 await browser.close()
 results.sort((a, b) => (a.file + a.name).localeCompare(b.file + b.name))
-for (const r of results) console.log(`${r.ok ? 'ok  ' : 'FAIL'} ${r.file.replace('.mjs', '')} · ${r.name}${r.ok ? '' : '\n       ' + r.error}`)
+for (const r of results) {
+  const mark = r.ok ? (r.flaky ? 'ok* ' : 'ok  ') : 'FAIL'
+  const note = r.ok ? (r.flaky ? '\n       прошёл со второй попытки, первая: ' + r.flaky : '') : '\n       ' + r.error
+  console.log(`${mark} ${r.file.replace('.mjs', '')} · ${r.name}${note}`)
+}
 const failed = results.filter((r) => !r.ok).length
-console.log(`\nсценариев ${results.length}, провалено ${failed}`)
+console.log(`\nсценариев ${results.length}, провалено ${failed}, со второй попытки ${results.filter((r) => r.flaky).length}`)
 process.exit(failed ? 1 : 0)

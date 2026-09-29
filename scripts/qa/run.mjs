@@ -34,7 +34,7 @@ function serve(dir) {
 
 if (cmd === 'build') {
   const name = rest[0] || 'head'
-  process.exit(spawnSync('npx', ['storybook', 'build', '-o', path.join(ROOT, name), '--quiet'], { stdio: 'inherit', shell: true }).status ?? 0)
+  process.exit(spawnSync('npx', ['storybook', 'build', '-o', path.join(ROOT, name), '--quiet'], { stdio: 'inherit', shell: true, env: { ...process.env, STORYBOOK_QA: '1' } }).status ?? 0)
 } else if (cmd === 'audit' || cmd === 'drill' || cmd === 'scenarios' || cmd === 'fuzz') {
   const [name, ...more] = rest
   const dir = path.resolve(ROOT, name)

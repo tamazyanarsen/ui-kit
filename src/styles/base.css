@@ -98,7 +98,11 @@
    чтобы не пересекаться с замком Base UI. Вне @layer: правило должно побеждать утилиты страницы. */
 html[data-page-scroll-lock] body {
   overflow: hidden;
-  padding-right: var(--scroll-lock-gap, 0px);
+}
+/* Отступ на ширину пропавшей полосы — только когда полоса была: при нулевой ширине собственный
+   padding-right страницы не трогаем. */
+html[data-page-scroll-lock][data-page-scroll-lock-gap] body {
+  padding-right: var(--scroll-lock-gap);
 }
 
 @layer base {

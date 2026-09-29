@@ -69,3 +69,31 @@ describe("usePageScrollLock: замок Base UI", () => {
     layer.unmount()
   })
 })
+
+describe("usePageScrollLock: отступ на полосу", () => {
+  it("без полосы прокрутки признак отступа не ставится, свой padding-right страницы не затирается", async () => {
+    const lock = await freshHook()
+    // jsdom отдаёт clientWidth = 0, то есть «полосу» шириной во всё окно: задаём ширину без полосы.
+    const html = document.documentElement
+    Object.defineProperty(html, "clientWidth", { configurable: true, value: window.innerWidth })
+    const layer = renderHook(() => lock(true))
+    expect(document.documentElement.hasAttribute("data-page-scroll-lock")).toBe(true)
+    expect(document.documentElement.hasAttribute("data-page-scroll-lock-gap")).toBe(false)
+    layer.unmount()
+    expect(document.documentElement.hasAttribute("data-page-scroll-lock-gap")).toBe(false)
+    delete (html as { clientWidth?: number }).clientWidth
+  })
+
+  it("с полосой прокрутки признак отступа ставится и снимается вместе с замком", async () => {
+    const lock = await freshHook()
+    const html = document.documentElement
+    Object.defineProperty(html, "clientWidth", { configurable: true, value: window.innerWidth - 15 })
+    const layer = renderHook(() => lock(true))
+    expect(html.hasAttribute("data-page-scroll-lock-gap")).toBe(true)
+    expect(html.style.getPropertyValue("--scroll-lock-gap")).toBe("15px")
+    layer.unmount()
+    expect(html.hasAttribute("data-page-scroll-lock-gap")).toBe(false)
+    expect(html.style.getPropertyValue("--scroll-lock-gap")).toBe("")
+    delete (html as { clientWidth?: number }).clientWidth
+  })
+})

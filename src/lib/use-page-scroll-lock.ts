@@ -26,6 +26,9 @@ import * as React from "react"
 
 const SCROLL_LOCK_GAP = "--scroll-lock-gap"
 const SCROLL_LOCK_ATTR = "data-page-scroll-lock"
+// Отдельный признак «полоса была и пропала»: отступ `body` нужен только тогда, иначе собственный
+// padding-right страницы затирался бы нулём.
+const SCROLL_LOCK_GAP_ATTR = "data-page-scroll-lock-gap"
 
 // ⚠️ Счётчик замков общий для ВСЕХ копий кита на странице. В микрофронтах
 // у каждого приложения свой экземпляр пакета, а значит и свой модульный
@@ -56,11 +59,15 @@ function lock() {
   // Ширину снятой полосы публикуем до установки атрибута: правило `base.css`
   // берёт из неё отступ `body`, а `fixed`-слои (кнопка «Наверх»), которым
   // отступ `body` не помогает, прибавляют её к `right` (аудит 23).
-  if (gap > 0) html.style.setProperty(SCROLL_LOCK_GAP, `${gap}px`)
+  if (gap > 0) {
+    html.style.setProperty(SCROLL_LOCK_GAP, `${gap}px`)
+    html.setAttribute(SCROLL_LOCK_GAP_ATTR, "")
+  }
   html.setAttribute(SCROLL_LOCK_ATTR, "")
 
   shared.restore = () => {
     html.removeAttribute(SCROLL_LOCK_ATTR)
+    html.removeAttribute(SCROLL_LOCK_GAP_ATTR)
     html.style.removeProperty(SCROLL_LOCK_GAP)
   }
 }

@@ -10,6 +10,6 @@ export function ArrowUp({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M2.477 11.536V6.878l-.77.771A1 1 0 0 1 .293 6.234l2.476-2.477a1 1 0 0 1 1.415 0l2.477 2.477a1 1 0 1 1-1.414 1.415l-.77-.77v4.657a1.001 1.001 0 0 1-2 0"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M7 11.536V6.878l-.77.771a1 1 0 0 1-1.414-1.415l2.476-2.477c.39-.39 1.025-.39 1.415 0l2.477 2.477A1.001 1.001 0 0 1 9.77 7.649L9 6.879v4.657a1 1 0 0 1-2 0"/></svg>
   )
 }

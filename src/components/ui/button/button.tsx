@@ -58,7 +58,7 @@ const buttonVariants = cva(
         "secondary-logo-black":
           "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-logo-border-white":
-          "[box-shadow:inset_0_0_0_1px_var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)] aria-disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)]",
+          "[box-shadow:inset_0_0_0_1px_var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)] aria-disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)] disabled:!text-[var(--btn-logo-border-white-fg-disabled)] aria-disabled:!text-[var(--btn-logo-border-white-fg-disabled)]",
         "secondary-logo-white":
           "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-logo-grey":

@@ -1,10 +1,10 @@
 import * as React from "react"
-// У ползунка свои маленькие стрелки из макета, а не обычные шевроны — см.
-// icons/arrow-right-small.tsx о том, почему они не взаимозаменяемы.
-import { ArrowLeftSmall, ArrowRightSmall } from "@/icons"
+// У ползунка свои стрелки из макета (тоньше символов набора) — см.
+// thumb-arrow.tsx.
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
+import { ThumbArrow } from "./thumb-arrow"
 import { hasNode } from "@/lib/has-node"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
@@ -224,7 +224,8 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
                     коробке 16px (сам глиф внутри неё 5.5×9). Прежний
                     size-2.5 ужимал обычный шеврон до 10px, и он выходил и
                     уже, и ниже, чем в макете. */}
-                <ArrowLeftSmall
+                <ThumbArrow
+                  direction="left"
                   className={cn(
                     "size-4 text-[var(--range-input-thumb-icon-fg)]",
                     // Исправление второго прохода: у символа Disabled в SVG
@@ -235,7 +236,8 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
                     invalid && "text-[var(--range-input-thumb-icon-fg-error)]"
                   )}
                 />
-                <ArrowRightSmall
+                <ThumbArrow
+                  direction="right"
                   className={cn(
                     "size-4 text-[var(--range-input-thumb-icon-fg)]",
                     disabled && "text-[var(--range-input-thumb-icon-fg-disabled)]",

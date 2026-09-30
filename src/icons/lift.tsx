@@ -5,11 +5,11 @@ import type { IconProps } from "./types"
 export function Lift({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M10.129.995c0-.557.448-.995.999-.995h1.537c.552 0 1 .438 1 .995a.993.993 0 0 1-1 .996h-1.537a.993.993 0 0 1-.999-.996m1.735 1.304H4.98c-.552 0-.999.451-.999 1.008v16.668H1.906a1.002 1.002 0 0 0 0 2.003h19.982a1.002 1.002 0 0 0 0-2.003h-2.075V3.307c0-.557-.447-1.008-1-1.008zm5.95 17.676V4.303h-4.918v15.672zm-6.916 0V4.303H5.979v15.672z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M10.23 1.999a.994.994 0 0 1 1-.997h1.54c.551 0 1 .44 1 .997a.994.994 0 0 1-1 .996h-1.54c-.551 0-1-.439-1-.996m1.737 1.305h-6.89c-.553 0-1 .45-1 1.009v16.682H2A1.004 1.004 0 0 0 2 23h20a1.003 1.003 0 0 0 0-2.005h-2.077V4.313c0-.558-.447-1.009-1-1.009zm5.955 17.691V5.309H13v15.686zm-6.922 0V5.309H6.077v15.686z" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M11.94 2.999c.551 0 .999.438.999.996v7.99h.999a1 1 0 0 1 0 2.003H1.948a1 1 0 0 1 0-2.003h1v-7.99c0-.558.447-.996.999-.996zm-2.998 8.986h1.998V4.99H8.942zm-3.996 0h1.998V4.99H4.946zM8.942 0c.552 0 .999.438.999.995a.99.99 0 0 1-.999.996H6.944a.99.99 0 0 1-.999-.996c0-.557.447-.995.999-.995z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M12 4.004c.552 0 1 .439 1 .997v7.997h1a1.001 1.001 0 0 1 0 2.005H2a1.004 1.004 0 0 1 0-2.005h1V5a.994.994 0 0 1 1-.997zm-3 8.994h2v-7H9zm-4 0h2v-7H5zM9 1.002c.552 0 1 .44 1 .997a.994.994 0 0 1-1 .996H7c-.552 0-1-.439-1-.996a.994.994 0 0 1 1-.997z"/></svg>
   )
 }

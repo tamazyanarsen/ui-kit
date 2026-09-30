@@ -14,12 +14,30 @@ interface ChevronsUpDownProps extends IconProps {
 // Grey 284. Прежний заход, подменявший иконку одиночным шевроном, был
 // неверным прочтением сета.
 //
+// 16 и 24 — отдельные начертания мастера `icon / sort` (на 24px штрих
+// толще, а шевроны разведены шире). В таблице стоит 16, но кит вправе
+// поставить и 24: прежде `size` молча игнорировался.
+//
 // Поэтому фигуры две, а не одна `currentColor`: активная наследует
 // `currentColor` (то есть цвет заголовка), приглушённая берёт свой токен.
 // Раньше здесь стоял литерал #999999 — сырое значение мимо токена, которое
 // не переключалось вместе с темой и вылезало в индикативной проверке.
-export function ChevronsUpDown({ size: _size, sort = "none", ...props }: ChevronsUpDownProps) {
+export function ChevronsUpDown({ size = 16, sort = "none", ...props }: ChevronsUpDownProps) {
   const muted = "var(--table-description-fg)"
+  if (size === 24) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <path
+          d="M12 1c.28 0 .548.12.737.32l5.5 6c.373.41.346 1.04-.061 1.42a1.01 1.01 0 0 1-1.413-.06L12 3.48l-4.763 5.2a1.01 1.01 0 0 1-1.413.06 1.01 1.01 0 0 1-.061-1.42l5.5-6c.189-.2.457-.32.737-.32"
+          fill={sort === "asc" ? "currentColor" : muted}
+        />
+        <path
+          d="M5.824 15.26a1.01 1.01 0 0 1 1.413.06L12 20.52l4.763-5.2a1.01 1.01 0 0 1 1.413-.06c.407.38.434 1.01.061 1.42l-5.5 6c-.189.2-.457.32-.737.32s-.548-.12-.737-.32l-5.5-6a1.01 1.01 0 0 1 .061-1.42"
+          fill={sort === "desc" ? "currentColor" : muted}
+        />
+      </svg>
+    )
+  }
   return (
     <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path

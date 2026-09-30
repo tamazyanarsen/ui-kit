@@ -10,6 +10,6 @@ export function ArrowLeft({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M6.234.293a1 1 0 1 1 1.415 1.414l-.77.77h4.657a1.001 1.001 0 0 1 0 2H6.88l.769.77a1 1 0 1 1-1.415 1.414L3.758 4.184a1 1 0 0 1 0-1.415z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M6.234 4.816A1.001 1.001 0 0 1 7.65 6.23L6.88 7h4.657a1 1 0 0 1 0 2H6.88l.77.77a1 1 0 0 1-1.416 1.414L3.758 8.707a1 1 0 0 1 0-1.415z"/></svg>
   )
 }

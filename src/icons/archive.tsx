@@ -5,11 +5,11 @@ import type { IconProps } from "./types"
 export function Archive({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M.373 3.438c0-.497.411-.9.916-.9h20.149c.506 0 .915.403.915.9v4.495c0 .497-.409.9-.915.9h-.916v10.79c0 .497-.411.9-.916.9H3.121a.91.91 0 0 1-.916-.9V8.833h-.916a.91.91 0 0 1-.916-.9zm3.663 5.395v9.892H18.69V8.833zm16.486-1.798H2.205V4.336h18.317zM8.616 11.531c0-.497.41-.9.915-.9h3.664c.505 0 .916.403.916.9a.91.91 0 0 1-.916.899H9.531a.91.91 0 0 1-.915-.899" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M1 3.9c0-.497.41-.9.916-.9h20.167c.507 0 .916.403.916.9v4.5c0 .496-.41.9-.916.9h-.917v10.8c0 .497-.41.9-.916.9H3.75a.91.91 0 0 1-.917-.9V9.3h-.917A.91.91 0 0 1 1 8.4zm3.666 5.4v9.9h14.667V9.3zm16.5-1.8H2.833V4.8h18.333zM9.25 12c0-.497.41-.9.916-.9h3.667c.506 0 .916.403.916.9 0 .496-.41.9-.916.9h-3.667a.91.91 0 0 1-.916-.9" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M13.404 1.536a1 1 0 0 1 1 1v2.996a1 1 0 0 1-1 1v5.995a1 1 0 0 1-.999.998H2.414a1 1 0 0 1-.999-.998V6.532a1 1 0 0 1-.999-1V2.536c0-.553.447-1 .999-1zm-9.991 9.991h7.993V6.532H3.413zm4.595-3.996a.998.998 0 1 1 0 1.998H6.011a1 1 0 1 1 0-1.998zM2.414 4.533h9.991v-.999H2.414z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM4 12h8V7H4zm4.599-4a1 1 0 1 1 0 2h-2a1 1 0 0 1 0-2zm-5.6-3h10V4H3z"/></svg>
   )
 }

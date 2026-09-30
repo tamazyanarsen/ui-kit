@@ -50,6 +50,10 @@
   --btn-muted-bg: var(--grey-114);
   --btn-muted-fg: var(--grey-166);
   --btn-muted-border: var(--grey-166);
+  /* Disabled у Secondary Logo Border (White): в мастере текст окрашен
+     переменной «Text/Text Grey 166» = #DEDEDE (светлее общего
+     --btn-muted-fg #C8C8CB), рамка остаётся общей. */
+  --btn-logo-border-white-fg-disabled: var(--grey-134);
 
   /* Loader (компонент-сет "icon / loader" на странице ALL ICONS,
      раздел "24. Loaders").

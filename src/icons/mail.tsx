@@ -23,6 +23,6 @@ export function Mail({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M2 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm1.2 2L8 8.5 12.8 5zM3 6.25V11h10V6.25L8.588 9.56a.98.98 0 0 1-1.176 0z" clipRule="evenodd"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 3.083c.874 0 1.584.709 1.584 1.583V12c0 .874-.71 1.583-1.584 1.583H2A1.583 1.583 0 0 1 .417 12V4.666c0-.874.709-1.583 1.583-1.583zm-4.594 6.3a2.25 2.25 0 0 1-2.811 0L2.25 5.906v5.844h11.5V5.906zM7.74 7.951a.416.416 0 0 0 .52 0l3.794-3.035H3.947z"/></svg>
   )
 }

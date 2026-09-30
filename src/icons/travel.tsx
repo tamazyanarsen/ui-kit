@@ -5,7 +5,7 @@ import type { IconProps } from "./types"
 export function Travel({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M5.995 2.999A3.004 3.004 0 0 1 8.993 0h5.994a3.003 3.003 0 0 1 2.997 2.999v1.008h2.998a2.993 2.993 0 0 1 2.997 2.987v11.997a3.003 3.003 0 0 1-2.997 2.999H2.998A3.004 3.004 0 0 1 0 18.991V6.994a2.993 2.993 0 0 1 2.998-2.987h2.997zm0 2.999H2.998a1 1 0 0 0-.999.996v11.997a1 1 0 0 0 .999.996h2.997zm1.998 13.989V5.998h7.994v13.989zm9.991 0h2.998c.551 0 .999-.451.999-.996V6.994c0-.545-.448-.996-.999-.996h-2.998zm-1.997-15.98H7.993V2.999c0-.545.448-.996 1-.996h5.994c.551 0 1 .451 1 .996z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M6 3.996A3.006 3.006 0 0 1 9 .994h6c1.656 0 3 1.352 3 3.002v1.008h3c1.657 0 3 1.34 3 2.99v12.008a3.006 3.006 0 0 1-3 3.002H3c-1.657 0-3-1.353-3-3.002V7.994c0-1.65 1.343-2.99 3-2.99h3zm0 3.002H3a1 1 0 0 0-1 .996v12.008a1 1 0 0 0 1 .996h3zm2 14v-14h8v14zm10 0h3a1 1 0 0 0 1-.996V7.994a1 1 0 0 0-1-.996h-3zM16 5.004H8V3.996c0-.546.448-.997 1-.997h6c.552 0 1 .45 1 .997z" clipRule="evenodd"/></svg>
     )
   }
 

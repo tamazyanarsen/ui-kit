@@ -10,6 +10,6 @@ export function ArrowDown({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M2.477 4.465a1 1 0 1 1 2 0v4.656l.77-.77a1 1 0 0 1 1.414 1.414l-2.477 2.478c-.39.39-1.024.39-1.415 0L.293 9.765a.999.999 0 1 1 1.414-1.414l.77.771z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M7 4.465a1 1 0 1 1 2 0V9.12l.77-.77a1 1 0 0 1 1.414 1.414l-2.477 2.478c-.39.39-1.024.39-1.415 0L4.816 9.765A1 1 0 0 1 6.23 8.351l.77.77z"/></svg>
   )
 }

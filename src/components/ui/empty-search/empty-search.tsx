@@ -38,6 +38,14 @@ interface EmptySearchResultsProps {
    * старой версии макета больше не существует.
    */
   largeIcon?: boolean
+  /**
+   * Значок на углу плитки — свойство `Show Badge` вложенного `ELK / thumbnail`
+   * (красная точка 16×16, правый край −8, верх −4). В обоих мастерах
+   * (Desktop и Mobile) этот слой стоит на месте, но СКРЫТ, поэтому по
+   * умолчанию значка нет; включается явно. Рисует его сам Thumbnail
+   * (`showDot`), здесь он только пробрасывается.
+   */
+  showBadge?: boolean
   title: React.ReactNode
   description?: React.ReactNode
   /**
@@ -71,6 +79,7 @@ function EmptySearchResults({
   icon,
   thumbnailType = "icon",
   largeIcon = true,
+  showBadge = false,
   title,
   description,
   showButton,
@@ -102,6 +111,7 @@ function EmptySearchResults({
         <Thumbnail
           type={thumbnailType}
           size={largeIcon ? "l" : "m"}
+          showDot={showBadge}
           icon={
             isIconTile ? (
               <span className="flex items-center justify-center text-[var(--empty-search-icon-fg)] [&_svg]:size-6">

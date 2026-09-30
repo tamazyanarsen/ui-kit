@@ -3,6 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { flattenChildren } from "@/lib/flatten-children"
 import { pressHandlers } from "@/lib/press"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Divider } from "@/components/ui/divider"
 
 // BlockWidget — «блок-виджет»: карточка с шапкой и слотом содержимого,
@@ -88,7 +89,7 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
         if (!event.defaultPrevented) press.onKeyDown?.(event)
       }}
       className={cn(
-        "flex w-full flex-col items-center gap-2 rounded-[12px] p-4 desktop:gap-4 desktop:p-6",
+        "group/block-widget flex w-full flex-col items-center gap-2 rounded-[12px] p-4 desktop:gap-4 desktop:p-6",
         variant === "solid"
           ? "bg-[var(--block-widget-bg)]"
           : // `box-border` явно: у обводки 1px входит в габарит блока, а не
@@ -116,6 +117,7 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
  * и вертикальную ориентацию он уже умеет.
  */
 function DoubleLayout({ children }: { children?: React.ReactNode }) {
+  const isDesktop = useIsDesktop()
   const items = flattenChildren(children)
   const columns = items.filter(
     (child) => React.isValidElement(child) && child.type === BlockWidgetColumn
@@ -128,7 +130,10 @@ function DoubleLayout({ children }: { children?: React.ReactNode }) {
     <>
       <div
         data-slot="block-widget-columns"
-        className="flex w-full items-center gap-4"
+        // Мобильный `Double` (мастер): колонки ДРУГ ПОД ДРУГОМ, между ними
+        // горизонтальная линия, зазор 8; на десктопе — в ряд через
+        // вертикальную.
+        className="flex w-full flex-col gap-2 desktop:flex-row desktop:items-center desktop:gap-4"
       >
         {/* Ключ — ключ самой колонки (его выдал разбор детей), а не
             позиция: иначе, когда первая колонка исчезала, вторая
@@ -137,7 +142,9 @@ function DoubleLayout({ children }: { children?: React.ReactNode }) {
           <React.Fragment
             key={React.isValidElement(column) && column.key != null ? column.key : index}
           >
-            {index > 0 && <Divider orientation="vertical" />}
+            {index > 0 && (
+              <Divider orientation={isDesktop ? "vertical" : "horizontal"} />
+            )}
             {column}
           </React.Fragment>
         ))}
@@ -153,7 +160,9 @@ const BlockWidgetColumn = React.forwardRef<HTMLDivElement, React.ComponentProps<
     <div
       data-slot="block-widget-column"
       className={cn(
-        "flex min-w-0 flex-1 flex-col items-start gap-2 desktop:gap-4",
+        // Зазор 16 и на мобиле: в мастере `Container` и `Box` мобильного
+        // Double идут с зазором 16 (заголовок, кнопка, слот).
+        "flex min-w-0 flex-col items-start gap-4 desktop:flex-1",
         className
       )}
       ref={ref}

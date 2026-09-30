@@ -46,6 +46,13 @@ describe("EmptySearchResults", () => {
     expect(onButtonClick).toHaveBeenCalledTimes(1)
   })
 
+  it("показывает значок на плитке только по showBadge (в мастере слой скрыт)", () => {
+    const { container, rerender } = render(<EmptySearchResults title="Заголовок" />)
+    expect(container.querySelector('[data-slot="badge"]')).not.toBeInTheDocument()
+    rerender(<EmptySearchResults title="Заголовок" showBadge />)
+    expect(container.querySelector('[data-slot="badge"]')).toBeInTheDocument()
+  })
+
   it("omits the button when no buttonLabel is given", () => {
     render(<EmptySearchResults title="Заголовок" />)
     expect(screen.queryByRole("button")).not.toBeInTheDocument()

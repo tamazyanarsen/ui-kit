@@ -170,20 +170,28 @@ function FadeArrow({
 }) {
   const Icon = side === "left" ? ChevronLeft : ChevronRight
 
+  // Мастер Steps / Arrow: блок затухания 32 (серый grey-106, маска — градиент:
+  // слева непрозрачен до 25%, справа от 75%), а кнопка 32 висит на 16px ЗА
+  // краем ряда (left/right: -16; экспорт 1040 при ряде 1008). Поэтому кнопке
+  // нужны поля снаружи: потребитель оставляет 16px с каждой стороны, иначе
+  // кнопку обрежет край контейнера.
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-y-0 z-10 flex w-16 items-center",
+        "pointer-events-none absolute inset-y-0 z-10 flex w-8 items-center",
         side === "left"
-          ? "left-0 justify-start bg-gradient-to-r from-[var(--steps-fade-bg)] to-transparent"
-          : "right-0 justify-end bg-gradient-to-l from-[var(--steps-fade-bg)] to-transparent"
+          ? "left-0 justify-start bg-[linear-gradient(to_right,var(--steps-fade-bg)_25%,transparent)]"
+          : "right-0 justify-end bg-[linear-gradient(to_left,var(--steps-fade-bg)_25%,transparent)]"
       )}
     >
       <Button
         type="button"
         variant="secondary-black"
         size="sm"
-        className="pointer-events-auto rounded-full"
+        className={cn(
+          "pointer-events-auto rounded-full",
+          side === "left" ? "-ml-4" : "-mr-4"
+        )}
         icon={Icon}
         iconPosition="only"
         aria-label={side === "left" ? "Назад" : "Далее"}

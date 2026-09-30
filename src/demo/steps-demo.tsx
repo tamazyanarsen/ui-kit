@@ -115,7 +115,10 @@ function StepsDemo() {
             Ряд шагов + навигация по краям (рабочий пример — жмите «Далее» /
             «Назад» или кликайте по заполненным шагам)
           </RowLabel>
+          {/* Кнопки стрелок висят на 16px за краем ряда (мастер Steps / Arrow):
+              поля mx-4 нужны, чтобы их не обрезал overflow панели. */}
           <Steps
+            className="mx-4"
             steps={rowSteps}
             showLeftFade
             showRightFade

@@ -13,6 +13,7 @@ import {
   type DropdownSize,
 } from "./dropdown"
 import { DropdownFooter, DropdownFooterButton } from "./dropdown-footer"
+import { DropdownPanelButton } from "./dropdown-panel-button"
 import { DropdownHelp, DropdownSearch } from "./dropdown-search"
 
 /**
@@ -59,6 +60,8 @@ interface PlaygroundArgs {
   value: number
   add: AddValue
   showSearch: boolean
+  showButton: boolean
+  buttonLabel: string
   showTextHelp: boolean
   showList: boolean
   showDescription: boolean
@@ -92,6 +95,8 @@ function DropdownDemo({
   value = 5,
   add = "None",
   showSearch = false,
+  showButton = false,
+  buttonLabel = "Button",
   showTextHelp = false,
   showList = true,
   showDescription = true,
@@ -117,6 +122,10 @@ function DropdownDemo({
           onChange={(event) => setQuery(event.target.value)}
           onClear={() => setQuery("")}
         />
+      )}
+      {/* Show Button: блок с кнопкой S стоит под поиском, выше списка. */}
+      {showButton && (
+        <DropdownPanelButton>{buttonLabel}</DropdownPanelButton>
       )}
       {showTextHelp && <DropdownHelp>Начните вводить параметры поиска</DropdownHelp>}
       {showList &&
@@ -175,6 +184,16 @@ const meta = {
       name: "Show Search",
       description: "Строка поиска сверху: 56, глиф 24, нижний разделитель",
     },
+    showButton: {
+      control: "boolean",
+      name: "Show Button",
+      description:
+        "Panel Button: блок с кнопкой S (Secondary Dark Blue, стрелка слева) под поиском, поля 16, высота 64",
+    },
+    buttonLabel: {
+      control: "text",
+      name: "Подпись кнопки (Show Button)",
+    },
     showTextHelp: {
       control: "boolean",
       name: "Show Text Help",
@@ -201,6 +220,8 @@ const meta = {
     value: 5,
     add: "Two Buttons",
     showSearch: true,
+    showButton: true,
+    buttonLabel: "Button",
     showTextHelp: false,
     showList: true,
     showDescription: true,
@@ -242,6 +263,23 @@ export const Examples: Story = {
         <div className="flex flex-wrap items-start gap-6">
           <DropdownDemo value={4} showSearch showDescription={false} />
           <DropdownDemo value={0} showSearch showTextHelp showList={false} />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Show Button"
+        description="Panel Button: под строкой поиска блок 64 с кнопкой S (Secondary Dark Blue, стрелка слева). На мобильных формах подпись кнопки 12/16."
+      >
+        <div className="flex flex-wrap items-start gap-6">
+          <DropdownDemo value={3} showSearch showButton showDescription={false} />
+          <DropdownDemo
+            size="mobile-bottom-sheet"
+            value={3}
+            showSearch
+            showButton
+            add="Two Buttons"
+            showDescription={false}
+          />
         </div>
       </StorySection>
 

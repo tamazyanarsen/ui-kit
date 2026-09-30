@@ -3,6 +3,7 @@ import { Image as ImageIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { ViewportScope } from "@/lib/viewport"
 
 import {
   bannerBackgroundImage,
@@ -156,11 +157,10 @@ function Banner({
   // с той же синей заливкой `primary`, что и у десктопного (фон #80E3FF), и
   // только у compact кнопка белая, `secondary-white`. Размер «lg» сам по
   // себе адаптивный (h-12/px-6/text-sm ниже брейкпоинта desktop: и
-  // h-14/px-8/text-base на нём и выше), поэтому один и тот же пропс размера
-  // уже воспроизводит и мобильные литеральные размеры (48/24/14), и
-  // десктопные вместе с compact (56/32/16) — ветвиться по size здесь не
-  // нужно.
-  const cta = isFilled(ctaLabel) && (
+  // h-14/px-8/text-base на нём и выше), поэтому на десктопном баннере и на
+  // compact он сам даёт 56/32/16; мобильный баннер форсирует мобильную
+  // форму скоупом (см. ниже).
+  const ctaButton = (
     <Button
       variant={size === "compact" ? "secondary-white" : "primary"}
       size="lg"
@@ -170,6 +170,18 @@ function Banner({
       {ctaLabel}
     </Button>
   )
+  // Мобильный баннер — это форма самого баннера, а не окна: в мастере его
+  // кнопка всегда 48 с подписью 14/20 и полями 24. Без скоупа `lg` на
+  // десктопном окне рисовал 56 / 16/24 / поля 32 (замер на 1280), хотя
+  // остальная карточка была мобильной. Скоуп `display: contents`, раскладку
+  // колонки не трогает.
+  const cta =
+    isFilled(ctaLabel) &&
+    (size === "mobile" ? (
+      <ViewportScope viewport="mobile">{ctaButton}</ViewportScope>
+    ) : (
+      ctaButton
+    ))
 
   return (
     <div

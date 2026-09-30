@@ -60,8 +60,10 @@ const DropdownFooterButton = React.forwardRef<
       type={type}
       data-slot="dropdown-footer-button"
       className={cn(
-        "flex min-h-14 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium group-data-[size^=mobile]/dropdown:min-h-12 text-[var(--menu-item-fg)] outline-none transition-colors",
+        "flex min-h-14 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium group-data-[size^=mobile]/dropdown:min-h-12 group-data-[size^=mobile]/dropdown:px-6 group-data-[size^=mobile]/dropdown:py-[14px] group-data-[size^=mobile]/dropdown:text-p2-medium text-[var(--menu-item-fg)] outline-none transition-colors",
         "hover:bg-[var(--menu-item-bg-highlighted)] focus-visible:focus-ring",
+        // Мобильные формы (мастер, узел `Buttons`): ячейка 48, поля 24/14 и
+        // подпись P1 Medium Mobile 14/20, а не десктопные 32/16 и 16/24.
         // Выключенная кнопка — Grey 114 / Grey 166 из сета, теми же токенами,
         // что и у обычной кнопки кита.
         "disabled:cursor-not-allowed disabled:bg-[var(--btn-muted-bg)] disabled:text-[var(--btn-muted-fg)]",

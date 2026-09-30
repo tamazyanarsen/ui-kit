@@ -7,3 +7,5 @@ export type {
 } from "./dropdown-footer"
 export { DropdownHelp, DropdownSearch } from "./dropdown-search"
 export type { DropdownSearchProps } from "./dropdown-search"
+export { DropdownPanelButton } from "./dropdown-panel-button"
+export type { DropdownPanelButtonProps } from "./dropdown-panel-button"

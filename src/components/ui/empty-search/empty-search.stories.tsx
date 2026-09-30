@@ -71,6 +71,8 @@ const meta = {
       options: ["primary", "secondary-grey"],
       ...CONTENT,
     },
+    // Свойство Show Badge вложенного Thumbnail: в мастерах слой скрыт.
+    showBadge: toggleArgType("Show Badge"),
     largeIcon: {
       control: "boolean",
       description:
@@ -99,6 +101,7 @@ const meta = {
     title: "Ничего не найдено",
     description: "Попробуйте изменить параметры поиска",
     largeIcon: true,
+    showBadge: false,
     thumbnailType: "icon",
     // По умолчанию кнопка включена: иначе её вариант и подпись не видно, а
     // Playground должен показывать все необязательные блоки (см. правило
@@ -139,6 +142,8 @@ export const Matrix: Story = {
         { label: "Без иконки", props: { icon: null } },
         // Плитка — это Thumbnail целиком, а не только его «иконочный» тип.
         { label: "Статус", props: { thumbnailType: "alert" as const } },
+        // Show Badge: слой скрыт в мастерах, включается явно.
+        { label: "Со значком", props: { showBadge: true } },
       ]}
       rows={[
         { label: "Только заголовок", props: {} },

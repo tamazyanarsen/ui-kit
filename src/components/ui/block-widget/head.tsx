@@ -51,6 +51,14 @@ const TITLE_BLOCK_PT: Record<BlockWidgetTitleType, string> = {
   small: "pt-0.5 desktop:pt-1",
 }
 
+// Тег в шапке блока ВСЕГДА десктопного размера 22 / P2 14/20: в мастерах
+// мобильных Title Block (Small Text и оба Large Text, Default и Label) он
+// такой же, как на десктопе, а собственный мобильный размер Tag (18, 12/16) к
+// шапке не относится. Размер у Tag задаёт вариант `desktop:`, а не проп, поэтому
+// мобильную ступень перекрывает селектор потомка (он специфичнее).
+const TAG_22 =
+  "[&_[data-slot=tag]]:h-[22px] [&_[data-slot=tag]]:pt-0 [&_[data-slot=tag]]:text-p2-medium"
+
 /** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
 const hasValue = (node: React.ReactNode) =>
   node != null && node !== false && node !== ""
@@ -132,9 +140,27 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
     </div>
   ) : null
 
+  // Мобильный `Type=Label`: тег встаёт на СВОЮ строку над заголовком, а не
+  // перед ним в одном ряду, как на десктопе. В мастерах мобильного
+  // `Title Block (Label)` рамка `Title` — колонка с зазором 8: тег, затем
+  // заголовок со значком, а подзаголовок у Large Text входит в ту же колонку
+  // (зазор 8), у Small Text стоит после неё (зазор 4, как у описания).
+  const mobileLabel = !isDesktop && labelFirst
+
+  const subtitleBelow = !isDesktop && hasValue(subtitle) && (
+    <span
+      className={cn(
+        "min-w-0 truncate text-[var(--block-widget-muted-fg)]",
+        TITLE_CLASS[titleType]
+      )}
+    >
+      {subtitle}
+    </span>
+  )
+
   const titleRow = (
     <div className="flex w-full items-center gap-2">
-      {labelFirst && tag}
+      {labelFirst && !mobileLabel && tag}
       <span
         className={cn(
           "min-w-0 truncate text-[var(--block-widget-title-fg)]",
@@ -175,20 +201,20 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
         // ширина на раскладку не влияет — основа `flex-1` нулевая, и
         // заголовок растягивается на всё свободное место.
         "flex min-w-0 flex-1 flex-col justify-end gap-1 desktop:w-[min(200px,100%)] desktop:min-w-auto",
+        TAG_22,
         TITLE_BLOCK_PT[titleType]
       )}
     >
-      {titleRow}
-      {!isDesktop && hasValue(subtitle) && (
-        <span
-          className={cn(
-            "min-w-0 truncate text-[var(--block-widget-muted-fg)]",
-            TITLE_CLASS[titleType]
-          )}
-        >
-          {subtitle}
-        </span>
+      {mobileLabel ? (
+        <div className="flex w-full flex-col items-start gap-2">
+          {hasValue(tag) && tag}
+          {titleRow}
+          {titleType === "large" && subtitleBelow}
+        </div>
+      ) : (
+        titleRow
       )}
+      {(!mobileLabel || titleType === "small") && subtitleBelow}
       {hasValue(description) && (
         <p
           className={cn(
@@ -235,7 +261,9 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
             className={cn(
               "flex h-14 shrink-0 self-stretch",
               leadingAlign === "center"
-                ? "flex-col justify-center"
+                ? // Мини-карта: на десктопе по центру высоты ряда, на мобиле
+                  // прижата к верху (мастер Block Element Mobile / Card).
+                  "flex-col justify-start desktop:justify-center"
                 : // Опускание на 2 — только на десктопе: там строка
                   // заголовка 28, и без него управление сидит выше
                   // прописных. На мобильной строке 24 оно уже совпадает.
@@ -250,7 +278,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       {(statusNode || action) && (
         <div
           data-slot="block-widget-trailing"
-          className="order-1 flex w-full items-center justify-end gap-4 desktop:order-none desktop:ml-auto desktop:w-auto desktop:max-w-full desktop:shrink-0 desktop:flex-wrap desktop:items-start"
+          className="order-1 flex w-full items-center justify-end gap-4 group-data-[type=double]/block-widget:order-none group-data-[type=double]/block-widget:justify-start desktop:order-none desktop:ml-auto desktop:w-auto desktop:max-w-full desktop:shrink-0 desktop:flex-wrap desktop:items-start"
         >
           {statusNode}
           {action}

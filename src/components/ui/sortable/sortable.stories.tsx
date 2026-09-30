@@ -2,7 +2,6 @@ import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { ArrowDownChevron, ArrowNextChevron } from "@/icons"
-import { cn } from "@/lib/utils"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 
 import {
@@ -99,26 +98,31 @@ function SectionList({ initial = INITIAL }: { initial?: Row[] }) {
           className={sortableRowClass(
             menuItemRowClass(
               "not-data-dragging:not-data-drop-into:hover:bg-[var(--menu-item-bg-highlighted)]",
-              "rounded-2xl"
+              // Строка списка разделов — `Menu Point` с радиусом 8 и высотой 56
+              // во всех трёх видах. Заголовок группы — рамка, а не экземпляр:
+              // pl 8, py 12, gap 8 и коробка значка 32 (8 + 32 + 8 = 48, текст
+              // встаёт на x=48). Обычная строка — Level 3 (pl 48), вложенная —
+              // Level 4 (pl 64): текст в обоих случаях там же, где у соседей.
+              row.group ? "items-center gap-2 rounded-[8px] py-3 pl-2" : "rounded-[8px]",
+              row.group ? 1 : row.depth ? 4 : 3
             )
           )}
           {...sortable.itemProps(row.id)}
         >
           <MenuItemContent
             leading={
-              <span
-                className={cn(
-                  "flex size-6 shrink-0 items-center justify-center text-[var(--menu-item-fg)]",
-                  !row.group && "invisible"
-                )}
-                aria-hidden="true"
-              >
-                {row.expanded ? (
-                  <ArrowDownChevron size={16} className="size-4" />
-                ) : (
-                  <ArrowNextChevron size={16} className="size-4" />
-                )}
-              </span>
+              row.group ? (
+                <span
+                  className="flex size-8 shrink-0 items-center justify-center text-[var(--menu-item-fg)]"
+                  aria-hidden="true"
+                >
+                  {row.expanded ? (
+                    <ArrowDownChevron size={16} className="size-4" />
+                  ) : (
+                    <ArrowNextChevron size={16} className="size-4" />
+                  )}
+                </span>
+              ) : undefined
             }
             trailing={
               <SortableHandle
@@ -127,7 +131,7 @@ function SectionList({ initial = INITIAL }: { initial?: Row[] }) {
               />
             }
           >
-            <span className={cn(row.depth ? "pl-8" : undefined)}>{row.label}</span>
+            {row.label}
           </MenuItemContent>
         </div>
       ))}

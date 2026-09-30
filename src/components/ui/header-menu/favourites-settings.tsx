@@ -77,12 +77,15 @@ function SettingsRow({
       data-slot="favourites-settings-row"
       // Заливка взятой строки и линия вставки — общие правила кита
       // (`sortableRowClass`, дизайн-чек от 08.09 про целевой вид drag&drop).
+      // Радиус 8 — как у `Menu Point` в макете списка с перетаскиванием: заливка
+      // взятой строки и ховер режутся по нему. Поля p16, значок 24 и gap 16 —
+      // мастер `Menu Point` из «Настройки быстрого доступа», их не трогаем.
       // Ховер гасится на время перетаскивания: под курсором и так стоит
       // линия, а вторая подсветка читалась бы как ещё одна цель.
       className={sortableRowClass(
         menuItemRowClass(
           "not-data-dragging:hover:bg-[var(--menu-item-bg-highlighted)]",
-          "rounded-2xl"
+          "rounded-[8px]"
         )
       )}
       {...rowProps}
@@ -225,7 +228,10 @@ function FavouritesSettings({
           </section>
 
           {remaining.length > 0 && (
-            <section className="flex flex-col gap-4">
+            // Между заголовком и списком здесь 24, а не 16 как в «Добавлено»:
+            // так заданы интервалы двух секций в «Настройке быстрого доступа» (у
+            // мобильной формы своих чисел в макете нет).
+            <section className="flex flex-col gap-4 desktop:gap-6">
               <h3 className="text-h4-mobile text-[var(--modal-title-fg)] desktop:text-h3">
                 Остальные разделы
               </h3>

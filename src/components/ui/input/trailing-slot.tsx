@@ -45,7 +45,7 @@ function InputTrailingSlot({
         aria-hidden="true"
         className={cn(
           ICON_SIZE[size],
-          "shrink-0 text-[var(--input-icon-fg)] group-has-[[aria-disabled=true]]/input:text-[var(--input-fg-disabled)]"
+          "shrink-0 text-[var(--input-icon-fg)] group-has-[[aria-disabled=true]]/input:text-[var(--input-icon-fg-disabled)]"
         )}
       />
     )

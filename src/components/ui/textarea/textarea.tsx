@@ -231,8 +231,12 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
             // Замок стоит в правом верхнем углу коробки. Без подписи текст
             // начинается на его высоте, и конец первой строки рисовался
             // прямо под значком — место под него (16 + зазор 8) держит
-            // правый отступ. С подписью первая строка ниже замка.
-            locked && !hasFloatingLabel && "pr-6",
+            // правый отступ. Полный проход 30.09: с подписью тоже. В макете
+            // Locked текст — колонка `Text`, а замок — соседняя колонка
+            // через gap-[8px]: строки значения сужены на замок ВСЕ, а не
+            // только первая (при подписи первая строка на 8px заходит под
+            // нижний край значка).
+            locked && "pr-6",
             className
           )}
           {...props}
@@ -250,7 +254,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
           <label
             htmlFor={textareaId}
             className={cn(
-              "pointer-events-none absolute top-4 left-4 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium",
+              // Полный проход 30.09: подпись пустого поля на наведении
+              // темнеет до #6D6D6D (Hover/Empty в макете), но только пока
+              // она лежит на месте текста — поднятая 12px-подпись остаётся
+              // #999 (Hover/Filled, Focused).
+              "pointer-events-none absolute top-4 left-4 truncate text-p2-medium text-[var(--input-label-fg)] transition-all group-hover/textarea:text-[var(--textarea-border-hover)] group-focus-within/textarea:text-[var(--input-label-fg)]! group-has-[textarea:not(:placeholder-shown)]/textarea:text-[var(--input-label-fg)]! group-has-[[aria-disabled=true]]/textarea:text-[var(--input-label-fg)]! desktop:text-p1-medium",
               // Место под замок справа, чтобы длинная подпись под него не
               // подлезала.
               locked ? "right-10" : "right-4",

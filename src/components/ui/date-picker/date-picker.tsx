@@ -12,7 +12,8 @@ import type { InputSize } from "@/components/ui/input"
 import { formatDisplayValue } from "./display-value"
 import { useFieldPopoverFocus } from "./use-field-popover-focus"
 
-const ICON_SIZE = { sm: "size-3.5", lg: "size-4" } as const
+// Полный проход 30.09: значок S — 16px, как и у Input (там тоже было 14).
+const ICON_SIZE = { sm: "size-4", lg: "size-4" } as const
 
 // ⚠️ Минимальной ширины у поля БОЛЬШЕ НЕТ — дизайн-чек от 08.09, замечание
 // 18: «Снять минимальную ширину с инпутов/селектов».

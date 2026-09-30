@@ -116,7 +116,7 @@ export const SelectTrigger = React.forwardRef<
             // текст значения, освобождая место для всплывшей подписи над
             // ним.
             hasFloatingLabel &&
-              "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
+              "group-data-popup-open/trigger:pt-[18px] group-[&:not([data-placeholder])]/trigger:pt-[18px] desktop:group-data-popup-open/trigger:pt-4 desktop:group-[&:not([data-placeholder])]/trigger:pt-4"
           )}
         >
           {children}
@@ -125,7 +125,7 @@ export const SelectTrigger = React.forwardRef<
           aria-hidden="true"
           className={cn(
             SELECT_ICON_SIZE[size],
-            "hidden shrink-0 text-[var(--select-icon-fg)] group-data-readonly/trigger:block"
+            "hidden shrink-0 text-[var(--select-icon-fg)] group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-readonly/trigger:block"
           )}
         />
         <span className="flex shrink-0 items-center gap-2 group-data-readonly/trigger:hidden">
@@ -156,7 +156,7 @@ export const SelectTrigger = React.forwardRef<
             aria-hidden="true"
             className={cn(
               SELECT_ICON_SIZE[size],
-              "shrink-0 text-[var(--select-icon-fg)] transition-transform group-data-popup-open/trigger:rotate-180"
+              "shrink-0 text-[var(--select-icon-fg)] transition-transform group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-popup-open/trigger:rotate-180"
             )}
           />
         </span>

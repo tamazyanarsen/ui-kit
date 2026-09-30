@@ -105,7 +105,7 @@ export const ComboboxTrigger = React.forwardRef<
         )}
         <span
           className={cn(
-            "flex flex-1 items-center gap-1.5 truncate text-[var(--select-fg)]",
+            "flex flex-1 items-center gap-2 truncate text-[var(--select-fg)]",
             "group-data-disabled/trigger:text-[var(--select-fg-disabled)]",
             placeholder &&
               label &&
@@ -115,14 +115,14 @@ export const ComboboxTrigger = React.forwardRef<
             // центру и значки с кнопкой очистки и увёл бы их вниз при
             // фокусе.
             hasFloatingLabel &&
-              "group-data-popup-open/trigger:pt-4 group-[&:not([data-placeholder])]/trigger:pt-4 desktop:group-data-popup-open/trigger:pt-5 desktop:group-[&:not([data-placeholder])]/trigger:pt-5"
+              "group-data-popup-open/trigger:pt-[18px] group-[&:not([data-placeholder])]/trigger:pt-[18px] desktop:group-data-popup-open/trigger:pt-4 desktop:group-[&:not([data-placeholder])]/trigger:pt-4"
           )}
         >
           {/* Сводка («Выбрано: …») обычно приходит голым текстом, а во
               флексе он многоточия не получает — оборачиваем в свой узел. */}
           {clipText(children)}
         </span>
-        <span className="flex shrink-0 items-center gap-1">
+        <span className="flex shrink-0 items-center gap-2">
           {clearable && onClear && (
             <button
               type="button"
@@ -144,7 +144,7 @@ export const ComboboxTrigger = React.forwardRef<
               <X aria-hidden="true" className={SELECT_ICON_SIZE[size]} />
             </button>
           )}
-          <ComboboxPrimitive.Icon className="text-[var(--select-icon-fg)] transition-transform group-data-popup-open/trigger:rotate-180">
+          <ComboboxPrimitive.Icon className="text-[var(--select-icon-fg)] transition-transform group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-popup-open/trigger:rotate-180">
             <ChevronDown className={SELECT_ICON_SIZE[size]} />
           </ComboboxPrimitive.Icon>
         </span>

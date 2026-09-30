@@ -25,7 +25,9 @@ export const selectTriggerVariants = cva(
         // влезала: третья строка обрезалась нижней границей. Пустое и
         // однострочное поле от этой замены не меняется — контент ниже
         // минимума, `items-center` держит его по центру.
-        sm: "min-h-8 gap-2 rounded-[8px] px-4 text-p2-medium",
+        // Полный проход 30.09: S/Mobile в макете — 12/16 (P2 Medium Mobile), а
+        // S/Desktop — 14/20; стояло 14/20 на обоих.
+        sm: "min-h-8 gap-2 rounded-[8px] px-4 text-p3-medium desktop:text-p2-medium",
         lg: "min-h-12 gap-2 rounded-[16px] px-4 text-p2-medium desktop:min-h-14 desktop:text-p1-medium",
       },
       invalid: {
@@ -55,19 +57,23 @@ export const selectTriggerVariants = cva(
 // text-xs (12px), тем же, что и во всплывшем состоянии, — слишком мелко,
 // пока значения ещё нет. Правка та же, что и у Input: text-sm, пока пусто,
 // и уменьшение до text-xs после всплытия.
+/// Полный проход 30.09: всплывшая подпись — на 8 от внешнего края на
+// десктопе (блок 40 центрован в 56) и на 7 на мобильной (блок 36 на y=7 в
+// 48), то есть top-[7px] и top-[6px] от внутреннего края; значение стоит
+// вплотную под подписью (см. pt в trigger.tsx).
 // Правая граница подписи обязательна: абсолютная подпись без неё растёт
 // под свой текст, `truncate` не об что обрезать, и длинная подпись уходила
 // под шеврон и за край поля (аудит 14: до 749px при поле 343). Место —
 // как у Input: отступ 16 + шеврон 16 + зазор 8 = `right-10`; при значении
 // рядом встаёт ещё крестик очистки (16 + 8) — `right-16`.
 export const selectFloatingLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate group-[&:not([data-placeholder])]/trigger:right-16 text-p2-medium text-[var(--select-label-fg)] transition-all desktop:text-p1-medium group-data-popup-open/trigger:top-[7px] group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-medium desktop:group-data-popup-open/trigger:text-p3-medium group-[&:not([data-placeholder])]/trigger:top-[7px] group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-medium desktop:group-[&:not([data-placeholder])]/trigger:text-p3-medium group-data-disabled/trigger:text-[var(--select-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate group-[&:not([data-placeholder])]/trigger:right-16 text-p2-medium text-[var(--select-label-fg)] transition-all desktop:text-p1-medium group-data-popup-open/trigger:top-[6px] desktop:group-data-popup-open/trigger:top-[7px] group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-medium desktop:group-data-popup-open/trigger:text-p3-medium group-[&:not([data-placeholder])]/trigger:top-[6px] desktop:group-[&:not([data-placeholder])]/trigger:top-[7px] group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-medium desktop:group-[&:not([data-placeholder])]/trigger:text-p3-medium group-data-disabled/trigger:text-[var(--select-label-fg-disabled)]"
 
 // Статичная подпись (S) видна только в пустом поле — крестика рядом ещё
 // нет, поэтому граница одна: `right-10`. Центрируется сдвигом, а не
 // флексом: у flex-контейнера текст — анонимный элемент, и `truncate`
 // обрезал его без многоточия.
 export const selectStaticLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate text-p2-medium text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate text-p3-medium desktop:text-p2-medium text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-label-fg-disabled)]"
 
 export const SELECT_ICON_SIZE = { sm: "size-4", lg: "size-4" } as const

@@ -21,7 +21,9 @@ function WeekdaysRow({ size = "desktop" }: { size?: GridSize }) {
         <span
           key={day}
           className={cn(
-            "flex h-8 items-center justify-center text-p3-medium text-[var(--calendar-muted-fg)]",
+            // Полный проход 30.09: подписи дней недели в макете — Regular
+            // (P3 Regular, 400) на обеих формах, а не Medium.
+            "flex h-8 items-center justify-center text-p3-regular text-[var(--calendar-muted-fg)]",
             CELL_WIDTH[size]
           )}
         >
@@ -107,11 +109,19 @@ function DayButton({
   return (
     <span
       className={cn(
-        "flex h-8 shrink-0 items-center justify-center",
+        "relative flex h-8 shrink-0 items-center justify-center",
         cellWidth,
-        rangeMiddle && "bg-[var(--calendar-range-bg)]",
-        rangeStart && "rounded-l-[8px] bg-[var(--calendar-range-bg)]",
-        rangeEnd && "rounded-r-[8px] bg-[var(--calendar-range-bg)]"
+        rangeMiddle && !rangeStart && !rangeEnd && "bg-[var(--calendar-range-bg)]",
+        // Полный проход 30.09: полоса диапазона у крайних дней — не во всю
+        // ячейку, а от края самой плитки дня: FirstInRange начинается на её
+        // левом краю (на десктопе x=2 из 36, на мобильном x=8 из 48),
+        // LastInRange кончается на правом. Раньше серая полоса торчала за
+        // плитку на 2px (8px на мобильном), и вокруг скруглённого угла
+        // выступала серая кайма.
+        rangeStart &&
+          "before:absolute before:inset-y-0 before:right-0 before:left-[calc(50%-16px)] before:rounded-l-[8px] before:bg-[var(--calendar-range-bg)]",
+        rangeEnd &&
+          "after:absolute after:inset-y-0 after:left-0 after:right-[calc(50%-16px)] after:rounded-r-[8px] after:bg-[var(--calendar-range-bg)]"
       )}
     >
       <button

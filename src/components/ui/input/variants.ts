@@ -94,7 +94,13 @@ const inputFieldVariants = cva(
       // второй строки просто нет места, поэтому дизайн откатывается на
       // обычный placeholder, исчезающий при вводе (см. эталон S/Desktop).
       floating: {
-        true: "placeholder:text-transparent [&:not(:placeholder-shown)]:pt-4 focus:pt-4 desktop:[&:not(:placeholder-shown)]:pt-5 desktop:focus:pt-5",
+        // Полный проход 30.09: в Fill-колонке макета подпись (16) и значение
+        // стоят вплотную, то есть верх значения = верх подписи + 16 на обеих
+        // формах. Десктоп: блок 40 в коробке 56 — подпись на 8, значение на
+        // 24 (pt-4). Мобильная: блок 36 на y=7 (7 сверху, 5 снизу), значение
+        // на 23 (pt-[18px]). Раньше стояли pt-5 и pt-4: зазор 2 на десктопе и
+        // наезд на 2 на мобильной.
+        true: "placeholder:text-transparent [&:not(:placeholder-shown)]:pt-[18px] focus:pt-[18px] desktop:[&:not(:placeholder-shown)]:pt-4 desktop:focus:pt-4",
         false: "",
       },
     },
@@ -117,18 +123,19 @@ const inputFieldVariants = cva(
 // внутри одной обёртки font-['Object_Sans:Medium'] — то есть Medium на
 // любом размере, а не только в состоянии до всплытия P1/P2.
 const floatingLabelVariants =
-  // Всплывшее положение — 7px от внутреннего верхнего края коробки в обеих
-  // формах L: мобильная строка 48px это `pt-[7px]`, а десктопная 56px
-  // центрует блок содержимого 40px (16 + 24) в своём внутреннем
-  // пространстве 54px, то есть тоже 7px. Раньше на десктопе подпись стояла
-  // на 3px ниже.
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium peer-focus:top-[7px] peer-focus:translate-y-0 peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[[aria-disabled=true]]/input:text-[var(--input-fg-disabled)]"
+  // Всплывшее положение: десктопная коробка 56 центрует блок 40 (16 + 24) в
+  // своём внутреннем пространстве 54 — подпись на 7 от внутреннего края
+  // (8 от внешнего, как y=8 в макете). Мобильный блок 36 в макете стоит на
+  // y=7 от внешнего края (7 сверху, 5 снизу), то есть 6 от внутреннего.
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium peer-focus:top-[6px] peer-focus:translate-y-0 desktop:peer-focus:top-[7px] peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[6px] peer-[&:not(:placeholder-shown)]:translate-y-0 desktop:peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[[aria-disabled=true]]/input:text-[var(--input-label-fg-disabled)]"
 
 // Замыкающие глифы (крестик очистки, глаз, замок, крутилка) — 16px на
 // любом размере: `icon / close cross` в макете это `size-[16px]` и в ряду
 // S, и в L-mobile, и в L-desktop одинаково.
+// Полный проход 30.09: у S стояло size-3.5 (14px), а `icon / lock` S/Desktop и
+// `icon / close cross` S/Mobile в макете — size-[16px].
 const ICON_SIZE: Record<InputSize, string> = {
-  sm: "size-3.5",
+  sm: "size-4",
   lg: "size-4",
 }
 

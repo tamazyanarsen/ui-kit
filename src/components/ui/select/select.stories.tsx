@@ -262,6 +262,10 @@ export const Playground: Story = {
     return (
       <PseudoBox state={state} viewport={viewport} className="w-80">
         <DemoSelect
+          // Значение поля держится в useState с начальным значением по
+          // маске: без `key` переключение Type/маски контролом не
+          // перезапускало его (Empty оставался заполненным «Apple»).
+          key={figmaType === "Fill" ? mask : figmaType}
           {...args}
           size={size}
           // Ось Type задаёт наполнение триггера, а «Маска содержимого» —

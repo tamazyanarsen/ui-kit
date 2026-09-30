@@ -79,7 +79,13 @@
   --input-border-error-hover: var(--red-344);
 
   --input-fg: var(--grey-1514);
-  --input-fg-disabled: var(--grey-166);
+  /* Полный проход 30.09 по символам ELK / input (State=Disabled, все типы):
+     значение — grey-517 #6D6D6D, подпись 12px и подпись пустого поля —
+     grey-284 #999999, значок замка — тоже #999999. Раньше все три стояли в
+     grey-166 #C8C8CB (это цвет рамки, а не текста). */
+  --input-fg-disabled: var(--grey-517);
+  --input-label-fg-disabled: var(--grey-284);
+  --input-icon-fg-disabled: var(--grey-284);
   --input-label-fg: var(--grey-284);
   --input-icon-fg: var(--grey-1514);
 
@@ -193,7 +199,12 @@
   --select-border-error-hover: var(--red-344);
 
   --select-fg: var(--grey-1514);
-  --select-fg-disabled: var(--grey-166);
+  /* Полный проход 30.09 по символам ELK / select (State=Disabled): значение
+     — grey-517 #6D6D6D, подпись — grey-284 #999999 (у Empty подпись тоже),
+     шеврон и замок — #999999 (fill в svg). Раньше всё стояло в grey-166. */
+  --select-fg-disabled: var(--grey-517);
+  --select-label-fg-disabled: var(--grey-284);
+  --select-icon-fg-disabled: var(--grey-284);
   --select-label-fg: var(--grey-284);
   --select-icon-fg: var(--grey-1514);
 

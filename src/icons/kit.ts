@@ -32,7 +32,7 @@
 // а это логотип Одноклассников), `search` (`zoom` — лупа с плюсом, то есть
 // «увеличить»), `clock` (`time` — песочные часы), `coins` (`money` —
 // банкнота), `lock`, `copy`, `image`, `minus`, `plus`, `star`, `loader`,
-// `download`, `drag`, `sbp`, `alarm`, `chevrons-up-down` — равнозначного
+// `download`, `drag`, `alarm`, `chevrons-up-down` — равнозначного
 // глифа в наборе нет, подменять на похожий по смыслу нельзя.
 
 export {
@@ -89,7 +89,12 @@ export { UserCircle as CircleUser } from "./user-circle"
 export { Signout as LogOut } from "./signout"
 export { Wallet } from "./wallet"
 export { Settings } from "./settings"
-export { Sbp } from "./sbp"
+// `Sbp` — монохромный логотип СБП (`icon / SBP black`, 16 и 24). Раньше
+// здесь лежал значок «документ со стрелкой» без макета; мастер `icon / SBP`
+// (Glass) нарисован только на 72/56/48 и на 16/24 не годится. В боковой
+// панели мастер берёт именно `SBP black`; цветной `SBP color` у пунктов
+// шапки и плиток «Создать» берут напрямую, по имени из ALL ICONS.
+export { SbpBlack as Sbp } from "./sbp-black"
 export { Coins } from "./coins"
 export { Alarm } from "./alarm"
 

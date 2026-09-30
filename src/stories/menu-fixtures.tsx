@@ -5,7 +5,8 @@ import {
   FileIcon,
   FileText,
   Mail,
-  Sbp,
+  Qr,
+  SbpColor,
   Settings,
   Wallet,
 } from "@/icons"
@@ -87,7 +88,7 @@ export const MENU_GROUPS: HeaderMenuGroup[] = [
   {
     value: "sbp",
     title: "СБП",
-    icon: <Sbp />,
+    icon: <SbpColor />,
     links: [
       { value: "sbp-payments", label: "Платежи СБП" },
       { value: "sbp-qr", label: "QR-коды СБП" },
@@ -163,9 +164,9 @@ export const CREATE_ITEMS: CreateMenuItem[] = [
   { value: "drawdown", label: "Заявка на выборку", icon: <FileText /> },
   { value: "autopay", label: "Автоплатёж", icon: <CalendarDays /> },
   { value: "registry", label: "Реестр платежей", icon: <FileText /> },
-  { value: "sbp-company", label: "Платёж по СБП юрлицу", icon: <Sbp /> },
-  { value: "sbp-person", label: "Платёж по СБП физлицу", icon: <Sbp /> },
-  { value: "qr", label: "QR-код на оплату", icon: <Sbp /> },
+  { value: "sbp-company", label: "Платёж по СБП юрлицу", icon: <SbpColor /> },
+  { value: "sbp-person", label: "Платёж по СБП физлицу", icon: <SbpColor /> },
+  { value: "qr", label: "QR-код на оплату", icon: <Qr /> },
 ]
 
 // Демо-наполнение меню сотрудника — разделы, заголовки и порядок сняты с

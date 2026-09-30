@@ -4,7 +4,7 @@ import {
   CalendarDays as CalendarCheck,
   FileText as FileOutput,
   Wallet as CreditCard,
-  Sbp,
+  SbpBlack,
   Copy as Database,
   Coins,
   Alarm,
@@ -72,7 +72,7 @@ function SidebarDemo() {
                   active={active === "payments-registry"}
                   onClick={() => setActive("payments-registry")}
                 />
-                <SidebarGroup value="sbp" icon={Sbp} label="СБП">
+                <SidebarGroup value="sbp" icon={SbpBlack} label="СБП">
                   <SidebarItem
                     nested
                     label="Платежи СБП"

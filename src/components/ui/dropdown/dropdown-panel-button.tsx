@@ -2,24 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-
-// Стрелка мастера `icon / arrow right` 16: штрих 2, круглые концы, по центру
-// коробки (шаг по y = 8). Глиф `ArrowRight` набора иконок кита рисуется в
-// верхней половине коробки (y 0.3–6.7), и стрелка в кнопке сидела выше
-// подписи, поэтому здесь путь мастера взят как есть.
-function PanelArrow(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
-      <path
-        d="M11.5357 8L4.4646 8M9.05854 5.52288L11.5357 8L9.05854 10.4771"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+import { ArrowRight } from "@/icons"
 
 /**
  * Блок с кнопкой под строкой поиска — `Panel Button (Desktop | Mobile, ELK)`,
@@ -48,7 +31,7 @@ const DropdownPanelButton = React.forwardRef<
   HTMLDivElement,
   DropdownPanelButtonProps
 >(function DropdownPanelButton(
-  { className, children, onClick, icon = PanelArrow, ...props },
+  { className, children, onClick, icon = ArrowRight, ...props },
   ref
 ) {
   return (

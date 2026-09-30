@@ -98,6 +98,7 @@ function EmptyFavouritesHint() {
     >
       Избранное — наведите курсор на элемент в меню и нажмите
       <Star
+        size={16}
         aria-hidden="true"
         className="mx-1 inline-block size-4 align-[-0.125em]"
       />

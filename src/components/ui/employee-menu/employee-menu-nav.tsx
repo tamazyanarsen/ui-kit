@@ -88,6 +88,7 @@ function EmptyFavouritesHint() {
     >
       Наведите курсор на элемент на главной и нажмите
       <Star
+        size={16}
         aria-hidden="true"
         className="mx-1 inline-block size-4 align-[-0.125em]"
       />

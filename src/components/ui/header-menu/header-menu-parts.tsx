@@ -70,7 +70,7 @@ function PageLink({
               : "opacity-0 group-hover/link:opacity-100 focus-visible:opacity-100"
           )}
         >
-          <Star filled={favourite} aria-hidden="true" className="size-4 shrink-0" />
+          <Star size={16} filled={favourite} aria-hidden="true" className="size-4 shrink-0" />
         </button>
       )}
     </div>

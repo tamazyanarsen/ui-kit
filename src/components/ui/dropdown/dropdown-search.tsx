@@ -65,48 +65,54 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
       <div
         data-slot="dropdown-search"
         className={cn(
-          "flex max-h-14 min-h-14 w-full max-w-[1080px] min-w-44 shrink-0 items-center gap-2 border-b border-[var(--menu-item-divider)] bg-popover p-4",
+          "flex max-h-14 min-h-14 w-full max-w-[1080px] min-w-44 shrink-0 items-center border-b border-[var(--menu-item-divider)] bg-popover p-4",
+          // Мобильные формы (Full Screen / Bottom Sheet): в макете это не
+          // строка списка, а настоящее поле `ELK / input` 328×48 с рамкой
+          // Grey 166 и радиусом 16, в кадре высотой 48 с боковыми полями 16.
+          "group-data-[size^=mobile]/dropdown:max-h-12 group-data-[size^=mobile]/dropdown:min-h-12 group-data-[size^=mobile]/dropdown:border-b-0 group-data-[size^=mobile]/dropdown:px-4 group-data-[size^=mobile]/dropdown:py-0",
           containerClassName
         )}
       >
-        <Search
-          size={24}
-          aria-hidden="true"
-          className="size-6 shrink-0 text-[var(--menu-item-description-fg)]"
-        />
-        <input
-          ref={composedRef}
-          type="search"
-          value={value}
-          defaultValue={defaultValue}
-          onChange={(event) => {
-            if (!controlled) setOwnValue(event.target.value)
-            onChange?.(event)
-          }}
-          placeholder={placeholder}
-          className={cn(
-            // `[&::-webkit-search-cancel-button]:hidden` — у типа `search`
-            // свой крестик, и рядом с нашим он был бы вторым органом
-            // управления тем же полем.
-            // Многоточие у непоместившегося текста — то же правило, что и у
-            // `Input` (дизайн-чек от 13.09, замечание 14): «правка
-            // распространяется на Input, Select и другие подобные
-            // компоненты», а в фокусе многоточия нет.
-            "min-w-0 flex-1 overflow-hidden bg-transparent text-p1-medium text-ellipsis whitespace-nowrap text-[var(--menu-item-fg)] outline-none focus:text-clip placeholder:text-[var(--menu-item-description-fg)] [&::-webkit-search-cancel-button]:hidden",
-            className
+        <div className="flex min-w-0 flex-1 items-center gap-2 group-data-[size^=mobile]/dropdown:h-12 group-data-[size^=mobile]/dropdown:rounded-[16px] group-data-[size^=mobile]/dropdown:border group-data-[size^=mobile]/dropdown:border-[var(--input-border)] group-data-[size^=mobile]/dropdown:px-[15px]">
+          <Search
+            size={24}
+            aria-hidden="true"
+            className="size-6 shrink-0 text-[var(--menu-item-description-fg)]"
+          />
+          <input
+            ref={composedRef}
+            type="search"
+            value={value}
+            defaultValue={defaultValue}
+            onChange={(event) => {
+              if (!controlled) setOwnValue(event.target.value)
+              onChange?.(event)
+            }}
+            placeholder={placeholder}
+            className={cn(
+              // `[&::-webkit-search-cancel-button]:hidden` — у типа `search`
+              // свой крестик, и рядом с нашим он был бы вторым органом
+              // управления тем же полем.
+              // Многоточие у непоместившегося текста — то же правило, что и у
+              // `Input` (дизайн-чек от 13.09, замечание 14): «правка
+              // распространяется на Input, Select и другие подобные
+              // компоненты», а в фокусе многоточия нет.
+              "min-w-0 flex-1 overflow-hidden bg-transparent text-p1-medium group-data-[size^=mobile]/dropdown:text-p2-medium text-ellipsis whitespace-nowrap text-[var(--menu-item-fg)] outline-none focus:text-clip placeholder:text-[var(--menu-item-description-fg)] [&::-webkit-search-cancel-button]:hidden",
+              className
+            )}
+            {...props}
+          />
+          {onClear && hasValue && (
+            <button
+              type="button"
+              aria-label="Очистить поиск"
+              onClick={clear}
+              className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-[var(--menu-item-fg)] outline-none focus-visible:focus-ring"
+            >
+              <X size={24} aria-hidden="true" className="size-6" />
+            </button>
           )}
-          {...props}
-        />
-        {onClear && hasValue && (
-          <button
-            type="button"
-            aria-label="Очистить поиск"
-            onClick={clear}
-            className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-[var(--menu-item-fg)] outline-none focus-visible:focus-ring"
-          >
-            <X size={24} aria-hidden="true" className="size-6" />
-          </button>
-        )}
+        </div>
       </div>
     )
   }

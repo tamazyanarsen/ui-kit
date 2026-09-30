@@ -19,7 +19,7 @@ const ModalFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">
     <div
       data-slot="modal-footer"
       className={cn(
-        "flex shrink-0 flex-col-reverse gap-4 px-6 py-5 [&>*]:w-full desktop:flex-row desktop:justify-start desktop:gap-6 desktop:px-(--modal-px) desktop:pt-4 desktop:pb-12 desktop:[&>*]:w-auto",
+        "flex shrink-0 flex-col-reverse gap-4 px-4 pt-5 pb-6 [&>*]:min-h-12 [&>[data-slot=button]]:rounded-[16px] [&>*]:w-full desktop:flex-row desktop:justify-start desktop:gap-6 desktop:px-(--modal-px) desktop:pt-4 desktop:pb-12 desktop:[&>*]:min-h-0 desktop:[&>*]:w-auto",
         className
       )}
       ref={ref}

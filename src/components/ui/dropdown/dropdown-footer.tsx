@@ -60,7 +60,7 @@ const DropdownFooterButton = React.forwardRef<
       type={type}
       data-slot="dropdown-footer-button"
       className={cn(
-        "flex min-h-14 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium text-[var(--menu-item-fg)] outline-none transition-colors",
+        "flex min-h-14 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium group-data-[size^=mobile]/dropdown:min-h-12 text-[var(--menu-item-fg)] outline-none transition-colors",
         "hover:bg-[var(--menu-item-bg-highlighted)] focus-visible:focus-ring",
         // Выключенная кнопка — Grey 114 / Grey 166 из сета, теми же токенами,
         // что и у обычной кнопки кита.

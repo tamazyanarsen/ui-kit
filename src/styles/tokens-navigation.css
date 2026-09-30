@@ -101,7 +101,9 @@
   --nav-sidebar-bg: var(--white-101);
   --nav-sidebar-border: var(--grey-134);
   --nav-sidebar-fg: var(--grey-1514);
-  --nav-sidebar-icon-fg: var(--grey-1514);
+  /* Значки пунктов — Grey 284 (#999999) во всех состояниях набора Sidebar
+     Item; шеврон группы остаётся тёмным и берёт --nav-sidebar-fg. */
+  --nav-sidebar-icon-fg: var(--grey-284);
   --nav-sidebar-label-fg: var(--grey-284);
   --nav-sidebar-item-hover-bg: var(--grey-114);
   --nav-sidebar-item-active-bg: var(--grey-109);

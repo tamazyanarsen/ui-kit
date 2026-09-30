@@ -23,7 +23,7 @@ describe("Dropdown", () => {
   // весь экран идёт без скруглений, нижняя шторка — со скруглением сверху.
   it("мобильные формы различаются между собой", () => {
     render(<Dropdown data-testid="sheet" size="mobile-bottom-sheet" />)
-    expect(screen.getByTestId("sheet")).toHaveClass("rounded-t-[16px]")
+    expect(screen.getByTestId("sheet")).toHaveClass("rounded-t-[24px]")
 
     render(<Dropdown data-testid="full" size="mobile-full-screen" />)
     expect(screen.getByTestId("full")).toHaveClass("rounded-none")

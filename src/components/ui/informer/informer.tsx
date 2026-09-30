@@ -170,7 +170,9 @@ function Informer({
               {hasContent(additionalButtonLabel) && (
                 <Button
                   type="button"
-                  variant="secondary-grey"
+                  // На сером листе (Solid=Grey) второстепенная кнопка в
+                  // мастере белая (Secondary (White)), на белом — серая.
+                  variant={solid === "grey" ? "secondary-white" : "secondary-grey"}
                   size="sm"
                   onClick={onAdditionalButtonClick}
                 >

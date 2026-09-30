@@ -43,7 +43,7 @@ function barShapeClass({
 }) {
   if (!detached) return "rounded-t-[16px]"
   return bordered
-    ? "rounded-[16px] border-b border-solid border-[var(--button-menu-border)]"
+    ? "rounded-[16px] border-b border-solid border-[var(--button-menu-border)] pb-[15px]"
     : "rounded-[16px]"
 }
 

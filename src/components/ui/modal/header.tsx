@@ -18,7 +18,7 @@ const ModalHeader = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">
   return (
     <div
       data-slot="modal-header"
-      className={cn("flex shrink-0 flex-col gap-4 px-6 py-5 desktop:gap-2 desktop:px-(--modal-px) desktop:pt-12 desktop:pb-4", className)}
+      className={cn("flex shrink-0 flex-col gap-4 px-4 pt-6 pb-3 desktop:gap-2 desktop:px-(--modal-px) desktop:pt-12 desktop:pb-4", className)}
       ref={ref}
       {...props}
     />
@@ -40,15 +40,15 @@ const ModalHeader = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">
  * ровно тот «пустой холдер 48px», который в макете и стоит.
  *
  * Мобильная высота больше десктопной не по прихоти: на мобиле крестик стоит
- * ВНУТРИ листа (top-5, кнопка 32 → занято 52px), а на десктопе он вынесен за
- * карточку. Без этих 52 контент при `Top: None` начинался прямо под крестиком.
+ * ВНУТРИ листа (top-6, кнопка 32 → занято 56px), а на десктопе он вынесен за
+ * карточку. Без этих 56 контент при `Top: None` начинался прямо под крестиком.
  */
 const ModalTopHolder = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(function ModalTopHolder({ className, ...props }, ref) {
   return (
     <div
       data-slot="modal-top-holder"
       aria-hidden="true"
-      className={cn("h-[52px] shrink-0 desktop:h-12", className)}
+      className={cn("h-14 shrink-0 desktop:h-12", className)}
       ref={ref}
       {...props}
     />
@@ -63,7 +63,7 @@ const ModalTitle = React.forwardRef<HTMLHeadingElement, DialogPrimitive.Title.Pr
     <DialogPrimitive.Title
       data-slot="modal-title"
       className={stateClassName(
-        "pr-10 text-h2-mobile text-[var(--modal-title-fg)] desktop:pr-0 desktop:text-h2",
+        "pr-12 text-h2-mobile text-[var(--modal-title-fg)] desktop:pr-0 desktop:text-h2",
         className
       )}
       ref={ref}

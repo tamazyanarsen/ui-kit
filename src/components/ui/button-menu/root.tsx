@@ -110,6 +110,10 @@ const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function Bu
           скруглённый вид без рамки, старше этого мастера; верить надо живому
           компоненту.
 
+          Рамка в макете лежит ВНУТРИ размера (панель 1160×88 при полях
+          32 и рядах 56): CSS-рамка снаружи давала 89 и сдвигала кнопки на
+          пиксель, поэтому поля уменьшены на толщину рамки (31/15).
+
           Ширину задаёт размещение на сетке: по умолчанию вся полоса, что и
           показывают макеты «Использование в макете» (кнопки жмутся влево,
           белая заливка добирает остаток), но 12 колонок перестали быть
@@ -121,7 +125,7 @@ const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function Bu
         data-detached={detached || undefined}
         data-placement={placement}
         className={cn(
-          "flex items-center gap-4 border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-8 py-4 shadow-universal",
+          "flex items-center gap-4 border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-[31px] pt-[15px] pb-4 shadow-universal",
           BAR_PLACEMENT_CLASS[placement],
           barShapeClass({ detached, bordered: true }),
           pinned && !detached && PINNED_CLASS,

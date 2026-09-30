@@ -92,7 +92,8 @@ function Hint({
           aria-label={hasNode(title) ? undefined : "Подсказка"}
         >
           {hasNode(title) && (
-            <ModalHeader>
+            // Зазор заголовок → текст 16px (мобильная шторка макета).
+            <ModalHeader className="pb-4 desktop:pb-4">
               <ModalTitle>{title}</ModalTitle>
             </ModalHeader>
           )}
@@ -103,10 +104,10 @@ function Hint({
               // и вторая половина текста вместе с «Понятно» уходила вниз.
               // Текст сжимается и прокручивается сам, подвал всегда виден.
               "themed-scrollbar min-h-0 overflow-y-auto",
-              "px-6 pb-5 desktop:px-8 desktop:pb-6",
+              "px-4 pb-3 desktop:px-8 desktop:pb-6",
               // Без шапки над собой тексту нужен её верхний отступ, иначе
               // он налезет на скруглённый верхний край шторки.
-              !hasNode(title) && "pt-5 desktop:pt-6"
+              !hasNode(title) && "pt-4 desktop:pt-6"
             )}
           >
             {content}

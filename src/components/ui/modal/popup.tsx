@@ -117,7 +117,7 @@ const ModalContent = React.forwardRef<HTMLDivElement, ModalContentProps>(functio
           // вынесена целиком за карточку и выглядывает за её правый верхний
           // угол ровно на то смещение, что снято с анатомии десктопных
           // Large и Small Modal (right:-64px, top:0).
-          className="absolute top-5 right-6 z-10 desktop:top-0 desktop:-right-16"
+          className="absolute top-6 right-4 z-10 desktop:top-0 desktop:-right-16"
           render={
             <Button
               variant="secondary-grey"

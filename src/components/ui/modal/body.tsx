@@ -45,7 +45,11 @@ const ModalBody = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
       // Две тени складываются через переменные: обычный `shadow-*` у
       // верхнего и нижнего краёв перебивал бы друг друга.
       className={cn(
-        "min-h-0 flex-1 px-6 py-5 desktop:px-(--modal-px) desktop:py-4",
+        "min-h-0 flex-1 px-4 py-3 desktop:px-(--modal-px) desktop:py-4",
+        // Без шапки первым идёт холдер, и содержимое встаёт сразу под ним:
+        // в макете у Body нет верхнего отступа (десктоп), а на мобильном
+        // между строкой крестика и содержимым 24px.
+        "[[data-slot=modal-top-holder]+&]:pt-6 desktop:[[data-slot=modal-top-holder]+&]:pt-0",
         "[box-shadow:var(--divider-top,0_0_#0000),var(--divider-bottom,0_0_#0000)]",
         scrolledFromTop && "[--divider-top:inset_0_1px_0_var(--modal-divider)]",
         !scrolledToEnd && "[--divider-bottom:inset_0_-1px_0_var(--modal-divider)]",

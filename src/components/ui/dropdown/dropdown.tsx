@@ -42,7 +42,7 @@ const DROPDOWN_SIZE: Record<DropdownSize, string> = {
     "max-h-[min(504px,var(--available-height,504px))] max-w-[1008px] min-w-70 overflow-x-hidden overflow-y-auto rounded-[16px] shadow-universal",
   "mobile-full-screen": "flex h-full w-full flex-col rounded-none",
   "mobile-bottom-sheet":
-    "flex max-h-[80vh] w-full flex-col rounded-t-[16px] shadow-universal",
+    "flex max-h-[80vh] w-full flex-col rounded-t-[24px] shadow-universal",
 }
 
 interface DropdownProps extends React.ComponentProps<"div"> {
@@ -57,7 +57,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
         data-slot="dropdown"
         data-size={size}
         className={cn(
-          "bg-popover text-popover-foreground outline-none origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "group/dropdown bg-popover text-popover-foreground outline-none origin-(--transform-origin) duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           DROPDOWN_SIZE[size],
           className
         )}
@@ -85,9 +85,11 @@ function DropdownHeader({
   return (
     <div
       data-slot="dropdown-header"
-      className={cn("flex items-center gap-4 p-4", className)}
+      // Строка заголовка мобильной шторки: px 16, py 13 при заголовке 22/30
+      // (Header, H2 Medium Mobile) — итого 56.
+      className={cn("flex items-center gap-4 px-4 py-[13px]", className)}
     >
-      <span className="min-w-0 flex-1 truncate text-h4-mobile text-[var(--menu-item-fg)]">
+      <span className="min-w-0 flex-1 truncate text-h2-mobile text-[var(--menu-item-fg)]">
         {title}
       </span>
       <button
@@ -140,7 +142,7 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         ref={ref}
         data-slot="dropdown-item"
         className={cn(
-          "flex cursor-pointer flex-col gap-0.5 p-4 outline-none transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-40",
+          "flex cursor-pointer flex-col gap-1 p-4 outline-none transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-40",
           // ⚠️ ДВА селектора подсветки, а не один. `data-highlighted` ставит
           // примитив Base UI, когда строка лежит внутри его меню — этим
           // живут Select, Combobox, меню «ещё». Но `DropdownItem` законно

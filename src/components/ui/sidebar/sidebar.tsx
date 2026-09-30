@@ -83,7 +83,10 @@ function Sidebar({
         data-slot="sidebar"
         data-open={isOpen || undefined}
         className={cn(
-          "flex h-full flex-col overflow-hidden border-r border-[var(--nav-sidebar-border)] bg-[var(--nav-sidebar-bg)] transition-[width] duration-200",
+          // Правая линия — внутренняя тень, а не `border-r`: в мастере панель
+          // ровно 312/56 без рамки, и пункты по 296 при полях 8. CSS-рамка
+          // отнимала бы пиксель у содержимого (295).
+          "flex h-full flex-col overflow-hidden bg-[var(--nav-sidebar-bg)] shadow-[inset_-1px_0_0_var(--nav-sidebar-border)] transition-[width] duration-200",
           isOpen ? "w-[312px]" : "w-14",
           className
         )}

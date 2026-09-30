@@ -241,7 +241,7 @@ function SidebarGroup({
             <ChevronDown
               aria-hidden="true"
               data-slot="sidebar-group-chevron"
-              className="mt-1 size-4 shrink-0 text-[var(--nav-sidebar-icon-fg)] transition-transform duration-200"
+              className="mt-1 size-4 shrink-0 text-[var(--nav-sidebar-fg)] transition-transform duration-200"
             />
           </AccordionPrimitive.Trigger>
         ) : (

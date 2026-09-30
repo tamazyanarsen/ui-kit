@@ -2,6 +2,7 @@
  "qa-autocomplete--playground|1280|page-overflow|align,alignOffset,comment,defaultQuery,emptyText,error,hintText,label,open,placeholder,side,sideOffset": "синтетическое sideOffset=12345 в сочетании других аргументов",
  "qa-autocomplete--playground|1280|page-overflow|open,sideOffset": "синтетическое sideOffset=12345: попап уходит за экран по заданному смещению",
  "qa-autocomplete--playground|375|page-overflow|open": "артефакт замера: 130 мс после смены аргумента попап ещё позиционируется, через 400 мс страница 375",
+ "атомы-grid--examples|1280|page-overflow|": "по мастеру: сетка 1800 с полями 40, минимальная ширина макета шире 1280",
  "компоненты-block-widget--playground|375|page-overflow|description": "демо-обёртка/контейнер по содержимому (w-fit)",
  "компоненты-block-widget--playground|375|page-overflow|status": "демо-обёртка/контейнер по содержимому (w-fit)",
  "компоненты-block-widget--playground|375|page-overflow|subtitle": "демо-обёртка w-fit у истории (проверено цепочкой предков: корень 688px по содержимому)",
@@ -46,5 +47,6 @@
  "компоненты-top-fixed-message--playground|375|page-overflow|closeLabel,viewport": "по решению: подписи кнопок не переносятся",
  "компоненты-меню-header--examples|375|page-overflow|": "шапка без мобильной формы (441–471px), колеблется на несколько px по раскладке ряда «Ещё»",
  "компоненты-меню-header--playground|375|page-overflow|phoneNumber,type": "шапка без мобильной формы (макета нет), известно",
- "компоненты-меню-header--playground|375|page-overflow|type": "шапка без мобильной формы (макета нет), известно"
+ "компоненты-меню-header--playground|375|page-overflow|type": "шапка без мобильной формы (макета нет), известно",
+ "песочница-подача-заявки-на-кредит-шаг-2--default|375|page-overflow|": "шапка без мобильной формы, колеблется на несколько px"
 }

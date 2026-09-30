@@ -150,10 +150,20 @@ function Chips({
         // таблетка, тогда как источник в макете использует радиус углов 8px
         // повсюду, а это здесь rounded-md, а не rounded-2xl.
         "group/chips inline-flex w-fit max-w-64 flex-col items-start gap-0 rounded-md whitespace-nowrap transition-colors",
-        withSubtitle ? "px-4 py-2" : "px-4 py-1.5",
-        // Рамка держится постоянной и прозрачной, чтобы коробка не прыгала на
-        // 2px при переходе в Active — тот же приём, что у триггера Filter.
-        isFilter && "border-2 border-transparent bg-clip-padding",
+        // У типов Filter рамка Active (2px, Blue 223) лежит ВНУТРИ коробки
+        // мастера: символы Default и Active оба 145 × 36 (Desktop) и 140 × 32
+        // (Mobile), то есть поля 16/6 считаются от внешнего края. Поэтому
+        // рамка постоянная, прозрачная, а поля у неё на 2px меньше (14/4 и
+        // 14/6 с подписью): коробка не прыгает при переходе в Active и не
+        // разрастается на 4px против мастера.
+        isFilter
+          ? withSubtitle
+            ? "px-3.5 py-1.5"
+            : "px-3.5 py-1"
+          : withSubtitle
+            ? "px-4 py-2"
+            : "px-4 py-1.5",
+        isFilter && "border-2 border-transparent",
         isFilter && selected && !disabled && "border-[var(--filter-active-border)]",
         disabled
           ? isFilter

@@ -1,4 +1,4 @@
-import { Download, Search } from "@/icons"
+import { ChevronDown, Search } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { TableColumnSettings, type TableColumn } from "@/components/ui/table"
@@ -61,7 +61,7 @@ function TableDemoTop({
         }
         actions={
           <>
-            <Button variant="secondary-grey" size="sm" icon={Download}>
+            <Button variant="secondary-grey" size="sm" icon={ChevronDown} iconPosition="right">
               Скачать
             </Button>
             <TableColumnSettings

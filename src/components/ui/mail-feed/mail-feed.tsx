@@ -97,15 +97,23 @@ function MailFeed({
           <span className="min-w-0 truncate font-medium text-[var(--mail-feed-fg)]">
             {sender}
           </span>
-          <span className="shrink-0 text-[var(--mail-feed-meta-fg)]">{date}</span>
+          {/* Дата в мастере — P3 Regular (400), а не Medium, как подпись слева. */}
+          <span className="shrink-0 text-p3-regular text-[var(--mail-feed-meta-fg)]">{date}</span>
         </div>
       </div>
 
       <p className="w-full truncate text-p2-medium text-[var(--mail-feed-fg)]">{subject}</p>
 
-      <div className="flex w-full flex-col gap-1 text-p3-medium">
+      {/* Текст письма и ответ банка в мастере — P3 Regular (400). Ответ лежит
+          в коробке высотой 20 (строка 16 по центру), поэтому карточка на 4px
+          выше, чем при коробке в одну строку: 140, а не 136. */}
+      <div className="flex w-full flex-col gap-1 text-p3-regular">
         <span className="[overflow-wrap:anywhere] text-[var(--mail-feed-fg)]">{message}</span>
-        {hasContent(preview) && <span className="line-clamp-1 text-[var(--mail-feed-meta-fg)]">{preview}</span>}
+        {hasContent(preview) && (
+          <span className="flex h-5 min-w-0 flex-col justify-center overflow-hidden text-[var(--mail-feed-meta-fg)]">
+            <span className="line-clamp-1">{preview}</span>
+          </span>
+        )}
       </div>
     </div>
   )

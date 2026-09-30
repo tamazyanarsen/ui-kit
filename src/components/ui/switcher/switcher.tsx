@@ -247,7 +247,11 @@ function Switcher({
       ref={containerRef}
       data-slot="switcher"
       className={cn(
-        "relative inline-flex items-center rounded-[20px] border border-[var(--switcher-border)] p-1",
+        // Рамка 1px в мастере лежит ВНУТРИ коробки: символы Cell Switcher —
+        // 56 (L) и 48 (M) при поле 4 от внешнего края и ячейке 48 / 40. Поэтому
+        // поле здесь 3 + рамка 1, а не 4 + 1: иначе рамка прибавляла бы 2px к
+        // высоте (58 и 50) и сдвигала ячейки на 5px от края.
+        "relative inline-flex items-center rounded-[20px] border border-[var(--switcher-border)] p-[3px]",
         greyBackground
           ? "bg-[var(--switcher-grey-bg)]"
           : "bg-[var(--switcher-white-bg)]",

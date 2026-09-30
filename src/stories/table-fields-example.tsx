@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Download } from "@/icons"
+import { ChevronDown } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuBlack } from "@/components/ui/button-menu"
 import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
@@ -135,7 +135,7 @@ function TableFieldsExample({
             }
             actions={
               <>
-                <Button variant="secondary-grey" size="sm" icon={Download}>
+                <Button variant="secondary-grey" size="sm" icon={ChevronDown} iconPosition="right">
                   Скачать
                 </Button>
                 <TableColumnSettings

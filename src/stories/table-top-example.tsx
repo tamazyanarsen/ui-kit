@@ -262,7 +262,9 @@ function FullExample({
               variant="secondary-grey"
               size="sm"
               icon={moreOpen ? ChevronUp : ChevronDown}
-              iconPosition="left"
+              // В мастере (`Last Chips`: Type More / Hide) подпись идёт
+              // первой, шеврон — справа, поля pl 20 / pr 16.
+              iconPosition="right"
               onClick={() => setMoreOpen((v) => !v)}
             >
               {moreOpen

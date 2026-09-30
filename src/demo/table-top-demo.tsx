@@ -144,7 +144,7 @@ function TableTopFilterSettingExample() {
           variant="secondary-grey"
           size="sm"
           icon={moreOpen ? ChevronUp : ChevronDown}
-          iconPosition="left"
+          iconPosition="right"
           onClick={() => setMoreOpen((v) => !v)}
         >
           {moreOpen ? "Скрыть фильтры" : "Ещё фильтры: 1"}

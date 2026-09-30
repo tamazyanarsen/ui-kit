@@ -1,4 +1,4 @@
-import { Download } from "@/icons"
+import { ChevronDown } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { TableColumnSettings, type TableColumn } from "@/components/ui/table"
 import {
@@ -49,7 +49,7 @@ function TableExampleTop({
         }
         actions={
           <>
-            <Button variant="secondary-grey" size="sm" icon={Download}>
+            <Button variant="secondary-grey" size="sm" icon={ChevronDown} iconPosition="right">
               Скачать
             </Button>
             <TableColumnSettings

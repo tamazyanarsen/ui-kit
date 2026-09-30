@@ -291,7 +291,8 @@ const TableTopDetails = React.forwardRef<
         )}
         {/* rounded-[16px] вместе с обрезкой на дорожке — это собственный
             кадр Row в макете: он подрезает концы ленты вровень с радиусом
-            блока.
+            блока. `px-1` — поле этого кадра по бокам (`px-[4px]` во всех
+            четырёх состояниях ленты): первая пара стоит в 4px от кромки.
             `scrollbar-none`: своей полосы прокрутки у ленты нет ни в одном
             варианте сета — вторая полоса рядом со стрелками была бы вторым
             органом управления той же ленты. Листается она стрелками, колесом
@@ -300,7 +301,7 @@ const TableTopDetails = React.forwardRef<
           ref={trackRef}
           data-slot="table-top-details-track"
           data-scroll-window=""
-          className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto rounded-[16px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto rounded-[16px] px-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {items.filter(Boolean).map((item, index) => (
             <span

@@ -9,6 +9,13 @@ import { useIsDesktop } from "@/lib/use-is-desktop"
 
 import { GosuslugiLogo } from "./gosuslugi-logo"
 
+// Рамка «Secondary Logo Border» / «с обводкой» рисуется внутренней тенью, а не
+// `border`: в макете обводка внутри рамки автолейаута и на отступы не влияет
+// (padding 32 считается от внешнего края), а настоящий border в border-box
+// сдвигал подпись и значок на 1px и раздвигал кнопку на 2px по ширине против
+// мастера (L/Desktop/Text: 118 в Figma, 119.5 в ките). Прозрачную рамку у
+// остальных типов убрали по той же причине.
+//
 // ⚠️ У каждого типа рядом с `enabled:active:` стоит `enabled:data-popup-open:`
 // с ТЕМ ЖЕ цветом.
 //
@@ -27,7 +34,7 @@ const buttonVariants = cva(
   // размерного варианта ниже (все Medium, как в макете), а не здесь:
   // отдельный класс font-medium тут лишь продублировал бы насыщенность,
   // уже зашитую в составной класс.
-  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding whitespace-nowrap transition-all outline-none select-none focus-visible:focus-ring active:not-aria-[haspopup]:translate-y-px disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] disabled:!border-transparent aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] aria-disabled:!border-transparent aria-disabled:active:!translate-y-0 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none focus-visible:focus-ring active:not-aria-[haspopup]:translate-y-px disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] aria-disabled:active:!translate-y-0 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -40,7 +47,7 @@ const buttonVariants = cva(
         "secondary-white":
           "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-outline":
-          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:!border-[var(--btn-muted-border)] aria-disabled:!border-[var(--btn-muted-border)]",
+          "[box-shadow:inset_0_0_0_1px_var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)] aria-disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)]",
         destructive:
           "bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] enabled:hover:bg-[var(--btn-destructive-bg-hover)] enabled:active:bg-[var(--btn-destructive-bg-active)] enabled:data-popup-open:bg-[var(--btn-destructive-bg-active)]",
         // Типы «Secondary Logo» всегда идут в паре с фиксированным глифом
@@ -51,7 +58,7 @@ const buttonVariants = cva(
         "secondary-logo-black":
           "bg-[var(--btn-secondary-black-bg)] text-[var(--btn-secondary-black-fg)] enabled:hover:bg-[var(--btn-secondary-black-bg-hover)] enabled:active:bg-[var(--btn-secondary-black-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-black-bg-active)]",
         "secondary-logo-border-white":
-          "border-[var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)]",
+          "[box-shadow:inset_0_0_0_1px_var(--btn-secondary-outline-border)] bg-[var(--btn-secondary-outline-bg)] text-[var(--btn-secondary-outline-fg)] enabled:hover:bg-[var(--btn-secondary-outline-bg-hover)] enabled:active:bg-[var(--btn-secondary-outline-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-outline-bg-active)] disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)] aria-disabled:![box-shadow:inset_0_0_0_1px_var(--btn-muted-border)]",
         "secondary-logo-white":
           "bg-[var(--btn-secondary-white-bg)] text-[var(--btn-secondary-white-fg)] enabled:hover:bg-[var(--btn-secondary-white-bg-hover)] enabled:active:bg-[var(--btn-secondary-white-bg-active)] enabled:data-popup-open:bg-[var(--btn-secondary-white-bg-active)]",
         "secondary-logo-grey":
@@ -255,8 +262,12 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
           {!iconOnly && children != null && (
             <span className="sr-only">{children}</span>
           )}
+          {/* Спиннер в мастере: 24px у M и L (и на десктопе, и на мобильном,
+              ширины символов Loading 72/88 = отступы + 24), 16px только у
+              S. Раньше 24px брался лишь у desktop-L, а L-Mobile и M
+              получали 16px. */}
           <Loader
-            size={glyphSize === 24 ? "md" : "sm"}
+            size={resolvedSize === "sm" || resolvedSize === "icon-sm" ? "sm" : "md"}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           />
         </>

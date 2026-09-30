@@ -1,19 +1,15 @@
-import { useId } from "react"
 import type { IconProps } from "./types"
 
 // icon / bus transport — 18. Other, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function BusTransport({ size = 16, ...props }: IconProps) {
-  // id внутри svg общие для документа: две одинаковые иконки на
-  // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
   if (size === 24) {
     return (
-      <svg viewBox="0 0 20.245 20.245" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-87.729 -151.839)"><defs><clipPath id={`${uid}-bus-transport-24-clip1_70326_26`}><path fill="#fff" d="M87.651 151.704h20.232v20.232H87.651z"/></clipPath></defs><g clipPath={`url(#${uid}-bus-transport-24-clip1_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M90.179 154.232a2.53 2.53 0 0 1 2.529-2.528h10.113a2.53 2.53 0 0 1 2.529 2.528v2.528h1.685c.466 0 .843.378.843.843v3.371a.84.84 0 0 1-.843.843h-1.685v7.585a2.529 2.529 0 1 1-5.057 0h-5.057a2.528 2.528 0 1 1-5.057 0v-7.585h-1.685a.84.84 0 0 1-.843-.843v-3.371c0-.465.377-.843.843-.843h1.685zm0 4.214h-.842v1.686h.842zm1.686 5.057v4.214h11.799v-4.214zm11.799-1.686H91.865v-5.057h11.799zm0-6.742v-.843a.843.843 0 0 0-.843-.843H92.708a.843.843 0 0 0-.843.843v.843zm0 14.327h-1.685a.842.842 0 1 0 1.685 0m-11.799 0a.842.842 0 1 0 1.686 0zm13.485-9.27h.843v-1.686h-.843zm-12.642 5.48c0-.465.377-.843.843-.843h1.685a.843.843 0 0 1 0 1.686h-1.685a.84.84 0 0 1-.843-.843m6.742 0c0-.465.378-.843.843-.843h1.686a.843.843 0 0 1 0 1.686h-1.686a.843.843 0 0 1-.843-.843" clipRule="evenodd"/></g></g></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M3 3a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v3h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-2v9a3 3 0 1 1-6 0H9a3 3 0 1 1-6 0v-9H1a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h2zm0 5H2v2h1zm2 6v5h14v-5zm14-2H5V6h14zm0-8V3a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v1zm0 17h-2a1 1 0 1 0 2 0M5 21a1 1 0 1 0 2 0zm16-11h1V8h-1zM6 16.503a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1m8 0a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 13.497 13.497" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-47.239 -151.839)"><defs><clipPath id={`${uid}-bus-transport-16-clip2_70326_26`}><path fill="#fff" d="M47.197 151.704h13.488v13.488H47.197z"/></clipPath></defs><g clipPath={`url(#${uid}-bus-transport-16-clip2_70326_26)`}><path fill="currentColor" d="M56.468 151.704a2.53 2.53 0 0 1 2.528 2.528v.843h.843c.465 0 .842.377.842.843v1.685a.84.84 0 0 1-.842.843h-.843v4.635a2.11 2.11 0 0 1-2.914 1.947 2.11 2.11 0 0 1-1.257-1.525h-1.772a2.1 2.1 0 0 1-.574 1.068 2.1 2.1 0 0 1-1.49.617 2.103 2.103 0 0 1-2.107-2.107v-4.635h-.843a.84.84 0 0 1-.842-.843v-1.685c0-.466.377-.843.842-.843h.843v-.843a2.53 2.53 0 0 1 2.529-2.528zm-5.9 10.113h6.742v-2.528h-6.742zm0-4.214h6.742v-1.685h-6.742zm.843-4.214a.843.843 0 0 0-.843.843h6.742a.843.843 0 0 0-.842-.843z"/></g></g></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M11 0a3 3 0 0 1 3 3v1h1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1v5.5a2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-2.45-2h-2.1a2.5 2.5 0 0 1-3.407 1.81A2.5 2.5 0 0 1 2 13.5V8H1a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h1V3a3 3 0 0 1 3-3zM4 12h8V9H4zm0-5h8V5H4zm1-5a1 1 0 0 0-1 1h8a1 1 0 0 0-1-1z"/></svg>
   )
 }

@@ -1,12 +1,15 @@
 import type { IconProps } from "./types"
 
-// `icon / clock` из макета (строка «ожидает подписи» в ELK / event):
-// циферблат со стрелками, 14,2222 × 14,2222 по центру коробки 16px.
-// Раньше здесь лежали ПЕСОЧНЫЕ ЧАСЫ — наследие эпохи проброса lucide, а
-// не глиф этой дизайн-системы, из-за чего строка «ожидает подписи» у
-// Event показывала совсем другой символ.
-export function Clock({ size: _size, ...props }: IconProps) {
+// icon / Clock — набор ALL ICONS.
+// 16 и 24 — отдельные начертания мастера, а не масштаб одного.
+export function Clock({ size = 16, ...props }: IconProps) {
+  if (size === 24) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2M0 12C0 5.373 5.373 0 12 0s12 5.373 12 12-5.373 12-12 12S0 18.627 0 12m12-6a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2h-5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1" clipRule="evenodd"/></svg>
+    )
+  }
+
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g fill="currentColor"><path d="M8 3.475c.357 0 .647.29.647.646v3.611l1.75 1.75a.646.646 0 1 1-.915.915l-1.939-1.94A.65.65 0 0 1 7.353 8V4.121c0-.357.29-.646.647-.646"/><path fillRule="evenodd" d="M8 15.111A7.111 7.111 0 1 1 8 .89a7.111 7.111 0 0 1 0 14.222m0-1.293A5.818 5.818 0 1 0 8 2.182a5.818 5.818 0 0 0 0 11.636" clipRule="evenodd"/></g></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M14 8A6 6 0 1 0 2 8a6 6 0 0 0 12 0M7 4a1 1 0 0 1 2 0v3h3a1 1 0 1 1 0 2H8a1 1 0 0 1-1-1zm9 4A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/></svg>
   )
 }

@@ -1,15 +1,11 @@
-import { useId } from "react"
 import type { IconProps } from "./types"
 
 // icon / music — 18. Other, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function Music({ size = 16, ...props }: IconProps) {
-  // id внутри svg общие для документа: две одинаковые иконки на
-  // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
   if (size === 24) {
     return (
-      <svg viewBox="0 0 20.245 20.245" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-87.729 -1069.619)"><defs><clipPath id={`${uid}-music-24-clip12_70326_26`}><path fill="#fff" d="M87.651 1068.67h20.232v20.232H87.651z"/></clipPath></defs><g clipPath={`url(#${uid}-music-24-clip12_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M106.697 1068.84c.213.15.338.41.338.67V1083a3.371 3.371 0 0 1-6.742 0c0-1.87 1.509-3.38 3.371-3.38.614 0 1.19.17 1.686.46v-5.24l-10.114 2.89v7.79c0 1.87-1.509 3.38-3.371 3.38a3.373 3.373 0 0 1-3.371-3.38 3.371 3.371 0 0 1 5.057-2.92v-9.59c0-.38.245-.71.603-.81l11.799-3.5a.86.86 0 0 1 .744.14m-11.461 7.14 10.114-2.89v-2.45l-10.114 3zm-1.685 9.54c0-.93-.755-1.68-1.686-1.68s-1.686.75-1.686 1.68c0 .94.755 1.69 1.686 1.69s1.686-.75 1.686-1.69m11.799-2.52c0-.94-.755-1.69-1.686-1.69s-1.685.75-1.685 1.69c0 .93.754 1.68 1.685 1.68s1.686-.75 1.686-1.68" clipRule="evenodd"/></g></g></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M22.598.199A1 1 0 0 1 23 1v16a4 4 0 1 1-2-3.465v-6.21l-12 3.43V20a4 4 0 1 1-2-3.465V5.147a1 1 0 0 1 .716-.958l14-4.148a1 1 0 0 1 .882.158M9 8.674l12-3.428V2.339L9 5.894zM7 20a2 2 0 1 0-4 0 2 2 0 0 0 4 0m14-3a2 2 0 1 0-4 0 2 2 0 0 0 4 0" clipRule="evenodd"/></svg>
     )
   }
 

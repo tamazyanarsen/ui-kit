@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { render } from "@testing-library/react"
 
 import * as icons from "@/icons"
-import { Railway } from "@/icons"
+import { Calendar } from "@/icons"
 import type { IconProps } from "@/icons"
 
 // id внутри svg общие для всего документа. Figma выгружала иконки с жёстко
@@ -29,8 +29,8 @@ describe("иконки: внутренние id", () => {
   it("две копии иконки с настоящей обрезкой получают разные id", () => {
     const { container } = render(
       <>
-        <Railway />
-        <Railway />
+        <Calendar />
+        <Calendar />
       </>
     )
     const clips = [...container.querySelectorAll("clipPath")]

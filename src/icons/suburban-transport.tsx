@@ -1,19 +1,15 @@
-import { useId } from "react"
 import type { IconProps } from "./types"
 
 // icon / suburban transport — 18. Other, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
 export function SuburbanTransport({ size = 16, ...props }: IconProps) {
-  // id внутри svg общие для документа: две одинаковые иконки на
-  // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
   if (size === 24) {
     return (
-      <svg viewBox="0 0 20.245 20.245" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-87.729 -529.748)"><defs><clipPath id={`${uid}-suburban-transport-24-clip4_70326_26`}><path fill="#fff" d="M87.651 529.277h20.232v20.232H87.651z"/></clipPath></defs><g clipPath={`url(#${uid}-suburban-transport-24-clip4_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M87.651 529.699h9.271a2.53 2.53 0 0 1 2.528 2.528v12.642a.84.84 0 0 1-.843.843h-2.528a3.37 3.37 0 1 1-6.742 0h-1.686v-1.686h1.931q.1 0 .193.022a3.372 3.372 0 0 1 5.853-.022h2.137v-.842h-.843a.843.843 0 0 1 0-1.686h.843v-1.686h-6.743a1.684 1.684 0 0 1-1.685-1.685v-3.371c0-.931.754-1.686 1.685-1.686h6.743v-.843a.844.844 0 0 0-.843-.843h-9.271zm10.114 5.057h-2.529v3.371h2.529zm-4.214 3.371v-3.371h-2.529v3.371zm7.585-3.371c0-.931.754-1.686 1.685-1.686h3.372c.931 0 1.685.755 1.685 1.686v3.371c0 .931-.754 1.685-1.685 1.685h-.843v5.057h.421a.842.842 0 1 1 0 1.686h-2.528a.843.843 0 0 1 0-1.686h.421v-5.057h-.843a1.684 1.684 0 0 1-1.685-1.685zm5.057 0h-3.372v3.371h3.372zm-13.485 9.27a1.686 1.686 0 1 0 0 3.372 1.686 1.686 0 0 0 0-3.372" clipRule="evenodd"/></g></g></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M0 .5h11a3 3 0 0 1 3 3v15a1 1 0 0 1-1 1h-3a4 4 0 0 1-8 0H0v-2h2.292q.118.001.228.026A4 4 0 0 1 6 15.5c1.48 0 2.773.804 3.465 2H12v-1h-1a1 1 0 1 1 0-2h1v-2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h8v-1a1 1 0 0 0-1-1H0zm12 6H9v4h3zm-5 4v-4H4v4zm9-4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1v6h.5a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2h.5v-6h-1a2 2 0 0 1-2-2zm6 0h-4v4h4zm-16 11a2 2 0 1 0 0 4 2 2 0 0 0 0-4" clipRule="evenodd"/></svg>
     )
   }
 
   return (
-    <svg viewBox="0 0 13.497 13.497" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-47.239 -529.748)"><defs><clipPath id={`${uid}-suburban-transport-16-clip5_70326_26`}><path fill="#fff" d="M47.197 529.277h13.488v13.488H47.197z"/></clipPath></defs><g clipPath={`url(#${uid}-suburban-transport-16-clip5_70326_26)`}><path fill="currentColor" d="M53.096 529.277a2.53 2.53 0 0 1 2.529 2.529v7.503a.84.84 0 0 1-.839.929h-1.69a2.528 2.528 0 0 1-5.057 0h-.838v-1.686h1.482a2.522 2.522 0 0 1 3.77 0h1.486v-1.689h-5.057a.844.844 0 0 1-.843-.843v-3.371c0-.466.378-.843.843-.843h5.057a.84.84 0 0 0-.843-.843h-5.899v-1.686zm6.743 2.529c.465 0 .842.377.842.843v3.371a.843.843 0 0 1-.842.843h-.422v2.532h.426a.843.843 0 0 1 0 1.686h-2.529a.843.843 0 0 1 0-1.686h.418v-2.532h-.422a.843.843 0 0 1-.842-.843v-3.371c0-.466.377-.843.842-.843zm-9.271 7.585a.842.842 0 1 0-.001 1.685.842.842 0 0 0 .001-1.685m-.843-4.214h1.686v-1.686h-1.686zm3.371 0h.843v-1.686h-.843zm5.057 0h.843v-1.686h-.843z"/></g></g></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M7 0a3 3 0 0 1 3 3v8.902q.005.05.005.103a1 1 0 0 1-1 1H7a3 3 0 0 1-6 0H.005v-2h1.759a2.99 2.99 0 0 1 4.472 0H8V9H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6a1 1 0 0 0-1-1H0V0zm8 3a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-.5v3.005h.505a1 1 0 1 1 0 2h-3a1 1 0 0 1 0-2h.495V9H12a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM4 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2M3 7h2V5H3zm4 0h1V5H7zm6 0h1V5h-1z"/></svg>
   )
 }

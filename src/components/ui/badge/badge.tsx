@@ -48,8 +48,15 @@ function Badge({
         data-color={color}
         className={cn("inline-flex size-4 items-center justify-center", className)}
       >
+        {/* Contra-Red в мастере: красный круг диаметром 8px и поверх него
+            белое кольцо 1px СНАРУЖИ (окружность r=4.5 с обводкой по краю), то
+            есть весь значок 10px. Поэтому коробка с рамкой border-box здесь
+            10px, а не 8px: иначе красный круг сжимался до 6px. */}
         <span
-          className="size-2 shrink-0 rounded-full"
+          className={cn(
+            "shrink-0 rounded-full",
+            style.border ? "size-2.5" : "size-2"
+          )}
           style={{
             backgroundColor: style.bg,
             border: style.border ? `1px solid ${style.border}` : undefined,
@@ -78,7 +85,10 @@ function Badge({
       style={{
         backgroundColor: style.bg,
         color: style.fg,
-        border: style.border ? `1px solid ${style.border}` : undefined,
+        // Белая обводка Contra-Red лежит внутри коробки и на размер не
+        // влияет (в мастере 16px при любой обводке), поэтому тенью, а не
+        // `border`: рамка раздвигала двузначные счётчики на 2px.
+        boxShadow: style.border ? `inset 0 0 0 1px ${style.border}` : undefined,
       }}
     >
       {formatBadgeCount(value)}

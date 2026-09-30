@@ -57,13 +57,15 @@ function Tag({
         // `pt-[2px]` на 18px при 16px строке) — тот же приём, что у Badge;
         // десктопная (22/20) центрируется обычным `py-px`.
         "h-[18px] pt-[2px] text-p3-medium desktop:h-[22px] desktop:pt-0 desktop:text-p2-medium",
-        style.border && "border",
         className
       )}
       style={{
         backgroundColor: style.bg,
         color: style.fg,
-        borderColor: style.border,
+        // Обводка внутренней тенью, а не `border`: в мастере она лежит внутри
+        // коробки и на ширину не влияет (Desktop: 104px и у сплошного тега, и
+        // у «Text»), а настоящий border раздвигал обводочные теги на 2px.
+        boxShadow: style.border ? `inset 0 0 0 1px ${style.border}` : undefined,
       }}
     >
       {typeof icon === "string" ? (

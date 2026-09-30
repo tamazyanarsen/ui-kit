@@ -90,11 +90,17 @@ export const FileListItem = React.forwardRef<
   // отличается только цветом.
   const glyphSize = small ? 16 : 24
   const Glyph = loading ? LoaderCircle : error ? CircleAlert : FileIcon
+  // Выключенный файл: значок документа, имя и строка сведений серые #999
+  // (grey-284, как подпись сведений) — так в мастере `Size=L / Desktop,
+  // State=Disabled` (пиксель текста и значка 153,153,153); значки действий
+  // справа остаются тёмными #252628.
   const glyphColor = loading
     ? "text-[var(--file-item-loading-fg)]"
     : error
       ? "text-[var(--file-item-error-fg)]"
-      : "text-[var(--file-item-icon-fg)]"
+      : disabled
+        ? "text-[var(--file-item-meta-fg)]"
+        : "text-[var(--file-item-icon-fg)]"
 
   // Значок свойства `Show Edit` зависит от размера, и это не описка макета:
   // у L стоит
@@ -126,7 +132,9 @@ export const FileListItem = React.forwardRef<
         // отступов. Расстояние между строками принадлежит списку, который
         // их складывает.
         "flex w-full items-center gap-4 pr-4 text-p2-medium",
-        disabled && "pointer-events-none opacity-50",
+        // Прозрачности нет: мастер гасит файл цветом, а не `opacity`
+        // (у значков действий прежний цвет).
+        disabled && "pointer-events-none",
         className
       )}
       {...props}
@@ -187,7 +195,7 @@ export const FileListItem = React.forwardRef<
             // 20 + 4 + 16), на десктопе 16/24.
             small ? "text-p3-medium" : "text-p2-medium desktop:text-p1-medium",
             disabled
-              ? "text-[var(--file-item-fg-disabled)]"
+              ? "text-[var(--file-item-meta-fg)]"
               : "text-[var(--file-item-fg)]"
           )}
         >
@@ -202,7 +210,8 @@ export const FileListItem = React.forwardRef<
             title={typeof secondLine === "string" ? secondLine : undefined}
             className={cn(
               small ? "truncate" : "line-clamp-2 break-words",
-              small ? "text-p4-medium" : "text-p3-medium",
+              // S: сведения P4 Regular (10/12, вес 400), L: P3 Medium.
+              small ? "text-p4-regular" : "text-p3-medium",
               error
                 ? "text-[var(--file-item-error-fg)]"
                 : "text-[var(--file-item-meta-fg)]"

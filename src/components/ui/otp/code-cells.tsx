@@ -27,6 +27,15 @@ interface OtpCellsProps {
 const CARET =
   "absolute top-1/2 h-[1.2em] w-px -translate-y-1/2 bg-current animate-[otp-caret-blink_1s_step-end_infinite]"
 
+// Каретка пустого поля (состояние Focused мастера, где placeholder скрыт —
+// см. `focus:placeholder:text-transparent` у поля): 1px шириной, 32px высотой
+// на мобильной форме и 40px на десктопной, верхним краем вровень с кадром
+// Code (центр на calc(50% - 8px) при высоте кадра 48/56), цвет #252628. С
+// цифрами каретка стоит между ячейками и повторяет их строку (CARET выше) —
+// для неё в мастере состояния нет.
+const CARET_EMPTY =
+  "absolute top-0 h-8 w-px bg-current animate-[otp-caret-blink_1s_step-end_infinite] desktop:h-10"
+
 function OtpCells({ digits, start, end, focused, invalid, disabled }: OtpCellsProps) {
   const cells = Array.from(digits)
   // Каретка стоит на границе ячеек: перед ячейкой `start`, а в конце кода —
@@ -50,8 +59,8 @@ function OtpCells({ digits, start, end, focused, invalid, disabled }: OtpCellsPr
     >
       {cells.length === 0 ? (
         // Пустое поле в фокусе: каретка по центру подчёркивания, как в
-        // состоянии Focus мастера; поверх неё стоит placeholder поля.
-        focused && <span data-slot="otp-caret" className={CARET} />
+        // состоянии Focus мастера; placeholder в фокусе прозрачный.
+        focused && <span data-slot="otp-caret" className={CARET_EMPTY} />
       ) : (
         // Ячейка 40px, зазор — из переменной слоя. В узкой колонке ячейки
         // сжимаются (`shrink`), а зазор остаётся: длинный код не уходит

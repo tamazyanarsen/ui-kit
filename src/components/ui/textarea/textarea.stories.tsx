@@ -129,7 +129,7 @@ export const Playground: Story = {
         ? undefined
         : LOCKED_VALUE
     return (
-      <PseudoBox state={state} viewport={viewport} className="w-96">
+      <PseudoBox state={state} viewport={viewport} emulateFocus className="w-96">
         <Textarea
           key={`${figmaType}-${scrollbar}`}
           {...args}
@@ -159,10 +159,10 @@ export const Playground: Story = {
    Type (Empty / Filled / Locked) и Add (None / Comment / Error). Разложены
    они здесь ровно так же, как на листе: State — колонки, Type × Add —
    строки, Size — две матрицы рядом. */
-const STATES: { label: string; props: Partial<TextareaProps>; pseudo?: "hover" | "focus-within" }[] = [
+const STATES: { label: string; props: Partial<TextareaProps>; pseudo?: "hover" | ("focus" | "focus-within")[] }[] = [
   { label: "Default", props: {} },
   { label: "Hover", props: {}, pseudo: "hover" },
-  { label: "Focused", props: {}, pseudo: "focus-within" },
+  { label: "Focused", props: {}, pseudo: ["focus", "focus-within"] },
   { label: "Disabled", props: { disabled: true } },
 ]
 

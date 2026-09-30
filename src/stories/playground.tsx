@@ -97,10 +97,21 @@ const PLAYGROUND_STATE_CLASS: Record<PlaygroundState, string | undefined> = {
 export function PseudoBox({
   state = "default",
   viewport,
+  emulateFocus = false,
   className,
   children,
 }: {
   state?: PlaygroundState
+  /**
+   * Поля ввода (Input, Textarea) рисуют фокус правилами `:has(input:focus)` и
+   * `peer-focus:`, а не `:focus-visible`, а аддон для `state=focus` ставит
+   * только `pseudo-focus-visible-all`. С этим флагом к обёртке добавляются
+   * `pseudo-focus-all` и `pseudo-focus-within-all` — аддон переписывает такие
+   * селекторы и показывает рамку фокуса и поднятую подпись (у Textarea
+   * подпись едет по `group-focus-within`, у Input — по `peer-focus`). Для остальных компонентов выключен:
+   * у кнопок и прочих `:focus` рисует другое, чем `:focus-visible`.
+   */
+  emulateFocus?: boolean
   /** Форма Desktop/Mobile — контрол `viewport` из панели истории. */
   viewport?: Viewport
   className?: string
@@ -108,7 +119,16 @@ export function PseudoBox({
 }) {
   return (
     <ViewportScope viewport={viewport}>
-      <div className={cn("w-fit", PLAYGROUND_STATE_CLASS[state], className)}>
+      <div
+        className={cn(
+          "w-fit",
+          PLAYGROUND_STATE_CLASS[state],
+          emulateFocus &&
+            state === "focus" &&
+            "pseudo-focus-all pseudo-focus-within-all",
+          className
+        )}
+      >
         {children}
       </div>
     </ViewportScope>

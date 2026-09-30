@@ -68,6 +68,9 @@ const meta = {
     figmaType: optionsArgType<FigmaType>("Type", TYPE_LABELS, "inline-radio"),
     add: optionsArgType<FigmaAdd>("Add", ADD_LABELS, "inline-radio"),
     showErrorText: toggleArgType("Show Error Text"),
+    // Comment & Icon / Error Input & Icon: значок «i» в строке подписи. В
+    // панели Figma его нет — он нарисован слоем внутри строки Comment/Error.
+    showCommentIcon: { control: "boolean", name: "Show Comment Icon" },
     // `mask` — обычное строковое объединение (`MaskName`, импортированное
     // из ./mask), а react-docgen не умеет разрешить импортированный
     // псевдоним типа в перечисление и откатывается на тот же универсальный
@@ -108,6 +111,7 @@ const meta = {
     comment: { control: "text", table: { category: "Контент" } },
     errorText: { control: "text", table: { category: "Контент" } },
     lockedHint: { control: "text", table: { category: "Контент" } },
+    commentHint: { control: "text", table: { category: "Контент" } },
     // Значения осей Type и State — отдельных контролов у них нет.
     locked: { table: { disable: true } },
     disabled: { table: { disable: true } },
@@ -120,6 +124,7 @@ const meta = {
     figmaType: "empty" as FigmaType,
     add: "none" as FigmaAdd,
     showErrorText: true,
+    showCommentIcon: false,
     clearable: false,
     loading: false,
     label: "Label",
@@ -127,6 +132,7 @@ const meta = {
     comment: "Comment",
     errorText: "Text about error here",
     lockedHint: "Поле заполняется автоматически и не редактируется",
+    commentHint: "Дополнительная информация по полю",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -151,7 +157,7 @@ export const Playground: Story = {
       Viewport,
     ]
     return (
-      <PseudoBox state={state} viewport={viewport} className="w-80">
+      <PseudoBox state={state} viewport={viewport} emulateFocus className="w-80">
         <Input
           // Поле неуправляемое: без `key` переключение Type не сбрасывает
           // уже набранное значение и «Empty» остаётся заполненным.
@@ -200,7 +206,7 @@ export const Matrix: Story = {
       rows={[
         { label: "Default", props: {} },
         { label: "Hover", props: {}, pseudo: "hover" },
-        { label: "Focus", props: {}, pseudo: "focus-within" },
+        { label: "Focus", props: {}, pseudo: ["focus", "focus-within"] },
         { label: "Filled", props: { defaultValue: "Value" } },
         {
           label: "Comment",
@@ -209,6 +215,18 @@ export const Matrix: Story = {
         {
           label: "Error",
           props: { defaultValue: "Value", error: "Text about error here" },
+        },
+        {
+          label: "Comment & Icon",
+          props: { defaultValue: "Value", comment: "Comment", showCommentIcon: true },
+        },
+        {
+          label: "Error Input & Icon",
+          props: {
+            defaultValue: "Value",
+            error: "Text about error here",
+            showCommentIcon: true,
+          },
         },
         { label: "Loading", props: { loading: true } },
         {

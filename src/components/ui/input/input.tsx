@@ -15,6 +15,7 @@ import {
 } from "./mask"
 import { InputTrailingSlot, hasTrailingSlot } from "./trailing-slot"
 import { resolveCaption } from "./caption"
+import { InputCaption } from "./caption-row"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolvePlaceholder, useMask } from "./use-mask"
 import { useStableInputRef } from "./use-stable-input-ref"
@@ -31,6 +32,11 @@ interface InputOwnProps {
   label?: React.ReactNode
   comment?: React.ReactNode
   error?: React.ReactNode
+  // Comment & Icon / Error Input & Icon: значок «i» 16px в правом краю
+  // строки подписи (как `showCommentIcon` у Textarea). Текст подсказки по
+  // значку приходит в `commentHint` и раскрывается по клику.
+  showCommentIcon?: boolean
+  commentHint?: React.ReactNode
   locked?: boolean
   // Причина, по которой поле нельзя редактировать; показывается в
   // подсказке по наведению — макет требует пояснения у каждого Lock Input.
@@ -70,6 +76,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   label,
   comment,
   error,
+  showCommentIcon = false,
+  commentHint,
   locked = false,
   lockedHint,
   clearable = true,
@@ -344,26 +352,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
       </FieldTooltip>
 
       {hasNode(caption) && (
-        <p
+        // Второй проход: у подписи Comment и Error в макете `px-[16px]` и
+        // P3 Medium (см. caption-row.tsx); значок «i» — только по флагу.
+        <InputCaption
           id={captionId}
-          className={cn(
-            // Второй проход: не хватало font-medium — у каждого инстанса
-            // подписи Comment или Error <p> обёрнут в родителя с
-            // font-['Object_Sans:Medium'] (P3 Medium, насыщенность 500), а
-            // не в браузерные 400 по умолчанию.
-            // `px-4`: кадр «Comment (ELK)» в макете сдвинут на 16px, чтобы
-            // подпись встала по тексту самого поля, а не по внешнему краю
-            // коробки.
-            // `break-words`: неразрывное слово (номер договора, имя файла)
-            // переносится внутри подписи, а не выходит за поле (аудит 18).
-            "px-4 text-p3-medium break-words",
-            error
-              ? "text-[var(--input-caption-error-fg)]"
-              : "text-[var(--input-caption-fg)]"
-          )}
+          error={Boolean(error)}
+          showIcon={showCommentIcon}
+          hint={commentHint}
         >
           {caption}
-        </p>
+        </InputCaption>
       )}
     </div>
   )

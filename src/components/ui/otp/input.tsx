@@ -301,7 +301,11 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
             // же, что у слоя, — от них зависит положение placeholder.
             "box-border h-12 w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-[10px] text-center text-h1-mobile text-transparent caret-transparent outline-none selection:bg-transparent selection:text-transparent placeholder-shown:pb-[23px] desktop:h-14 desktop:pb-[7px] desktop:text-h1 desktop:placeholder-shown:pb-[21px]",
             "desktop:@max-[367px]/otp:h-12 desktop:@max-[367px]/otp:pb-[10px] desktop:@max-[367px]/otp:text-h1-mobile desktop:@max-[367px]/otp:placeholder-shown:pb-[23px]",
-            "placeholder:text-p2-medium placeholder:text-[var(--otp-placeholder-fg)] desktop:placeholder:text-p1-medium",
+            // В состоянии Focused мастера («Input Code» Focused) текста нет —
+            // только каретка и линия; подсказка «Введите код из СМС» есть
+            // лишь у Default. Поэтому в фокусе placeholder прозрачный, а
+            // каретка по центру не лежит поверх букв.
+            "placeholder:text-p2-medium placeholder:text-[var(--otp-placeholder-fg)] focus:placeholder:text-transparent desktop:placeholder:text-p1-medium",
             "disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
@@ -323,12 +327,13 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
           // а не выходит за ячейки (аудит 18).
           //
           // Мастер (Regular 12/16): подпись стоит абсолютно, на 8px ниже
-          // линии, и раскладку не двигает — зазор до кнопок остаётся 48.
-          // Здесь она в потоке, но `-mb-6` гасит её строку (8 + 16), так что
-          // высота поля с ошибкой в одну строку прежняя. Абсолютной её не
+          // линии (на мобильной форме на 16px) и раскладку не двигает —
+          // зазор до кнопок остаётся 48. Здесь она в потоке, но `-mb-6`
+          // (мобильная форма: `-mb-8`) гасит её отступ и строку (8 + 16 /
+          // 16 + 16), так что высота поля с ошибкой в одну строку прежняя. Абсолютной её не
           // делаем: в две-три строки текст наехал бы на «Отправить повторно»,
           // а так лишняя высота только сдвигает форму вниз.
-          className="mt-4 text-center text-p3-regular break-words text-[var(--otp-error-fg)] desktop:mt-2 desktop:-mb-6"
+          className="mt-4 text-center text-p3-regular break-words text-[var(--otp-error-fg)] -mb-8 desktop:mt-2 desktop:-mb-6"
         >
           {errorText}
         </p>

@@ -42,8 +42,14 @@ export function ComboboxFooter({
       // кнопками — литеральный grey-134 #DEDEDE в снятом подвале
       // «ELK / dropdown» (и в примере с деревом флажков, и в обычном), а не
       // общий токен кита --border (#E5E5E5).
+      //
+      // Высота подвала в макете равна высоте кнопок (56px на десктопе, 48 на
+      // мобильной): верхняя линия — отдельный элемент «Devider», лежащий
+      // поверх верхней кромки кнопок, а не рамка поверх 56px кнопок (та
+      // давала 57px). Поэтому линия рисуется наложением (`after`), а не
+      // `border-t`, и размер не растёт; высоту задают сами кнопки.
       className={cn(
-        "flex shrink-0 border-t border-[var(--menu-item-divider)]",
+        "relative flex shrink-0 after:pointer-events-none after:absolute after:inset-x-0 after:top-0 after:h-px after:bg-[var(--menu-item-divider)]",
         className
       )}
     >

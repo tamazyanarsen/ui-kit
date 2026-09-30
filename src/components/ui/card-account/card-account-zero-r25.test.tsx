@@ -11,7 +11,9 @@ describe("CardAccount: окончание 0", () => {
     const { container } = render(<CardAccount number={0} />)
     const end = container.querySelector('[data-slot="card-account"] > span.text-p4-regular')
     expect(end).toHaveTextContent("0")
-    expect(end).toHaveClass("absolute", "right-[3px]", "bottom-[3px]")
+    // «в правом нижнем углу» — это `right-[3px]` и `bottom-0` (строка 12 вплотную
+    // к низу рамки по мастеру; число измерено сценарием full-content).
+    expect(end).toHaveClass("absolute", "right-[3px]", "bottom-0")
   })
 
   it("пустая строка узел не рисует", () => {

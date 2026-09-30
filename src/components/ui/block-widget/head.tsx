@@ -44,10 +44,11 @@ const DESCRIPTION_CLASS: Record<BlockWidgetTitleType, string> = {
 
 // Собственный верхний отступ блока заголовка — он выравнивает первую строку
 // по левому слоту, и у каждой ступени он свой (замер мастеров: Large на
-// десктопе 0, Small 4; на мобиле 2 и 4).
+// десктопе 0, Small 4; на мобиле у обеих ступеней 2 — у мобильного Small в
+// мастере `pt-[2px]`, а не 4, как было здесь раньше).
 const TITLE_BLOCK_PT: Record<BlockWidgetTitleType, string> = {
   large: "pt-0.5 desktop:pt-0",
-  small: "pt-1",
+  small: "pt-0.5 desktop:pt-1",
 }
 
 /** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */

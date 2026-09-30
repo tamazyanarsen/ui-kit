@@ -87,7 +87,13 @@ function Thumbnail({
   const isIconStatus = isIconStatusType(type)
   const isIconTile = type === "icon"
 
-  const badgeOffset = type === "picture" ? "top-[58%] right-[8%]" : "top-[-4px] right-[-8px]"
+  // Type=Image: значок сидит внутри картинки, а не на углу. По мастеру: на 48px
+  // (L / Desktop) правый край 4, верх 28; на 40px (M и L-M / Mobile) — правый
+  // край 0, верх 12. Проценты давали 3.84/27.84 и 3.2/23.2, то есть на 40px
+  // значок стоял на 11px ниже мастера.
+  const pictureOffset =
+    size === "l" ? "top-3 right-0 desktop:top-7 desktop:right-1" : "top-3 right-0"
+  const badgeOffset = type === "picture" ? pictureOffset : "top-[-4px] right-[-8px]"
   const badge =
     count !== undefined ? (
       <Badge

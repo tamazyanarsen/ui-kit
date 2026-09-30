@@ -68,8 +68,12 @@ function CardAccount({
           `IB / card account`: единственный текст в нём —
           `Object_Sans:Regular`, «Desktop. Параграф/P4 Regular». Разница в
           одном шаге веса, на 10 пикселях её видно только рядом с эталоном. */}
+      {/* Положение цифр по мастеру: правый край 3, блок высотой 9 со строкой 12
+          (`bottom-12` + сдвиг вниз на свою высоту). Строка встаёт на 20–32 из
+          32 внутри рамки, то есть вплотную к низу; прежние `bottom-[3px]`
+          поднимали цифры на 3px выше эталона (сверено по пикселям узла). */}
       {hasValue(number) && (
-        <span className="absolute right-[3px] bottom-[3px] text-p4-regular text-[var(--card-thumb-fg)]">
+        <span className="absolute right-[3px] bottom-0 text-p4-regular text-[var(--card-thumb-fg)]">
           {number}
         </span>
       )}

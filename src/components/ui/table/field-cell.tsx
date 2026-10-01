@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import type { TableCellProps } from "./cell"
+import type { TableValueTone } from "./cell-value"
 import {
   formatDate,
   formatDateTime,
@@ -60,6 +61,7 @@ function fieldCellProps<Row>(
     description: total ? undefined : field.description?.(row),
     descriptionSign: total ? undefined : field.descriptionSign?.(row),
     descriptionSignTone: total ? undefined : field.descriptionSignTone?.(row),
+    descriptionTone: total ? undefined : field.descriptionTone?.(row),
   }
 
   // Итог: слотовые ячейки пустые, а отданные строке `cellProps` не зовутся.
@@ -151,7 +153,11 @@ function fieldCellProps<Row>(
       empty || (!render && !field.format && hasOwnUnit(value))
         ? undefined
         : fieldUnit(total ? totalUnitField(field) : field, row),
-    tone: numeric ? fieldTone(total ? { ...field, tone: undefined } : field, row, value) : undefined,
+    tone: numeric
+      ? fieldTone(total ? { ...field, tone: undefined } : field, row, value)
+      : field.tone && !total
+        ? field.tone(row)
+        : undefined,
     ...own,
   }
 }
@@ -178,7 +184,7 @@ function fieldTone<Row>(
   field: TableField<Row>,
   row: Row,
   value: unknown
-): "default" | "positive" {
+): TableValueTone {
   if (field.tone) return field.tone(row)
   if (!field.signed) return "default"
   // Готовая строка красится, только если плюс в ней виден: «+31 922 ₽»

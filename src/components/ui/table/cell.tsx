@@ -8,7 +8,12 @@ import {
   TableCellAction,
   type TableCellActionProps,
 } from "./cell-action"
-import { TableCellTag, TableCellValue, type TableSignTone } from "./cell-value"
+import {
+  TableCellTag,
+  TableCellValue,
+  type TableSignTone,
+  type TableValueTone,
+} from "./cell-value"
 import { TableCollapseToggle, collapseLabel } from "./collapse-toggle"
 import {
   EDGE_PADDING_CLASS,
@@ -41,6 +46,9 @@ interface TableCellProps
   descriptionSign?: React.ReactNode
   /** Статусный цвет знака. По умолчанию — цвет самого пояснения. */
   descriptionSignTone?: TableSignTone
+  /** Цвет всего пояснения: серый Information по умолчанию либо статус
+   * (Description Cell — Mint, Yellow, Red). */
+  descriptionTone?: TableSignTone
   icon?: React.ReactNode
   tagColor?: TagColor
   /**
@@ -75,9 +83,10 @@ interface TableCellProps
   hierarchy?: boolean
   expanded?: boolean
   onExpandedChange?: (expanded: boolean) => void
-  /** Красит значение ячейки Number: приходящие деньги идут зелёным цветом
-   * успеха кита («+31 922 980 133 515,05 ₽» в образце макета). */
-  tone?: "default" | "positive"
+  /** Цвет значения ячеек Text и Number: приходящие деньги идут зелёным
+   * цветом успеха кита («+31 922 980 133 515,05 ₽» в образце макета),
+   * остальные варианты — Yellow, Red и приглушённый Grey (Value Cell). */
+  tone?: TableValueTone
   /**
    * Знак после значения: `₽`, `$`, `%`, `шт.` Стоит **в ячейке через
    * неразрывный пробел после числа**, а не в заголовке столбца: в одной
@@ -118,6 +127,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
     description,
     descriptionSign,
     descriptionSignTone,
+    descriptionTone,
     icon,
     tagColor = "green",
     tagVariant,
@@ -246,6 +256,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
               description={description}
               descriptionSign={descriptionSign}
               descriptionSignTone={descriptionSignTone}
+              descriptionTone={descriptionTone}
               alignRight={isRight}
               numeric={type === "number"}
               tone={tone}

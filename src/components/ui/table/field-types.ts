@@ -5,7 +5,7 @@ import type { TagColor, TagVariant } from "@/components/ui/tag"
 
 import type { TableRowAction } from "./cell-action"
 import type { TableCellProps } from "./cell"
-import type { TableSignTone } from "./cell-value"
+import type { TableSignTone, TableValueTone } from "./cell-value"
 import type { TablePin } from "./pin"
 import type { TableCellType } from "./types"
 
@@ -140,6 +140,8 @@ interface TableField<Row = unknown> {
   descriptionSign?: (row: Row) => React.ReactNode
   /** Статусный цвет знака. По умолчанию — цвет самого пояснения. */
   descriptionSignTone?: (row: Row) => TableSignTone | undefined
+  /** Цвет всего пояснения: Mint, Yellow или Red вместо серого. */
+  descriptionTone?: (row: Row) => TableSignTone | undefined
   /** Готовое форматирование значения — вместо форматирования по типу. */
   format?: (value: unknown, row: Row) => React.ReactNode
   /** Своё содержимое ячейки целиком. Для типа `custom` обязателен. */
@@ -186,7 +188,7 @@ interface TableField<Row = unknown> {
   /** Плюс и зелёный цвет у положительных значений. */
   signed?: boolean
   /** Цвет значения, если правило сложнее, чем `signed`. */
-  tone?: (row: Row) => "default" | "positive"
+  tone?: (row: Row) => TableValueTone
 
   /** Тег статусного поля: цвет и подпись по значению. */
   tag?: (row: Row) => TableFieldTag

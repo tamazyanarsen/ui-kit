@@ -246,3 +246,40 @@ describe("TableCell action types", () => {
     ).not.toBeInTheDocument()
   })
 })
+
+describe("TableCell: цвет значения и пояснения", () => {
+  const cell = (props: Record<string, unknown>) => {
+    const { container } = render(
+      <table>
+        <tbody>
+          <tr>
+            <TableCell description="Описание" {...props}>
+              Значение
+            </TableCell>
+          </tr>
+        </tbody>
+      </table>
+    )
+    const spans = container.querySelectorAll(".truncate")
+    return { value: spans[0], description: spans[1] }
+  }
+
+  it.each([
+    ["positive", "--table-number-positive-fg"],
+    ["attention", "--table-sign-attention-fg"],
+    ["negative", "--table-sign-negative-fg"],
+    ["muted", "--table-description-fg"],
+    ["default", "--table-fg"],
+  ])("tone=%s красит значение ячейки Text", (tone, token) => {
+    expect(cell({ tone }).value.className).toContain(token)
+  })
+
+  it.each([
+    ["positive", "--table-sign-positive-fg"],
+    ["attention", "--table-sign-attention-fg"],
+    ["negative", "--table-sign-negative-fg"],
+    ["default", "--table-description-fg"],
+  ])("descriptionTone=%s красит пояснение целиком", (descriptionTone, token) => {
+    expect(cell({ descriptionTone }).description.className).toContain(token)
+  })
+})

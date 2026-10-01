@@ -188,6 +188,37 @@ export const Matrix: Story = {
       </StorySection>
 
       <StorySection
+        title="Цвет ячейки Text (Value Cell / Description Cell)"
+        description="Значение: Default, Mint, Yellow, Red, Grey. Пояснение красится целиком: Information (серый), Mint, Yellow, Red."
+      >
+        <Table>
+          <TableHeader>
+            <tr>
+              <TableHeadCell type="subtitle-left">Значение</TableHeadCell>
+              <TableHeadCell type="subtitle-left">Пояснение</TableHeadCell>
+            </tr>
+          </TableHeader>
+          <TableBody>
+            {(["default", "positive", "attention", "negative", "muted"] as const).map(
+              (tone, i) => (
+                <TableRow key={tone}>
+                  <TableCell tone={tone}>Sample Text ({tone})</TableCell>
+                  <TableCell
+                    description="Description"
+                    descriptionTone={
+                      (["default", "positive", "attention", "negative"] as const)[i]
+                    }
+                  >
+                    Sample Text
+                  </TableCell>
+                </TableRow>
+              )
+            )}
+          </TableBody>
+        </Table>
+      </StorySection>
+
+      <StorySection
         title="Line Fill — состояния строки"
         description="Ховер и Active появляются только у кликабельных строк; Added живёт 2000 ms (1000 статично + 1000 затухание), поэтому в статике виден уже погасшим."
       >

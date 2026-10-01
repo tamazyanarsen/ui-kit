@@ -14,6 +14,28 @@ import { useTruncated } from "./use-truncated"
 /** Статусный цвет знака у пояснения — см. `descriptionSign` у ячейки. */
 type TableSignTone = "default" | "positive" | "negative" | "attention"
 
+/**
+ * Цвет значения ячейки (Value Cell, макет 70446:6947): по умолчанию Grey 1514,
+ * дальше Mint 230, Yellow 214, Red 418 и приглушённый Grey 284.
+ */
+type TableValueTone = "default" | "positive" | "attention" | "negative" | "muted"
+
+const VALUE_TONE_CLASS: Record<TableValueTone, string> = {
+  default: "text-[var(--table-fg)]",
+  positive: "text-[var(--table-number-positive-fg)]",
+  attention: "text-[var(--table-sign-attention-fg)]",
+  negative: "text-[var(--table-sign-negative-fg)]",
+  muted: "text-[var(--table-description-fg)]",
+}
+
+/** Цвет пояснения целиком (Description Cell): серый Information или статус. */
+const DESCRIPTION_TONE_CLASS: Record<TableSignTone, string> = {
+  default: "text-[var(--table-description-fg)]",
+  positive: "text-[var(--table-sign-positive-fg)]",
+  attention: "text-[var(--table-sign-attention-fg)]",
+  negative: "text-[var(--table-sign-negative-fg)]",
+}
+
 const SIGN_TONE_CLASS: Record<TableSignTone, string | undefined> = {
   default: undefined,
   positive: "text-[var(--table-sign-positive-fg)]",
@@ -35,6 +57,7 @@ function TableCellValue({
   description,
   descriptionSign,
   descriptionSignTone,
+  descriptionTone,
   alignRight,
   numeric,
   tone,
@@ -45,9 +68,10 @@ function TableCellValue({
   description?: React.ReactNode
   descriptionSign?: React.ReactNode
   descriptionSignTone?: TableSignTone
+  descriptionTone?: TableSignTone
   alignRight: boolean
   numeric: boolean
-  tone: "default" | "positive"
+  tone: TableValueTone
   unit?: string
   unitVariants?: string[]
 }) {
@@ -91,9 +115,7 @@ function TableCellValue({
             // `withTabularDigits`; правило оставлено на будущее, см. его
             // JSDoc.
             numeric && "tabular-nums",
-            tone === "positive"
-              ? "text-[var(--table-number-positive-fg)]"
-              : "text-[var(--table-fg)]"
+            VALUE_TONE_CLASS[tone]
           )}
         >
           {numeric ? withTabularDigits(children) : children}
@@ -119,7 +141,8 @@ function TableCellValue({
           <span
             ref={sub.ref}
             className={cn(
-              "max-w-full truncate text-p3-regular text-[var(--table-description-fg)]",
+              "max-w-full truncate text-p3-regular",
+              DESCRIPTION_TONE_CLASS[descriptionTone ?? "default"],
               numeric && "tabular-nums"
             )}
           >
@@ -185,4 +208,4 @@ function TableCellTag({
 }
 
 export { TableCellTag, TableCellValue }
-export type { TableSignTone }
+export type { TableSignTone, TableValueTone }

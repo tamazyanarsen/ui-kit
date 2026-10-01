@@ -19,7 +19,7 @@ describe("AccordionListItem: 0 — значение, а не пустота", ()
     expect(zeros).toHaveLength(2)
     for (const zero of zeros) expect(zero.tagName).toBe("SPAN")
     // Колонка суммы — со своим выравниванием вправо.
-    expect(zeros.some((zero) => zero.classList.contains("text-right"))).toBe(true)
+    expect(zeros.some((zero) => zero.classList.contains("desktop:text-right"))).toBe(true)
   })
 
   it("пустые значения по-прежнему не рисуются", () => {

@@ -133,7 +133,8 @@ function PageButton({
         // Paginator Numbers строка высотой 20px стоит на 1px ниже центра
         // своей коробки 36px. Высота по-прежнему складывается в 36
         // (9 + 20 + 7), ширина — в 44 (8 + 28 + 8).
-        "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors",
+        // Size=Mobile: 12/16, px 6 — 40 × 32 (9 + 16 + 7, 6 + 28 + 6).
+        "flex min-w-10 shrink-0 cursor-pointer items-center justify-center rounded-full px-1.5 pt-[9px] pb-[7px] text-p3-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors desktop:min-w-11 desktop:px-2 desktop:text-p2-medium",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"
@@ -166,7 +167,7 @@ function NavButton({
       aria-label={label}
       {...focusProps}
       data-slot="pagination-nav"
-      className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors not-disabled:hover:bg-[var(--pagination-hover-bg)] disabled:cursor-not-allowed disabled:text-[var(--pagination-disabled-fg)]"
+      className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-[var(--pagination-fg)] outline-none desktop:size-9 focus-visible:focus-ring transition-colors not-disabled:hover:bg-[var(--pagination-hover-bg)] disabled:cursor-not-allowed disabled:text-[var(--pagination-disabled-fg)]"
     >
       <Icon aria-hidden="true" className="size-4" />
     </button>
@@ -296,7 +297,7 @@ function Pagination({
                 key={`ellipsis-${index}`}
                 aria-hidden="true"
                 data-slot="pagination-ellipsis"
-                className="flex size-9 shrink-0 items-center justify-center text-[var(--pagination-fg)]"
+                className="flex size-8 shrink-0 items-center justify-center text-[var(--pagination-fg)] desktop:size-9"
               >
                 <Ellipsis aria-hidden="true" className="size-4" />
               </span>
@@ -333,8 +334,9 @@ function Pagination({
 
           Зазор в мобильной форме 12, а не 16: подпись и три кнопки
           (умолчание) занимают 312px при полосе 311, и с зазором 16 блок
-          переносился из-за одного пикселя. Мобильного макета у пагинатора
-          нет, на десктопе зазор прежний. */}
+          переносился из-за одного пикселя. Мобильный макет (Size=L / Mobile,
+          M / Mobile) нарисован только для блока страниц — кнопки 40 × 32,
+          12/16, «…» 32 × 32; блок «Показать на странице» остаётся по-прежнему. */}
       <div
         data-slot="pagination-page-count"
         className={cn(

@@ -12,14 +12,17 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Icon, type IconName } from "@/components/ui/icon"
 
+import logo131 from "./logo-131bank.svg"
+import { MiniCard } from "./mini-card"
 import { PaymentIcon } from "./payment-icon"
-import { PaymentLogo } from "./payment-logo"
 import {
   CARD_TYPES,
   ICON_STATUS_STYLE,
   isIconStatusType,
+  MINI_TYPES,
   SBP_TYPES,
   THUMBNAIL_ICON_BG,
+  THUMBNAIL_ICON_FG,
   type PaymentSystem,
   type ThumbnailBackground,
   type ThumbnailSize,
@@ -55,6 +58,11 @@ interface ThumbnailProps {
    * Дизайн-чек от 13.09, замечание 5; подробности — в `./variants`.
    */
   background?: ThumbnailBackground
+  /**
+   * Знак для `type="logo"` — 24×24 внутри светло-серой плитки. В мастере это
+   * instance swap (по умолчанию `Logo/131Bank`), поэтому принимается узел.
+   */
+  logo?: React.ReactNode
   disabled?: boolean
   paymentSystem?: PaymentSystem
   last4?: string
@@ -70,6 +78,7 @@ function Thumbnail({
   size = "l",
   icon = "ellipsis",
   background = "grey",
+  logo,
   disabled = false,
   paymentSystem = "mir",
   last4,
@@ -86,14 +95,14 @@ function Thumbnail({
   const isSbp = SBP_TYPES.has(type)
   const isIconStatus = isIconStatusType(type)
   const isIconTile = type === "icon"
+  const isLogo = type === "logo"
+  const isMini = MINI_TYPES.has(type)
 
-  // Type=Image: значок сидит внутри картинки, а не на углу. По мастеру: на 48px
-  // (L / Desktop) правый край 4, верх 28; на 40px (M и L-M / Mobile) — правый
-  // край 0, верх 12. Проценты давали 3.84/27.84 и 3.2/23.2, то есть на 40px
-  // значок стоял на 11px ниже мастера.
-  const pictureOffset =
-    size === "l" ? "top-3 right-0 desktop:top-7 desktop:right-1" : "top-3 right-0"
-  const badgeOffset = type === "picture" ? pictureOffset : "top-[-4px] right-[-8px]"
+  // Мастер: значок у всех типов на top −4, right −8; у миниатюры карты
+  // (Card, Sticker) — на top 4: она ниже плитки (34 из 48), и значок
+  // сидит на её верхнем крае. Type=Image — ровно то же, что и у прочих:
+  // картинка заполняет плитку целиком, особого положения у неё больше нет.
+  const badgeOffset = isMini ? "top-1 right-[-8px]" : "top-[-4px] right-[-8px]"
   const badge =
     count !== undefined ? (
       <Badge
@@ -116,6 +125,8 @@ function Thumbnail({
     bg = "var(--tag-black-bg)"
   } else if (isIconTile) {
     bg = THUMBNAIL_ICON_BG[background]
+  } else if (isLogo) {
+    bg = THUMBNAIL_ICON_BG.grey
   } else if (isIconStatus) {
     bg = ICON_STATUS_STYLE[type].bg
   }
@@ -148,20 +159,25 @@ function Thumbnail({
               name={icon}
               size={24}
               aria-hidden="true"
-              className="size-6 text-[var(--tag-grey-secondary-fg)]"
+              className={cn("size-6", THUMBNAIL_ICON_FG[background])}
             />
           ) : (
             icon
           ))}
 
-        {/* Type=Card — значок 24×24 из макета по центру плитки; у Sticker
-            мастер — целиком картинка плитки, её здесь нет, остаётся знак. */}
-        {type === "card" && (
-          <PaymentIcon system={paymentSystem} size="24" disabled={disabled} />
+        {isMini && (
+          <MiniCard
+            kind={type as "card" | "sticker"}
+            compact={size === "m"}
+            system={paymentSystem}
+            last4={last4Text}
+            disabled={disabled}
+          />
         )}
-        {type === "sticker" && (
-          <PaymentLogo system={paymentSystem} disabled={disabled} />
-        )}
+
+        {/* Type=Logo — знак 24×24 по центру светло-серой плитки. */}
+        {isLogo &&
+          (logo ?? <img src={logo131} alt="" className="size-6" />)}
 
         {type === "picture" &&
           (src ? (

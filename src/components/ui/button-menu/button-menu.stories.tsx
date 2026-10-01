@@ -5,8 +5,10 @@ import {
   StorySection,
   StoryShowcase,
   optionsArgType,
+  sizeArgType,
   toggleArgType,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ButtonMenu } from "./root"
 import type { ButtonMenuPlacement } from "./placement"
@@ -101,6 +103,7 @@ const PLACEMENT_LABELS: Record<ButtonMenuPlacement, string> = {
 const SPANS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
 
 interface PlaygroundArgs {
+  viewport: Viewport
   type: MenuType
   buttons: ButtonCount
   overflow: boolean
@@ -125,6 +128,7 @@ const meta = {
   // Storybook: иначе `sticky bottom-0` не к чему прилипать.
   parameters: { layout: "padded" },
   argTypes: {
+    viewport: sizeArgType,
     type: {
       name: "Type",
       description: "Свойство Type компонента ELK / button menu",
@@ -183,6 +187,7 @@ const meta = {
     },
   },
   args: {
+    viewport: "desktop" as Viewport,
     type: "With Primary",
     buttons: 3,
     overflow: true,
@@ -200,6 +205,7 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: ({
+    viewport,
     type,
     buttons,
     overflow: withOverflow,
@@ -210,6 +216,8 @@ export const Playground: Story = {
     overflowDirection,
     showDropdown,
   }) => (
+    <ViewportScope viewport={viewport}>
+    <div className={viewport === "mobile" ? "w-[360px]" : undefined}>
     <StoryContentArea height="h-72">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
@@ -230,6 +238,8 @@ export const Playground: Story = {
           overflow({ direction: overflowDirection, showDropdown })}
       </ButtonMenu>
     </StoryContentArea>
+    </div>
+    </ViewportScope>
   ),
 }
 
@@ -302,6 +312,20 @@ export const Examples: Story = {
           </div>
         </StorySection>
       ))}
+
+      <StorySection
+        title="Size = Mobile"
+        description="Мобильная форма (360×72): без рамки, тени и скруглений, поля 16 и снизу 24, белая маска, проявляющаяся снизу вверх; Primary тянется на всю ширину, рядом — «ещё»."
+      >
+        <ViewportScope viewport="mobile">
+          <div className="w-[360px]">
+            <ButtonMenu pinned={false}>
+              {menuButtons("With Primary", 1)}
+              {overflow()}
+            </ButtonMenu>
+          </div>
+        </ViewportScope>
+      </StorySection>
 
       <StorySection
         title="С меню «ещё»"

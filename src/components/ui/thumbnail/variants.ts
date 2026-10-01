@@ -1,7 +1,9 @@
 export type ThumbnailSize = "l" | "m"
 
-// Типы семейства «Card» (card, sticker, picture) рисуют тёмный квадрат со
-// знаком платёжной системы или картинкой, приглушаемый прозрачностью в
+// Тип «picture» рисует тёмный квадрат с картинкой, а Card и Sticker — с
+// ELK 69.36 — миниатюру карты 48×34 (см. `mini-card`). Раньше семейство
+// «Card» (card, sticker, picture) рисовало тёмный квадрат со знаком платёжной
+// системы или картинкой, приглушаемый прозрачностью в
 // выключенном состоянии (сверено с собственными образцами Disabled в
 // макете: это плоский opacity-50 на всей плитке, а не подмена цвета фона).
 // Типы СБП рисуют ту же тёмную плитку, но абсолютно спозиционированным
@@ -23,6 +25,7 @@ export type ThumbnailType =
   | "sbp-card"
   | "sbp-card-account"
   | "picture"
+  | "logo"
   | "check"
   | "question"
   | "clock"
@@ -56,14 +59,26 @@ export type PaymentSystem = "mir" | "mir-white" | "mastercard" | "visa"
  * статусом. Свободна она ровно у `Icon`, и меняется там действительно только
  * фон: глиф, размер и радиус те же.
  */
-export type ThumbnailBackground = "grey" | "white"
+export type ThumbnailBackground = "grey" | "white" | "black"
 
 export const THUMBNAIL_ICON_BG: Record<ThumbnailBackground, string> = {
   grey: "var(--tag-grey-secondary-bg)",
   white: "var(--white-101)",
+  // Type=Black Icon мастера: плитка #252628 (Base/Grey 1514), глиф белый.
+  black: "var(--tag-black-bg)",
 }
 
-export const CARD_TYPES = new Set<ThumbnailType>(["card", "sticker", "picture"])
+/** Цвет глифа у `Type=Icon`: на чёрной плитке — белый, на светлых — тёмно-серый. */
+export const THUMBNAIL_ICON_FG: Record<ThumbnailBackground, string> = {
+  grey: "text-[var(--tag-grey-secondary-fg)]",
+  white: "text-[var(--tag-grey-secondary-fg)]",
+  black: "text-white",
+}
+
+export const CARD_TYPES = new Set<ThumbnailType>(["picture"])
+
+/** Card и Sticker — миниатюра банковской карты 48×34 / 40×28, см. `mini-card`. */
+export const MINI_TYPES = new Set<ThumbnailType>(["card", "sticker"])
 
 export const SBP_TYPES = new Set<ThumbnailType>(["sbp-card", "sbp-card-account"])
 

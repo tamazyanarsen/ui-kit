@@ -12,6 +12,8 @@ import {
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
 
+import { Icon } from "@/components/ui/icon"
+
 import { Chips, type ChipsProps, type ChipsType } from "./chips"
 
 /* Панель «Свойства компонента» компонент-сета «ELK / chips, filter»:
@@ -21,7 +23,8 @@ import { Chips, type ChipsProps, type ChipsType } from "./chips"
      Type        Filter (White), Filter Subtitle (White), Filter (Grey),
                  Filter Subtitle (Grey), Chips
      Show Count  True, False
-     Show Icon   True, False
+     Show Icon Left  True, False
+     Show Icon Right True, False
      Show Select True, False
 
    Дизайн-чек Storybook (Аня Багрова) №23. С прошлого прохода в панели не
@@ -67,9 +70,13 @@ const meta = {
     state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
     type: optionsArgType("Type", TYPE_LABELS),
     showCount: toggleArgType("Show Count"),
+    iconLeft: {
+      ...iconArgType("Вспомогательная иконка слева от значения"),
+      name: "Show Icon Left",
+    },
     icon: {
       ...iconArgType("Вспомогательная иконка справа от значения"),
-      name: "Show Icon",
+      name: "Show Icon Right",
     },
     showSelect: toggleArgType(
       "Show Select",
@@ -94,6 +101,7 @@ const meta = {
     state: "default" as PlaygroundState,
     type: "chips" as ChipsType,
     showCount: true,
+    iconLeft: "ellipse",
     showSelect: false,
     open: false,
     selected: false,
@@ -160,6 +168,13 @@ export const Matrix: Story = {
           { label: "+ подпись", props: { subtitle: "Подпись" } },
           { label: "+ счётчик", props: { count: 5 } },
           { label: "+ крестик", props: { closable: true } },
+          {
+            label: "+ иконки",
+            props: {
+              iconLeft: <Icon name="ellipse" size={16} />,
+              icon: <Icon name="arrow-down-chevron" size={16} />,
+            },
+          },
         ]}
         rows={[
           { label: "Default", props: {} },

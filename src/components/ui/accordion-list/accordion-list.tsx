@@ -46,9 +46,11 @@ const DESCRIPTION_COLOR: Record<DescriptionType, string> = {
   information: "text-[var(--accordion-list-description-information-fg)]",
 }
 
+// На мобиле H3 и H4 одинаковы — 18/24 (в мастере Size=Mobile у Large Title и
+// Small Title один и тот же кегль), разница появляется только с desktop.
 const TITLE_SIZE = {
-  h3: "text-h3",
-  h4: "text-h4",
+  h3: "text-h3-mobile desktop:text-h3",
+  h4: "text-h4-mobile desktop:text-h4",
 } as const
 
 interface AccordionListItemProps {
@@ -141,11 +143,16 @@ function AccordionListItem({
             // accordion` начинается прямо от края (Top-фрейм x=0..719,
             // дети от x=0) — отступы даёт контентный блок страницы, в
             // который компонент вкладывается.
-            className="flex w-full cursor-pointer items-start gap-4 text-left outline-none focus-visible:focus-ring transition-colors [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
+            // Size=Mobile: рамка «Top» — колонка с зазором 12: сверху флажок
+            // и Title.Subtitle, ниже строка Description (описание слева,
+            // кнопки справа) от самого края, под флажком тоже. Тот же DOM
+            // раскладывается сеткой из трёх колонок; промежуточные обёртки
+            // на мобиле `contents`, а с desktop снова flex-строка.
+            className="grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-start text-left outline-none focus-visible:focus-ring transition-colors desktop:flex desktop:gap-4 [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
           >
             {showCheckbox && (
               <span
-                className="mt-0.5 shrink-0"
+                className="col-start-1 row-span-2 row-start-1 mt-0.5 mr-4 shrink-0 desktop:mr-0"
                 onMouseDown={stopPropagation}
                 onClick={stopPropagation}
               >
@@ -165,8 +172,8 @@ function AccordionListItem({
                 именно здесь, на строке заголовка, а не в группе кнопок —
                 отсюда и претензия дизайн-чека №24, что он «располагается
                 выше чем середина по кнопкам». */}
-            <span className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="flex w-full items-start gap-3">
+            <span className="contents desktop:flex desktop:min-w-0 desktop:flex-1 desktop:flex-col desktop:gap-1">
+              <span className="contents desktop:flex desktop:w-full desktop:items-start desktop:gap-3">
                 {/* Дизайн-чек №23: заголовок больше не обрезается в
                     многоточие. «Длинный текст становится многострочным, а
                     иконка шеврона ставится не по концу контейнера текста, а
@@ -186,7 +193,7 @@ function AccordionListItem({
                 <span
                   id={titleId}
                   className={cn(
-                    "min-w-0 flex-1 [overflow-wrap:anywhere] text-[var(--accordion-list-title-fg)]",
+                    "col-span-2 col-start-2 row-start-1 min-w-0 flex-1 [overflow-wrap:anywhere] text-[var(--accordion-list-title-fg)]",
                     TITLE_SIZE[titleAs]
                   )}
                 >
@@ -199,7 +206,10 @@ function AccordionListItem({
                       // (Box `py-2` при строке 32) и 6px на H4 (строка 28).
                       // `align-middle` ставил её выше на ~3px.
                       "relative inline-block size-4 shrink-0 align-top text-[var(--accordion-list-icon-fg)] transition-transform duration-200",
-                      titleAs === "h4" ? "top-1.5 ml-2" : "top-2 ml-3"
+                      // На мобиле Box `py-1` при строке 24 и зазор 8 у обоих.
+                      titleAs === "h4"
+                        ? "top-1 ml-2 desktop:top-1.5"
+                        : "top-1 ml-2 desktop:top-2 desktop:ml-3"
                     )}
                   />
                 </span>
@@ -213,8 +223,9 @@ function AccordionListItem({
                       // `py` из мастера (Status — `flex items-start py-[4px]`)
                       // центрирует 24px-строку в 32px-строке заголовка H3;
                       // на H4 строка заголовка 28px, поэтому 2px.
-                      "shrink-0 text-right text-p1-medium",
-                      titleAs === "h4" ? "py-0.5" : "py-1",
+                      // Мобила: строка Description — слева, 14/20, `py-1.5`.
+                      "col-span-2 col-start-1 row-start-3 mt-3 mr-3 shrink-0 py-1.5 text-p2-medium desktop:m-0 desktop:text-right desktop:text-p1-medium",
+                      titleAs === "h4" ? "desktop:py-0.5" : "desktop:py-1",
                       DESCRIPTION_COLOR[descriptionType]
                     )}
                   >
@@ -224,15 +235,23 @@ function AccordionListItem({
               </span>
               {hasValue(subtitle) && (
                 // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
-                <span className="text-p1-medium [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)]">
+                <span className="col-span-2 col-start-2 row-start-2 mt-1 text-p2-medium [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)] desktop:m-0 desktop:text-p1-medium">
                   {subtitle}
                 </span>
               )}
             </span>
 
-            <span className="flex shrink-0 items-start gap-4">
-              {(showButton || showMore) && (
-                <span className="flex items-start gap-2">
+            {(showButton || showMore) && (
+            <span
+              className={cn(
+                "row-start-3 mt-3 flex shrink-0 items-start gap-4 desktop:mt-0",
+                // Без описания кнопки в строке Description стоят от левого края.
+                hasValue(description)
+                  ? "col-start-3"
+                  : "col-span-3 col-start-1 justify-self-start"
+              )}
+            >
+              <span className="flex items-start gap-2">
                   {showButton && (
                     <span onMouseDown={stopPropagation} onClick={stopPropagation}>
                       <Button
@@ -259,8 +278,8 @@ function AccordionListItem({
                     </span>
                   )}
                 </span>
-              )}
             </span>
+            )}
           </AccordionPrimitive.Trigger>
         </AccordionPrimitive.Header>
 
@@ -273,7 +292,7 @@ function AccordionListItem({
                 (шапка заканчивается на 60, слот начинается на 84) и тянет
                 его во всю ширину строки — без собственных отступов снизу и
                 по бокам, раз у триггера отступов больше нет. */}
-            <div className="pt-6">
+            <div className="pt-4 desktop:pt-6">
               {children}
             </div>
           </AccordionPrimitive.Panel>

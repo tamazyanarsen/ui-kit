@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import type * as React from "react"
 
 import {
   StatesMatrix,
@@ -17,51 +18,67 @@ import type {
   ThumbnailType,
 } from "./variants"
 
-/* Дизайн-чек №3 №4: «Некорректные нейминги в матрице thumbnail. Это не
-   more, это вариант с иконкой. Матрицу взять из figma».
+/* Свойства мастера `ELK / thumbnail` (релиз 69.36): Size (`L / Desktop`,
+   `M / Desktop`, `L / Mobile`, `M / Mobile`), State (Default / Disabled),
+   Type из десяти значений — Grey Icon, White Icon, Black Icon, Card,
+   Sticker, Image, Logo, Check (Green), Attention (Yellow), Alert (Red) — и
+   Show Badge. Три «Icon» — это один тип кита `icon` с осью `background`
+   (серый, белый, чёрный), поэтому в панели они выбираются одним списком, а
+   `render` раскладывает его на два пропса.
 
-   Свойства мастера `ELK / thumbnail`: Size (`L / Desktop`,
-   `M / Desktop`, `L-M / Mobile`), State (Default / Disabled) и Type из
-   девяти значений — Icon, Card, Sticker, SBP Card, SBP Card Account,
-   Image, Check (Green), Attention (Yellow), Alert (Red). Порядок и имена
-   колонок ниже взяты оттуда; счётчик и точка — это вложенный
-   `ELK / badge` (свойство Show Badge), поэтому они остались строками. */
-const CARD_TYPES: ThumbnailType[] = [
-  "icon",
-  "card",
-  "sticker",
-  "sbp-card",
-  "sbp-card-account",
-  "picture",
-]
-const ICON_TYPES: ThumbnailType[] = [
-  "check",
-  "question",
-  "clock",
-  "alert",
-  "alert-red",
-]
+   Card и Sticker в мастере — миниатюра карты 48×34, а не плитка 48×48: те
+   типы, что остались от прежнего мастера (SBP Card, SBP Card Account, Clock,
+   жёлтый Alert-«!»), в нём не нарисованы и помечены точкой — так же, как
+   «лишние» значения у Button. Attention (Yellow) в мастере — глиф «?»
+   (`icon / question`), то есть тип `question`. */
+type PlayType =
+  | "icon-grey"
+  | "icon-white"
+  | "icon-black"
+  | Exclude<ThumbnailType, "icon">
 
-const TYPE_LABEL: Partial<Record<ThumbnailType, string>> = {
-  icon: "Icon",
+const PLAY_TYPE_LABELS: Record<PlayType, string> = {
+  "icon-grey": "Grey Icon",
+  "icon-white": "White Icon",
+  "icon-black": "Black Icon",
   card: "Card",
   sticker: "Sticker",
-  "sbp-card": "SBP Card",
-  "sbp-card-account": "SBP Card Account",
   picture: "Image",
+  logo: "Logo",
   check: "Check (Green)",
-  question: "Question",
-  clock: "Clock",
-  alert: "Attention (Yellow)",
+  question: "Attention (Yellow)",
   "alert-red": "Alert (Red)",
+  alert: "· Alert (Yellow)",
+  clock: "· Clock",
+  "sbp-card": "· SBP Card",
+  "sbp-card-account": "· SBP Card Account",
 }
 
-/* `Size` в Figma — одно свойство с тремя значениями: размер и форма там не
-   разъезжаются, в коде это пара `size` + <ViewportScope>. */
+const LEGACY_TYPES = [
+  "alert",
+  "clock",
+  "sbp-card",
+  "sbp-card-account",
+] as const satisfies readonly PlayType[]
+
+function resolveType(type: PlayType): {
+  type: ThumbnailType
+  background?: ThumbnailBackground
+} {
+  if (type === "icon-grey") return { type: "icon", background: "grey" }
+  if (type === "icon-white") return { type: "icon", background: "white" }
+  if (type === "icon-black") return { type: "icon", background: "black" }
+  return { type }
+}
+
+/* `Size` в Figma — одно свойство с четырьмя значениями: размер и форма там не
+   разъезжаются, в коде это пара `size` + <ViewportScope>. На мобиле L и M
+   совпадают (40), но в мастере это два символа. */
 const SIZE_LABELS = {
   "l-desktop": "L / Desktop",
   "m-desktop": "M / Desktop",
-  "l-mobile": "L-M / Mobile",
+  "l-mobile": "L / Mobile",
+  "m-mobile": "M / Mobile",
 } as const
 type FigmaSize = keyof typeof SIZE_LABELS
 
@@ -69,53 +86,35 @@ const SIZE_PROPS: Record<FigmaSize, { size: "l" | "m"; viewport: Viewport }> = {
   "l-desktop": { size: "l", viewport: "desktop" },
   "m-desktop": { size: "m", viewport: "desktop" },
   "l-mobile": { size: "l", viewport: "mobile" },
+  "m-mobile": { size: "m", viewport: "mobile" },
 }
 
-/* Значения `Type` — ровно девять из мастера, в его же порядке. Два
-   последних значения кита пары в сете не имеют (они есть на канвасе
-   отдельными кадрами «Thumbnail Question» / «Thumbnail Clock»), поэтому
-   помечены точкой — так же, как «лишние» значения у Button. */
-const TYPE_LABELS: Record<ThumbnailType, string> = {
-  icon: "Icon",
-  card: "Card",
-  sticker: "Sticker",
-  "sbp-card": "SBP Card",
-  "sbp-card-account": "SBP Card Account",
-  picture: "Image",
-  check: "Check (Green)",
-  alert: "Attention (Yellow)",
-  "alert-red": "Alert (Red)",
-  question: "· Question",
-  clock: "· Clock",
-}
-
-type PlaygroundArgs = Omit<ThumbnailProps, "size"> & {
-  viewport?: Viewport
+type PlaygroundArgs = Omit<ThumbnailProps, "size" | "type" | "background"> & {
+  type: PlayType
   figmaSize?: FigmaSize
   state?: PlaygroundState
+  showBadge?: boolean
 }
 const PAYMENT_SYSTEMS: PaymentSystem[] = ["mir", "mir-white", "mastercard", "visa"]
 
 const meta = {
   title: "Компоненты/Thumbnail",
-  component: Thumbnail,
+  // Панель собрана из свойств Figma (`type` здесь — PlayType), поэтому
+  // компонент приведён к типу пропсов истории.
+  component: Thumbnail as unknown as React.ComponentType<PlaygroundArgs>,
   parameters: { layout: "centered" },
   /* Панель повторяет «Свойства компонента» `ELK / thumbnail`: Size /
-     State / Type — плюс вложенные
-     инстансы `Payment System (ELK)` и `ELK / badge` своими категориями. */
+     State / Type / Show Badge — плюс вложенные инстансы `Payment System
+     (ELK)` и `ELK / badge` своими категориями. */
   argTypes: {
     figmaSize: optionsArgType<FigmaSize>("Size", SIZE_LABELS, "inline-radio"),
     state: stateArgTypeOf(["default", "disabled"]),
-    type: optionsArgType<ThumbnailType>("Type", TYPE_LABELS),
-    /* Дизайн-чек от 13.09, замечание 5: «Добавить версию Thumbnail с белым
-       фоном квадрата… Отличаться будет только цвет фона». В ДС свойства ещё
-       нет, поэтому в таблице свойств оно не значится — но в панели должно
-       быть, иначе белая версия из витрины недостижима. */
-    background: optionsArgType<ThumbnailBackground>(
-      "Фон квадрата",
-      { grey: "Серый", white: "Белый" },
-      "inline-radio"
-    ),
+    type: optionsArgType<PlayType>("Type", PLAY_TYPE_LABELS),
+    showBadge: {
+      name: "Show Badge",
+      control: "boolean",
+      description: "Вложенный ELK / badge: счётчик (если задан) или точка",
+    },
     paymentSystem: {
       name: "Payment System",
       control: "select",
@@ -131,12 +130,14 @@ const meta = {
     icon: {
       control: "select",
       options: ICON_NAMES,
-      description: "Глиф для типа Icon (в Figma — instance swap)",
+      description: "Глиф для типов Icon (в Figma — instance swap)",
       table: { category: "Контент" },
     },
     last4: { control: "text", table: { category: "Контент" } },
     src: { control: "text", table: { category: "Контент" } },
     alt: { control: "text", table: { category: "Контент" } },
+    // Фон квадрата выбирается самим `Type` (Grey / White / Black Icon).
+    logo: { table: { disable: true } },
     // Значение оси State — отдельного контрола у него нет.
     disabled: { table: { disable: true } },
   },
@@ -145,11 +146,12 @@ const meta = {
   args: {
     figmaSize: "l-desktop" as FigmaSize,
     state: "default" as PlaygroundState,
-    type: "card",
-    paymentSystem: "mir",
-    showDot: false,
+    type: "icon-grey" as PlayType,
+    showBadge: true,
+    paymentSystem: "mastercard",
+    showDot: true,
     icon: "ellipsis",
-    background: "grey",
+    last4: "2545",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -157,15 +159,38 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ figmaSize = "l-desktop", state, ...args }) => {
+  render: ({ figmaSize = "l-desktop", state, type, showBadge, showDot, count, ...args }) => {
     const { size, viewport } = SIZE_PROPS[figmaSize]
     return (
       <ViewportScope viewport={viewport}>
-        <Thumbnail {...args} size={size} disabled={state === "disabled"} />
+        <Thumbnail
+          {...args}
+          {...resolveType(type)}
+          size={size}
+          disabled={state === "disabled"}
+          showDot={showBadge && showDot && count === undefined}
+          count={showBadge ? count : undefined}
+        />
       </ViewportScope>
     )
   },
 }
+
+const typeColumns = (types: readonly PlayType[]) =>
+  types.map((type) => ({
+    label: PLAY_TYPE_LABELS[type],
+    props: resolveType(type) as Partial<ThumbnailProps>,
+  }))
+
+const SIZE_ROWS = [
+  { label: "L (default)", props: { size: "l" } },
+  { label: "M", props: { size: "m" } },
+  { label: "Со счётчиком", props: { count: 3 } },
+  { label: "С точкой", props: { showDot: true } },
+  // Выключенное состояние — плоский opacity-50 на всей плитке, а не подмена
+  // фона.
+  { label: "Disabled", props: { disabled: true } },
+] satisfies { label: string; props: Partial<ThumbnailProps> }[]
 
 export const Matrix: Story = {
   name: "Matrix (все состояния)",
@@ -174,53 +199,29 @@ export const Matrix: Story = {
     <div className="flex flex-col gap-2">
       <StatesMatrix<ThumbnailProps>
         responsive
-        baseProps={{ paymentSystem: "mir", last4: "1234" }}
+        baseProps={{ paymentSystem: "mastercard", last4: "2545" }}
         columnGroups={[
           {
             label: "Type",
-            columns: CARD_TYPES.map((type) => ({
-              label: TYPE_LABEL[type] ?? type,
-              props: { type },
-            })),
+            columns: typeColumns([
+              "icon-grey",
+              "icon-white",
+              "icon-black",
+              "card",
+              "sticker",
+              "picture",
+              "logo",
+            ]),
           },
         ]}
-        rows={[
-          { label: "L (default)", props: { size: "l" } },
-          { label: "M", props: { size: "m" } },
-          { label: "Со счётчиком", props: { count: 3 } },
-          { label: "С точкой", props: { showDot: true } },
-          // Выключенное состояние — плоский opacity-50 на всей плитке, а
-          // не подмена фона.
-          { label: "Disabled", props: { disabled: true } },
-        ]}
-        render={(props) => <Thumbnail {...props} />}
-      />
-      <StatesMatrix<ThumbnailProps>
-        baseProps={{ type: "icon" }}
-        columnGroups={[
-          {
-            label: "Фон квадрата (Type = Icon)",
-            columns: (["grey", "white"] as const).map((background) => ({
-              label: background === "grey" ? "Серый" : "Белый",
-              props: { background },
-            })),
-          },
-        ]}
-        rows={[
-          { label: "L (default)", props: { size: "l" } },
-          { label: "M", props: { size: "m" } },
-          { label: "Disabled", props: { disabled: true } },
-        ]}
+        rows={SIZE_ROWS}
         render={(props) => <Thumbnail {...props} />}
       />
       <StatesMatrix<ThumbnailProps>
         columnGroups={[
           {
             label: "Type — статусы",
-            columns: ICON_TYPES.map((type) => ({
-              label: TYPE_LABEL[type] ?? type,
-              props: { type },
-            })),
+            columns: typeColumns(["check", "question", "alert-red"]),
           },
         ]}
         rows={[
@@ -231,10 +232,25 @@ export const Matrix: Story = {
         render={(props) => <Thumbnail {...props} />}
       />
       <StatesMatrix<ThumbnailProps>
-        baseProps={{ type: "card" }}
+        baseProps={{ paymentSystem: "mir", last4: "1234" }}
         columnGroups={[
           {
-            label: "Payment systems",
+            label: "Значения кита, которых нет в мастере",
+            columns: typeColumns(LEGACY_TYPES),
+          },
+        ]}
+        rows={[
+          { label: "L (default)", props: { size: "l" } },
+          { label: "M", props: { size: "m" } },
+          { label: "Disabled", props: { disabled: true } },
+        ]}
+        render={(props) => <Thumbnail {...props} />}
+      />
+      <StatesMatrix<ThumbnailProps>
+        baseProps={{ type: "card", last4: "2545" }}
+        columnGroups={[
+          {
+            label: "Payment systems (Card)",
             columns: PAYMENT_SYSTEMS.map((paymentSystem) => ({
               label: paymentSystem,
               props: { paymentSystem },

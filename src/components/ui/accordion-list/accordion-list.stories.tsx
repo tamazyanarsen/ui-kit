@@ -4,8 +4,10 @@ import type { ComponentProps } from "react"
 import {
   StatesMatrix,
   optionsArgType,
+  sizeArgType,
   toggleArgType,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { AccordionList, AccordionListItem } from "./accordion-list"
 
@@ -24,6 +26,7 @@ const CONTENT = { table: { category: "Контент" } }
 /* `showDescription` / `showSubtitle` — синтетические аргументы: в макете это
    свойства-переключатели, в коде — наличие содержимого в слоте. */
 type PlaygroundArgs = ItemProps & {
+  viewport?: Viewport
   showDescription?: boolean
   showSubtitle?: boolean
 }
@@ -37,6 +40,7 @@ const meta = {
     // компонента» — Style, Open, Show Checkbox, Show Description,
     // Show Buttons, Show Subtitle. Остальные контролы — наполнение строки,
     // они убраны в отдельную группу.
+    viewport: sizeArgType,
     titleAs: optionsArgType(
       "Style",
       { h3: "Title H3", h4: "Title H4" },
@@ -68,6 +72,7 @@ const meta = {
     open: { table: { disable: true } },
   },
   args: {
+    viewport: "desktop" as Viewport,
     title: "Личные данные",
     subtitle: "Паспорт, СНИЛС",
     showCheckbox: true,
@@ -96,7 +101,8 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ showDescription, showSubtitle, description, subtitle, ...args }) => (
+  render: ({ viewport, showDescription, showSubtitle, description, subtitle, ...args }) => (
+    <ViewportScope viewport={viewport}>
     <AccordionList>
       {/* Дизайн-чек Storybook (Аня Багрова) №24: «не работает настройка
           Checked — при изменении True на False остаётся Checked».
@@ -110,6 +116,7 @@ export const Playground: Story = {
         description={showDescription ? description : undefined}
       />
     </AccordionList>
+    </ViewportScope>
   ),
 }
 
@@ -122,6 +129,7 @@ export const Matrix: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <StatesMatrix<ItemProps>
+        responsive
         stretch
         cellClassName="min-w-[420px]"
         baseProps={{ title: "Title", children: "Содержимое раздела." }}
@@ -166,6 +174,7 @@ export const Matrix: Story = {
         )}
       />
       <StatesMatrix<ItemProps>
+        responsive
         stretch
         cellClassName="min-w-[420px]"
         baseProps={{ title: "Title", description: "Description" }}

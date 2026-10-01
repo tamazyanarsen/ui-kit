@@ -2,7 +2,6 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
-import { ViewportScope } from "@/lib/viewport"
 
 import { flattenChildren } from "@/lib/flatten-children"
 import { ButtonMenuRow, isButton, isOverflow } from "./row"
@@ -87,19 +86,16 @@ const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function Bu
   const ref = useViewportInsetBottom(pinned && !detached, forwardedRef)
 
   return (
-    // ⚠️ Панель ВСЕГДА в десктопной форме.
+    // Форма следует варианту `desktop:`: в мастере «ELK / button menu» (v2.0.0)
+    // два размера — Desktop (1160×88) и Mobile (360×72).
     //
-    // Дизайн-чек от 13.09, замечание 2: «У панели вообще не должно быть
-    // мобайл-версии или уменьшенной версии. Она не должна менять размеры,
-    // должна просто следовать сетке». Своих `desktop:` у полосы нет — её
-    // размер менялся через кнопки внутри (`ELK / button` на мобиле 48, на
-    // десктопе 56), поэтому и чинится это не здесь, а скоупом на всё
-    // поддерево: `ViewportScope` ставит `data-viewport="desktop"`, и вариант
-    // `desktop:` включается при любой ширине окна (см. src/styles/variants.css).
-    //
-    // Обёртка — `display: contents`, в раскладке не участвует, поэтому липкий
-    // низ и место в потоке остаются за самой полосой.
-    <ViewportScope viewport="desktop">
+    // Дизайн-чек от 13.09, замечание 2 («у панели не должно быть
+    // мобайл-версии») снят макетом: в Size=Mobile нет ни рамки, ни тени, ни
+    // скруглений — это ряд кнопок с полями 16/16 снизу 24 на белой маске,
+    // которая плавно проявляется снизу вверх (прозрачный верх → белый на
+    // 64%), поэтому контент под панелью уходит под неё мягко. Первая кнопка
+    // растянута (Primary `flex-1`), остальные — по содержимому.
+    <>
       {/* Живой мастер «ELK / button menu» (v2.0.0) подтверждает исходное
           прочтение замечания 5 дизайн-чека: это панель, прижатая к низу, а
           не плавающая таблетка. Скруглены только верхние углы, рамка идёт
@@ -125,9 +121,12 @@ const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function Bu
         data-detached={detached || undefined}
         data-placement={placement}
         className={cn(
-          "flex items-center gap-4 border-t border-r border-l border-solid border-[var(--button-menu-border)] bg-[var(--button-menu-bg)] px-[31px] pt-[15px] pb-4 shadow-universal",
+          "flex items-center gap-4 border-solid border-[var(--button-menu-border)] bg-[linear-gradient(to_bottom,rgb(255_255_255/0),var(--button-menu-bg)_64%)] px-4 pb-6",
+          "desktop:border-t desktop:border-r desktop:border-l desktop:bg-none desktop:bg-[var(--button-menu-bg)] desktop:px-[31px] desktop:pt-[15px] desktop:pb-4 desktop:shadow-universal",
           BAR_PLACEMENT_CLASS[placement],
-          barShapeClass({ detached, bordered: true }),
+          detached
+            ? barShapeClass({ detached, bordered: true })
+            : "desktop:rounded-t-[16px]",
           pinned && !detached && PINNED_CLASS,
           className
         )}
@@ -136,10 +135,12 @@ const ButtonMenu = React.forwardRef<HTMLDivElement, ButtonMenuProps>(function Bu
       >
         {/* Мерная зона — только ряд кнопок: `extras` в неё не входят, иначе
             панель считала бы их место свободным. */}
-        <ButtonMenuRow size="lg">{row}</ButtonMenuRow>
+        <ButtonMenuRow size="lg" stretchFirst>
+          {row}
+        </ButtonMenuRow>
         {extras}
       </div>
-    </ViewportScope>
+    </>
   )
 })
 

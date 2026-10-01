@@ -82,6 +82,13 @@ interface ChipsProps {
    */
   icon?: React.ReactNode
   /**
+   * Свойство `Show Icon Left` — иконка 16×16 слева от значения. В мастере она
+   * стоит первой в строке (зазор 8), перед текстом; как и правая, это
+   * иконка-пример, которую подставляет дизайнер, поэтому проп принимает узел.
+   * В типах с подписью она стоит в строке значения, а не над ней.
+   */
+  iconLeft?: React.ReactNode
+  /**
    * Свойство `Show Select` — шеврон вызова Dropdown.
    *
    * В макете он есть только у типов `Filter …`: чипса выпадающего списка не
@@ -123,6 +130,7 @@ function Chips({
   type = "chips",
   subtitle,
   icon,
+  iconLeft,
   showSelect = false,
   open = false,
   count,
@@ -191,6 +199,20 @@ function Chips({
         </span>
       )}
       <span className="flex w-full min-w-0 items-center gap-2">
+        {hasValue(iconLeft) && (
+          <span
+            aria-hidden="true"
+            data-slot="chips-icon-left"
+            className={cn(
+              "flex shrink-0 [&_svg]:size-4",
+              disabled
+                ? "text-[var(--chips-disabled-fg)]"
+                : "text-[var(--chips-fg)]"
+            )}
+          >
+            {iconLeft}
+          </span>
+        )}
         <span
           className={cn(
             "min-w-0 truncate text-p2-medium desktop:text-p1-medium",

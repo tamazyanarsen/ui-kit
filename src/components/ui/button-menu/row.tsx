@@ -72,12 +72,19 @@ interface ButtonMenuRowProps extends React.ComponentProps<"div"> {
    * до одного «…», и всё уходит туда, а не ложится поверх информации.
    */
   minVisible?: number
+  /**
+   * Первая видимая кнопка тянется на всё свободное место, пока форма
+   * мобильная (Size=Mobile панели: Primary — `flex-1`). С desktop кнопки
+   * снова по содержимому. Включает только нижняя панель.
+   */
+  stretchFirst?: boolean
 }
 
 const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(function ButtonMenuRow({
   size = "lg",
   tone,
   minVisible = 1,
+  stretchFirst = false,
   className,
   children,
   ...props
@@ -136,7 +143,19 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
   // ключ из её собственного `key`. С индексом кнопка, вставленная в начало,
   // сдвигала бы все остальные, и React сопоставлял бы DOM и фокус не с теми
   // кнопками.
-  const sized = (child: ButtonElement) => React.cloneElement(child, { size })
+  const sized = (child: ButtonElement, index: number) =>
+    React.cloneElement(
+      child,
+      stretchFirst && index === 0
+        ? ({
+            size,
+            className: cn(
+              (child.props as { className?: string }).className,
+              "min-w-0 flex-1 desktop:flex-none"
+            ),
+          } as Partial<ButtonElement["props"]>)
+        : { size }
+    )
 
   const visible = buttons.slice(0, visibleCount).map(sized)
   const hidden = buttons.slice(visibleCount)

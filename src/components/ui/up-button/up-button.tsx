@@ -1,14 +1,18 @@
 import * as React from "react"
-import { ChevronUp } from "@/icons"
+import { ArrowUp } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-// Up Button — «Кнопка наверх»: по анатомии это собственная форма Button
-// Icon/Small (secondary-white, круг 32px — size-8 с rounded-2xl даёт точный
-// круг), по примечанию самого макета «аналогична Button + Анатомия +
-// Small». По макету: появляется внизу справа, когда страницу прокрутили, и
-// прячется, пока открыт плавающий элемент (модальное окно, шторка и
+// Up Button — «Кнопка наверх». Дизайн-чек от 08.10, замечание 25: прежний
+// круг 32px (Button Icon/Small с шевроном) заменён обычной кнопкой кита
+// размера L — `icon-lg`: 56×56 на Desktop и 48×48 на Mobile, радиус 16,
+// глиф 24/16 — со стандартной тенью Universal Shadow и стрелкой Arrow Up
+// вместо Chevron Up. Мобильная версия «сделана ровно так же» (кнопка L, тень,
+// стрелка), поэтому форма переключается вариантом `desktop:` самой кнопки,
+// своей ветки у Up Button нет.
+//
+// По макету: появляется внизу справа, когда страницу прокрутили, и прячется, пока открыт плавающий элемент (модальное окно, шторка и
 // прочее). `scrollContainer` указывает на источник прокрутки (по умолчанию
 // окно), а `hidden` позволяет потребителю принудительно убрать кнопку для
 // случая с плавающим элементом.
@@ -106,16 +110,14 @@ function UpButton({
       type="button"
       data-slot="up-button"
       variant="secondary-white"
-      size="sm"
+      size="lg"
       iconPosition="only"
-      icon={ChevronUp}
+      icon={ArrowUp}
       aria-label="Наверх"
       onClick={handleClick}
-      // Мастер (`ELK / up button`) несёт именованный эффект кита
-      // «Universal shadow» — 0/4/12 цвета #8B99A93D, — а не какую-то свою
-      // чёрную тень. Макет выгружает её фильтром `drop-shadow`, у которого
-      // размытие в CSS вдвое меньше радиуса в макете, поэтому в сырой
-      // выгрузке и читается 6px.
+      // Тень — именованный эффект дизайн-системы «Universal shadow»
+      // (`shadow-universal`, токен `--shadow-universal` в theme.css: 0/4/12
+      // цвета #8B99A93D), а не какая-то своя.
       //
       // ⚠️ Отступ снизу — над ЗАНЯТЫМ низом вьюпорта, а не над кромкой
       // экрана: закреплённая панель (ButtonMenu, ButtonMenuBlack) публикует
@@ -133,7 +135,7 @@ function UpButton({
         // иначе она лежала поверх меню и прокручивала скрытую страницу
         // (аудит 23). `right` компенсирует полосу прокрутки, снятую
         // блокировкой страницы (`--scroll-lock-gap`).
-        "[:root:has([data-side][data-open],[data-slot=header-menu-overlay])_&]:z-[35] fixed right-[calc(1.5rem+var(--scroll-lock-gap,0px))] bottom-[max(calc(1.5rem+var(--floating-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-[var(--shadow-universal)]",
+        "[:root:has([data-side][data-open],[data-slot=header-menu-overlay])_&]:z-[35] fixed right-[calc(1.5rem+var(--scroll-lock-gap,0px))] bottom-[max(calc(1.5rem+var(--floating-bottom,0px)),var(--floating-corner-inset,0px))] z-40 shadow-universal",
         className
       )}
     />

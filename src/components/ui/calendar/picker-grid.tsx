@@ -55,7 +55,7 @@ function PickerGrid<T extends string | number>({
             aria-pressed={isSelected}
             onClick={() => onSelect(value)}
             className={cn(
-              "flex items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:focus-ring",
+              "flex items-center justify-center rounded-[8px] text-p2-medium outline-none press-scale focus-visible:focus-ring",
               size === "mobile" ? "h-12" : "h-9",
               isSelected
                 ? "bg-[var(--calendar-selected-bg)] text-[var(--calendar-selected-fg)]"

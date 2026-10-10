@@ -98,6 +98,11 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
             "box-border border border-[var(--block-widget-border)]",
         interactive &&
           "cursor-pointer outline-none transition-colors hover:bg-[var(--block-widget-bg-hover)] focus-visible:focus-ring",
+        // OnClick (Active) серого блока — Grey 124 (дизайн-чек от 08.10,
+        // замечание 28). Только у сплошного: обведённый блок не серый.
+        interactive &&
+          variant === "solid" &&
+          "active:bg-[var(--block-widget-bg-active)]",
         className
       )}
       ref={ref}

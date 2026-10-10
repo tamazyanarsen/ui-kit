@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { ArrowDownChevron, ArrowNextChevron } from "@/icons"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
+import { LimitedGroups } from "@/stories/sortable-fixtures"
 
 import {
   SortableDropIndicator,
@@ -28,6 +29,10 @@ import {
  *   4. Вставка в низ группы — линия короче на ширину служебной колонки.
  *   5. Вставка под группу — линия обычная, но на том же уровне, что и в п. 4.
  *   6. Автопрокрутка при подводе к границе видимой области.
+ *
+ * Дизайн-чек 08.10, замечание 7: фантома у курсора нет — только заливка
+ * взятой строки и линия; у полной группы (5 из 5) нет линии под последней
+ * строкой — такой бросок ничего бы не поменял.
  *
  * Мышью это проверяется прямо здесь: истории живые, а не картинки состояний.
  */
@@ -55,11 +60,14 @@ function SectionList({ initial = INITIAL }: { initial?: Row[] }) {
 
   const sortable = useSortable({
     items: rows,
-    onReorder: (from, to) =>
+    // Глубина приземления приходит из хука: строка, брошенная под последней
+    // строкой группы (короткая линия), встаёт внутрь неё, а над строкой под
+    // группой (обычная линия) — на верхний уровень.
+    onReorder: (from, to, { depth }) =>
       setRows((prev) => {
         const next = [...prev]
         const [moved] = next.splice(from, 1)
-        next.splice(to, 0, moved)
+        next.splice(to, 0, { ...moved, depth })
         return next
       }),
     onExpandGroup: (id) =>
@@ -176,7 +184,10 @@ export const Examples: Story = {
         <h4 className="text-h4">Правила</h4>
         <ul className="flex flex-col gap-1 text-p2-medium text-[var(--grey-284)]">
           <li>Захват — только за иконку перетаскивания.</li>
-          <li>Взятая строка красится в Active (Grey&nbsp;124).</li>
+          <li>
+            Взятая строка красится в Active (Grey&nbsp;124) и остаётся на месте;
+            фантомной копии у курсора нет.
+          </li>
           <li>Область вставки — линия 2&nbsp;px; список не раздвигается.</li>
           <li>
             Наведение на свёрнутую группу подсвечивает её Hover (Grey&nbsp;106)
@@ -188,6 +199,11 @@ export const Examples: Story = {
             уровне.
           </li>
           <li>У границы видимой области список прокручивается сам.</li>
+          <li>
+            Группа с лимитом заполнена — под её последней строкой линии нет
+            (бросок ничего не поменяет); на месте последней — есть, и
+            последняя строка вытесняется.
+          </li>
         </ul>
       </section>
 
@@ -195,6 +211,13 @@ export const Examples: Story = {
         <h4 className="text-h4">Список с группами</h4>
         <div className="rounded-3xl bg-[var(--white-101)] p-8">
           <SectionList />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h4 className="text-h4">Перенос между группами с лимитом (5 из 5)</h4>
+        <div className="rounded-3xl bg-[var(--white-101)] p-8">
+          <LimitedGroups />
         </div>
       </section>
 

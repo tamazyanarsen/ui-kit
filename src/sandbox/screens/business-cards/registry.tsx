@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { X } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { DataTable, TableBlock } from "@/components/ui/table"
+import { DataTable, TableBlock, TableBlockPagination } from "@/components/ui/table"
 import { EMPTY_FILTERED, EmptySearchResults } from "@/components/ui/empty-search"
 import { FilterTableSelect } from "@/components/ui/filter-table"
 import { Pagination } from "@/components/ui/pagination"
@@ -207,6 +207,19 @@ function BusinessCardsRegistry() {
                     showThumbnail
                     thumbnailNumber={card.last4}
                     paymentSystem={card.paymentSystem}
+                    // Дизайн-чек от 08.10, замечание 39: «не настоящий
+                    // компонент карты — не реагирует на ховер». Компонент и
+                    // был `Card`, но без `onClick`, а заливки Hover/Active у
+                    // `Card` включаются только у карточки, которая куда-то
+                    // ведёт. Карточка реестра ведёт на деталку карты (D7) —
+                    // в песочнице переход обозначен тостом.
+                    onClick={() =>
+                      toast.add({
+                        type: "checked",
+                        title: `Открываем карту · ${card.last4}`,
+                        behavior: "transient",
+                      })
+                    }
                     menuItems={[
                       {
                         text: "Активировать карту",
@@ -233,16 +246,18 @@ function BusinessCardsRegistry() {
               </div>
             )}
 
-            <Pagination
-              page={safePage}
-              totalPages={totalPages}
-              onPageChange={setPage}
-              pageSize={pageSize}
-              onPageSizeChange={(size) => {
-                setPageSize(size)
-                setPage(1)
-              }}
-            />
+            <TableBlockPagination className="pt-0">
+              <Pagination
+                page={safePage}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                pageSize={pageSize}
+                onPageSizeChange={(size) => {
+                  setPageSize(size)
+                  setPage(1)
+                }}
+              />
+            </TableBlockPagination>
           </>
         ) : (
           <DataTable fields={OPERATION_FIELDS} rows={OPERATIONS} />

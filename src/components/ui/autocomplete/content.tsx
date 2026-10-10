@@ -1,6 +1,7 @@
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { Dropdown } from "@/components/ui/dropdown"
 
 import { useAutocompleteAnchor } from "./root"
@@ -34,6 +35,7 @@ function AutocompleteContent({
         anchor={anchorRef}
         side={side}
         sideOffset={sideOffset}
+        collisionAvoidance={POPUP_COLLISION}
         align={align}
         alignOffset={alignOffset}
         className="isolate z-50 w-(--anchor-width)"

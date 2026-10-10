@@ -3,23 +3,28 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   PseudoBox,
   StatesMatrix,
+  sizeArgType,
   stateArgTypeOf,
   type PlaygroundState,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { UpButton, type UpButtonProps } from "./up-button"
 
-// У `ELK / up button` ровно одно свойство — `State` (Default, Hover,
-// Active), и других вариантов у компонента нет. Без него в Playground не
-// было вообще ни одного контрола, повторяющего Figma.
-type PlaygroundArgs = UpButtonProps & { state?: PlaygroundState }
+// Свойства `ELK / up button`: `Size` (Desktop / Mobile — дизайн-чек от
+// 08.10, №25: кнопка L Desktop и L Mobile) и `State` (Default, Hover,
+// Active).
+type PlaygroundArgs = UpButtonProps & {
+  state?: PlaygroundState
+  viewport?: Viewport
+}
 
 const meta = {
   title: "Компоненты/Up Button",
   component: UpButton,
   parameters: { layout: "padded" },
   argTypes: {
-    // Единственное свойство мастера.
+    viewport: sizeArgType,
     state: stateArgTypeOf(["default", "hover", "active"]),
     threshold: { control: "number" },
     hidden: { control: "boolean" },
@@ -33,7 +38,12 @@ const meta = {
   // threshold=-1 оставляет кнопку видимой сразу на холсте стори; в реальном
   // применении она появляется только после того, как страницу прокрутили за
   // порог.
-  args: { threshold: -1, hidden: false, state: "default" as PlaygroundState },
+  args: {
+    viewport: "desktop" as Viewport,
+    state: "default" as PlaygroundState,
+    threshold: -1,
+    hidden: false,
+  },
 } satisfies Meta<PlaygroundArgs>
 
 export default meta
@@ -52,12 +62,14 @@ type Story = StoryObj<PlaygroundArgs>
 const STORY_POSITION = "static"
 
 export const Playground: Story = {
-  render: ({ state, ...args }) => (
-    <div className="relative h-40 w-full">
-      <PseudoBox state={state} className="absolute right-6 bottom-6">
-        <UpButton {...args} className={STORY_POSITION} />
-      </PseudoBox>
-    </div>
+  render: ({ state, viewport = "desktop", ...args }) => (
+    <ViewportScope viewport={viewport}>
+      <div className="relative h-40 w-full">
+        <PseudoBox state={state} className="absolute right-6 bottom-6">
+          <UpButton {...args} className={STORY_POSITION} />
+        </PseudoBox>
+      </div>
+    </ViewportScope>
   ),
 }
 
@@ -67,6 +79,7 @@ export const Matrix: Story = {
   render: () => (
     <StatesMatrix<UpButtonProps>
       baseProps={{ threshold: -1 }}
+      responsive
       columns={[{ label: "Up Button" }]}
       rows={[
         { label: "Default", props: {} },

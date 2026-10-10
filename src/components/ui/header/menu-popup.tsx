@@ -2,8 +2,10 @@ import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
 import { cn } from "@/lib/utils"
+import { useViewportAttr } from "@/lib/viewport"
 import { Dropdown } from "@/components/ui/dropdown"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 /**
  * Плитка панели иконок в шапке — только геометрия, без реакции на курсор.
@@ -67,12 +69,18 @@ function HeaderMenuPopup({
   className?: string
   children: React.ReactNode
 }) {
+  const viewport = useViewportAttr()
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
         side="bottom"
         align={align}
         sideOffset={8}
+        collisionAvoidance={POPUP_COLLISION}
+        // Портал уводит попап из-под `ViewportScope`: форму (Desktop/Mobile)
+        // корню слоя надо проставить вручную, иначе мобильная шапка в
+        // витрине открывает десктопные попапы.
+        data-viewport={viewport}
         className="isolate z-50"
       >
         <MenuPrimitive.Popup

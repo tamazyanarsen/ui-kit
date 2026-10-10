@@ -7,4 +7,6 @@ export {
   ModalDescription,
 } from "./header"
 export { ModalBody } from "./body"
+export { ModalColumns } from "./columns"
+export type { ModalColumnsProps } from "./columns"
 export { ModalFooter } from "./footer"

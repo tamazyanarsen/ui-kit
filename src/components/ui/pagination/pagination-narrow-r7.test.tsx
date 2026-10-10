@@ -33,8 +33,8 @@ describe("Pagination: узкая полоса", () => {
   afterEach(() => vi.restoreAllMocks())
 
   it("полный ряд шире полосы — показывается «1 … текущая … последняя»", () => {
-    // Полный ряд: 2 стрелки + 7 ячеек = 9 × 40 = 360 > 300.
-    mockStrip(300)
+    // Полный ряд: 7 ячеек = 7 × 40 = 280 > 260 (стрелок с v1.0.1 нет).
+    mockStrip(260)
     render(<Pagination page={10} totalPages={20} />)
     expect(pageNumbers()).toEqual(["1", "10", "20"])
     expect(document.querySelectorAll('[data-slot="pagination-ellipsis"]')).toHaveLength(2)
@@ -48,7 +48,7 @@ describe("Pagination: узкая полоса", () => {
   })
 
   it("у края — соседняя страница, без дублей", () => {
-    mockStrip(300)
+    mockStrip(260)
     const { rerender } = render(<Pagination page={1} totalPages={20} />)
     expect(pageNumbers()).toEqual(["1", "2", "20"])
     rerender(<Pagination page={20} totalPages={20} />)

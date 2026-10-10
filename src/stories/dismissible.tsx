@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
    решает вызывающий код. Без обёртки крестик в Storybook ничего не делал, и
    поведение нельзя было проверить в браузере.
 
-   После закрытия ставится кнопка «Показать снова», и фокус переходит на неё:
+   После закрытия включается кнопка «Показать снова», и фокус переходит на неё:
    иначе он падает на body, и клавиатурного пользователя выбрасывает в начало
    страницы (то же правило у самих компонентов кита — см. NpsDone).
    Счётчик закрытий виден на странице, чтобы значение проверялось без
@@ -44,28 +44,29 @@ function Dismissible({ children, resetKey }: DismissibleProps) {
     wasClosed.current = closed
   }, [closed])
 
+  // Содержимое — прямой ребёнок колонки, а кнопка «Показать снова» стоит
+  // под ним всегда (выключенная, пока содержимое на месте): так видно, как
+  // при закрытии нижестоящий контент плавно поднимается на освободившееся
+  // место (дизайн-чек 08.10, замечание 11), а не подменяется одним кадром.
   return (
-    <div className="flex flex-col gap-4">
-      {closed ? (
-        <div>
-          <Button
-            ref={restoreRef}
-            type="button"
-            variant="secondary-grey"
-            size="sm"
-            onClick={() => setClosed(false)}
-          >
-            Показать снова
-          </Button>
-        </div>
-      ) : (
-        <div ref={contentRef}>
-          {children(() => {
-            setClosed(true)
-            setCount((n) => n + 1)
-          })}
-        </div>
-      )}
+    <div ref={contentRef} className="flex flex-col gap-4">
+      {!closed &&
+        children(() => {
+          setClosed(true)
+          setCount((n) => n + 1)
+        })}
+      <div>
+        <Button
+          ref={restoreRef}
+          type="button"
+          variant="secondary-grey"
+          size="sm"
+          disabled={!closed}
+          onClick={() => setClosed(false)}
+        >
+          Показать снова
+        </Button>
+      </div>
       <p data-slot="story-status" className="text-p3-medium text-[var(--nps-subtitle-fg)]">
         Закрыто раз: {count}
       </p>

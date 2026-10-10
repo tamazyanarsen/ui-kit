@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { PseudoBox, StatesMatrix, sizeArgType, toggleArgType } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
-import { IssueItem, type IssueStatus } from "@/components/ui/issue-item"
+import { SampleError, type SampleErrorStatus } from "@/components/ui/sample-error"
 
 import { ListOfErrors, type ListOfErrorsProps } from "./list-of-errors"
 
@@ -27,12 +27,12 @@ import { ListOfErrors, type ListOfErrorsProps } from "./list-of-errors"
  * булево «показывать разделитель» (умолчание — включено, как во всех
  * символах).
  */
-const ISSUES: { status: IssueStatus; text: string }[] = [
+const ISSUES: { status: SampleErrorStatus; text: string }[] = [
   { status: "error", text: "Не заполнено обязательное поле «ИНН организации»" },
   { status: "error", text: "Сумма транша превышает остаток лимита по договору" },
   { status: "attention", text: "Срок действия доверенности истекает через 5 дней" },
   { status: "attention", text: "Не приложен акт выполненных работ" },
-  { status: "info", text: "Заявка будет рассмотрена в течение двух рабочих дней" },
+  { status: "information", text: "Заявка будет рассмотрена в течение двух рабочих дней" },
 ]
 
 type PlaygroundArgs = ListOfErrorsProps & {
@@ -42,9 +42,9 @@ type PlaygroundArgs = ListOfErrorsProps & {
 
 function issues(count: number) {
   return ISSUES.slice(0, count).map((issue, index) => (
-    <IssueItem key={index} status={issue.status}>
+    <SampleError key={index} status={issue.status}>
       {issue.text}
-    </IssueItem>
+    </SampleError>
   ))
 }
 
@@ -120,8 +120,8 @@ export const Matrix: Story = {
           <div className="flex w-[440px] flex-col gap-6">
             <ListOfErrors>{issues(2)}</ListOfErrors>
             <ListOfErrors>
-              <IssueItem status="attention">{ISSUES[2].text}</IssueItem>
-              <IssueItem status="info">{ISSUES[4].text}</IssueItem>
+              <SampleError status="attention">{ISSUES[2].text}</SampleError>
+              <SampleError status="information">{ISSUES[4].text}</SampleError>
             </ListOfErrors>
           </div>
         )}

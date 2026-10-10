@@ -5,6 +5,8 @@ import {
   ButtonMenuOverflowItem,
 } from "@/components/ui/button-menu"
 
+import { ViewportScope } from "@/lib/viewport"
+
 import { StoryContentArea, StorySection, StoryShowcase } from "./matrix"
 
 // Витрина «Варианты использования» чёрной панели — 121 строка перечислений.
@@ -101,6 +103,32 @@ function ButtonMenuBlackExamples() {
             </div>
           ))}
         </div>
+      </StorySection>
+
+      <StorySection
+        title="Size = Mobile"
+        description="Карточка 360 в столбик: информация таблицей и крестик сверху, одна растянутая кнопка L и «…» с остальными. Без действий — подпись «Нет общих действий для выбранных элементов»."
+      >
+        <ViewportScope viewport="mobile">
+          <div className="flex flex-wrap items-start gap-6">
+            {BUTTON_COUNTS.map((count) => (
+              <div key={count} className="flex w-full max-w-[360px] flex-col gap-1">
+                <span className="text-p3-medium text-[#999999]">
+                  Button = {FIGMA_BUTTON_NAMES[count]}
+                </span>
+                <ButtonMenuBlack
+                  pinned={false}
+                  info={INFO_ITEMS.slice(0, count === 4 ? 1 : 3)}
+                  onClose={() => {}}
+                  selectAllPagesCount={781}
+                  onSelectAllPages={() => {}}
+                >
+                  {blackButtons(count)}
+                </ButtonMenuBlack>
+              </div>
+            ))}
+          </div>
+        </ViewportScope>
       </StorySection>
 
       <StorySection

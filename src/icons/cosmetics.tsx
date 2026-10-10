@@ -10,6 +10,6 @@ export function Cosmetics({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M11 0a2 2 0 0 1 2 2 1 1 0 0 1-2 0H9v1a3 3 0 0 1 3 3v1.173c1.165.412 2 1.52 2 2.827v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-5c0-1.307.835-2.415 2-2.827V6a3 3 0 0 1 3-3V2H6a1 1 0 0 1 0-2zM5 9a1 1 0 0 0-1 1v4h8v-4a1 1 0 0 0-1-1zm2-4a1 1 0 0 0-1 1v1h4V6a1 1 0 0 0-1-1z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M11 0a2 2 0 0 1 2 2 1 1 0 0 1-2 0H9v1a3 3 0 0 1 3 3v1.173c1.165.412 2 1.52 2 2.827v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-5c0-1.307.835-2.415 2-2.827V6a3 3 0 0 1 3-3V2H6a1 1 0 0 1 0-2zM5 9a1 1 0 0 0-1 1v4h8v-4a1 1 0 0 0-1-1zm2-4a1 1 0 0 0-1 1v1h4V6a1 1 0 0 0-1-1z"/></svg>
   )
 }

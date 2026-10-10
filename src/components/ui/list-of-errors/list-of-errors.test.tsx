@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 
-import { IssueItem } from "@/components/ui/issue-item"
+import { SampleError } from "@/components/ui/sample-error"
 
 import { ListOfErrors } from "./list-of-errors"
 
@@ -9,8 +9,8 @@ describe("ListOfErrors", () => {
   it("оборачивает каждую строку в пункт списка", () => {
     render(
       <ListOfErrors>
-        <IssueItem>Первая</IssueItem>
-        <IssueItem>Вторая</IssueItem>
+        <SampleError>Первая</SampleError>
+        <SampleError>Вторая</SampleError>
       </ListOfErrors>
     )
     expect(screen.getAllByRole("listitem")).toHaveLength(2)
@@ -22,7 +22,7 @@ describe("ListOfErrors", () => {
   it("разделитель показан по умолчанию и гасится пропсом", () => {
     const { unmount } = render(
       <ListOfErrors>
-        <IssueItem>Ошибка</IssueItem>
+        <SampleError>Ошибка</SampleError>
       </ListOfErrors>
     )
     expect(screen.getByRole("separator")).toBeInTheDocument()
@@ -30,7 +30,7 @@ describe("ListOfErrors", () => {
 
     render(
       <ListOfErrors showDivider={false}>
-        <IssueItem>Ошибка</IssueItem>
+        <SampleError>Ошибка</SampleError>
       </ListOfErrors>
     )
     expect(screen.queryByRole("separator")).not.toBeInTheDocument()
@@ -42,7 +42,7 @@ describe("ListOfErrors", () => {
     render(
       <ListOfErrors>
         {Array.from({ length: 7 }, (_, i) => (
-          <IssueItem key={i}>Ошибка {i}</IssueItem>
+          <SampleError key={i}>Ошибка {i}</SampleError>
         ))}
       </ListOfErrors>
     )

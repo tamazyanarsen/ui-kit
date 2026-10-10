@@ -3,6 +3,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { ChevronDown, ChevronUp, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { filterTablePillClass } from "./filter-table"
 import { Badge } from "@/components/ui/badge"
 import { Dropdown } from "@/components/ui/dropdown"
@@ -146,6 +147,7 @@ function FilterShell({
             side="bottom"
             align="start"
             sideOffset={8}
+            collisionAvoidance={POPUP_COLLISION}
             className="z-50"
           >
             <PopoverPrimitive.Popup

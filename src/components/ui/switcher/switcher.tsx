@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { Badge } from "@/components/ui/badge"
 import { Icon, type IconName } from "@/components/ui/icon"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
@@ -147,7 +148,7 @@ function SegmentButton({
         // каждый размер.
         // `relative` — чтобы подпись лежала ПОВЕРХ бегунка: тот
         // абсолютный и в потоке идёт после сегментов.
-        "relative flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
+        "relative flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[16px] whitespace-nowrap text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring press-scale not-data-active:hover:bg-[var(--switcher-hover-bg)] not-data-active:hover:text-[var(--switcher-fg)] disabled:cursor-not-allowed disabled:text-[var(--switcher-disabled-fg)] disabled:hover:bg-transparent disabled:hover:text-[var(--switcher-disabled-fg)]",
         activeBg,
         className
       )}
@@ -312,7 +313,7 @@ function Switcher({
                 // заливка переезжает на многоточие: иначе в ряду не было бы
                 // видно, что выбрано вообще что-то.
                 className={cn(
-                  "flex shrink-0 items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring transition-colors",
+                  "flex shrink-0 items-center justify-center rounded-[16px] p-3 text-[var(--switcher-fg-inactive)] outline-none focus-visible:focus-ring press-scale",
                   disabled
                     ? "cursor-not-allowed text-[var(--switcher-disabled-fg)]"
                     : activeHidden
@@ -329,6 +330,7 @@ function Switcher({
               side="bottom"
               align="start"
               sideOffset={8}
+              collisionAvoidance={POPUP_COLLISION}
               className="isolate z-50"
             >
               <MenuPrimitive.Popup

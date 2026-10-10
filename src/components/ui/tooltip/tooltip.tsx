@@ -60,6 +60,9 @@ type TooltipRestProps = Omit<
   "content" | "title" | "children" | "className"
 >
 
+/** Задержка появления подсказки по наведению, мс. */
+const TOOLTIP_OPEN_DELAY = 100
+
 const Tooltip = React.forwardRef<
   HTMLElement,
   TooltipProps & TooltipRestProps
@@ -98,7 +101,12 @@ const Tooltip = React.forwardRef<
   }
 
   return (
-    <TooltipPrimitive.Provider delay={400} closeDelay={0}>
+    // Задержка появления — 100 мс (дизайн-чек 08.10, замечание 10: «слишком
+    // долгое время появления хинта… сделать 100ms по всему проекту»). Было
+    // 400: подсказка у значка «i» Information Field ощущалась запоздалой.
+    // Все наведённые подсказки кита идут через этот компонент, так что
+    // число одно на весь кит.
+    <TooltipPrimitive.Provider delay={TOOLTIP_OPEN_DELAY} closeDelay={0}>
       <TooltipPrimitive.Root open={disabled ? false : open} onOpenChange={setOpen}>
         {/* ⚠️ Id ребёнка отдаётся самому триггеру. Base UI регистрирует триггер
             под своим id, а собственный `id` у ребёнка (`<Button id="save">`)

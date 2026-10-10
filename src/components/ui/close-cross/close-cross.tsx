@@ -52,7 +52,7 @@ const CloseCross = React.forwardRef<HTMLButtonElement, CloseCrossProps>(function
       data-slot="close-cross"
       aria-label={ariaLabel}
       className={cn(
-        "flex shrink-0 cursor-pointer items-center justify-center rounded-[4px] outline-none transition-colors",
+        "flex shrink-0 cursor-pointer items-center justify-center rounded-[4px] outline-none press-scale",
         "active:text-[var(--close-cross-fg-active)]",
         "focus-visible:focus-ring",
         "disabled:cursor-not-allowed",

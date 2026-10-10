@@ -3,6 +3,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { LoaderCircle, Search, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { Dropdown } from "@/components/ui/dropdown"
 
@@ -30,6 +31,7 @@ export function ComboboxContent({
       <ComboboxPrimitive.Positioner
         side={side}
         sideOffset={sideOffset}
+        collisionAvoidance={POPUP_COLLISION}
         align={align}
         alignOffset={alignOffset}
         className="isolate z-50 w-(--anchor-width)"

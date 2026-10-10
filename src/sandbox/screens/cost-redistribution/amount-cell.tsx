@@ -1,25 +1,27 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 
-import { integer, money, parseAmount } from "../../shell"
+import { integer, parseAmount } from "../../shell"
 
 // Ячейка суммы в таблице перераспределения ССР.
 //
 // В эталоне у каждой суммы своя коробка поля, и различаются
 // они ровно одним: у РОДИТЕЛЬСКИХ строк и у столбца «Сметная стоимость» поле
-// залито серым и не редактируется — это производная величина, — а у листьев в
-// столбцах средств поле белое и в него вводят.
+// заблокировано — это производная величина, — а у листьев в столбцах средств
+// поле белое и в него вводят.
 //
-// Почему не `Input readOnly`: заблокированное поле кита гасит и текст, а здесь
-// сумма — главное содержимое строки и читаться должна в полную силу. Поэтому
-// нередактируемый вариант — не поле вовсе, а плашка тех же размеров: та же
-// высота 32, тот же радиус 8 и те же поля 16, но без рамки и без фокуса.
+// Дизайн-чек от 08.10, замечание 33: «В песочнице ССР выдуман кастомный
+// инпут — видно по отсутствию обводки в состоянии disabled… переиспользовать
+// компонент input в размере S Desktop». Раньше нередактируемая сумма была
+// серой плашкой-`span` без рамки. Теперь оба варианта — настоящий `Input
+// size="sm"`, нередактируемый — в штатном состоянии `disabled` (Grey 114 +
+// рамка Grey 166, текст Grey 517). Дефекта в самом ките нет: заблокированное
+// поле кита рамку рисует, её не было только у самодельной плашки.
 
 interface AmountCellProps {
   value: number
-  /** Поле только для чтения — серая плашка вместо ввода. */
+  /** Производная сумма — поле в состоянии `disabled`. */
   readOnly?: boolean
   onChange?: (next: number) => void
   label?: string
@@ -28,8 +30,9 @@ interface AmountCellProps {
 // ⚠️ Ширина в пикселях, а не `w-full`. Ячейка таблицы выключена вправо и
 // сжимает содержимое до его собственной ширины (замер: колонка 240, а коробка
 // поля — 114), поэтому `w-full` считался бы от уже сжатого предка. 184 — это
-// 200 из макета («Ячейка шапки шага 1») минус поля ячейки.
-const BOX = "h-8 w-[184px] rounded-[8px] px-4 text-p2-medium"
+// 200 из макета («Ячейка шапки шага 1») минус поля ячейки. Высота, радиус и
+// поля — собственные у `Input size="sm"`, здесь не переопределяются.
+const BOX = "w-[184px] min-w-0"
 
 function AmountCell({ value, readOnly, onChange, label }: AmountCellProps) {
   // ⚠️ В поле с маской `amount` уходит УЖЕ РАЗБИТАЯ по разрядам строка, а не
@@ -46,24 +49,12 @@ function AmountCell({ value, readOnly, onChange, label }: AmountCellProps) {
     setText((prev) => (parseAmount(prev) === value ? prev : integer(value)))
   }, [value])
 
-  if (readOnly) {
-    return (
-      <span
-        className={cn(
-          BOX,
-          "flex items-center bg-[var(--grey-109)] text-[var(--grey-284)] tabular-nums"
-        )}
-      >
-        {money(value)}
-      </span>
-    )
-  }
-
   return (
     <Input
       size="sm"
       mask="amount"
       aria-label={label}
+      disabled={readOnly}
       // Крестика очистки у суммы нет: пустая сумма — это не «нет значения», а
       // ноль, и стирать её одним нажатием опаснее, чем полезно.
       clearable={false}
@@ -72,7 +63,7 @@ function AmountCell({ value, readOnly, onChange, label }: AmountCellProps) {
         setText(event.target.value)
         onChange?.(parseAmount(event.target.value))
       }}
-      containerClassName={cn(BOX, "min-w-0")}
+      containerClassName={BOX}
     />
   )
 }

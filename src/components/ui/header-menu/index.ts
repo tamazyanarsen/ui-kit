@@ -17,3 +17,5 @@ export {
   toggleFavourite,
   moveFavourite,
 } from "./favourites"
+export { MobileHeaderMenu } from "./mobile-menu"
+export type { MobileHeaderMenuProps } from "./mobile-menu"

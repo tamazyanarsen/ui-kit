@@ -15,10 +15,12 @@ import { cn } from "@/lib/utils"
 // целиком задаются потребителем через className, так же как и у настоящего
 // содержимого, которое маскируется.
 //
-// Движение — это обычная пульсация прозрачности (`animate-pulse`), а не
-// бегущий блик: сам блик запечён в статичный фоновый градиент (см.
-// комментарий к токенам --shimmer-* в styles/tokens-table.css). Цикл — 1.8 с
-// из макета, а не 2 с по умолчанию в Tailwind.
+// Движение — бегущий блик (`shimmer-sweep`, styles/motion.css): светлый
+// гребень едет слева направо, уходит за край и снова появляется слева.
+// Дизайн-чек 08.10, замечание 18: прежняя пульсация прозрачности
+// (`animate-pulse` по статичному градиенту) заменена «переливом градиента».
+// Цикл — те же 1.8 с из макета. При `prefers-reduced-motion` блик стоит, а
+// блок залит ровным светлым серым.
 interface ShimmerProps extends React.ComponentProps<"div"> {
   shape?: "square" | "circle"
 }
@@ -30,7 +32,7 @@ const Shimmer = React.forwardRef<HTMLDivElement, ShimmerProps>(function Shimmer(
       data-shape={shape}
       aria-hidden="true"
       className={cn(
-        "h-4 w-full shrink-0 animate-pulse bg-[linear-gradient(90deg,var(--shimmer-from)_0%,var(--shimmer-via)_50%)] [animation-duration:1.8s]",
+        "h-4 w-full shrink-0 shimmer-sweep",
         shape === "circle" ? "rounded-full" : "rounded-[8px]",
         className
       )}

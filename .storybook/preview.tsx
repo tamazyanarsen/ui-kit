@@ -114,7 +114,11 @@ const preview: Preview = {
       // ляжет на белую страницу.
       useEffect(() => {
         const grey = context.globals.canvas !== 'white'
-        document.body.style.background = grey ? 'var(--card-bg)' : ''
+        // Дизайн-чек от 08.10, замечание 9: серая подложка — это фон
+        // страницы продукта, а не заливка карточки (`--card-bg`, которым
+        // красили раньше). Токен `--page-bg` меняется темой: Grey 109 в новой
+        // палитре, Grey 106 в старой.
+        document.body.style.background = grey ? 'var(--page-bg)' : ''
       }, [context.globals.canvas])
 
       return <Story />

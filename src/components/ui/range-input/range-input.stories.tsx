@@ -24,11 +24,16 @@ const SCALE_PRESETS = {
   "Min / Max": ["Min", "Max"],
 } satisfies Record<string, string[]>
 
+/* Дизайн-чек 08.10, замечание 31: маски значения — сумма (₽), валюта с
+   копейками, проценты и своя единица. Значение в поле набирается с
+   клавиатуры, ползунок едет вслед. */
 const FORMAT_PRESETS = {
-  "Без форматирования": undefined,
-  "Рубли": { style: "currency", currency: "RUB", maximumFractionDigits: 0 },
-  "Проценты": { style: "unit", unit: "percent" },
-} satisfies Record<string, Intl.NumberFormatOptions | undefined>
+  "Без форматирования": {},
+  "Маска суммы (₽)": { mask: "amount" },
+  "Рубли с копейками": { format: { style: "currency", currency: "RUB" } },
+  "Проценты": { format: { style: "unit", unit: "percent" } },
+  "Своя единица (дн.)": { unit: "дн." },
+} satisfies Record<string, Pick<RangeInputProps, "format" | "mask" | "unit">>
 
 type ScalePreset = keyof typeof SCALE_PRESETS
 type FormatPreset = keyof typeof FORMAT_PRESETS
@@ -107,9 +112,9 @@ const meta = {
       options: Object.keys(SCALE_PRESETS),
       table: { category: "Контент" },
     },
-    // Параметры Intl.NumberFormat для пузыря со значением, например валюта.
+    // Маска значения: `mask`, `format` (Intl) или `unit`.
     formatPreset: {
-      name: "Формат значения",
+      name: "Маска значения",
       control: "select",
       options: Object.keys(FORMAT_PRESETS),
       table: { category: "Контент" },
@@ -119,6 +124,8 @@ const meta = {
     step: { control: "number", table: { category: "Контент" } },
     scaleLabels: { table: { disable: true } },
     format: { table: { disable: true } },
+    mask: { table: { disable: true } },
+    unit: { table: { disable: true } },
     defaultValue: { table: { disable: true } },
   },
   /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
@@ -194,7 +201,7 @@ export const Playground: Story = {
               ? SCALE_PRESETS[scalePreset ?? "0 — 50 — 100"]
               : undefined
           }
-          format={FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
+          {...FORMAT_PRESETS[formatPreset ?? "Без форматирования"]}
         />
       </PseudoBox>
     )
@@ -228,8 +235,25 @@ export const Matrix: Story = {
           props: { defaultValue: 50, error: "Text about error here" },
         },
         { label: "Disabled", props: { defaultValue: 50, disabled: true } },
+        {
+          label: "Маска суммы (₽)",
+          props: { mask: "amount", min: 50_000, max: 50_000_000, step: 50_000, defaultValue: 23_700_000 },
+        },
+        {
+          label: "Рубли с копейками",
+          props: { format: { style: "currency", currency: "RUB" }, max: 5_000_000, defaultValue: 2_000_000 },
+        },
+        { label: "Единица (дн.)", props: { unit: "дн.", min: 1, max: 1095, defaultValue: 365 } },
       ]}
-      render={(props) => <Controlled {...props} />}
+      // Подписи шкалы «0 / 50 / 100» колонки годятся только для диапазона
+      // 0…100 — у строк со своим диапазоном их пересчитываем из min/max.
+      render={(props) => <Controlled {...props} scaleLabels={matrixScaleLabels(props)} />}
     />
   ),
+}
+
+function matrixScaleLabels({ scaleLabels, min = 0, max = 100 }: RangeInputProps) {
+  if (!scaleLabels || (min === 0 && max === 100)) return scaleLabels
+  const fmt = (n: number) => n.toLocaleString("ru-RU")
+  return [fmt(min), fmt(Math.round((min + max) / 2)), fmt(max)]
 }

@@ -10,6 +10,6 @@ export function BypassSheet({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M9 1c.265 0 .519.11.707.29l4 4A1 1 0 0 1 14 6v7c0 1.1-.895 2-2 2H4c-1.105 0-2-.9-2-2V3c0-1.1.895-2 2-2zM4 3v10h8V7H9c-.552 0-1-.45-1-1V3zm6 7c.552 0 1 .45 1 1s-.448 1-1 1H6c-.552 0-1-.45-1-1s.448-1 1-1zm0-2.5c.552 0 1 .45 1 1s-.448 1-1 1H6c-.552 0-1-.45-1-1s.448-1 1-1zM10 5h.586L10 4.41z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M9 1c.265 0 .519.11.707.29l4 4A1 1 0 0 1 14 6v7c0 1.1-.895 2-2 2H4c-1.105 0-2-.9-2-2V3c0-1.1.895-2 2-2zM4 3v10h8V7H9c-.552 0-1-.45-1-1V3zm6 7c.552 0 1 .45 1 1s-.448 1-1 1H6c-.552 0-1-.45-1-1s.448-1 1-1zm0-2.5c.552 0 1 .45 1 1s-.448 1-1 1H6c-.552 0-1-.45-1-1s.448-1 1-1zM10 5h.586L10 4.41z"/></svg>
   )
 }

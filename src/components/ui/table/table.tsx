@@ -3,8 +3,10 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 import { TableScrollContext, useHorizontalScrollState } from "./pin"
+import { useComposedRefs } from "@/lib/compose-refs"
+
 import { TableScrollbar } from "./scrollbar"
-import { useBelowReserve } from "./use-below-reserve"
+import { useStickyHead } from "./use-sticky-head"
 
 // Table — по документу «Проектирование таблиц ЕЛК». Анатомия по макету:
 // ряд ячеек заголовка (шапка, `<thead>`) и сетка ячеек с данными
@@ -26,37 +28,16 @@ interface TableProps extends React.ComponentProps<"table"> {
    * ячейка растёт под содержимое, а не подрезает его. */
   fixed?: boolean
   /**
-   * Липкая шапка: «Шапка (закрепляется всегда при достижении верха вьюпорта,
-   * открепляется вместе с достижением низа блока данных)».
+   * Липкая строка названий столбцов: «закрепляется на промежуточном скролле
+   * и открепляется по выходу блока из вьюпорта» (дизайн-чек от 08.10,
+   * замечания 21 и 35). Включена по умолчанию — правило действует «во всех
+   * таблицах».
    *
-   * ⚠️ ЛИПНЕТ НЕ СТРОКА ШАПКИ, А ВЕСЬ БЛОК ТАБЛИЦЫ — и это единственный
-   * способ выполнить правило, не ломая закреплённые столбцы.
-   *
-   * Суть ограничения: коробка с горизонтальной прокруткой по правилу CSS
-   * становится областью прокрутки ПО ОБЕИМ осям (`overflow-x: auto`
-   * выводит `overflow-y` из `visible`), а `position: sticky` считается от
-   * ближайшей области прокрутки. Пока окно таблицы даёт горизонтальную
-   * прокрутку — а оно обязано её давать, на ней держатся закреплённые
-   * столбцы, — шапка внутри него физически не может липнуть к вьюпорту
-   * страницы. Проверено замером: строка честно получала `top: 64px` и всё
-   * равно уезжала вместе со страницей.
-   *
-   * Поэтому липнет обёртка `table-root`: она остаётся у верхнего края
-   * экрана, пока страница идёт мимо, а шапка внутри неё липнет к её нулю —
-   * то есть ровно к верху вьюпорта под закреплённой шапкой страницы.
-   * Отсюда же два следствия:
-   *
-   *   • окно прокрутки ограничивается свободной высотой вьюпорта
-   *     (`100dvh` минус занятый верх и низ — обе величины публикуют шапка
-   *     страницы и нижние панели), поэтому длинная таблица листается внутри
-   *     блока, а короткая ведёт себя как раньше;
-   *   • «открепляется вместе с достижением низа блока данных» получается
-   *     само: `sticky` ограничен коробкой родителя, то есть блока таблицы;
-   *   • пока в блоке ниже таблицы кто-то есть (пагинатор), липкость гасится
-   *     вовсе — весь её ход пришёлся бы на него, см. use-below-reserve.ts.
-   *
-   * `--table-header-top` остаётся ручным перекрытием отступа строки внутри
-   * окна, `containerClassName` — ограничения высоты.
+   * ⚠️ Своей вертикальной прокрутки у таблицы НЕТ и быть не может: «у
+   * страницы должен быть единый скролл». Строка липнет к верху вьюпорта под
+   * закреплённой шапкой страницы (`--viewport-inset-top`) и уходит вместе с
+   * низом таблицы. Почему это не `position: sticky` и как устроено — см.
+   * use-sticky-head.ts.
    */
   stickyHeader?: boolean
   /**
@@ -86,7 +67,7 @@ interface TableProps extends React.ComponentProps<"table"> {
 const Table = React.forwardRef<HTMLTableElement, TableProps>(function Table({
   className,
   fixed = false,
-  stickyHeader = false,
+  stickyHeader = true,
   gridLines = false,
   containerClassName,
   containerRef,
@@ -97,34 +78,26 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(function Table({
 
   const scrollState = useHorizontalScrollState(innerRef)
 
-  // Место под тем, что стоит в блоке НИЖЕ таблицы (пагинатор), — см.
-  // use-below-reserve.ts.
   const rootRef = React.useRef<HTMLDivElement>(null)
-  useBelowReserve(rootRef, stickyHeader)
+  const tableRef = React.useRef<HTMLTableElement>(null)
+  const composedTableRef = useComposedRefs(tableRef, ref)
+  useStickyHead(rootRef, tableRef, stickyHeader)
 
   return (
     <TableScrollContext.Provider value={scrollState}>
       {/* Обёртка нужна полосе прокрутки: она стоит РЯДОМ с прокручиваемым
           узлом, а не внутри него (внутри она ехала бы вместе с колонками), и
           показывается по наведению на всю зону таблицы — отсюда `group`.
- 
-          ⚠️ ОНА ЖЕ — липкий узел, а не строка шапки. Разбор — в комментарии
-          к `stickyHeader` выше: `overflow-x: auto` у окна прокрутки делает
-          его областью прокрутки, и `sticky` у `th` считается от него, а не
-          от вьюпорта. Липнет поэтому весь блок таблицы: он остаётся у
-          верхнего края экрана, пока страница проходит мимо, а шапка внутри
-          него липнет к его нулю — то есть ровно к верху вьюпорта.
- 
-          Липнуть обязана именно эта обёртка, а не окно прокрутки: `sticky`
-          ограничен коробкой РОДИТЕЛЯ, а родитель окна — эта самая обёртка,
-          высота которой равна высоте окна. Ехать было бы некуда. */}
+
+          Она же — субъект шкалы просмотра, по которой сдвигается липкая
+          строка шапки (`data-sticky-head`, см. use-sticky-head.ts), и
+          собственный контекст наложения (`isolate`): шапка поднята над
+          закреплёнными ячейками строк, но не над слоями страницы. */}
       <div
         ref={rootRef}
         data-slot="table-root"
-        className={cn(
-          "group/table relative",
-          stickyHeader && "sticky top-(--viewport-inset-top)"
-        )}
+        data-sticky-head={stickyHeader || undefined}
+        className="group/table relative isolate"
       >
         <div
           ref={innerRef}
@@ -132,29 +105,17 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(function Table({
           // См. `scrollbar.tsx`: окно прокрутки — фокусируемый узел без
           // `tabindex`, кольцо ему выдаёт правило по этому маркеру.
           data-scroll-window=""
-          // `themed-scrollbar` оставлен ради ВЕРТИКАЛЬНОЙ полосы (её растит
-          // липкая шапка с ограниченной высотой контейнера); горизонтальная
-          // нативная погашена в styles/base.css — вместо неё своя, см.
-          // `scrollbar.tsx`.
+          // Только горизонтальная прокрутка: вертикальной у таблицы нет
+          // «навсегда» (замечание 35) — страница листается единым скроллом.
+          // `overflow-y-hidden` явно, потому что `overflow-x: auto` иначе
+          // вывел бы `auto` и по второй оси.
           className={cn(
-            "themed-scrollbar w-full overflow-x-auto",
-            // ⚠️ Ограничение высоты стоит на САМОМ ОКНЕ прокрутки, а не на
-            // липкой обёртке. Через обёртку не выходит: у неё автовысота, и
-            // процентные ограничения окна (`max-h-full`) от такого родителя
-            // резолвятся в `none` — окно оставалось безразмерным, а строки
-            // вываливались за подрезанную обёртку. Обёртка же получает свою
-            // высоту от окна сама.
-            // `--table-below` — место под пагинатором и всем, что стоит в
-            // блоке ниже таблицы (см. use-below-reserve.ts). Без него окно
-            // забирало всю свободную высоту, и пагинатор рисовался поверх
-            // последней строки (дизайн-чек от 08.09, замечание 11).
-            stickyHeader &&
-              "max-h-[calc(100dvh-var(--viewport-inset-top,0px)-var(--viewport-inset-bottom,0px)-var(--table-below,0px))]",
+            "w-full overflow-x-auto overflow-y-hidden",
             containerClassName
           )}
         >
           <table
-            ref={ref}
+            ref={composedTableRef}
             data-slot="table"
             data-sticky-header={stickyHeader || undefined}
             data-grid-lines={gridLines || undefined}

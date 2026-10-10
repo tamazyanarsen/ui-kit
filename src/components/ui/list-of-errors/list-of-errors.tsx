@@ -62,7 +62,7 @@ const ListOfErrors = React.forwardRef<HTMLDivElement, ListOfErrorsProps>(functio
   children,
   ...props
 }, ref) {
-  // Фрагменты раскрываются: `{has && <><IssueItem/><IssueItem/></>}` иначе
+  // Фрагменты раскрываются: `{has && <><SampleError/><SampleError/></>}` иначе
   // давал одну строку `li` на две ошибки — без зазора между ними и с общей
   // анимацией. Ключи раскрытых детей — от `toArray`, стабильные.
   const items = flattenChildren(children).filter((child) => child !== "")

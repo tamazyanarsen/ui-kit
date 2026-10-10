@@ -2,6 +2,7 @@ import * as React from "react"
 import type { VariantProps } from "class-variance-authority"
 import { IMaskInput } from "react-imask"
 
+import { withIconSize } from "@/lib/icon-size"
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
 import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
@@ -275,7 +276,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
                 "shrink-0 [&>svg]:size-full text-[var(--input-icon-fg)]"
               )}
             >
-              {iconLeft}
+              {/* Дизайн-чек от 08.10, замечание 12 («иконка в инпуте
+                  великовата»): в слот 24 приходил узел `<Search />` с
+                  начертанием 16, и бокс растягивал его вместе со штрихом —
+                  у шестнадцатого глиф идёт почти от края до края, а у
+                  двадцать четвёртого внутри есть поле. В мастере
+                  (`Icon Left (LD, ELK)`) иконка — `size-[24px]` своего
+                  начертания, поэтому слот сам подставляет размер. */}
+              {withIconSize(iconLeft, size === "lg" ? 24 : 16)}
             </span>
           )}
 

@@ -22,25 +22,11 @@ describe("Pagination", () => {
     expect(onPageChange).toHaveBeenCalledWith(3)
   })
 
-  it("disables the previous button on the first page and next on the last", () => {
-    const { rerender } = render(<Pagination page={1} totalPages={5} />)
-    expect(screen.getByRole("button", { name: "Предыдущая страница" })).toBeDisabled()
-    expect(screen.getByRole("button", { name: "Следующая страница" })).toBeEnabled()
-
-    rerender(<Pagination page={5} totalPages={5} />)
-    expect(screen.getByRole("button", { name: "Следующая страница" })).toBeDisabled()
-  })
-
-  it("navigates via the next/previous buttons", async () => {
-    const user = userEvent.setup()
-    const onPageChange = vi.fn()
-    render(<Pagination page={3} totalPages={5} onPageChange={onPageChange} />)
-
-    await user.click(screen.getByRole("button", { name: "Следующая страница" }))
-    expect(onPageChange).toHaveBeenLastCalledWith(4)
-
-    await user.click(screen.getByRole("button", { name: "Предыдущая страница" }))
-    expect(onPageChange).toHaveBeenLastCalledWith(2)
+  // Дизайн-чек от 08.10, №17: стрелок «Предыдущая/Следующая» больше нет.
+  it("has no previous/next arrows", () => {
+    render(<Pagination page={3} totalPages={5} />)
+    expect(screen.queryByRole("button", { name: /Предыдущая|Следующая/ })).toBeNull()
+    expect(document.querySelector("[data-slot=pagination-nav]")).toBeNull()
   })
 
   it("collapses far-apart pages behind an ellipsis", () => {
@@ -71,8 +57,8 @@ describe("Pagination", () => {
   // даже когда блок страниц скрыт.
   it("keeps the Page Count block when the pages block is hidden", () => {
     render(<Pagination page={1} totalPages={5} pageSize={25} showPages={false} />)
-    expect(screen.getByText("Показать на странице")).toBeInTheDocument()
-    expect(screen.queryByRole("button", { name: "Следующая страница" })).not.toBeInTheDocument()
+    expect(screen.getByText("На странице")).toBeInTheDocument()
+    expect(document.querySelector("[data-slot=pagination-pages]")).toBeNull()
   })
 
   // Дизайн-чек №4 №7: два набора Page Count — «100 (Without 75)» и «100».
@@ -87,13 +73,13 @@ describe("Pagination", () => {
 
 describe("Pagination — номер страницы за концом списка", () => {
   // Отбор сузил выдачу до 5 страниц, а родитель оставил `page={7}`:
-  // «Предыдущая» выглядит активной и обязана что-то делать.
-  it("«Предыдущая» ведёт на последнюю существующую страницу", async () => {
+  // номер последней страницы обязан что-то делать.
+  it("номер последней страницы ведёт на неё", async () => {
     const user = userEvent.setup()
     const onPageChange = vi.fn()
     render(<Pagination page={7} totalPages={5} onPageChange={onPageChange} />)
 
-    await user.click(screen.getByRole("button", { name: "Предыдущая страница" }))
+    await user.click(screen.getByRole("button", { name: "5" }))
     expect(onPageChange).toHaveBeenCalledWith(5)
   })
 })

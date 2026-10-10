@@ -1,4 +1,3 @@
-
 /* Тестовая монохромная палитра («Тест — монохром») — data-product="test-mono".
    Лакмус на захардкоженные цвета: перекрашена вся палитра, поэтому элемент,
    оставшийся серым или синим, держит цвет литералом мимо токенов.
@@ -15,12 +14,14 @@
   --blue-104:           #EFE0F6; /* #F0FCFF */
   --blue-114:           #E2C8EF; /* #CFF7FF */
   --blue-121:           #D8B5EA; /* #B6F3FF */
+  --blue-130:           #CFA3E4; /* #9DEEFF */
   --blue-223:           #C38EDE; /* #80E3FF */
   --blue-187:           #9E46C9; /* #2FCEEF */
   --blue-254:           #8131A8; /* #14B1D1 */
   --dark-blue-109:      #ECDCF5; /* #EDF6FC */
   --dark-blue-322:      #A95BD0; /* #5B90E0 */
   --dark-blue-389:      #8633AF; /* #2487CA */
+  --dark-blue-264:      #AA5DD0; /* #64A5D9 */
   --dark-blue-596:      #652684; /* #1368A1 */
   --dark-blue-701:      #7E30A5; /* #0D4CD3 */
   --dark-blue-961:      #481B5F; /* #114870 */
@@ -61,9 +62,11 @@
   --yellow-214:         #8E36BA; /* #EEA20F */
   --yellow-400:         #672786; /* #B76E00 */
   --odl-dark-blue-117:  #EAD7F3; /* #E3EEFF */
+  --odl-blue-182:       #CDA1E4; /* #9AC2FF */
   --odl-green-107:      #E9D4F3; /* #F3F9E6 */
   --odl-green-123:      #CEA2E4; /* #D9F0AB */
   --odl-green-137:      #BF85DC; /* #C4E88B */
+  --odl-green-171:      #A759CF; /* #A3D562 */
   --odl-green-223:      #6B298C; /* #82BF00 */
   --odl-green-289:      #6A288B; /* #72A716 */
   --odl-green-333:      #61257F; /* #699B12 */

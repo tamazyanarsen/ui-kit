@@ -7,9 +7,16 @@ import { Tooltip } from "@/components/ui/tooltip"
 
 import { useSidebarContext } from "./sidebar"
 
-type IconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>
+type IconComponent = React.ComponentType<
+  React.SVGProps<SVGSVGElement> & { size?: 16 | 24 }
+>
 
+// Дизайн-чек от 08.10, замечание 19: значки в сайдбаре выглядели утолщёнными.
+// Слот 24×24 получал только `size-6`, и иконка набора рисовала своё
+// ШЕСТНАДЦАТОЕ начертание, растянутое в полтора раза вместе со штрихом. У
+// глифов ELK 16 и 24 — разные рисунки, поэтому в слот передаётся `size={24}`.
 const ICON_SIZE = "size-6"
+const ICON_GLYPH = 24
 
 // Показывает подпись в подсказке, когда боковая панель свёрнута (видимой
 // подписи просто нет) или когда текст подписи не помещается даже в
@@ -124,6 +131,7 @@ function SidebarItem({
       {Icon && !nested && (
         <Icon
           aria-hidden="true"
+          size={ICON_GLYPH}
           className={cn(ICON_SIZE, "shrink-0 text-[var(--nav-sidebar-icon-fg)]")}
         />
       )}
@@ -202,6 +210,7 @@ function SidebarGroup({
       {Icon && (
         <Icon
           aria-hidden="true"
+          size={ICON_GLYPH}
           className={cn(ICON_SIZE, "shrink-0 text-[var(--nav-sidebar-icon-fg)]")}
         />
       )}
@@ -230,6 +239,7 @@ function SidebarGroup({
             {Icon && (
               <Icon
                 aria-hidden="true"
+                size={ICON_GLYPH}
                 className={cn(ICON_SIZE, "shrink-0 text-[var(--nav-sidebar-icon-fg)]")}
               />
             )}

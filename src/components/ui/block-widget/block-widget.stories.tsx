@@ -82,7 +82,8 @@ const meta = {
     viewport: sizeArgType,
     // Ховер пропом не выставить — его даёт PseudoBox, как у остальных
     // наводимых компонентов кита.
-    state: stateArgTypeOf(["default", "hover"]),
+    // Active (OnClick, Grey 124) — дизайн-чек от 08.10, замечание 28.
+    state: stateArgTypeOf(["default", "hover", "active"]),
     variant: optionsArgType("Variant", VARIANT_LABELS),
     type: optionsArgType("Type", TYPE_LABELS),
     titleType: {

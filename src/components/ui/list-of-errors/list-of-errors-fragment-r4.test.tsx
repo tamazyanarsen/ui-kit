@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { render } from "@testing-library/react"
 
-import { IssueItem } from "@/components/ui/issue-item"
+import { SampleError } from "@/components/ui/sample-error"
 
 import { ListOfErrors } from "./list-of-errors"
 
@@ -14,11 +14,11 @@ describe("ListOfErrors: ошибки во фрагменте", () => {
     const has = true
     const { container } = render(
       <ListOfErrors>
-        <IssueItem>Первая</IssueItem>
+        <SampleError>Первая</SampleError>
         {has && (
           <>
-            <IssueItem>Вторая</IssueItem>
-            <IssueItem>Третья</IssueItem>
+            <SampleError>Вторая</SampleError>
+            <SampleError>Третья</SampleError>
           </>
         )}
       </ListOfErrors>

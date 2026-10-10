@@ -162,8 +162,12 @@ export function iconArgType(
    * контрол обязан отдавать именно 24-й рисунок — иначе в неё попадает
    * растянутый 16-й и выглядит тоньше и мельче макета (дизайн-чек Storybook
    * (Аня Багрова) №28 про «слишком маленькую иконку»).
+   *
+   * `"slot"` — размер не задаётся вовсе: его подставляет сам слот компонента
+   * через `withIconSize` (у Input он зависит от размера поля, и явный 16
+   * из контрола перебивал бы его — дизайн-чек от 08.10, замечание 12).
    */
-  size: 16 | 24 = 16
+  size: 16 | 24 | "slot" = 16
 ) {
   const NONE = "без иконки"
   return {
@@ -174,7 +178,11 @@ export function iconArgType(
       [NONE, undefined],
       ...ICON_NAMES.map((name) => [
         name,
-        <Icon key={name} name={name} size={size} />,
+        size === "slot" ? (
+          <Icon key={name} name={name} />
+        ) : (
+          <Icon key={name} name={name} size={size} />
+        ),
       ]),
     ]),
   }

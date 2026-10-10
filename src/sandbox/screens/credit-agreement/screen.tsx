@@ -119,9 +119,14 @@ function CreditAgreementScreen() {
             </SandboxBlock>
 
             <SandboxBlock>
+              {/* Дизайн-чек от 08.10, замечание 45: заголовок и группа полей
+                  — одна секция, зазор между её элементами 24 (было 0 —
+                  первое поле прилипало к заголовку). Нижний холостой
+                  отступ последнего поля снимает правило самого Information
+                  Field. То же правило — у «Параметров договора». */}
               <SandboxSection
                 title="Ближайший платёж"
-                gap={0}
+                gap={24}
                 action={
                   <Button variant="secondary-grey" size="sm">
                     Подробнее
@@ -144,7 +149,7 @@ function CreditAgreementScreen() {
             </SandboxBlock>
 
             <SandboxBlock>
-              <SandboxSection title="Параметры договора" gap={0}>
+              <SandboxSection title="Параметры договора" gap={24}>
                 <ItemInformationFieldGroup>
                   <ItemInformationField
                     label="Кредитный продукт"

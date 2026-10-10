@@ -10,6 +10,6 @@ export function Monitor({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M12 2c1.657 0 3 1.34 3 3v4c0 1.66-1.343 3-3 3H9.005v1H11c.552 0 1 .45 1 1s-.448 1-1 1H5c-.552 0-1-.45-1-1s.448-1 1-1h2.005v-1H4c-1.657 0-3-1.34-3-3V5c0-1.66 1.343-3 3-3zM4 4c-.552 0-1 .45-1 1v4c0 .55.448 1 1 1h8c.552 0 1-.45 1-1V5c0-.55-.448-1-1-1z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M12 2c1.657 0 3 1.34 3 3v4c0 1.66-1.343 3-3 3H9.005v1H11c.552 0 1 .45 1 1s-.448 1-1 1H5c-.552 0-1-.45-1-1s.448-1 1-1h2.005v-1H4c-1.657 0-3-1.34-3-3V5c0-1.66 1.343-3 3-3zM4 4c-.552 0-1 .45-1 1v4c0 .55.448 1 1 1h8c.552 0 1-.45 1-1V5c0-.55-.448-1-1-1z"/></svg>
   )
 }

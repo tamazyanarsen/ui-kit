@@ -10,6 +10,7 @@ import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 import type { HeaderMenuLink } from "@/components/ui/header-menu"
 import { compactList } from "@/components/ui/header-menu/compact-list"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 // «Избранное в навигации» — полоса закреплённых разделов в верхнем ряду
 // шапки сотрудника.
@@ -128,6 +129,7 @@ function NavOverflow({
           side="bottom"
           align="end"
           sideOffset={8}
+          collisionAvoidance={POPUP_COLLISION}
           className="isolate z-50"
         >
           <MenuPrimitive.Popup

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Dropdown } from "@/components/ui/dropdown"
 import { cn } from "@/lib/utils"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 // Триггер действий «...» для типа Button у ячейки заголовка — это Menu,
 // собранное так же, как `ButtonMenuOverflow`, размером icon-sm и в варианте
@@ -39,6 +40,7 @@ function TableRowMenu({
           side="bottom"
           align="end"
           sideOffset={8}
+          collisionAvoidance={POPUP_COLLISION}
           className="isolate z-50"
         >
           <MenuPrimitive.Popup

@@ -9,6 +9,8 @@ import {
 } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
+import { useCollapseExit } from "@/lib/use-collapse-exit"
 import { hasContent } from "@/lib/has-content"
 
 // FileListItem — строка одного загруженного или загружаемого файла. Значок
@@ -119,9 +121,14 @@ export const FileListItem = React.forwardRef<
   else if (error) secondLine = showErrorText ? (errorText ?? null) : null
   else if (showDescription) secondLine = meta
 
+  // Удаление файла из списка: строка гаснет и схлопывается, нижние строки
+  // поднимаются, `onRemove` приходит после (дизайн-чек 08.10, замечание 11).
+  const collapse = useCollapseExit<HTMLDivElement>(onRemove)
+  const rootRef = useComposedRefs(collapse.ref, ref)
+
   return (
     <div
-      ref={ref}
+      ref={rootRef}
       data-slot="file-item"
       data-size={size}
       data-disabled={disabled || undefined}
@@ -241,8 +248,8 @@ export const FileListItem = React.forwardRef<
             type="button"
             aria-label="Удалить файл"
             disabled={disabled}
-            onClick={onRemove}
-            className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none focus-visible:focus-ring"
+            onClick={collapse.exit}
+            className="flex items-center justify-center text-[var(--file-item-icon-fg)] outline-none press-scale focus-visible:focus-ring"
           >
             <X aria-hidden="true" className="size-4" />
           </button>

@@ -29,7 +29,7 @@ describe("form groups coverage", () => {
     expect(radios.current).toBe(container.querySelector('[data-slot="radio-group"]'))
     // У RangeInput ref — на нативный input ползунка (фокус на ошибке в
     // react-hook-form), а не на корень.
-    expect(range.current).toBe(container.querySelector('[data-slot="range-input"] input'))
+    expect(range.current).toBe(container.querySelector('[data-slot="range-input"] input[type="range"]'))
   })
 
   // `typeof error === "boolean" ? null : error` пропускал пустую строку

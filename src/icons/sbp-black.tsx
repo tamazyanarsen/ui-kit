@@ -10,6 +10,6 @@ export function SbpBlack({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path stroke="#000" strokeLinejoin="round" strokeWidth="2" d="M8 2v12l5-3L3 5v6l10-6z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path stroke="currentColor" strokeLinejoin="round" strokeWidth="2" d="M8 2v12l5-3L3 5v6l10-6z"/></svg>
   )
 }

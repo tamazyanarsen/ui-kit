@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/pagination"
 import {
   DataTable,
   TableBlock,
+  TableBlockPagination,
   columnsFromFields,
   sortTableRows,
   type TableSort,
@@ -270,16 +271,18 @@ function LettersOfCreditScreen() {
           }
         />
 
-        <Pagination
-          page={safePage}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          pageSize={pageSize}
-          onPageSizeChange={(size) => {
-            setPageSize(size)
-            setPage(1)
-          }}
-        />
+        <TableBlockPagination>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setPage(1)
+            }}
+          />
+        </TableBlockPagination>
       </TableBlock>
     </SandboxPage>
   )

@@ -121,7 +121,7 @@ describe("useSortable: перенос через закреплённую стр
     expect(indicator(container)).not.toBeNull()
     fireAt("drop", 3 * ROW_HEIGHT + 50)
 
-    expect(onReorder).toHaveBeenCalledWith(2, 3)
+    expect(onReorder).toHaveBeenCalledWith(2, 3, { depth: 0 })
     restore()
   })
 })

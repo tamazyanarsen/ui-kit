@@ -55,7 +55,14 @@ function IconTile({ name }: { name: string }) {
       onClick={handleCopy}
       className="flex cursor-pointer flex-col items-center gap-3 rounded-xl border border-[var(--divider)] bg-[var(--modal-bg)] p-4 text-center transition-colors hover:border-[var(--input-border-hover)] hover:bg-[var(--card-bg)]"
     >
-      <span className="flex min-h-6 items-end gap-3 text-[var(--btn-primary-fg)]">
+      {/* Дизайн-чек от 08.10, замечание 1: в старой теме плитки были пустые.
+          Цвет глифов брался из `--btn-primary-fg` — подписи КНОПКИ, которая
+          в старой теме белая (на зелёной заливке), и иконки рисовались белым
+          по белому. Цвет текста витрины — `--title-fg`, тема его не трогает.
+          Вторая половина той же причины — 52 глифа держали `fill="#000"`
+          вместо `currentColor` и не перекрашивались вовсе; исправлено в
+          самих файлах `src/icons`. */}
+      <span className="flex min-h-6 items-end gap-3 text-[var(--title-fg)]">
         <Icon name={name} size={16} />
         <Icon name={name} size={24} />
       </span>
@@ -80,7 +87,7 @@ function IconsPage() {
   return (
     <div className="flex flex-col gap-6 bg-[var(--modal-bg)] p-8">
       <div>
-        <h1 className="text-h3 text-[var(--btn-primary-fg)]">Иконки</h1>
+        <h1 className="text-h3 text-[var(--title-fg)]">Иконки</h1>
         <p className="mt-1 text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
           Все {ICON_NAMES.length} иконок набора, каждая в двух размерах — 16 и
           24. Клик по плитке копирует вызов компонента. Цвет наследуется от

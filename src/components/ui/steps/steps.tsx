@@ -31,6 +31,13 @@ import { statusColor, type StepState, type StepStatus } from "./variants"
 //
 // Компонент также сам подкручивает карточку в зону видимости, когда её
 // `state` становится "active".
+//
+// Дизайн-чек от 08.10, замечание 20: стрелка слева была видна всегда, даже в
+// начале ленты. Теперь `showLeftFade`/`showRightFade` только РАЗРЕШАЮТ
+// стрелку, а видна она, когда в её сторону есть что прокручивать: в начале
+// ленты левой нет, в конце — правой, в середине переполненной ленты видны
+// обе со своей маской. Положение пересчитывается на прокрутке ленты и на
+// изменении её размеров (ResizeObserver), а не только при монтировании.
 interface Step {
   title: React.ReactNode
   description: React.ReactNode
@@ -43,7 +50,12 @@ interface Step {
 
 interface StepsProps {
   steps: Step[]
+  /**
+   * «Show Left Fade» — разрешает левую стрелку. Видна она только когда ленте
+   * есть куда прокручиваться влево (в начале ленты скрыта).
+   */
   showLeftFade?: boolean
+  /** «Show Right Fade» — то же для правой стрелки (в конце ленты скрыта). */
   showRightFade?: boolean
   onClickLeft?: () => void
   onClickRight?: () => void
@@ -127,7 +139,8 @@ function StepCard({
   if (disabled && disabledHint) {
     return (
       <TooltipPrimitive.Root>
-        <TooltipPrimitive.Trigger render={card} />
+        {/* Задержка 100 мс, как у Tooltip кита (дизайн-чек 08.10, замечание 10). */}
+        <TooltipPrimitive.Trigger delay={100} render={card} />
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Positioner side="bottom" sideOffset={8}>
             {/* Дизайн-чек 3/3 №29: у подсказки не было стрелки направления —
@@ -170,11 +183,15 @@ function FadeArrow({
 }) {
   const Icon = side === "left" ? ChevronLeft : ChevronRight
 
-  // Мастер Steps / Arrow: блок затухания 32 (серый grey-106, маска — градиент:
+  // Мастер Steps / Arrow: блок затухания 32 (серый фон страницы, маска — градиент:
   // слева непрозрачен до 25%, справа от 75%), а кнопка 32 висит на 16px ЗА
   // краем ряда (left/right: -16; экспорт 1040 при ряде 1008). Поэтому кнопке
   // нужны поля снаружи: потребитель оставляет 16px с каждой стороны, иначе
   // кнопку обрежет край контейнера.
+  //
+  // Цвет маски — `--steps-fade-bg`, который ссылается на `--page-bg`: маска
+  // должна сливаться с серым фоном страницы, а он у тем разный (Grey 106 в
+  // старой, Grey 109 в новой). Замечание 20 дизайн-чека от 08.10.
   return (
     <div
       className={cn(
@@ -201,10 +218,43 @@ function FadeArrow({
   )
 }
 
+/** Есть ли у ленты куда прокручиваться влево и вправо. Допуск в 1px гасит
+ * дробные scrollLeft при масштабе страницы, иначе в конце ленты правая
+ * стрелка мигала бы из-за полупикселя. */
+function useScrollEdges(stripRef: React.RefObject<HTMLDivElement | null>, count: number) {
+  const [edges, setEdges] = React.useState({ left: false, right: false })
+
+  React.useEffect(() => {
+    const strip = stripRef.current
+    if (!strip) return
+    const measure = () => {
+      const left = strip.scrollLeft > 1
+      const right = strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1
+      setEdges((prev) =>
+        prev.left === left && prev.right === right ? prev : { left, right }
+      )
+    }
+    measure()
+    strip.addEventListener("scroll", measure, { passive: true })
+    // Ширина ленты меняется с контейнером, ширина содержимого — с числом и
+    // размером карточек; следим за обоими.
+    const observer =
+      typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null
+    observer?.observe(strip)
+    Array.from(strip.children).forEach((child) => observer?.observe(child))
+    return () => {
+      strip.removeEventListener("scroll", measure)
+      observer?.disconnect()
+    }
+  }, [stripRef, count])
+
+  return edges
+}
+
 function Steps({
   steps: rawSteps,
-  showLeftFade = false,
-  showRightFade = false,
+  showLeftFade = true,
+  showRightFade = true,
   onClickLeft,
   onClickRight,
   className,
@@ -215,6 +265,7 @@ function Steps({
   const cardRefs = React.useRef<Array<HTMLDivElement | null>>([])
   const stripRef = React.useRef<HTMLDivElement>(null)
   const activeIndex = steps.findIndex((step) => step.state === "active")
+  const edges = useScrollEdges(stripRef, steps.length)
 
   // Активный шаг выводится в центр ЛЕНТЫ — и только её. `scrollIntoView`
   // прокручивает всех прокручиваемых предков, включая окно: Steps ниже
@@ -254,7 +305,7 @@ function Steps({
 
   return (
     <div data-slot="steps" className={cn("relative", className)}>
-      {showLeftFade && (
+      {showLeftFade && edges.left && (
         <FadeArrow
           side="left"
           onClick={() => {
@@ -279,7 +330,7 @@ function Steps({
           />
         ))}
       </div>
-      {showRightFade && (
+      {showRightFade && edges.right && (
         <FadeArrow
           side="right"
           onClick={() => {

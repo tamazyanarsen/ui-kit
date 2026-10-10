@@ -1,7 +1,8 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
+import { StorySection, StoryShowcase, sizeArgType } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 import {
   CREATE_ITEMS,
   MENU_BANNERS,
@@ -87,6 +88,8 @@ type PlaygroundArgs = Omit<
   createItemCount: number
   favouriteCount: number
   withFavourites: boolean
+  /** `Size` компонент-сета: Desktop или Mobile (форму задаёт ViewportScope). */
+  viewport: Viewport
 }
 
 function HeaderDemo({
@@ -98,13 +101,14 @@ function HeaderDemo({
   createItemCount = CREATE_ITEMS.length,
   favouriteCount = MENU_FAVOURITES.length,
   withFavourites = true,
+  viewport,
   ...props
 }: Partial<PlaygroundArgs>) {
   const orgs = ORGS.slice(0, Math.max(1, organizationCount))
   const [organizationId, setOrganizationId] = useState(orgs[0].id)
   const [favourites, setFavourites] = useState(MENU_FAVOURITES.slice(0, favouriteCount))
 
-  return (
+  const header = (
     <Header
       {...props}
       menuGroups={MENU_GROUPS.slice(0, menuGroupCount)}
@@ -119,6 +123,14 @@ function HeaderDemo({
       onOrganizationChange={setOrganizationId}
     />
   )
+  if (!viewport) return header
+  // Мобильная форма — в полосе 360, как кадры `Size=Mobile` макета:
+  // раскрытое меню и панель «Создать» занимают ту же ширину.
+  return (
+    <ViewportScope viewport={viewport}>
+      {viewport === "mobile" ? <div className="w-full max-w-[360px]">{header}</div> : header}
+    </ViewportScope>
+  )
 }
 
 const meta = {
@@ -129,6 +141,7 @@ const meta = {
   component: HeaderDemo,
   parameters: { layout: "fullscreen" },
   argTypes: {
+    viewport: sizeArgType,
     /* `Type` компонент-сета `ELK / header` — четыре значения.
        В коде они разложены на пару `type` + `clientHeaderType`, поэтому
        контролов два: первый повторяет ось макета, второй показывает
@@ -203,6 +216,7 @@ const meta = {
     },
   },
   args: {
+    viewport: "desktop",
     type: "client",
     clientHeaderType: "client",
     activeSection: "payments",
@@ -295,6 +309,23 @@ export const Examples: Story = {
       <StorySection title="Незалогиненный (Sign out)">
         <div className="w-full">
           <HeaderDemo type="sign-out" phoneNumber="8 800 700-87-83" />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Мобильная форма (Size=Mobile)"
+        description="Одна полоса 56px: логотип, уведомления и письма плитками 32, круглые «Создать» и «Меню». «Меню» раскрывает экран с карточкой организации и вкладками «Избранное / Все разделы» (Tab Headings), иконка меняется на крестик."
+      >
+        <div className="flex flex-wrap items-start gap-10">
+          <HeaderDemo viewport="mobile" type="client" activeSection="payments" />
+          <HeaderDemo
+            viewport="mobile"
+            type="client"
+            clientHeaderType="client-without-account"
+            organizationCount={1}
+          />
+          <HeaderDemo viewport="mobile" type="client" clientHeaderType="client-is-blocked" />
+          <HeaderDemo viewport="mobile" type="sign-out" />
         </div>
       </StorySection>
 

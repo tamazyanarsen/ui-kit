@@ -6,6 +6,7 @@ import { Loader } from "@/components/ui/loader"
 import { cn } from "@/lib/utils"
 import { stateClassName } from "@/lib/state-class-name"
 import { useIsDesktop } from "@/lib/use-is-desktop"
+import { usePressTracking } from "@/lib/use-press-tracking"
 
 import { GosuslugiLogo } from "./gosuslugi-logo"
 
@@ -29,12 +30,18 @@ import { GosuslugiLogo } from "./gosuslugi-logo"
 // правило действует для всех кнопок-триггеров кита разом (Selection Button,
 // «Скачать», меню шапки), а не только у таблицы. `active:` при этом остаётся:
 // это разные события — «палец на кнопке» и «список раскрыт».
+//
+// Нажатие — `press-scale` (styles/motion.css): дизайн-чек 08.10, замечания
+// 8 и 37 заменили съезд вниз на 1px лёгким сжатием до 0.97. Прежде съезд был
+// отключён у триггеров всплывашек (`not-aria-[haspopup]`), из-за чего кнопки
+// Dropdown/«Ещё» на зажатие не отвечали вовсе (замечание 8); сжатие идёт от
+// центра и позиционер его переживает, так что исключения больше нет.
 const buttonVariants = cva(
   // Насыщенность теперь живёт в суффиксе text-pN-medium у каждого
   // размерного варианта ниже (все Medium, как в макете), а не здесь:
   // отдельный класс font-medium тут лишь продублировал бы насыщенность,
   // уже зашитую в составной класс.
-  "group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none focus-visible:focus-ring active:not-aria-[haspopup]:translate-y-px disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] aria-disabled:active:!translate-y-0 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap press-scale outline-none select-none focus-visible:focus-ring disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -195,6 +202,7 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
   // `<Button size="lg" icon={Mail}>`. Это должен быть медиазапрос, а не
   // класс `desktop:`, потому что выбирается сам *контур*, а не коробка.
   const isDesktop = useIsDesktop()
+  usePressTracking()
   const glyphSize =
     isDesktop && (resolvedSize === "lg" || resolvedSize === "icon-lg") ? 24 : 16
 

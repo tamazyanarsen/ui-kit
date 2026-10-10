@@ -243,3 +243,20 @@ html[data-page-scroll-lock][data-page-scroll-lock-gap] body {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
+
+/* Гибридное закрепление колонки (lib/use-hybrid-sticky.ts, дизайн-чек от
+   08.10, замечания 32 и 34): `top` ставит скрипт, здесь — только липкость и
+   слой. Пока внутри колонки открыто меню (`data-popup-open` у триггера Base
+   UI) или колонка поднята явно, она на 1 выше `--z-sticky` — меню не
+   прячется под соседней колонкой.
+
+   ⚠️ ВНЕ `@layer`: утилита `relative` у потребителя иначе перебила бы
+   `position: sticky` молча (см. table-rules.css). */
+[data-hybrid-sticky] {
+  position: sticky;
+  z-index: var(--z-sticky);
+}
+[data-hybrid-sticky][data-raised],
+[data-hybrid-sticky]:has([data-popup-open]) {
+  z-index: calc(var(--z-sticky) + 1);
+}

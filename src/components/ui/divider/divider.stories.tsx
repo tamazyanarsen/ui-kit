@@ -54,9 +54,9 @@ export const Examples: Story = {
         description="Занимает всю ширину контейнера — разделяет строки списка или секции карточки."
       >
         <div className="flex w-full max-w-md flex-col gap-4">
-          <span className="text-p1-medium text-[var(--btn-primary-fg)]">Раздел выше</span>
+          <span className="text-p1-medium text-[var(--title-fg)]">Раздел выше</span>
           <Divider />
-          <span className="text-p1-medium text-[var(--btn-primary-fg)]">Раздел ниже</span>
+          <span className="text-p1-medium text-[var(--title-fg)]">Раздел ниже</span>
         </div>
       </StorySection>
 
@@ -65,9 +65,9 @@ export const Examples: Story = {
         description="Растягивается на всю высоту строки — так он стоит между кнопками футера Dropdown и в нижнем ряду шапки."
       >
         <div className="flex h-10 items-center gap-4">
-          <span className="text-p1-medium text-[var(--btn-primary-fg)]">Слева</span>
+          <span className="text-p1-medium text-[var(--title-fg)]">Слева</span>
           <Divider orientation="vertical" />
-          <span className="text-p1-medium text-[var(--btn-primary-fg)]">Справа</span>
+          <span className="text-p1-medium text-[var(--title-fg)]">Справа</span>
         </div>
       </StorySection>
     </StoryShowcase>

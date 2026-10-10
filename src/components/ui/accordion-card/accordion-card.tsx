@@ -75,7 +75,9 @@ function AccordionCard({
               "flex w-full flex-col gap-1 p-4 text-left outline-none focus-visible:focus-ring transition-colors desktop:p-6 [&[data-panel-open]_svg]:rotate-180",
               blocked
                 ? "hover:bg-[var(--accordion-card-blocked-bg-hover)]"
-                : "hover:bg-[var(--accordion-card-bg-hover)]"
+                : // OnClick (Active) серой шапки — Grey 124 (дизайн-чек от
+                  // 08.10, замечание 28). У Blocked шапка красная, не серая.
+                  "hover:bg-[var(--accordion-card-bg-hover)] active:bg-[var(--accordion-card-bg-active)]"
             )}
           >
             {/* `items-start`: шеврон прижат к верху строки заголовка (в

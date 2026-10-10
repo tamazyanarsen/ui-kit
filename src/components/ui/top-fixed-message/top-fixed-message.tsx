@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tooltip } from "@/components/ui/tooltip"
 import { useIsDesktop } from "@/lib/use-is-desktop"
+import { useCollapseExit } from "@/lib/use-collapse-exit"
 
 import {
   TOP_FIXED_MESSAGE_BG,
@@ -114,6 +115,10 @@ function TopFixedMessage({
   const isDesktop = useIsDesktop()
   const textRef = React.useRef<HTMLSpanElement>(null)
   const truncated = useIsTruncated(textRef, text, isDesktop)
+  // Закрытие — «фейд ап» (дизайн-чек 08.10, замечание 24): полоса гаснет с
+  // подъёмом, а её высота схлопывается в ту же анимацию, так что контент
+  // под ней поднимается параллельно. `onClose` приходит после ухода.
+  const { ref, exit } = useCollapseExit<HTMLDivElement>(onClose, { lift: true })
 
   const icon = showIcon && (
     <Alert
@@ -126,6 +131,7 @@ function TopFixedMessage({
 
   return (
     <div
+      ref={ref}
       data-slot="top-fixed-message"
       className={cn(
         "flex w-full",
@@ -170,7 +176,7 @@ function TopFixedMessage({
                раза. */
             <CloseCross
               size={24}
-              onClick={onClose}
+              onClick={exit}
               className="text-[var(--top-fixed-message-close-fg)]"
             />
           )}
@@ -207,7 +213,7 @@ function TopFixedMessage({
                     type="button"
                     variant="secondary-white"
                     size="sm"
-                    onClick={onClose}
+                    onClick={exit}
                   >
                     {closeLabel}
                   </Button>

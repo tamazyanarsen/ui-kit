@@ -28,12 +28,20 @@ function PageLink({
   showStar,
   active,
   onFavouriteToggle,
+  mobile = false,
 }: {
   link: HeaderMenuLink
   favourite: boolean
   showStar: boolean
   active: boolean
   onFavouriteToggle?: (value: string) => void
+  /**
+   * Строка мобильного меню (`Меню / Избранное`, 70467:11707): подпись
+   * P1 Medium Mobile — 14/20 вместо 16/24, а звезда видна всегда. Наведения
+   * на телефоне нет, и звезда, которая проявляется по нему, там была бы
+   * недоступна вовсе.
+   */
+  mobile?: boolean
 }) {
   return (
     // `group/link`, а не hover на самой звезде: в макете незаполненная
@@ -47,7 +55,8 @@ function PageLink({
         aria-current={active ? "page" : undefined}
         onClick={link.onClick}
         className={cn(
-          "min-w-0 flex-1 cursor-pointer pr-2 text-left text-p1-medium [overflow-wrap:anywhere] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
+          "min-w-0 flex-1 cursor-pointer pr-2 text-left [overflow-wrap:anywhere] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
+          mobile ? "text-p2-medium" : "text-p1-medium",
           active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
         )}
       >
@@ -64,8 +73,11 @@ function PageLink({
             // отличается только заливка контура (см. «Настройку
             // избранного», где добавленные разделы помечены такой же серой
             // звездой, а не брендовой).
-            "flex cursor-pointer flex-col items-start py-[3px] pl-1 text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring transition-opacity",
-            favourite
+            "flex cursor-pointer flex-col items-start pl-1 text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring transition-opacity",
+            // У мобильной строки высотой 20 звезда стоит с полями 2
+            // (`Star Container py-[2px]` макета); десктопные 3 — как были.
+            mobile ? "py-0.5" : "py-[3px]",
+            favourite || mobile
               ? "opacity-100"
               : "opacity-0 group-hover/link:opacity-100 focus-visible:opacity-100"
           )}

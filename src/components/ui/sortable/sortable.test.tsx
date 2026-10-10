@@ -154,7 +154,7 @@ describe("useSortable", () => {
     dragOverAt(2 * ROW_HEIGHT + 50)
     dropAt(2 * ROW_HEIGHT + 50)
 
-    expect(onReorder).toHaveBeenCalledWith(0, 2)
+    expect(onReorder).toHaveBeenCalledWith(0, 2, { depth: 0 })
     restore()
   })
 
@@ -224,7 +224,7 @@ describe("useSortable", () => {
     fireEvent.keyDown(screen.getByRole("button", { name: "Переместить b" }), {
       key: "ArrowUp",
     })
-    expect(onReorder).toHaveBeenCalledWith(1, 0)
+    expect(onReorder).toHaveBeenCalledWith(1, 0, { depth: 0 })
     restore()
   })
   // `canMove` — запрет сверх `locked`: так «Настроить столбцы» при поиске

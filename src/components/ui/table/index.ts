@@ -21,7 +21,7 @@ export type {
   TableFieldType,
   TableFieldTypeSpec,
 } from "./field-types"
-export { TableBlock, TableBlockEmpty } from "./block"
+export { TableBlock, TableBlockEmpty, TableBlockPagination } from "./block"
 export { TableColumnSettings } from "./column-settings"
 export type { TableColumnSettingsProps, TableColumn } from "./column-settings"
 export { useTableScrollState, useHorizontalScrollState } from "./pin"

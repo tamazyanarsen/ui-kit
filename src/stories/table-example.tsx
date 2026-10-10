@@ -7,6 +7,7 @@ import { Pagination } from "@/components/ui/pagination"
 import {
   Table,
   TableBlock,
+  TableBlockPagination,
   TableBlockEmpty,
   TableBody,
   TableCell,
@@ -36,7 +37,7 @@ interface TableExampleProps {
   nested?: boolean
   /** Закрепление колонок слева (чекбокс + иерархия) и справа (действия). */
   pinned?: boolean
-  /** Липкая шапка внутри вьюпорта таблицы. */
+  /** Липкая строка названий столбцов у верха вьюпорта страницы. */
   stickyHeader?: boolean
   /** Изменение ширины колонок перетаскиванием правой границы. */
   resizable?: boolean
@@ -63,7 +64,7 @@ function TableExample({
   sortable = true,
   nested = true,
   pinned = true,
-  stickyHeader = false,
+  stickyHeader = true,
   resizable = true,
   showDescription = true,
   empty = false,
@@ -115,7 +116,6 @@ function TableExample({
       <Table
         fixed
         stickyHeader={stickyHeader}
-        containerClassName={stickyHeader ? "max-h-[320px]" : undefined}
       >
         <TableExampleHead
           visible={visible}
@@ -229,13 +229,15 @@ function TableExample({
       )}
 
       {showPagination && (
-        <Pagination
-          page={page}
-          totalPages={26}
-          onPageChange={setPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-        />
+        <TableBlockPagination>
+          <Pagination
+            page={page}
+            totalPages={26}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
+          />
+        </TableBlockPagination>
       )}
     </>
   )

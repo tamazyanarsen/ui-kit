@@ -78,6 +78,12 @@ interface ButtonMenuRowProps extends React.ComponentProps<"div"> {
    * снова по содержимому. Включает только нижняя панель.
    */
   stretchFirst?: boolean
+  /**
+   * Сколько кнопок ряд показывает НЕ БОЛЬШЕ, даже если место есть. Мобильная
+   * форма чёрной панели («Menu Black Buttons», Size=Mobile) держит одну
+   * растянутую кнопку, а все остальные с двух кнопок уходят в «…».
+   */
+  maxVisible?: number
 }
 
 const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(function ButtonMenuRow({
@@ -85,6 +91,7 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
   tone,
   minVisible = 1,
   stretchFirst = false,
+  maxVisible,
   className,
   children,
   ...props
@@ -116,7 +123,7 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
   }, [hasOthers])
 
   const gap = ROW_GAP[size]
-  const { containerRef, itemRefs, visibleCount } = useOverflowCount(
+  const { containerRef, itemRefs, visibleCount: fitCount } = useOverflowCount(
     buttons.length,
     OVERFLOW_WIDTH[size] + gap,
     gap,
@@ -134,6 +141,8 @@ const ButtonMenuRow = React.forwardRef<HTMLDivElement, ButtonMenuRowProps>(funct
     hasOthers ? othersWidth + gap : 0,
     minVisible
   )
+  const visibleCount =
+    maxVisible === undefined ? fitCount : Math.min(fitCount, maxVisible)
 
   // Размер кнопкам ряд задаёт САМ, что бы ни передал вызывающий: ряд обязан
   // быть одной высоты, а собственное умолчание кнопки — Medium, то есть не

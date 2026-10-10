@@ -2,6 +2,7 @@ import * as React from "react"
 import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { usePressTracking } from "@/lib/use-press-tracking"
 
 // Dropdown — всплывающая поверхность, которую макет описывает как
 // отдельный переиспользуемый компонент (на канвасе самого Select лежат три
@@ -51,6 +52,9 @@ interface DropdownProps extends React.ComponentProps<"div"> {
 
 const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
   function Dropdown({ className, size = "desktop", children, ...props }, ref) {
+    // Строки внутри сжимаются на зажатие (`press-scale-content`), а Base UI
+    // гасит у них `mousedown` — нужен атрибут нажатия, см. хук.
+    usePressTracking()
     return (
       <div
         ref={ref}
@@ -158,6 +162,11 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
           // Item». Обычный `hover:` — та же половина правила, что у
           // `menuItemRowClass` (см. components/ui/menu-item).
           "hover:bg-[var(--menu-item-bg-highlighted)] data-highlighted:bg-[var(--menu-item-bg-highlighted)]",
+          // Нажатие сжимает содержимое строки, а не её заливку: строка идёт
+          // от края до края панели, и сжатая коробка отлипла бы от границ
+          // (дизайн-чек 08.10, замечание 37). Опора — левый край, чтобы текст
+          // не уплывал от поля 16.
+          "press-scale-content [--press-origin:left_center]",
           "data-disabled:hover:bg-transparent",
           className
         )}

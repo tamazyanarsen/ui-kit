@@ -30,12 +30,15 @@ interface CountButtonProps extends ButtonProps {
 // оставалось невидимым (opacity 0, без якоря). Ref уходит на саму кнопку,
 // а не на обёртку-span.
 const CountButton = React.forwardRef<HTMLButtonElement, CountButtonProps>(function CountButton(
-  { count, countColor = "red", className, ...props },
+  { count, countColor = "red", size = "lg", className, ...props },
   ref
 ) {
   return (
     <span data-slot="count-button" className="relative inline-flex">
-      <Button ref={ref} className={className} {...props} />
+      {/* Размер по умолчанию — L, а не M, как у самой Button: дизайн-чек от
+          08.10, замечание 5 — «кнопки размера M крайне редко используются в
+          проекте, исключение — модальные окна». */}
+      <Button ref={ref} size={size} className={className} {...props} />
       {/* Значок свисает за кнопку на 4px с каждой стороны (в макете это
           `right-[-4px] top-[-4px]`), а не на 8. */}
       {count !== undefined && (

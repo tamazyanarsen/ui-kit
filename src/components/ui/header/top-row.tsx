@@ -15,6 +15,7 @@ import { NotificationMenu, type NotificationMenuItem } from "./notification-menu
 import { ProfileMenu, type ProfileMenuOrganization } from "./profile-menu"
 import { DocumentMenu, type HeaderDocumentMenuItem } from "./top-row-menus"
 import { EmployeeUserMenu } from "./top-row-menus"
+import { useOrganization } from "./use-organization"
 
 // Верхняя полоса шапки: логотип слева, кластер иконок справа. Состав
 // кластера целиком определяется типом шапки — клиент, сотрудник или
@@ -48,16 +49,19 @@ function Logo() {
 function MessagesButton({
   count,
   onClick,
+  className,
 }: {
   count: number
   onClick?: () => void
+  /** Мобильная плитка 32×32 вместо 56×64 — см. `MobileTopRow`. */
+  className?: string
 }) {
   return (
     <button
       type="button"
       aria-label="Сообщения"
       onClick={onClick}
-      className={HEADER_ICON_TILE_ACCENT}
+      className={cn(HEADER_ICON_TILE_ACCENT, className)}
     >
       {/* Бейдж крепится к самой иконке, а не к плитке: иначе он уезжает в
           угол блока 56×64 вместо угла глифа 24×24. */}
@@ -106,25 +110,11 @@ function ClientActions({
   onOrgSettingsClick,
   onLogoutClick,
 }: ClientActionsProps) {
-  // Без `organizationId` выбор организации живёт здесь же: иначе клик по
-  // другой организации вызывал колбэк, а триггер и галочка навсегда
-  // оставались на первой.
-  //
-  // Свой выбор учитывается, только пока такая организация есть в списке:
-  // после смены `organizations` устаревший id уходил в меню как `value`,
-  // триггер откатывался на первую, а галочки в списке не было ни у кого.
-  const [ownOrganizationId, setOwnOrganizationId] = React.useState<string>()
-  const ownOrganizationListed = organizations.some(
-    (organization) => organization.id === ownOrganizationId
+  const { activeOrganizationId, changeOrganization } = useOrganization(
+    organizations,
+    organizationId,
+    onOrganizationChange
   )
-  const activeOrganizationId =
-    organizationId ??
-    (ownOrganizationListed ? ownOrganizationId : undefined) ??
-    organizations[0]?.id
-  function changeOrganization(id: string) {
-    if (organizationId === undefined) setOwnOrganizationId(id)
-    onOrganizationChange?.(id)
-  }
 
   // Кластер сжимаемый (`min-w-0`, без `shrink-0`): плитка профиля умеет
   // обрезать название многоточием (`max-w-[304px] min-w-0` + `truncate`),
@@ -276,6 +266,7 @@ export {
   ClientActions,
   EmployeeActions,
   Logo,
+  MessagesButton,
   SignOutPhone,
   TopRow,
   TopRowDivider,

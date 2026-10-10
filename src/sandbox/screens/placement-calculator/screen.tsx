@@ -81,8 +81,13 @@ function PlacementCalculatorScreen() {
       {/* Дизайн-чек от 08.09, замечание 11: «Блок должен занимать 5 колонок
           и залипать при прокрутке, как в деталке размещения средств». Было
           4 колонки и без закрепления. */}
+      {/* Дизайн-чек от 08.10, замечание 32: гибридное закрепление — высокая
+          колонка крепится сверху или снизу по направлению прокрутки
+          (lib/use-hybrid-sticky.ts). Обе колонки считаются независимо: у
+          каждой своё сохранённое `top`, поэтому правая (список предложений)
+          закрепляется так же, когда после отбора оказывается короче левой. */}
       <SandboxColumns widths={[5, 7]}>
-        <SandboxBlock sticky>
+        <SandboxBlock sticky="hybrid">
           <SandboxSection title="Выбор условий" gap={16}>
             <div className="flex flex-wrap gap-2">
               <SandboxChipsToggle
@@ -134,7 +139,8 @@ function PlacementCalculatorScreen() {
               /* Правая подпись шкалы «∞» — с эталона: верхняя граница суммы
                  продуктом не ограничена, а ползунку конец всё равно нужен. */
               scaleLabels={["50 000", "∞"]}
-              format={{ maximumFractionDigits: 0 }}
+              /* Маска суммы: «23 700 000 ₽», ввод с клавиатуры. */
+              mask="amount"
             />
             <RangeInput
               label="Срок, дней"
@@ -153,7 +159,7 @@ function PlacementCalculatorScreen() {
           </SandboxSection>
         </SandboxBlock>
 
-        <SandboxBlock>
+        <SandboxBlock sticky="hybrid">
           {offers.length === 0 ? (
             <EmptySearchResults
               title="Предложений нет"

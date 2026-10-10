@@ -14,6 +14,6 @@ export function ArrowCircleUp({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-112 -504)"><defs><clipPath id={`${uid}-arrow-circle-up-16-clip5_70326_26`}><path fill="#fff" d="M112 504h16v16h-16z"/></clipPath></defs><g clipPath={`url(#${uid}-arrow-circle-up-16-clip5_70326_26)`}><path fill="#fff" d="M112 504h16v16h-16z"/><path fill="currentColor" d="M120 506a6 6 0 1 0 0 12 6 6 0 0 0 0-12m-3.185 5.648a1 1 0 0 1 0-1.414l2.478-2.476a1 1 0 0 1 1.414 0l2.478 2.476a1 1 0 0 1-1.415 1.414l-.77-.769v4.656a1 1 0 0 1-2 0v-4.656l-.77.769a1 1 0 0 1-1.415 0M120 504a8 8 0 1 1 0 16 8 8 0 0 1 0-16"/></g></g></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-112 -504)"><defs><clipPath id={`${uid}-arrow-circle-up-16-clip5_70326_26`}><path fill="#fff" d="M112 504h16v16h-16z"/></clipPath></defs><g clipPath={`url(#${uid}-arrow-circle-up-16-clip5_70326_26)`}><path fill="currentColor" d="M120 506a6 6 0 1 0 0 12 6 6 0 0 0 0-12m-3.185 5.648a1 1 0 0 1 0-1.414l2.478-2.476a1 1 0 0 1 1.414 0l2.478 2.476a1 1 0 0 1-1.415 1.414l-.77-.769v4.656a1 1 0 0 1-2 0v-4.656l-.77.769a1 1 0 0 1-1.415 0M120 504a8 8 0 1 1 0 16 8 8 0 0 1 0-16"/></g></g></svg>
   )
 }

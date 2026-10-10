@@ -10,6 +10,6 @@ export function Laptop({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M12 3c1.105 0 2 .9 2 2v4c0 1.1-.895 2-2 2H8V9h4V5H5v1c1.105 0 2 .9 2 2v4c0 1.1-.895 2-2 2H3c-1.105 0-2-.9-2-2V8c0-1.1.895-2 2-2V5c0-1.1.895-2 2-2zm2 9c.552 0 1 .45 1 1s-.448 1-1 1H8v-2zM3 12h2V8H3z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M12 3c1.105 0 2 .9 2 2v4c0 1.1-.895 2-2 2H8V9h4V5H5v1c1.105 0 2 .9 2 2v4c0 1.1-.895 2-2 2H3c-1.105 0-2-.9-2-2V8c0-1.1.895-2 2-2V5c0-1.1.895-2 2-2zm2 9c.552 0 1 .45 1 1s-.448 1-1 1H8v-2zM3 12h2V8H3z"/></svg>
   )
 }

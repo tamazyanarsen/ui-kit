@@ -3,7 +3,19 @@ import { render, screen } from "@testing-library/react"
 
 import { Button } from "@/components/ui/button"
 
+import type * as React from "react"
+
+import { ViewportScope } from "@/lib/viewport"
+
 import { ButtonMenuBlack } from "./black"
+
+// Сверки ниже — про десктопную форму панели: с v1.1.0 у неё есть Mobile,
+// а jsdom без медиазапроса видит именно мобильную.
+const desktop = {
+  wrapper: ({ children }: { children: React.ReactNode }) => (
+    <ViewportScope viewport="desktop">{children}</ViewportScope>
+  ),
+}
 
 // Аудит r7: действия чёрной панели стояли `shrink-0` и в «…» не уходили.
 // На части сетки (`placement="left"`, `span={6}`) панель 588 выталкивала
@@ -39,7 +51,8 @@ function renderPanel() {
       <Button>Отправить в банк</Button>
       <Button>Скачать</Button>
       <Button>Удалить</Button>
-    </ButtonMenuBlack>
+    </ButtonMenuBlack>,
+    desktop
   )
 }
 

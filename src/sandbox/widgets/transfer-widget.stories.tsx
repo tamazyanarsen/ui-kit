@@ -45,7 +45,10 @@ function TransferWidget() {
   }
 
   return (
-    <div className="flex w-96 flex-col gap-4 rounded-3xl bg-white p-6 shadow-universal">
+    // Дизайн-чек от 08.10, замечание 29: «белые блоки по умолчанию не должны
+    // иметь теней». Тень давал не компонент кита (у CardBox, BlockWidget и
+    // Card её нет), а собственный класс `shadow-universal` этой обёртки.
+    <div className="flex w-96 flex-col gap-4 rounded-3xl bg-white p-6">
       <div className="flex items-center gap-2">
         <Coins aria-hidden="true" className="size-5 text-[#252628]" />
         <h2 className="text-p1-medium text-[#252628]">Перевод между своими счетами</h2>
@@ -88,8 +91,11 @@ function TransferWidget() {
         onChange={(event) => setAmount(event.target.value)}
       />
 
+      {/* Дизайн-чек от 08.10, замечание 44: «Не ставим белый информер на
+          белый блок» — на белой карточке виджета вариант с серой подложкой. */}
       <Informer
         icon="information"
+        solid="grey"
         title="Без комиссии"
         description="Переводы между своими счетами всегда бесплатны"
         showCross={false}

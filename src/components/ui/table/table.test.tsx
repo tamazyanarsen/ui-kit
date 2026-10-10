@@ -67,12 +67,17 @@ describe("Table", () => {
     expect(screen.getByText("Иванов")).toBeInTheDocument()
   })
 
-  it("marks the table for the sticky header rule only when asked", () => {
-    const { rerender } = render(<Table />)
-    expect(screen.getByRole("table")).not.toHaveAttribute("data-sticky-header")
-
-    rerender(<Table stickyHeader />)
+  // Дизайн-чек от 08.10, замечания 21 и 35: липкая шапка «во всех
+  // таблицах», внутреннего вертикального скролла нет.
+  it("sticks the header row by default and never scrolls vertically inside", () => {
+    const { rerender } = render(<Table><thead><tr><th>Имя</th></tr></thead></Table>)
     expect(screen.getByRole("table")).toHaveAttribute("data-sticky-header")
+    const container = document.querySelector('[data-slot="table-container"]')!
+    expect(container).toHaveClass("overflow-x-auto", "overflow-y-hidden")
+    expect(container.className).not.toMatch(/max-h/)
+
+    rerender(<Table stickyHeader={false} />)
+    expect(screen.getByRole("table")).not.toHaveAttribute("data-sticky-header")
   })
 })
 

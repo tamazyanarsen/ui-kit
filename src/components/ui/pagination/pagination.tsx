@@ -1,9 +1,8 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight, Ellipsis } from "@/icons"
+import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 
-import { useNavFocusHandoff } from "./use-nav-focus"
 import { getCompactPageList, getMinimalPageList, useCompactPages } from "./use-compact-pages"
 
 // Pagination («Paginator») — навигация по номерам страниц плюс выбор
@@ -14,14 +13,20 @@ import { getCompactPageList, getMinimalPageList, useCompactPages } from "./use-c
 // фиксированный размер, поэтому она сделана обычным переносом flex, а не
 // отдельным пропсом.
 //
-// Сама внешняя полоса несёт оформление в обоих мастерах, и L и M (у обоих
-// одинаково, плюс снято пипеткой с примера «пагинатор, приклеенный к низу
-// таблицы»): белый фон, верхняя рамка 1px и отступы 16px по горизонтали и
-// 4px по вертикали. Это собственная рамка компонента в стиле подвала, а не
-// то, во что вызывающий код должен его оборачивать.
+// Дизайн-чек от 08.10, замечание 17 («ELK / paginator» v1.0.1, релиз
+// 69.36): «Удалили стрелки, удалили разделитель, компонент вычищен». У
+// пагинатора больше НЕТ ни стрелок «Предыдущая/Следующая», ни верхней
+// рамки, ни белой заливки, ни собственных полей: мастер L / Desktop —
+// голая строка 1160×36, M / Desktop — 1160×80 (36 + 8 + 36), Mobile —
+// 296×32. Поля даёт место применения: в табличном блоке это
+// `TableBlockPagination` (16 со всех сторон — «ELK / paginator» в
+// «Использовании в макете»: 1800×68 при инстансе 36), иначе пагинатор
+// слипался бы с последней строкой. Пагинатор при этом НЕ закрепляется
+// внизу таблицы, а просто стоит под данными в потоке — фраза документации
+// «Пагинатор закреплён внизу таблицы» — опечатка (там же, №17).
 //
 // Текст на всех таблетках страниц и размеров (во всех состояниях) и
-// подпись «Показать на странице» идут в насыщенности Medium (500) по
+// подпись «На странице» идут в насыщенности Medium (500) по
 // макету, а не только активная таблетка: числовые таблетки Default, Hover
 // и Onclick тоже дают font-medium, у них меняется лишь фон.
 //
@@ -33,6 +38,9 @@ import { getCompactPageList, getMinimalPageList, useCompactPages } from "./use-c
 // - иначе («Middle»):                  1 … т-1 текущая т+1 … последняя
 // - полоса уже полного ряда (узкий экран): 1 … текущая … последняя
 //   (см. use-compact-pages).
+//
+// Без стрелок соседние страницы — это сами номера: «Middle» мастера
+// («1 … 5 6 7 … 24») держит обе соседние кнопки.
 
 /**
  * Дизайн-чек №4 №7: элемент «Page Count (ELK)» имеет
@@ -70,12 +78,12 @@ interface PaginationProps {
    * Документация компонента описывает два случая:
    * «если все записи отображаются на одной странице, в правой части
    * пагинатора должен оставаться только один активный элемент — текущая
-   * страница» (это `totalPages = 1`, стрелки прячутся сами) и «в случае,
+   * страница» (это `totalPages = 1`) и «в случае,
    * если система возвращает пустое значение, пагинатор также отображается,
    * но отображается только правая часть (с выбором числа записей на
    * странице)» — вот для второго случая и нужен `showPages={false}`.
    *
-   * Дизайн-чек №4 №6: при `showPages={false}` блок «Показать на странице»
+   * Дизайн-чек №4 №6: при `showPages={false}` блок «На странице»
    * остаётся на своём месте (справа в Size=L), а не переезжает влево — сам
    * блок Page Count отключать нечем (дизайн-чек №4 №7).
    */
@@ -134,42 +142,13 @@ function PageButton({
         // своей коробки 36px. Высота по-прежнему складывается в 36
         // (9 + 20 + 7), ширина — в 44 (8 + 28 + 8).
         // Size=Mobile: 12/16, px 6 — 40 × 32 (9 + 16 + 7, 6 + 28 + 6).
-        "flex min-w-10 shrink-0 cursor-pointer items-center justify-center rounded-full px-1.5 pt-[9px] pb-[7px] text-p3-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors desktop:min-w-11 desktop:px-2 desktop:text-p2-medium",
+        "flex min-w-10 shrink-0 cursor-pointer items-center justify-center rounded-full px-1.5 pt-[9px] pb-[7px] text-p3-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring press-scale desktop:min-w-11 desktop:px-2 desktop:text-p2-medium",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"
       )}
     >
       {page}
-    </button>
-  )
-}
-
-function NavButton({
-  icon: Icon,
-  disabled,
-  onClick,
-  label,
-  ...focusProps
-}: {
-  icon: typeof ChevronLeft
-  disabled?: boolean
-  onClick?: () => void
-  label: string
-  onFocus?: () => void
-  onBlur?: (event: React.FocusEvent) => void
-}) {
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      aria-label={label}
-      {...focusProps}
-      data-slot="pagination-nav"
-      className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-[var(--pagination-fg)] outline-none desktop:size-9 focus-visible:focus-ring transition-colors not-disabled:hover:bg-[var(--pagination-hover-bg)] disabled:cursor-not-allowed disabled:text-[var(--pagination-disabled-fg)]"
-    >
-      <Icon aria-hidden="true" className="size-4" />
     </button>
   )
 }
@@ -194,7 +173,7 @@ function SizeButton({
         // Paginator Numbers строка высотой 20px стоит на 1px ниже центра
         // своей коробки 36px. Высота по-прежнему складывается в 36
         // (9 + 20 + 7), ширина — в 44 (8 + 28 + 8).
-        "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring transition-colors",
+        "flex min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full px-2 pt-[9px] pb-[7px] text-p2-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring press-scale",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"
@@ -234,9 +213,8 @@ function Pagination({
   const pageNum = pageProp == null || String(pageProp).trim() === "" ? NaN : Number(pageProp)
   const totalPages = Number.isFinite(totalPagesNum) ? Math.max(0, Math.ceil(totalPagesNum)) : 0
   const page = Number.isFinite(pageNum) ? pageNum : 1
-  const showNav = totalPages > 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
-  const { listRef, navFocusProps } = useNavFocusHandoff(page, totalPages)
+  const listRef = React.useRef<HTMLDivElement>(null)
   const rootRef = React.useRef<HTMLDivElement>(null)
   const compactLevel = useCompactPages(rootRef, listRef, {
     enabled: showPages,
@@ -253,10 +231,9 @@ function Pagination({
           ? getCompactPageList(page, totalPages)
           : getPageList(page, totalPages)
 
-  // Цель прижимается к существующим страницам, а не отбрасывается. Если
+  // Цель прижимается к существующим страницам, а не отбрасывается: если
   // страниц стало меньше, чем номер текущей (отбор сузил выдачу, а родитель
-  // `page` не поправил), «Предыдущая» выглядит активной — и раньше молча
-  // ничего не делала: `page - 1` тоже лежало за концом списка.
+  // `page` не поправил), клик по номеру всё равно ведёт на существующую.
   function goTo(next: number) {
     const target = Math.min(Math.max(next, 1), Math.max(totalPages, 1))
     if (target === page) return
@@ -270,9 +247,8 @@ function Pagination({
       data-size={size}
       data-compact={compactLevel === 2 ? "minimal" : compactLevel === 1 ? "true" : undefined}
       className={cn(
-        // Штрих в макете лежит ВНУТРИ высоты 44 (и 88 у Size=M), поверх
-        // верхнего поля 4px, поэтому сверху 3px + рамка 1px = те же 4px.
-        "flex border-t border-[var(--pagination-border)] bg-white px-4 pt-[3px] pb-1",
+        // Ни рамки, ни заливки, ни полей — см. шапку файла (№17).
+        "flex",
         // Size=M: выбор числа записей уходит на вторую строку и влево.
         size === "M"
           ? "flex-col items-start gap-y-2"
@@ -282,22 +258,15 @@ function Pagination({
     >
       {showPages && (
         <div ref={listRef} data-slot="pagination-pages" className="flex items-center gap-1">
-          {showNav && (
-            <NavButton
-              icon={ChevronLeft}
-              label="Предыдущая страница"
-              disabled={page <= 1}
-              onClick={() => goTo(page - 1)}
-              {...navFocusProps}
-            />
-          )}
           {pages.map((entry, index) =>
             entry === "ellipsis" ? (
               <span
                 key={`ellipsis-${index}`}
                 aria-hidden="true"
                 data-slot="pagination-ellipsis"
-                className="flex size-8 shrink-0 items-center justify-center text-[var(--pagination-fg)] desktop:size-9"
+                // «Box» с `icon / more` 16: 36×36 (p-10) на Desktop, 32×32
+                // (p-8) на Mobile; точки — Grey 284, а не цвет номеров.
+                className="flex size-8 shrink-0 items-center justify-center text-[var(--pagination-ellipsis-fg)] desktop:size-9"
               >
                 <Ellipsis aria-hidden="true" className="size-4" />
               </span>
@@ -309,15 +278,6 @@ function Pagination({
                 onClick={() => goTo(entry)}
               />
             )
-          )}
-          {showNav && (
-            <NavButton
-              icon={ChevronRight}
-              label="Следующая страница"
-              disabled={page >= totalPages}
-              onClick={() => goTo(page + 1)}
-              {...navFocusProps}
-            />
           )}
         </div>
       )}
@@ -336,7 +296,9 @@ function Pagination({
           (умолчание) занимают 312px при полосе 311, и с зазором 16 блок
           переносился из-за одного пикселя. Мобильный макет (Size=L / Mobile,
           M / Mobile) нарисован только для блока страниц — кнопки 40 × 32,
-          12/16, «…» 32 × 32; блок «Показать на странице» остаётся по-прежнему. */}
+          12/16, «…» 32 × 32. Строки «На странице» в мобильных символах
+          v1.0.1 нет вовсе, но выбор числа записей кит не отнимает: блок
+          остаётся, как был. */}
       <div
         data-slot="pagination-page-count"
         className={cn(
@@ -344,8 +306,9 @@ function Pagination({
           size === "L" && "ml-auto"
         )}
       >
+        {/* Подпись мастера v1.0.1 — «На странице» (Count Line). */}
         <span className="text-p2-medium whitespace-nowrap text-[var(--pagination-caption-fg)]">
-          Показать на странице
+          На странице
         </span>
         <div className="flex items-center gap-1">
           {pageSizeOptions.map((option) => (

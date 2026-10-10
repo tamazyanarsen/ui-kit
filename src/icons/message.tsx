@@ -10,6 +10,6 @@ export function Message({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M13 1a2 2 0 0 1 2 2v8.263a2 2 0 0 1-2 2H5.089l-.656.674C3.18 15.222 1 14.335 1 12.541V3a2 2 0 0 1 2-2zM3 12.541l.656-.674a2 2 0 0 1 1.433-.604H13V3H3z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M13 1a2 2 0 0 1 2 2v8.263a2 2 0 0 1-2 2H5.089l-.656.674C3.18 15.222 1 14.335 1 12.541V3a2 2 0 0 1 2-2zM3 12.541l.656-.674a2 2 0 0 1 1.433-.604H13V3H3z"/></svg>
   )
 }

@@ -1,10 +1,20 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-// Значки названы по тому глифу, которым они на самом деле являются:
-// прежние псевдонимы (`Briefcase as Home`, `Wallet as Landmark`) описывали
-// значки, которых в этом наборе нет, и из-за этого стори выглядела так,
-// будто использует глифы, которые никогда не рисовала.
-import { Briefcase, Coins, Settings, Wallet } from "@/icons"
+// Дизайн-чек от 08.10, замечание 19: пункты берут штатные глифы ELK по
+// смыслу подписи (дом, платежи, карты, шестерёнка) — настоящие иконки набора,
+// а не псевдонимы чужих имён. Начертание 24 выбирает сам SidebarItem.
+import {
+  Cards,
+  Deposit,
+  Doc,
+  Home,
+  Mail,
+  More,
+  Payments,
+  Question,
+  Settings,
+  Wallet,
+} from "@/icons"
 
 import { StorySection, StoryShowcase } from "@/stories/matrix"
 
@@ -17,16 +27,16 @@ import { SidebarItem, SidebarGroup } from "./item"
    подписи переключить было нельзя, хотя это основные оси компонента.
    Sidebar собирается из детей, поэтому контролы синтетические. */
 const ITEM_POOL = [
-  { value: "main", icon: Briefcase, label: "Главная" },
-  { value: "payments", icon: Coins, label: "Платежи", group: true },
-  { value: "cards", icon: Wallet, label: "Карты" },
+  { value: "main", icon: Home, label: "Главная" },
+  { value: "payments", icon: Payments, label: "Платежи", group: true },
+  { value: "cards", icon: Cards, label: "Карты" },
   { value: "settings", icon: Settings, label: "Настройки" },
   { value: "accounts", icon: Wallet, label: "Счета" },
-  { value: "deposits", icon: Coins, label: "Депозиты" },
-  { value: "letters", icon: Briefcase, label: "Письма в банк" },
-  { value: "reports", icon: Settings, label: "Отчёты" },
-  { value: "help", icon: Briefcase, label: "Помощь" },
-  { value: "more", icon: Settings, label: "Ещё" },
+  { value: "deposits", icon: Deposit, label: "Депозиты" },
+  { value: "letters", icon: Mail, label: "Письма в банк" },
+  { value: "reports", icon: Doc, label: "Отчёты" },
+  { value: "help", icon: Question, label: "Помощь" },
+  { value: "more", icon: More, label: "Ещё" },
 ]
 
 /* Подписи для строки состояния под панелью: значение активного пункта
@@ -185,8 +195,8 @@ function ControlledSidebar({ defaultOpen = false }: { defaultOpen?: boolean }) {
         expandedGroups={expanded}
         onExpandedGroupsChange={setExpanded}
       >
-        <SidebarItem icon={Briefcase} label="Главная" />
-        <SidebarGroup value="payments" icon={Coins} label="Платежи">
+        <SidebarItem icon={Home} label="Главная" />
+        <SidebarGroup value="payments" icon={Payments} label="Платежи">
           <SidebarItem label="СБП" nested />
           <SidebarItem label="QR-коды СБП" nested />
         </SidebarGroup>

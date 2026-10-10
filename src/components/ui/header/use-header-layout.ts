@@ -23,7 +23,12 @@ function useHeaderLayout({
   favourites = [],
   onFavouritesChange,
   pinned = false,
-}: HeaderProps) {
+}: HeaderProps,
+/**
+ * Мобильная форма (`Size=Mobile`): одна полоса без нижнего ряда, поэтому
+ * закрепляется вся шапка, а не ряд.
+ */
+mobile = false) {
   const [logoutOpen, setLogoutOpen] = React.useState(false)
   const [favouritesSettingsOpen, setFavouritesSettingsOpen] =
     React.useState(false)
@@ -79,8 +84,15 @@ function useHeaderLayout({
 
   // Что именно закрепляется — см. `pinned`. Если нижний ряд есть, липнет
   // только он; если его нет, липнет вся шапка.
-  const pinnedRow = pinned && showNavRow
-  const pinnedRoot = pinned && !showNavRow
+  const pinnedRow = pinned && showNavRow && !mobile
+  const pinnedRoot = pinned && (!showNavRow || mobile)
+
+  // Смена формы (Desktop ↔ Mobile) закрывает панель: кнопки, которые её
+  // открыли и закрывают, переехали в другую полосу, а наполнение меню —
+  // другое.
+  React.useEffect(() => {
+    setOpenPanel(null)
+  }, [mobile])
 
   // Занятый верх вьюпорта публикуется отсюда. Величина МЕРЯЕТСЯ у того
   // узла, который реально закреплён, — оба вызова живут рядом, неактивный

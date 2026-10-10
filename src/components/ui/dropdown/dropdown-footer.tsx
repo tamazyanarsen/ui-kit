@@ -53,13 +53,20 @@ interface DropdownFooterButtonProps
 const DropdownFooterButton = React.forwardRef<
   HTMLButtonElement,
   DropdownFooterButtonProps
->(function DropdownFooterButton({ className, type = "button", ...props }, ref) {
+>(function DropdownFooterButton(
+  { className, type = "button", children, ...props },
+  ref
+) {
   return (
     <button
       ref={ref}
       type={type}
       data-slot="dropdown-footer-button"
       className={cn(
+        // Нажатие (дизайн-чек 08.10, замечания 8 и 37): сжимается подпись, а
+        // не ячейка — ячейка прижата к краям списка и к соседней кнопке, и её
+        // сжатие обнажило бы полосы вдоль границ панели.
+        "press-scale-content",
         "flex min-h-14 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium group-data-[size^=mobile]/dropdown:min-h-12 group-data-[size^=mobile]/dropdown:px-6 group-data-[size^=mobile]/dropdown:py-[14px] group-data-[size^=mobile]/dropdown:text-p2-medium text-[var(--menu-item-fg)] outline-none transition-colors",
         "hover:bg-[var(--menu-item-bg-highlighted)] focus-visible:focus-ring",
         // Мобильные формы (мастер, узел `Buttons`): ячейка 48, поля 24/14 и
@@ -70,7 +77,9 @@ const DropdownFooterButton = React.forwardRef<
         className
       )}
       {...props}
-    />
+    >
+      <span>{children}</span>
+    </button>
   )
 })
 

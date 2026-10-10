@@ -219,7 +219,7 @@ export const Examples: Story = {
       />
 
       <div className="flex flex-col gap-2">
-        <p className="text-p2-medium text-[var(--btn-primary-fg)]">
+        <p className="text-p2-medium text-[var(--title-fg)]">
           Ведущий и замыкающий элементы: чекбокс, иконка, миниатюра, счётчик
         </p>
         <p className="text-p3-medium text-[var(--accordion-card-subtitle-fg)]">

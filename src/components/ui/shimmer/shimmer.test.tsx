@@ -26,13 +26,14 @@ describe("Shimmer", () => {
     expect(el).toHaveClass("rounded-full")
   })
 
-  it("pulses at a 1.8s cycle", () => {
-    // В jsdom нет ни таблиц стилей, ни движка CSS, поэтому проверяются
-    // утилитарные классы Tailwind, которые задают пульсацию, а не
-    // вычисленный стиль.
+  it("sweeps a gradient highlight instead of pulsing opacity", () => {
+    // Дизайн-чек 08.10, замечание 18. В jsdom нет движка CSS, поэтому
+    // проверяется утилита перелива (styles/motion.css), а не вычисленный
+    // стиль; пульсации прозрачности быть не должно.
     const { container } = render(<Shimmer />)
     const el = container.querySelector('[data-slot="shimmer"]')!
-    expect(el).toHaveClass("animate-pulse", "[animation-duration:1.8s]")
+    expect(el).toHaveClass("shimmer-sweep")
+    expect(el).not.toHaveClass("animate-pulse")
   })
 
   it("accepts a custom size via className", () => {

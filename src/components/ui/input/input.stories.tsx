@@ -98,7 +98,8 @@ const meta = {
     // `iconLeft`/`trailingIcon` — готовые JSX-узлы, значением из контрола
     // их не набрать. В Figma это instance swap, поэтому контрол даёт весь
     // набор кита, а не пару заготовленных вариантов (см. iconArgType).
-    iconLeft: iconArgType("Иконка слева от значения"),
+    // Начертание выбирает слот (24 у L, 16 у S) — см. `withIconSize`.
+    iconLeft: iconArgType("Иконка слева от значения", "slot"),
     trailingIcon: iconArgType("Иконка справа, перед крестиком очистки"),
     clearable: { control: "boolean" },
     loading: { control: "boolean" },

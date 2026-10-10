@@ -3,8 +3,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
   StoryContentArea,
   optionsArgType,
+  sizeArgType,
   toggleArgType,
 } from "@/stories/matrix"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { ButtonMenuBlack } from "./black"
 import {
@@ -51,6 +53,7 @@ const PLACEMENT_LABELS: Record<ButtonMenuPlacement, string> = {
 const SPANS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
 
 interface PlaygroundArgs {
+  viewport: Viewport
   placement: ButtonMenuPlacement
   span: number
   buttons: ButtonCount
@@ -96,6 +99,9 @@ const meta = {
     // «Свойствам компонента» — Button, Show Bar, Show Count, Show Sum,
     // Show Write-Off. Значение None в списке замечания не названо, но в
     // компонент-сете оно есть, поэтому остаётся первым пунктом.
+    // v1.1.0: первое свойство сета — Size (Desktop / Mobile), дизайн-чек от
+    // 08.10, №3.
+    viewport: sizeArgType,
     buttons: {
       ...optionsArgType<ButtonCount>("Button", FIGMA_BUTTON_LABELS, "inline-radio"),
       description: "Свойство Button компонента ELK / button menu (black)",
@@ -160,6 +166,7 @@ const meta = {
     },
   },
   args: {
+    viewport: "desktop",
     buttons: 2,
     showButton: true,
     selectAllCount: 40,
@@ -182,6 +189,7 @@ type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
   render: ({
+    viewport,
     buttons,
     overflow,
     showClose,
@@ -194,7 +202,10 @@ export const Playground: Story = {
     span,
     ...bar
   }) => (
-    <StoryContentArea height="h-72">
+    // Mobile — карточка 360, как символ Size=Mobile мастера.
+    <ViewportScope viewport={viewport}>
+    <div className={viewport === "mobile" ? "w-full max-w-[360px]" : undefined}>
+    <StoryContentArea height={viewport === "mobile" ? "h-[480px]" : "h-72"}>
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
           <p key={index} className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
@@ -224,6 +235,8 @@ export const Playground: Story = {
         )}
       </ButtonMenuBlack>
     </StoryContentArea>
+    </div>
+    </ViewportScope>
   ),
 }
 

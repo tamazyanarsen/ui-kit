@@ -8,7 +8,7 @@ import { Pagination } from "./pagination"
 //    страниц режим не выключался — «1 2 … 5» вместо помещающегося ряда;
 // 2) многоточие заменяло ровно одну страницу («1 … 3» без второй).
 
-/** Полоса шириной `width`; ширина ряда — по 40 на ячейку (стрелки тоже). */
+/** Полоса шириной `width`; ширина ряда — по 40 на ячейку. */
 function mockStrip(width: number) {
   vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function (
     this: HTMLElement
@@ -36,9 +36,10 @@ describe("Pagination: сжатый режим, круг r8", () => {
   afterEach(() => vi.restoreAllMocks())
 
   it("страниц стало меньше — ряд перемеряется и показывается целиком", () => {
-    // 20 страниц: 2 стрелки + 7 ячеек = 360 > 300 — сжатый.
-    // 5 страниц: 2 стрелки + 5 ячеек = 280 ≤ 300 — помещается.
-    mockStrip(300)
+    // Стрелок с v1.0.1 нет (дизайн-чек от 08.10, №17).
+    // 20 страниц: 7 ячеек = 280 > 260 — сжатый.
+    // 5 страниц: 5 ячеек = 200 ≤ 260 — помещается.
+    mockStrip(260)
     const { rerender } = render(<Pagination page={3} totalPages={20} />)
     expect(document.querySelector('[data-slot="pagination"]')).toHaveAttribute("data-compact")
     rerender(<Pagination page={3} totalPages={5} />)
@@ -48,7 +49,7 @@ describe("Pagination: сжатый режим, круг r8", () => {
   })
 
   it("одна пропущенная страница показывается номером, а не многоточием", () => {
-    mockStrip(300)
+    mockStrip(260)
     const { rerender } = render(<Pagination page={3} totalPages={20} />)
     expect(pageNumbers()).toEqual(["1", "2", "3", "20"])
     expect(ellipses()).toBe(1)

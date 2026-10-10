@@ -1,0 +1,118 @@
+/* Движение кита: отклик на нажатие и перелив скелетона.
+
+   Кривые и длительности — только из tokens-motion.css; здесь их
+   применение, общее для многих компонентов.
+
+   ── Нажатие ────────────────────────────────────────────────────────────
+   Дизайн-чек 08.10, замечания 8 и 37: «по всему проекту убираем смещение
+   вниз при зажатии, а делаем лёгкое уменьшение масштаба» (референс — правила
+   Эмиля Ковальски: scale 0.97, ease-out, ~140 мс; отпускание той же кривой).
+   Прежде кнопки съезжали на 1px вниз (`active:translate-y-px`).
+
+   Две формы:
+
+     press-scale          — сжимается сам элемент (кнопка, пилюля, чипс,
+                            ячейка календаря: у них есть своя коробка с
+                            зазором вокруг);
+     press-scale-content  — сжимается СОДЕРЖИМОЕ, а залитая коробка стоит
+                            (строка выпадающего списка, кнопки нижней панели
+                            Dropdown): строка во всю ширину панели при
+                            сжатии отлипла бы от её границ, обнажив полосы
+                            по краям, — замечание 37 это и запрещает.
+                            Сжимаются прямые дети; точку опоры задаёт
+                            `--press-origin` (у строк списка — левый край,
+                            чтобы текст не плыл от поля).
+
+   Нажатие читается и по `:active`, и по атрибуту `data-pressing`: триггеры
+   всплывашек Base UI гасят `mousedown`, и `:active` у них не наступает —
+   атрибут ставит `usePressTracking` (src/lib/use-press-tracking.ts).
+
+   Вложенное нажимаемое (крестик внутри чипса, кнопка внутри строки) жмёт
+   только себя: `:active` поднимается по всем предкам, и без `:has(...)`
+   вместе с крестиком сжимался бы и его хозяин.
+
+   Утилита сама задаёт `transition-property` (цвета + тень + `scale`), поэтому
+   ставится ВМЕСТО `transition-colors`/`transition-all`, а не рядом: две
+   утилиты одного свойства в одном слое разрешаются порядком генерации, а не
+   порядком в className.
+
+   Масштаб — отдельное свойство `scale`, а не `transform`: так он не
+   конфликтует с `translate`/`rotate`-утилитами Tailwind v4 на том же узле
+   (центровка `-translate-y-1/2`, поворот шеврона). */
+
+@utility press-scale {
+  transition-property: color, background-color, border-color, outline-color,
+    text-decoration-color, fill, stroke, box-shadow, opacity, scale;
+  transition-duration: var(--duration-press);
+  transition-timing-function: var(--ease-out);
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content):is(:active, [data-pressing]))) {
+    scale: 0.97;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:is(:active, [data-pressing]) {
+      scale: none;
+    }
+  }
+}
+
+@utility press-scale-content {
+  /* Своего перехода цвета строка не получает: подсветку строки списка
+     двигает и клавиатура, а отклик на клавиши анимироваться не должен. */
+  & > * {
+    transform-origin: var(--press-origin, center);
+    transition: scale var(--duration-press) var(--ease-out);
+  }
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content):is(:active, [data-pressing]))) > * {
+    scale: 0.97;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:is(:active, [data-pressing]) > * {
+      scale: none;
+    }
+  }
+}
+
+/* ── Перелив скелетона ──────────────────────────────────────────────────
+   Дизайн-чек 08.10, замечание 18: «не через прозрачность, а через перелив
+   градиента: светлая часть циклично двигается вправо, пропадает и снова
+   появляется слева». Картинка фона втрое шире блока, светлый гребень — в
+   её середине; сдвиг позиции со 100% до 0% проводит гребень от левого края
+   (ещё за ним) до правого (уже за ним), и цикл начинается заново. Профиль
+   гребня — тот же переход DEDEDE → EFEFEF, что был запечён в статичный фон
+   мастера, только теперь он симметричен и едет.
+
+   `prefers-reduced-motion`: движение снимается, остаётся ровный светлый
+   фон — скелетон по-прежнему читается как заглушка. */
+@utility shimmer-sweep {
+  background-color: var(--shimmer-from);
+  background-image: linear-gradient(
+    90deg,
+    var(--shimmer-from) 0%,
+    var(--shimmer-from) 35%,
+    var(--shimmer-via) 50%,
+    var(--shimmer-from) 65%,
+    var(--shimmer-from) 100%
+  );
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer-sweep 1.8s var(--ease-in-out) infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background-image: none;
+    background-color: var(--shimmer-via);
+  }
+}
+
+@keyframes shimmer-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}

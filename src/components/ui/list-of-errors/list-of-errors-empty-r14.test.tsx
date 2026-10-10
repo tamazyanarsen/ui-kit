@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { render } from "@testing-library/react"
 
-import { IssueItem } from "@/components/ui/issue-item"
+import { SampleError } from "@/components/ui/sample-error"
 
 import { ListOfErrors } from "./list-of-errors"
 
@@ -14,7 +14,7 @@ describe("ListOfErrors без ошибок", () => {
     const { container } = render(
       <ListOfErrors>
         {errors.map((text) => (
-          <IssueItem key={text}>{text}</IssueItem>
+          <SampleError key={text}>{text}</SampleError>
         ))}
       </ListOfErrors>
     )

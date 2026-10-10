@@ -36,22 +36,25 @@ interface CreateMenuProps {
 function CreateMenu({ items = [], maxHeight, className }: CreateMenuProps) {
   const scrollable = maxHeight !== undefined
   const grid = (
-    // С прокруткой поля сверху и снизу отдаёт рамка полосы (см. ниже), а
-    // не сетка — иначе они сложились бы и панель выросла.
-    <Grid
-      className={cn(
-        "flex flex-col items-start",
-        scrollable ? "pt-2 pb-0" : "pt-4 pb-10"
-      )}
-    >
-      <div className="flex w-full flex-wrap content-start items-start gap-6">
+    // Поля одни и те же с прокруткой и без: 16 сверху, 40 снизу. Раньше с
+    // прокруткой их отдавала рамка полосы, и она же резала плитки на 48px
+    // выше белой кромки (дизайн-чек от 10.10, замечания 26 и 27, — см.
+    // правило `panel` в styles/scrollbar.css). На мобильной форме сетка
+    // полей не держит (`Grid` там во всю ширину) — 16 по бокам из макета
+    // мобильного меню (`Меню / Избранное`, 70467:11707).
+    <Grid className="flex flex-col items-start px-4 pt-4 pb-10 desktop:px-0">
+      {/* На телефоне интервал 8, а не 24: две плитки по 160 + 8 = 328 —
+          ровно ширина экрана 360 за вычетом полей 16. С 24 на любом
+          телефоне плитки шли в один столбец. Мобильного макета у панели
+          нет — это наше решение. */}
+      <div className="flex w-full flex-wrap content-start items-start gap-2 desktop:gap-6">
         {(compactList(items) ?? []).map((item) => (
           <button
             key={item.value}
             type="button"
             data-slot="header-create-menu-item"
             onClick={item.onClick}
-            className="flex h-38 w-40 min-h-36 min-w-36 shrink-0 cursor-pointer flex-col items-start gap-4 rounded-[16px] bg-[var(--header-menu-tile-bg)] p-4 text-left outline-none transition-colors focus-visible:focus-ring hover:bg-[var(--header-item-hover-bg)]"
+            className="flex h-38 w-40 min-h-36 min-w-36 shrink-0 cursor-pointer flex-col items-start gap-4 rounded-[16px] bg-[var(--header-menu-tile-bg)] p-4 text-left outline-none transition-colors focus-visible:focus-ring hover:bg-[var(--header-item-hover-bg)] active:bg-[var(--header-menu-tile-bg-active)]"
           >
             {item.icon && (
               <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-[var(--header-menu-tile-icon-bg)] p-3 text-[var(--header-icon-fg)] [&_svg]:size-6">
@@ -92,18 +95,17 @@ function CreateMenu({ items = [], maxHeight, className }: CreateMenuProps) {
         // Прокрутка та же, что у меню навигации (см. HeaderMenu).
         //
         // Раскладка, пока плитки помещаются, та же до пикселя, что без
-        // предела. Рамка `inset="panel"` занимает место (8 сверху, 48 снизу,
-        // 8 справа), поэтому: сверху 8 рамки + 8 у сетки = прежние 16;
-        // снизу 48 рамки − 8 (`-mb-2`, срезает прозрачный край корень с
-        // `overflow-hidden`) = прежние 40, и дорожка всё равно кончается до
-        // скругления 32. Справа рамка съедает 8, а ширина сетки считается
+        // предела: вдоль оси вариант `panel` укорачивает только дорожку
+        // (поле `::-webkit-scrollbar-track`), окну места не занимает, и
+        // дорожка всё равно кончается до скругления 32. Справа рамка
+        // съедает 8, а ширина сетки считается
         // от контейнера (`--grid-content-width` = 100% − 2 поля) — поэтому
         // обёртка на 8 шире окна прокрутки, и сетка той же ширины и на том
         // же месте; лишние 8 под рамкой срезает `overflow-x-hidden` самого
         // окна прокрутки.
         <Scrollbar
           inset="panel"
-          className="-mb-2 w-full"
+          className="w-full"
           style={{ maxHeight }}
         >
           <div className="flex w-[calc(100%+8px)] justify-center">{grid}</div>

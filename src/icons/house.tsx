@@ -10,6 +10,6 @@ export function House({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M7.369 1.22c.393-.32.972-.29 1.338.07l5 5c.187.19.293.44.293.71v5h1c.552 0 1 .45 1 1s-.448 1-1 1H1c-.552 0-1-.45-1-1s.448-1 1-1h1V7a1 1 0 0 1 .293-.71l5-5zM4 7.41V12h1.5V8c0-.55.448-1 1-1h3c.552 0 1 .45 1 1v4H12V7.41l-4-4zM7.5 12h1V9h-1z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M7.369 1.22c.393-.32.972-.29 1.338.07l5 5c.187.19.293.44.293.71v5h1c.552 0 1 .45 1 1s-.448 1-1 1H1c-.552 0-1-.45-1-1s.448-1 1-1h1V7a1 1 0 0 1 .293-.71l5-5zM4 7.41V12h1.5V8c0-.55.448-1 1-1h3c.552 0 1 .45 1 1v4H12V7.41l-4-4zM7.5 12h1V9h-1z"/></svg>
   )
 }

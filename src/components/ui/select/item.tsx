@@ -45,7 +45,7 @@ export function SelectItem({
       // `focus:` здесь никогда не совпадал с оформлением наведения из
       // макета при навигации с клавиатуры.
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 py-4 pr-12 pl-4 text-p1-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full cursor-default items-center gap-2 press-scale-content [--press-origin:left_center] py-4 pr-12 pl-4 text-p1-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
       {...props}

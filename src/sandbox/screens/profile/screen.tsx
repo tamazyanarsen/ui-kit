@@ -121,7 +121,9 @@ function ProfileScreen() {
       }
     >
       <SandboxColumns widths={[4, 8]}>
-        <SandboxBlock padding={24}>
+        {/* Дизайн-чек от 08.10, замечание 34: левый блок закрепляется по
+            правилам гибридного закрепления (lib/use-hybrid-sticky.ts). */}
+        <SandboxBlock padding={24} sticky="hybrid">
           <SandboxSection title="Общие разделы" gap={8}>
             <SectionMenu
               items={GENERAL_SECTIONS}

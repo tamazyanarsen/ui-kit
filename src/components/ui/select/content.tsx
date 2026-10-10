@@ -3,6 +3,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { ChevronDownIcon, ChevronUpIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { Dropdown } from "@/components/ui/dropdown"
 
 export function SelectContent({
@@ -29,6 +30,7 @@ export function SelectContent({
       <SelectPrimitive.Positioner
         side={side}
         sideOffset={sideOffset}
+        collisionAvoidance={POPUP_COLLISION}
         align={align}
         alignOffset={alignOffset}
         alignItemWithTrigger={alignItemWithTrigger}

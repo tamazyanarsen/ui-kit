@@ -92,7 +92,9 @@ function Card({
         // y=32 при росте 36 в карточке 100, то есть ровно середина. Отсюда
         // `self-center` на ней ниже.
         "flex min-h-20 items-start gap-6 rounded-[12px] bg-[var(--card-bg)] p-6 transition-colors",
-        clickable && "cursor-pointer hover:bg-[var(--card-bg-hover)]",
+        // OnClick (Active) — Grey 124, дизайн-чек от 08.10, замечание 28.
+        clickable &&
+          "cursor-pointer hover:bg-[var(--card-bg-hover)] active:bg-[var(--card-bg-active)]",
         className
       )}
     >

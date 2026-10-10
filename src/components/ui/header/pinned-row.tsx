@@ -1,18 +1,13 @@
 import * as React from "react"
 
-import { Settings } from "@/icons"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  CreateMenu,
-  HeaderMenu,
-  toggleFavourite,
-  type CreateMenuItem,
-  type HeaderMenuGroup,
-  type MenuBannerProps,
+import type {
+  CreateMenuItem,
+  HeaderMenuGroup,
+  MenuBannerProps,
 } from "@/components/ui/header-menu"
 
-import { MenuOverlay } from "./menu-overlay"
+import { HeaderPanels } from "./header-panels"
 import { NavRow, type HeaderNavItem } from "./nav-row"
 
 // Нижний ряд шапки вместе с панелями «Меню» и «Создать».
@@ -62,33 +57,9 @@ function HeaderPinnedRow({
   const menuTriggerRef = React.useRef<HTMLButtonElement>(null)
   const createTriggerRef = React.useRef<HTMLButtonElement>(null)
 
-  // Переход по ссылке или плитке закрывает панель. Без этого в SPA шапка
-  // оставалась смонтированной, и панель с затемнением и запертой прокруткой
-  // висела поверх уже открытой новой страницы: закрыть её снаружи нечем,
-  // раскрытость — внутреннее состояние шапки. Обработчик потребителя
-  // вызывается первым, как и раньше.
+  // Переход закрывает панель (подробности — в `HeaderPanels`). Здесь —
+  // только избранный раздел в ряду над затемнением и в его «Ещё».
   const close = () => onOpenPanelChange(null)
-  const closingGroups = menuGroups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      onClick: () => {
-        link.onClick?.()
-        close()
-      },
-    })),
-  }))
-  const closingCreateItems = createItems.map((item) => ({
-    ...item,
-    onClick: () => {
-      item.onClick?.()
-      close()
-    },
-  }))
-  // Те же правила для остальных входов, откуда уходят на другую страницу,
-  // пока панель открыта: избранный раздел в ряду над затемнением (и в его
-  // «Ещё») и кнопка баннера внутри меню. Раньше закрывали только ссылки
-  // меню и плитки «Создать».
   const closingNavItems = navItems.map((item) => ({
     ...item,
     onClick: () => {
@@ -96,17 +67,6 @@ function HeaderPinnedRow({
       close()
     },
   }))
-  const closingBanners = menuBanners.map((banner) =>
-    banner.onButtonClick
-      ? {
-          ...banner,
-          onButtonClick: () => {
-            banner.onButtonClick?.()
-            close()
-          },
-        }
-      : banner
-  )
 
   return (
     <div
@@ -127,66 +87,21 @@ function HeaderPinnedRow({
         createTriggerRef={createTriggerRef}
       />
 
-      {/* ⚠️ Панели рисуются ВСЕГДА, а раскрытость передаётся пропом.
-          Дизайн-чек от 13.09, замечание 17: у панели появился уход («fade
-          down»), а анимировать уход у снятого из разметки узла нечем —
-          решение о снятии теперь принимает сам `MenuOverlay`, отодвигая его
-          на длительность анимации. */}
-      <MenuOverlay
-        open={openPanel === "menu"}
-        onClose={() => onOpenPanelChange(null)}
-        returnFocusRef={menuTriggerRef}
-        footer={
-          favouritesEnabled && (
-            <Button
-              variant="secondary-white"
-              size="sm"
-              icon={Settings}
-              onClick={onFavouritesSettingsOpen}
-            >
-              Настроить избранное
-            </Button>
-          )
-        }
-      >
-        <HeaderMenu
-          groups={closingGroups}
-          banners={closingBanners}
-          favourites={favourites}
-          activeLink={activeSection}
-          // Звезда работает сразу, без «Сохранить»: подсказка пустого
-          // избранного так и говорит — «нажмите ☆ справа, чтобы добавить
-          // его сюда». Новый раздел встаёт в конец ряда.
-          onFavouriteToggle={
-            onFavouritesChange &&
-            ((value) => onFavouritesChange(toggleFavourite(favourites, value)))
-          }
-          showFavourites={favouritesEnabled}
-          // «Оверлей занимает всё доступное место по высоте, кроме кнопки
-          // настройки избранного и её марджинов. И внутри оверлея
-          // появляется своя прокрутка» — дизайн-чек от 08.09, замечание 1.
-          //
-          // Величину считает сам оверлей (`--menu-overlay-panel`): она
-          // зависит и от того, сколько шапки осталось на экране, и от
-          // высоты кнопки. Прежняя константа «100vh − 14rem» держалась
-          // на том, что шапка всегда 128, а это перестало быть правдой,
-          // когда закрепляться стал только нижний ряд.
-          maxHeight="var(--menu-overlay-panel, calc(100vh - 14rem))"
-        />
-      </MenuOverlay>
-
-      <MenuOverlay
-        open={openPanel === "create"}
-        onClose={() => onOpenPanelChange(null)}
-        returnFocusRef={createTriggerRef}
-      >
-        {/* Аудит 14: предел высоты тот же, что у меню навигации, — иначе в
-            низком окне нижние плитки обрезались и были недостижимы. */}
-        <CreateMenu
-          items={closingCreateItems}
-          maxHeight="var(--menu-overlay-panel, calc(100vh - 14rem))"
-        />
-      </MenuOverlay>
+      <HeaderPanels
+        mobile={false}
+        openPanel={openPanel}
+        onOpenPanelChange={onOpenPanelChange}
+        menuTriggerRef={menuTriggerRef}
+        createTriggerRef={createTriggerRef}
+        menuGroups={menuGroups}
+        menuBanners={menuBanners}
+        createItems={createItems}
+        favourites={favourites}
+        onFavouritesChange={onFavouritesChange}
+        favouritesEnabled={favouritesEnabled}
+        activeSection={activeSection}
+        onFavouritesSettingsOpen={onFavouritesSettingsOpen}
+      />
     </div>
   )
 }

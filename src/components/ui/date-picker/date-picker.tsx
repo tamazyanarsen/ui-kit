@@ -11,6 +11,7 @@ import type { InputSize } from "@/components/ui/input"
 
 import { formatDisplayValue } from "./display-value"
 import { useFieldPopoverFocus } from "./use-field-popover-focus"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 // Полный проход 30.09: значок S — 16px, как и у Input (там тоже было 14).
 const ICON_SIZE = { sm: "size-4", lg: "size-4" } as const
@@ -352,6 +353,7 @@ const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(function 
             side="bottom"
             align="start"
             sideOffset={8}
+            collisionAvoidance={POPUP_COLLISION}
             className="z-50"
           >
             <PopoverPrimitive.Popup

@@ -16,6 +16,13 @@ import "./index.css"
 // `aria-invalid`, forwardRef, `data-slot`, предел размера файла) — в
 // docs/conventions.md.
 export { cn } from "./lib/utils"
+// Плавный уход закрываемого элемента (угасание + схлопывание места) — тот же,
+// что у крестиков Informer и Top Fixed Message; для своих закрываемых блоков.
+export { useCollapseExit } from "./lib/use-collapse-exit"
+export type { CollapseExitOptions } from "./lib/use-collapse-exit"
+// Гибридное закрепление колонок страницы (дизайн-чек от 08.10, замечание 32).
+export { useHybridSticky } from "./lib/use-hybrid-sticky"
+export type { HybridStickyOptions } from "./lib/use-hybrid-sticky"
 
 // <<< components: список ниже держит scripts/sync-exports.mjs, руками не правьте
 export * from "./components/ui/accordion-card"
@@ -66,6 +73,7 @@ export * from "./components/ui/pagination"
 export * from "./components/ui/progress-bar"
 export * from "./components/ui/radio"
 export * from "./components/ui/range-input"
+export * from "./components/ui/sample-error"
 export * from "./components/ui/scrollbar"
 export * from "./components/ui/select"
 export * from "./components/ui/selection-button"
@@ -75,6 +83,7 @@ export * from "./components/ui/sortable"
 export * from "./components/ui/status-screen"
 export * from "./components/ui/steps"
 export * from "./components/ui/switcher"
+export * from "./components/ui/tab-headings"
 export * from "./components/ui/table"
 export * from "./components/ui/table-top"
 export * from "./components/ui/tabs"

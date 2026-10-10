@@ -82,7 +82,7 @@ function SandboxPage({
   return (
     <GridRoot
       data-slot="sandbox-page"
-      className={cn("min-h-screen bg-[var(--grey-109)]", className)}
+      className={cn("min-h-screen bg-[var(--page-bg)]", className)}
     >
       <Header
         pinned

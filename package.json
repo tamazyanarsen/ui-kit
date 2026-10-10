@@ -214,6 +214,10 @@
       "types": "./dist/components/ui/range-input/index.d.ts",
       "import": "./dist/components/ui/range-input/index.js"
     },
+    "./sample-error": {
+      "types": "./dist/components/ui/sample-error/index.d.ts",
+      "import": "./dist/components/ui/sample-error/index.js"
+    },
     "./scrollbar": {
       "types": "./dist/components/ui/scrollbar/index.d.ts",
       "import": "./dist/components/ui/scrollbar/index.js"
@@ -249,6 +253,10 @@
     "./switcher": {
       "types": "./dist/components/ui/switcher/index.d.ts",
       "import": "./dist/components/ui/switcher/index.js"
+    },
+    "./tab-headings": {
+      "types": "./dist/components/ui/tab-headings/index.d.ts",
+      "import": "./dist/components/ui/tab-headings/index.js"
     },
     "./table": {
       "types": "./dist/components/ui/table/index.d.ts",

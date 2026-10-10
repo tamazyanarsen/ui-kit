@@ -140,7 +140,7 @@ function DayButton({
         onKeyDown={onDayKeyDown && ((event) => onDayKeyDown(cell.date, event))}
         onFocus={onDayFocus && (() => onDayFocus(cell.date))}
         className={cn(
-          "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2-medium outline-none transition-colors focus-visible:focus-ring",
+          "z-10 flex size-8 shrink-0 items-center justify-center rounded-[8px] text-p2-medium outline-none press-scale focus-visible:focus-ring",
           disabled
             ? "cursor-not-allowed text-[var(--calendar-disabled-fg)]"
             : selected || inRangeEdge

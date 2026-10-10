@@ -69,7 +69,7 @@ function App() {
 
   return (
     <ToastProvider>
-      <main className="mx-auto min-h-screen max-w-4xl space-y-10 bg-[#F8F8F8] px-6 py-16">
+      <main className="mx-auto min-h-screen max-w-4xl space-y-10 bg-[var(--page-bg)] px-6 py-16">
         <header className="flex items-start justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-semibold">UI-кит</h1>

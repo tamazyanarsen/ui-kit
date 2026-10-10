@@ -1,15 +1,22 @@
 import * as React from "react"
-import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
 import { flattenChildren } from "@/lib/flatten-children"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
-import { ViewportScope } from "@/lib/viewport"
 import { Button } from "@/components/ui/button"
 
 import { ButtonMenuOverflow } from "./overflow"
 import { ButtonMenuRow } from "./row"
 import { PINNED_CLASS, barShapeClass } from "./pinning"
+import {
+  BLACK_EMPTY_ACTIONS_TEXT,
+  BlackClose,
+  BlackEmptyActions,
+  BlackInfoDesktop,
+  BlackInfoMobile,
+  type ButtonMenuBlackInfoItem,
+} from "./black-parts"
 import {
   BAR_PLACEMENT_CLASS,
   barPlacementStyle,
@@ -27,6 +34,14 @@ import {
 // px-24/py-16, скругление 16px только у верхних углов (панель стоит
 // вплотную к нижнему краю, как и ButtonMenu), действия прижаты влево с
 // зазором 8px, а информационная полоса и крестик — вправо с зазором 32px.
+//
+// v1.1.0 (релиз 70.37) добавил Size=Mobile — дизайн-чек от 08.10, замечание
+// 3 («Добавить мобильную версию Button Menu Black»). Это карточка 360 в
+// столбик: поля 16, сверху информация таблицей и крестик, под ней одна
+// растянутая кнопка L и «…» с остальными (с двух кнопок). Кнопки — обычные
+// `ELK / button` L Mobile: «Текст кнопок перейдёт в состояние по умолчанию»,
+// то есть их подпись берёт стиль самой кнопки, панель его не переопределяет.
+// Над карточкой — та же кнопка «Выбрать на всех страницах» с зазором 16.
 
 // Закрепление у нижней края — поведение по умолчанию, а не опция «на
 // всякий случай»: в макете так и написано — «Панель всегда закреплена в
@@ -39,20 +54,6 @@ import {
 // `fixed` вырвал бы её из потока и как раз перекрыл бы. Из этого же
 // следует, что закрепление работает относительно прокручиваемого
 // контейнера: панель прижимается к низу контентной области, а не окна.
-
-interface ButtonMenuBlackInfoItem {
-  label: React.ReactNode
-  value: React.ReactNode
-  /**
-   * Дополнительные классы колонки.
-   *
-   * ⚠️ Ширину здесь задавать НЕ НУЖНО. Дизайн-чек от 07.09, замечание 4:
-   * «Не допускается перенос. Текст в 1 строку, ширина параметра
-   * динамическая». Раньше первой колонке («Выбрано») ставили `w-16` — 64px
-   * из макета, — и «3 документа» разваливалось на три строки.
-   */
-  className?: string
-}
 
 interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
   /** Полоса «Information (ELK)» — пары «подпись/значение», описывающие
@@ -87,11 +88,7 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
    * `Show Button` — кнопка «Выбрать на всех страницах (N)» над полосой.
    *
    * Умолчание снимается с мастера Figma: возможность, спрятанная по
-   * умолчанию, просто не находится. Экран, которому массовый выбор за
-   * пределы страницы не нужен, гасит её явно.
-   *
-   * (Сравните со сводкой у Table Top: там умолчание, наоборот, выключено —
-   * потому что документация кита прямо называет её дополнительной функцией.)
+   * умолчанию, просто не находится. Экран, которому она не нужна, гасит её.
    */
   showSelectAllPages?: boolean
   /**
@@ -119,6 +116,12 @@ interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
    * `showSelectAllPages`: она называла бы событие, которого не происходит.
    */
   onSelectAllPages?: () => void
+  /**
+   * Подпись на месте действий, когда общих действий у выбранных строк нет
+   * (`Number Of Buttons=None`). По умолчанию — текст мастера «Нет общих
+   * действий для выбранных элементов».
+   */
+  emptyActionsText?: React.ReactNode
 }
 
 const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(function ButtonMenuBlack({
@@ -133,24 +136,23 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   selectAllPagesCount,
   selectedCount,
   onSelectAllPages,
+  emptyActionsText = BLACK_EMPTY_ACTIONS_TEXT,
   children,
   style,
   ...props
 }, forwardedRef) {
-  // Рассуждение то же, что и в проходе по размерам самого ButtonMenu: макет
-  // рисует все действия одинаковой таблеткой 32px (px-16/py-6, радиус 16 —
-  // это `sm` у Button).
-  //
-  // Дизайн-чек №12: вариант тоже форсится, а не подставляется по умолчанию —
-  // «для button menu black используются только белые кнопки». Раньше здесь
-  // стоял `variant ?? "secondary-white"`, и вызывающий код мог поставить
-  // брендовую кнопку на тёмную панель (что и попало в дизайн-чек: «Подписать»
-  // была голубой). Брендового акцента на этой панели не существует: она сама
-  // и есть акцент.
+  // Desktop рисует все действия таблеткой 32px (`sm` у Button). Вариант
+  // форсится, а не подставляется по умолчанию — дизайн-чек №12: «для button
+  // menu black используются только белые кнопки».
   // Дети раскрываются вместе с фрагментами: `{canSign && <><Button/>…</>}`
   // иначе проходил мимо принудительного размера и варианта, и «Подписать»
   // снова становилась голубой на чёрной панели (дефект дизайн-чека №12).
   // Пары собирают условиями: `null`/`false` среди них отбрасываются.
+  //
+  // Мобильная форма (v1.1.0) — кнопки L: 48 по высоте, радиус 16, «…» 48×48.
+  // Ветка в JS, а не через `desktop:`: у форм разная РАЗМЕТКА (строка против
+  // столбика, колонки информации против таблицы), а не только оформление.
+  const isDesktop = useIsDesktop()
   const infoItems = (info ?? []).filter((item): item is ButtonMenuBlackInfoItem => !!item)
   const sizedChildren = flattenChildren(children).map((child) => {
     if (React.isValidElement(child) && child.type === Button) {
@@ -159,7 +161,7 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
         variant?: string
       }>
       return React.cloneElement(element, {
-        size: "sm",
+        size: isDesktop ? "sm" : "lg",
         variant: "secondary-white",
       })
     }
@@ -215,25 +217,88 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   )
   const outerPlacementStyle = barPlacementStyle(placement, span)
 
+  const hasActions = sizedChildren.length > 0
+  const pinnedHere = pinned && !detached
+
+  // Действия. Desktop — тот же ряд, что у белой панели: не поместившиеся
+  // уходят в «…». Ряд берёт оставшееся место (`flex-1 min-w-0`), правая
+  // группа — нет.
+  // ⚠️ Ряд собирает сначала кнопки, потом прочих детей, потом «…» — то есть
+  // переставляет их. Поэтому он берётся, только когда в действиях одни
+  // кнопки (и переданное «…»): кнопка в своей обёртке (`<PermissionGate>`)
+  // иначе уезжала бы в конец. Со «своими» детьми действия стоят как есть.
+  // ⚠️ На узкой панели (375, сетка на 6 колонок) ряд сжимался до нуля, а
+  // нулевую ширину хук ряда считает «ещё не померили» и показывает ВСЕ
+  // кнопки. Поэтому у ряда есть минимум под «…» (32) и `minVisible={0}`.
+  //
+  // Mobile — одна растянутая кнопка и «…» со всеми остальными, даже если
+  // место есть (`maxVisible={1}`), — символы Size=Mobile, Number Of
+  // Buttons=2…4 одинаковые.
+  let actions: React.ReactNode
+  if (!hasActions) {
+    actions = <BlackEmptyActions mobile={!isDesktop}>{emptyActionsText}</BlackEmptyActions>
+  } else if (onlyButtons && isDesktop) {
+    actions = (
+      <ButtonMenuRow
+        size="sm"
+        tone="dark"
+        minVisible={0}
+        data-slot="button-menu-black-actions"
+        className="min-w-8 items-start"
+      >
+        {sizedChildren}
+      </ButtonMenuRow>
+    )
+  } else if (onlyButtons) {
+    actions = (
+      <ButtonMenuRow
+        size="lg"
+        tone="dark"
+        stretchFirst
+        maxVisible={1}
+        data-slot="button-menu-black-actions"
+        className="w-full flex-none"
+      >
+        {sizedChildren}
+      </ButtonMenuRow>
+    )
+  } else {
+    actions = (
+      <div
+        data-slot="button-menu-black-actions"
+        className={cn(
+          "flex min-w-0 overflow-hidden",
+          isDesktop ? "flex-1 items-start gap-2" : "w-full items-center gap-4"
+        )}
+      >
+        {sizedChildren}
+      </div>
+    )
+  }
+
   const panel = (
     <div
       ref={ref}
       data-slot="button-menu-black"
-      data-pinned={(pinned && !detached) || undefined}
+      data-pinned={pinnedHere || undefined}
       data-detached={detached || undefined}
       data-placement={placement}
+      data-size={isDesktop ? "desktop" : "mobile"}
       className={cn(
-        // `@container/black` — от ширины панели (а не окна) зависит, есть
-        // ли место под информацию, см. правую группу ниже. Зазор 32 между
-        // действиями и правой группой — её `ml-8`, а не `gap-8` панели:
-        // свой зазор контейнер по собственному запросу менять не может.
-        "@container/black flex max-h-[72px] min-h-[72px] items-center justify-between bg-[var(--button-menu-black-bg)] px-6 py-4",
+        // Desktop: `@container/black` — от ширины панели (а не окна) зависит,
+        // есть ли место под информацию. Зазор 32 между действиями и правой
+        // группой — её `ml-8`: свой зазор контейнер по запросу менять не может.
+        // Mobile (Panel 360): столбик, поля и зазоры 16.
+        isDesktop
+          ? "@container/black flex max-h-[72px] min-h-[72px] items-center justify-between px-6 py-4"
+          : "flex flex-col gap-4 p-4",
+        "bg-[var(--button-menu-black-bg)]",
         withSelectAll ? "w-full" : outerPlacementClass,
         barShapeClass({ detached }),
         // Приём указателя возвращается панели: внешний узел его не
         // принимает (см. ниже).
         withSelectAll && "pointer-events-auto",
-        pinned && !detached && !withSelectAll && PINNED_CLASS,
+        pinnedHere && !withSelectAll && PINNED_CLASS,
         className
       )}
       style={
@@ -241,125 +306,55 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
       }
       {...props}
     >
-      {/* Действия — тот же ряд, что у белой панели: не поместившиеся
-          уходят в «…». Раньше они стояли `shrink-0`, и панель на части
-          сетки (`placement="left"`, `span={6}`) выталкивала информацию и
-          крестик за свой край на белый фон — вживую на 195px. Ряд берёт
-          оставшееся место (`flex-1 min-w-0`), правая группа — нет. */}
-      {/* ⚠️ Ряд собирает сначала кнопки, потом прочих детей, потом «…» —
-          то есть переставляет их. Поэтому он берётся, только когда в
-          действиях одни кнопки (и переданное «…»): кнопка в своей обёртке
-          (`<PermissionGate>`) иначе уезжала бы в конец. Со «своими» детьми
-          действия стоят как есть, но сжимаются и обрезаются — за край
-          панели они всё равно не выходят. Основа у них, как у ряда, 0
-          (`flex-1`): сжимаются они раньше информации. */}
-      {/* ⚠️ На узкой панели (375, сетка на 6 колонок) правая группа
-          съедала всё место, ряд сжимался до нуля — а нулевую ширину хук
-          ряда считает «ещё не померили» и показывает ВСЕ кнопки. Они
-          ложились поверх информации и уходили за край панели. Поэтому у
-          ряда с кнопками есть минимум — место под «…» (32), и ряд может
-          оставить видимыми ноль кнопок (`minVisible={0}`): сначала всё
-          уходит в «…», и лишь потом сжимается информация. */}
-      {onlyButtons ? (
-        <ButtonMenuRow
-          size="sm"
-          tone="dark"
-          minVisible={0}
-          data-slot="button-menu-black-actions"
-          className={cn("items-start", sizedChildren.length > 0 && "min-w-8")}
-        >
-          {sizedChildren}
-        </ButtonMenuRow>
-      ) : (
-        <div
-          data-slot="button-menu-black-actions"
-          className="flex min-w-0 flex-1 items-start gap-2 overflow-hidden"
-        >
-          {sizedChildren}
-        </div>
-      )}
-
-      {/* Правая группа сжимается ПОСЛЕ действий (у ряда основа 0, он
-          уже отдал всё до своих 32). Крестик виден всегда. Информация
-          теряет колонки с конца: они переносятся на вторую строку, а та
-          срезана высотой одной колонки (40); оставшаяся одна колонка
-          обрезается многоточием. Совсем узкой панели (контент уже 180)
-          информации не показать — она прячется, а зазор ужимается до 16,
-          чтобы «…» и крестик помещались даже на 6 колонках при 375. */}
-      <div className="ml-8 flex min-w-0 items-center justify-end gap-8 @max-[180px]/black:ml-4">
-        {infoItems.length > 0 && (
-          <div
-            data-slot="button-menu-black-info"
-            className="flex max-h-10 min-w-0 flex-wrap content-start items-center justify-end gap-8 overflow-clip text-p2-medium [overflow-clip-margin:4px] @max-[180px]/black:hidden"
-          >
-            {infoItems.map((item, index) => (
-              // Дизайн-чек от 07.09, замечание 4: перенос не допускается,
-              // ширина колонки динамическая. `whitespace-nowrap` — это и
-              // есть «в одну строку». Соседи колонку не сжимают: не
-              // поместившаяся уезжает на срезанную вторую строку. Сжимается
-              // (с многоточием) только колонка, оставшаяся одна.
-              <div
-                key={index}
-                className={cn(
-                  "flex min-w-0 flex-col items-start whitespace-nowrap",
-                  item.className
-                )}
-              >
-                <span className="max-w-full overflow-clip text-ellipsis [overflow-clip-margin:4px] text-[var(--button-menu-black-muted-fg)]">
-                  {item.label}
-                </span>
-                <span className="max-w-full overflow-clip text-ellipsis [overflow-clip-margin:4px] text-[var(--button-menu-black-fg)]">
-                  {item.value}
-                </span>
-              </div>
-            ))}
+      {isDesktop ? (
+        <>
+          {actions}
+          {/* Правая группа сжимается ПОСЛЕ действий. Крестик виден всегда;
+              совсем узкой панели зазор ужимается до 16, чтобы «…» и крестик
+              помещались даже на 6 колонках при 375. */}
+          <div className="ml-8 flex min-w-0 items-center justify-end gap-8 @max-[180px]/black:ml-4">
+            {infoItems.length > 0 && <BlackInfoDesktop items={infoItems} />}
+            {onClose && <BlackClose onClose={onClose} />}
           </div>
-        )}
-
-        {onClose && (
-          /* Ступень нажатия переопределена: общее умолчание темнит глиф до
-             Grey 1514, а на чёрной панели это сделало бы его невидимым. */
-          <CloseCross
-            size={24}
-            onClick={onClose}
-            className="text-[var(--button-menu-black-fg)] [--close-cross-fg-active:var(--button-menu-black-muted-fg)]"
-          />
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          {/* «Information (ELK)» Mobile: информация слева, крестик справа
+              сверху с зазором 16. Без информации крестик остаётся на своём
+              месте — в правом верхнем углу. */}
+          {(infoItems.length > 0 || onClose) && (
+            <div
+              className={cn(
+                "flex w-full gap-4",
+                infoItems.length === 1 ? "items-center" : "items-start",
+                infoItems.length === 0 && "justify-end"
+              )}
+            >
+              {infoItems.length > 0 && <BlackInfoMobile items={infoItems} />}
+              {onClose && <BlackClose onClose={onClose} />}
+            </div>
+          )}
+          {actions}
+        </>
+      )}
     </div>
   )
 
-  // ⚠️ Панель ВСЕГДА в десктопной форме — дизайн-чек от 13.09, замечание 2:
-  // «У панели вообще не должно быть мобайл-версии или уменьшенной версии. Она
-  // не должна менять размеры, должна просто следовать сетке». Своих
-  // `desktop:` у чёрной полосы нет, но они есть у кнопок внутри (`ELK /
-  // button` размера S меняет кегль 12 → 14), поэтому форму фиксирует скоуп на
-  // всё поддерево. Обёртка — `display: contents`, в раскладке не участвует.
+  // ⚠️ Форма больше НЕ фиксируется десктопной. Дизайн-чек от 13.09, №2
+  // («у панели не должно быть мобайл-версии») отменён мастером v1.1.0 и
+  // дизайн-чеком от 08.10, №3: Size=Mobile теперь есть.
   //
   // ⚠️ Панель стоит на ОДНОМ месте дерева при любом `withSelectAll`: блок
   // «кнопка + панель» есть всегда, а без кнопки он `display: contents` и в
-  // раскладке не участвует. Раньше панель без кнопки возвращалась одна, с
-  // кнопкой — внутри блока, и React на каждом переключении пересоздавал её
-  // вместе с кнопками действий: фокус падал на <body>, открытое «…»
-  // закрывалось. Переключается же это от любого клика по галке (выбрали всё —
-  // кнопка пропала, сняли одну — вернулась).
+  // раскладке не участвует. Иначе React на каждом переключении (выбрали всё —
+  // кнопка пропала, сняли одну — вернулась) пересоздавал панель вместе с
+  // кнопками действий: фокус падал на <body>, открытое «…» закрывалось.
   return (
-    <ViewportScope viewport="desktop">
-    {/* ⚠️ Прозрачный зазор ловил указатель. Блок занимает всю ширину и 136
-    // высоты, а нарисовано в нём двое — панель и кнопка; курсор до липкой
-    // полосы прокрутки таблицы, которая живёт в зазоре, не доезжал, таблица
-    // теряла наведение, полоса гасла на подходе.
-    //
-    // Лечится тем, что ВНЕШНИЙ узел указатель не принимает, а панель и
-    // обёртка кнопки возвращают себе приём; обёртка кнопки при этом ужата
-    // по самой кнопке (`w-fit`), чтобы не перекрывать зазор по бокам.
-    // Проверяется не глазами, а попаданием в точку: что лежит под центром
-    // дорожки прокрутки (`document.elementFromPoint`).
-    //
-        Место в потоке страницы при этом держится за ВЕСЬ блок (136, а не
-        72) — иначе контент уезжает под кнопку. Это две разные величины, и
-        путать их нельзя: занятый низ вьюпорта публикует панель (см. ref
-        выше), а место в потоке занимает этот узел. */}
+    // ⚠️ Прозрачный зазор ловил указатель: курсор до липкой полосы
+    // прокрутки таблицы, которая живёт в зазоре, не доезжал. Поэтому ВНЕШНИЙ
+    // узел указатель не принимает, а панель и обёртка кнопки (`w-fit`)
+    // возвращают себе приём. Место в потоке при этом держится за ВЕСЬ блок,
+    // а занятый низ вьюпорта публикует панель (см. ref выше).
     <div
       ref={blockRef}
       data-slot={withSelectAll ? "button-menu-black-block" : undefined}
@@ -367,9 +362,11 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
       className={cn(
         withSelectAll
           ? [
-              "pointer-events-none flex flex-col items-center gap-8",
+              // Зазор до кнопки: 32 на Desktop, 16 на Mobile (мастер).
+              "pointer-events-none flex flex-col items-center",
+              isDesktop ? "gap-8" : "gap-4",
               outerPlacementClass,
-              pinned && !detached && PINNED_CLASS,
+              pinnedHere && PINNED_CLASS,
             ]
           : "contents"
       )}
@@ -377,11 +374,9 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
     >
       {withSelectAll && (
         <div className="pointer-events-auto w-fit">
-          {/* Кнопка — не «таблетка» со своей заливкой, а инстанс кнопки кита
-              (`ELK / button`): `secondary-black` — это как раз
-              Dark blue 1412 #012F42, а `sm` даёт 32 по высоте, радиус 16,
-              поля 6/16 и P2 Medium. Своя вёрстка по замеру пикселя совпала бы
-              по картинке и разошлась бы по состояниям, фокусу и темам. */}
+          {/* Инстанс кнопки кита (`ELK / button`): `secondary-black` — это
+              Dark blue 1412, `sm` даёт 32 по высоте, радиус 16 и кегль
+              формы (P2 Medium на Desktop, 12/16 на Mobile, как в мастере). */}
           <Button
             variant="secondary-black"
             size="sm"
@@ -395,7 +390,6 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
       )}
       {panel}
     </div>
-    </ViewportScope>
   )
 })
 

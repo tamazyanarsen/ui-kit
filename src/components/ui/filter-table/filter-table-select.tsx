@@ -6,6 +6,7 @@ import { Dropdown } from "@/components/ui/dropdown"
 import { Input } from "@/components/ui/input"
 
 import { FilterTrigger, type FilterType } from "./select-trigger"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 // FilterTableSelect — «Фильтр таблицы» с выпадающим списком: элемент
 // вызова ведёт себя как у Select, а во всплывашке одно поле значения и
@@ -166,6 +167,7 @@ function FilterTableSelect({
             side="bottom"
             align="start"
             sideOffset={8}
+            collisionAvoidance={POPUP_COLLISION}
             className="z-50"
           >
             <PopoverPrimitive.Popup

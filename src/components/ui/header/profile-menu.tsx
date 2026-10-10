@@ -41,6 +41,12 @@ interface ProfileMenuProps {
   showLogout?: boolean
   onSettingsClick?: () => void
   onLogoutClick?: () => void
+  /**
+   * Вид триггера: `tile` — плитка 64px в верхнем ряду десктопной шапки,
+   * `card` — карточка организации в мобильном меню (`Company`,
+   * 70467:11710). Список, поиск и настройки внутри одни и те же.
+   */
+  trigger?: "tile" | "card"
   className?: string
 }
 
@@ -129,6 +135,59 @@ function ProfileMenuTrigger({
   )
 }
 
+/**
+ * Карточка организации — триггер того же меню в мобильной шапке.
+ *
+ * По `Company` из макета мобильного меню: подложка Grey 109, скругление 16,
+ * поля 16 слева/сверху/снизу и 24 справа, `ELK / thumbnail` 40×40 (белый,
+ * скругление 8, кейс 24), название P1 Medium Mobile (14/20) в две строки,
+ * контактное лицо P2 Medium Mobile (12/16) Grey 284 в одну, шеврон 16.
+ */
+function ProfileMenuCardTrigger({
+  organization,
+  contactPerson,
+  className,
+}: {
+  organization?: ProfileMenuOrganization
+  contactPerson?: React.ReactNode
+  className?: string
+}) {
+  return (
+    <MenuPrimitive.Trigger
+      render={
+        <button
+          type="button"
+          data-slot="profile-menu-card"
+          className={cn(
+            "group flex w-full min-w-0 cursor-pointer items-center gap-4 rounded-[16px] bg-[var(--header-org-card-bg)] py-4 pr-6 pl-4 text-left outline-none focus-visible:focus-ring",
+            className
+          )}
+        />
+      }
+    >
+      <span className="flex min-w-0 flex-1 items-start gap-4">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--header-org-card-thumb-bg)] p-2 text-[var(--header-icon-fg)]">
+          <Briefcase size={24} aria-hidden="true" className="size-6" />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+          <span className="line-clamp-2 text-p2-medium [overflow-wrap:anywhere] text-[var(--header-fg)]">
+            {organization?.name}
+          </span>
+          {hasContent(contactPerson) && (
+            <span className="truncate text-p3-medium text-[var(--header-meta-fg)]">
+              {contactPerson}
+            </span>
+          )}
+        </span>
+      </span>
+      <ChevronDown
+        aria-hidden="true"
+        className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-data-popup-open:rotate-180"
+      />
+    </MenuPrimitive.Trigger>
+  )
+}
+
 function ProfileMenu({
   organizations: rawOrganizations,
   value,
@@ -138,6 +197,7 @@ function ProfileMenu({
   showLogout = showSetting,
   onSettingsClick,
   onLogoutClick,
+  trigger = "tile",
   className,
 }: ProfileMenuProps) {
   // Меню экспортируется отдельно от Header: пустые элементы (`[cond && {...}]`)
@@ -172,16 +232,29 @@ function ProfileMenu({
         if (!open) setQuery("")
       }}
     >
-      <ProfileMenuTrigger
-        organization={activeOrg}
-        contactPerson={contactPerson}
-        className={className}
-      />
+      {trigger === "card" ? (
+        <ProfileMenuCardTrigger
+          organization={activeOrg}
+          contactPerson={contactPerson}
+          className={className}
+        />
+      ) : (
+        <ProfileMenuTrigger
+          organization={activeOrg}
+          contactPerson={contactPerson}
+          className={className}
+        />
+      )}
 
       {/* Ширина 400 — из мастера `Profile Menu (ELK)`: панель
           `w-[400px]`, скругление 16, universal shadow. Прежние 320 не давали
           длинному названию организации уложиться в две строки. */}
-      <HeaderMenuPopup slot="profile-menu-content" className="w-100">
+      {/* На телефоне 400 шире экрана — панель ужимается до него с полями 16. */}
+      <HeaderMenuPopup
+        slot="profile-menu-content"
+        align={trigger === "card" ? "start" : "end"}
+        className="w-100 max-w-[calc(100vw-2rem)]"
+      >
         {isSingle ? (
           <SingleOrganization organization={activeOrg} />
         ) : (

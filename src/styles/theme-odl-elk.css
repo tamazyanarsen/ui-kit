@@ -52,6 +52,15 @@
    - --top-fixed-message-blue-bg в :root всё ещё держал *старый* #E3EEFF;
      там он исправлен на #EDF6FC, а #E3EEFF переехал сюда. */
 [data-product="odl-elk"] {
+  /* Серая подложка страницы в старой палитре — Grey 106, в новой — Grey 109
+     (дизайн-чек от 08.10, замечание 9). Маска Steps следует за ней сама. */
+  --page-bg: var(--grey-106);
+
+  /* Баннер: макет нарисован старой палитрой, здесь её цвета и стоят. */
+  --banner-pink: var(--odl-red-147);
+  --banner-green: var(--odl-green-171);
+  --banner-blue: var(--odl-blue-182);
+
   --btn-primary-bg: var(--odl-green-223);
   --btn-primary-bg-hover: var(--odl-green-289);
   --btn-primary-bg-active: var(--odl-green-333);

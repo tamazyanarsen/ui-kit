@@ -8,8 +8,8 @@ import { ThumbArrow } from "./thumb-arrow"
 import { hasNode } from "@/lib/has-node"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
-import { GROUP_SPACES, formatSignSpacing } from "@/lib/number-format"
-import { useCopyWithoutSeparators } from "@/lib/use-copy-without-separators"
+import { RangeValueField } from "./value-field"
+import { rangeValueSpec } from "./value-mask"
 
 interface RangeInputOwnProps {
   label?: React.ReactNode
@@ -17,11 +17,40 @@ interface RangeInputOwnProps {
   /** Строка — текст ошибки; `true` — только состояние ошибки, без текста. */
   error?: React.ReactNode
   scaleLabels?: React.ReactNode[]
+  /**
+   * Формат значения (Intl). Из него берутся знак единицы (₽, %, км) и число
+   * знаков после запятой; разряды и запятая — всегда по-русски.
+   */
   format?: Intl.NumberFormatOptions
+  /** Маска суммы: рубли без копеек, «400 000 ₽» — как `mask="amount"` у Input. */
+  mask?: "amount"
+  /** Своя единица после числа («дн.», «мес.»), поверх `format` и `mask`. */
+  unit?: string
 }
 
-type RangeInputProps = Omit<SliderPrimitive.Root.Props<number>, "children" | "ref"> &
-  RangeInputOwnProps
+type RangeInputProps = Omit<
+  SliderPrimitive.Root.Props<number>,
+  "children" | "ref" | "value" | "defaultValue" | "onValueChange"
+> &
+  RangeInputOwnProps & {
+    value?: number
+    defaultValue?: number
+    onValueChange?: (value: number, eventDetails: SliderPrimitive.Root.ChangeEventDetails) => void
+  }
+
+/** Подробности события для изменения с клавиатуры в поле значения. */
+function typedChangeDetails(event: Event) {
+  return {
+    reason: "input-change",
+    event,
+    cancel: () => {},
+    allowPropagation: () => {},
+    isCanceled: false,
+    isPropagationAllowed: false,
+    trigger: undefined,
+    activeThumbIndex: 0,
+  } as unknown as SliderPrimitive.Root.ChangeEventDetails
+}
 
 // Ползунок с одной ручкой, оформленный как поле в рамке по образцу Input:
 // сверху подпись и отформатированное значение, снизу дорожка. В отличие от
@@ -38,9 +67,50 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
   error,
   scaleLabels,
   format,
+  mask,
+  unit,
   disabled,
+  value: valueProp,
+  defaultValue,
+  onValueChange,
+  onValueCommitted,
+  min = 0,
+  max = 100,
+  step = 1,
   ...props
 }, ref) {
+  // Значение держится здесь, а не только в Base UI: его двигает и ползунок,
+  // и набор в поле (дизайн-чек 08.10, замечание 31), и обоим нужен один
+  // источник. Управляемый `value` по-прежнему главнее.
+  const [internalValue, setInternalValue] = React.useState(
+    typeof defaultValue === "number" ? defaultValue : min
+  )
+  const value = typeof valueProp === "number" ? valueProp : internalValue
+  function change(next: number, details: SliderPrimitive.Root.ChangeEventDetails) {
+    if (valueProp === undefined) setInternalValue(next)
+    onValueChange?.(next, details)
+  }
+  const spec = rangeValueSpec({ mask, format, unit, min })
+  const valueFieldRef = React.useRef<HTMLInputElement>(null)
+  // Поле значения подписано той же подписью, что и ползунок. `id` подписи
+  // выдаёт Base UI (свой `id` Label не принимает), поэтому связь ставится
+  // после монтирования.
+  const labelRef = React.useRef<HTMLDivElement>(null)
+  /** Каретка — в конец поля значения. */
+  function focusValueField() {
+    const field = valueFieldRef.current
+    if (!field || disabled) return
+    field.focus()
+    const end = field.value.length
+    field.setSelectionRange(end, end)
+  }
+  React.useLayoutEffect(() => {
+    const field = valueFieldRef.current
+    const labelId = labelRef.current?.id
+    if (!field) return
+    if (labelId) field.setAttribute("aria-labelledby", labelId)
+    else field.removeAttribute("aria-labelledby")
+  })
   // Дизайн-чек 3/3 №3: состояние ошибки и её текст переключаются отдельно,
   // поэтому `error` принимает и `true` — красная шкала без подписи.
   const invalid = Boolean(error)
@@ -65,9 +135,6 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
     if (invalid) input.setAttribute("aria-invalid", "true")
     else input.removeAttribute("aria-invalid")
   }, [invalid])
-  // Разрядный пробел — отбивка по 3 разряда, а не символ значения: в буфер
-  // уходит «5000000», а не «5 000 000».
-  const copyWithoutSeparators = useCopyWithoutSeparators(GROUP_SPACES)
 
   return (
     // Исправление второго прохода: внешний зазор стоял gap-1.5 (6px), а
@@ -78,6 +145,15 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
         data-slot="range-input"
         disabled={disabled}
         format={format}
+        // Разряды и запятая — по-русски при любой локали браузера: иначе
+        // aria-valuetext ползунка звучал бы «23,700,000».
+        locale="ru-RU"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onValueChange={(next, details) => change(next as number, details)}
+        onValueCommitted={onValueCommitted}
         {...props}
       >
         <div
@@ -107,11 +183,32 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
             "border-[var(--range-input-border)] bg-[var(--range-input-bg)]",
             "not-has-[[data-disabled]]:hover:border-[var(--range-input-border-hover)]",
             "not-has-[[data-disabled]]:has-[:focus-visible]:border-[var(--range-input-border-hover)]",
-            "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:!border-[var(--range-input-border-disabled)] has-[[data-disabled]]:!bg-[var(--range-input-bg-disabled)]"
+            "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:!border-[var(--range-input-border-disabled)] has-[[data-disabled]]:!bg-[var(--range-input-bg-disabled)]",
+            // Коробка — поле ввода: курсор текста по всей площади, кроме
+            // ползунка и дорожки (там свой).
+            "not-has-[[data-disabled]]:cursor-text"
           )}
+          // Клик по любому месту коробки (подпись, пустое поле справа от
+          // числа) ставит каретку в поле значения — как у Input. Ползунок и
+          // дорожка остаются за Base UI.
+          onMouseDown={(event) => {
+            const target = event.target as HTMLElement
+            const field = valueFieldRef.current
+            if (disabled || !field || target === field) return
+            if (target.closest('[data-slot="range-input-control"]')) return
+            event.preventDefault()
+            focusValueField()
+          }}
         >
           {hasNode(label) && (
             <SliderPrimitive.Label
+              ref={labelRef}
+              // Своя реакция Base UI на клик по подписи — фокус на ползунок.
+              // Подпись поля ведёт в поле значения, как у Input.
+              onClick={(event) => {
+                event.preventBaseUIHandler()
+                focusValueField()
+              }}
               data-slot="range-input-label"
               // Одна строка с многоточием, как подпись Input: у коробки
               // фиксированная высота, и перенос длинной подписи ложился
@@ -123,36 +220,25 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
               {label}
             </SliderPrimitive.Label>
           )}
-          {/* Значение проходит через общий модуль формата чисел, а не
-              отдаётся ICU как есть. Две правки, обе сквозные:
-
-              • отбивка знака НЕ одна на все — `%`, `‰`, `°` набираются
-                вплотную к числу («50%»), а знак валюты через неразрывный
-                пробел («1 200 000 ₽»). ICU для `ru-RU` отбивает пробелом
-                всё подряд;
-              • разрядный пробел приводится к одному символу: ICU в части
-                сборок отдаёт узкий неразрывный, и снятие разрядов при
-                копировании по нему промахивается.
-
-              Копирование значения ползунка разряды снимает: «5 000 000» →
-              «5000000» (см. `useCopyWithoutSeparators`). */}
-          <SliderPrimitive.Value
-            data-slot="range-input-value"
-            {...copyWithoutSeparators}
-            className={cn(
-              // Десктопный символ в макете задаёт Label = P3 Medium 12/16
-              // и Value = P1 Medium 16/24. Раньше у обоих стоял
-              // `leading-tight`, то есть 15px и 17.5px — мимо шкалы вовсе.
-              "text-p2-medium text-[var(--range-input-value-fg)] desktop:text-p1-medium",
-              disabled && "!text-[var(--range-input-value-fg-disabled)]"
-            )}
-          >
-            {/* `formattedValues` — массив: у диапазона два конца. Склейка та
-                же, что у Base UI по умолчанию (тире с пробелами). */}
-            {(formattedValues) =>
-              formattedValues.map(formatSignSpacing).join(" – ")
-            }
-          </SliderPrimitive.Value>
+          {/* Значение — поле ввода с маской (value-field.tsx): число
+              набирается с клавиатуры, ползунок едет вслед. Разряды и знак —
+              по правилам кита (value-mask.ts); копирование снимает разрядные
+              пробелы, как и прежде. */}
+          <RangeValueField
+            value={value}
+            min={min}
+            max={max}
+            step={step}
+            spec={spec}
+            disabled={disabled}
+            describedBy={hasCaption ? captionId : undefined}
+            inputRef={valueFieldRef}
+            onType={(next, event) => change(next, typedChangeDetails(event))}
+            onCommit={(next, event) => {
+              change(next, typedChangeDetails(event))
+              onValueCommitted?.(next, typedChangeDetails(event))
+            }}
+          />
           {/* Дорожка лежит НА нижней рамке коробки, а не внутри отступов —
               подтверждено вырезкой из растра анатомии: таблетка ползунка
               заметно сидит верхом на рамке, половина внутри, половина

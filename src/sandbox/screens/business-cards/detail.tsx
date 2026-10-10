@@ -21,6 +21,7 @@ import {
   DataTable,
   sortTableRows,
   type TableSort,
+  TableBlockPagination,
 } from "@/components/ui/table"
 import {
   TableTop,
@@ -318,16 +319,18 @@ function BusinessCardDetail() {
               }
             />
 
-            <Pagination
-              page={safePage}
-              totalPages={totalPages}
-              onPageChange={setPage}
-              pageSize={pageSize}
-              onPageSizeChange={(size) => {
-                setPageSize(size)
-                setPage(1)
-              }}
-            />
+            <TableBlockPagination>
+              <Pagination
+                page={safePage}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                pageSize={pageSize}
+                onPageSizeChange={(size) => {
+                  setPageSize(size)
+                  setPage(1)
+                }}
+              />
+            </TableBlockPagination>
           </SandboxBlock>
         </div>
       </SandboxColumns>

@@ -93,11 +93,25 @@
 
    Сверху 8, снизу 48 — и это не опечатка макета: верх панели прямой и
    упирается в шапку, а низ скруглён на 32, поэтому дорожке там нужен
-   больший зазор. */
+   больший зазор.
+
+   ⚠️ Вдоль оси отступ даёт ПОЛЕ ДОРОЖКИ (`margin-block` у
+   `::-webkit-scrollbar-track`), а не прозрачная рамка, как у остальных
+   вариантов. Дизайн-чек от 10.10, замечания 26 и 27: рамка в 48 снизу
+   резала содержимое на 48px выше белой кромки панели («в промежуточном
+   положении паддинг не должен обрезать контент — он должен обрезаться
+   границами белой области»), а в нижнем положении складывалась с
+   собственным `pb-10` сетки — выходило 88 вместо 40. Поле дорожки
+   укорачивает только саму полосу, окно прокрутки остаётся во всю высоту
+   панели. Поперёк (8 справа) — по-прежнему рамка: там полоса обязана
+   отъехать от края, а содержимое под ней не видно. В Firefox (нет
+   вебкитовых псевдоэлементов) полоса идёт во всю высоту — компромисс
+   меньше, чем срезанное содержимое. */
 .themed-scrollbar[data-inset="panel"][data-orientation="vertical"] {
   border-inline-end: 8px solid transparent;
-  border-block-start: 8px solid transparent;
-  border-block-end: 48px solid transparent;
+}
+.themed-scrollbar[data-inset="panel"][data-orientation="vertical"]::-webkit-scrollbar-track {
+  margin-block: 8px 48px;
 }
 .themed-scrollbar[data-inset="dropdown"][data-orientation="horizontal"] {
   border-block-end: 8px solid transparent;

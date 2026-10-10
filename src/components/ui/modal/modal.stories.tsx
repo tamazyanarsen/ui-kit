@@ -14,6 +14,8 @@ import { Modal, ModalTrigger, ModalClose } from "./root"
 import { ModalContent } from "./popup"
 import { ModalHeader, ModalTitle, ModalDescription } from "./header"
 import { ModalBody } from "./body"
+import { ModalColumns } from "./columns"
+import { HelpLink, useHelpColumns } from "@/stories/modal-columns-fixtures"
 import { ModalFooter } from "./footer"
 import { Button } from "@/components/ui/button"
 
@@ -88,7 +90,10 @@ function ConfirmModal({
   // (size="m"). Иллюстрация есть только у третьего типа.
   const size = type === "large" ? "l" : "m"
   const showImage = type === "image"
-  const columns = column === "two" ? 2 : 1
+  // Дизайн-чек 08.10, замечание 15: «Two» — отдельное тело с двумя слотами
+  // (`ModalColumns`), а не сетка внутри `ModalBody`. Только у Large.
+  const twoColumns = column === "two"
+  const help = useHelpColumns()
   return (
     // Скоуп охватывает и триггер, и портал: `ModalContent` дублирует
     // `data-viewport` на самом попапе, потому что портал уносит его из
@@ -98,44 +103,52 @@ function ConfirmModal({
       <ModalTrigger render={<Button variant="secondary-grey" />}>
         {triggerLabel}
       </ModalTrigger>
-      <ModalContent size={size} showClose={showClose}>
+      <ModalContent size={twoColumns ? "l" : size} showClose={showClose}>
         {/* `Show Title=False` — вариант «Modal Top: None»: шапки нет вовсе,
             и тело начинается сразу с содержимого. */}
         {showTitle && (
           <ModalHeader>
             <ModalTitle>{title}</ModalTitle>
-            {description && <ModalDescription>{description}</ModalDescription>}
+            {twoColumns ? (
+              <HelpLink />
+            ) : (
+              description && <ModalDescription>{description}</ModalDescription>
+            )}
           </ModalHeader>
         )}
-        <ModalBody className={columns === 2 ? "desktop:grid desktop:grid-cols-2 desktop:gap-6" : undefined}>
-          {/* `Column=One Title` — колонка со своим заголовком внутри тела,
-              отдельно от шапки модалки. */}
-          {column === "one-title" && (
-            <p className="mb-2 text-h4 text-[#252628]">Заголовок блока</p>
-          )}
-          {/* `Type=With Image` — иллюстрация над текстом. */}
-          {showImage && (
-            <div
-              aria-hidden="true"
-              className="mb-4 h-40 rounded-2xl bg-[var(--card-bg)] desktop:col-span-2"
-            />
-          )}
-          {longBody ? (
-            <div className="flex flex-col gap-4 text-p2-medium text-[#6D6D6D]">
-              {Array.from({ length: 20 }, (_, i) => (
-                <p key={i}>
-                  Пункт соглашения {i + 1}. Раздел, поясняющий условия
-                  использования сервиса.
-                </p>
-              ))}
-            </div>
-          ) : (
-            <p className="text-p2-medium text-[#6D6D6D]">
-              Виртуальная карта •• 4482 привязана к 2 подпискам. После удаления
-              платежи по ним перестанут проходить.
-            </p>
-          )}
-        </ModalBody>
+        {twoColumns ? (
+          <ModalColumns left={help.left} right={help.right} />
+        ) : (
+          <ModalBody>
+            {/* `Column=One Title` — колонка со своим заголовком внутри тела,
+                отдельно от шапки модалки. */}
+            {column === "one-title" && (
+              <p className="mb-2 text-h4 text-[#252628]">Заголовок блока</p>
+            )}
+            {/* `Type=With Image` — иллюстрация над текстом. */}
+            {showImage && (
+              <div
+                aria-hidden="true"
+                className="mb-4 h-40 rounded-2xl bg-[var(--card-bg)]"
+              />
+            )}
+            {longBody ? (
+              <div className="flex flex-col gap-4 text-p2-medium text-[#6D6D6D]">
+                {Array.from({ length: 20 }, (_, i) => (
+                  <p key={i}>
+                    Пункт соглашения {i + 1}. Раздел, поясняющий условия
+                    использования сервиса.
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-p2-medium text-[#6D6D6D]">
+                Виртуальная карта •• 4482 привязана к 2 подпискам. После удаления
+                платежи по ним перестанут проходить.
+              </p>
+            )}
+          </ModalBody>
+        )}
         {/* `Modal Bottom (…, ELK)`, свойство Type: две кнопки, только
             основная или только второстепенная. */}
         {showFooter && (
@@ -241,7 +254,22 @@ export const Examples: Story = {
       >
         <ConfirmModal column="one" triggerLabel="One" />
         <ConfirmModal column="one-title" triggerLabel="One Title" />
-        <ConfirmModal column="two" triggerLabel="Two" />
+        <ConfirmModal column="two" triggerLabel="Two" title="Операции и выписки" />
+      </StorySection>
+
+      {/* Дизайн-чек 08.10, замечание 15: два слота (ModalColumns) — у
+          каждой колонки своя прокрутка; без кнопок внизу пустой холдер 48. */}
+      <StorySection
+        title="Column Two — два слота"
+        description="Пример «Операции и выписки»: слева вопросы (384px, своя прокрутка), справа ответ. С кнопками и без."
+      >
+        <ConfirmModal
+          column="two"
+          triggerLabel="Two — без кнопок"
+          title="Операции и выписки"
+          showFooter={false}
+        />
+        <ConfirmModal column="two" triggerLabel="Two — с кнопками" title="Операции и выписки" />
       </StorySection>
 
       <StorySection

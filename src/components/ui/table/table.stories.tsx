@@ -68,7 +68,7 @@ const meta = {
     sortable: true,
     nested: true,
     pinned: true,
-    stickyHeader: false,
+    stickyHeader: true,
     resizable: true,
     showDescription: true,
     empty: false,

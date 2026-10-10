@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/pagination"
 import {
   DataTable,
   TableBlock,
+  TableBlockPagination,
   TableColumnSettings,
   columnsFromFields,
   treeRequiredColumnIds,
@@ -62,7 +63,7 @@ function TableFieldsExample({
   selectable = true,
   nested = true,
   pinned = true,
-  stickyHeader = false,
+  stickyHeader = true,
   resizable = true,
   clickable = true,
   empty = false,
@@ -194,7 +195,6 @@ function TableFieldsExample({
         onSelectedKeysChange={setSelected}
         resizable={resizable}
         stickyHeader={stickyHeader}
-        containerClassName={stickyHeader ? "max-h-[320px]" : undefined}
         onRowClick={clickable ? () => {} : undefined}
         empty={
           <EmptySearchResults {...EMPTY_FILTERED} />
@@ -202,13 +202,15 @@ function TableFieldsExample({
       />
 
       {showPagination && (
-        <Pagination
-          page={page}
-          totalPages={26}
-          onPageChange={setPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-        />
+        <TableBlockPagination>
+          <Pagination
+            page={page}
+            totalPages={26}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
+          />
+        </TableBlockPagination>
       )}
     </>
   )

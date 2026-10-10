@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import { useComposedRefs } from "@/lib/compose-refs"
+import { useHybridSticky } from "@/lib/use-hybrid-sticky"
 import { cn } from "@/lib/utils"
 
 // Блок страницы и его внутренности. Это оболочка эталона, а не компонент
@@ -43,10 +45,15 @@ interface SandboxBlockProps extends React.ComponentProps<"section"> {
   /** Поле блока. 32 — обычный блок, 0 — табличный (там поле у элементов). */
   padding?: 0 | 24 | 32
   /**
-   * Закрепить блок при прокрутке — «Механика прокрутки страницы (ЕЛК)»,
-   * см. {@link STICKY_BLOCK}.
+   * Закрепить блок при прокрутке:
+   *
+   *   • `true` — «Механика прокрутки страницы (ЕЛК)»: блок стопорится в 40
+   *     px под шапкой, см. {@link STICKY_BLOCK};
+   *   • `"hybrid"` — гибридное закрепление (дизайн-чек от 08.10, замечания
+   *     32 и 34): высокий блок крепится сверху или снизу по направлению
+   *     прокрутки, см. `useHybridSticky` в lib/use-hybrid-sticky.ts.
    */
-  sticky?: boolean
+  sticky?: boolean | "hybrid"
 }
 
 // forwardRef, потому что под React 18 обычный компонент проп `ref` молча
@@ -55,13 +62,17 @@ interface SandboxBlockProps extends React.ComponentProps<"section"> {
 const SandboxBlock = React.forwardRef<HTMLElement, SandboxBlockProps>(
   function SandboxBlock(
     { padding = 32, sticky = false, className, style, ...props },
-    ref
+    forwardedRef
   ) {
+    const innerRef = React.useRef<HTMLElement>(null)
+    const ref = useComposedRefs(innerRef, forwardedRef)
+    useHybridSticky(innerRef, { enabled: sticky === "hybrid" })
+
     return (
       <section
         ref={ref}
         data-slot="sandbox-block"
-        data-sticky={sticky || undefined}
+        data-sticky={sticky === "hybrid" ? "hybrid" : sticky || undefined}
         className={cn(
           // ⚠️ `overflow-clip`, а не `overflow-hidden`. Дизайн-чек от 07.09,
           // замечание 32: «У таблиц всегда должна закрепляться нижняя полоса
@@ -72,7 +83,7 @@ const SandboxBlock = React.forwardRef<HTMLElement, SandboxBlockProps>(
           // `overflow: clip` подрезает по тому же радиусу, но области
           // прокрутки не создаёт, и полоса снова липнет к экрану.
           "flex w-full flex-col gap-8 overflow-clip rounded-[16px] bg-[var(--white-101)]",
-          sticky && STICKY_BLOCK,
+          sticky === true && STICKY_BLOCK,
           className
         )}
         style={{ padding, ...style }}

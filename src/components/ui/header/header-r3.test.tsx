@@ -1,3 +1,4 @@
+import "@/test/desktop-viewport"
 import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 import { act, render, screen } from "@testing-library/react"

@@ -48,7 +48,8 @@ const meta = {
   component: Card,
   parameters: { layout: "padded" },
   argTypes: {
-    state: stateArgTypeOf(["default", "hover"]),
+    // Active (OnClick, Grey 124) — дизайн-чек от 08.10, замечание 28.
+    state: stateArgTypeOf(["default", "hover", "active"]),
     showNumberCard: toggleArgType("Show Number Card", "Номер после названия"),
     showTag: toggleArgType("Show Tag"),
     showValue: toggleArgType("Show Value", "Сумма справа в верхней строке"),
@@ -176,6 +177,11 @@ export const Matrix: Story = {
         rows={[
           { label: "Default", props: {} },
           { label: "Hover", props: { onClick: () => {} }, pseudo: "hover" },
+          {
+            label: "Active (OnClick)",
+            props: { onClick: () => {} },
+            pseudo: "active",
+          },
           { label: "С тегом", props: { tag: "Новая" } },
           {
             label: "С красным тегом",

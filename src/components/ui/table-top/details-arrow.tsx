@@ -48,9 +48,10 @@ const DetailsArrow = React.forwardRef<
       className={cn(
         // `motion-safe`: `prefers-reduced-motion` гасит и плавную прокрутку
         // ленты (см. scrollToNeighbour), и проявление самой стрелки.
-        // Центровка без translate: у Button на :active стоит `translate-y-px`, и
-        // обе утилиты пишут в одну переменную --tw-translate-y, так что стрелка
+        // Центровка без translate: у Button на :active стоял `translate-y-px`, и
+        // обе утилиты писали в одну переменную --tw-translate-y, так что стрелка
         // при нажатии мыши прыгала на 17px из-под курсора и щелчок пропадал.
+        // Теперь нажатие — `scale` (styles/motion.css), но `my-auto` надёжнее.
         "absolute inset-y-0 z-10 my-auto motion-safe:animate-in motion-safe:fade-in",
         // Дизайн-чек «Storybook 3», замечание 1: «скорректировать отступ
         // кнопки до края элемента, поправить и правую, и левую». Обе стрелки

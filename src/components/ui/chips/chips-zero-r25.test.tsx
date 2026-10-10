@@ -14,7 +14,9 @@ describe("Chips: нулевые значения", () => {
       </Chips>
     )
     const subtitle = screen.getByText("0")
-    expect(subtitle).toHaveClass("truncate", "text-p3-medium")
+    expect(subtitle).toHaveClass("text-p3-medium")
+    // Многоточия у подписей чипса нет — дизайн-чек от 08.10, замечание 30.
+    expect(subtitle).not.toHaveClass("truncate")
   })
 
   it("icon 0 — в узле иконки", () => {

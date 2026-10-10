@@ -1,6 +1,7 @@
 import { ChevronUp, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { useCollapseExit } from "@/lib/use-collapse-exit"
 import { Badge } from "@/components/ui/badge"
 
 // Chips — «Чипсы»: обычная неинтерактивная таблетка со значением и
@@ -143,9 +144,14 @@ function Chips({
   const isFilter = type !== "chips"
   const withSubtitle = HAS_SUBTITLE[type] && hasValue(subtitle)
   const tone = CHIPS_TONE[type]
+  // Удаление крестиком: чипс гаснет и схлопывается по ширине, соседи в
+  // ряду съезжают на его место; `onRemove` приходит после (дизайн-чек 08.10,
+  // замечание 11; см. lib/use-collapse-exit).
+  const { ref, exit } = useCollapseExit<HTMLSpanElement>(onRemove, { axis: "width" })
 
   return (
     <span
+      ref={ref}
       data-slot="chips"
       data-type={type}
       data-selected={selected || undefined}
@@ -157,7 +163,12 @@ function Chips({
         // радиусов этого кита) при такой высоте читается как полная
         // таблетка, тогда как источник в макете использует радиус углов 8px
         // повсюду, а это здесь rounded-md, а не rounded-2xl.
-        "group/chips inline-flex w-fit max-w-64 flex-col items-start gap-0 rounded-md whitespace-nowrap transition-colors",
+        // Дизайн-чек от 08.10, замечание 30: «убрать обрезку текста —
+        // длинный текст ушёл в многоточие». Потолка ширины (`max-w-64`) и
+        // `truncate` больше нет: чипс всегда во всю длину подписи, в одну
+        // строку. Единственный предел — ширина контейнера (`max-w-full`):
+        // уже неё подпись не режется, а переносится.
+        "group/chips inline-flex w-fit max-w-full flex-col items-start gap-0 rounded-md transition-colors",
         // У типов Filter рамка Active (2px, Blue 223) лежит ВНУТРИ коробки
         // мастера: символы Default и Active оба 145 × 36 (Desktop) и 140 × 32
         // (Mobile), то есть поля 16/6 считаются от внешнего края. Поэтому
@@ -188,10 +199,11 @@ function Chips({
     >
       {withSubtitle && (
         // `max-w-full`: в колонке `items-start` ширина узла — ширина текста,
-        // и `truncate` было нечего резать — длинная подпись шла за плашку.
+        // и без предела длинная подпись шла бы за плашку. Многоточия нет
+        // (замечание 30 от 08.10) — подпись переносится.
         <span
           className={cn(
-            "max-w-full min-w-0 truncate text-p3-medium",
+            "max-w-full min-w-0 [overflow-wrap:anywhere] text-p3-medium",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-subtitle-fg)]"
           )}
         >
@@ -215,7 +227,7 @@ function Chips({
         )}
         <span
           className={cn(
-            "min-w-0 truncate text-p2-medium desktop:text-p1-medium",
+            "min-w-0 [overflow-wrap:anywhere] text-p2-medium desktop:text-p1-medium",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-fg)]"
           )}
         >
@@ -254,9 +266,9 @@ function Chips({
             type="button"
             aria-label="Удалить"
             disabled={disabled}
-            onClick={onRemove}
+            onClick={exit}
             className={cn(
-              "ml-auto shrink-0 outline-none focus-visible:focus-ring",
+              "ml-auto shrink-0 outline-none press-scale focus-visible:focus-ring",
               disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-fg)]"
             )}
           >

@@ -17,6 +17,15 @@
   --tabs-underline-active: var(--grey-1514);
   --tabs-border: var(--divider);
 
+  /* Токены Tab Headings (ui/tab-headings) — заголовки-вкладки мобильной
+     группировки разделов. Цвета сняты get_design_context с `Title Tab
+     (ELK)` (70467:11824): Default — Grey 284, Active — Grey 1514,
+     Disabled — Grey 166. С лентой Tabs не совпадает Default (там Grey 517),
+     поэтому пространство имён своё. */
+  --tab-headings-fg: var(--grey-284);
+  --tab-headings-fg-active: var(--grey-1514);
+  --tab-headings-fg-disabled: var(--grey-166);
+
   /* Токены Switcher («Cell Switcher», ui/switcher). Пара поверхностей
      Grey Solid / White Solid и значения наведения — все подтверждены
      гистограммой и в точности совпадают с уже заведёнными токенами (фон
@@ -107,14 +116,13 @@
      это третий самостоятельный оттенок, а не копия Active). Цвета подписи
      и выключенного состояния исправлены на #999999 (переменная макета
      «Base/Grey 284» и литеральная заливка SVG выключенной стрелки — обе
-     #999999, а не обычная для кита пара #6D6D6D / #C8C8CB). Рамка
-     переиспользует серый разделителя кита #DEDEDE (переменная «Second/Grey
-     colors/Grey 134», пипеткой rgb(222,222,222)) — та же линия толщиной
-     1px на границе таблицы и пагинатора. */
+     #999999, а не обычная для кита пара #6D6D6D / #C8C8CB). Рамки у
+     пагинатора с v1.0.1 нет (дизайн-чек от 08.10, №17), токен снят.
+     Многоточие — `icon / more` с заливкой Grey 284, как подпись. */
   --pagination-fg: var(--grey-1514);
   --pagination-caption-fg: var(--grey-284);
   --pagination-disabled-fg: var(--grey-284);
-  --pagination-border: var(--divider);
+  --pagination-ellipsis-fg: var(--grey-284);
   --pagination-hover-bg: var(--blue-104);
   --pagination-active-bg: var(--blue-114);
   --pagination-onclick-bg: var(--blue-121);
@@ -157,7 +165,11 @@
   --item-thumbnail-fg: var(--grey-1514);
   --item-comment-grey-fg: var(--grey-284);
   --item-comment-red-fg: var(--red-418);
-  --item-comment-yellow-fg: var(--yellow-400);
+  /* Дизайн-чек от 08.10, замечание 14: мастер `Comment Item (ELK)` v1.0.1
+     красит Attention в Status/Yellow 214 #EEA20F (стоял выведенный
+     #B76E00) и добавляет Success — Status/Mint 230 #39C182. */
+  --item-comment-yellow-fg: var(--yellow-214);
+  --item-comment-green-fg: var(--mint-230);
 
   /* Токены Item.Information Field (ui/item.information-field). Сняты прямо
      с образцов статусов Value и Sub Text, а не выведены по красным и

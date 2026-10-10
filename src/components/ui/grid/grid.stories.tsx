@@ -1,8 +1,6 @@
 import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { StorySection, StoryShowcase } from "@/stories/matrix"
-
 import {
   Grid,
   GridCol,
@@ -27,10 +25,13 @@ import {
  * Три части: `GridRoot` — корень продукта с порогом прокрутки, `Grid` —
  * контентная полоса, `GridRow` + `GridCol` — ряд из 12 колонок.
  *
- * ⚠️ Проверять правило прокрутки надо не здесь, а на песочном экране в
- * полном окне: внутри Storybook история живёт в узком `iframe`, и полоса
- * прокрутки, которая появляется у `GridRoot`, — как раз то самое ожидаемое
- * поведение, а не дефект витрины.
+ * Дизайн-чек от 08.10, замечание 23: 12 колонок — это правило размещения
+ * БЕЛЫХ БЛОКОВ на сером вьюпорте, а не контента внутри одного блока. Прежняя
+ * витрина рисовала колонки внутри белой плашки и подписывала ширину плашки
+ * как «вьюпорт». Теперь страница документации сама подчиняется сетке: серый
+ * фон — это и есть вьюпорт (окно превью), разделы — белые блоки, разложенные
+ * по колонкам, а полоса перестаёт расти на 1800 и сжиматься на 1200 (ниже
+ * 1280 появляется общая прокрутка, как в продукте).
  */
 const meta = {
   // Дизайн-чек от 13.09, замечание 12: «Перенести компонент Grid в рут
@@ -53,10 +54,21 @@ const meta = {
 export default meta
 type Story = StoryObj<React.ComponentProps<typeof Grid>>
 
-/** Полоска-«колонка» — чтобы было видно и пролёты, и желобы. */
-function Cell({ children }: { children?: React.ReactNode }) {
+/** Белый блок на сером вьюпорте — то, что сетка и раскладывает. */
+function Block({
+  children,
+  className,
+}: {
+  children?: React.ReactNode
+  className?: string
+}) {
   return (
-    <div className="flex h-16 items-center justify-center rounded-[8px] bg-[var(--header-menu-tile-bg)] text-p2-medium text-[var(--header-fg)]">
+    <div
+      className={
+        "flex h-16 items-center justify-center rounded-[16px] bg-[var(--modal-bg)] text-p2-medium text-[var(--title-fg)] " +
+        (className ?? "")
+      }
+    >
       {children}
     </div>
   )
@@ -64,14 +76,14 @@ function Cell({ children }: { children?: React.ReactNode }) {
 
 export const Playground: Story = {
   render: (args) => (
-    <GridRoot className="min-h-[420px] bg-[var(--grey-109)] py-10">
+    <GridRoot className="min-h-[420px] bg-[var(--page-bg)] py-10">
       <Grid {...args} className="gap-[var(--grid-gutter)]">
         {args.columns ? (
           Array.from({ length: GRID_COLUMNS }, (_, index) => (
-            <Cell key={index}>{index + 1}</Cell>
+            <Block key={index}>{index + 1}</Block>
           ))
         ) : (
-          <Cell>Контентная полоса — {`min(100% − 2×${GRID_MARGIN}, ${GRID_CONTENT_MAX})`}</Cell>
+          <Block>Контентная полоса — {`min(100% − 2×${GRID_MARGIN}, ${GRID_CONTENT_MAX})`}</Block>
         )}
       </Grid>
     </GridRoot>
@@ -79,13 +91,12 @@ export const Playground: Story = {
 }
 
 /**
- * Живые числа раскладки — что именно происходит при смене ширины окна.
- *
- * Меряет НАСТОЯЩИЕ узлы (`GridGuides`), а не считает по формуле: формула и
- * так написана в правилах выше, а витрина должна показывать, что раскладка
- * ей следует. Расхождение видно сразу.
+ * Живые числа раскладки. Меряет НАСТОЯЩИЕ узлы — окно превью и полосу этой
+ * же страницы, — а не считает по формуле: витрина должна показывать, что
+ * раскладка формуле следует. Вьюпорт — это ширина окна, а не какого-то блока.
  */
 function ColumnsProbe() {
+  const ref = React.useRef<HTMLParagraphElement>(null)
   const [state, setState] = React.useState<{
     viewport: number
     content: number
@@ -94,11 +105,11 @@ function ColumnsProbe() {
 
   React.useEffect(() => {
     const read = () => {
-      const guide = document.querySelector<HTMLElement>('[data-slot="grid-guide"]')
-      const strip = guide?.closest<HTMLElement>('[data-slot="grid"]')
+      const strip = ref.current?.closest<HTMLElement>('[data-slot="grid"]')
+      const guide = strip?.querySelector<HTMLElement>('[data-slot="grid-guide"]')
       if (!guide || !strip) return
       setState({
-        viewport: Math.round(window.innerWidth),
+        viewport: document.documentElement.clientWidth,
         content: Math.round(strip.getBoundingClientRect().width),
         column: Math.round(guide.getBoundingClientRect().width),
       })
@@ -108,101 +119,126 @@ function ColumnsProbe() {
     return () => window.removeEventListener("resize", read)
   }, [])
 
-  if (!state) return null
-
-  const beyond =
-    state.viewport < GRID_VIEWPORT_MIN
-      ? "продукт прокручивается"
+  const beyond = !state
+    ? ""
+    : state.viewport < GRID_VIEWPORT_MIN
+      ? "полоса на минимуме 1200, продукт прокручивается"
       : state.viewport >= GRID_VIEWPORT_MAX
-        ? "растут поля"
+        ? "полоса на максимуме 1800, растут поля"
         : "растут колонки"
 
   return (
-    <p className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">
-      Вьюпорт {state.viewport}px · полоса {state.content}px · колонка{" "}
-      {state.column}px · {beyond}
-      {state.viewport >= GRID_VIEWPORT_WIDE && " · порог 1536 пройден"}
+    <p ref={ref} className="text-p2-medium text-[var(--title-fg)]">
+      {state && (
+        <>
+          Вьюпорт {state.viewport}px · полоса {state.content}px · колонка{" "}
+          {state.column}px · {beyond}
+          {state.viewport >= GRID_VIEWPORT_WIDE && ` · порог ${GRID_VIEWPORT_WIDE} пройден`}
+        </>
+      )}
     </p>
   )
 }
+
+/** Заголовок раздела — лежит прямо на сером вьюпорте, над блоками. */
+function SectionTitle({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) {
+  return (
+    <div className="flex flex-col gap-1 pt-6">
+      <h2 className="text-h4 text-[var(--title-fg)]">{title}</h2>
+      <p className="text-p2-medium text-[var(--accordion-card-subtitle-fg)]">{description}</p>
+    </div>
+  )
+}
+
+const RULES: Array<[string, string]> = [
+  ["Колонок", String(GRID_COLUMNS)],
+  ["Желоб", `${GRID_GUTTER}px`],
+  ["Поле", `${GRID_MARGIN}px`],
+  ["Полоса", `${GRID_CONTENT_MIN}…${GRID_CONTENT_MAX}px`],
+  ["Пороги вьюпорта", `${GRID_VIEWPORT_MIN} / ${GRID_VIEWPORT_WIDE} / ${GRID_VIEWPORT_MAX}px`],
+]
+
+/** Раскладки живого примера: блоки по колонкам, не обязательно на все 12. */
+const LIVE_ROWS = [
+  Array.from({ length: GRID_COLUMNS }, () => 1),
+  [3, 3, 3, 3],
+  [4, 4, 4],
+  [6, 6],
+  [8, 4],
+  [5],
+]
+
+const ROW_EXAMPLES = [[12], [6, 6], [7, 5], [4, 8], [4, 4, 4]]
 
 export const Examples: Story = {
   name: "Варианты использования",
   parameters: { controls: { disable: true } },
   render: () => (
-    <StoryShowcase>
-      <StorySection
-        title="Правила"
-        description={`Контент ${GRID_CONTENT_MIN}…${GRID_CONTENT_MAX} при полях ${GRID_MARGIN}. Ниже ${GRID_VIEWPORT_MIN} продукт не сжимается — появляется общая горизонтальная прокрутка; выше ${GRID_VIEWPORT_MAX} контент стоит на ${GRID_CONTENT_MAX}, а растут поля.`}
-      >
-        <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-p2-medium text-[var(--header-fg)]">
-          <dt className="text-p2-medium">Колонок</dt>
-          <dd>{GRID_COLUMNS}</dd>
-          <dt className="text-p2-medium">Желоб</dt>
-          <dd>{GRID_GUTTER}px</dd>
-          <dt className="text-p2-medium">Поле</dt>
-          <dd>{GRID_MARGIN}px</dd>
-          <dt className="text-p2-medium">Контент</dt>
-          <dd>
-            {GRID_CONTENT_MIN}…{GRID_CONTENT_MAX}px
-          </dd>
-          <dt className="text-p2-medium">Пороги вьюпорта</dt>
-          <dd>
-            {GRID_VIEWPORT_MIN} / {GRID_VIEWPORT_WIDE} / {GRID_VIEWPORT_MAX}px
-          </dd>
-        </dl>
-      </StorySection>
+    <GridRoot className="min-h-screen bg-[var(--page-bg)] pb-10">
+      {/* «Хедер тянется на всю ширину»: подложка — на весь GridRoot, а
+          содержимое стоит по той же полосе, что и блоки ниже. */}
+      <div className="w-full border-b border-[var(--header-border)] bg-[var(--header-bg)]">
+        <Grid className="flex h-16 items-center text-p1-medium text-[var(--header-fg)]">
+          Шапка — подложка во всю ширину, содержимое по полосе сетки
+        </Grid>
+      </div>
 
-      <StorySection
-        title="Колонки вживую"
-        description={`Двенадцать настоящих колонок той же раскладкой, что и у GridRow. Потяните окно: между ${GRID_VIEWPORT_MIN} и ${GRID_VIEWPORT_MAX} растут колонки, выше ${GRID_VIEWPORT_MAX} — поля, ниже ${GRID_VIEWPORT_MIN} появляется общая прокрутка продукта. На ${GRID_VIEWPORT_WIDE} разделу разрешено перестроить содержимое — полосы это не касается.`}
-      >
-        <GridRoot className="w-full overflow-hidden rounded-[16px] bg-[var(--modal-bg)] py-6">
-          <Grid>
-            <GridGuides className="min-h-40" />
-          </Grid>
-        </GridRoot>
-        <ColumnsProbe />
-      </StorySection>
-
-      <StorySection
-        title="Ряд колонок"
-        description="GridRow раскладывает детей по 12 колонкам, GridCol задаёт пролёт. Ниже десктопной ширины ряд складывается в столбец: 12 колонок по 128 там уже не живут."
-      >
-        <div className="flex w-full flex-col gap-4">
-          {[
-            [12],
-            [6, 6],
-            [7, 5],
-            [4, 8],
-            [4, 4, 4],
-          ].map((widths) => (
-            <GridRow key={widths.join("-")}>
-              {widths.map((width, index) => (
-                <GridCol key={index} span={width}>
-                  <Cell>{width}</Cell>
-                </GridCol>
-              ))}
-            </GridRow>
+      <Grid className="flex flex-col gap-[var(--grid-gutter)] pt-4">
+        <SectionTitle
+          title="Правила"
+          description={`Серый фон — вьюпорт, его ширина не ограничена. Двенадцать колонок раскладывают по нему белые блоки: в ряду их может быть один, два, три и больше. Внутри блока колоночных правил нет. Полоса ${GRID_CONTENT_MIN}…${GRID_CONTENT_MAX} при полях ${GRID_MARGIN}: ниже ${GRID_VIEWPORT_MIN} продукт не сжимается — появляется общая горизонтальная прокрутка; выше ${GRID_VIEWPORT_MAX} полоса стоит на ${GRID_CONTENT_MAX}, а растут поля.`}
+        />
+        <GridRow>
+          {RULES.map(([term, value]) => (
+            <GridCol key={term} span={term === "Пороги вьюпорта" ? 4 : 2}>
+              <div className="flex h-full flex-col gap-1 rounded-[16px] bg-[var(--modal-bg)] p-6">
+                <span className="text-p3-medium text-[var(--accordion-card-subtitle-fg)]">{term}</span>
+                <span className="text-p1-medium text-[var(--title-fg)]">{value}</span>
+              </div>
+            </GridCol>
           ))}
-        </div>
-      </StorySection>
+        </GridRow>
 
-      <StorySection
-        title="Шапка во всю ширину"
-        description="Подложка тянется на весь GridRoot, а её содержимое стоит по той же полосе, что и контент страницы, — «грид работает не на белую подложку хедера, а на контент внутри»."
-      >
-        <GridRoot className="w-full overflow-hidden rounded-[16px] bg-[var(--grey-109)]">
-          <div className="w-full border-b border-[var(--header-border)] bg-[var(--header-bg)]">
-            <Grid className="flex h-16 items-center text-p1-medium text-[var(--header-fg)]">
-              Шапка
-            </Grid>
+        <SectionTitle
+          title="Колонки вживую"
+          description={`Серым по серому — сами колонки, белым — блоки, разложенные по ним. Потяните окно превью: между ${GRID_VIEWPORT_MIN} и ${GRID_VIEWPORT_MAX} растут колонки, выше ${GRID_VIEWPORT_MAX} — поля, ниже ${GRID_VIEWPORT_MIN} появляется общая прокрутка. На ${GRID_VIEWPORT_WIDE} разделу разрешено перестроить содержимое — полосы это не касается.`}
+        />
+        <ColumnsProbe />
+        <div className="relative">
+          <GridGuides className="absolute inset-0 h-full" />
+          <div className="relative flex flex-col gap-[var(--grid-gutter)] py-[var(--grid-gutter)]">
+            {LIVE_ROWS.map((spans, row) => (
+              <GridRow key={row}>
+                {spans.map((span, index) => (
+                  <GridCol key={index} span={span}>
+                    <Block className="h-20">{span}</Block>
+                  </GridCol>
+                ))}
+              </GridRow>
+            ))}
           </div>
-          <Grid className="py-6">
-            <Cell>Контент страницы — по тем же полям</Cell>
-          </Grid>
-        </GridRoot>
-      </StorySection>
-    </StoryShowcase>
+        </div>
+
+        <SectionTitle
+          title="Ряд колонок"
+          description={`GridRow раскладывает блоки по 12 колонкам, GridCol задаёт пролёт. Ряды стоят в полосе страницы, поэтому перестают расти на ${GRID_CONTENT_MAX} и перестают сжиматься на ${GRID_CONTENT_MIN}. Ниже десктопной ширины ряд складывается в столбец: 12 колонок по 128 там уже не живут.`}
+        />
+        {ROW_EXAMPLES.map((spans) => (
+          <GridRow key={spans.join("-")}>
+            {spans.map((span, index) => (
+              <GridCol key={index} span={span}>
+                <Block>{span}</Block>
+              </GridCol>
+            ))}
+          </GridRow>
+        ))}
+      </Grid>
+    </GridRoot>
   ),
 }

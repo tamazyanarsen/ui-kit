@@ -116,7 +116,7 @@ function SingleMatrix<P>({
   return (
     <div
       className={cn(
-        "inline-block max-w-full overflow-x-auto bg-[#F8F8F8] p-8 text-[#252628]",
+        "inline-block max-w-full overflow-x-auto bg-[var(--page-bg)] p-8 text-[#252628]",
         className
       )}
     >

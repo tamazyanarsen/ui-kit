@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 import { EmployeeMenuNav } from "@/components/ui/employee-menu"
 import { FavouritesSettings } from "@/components/ui/header-menu"
 
@@ -12,6 +13,7 @@ import {
   type HeaderType,
 } from "./header-props"
 import { LogoutModal } from "./logout-modal"
+import { MobileHeader } from "./mobile-header"
 import type { HeaderNavItem } from "./nav-row"
 import { HeaderPinnedRow } from "./pinned-row"
 import type { HeaderDocumentMenuItem } from "./top-row-menus"
@@ -75,6 +77,14 @@ function Header(rawProps: HeaderProps) {
     className,
   } = props
 
+  // Форма шапки — `Size` компонент-сета: Desktop или Mobile. Решает не
+  // медиазапрос, а `useIsDesktop()` — он читает `ViewportScope` первым, и
+  // витрина может показать мобильную шапку на широком экране. У сотрудника
+  // мобильного варианта в макете нет («Нет варианта»), его шапка всегда
+  // десктопная.
+  const isDesktop = useIsDesktop()
+  const mobile = !isDesktop && type !== "employee"
+
   const {
     isBlocked,
     showNavRow,
@@ -93,7 +103,67 @@ function Header(rawProps: HeaderProps) {
     setLogoutOpen,
     favouritesSettingsOpen,
     setFavouritesSettingsOpen,
-  } = useHeaderLayout(props)
+  } = useHeaderLayout(props, mobile)
+
+  // Модалки общие для обеих форм.
+  const modals = (
+    <>
+      {onFavouritesChange && (
+        <FavouritesSettings
+          open={favouritesSettingsOpen}
+          onOpenChange={setFavouritesSettingsOpen}
+          groups={menuGroups}
+          favourites={favourites}
+          onSave={onFavouritesChange}
+        />
+      )}
+
+      <LogoutModal
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        onConfirm={() => onLogout?.()}
+      />
+    </>
+  )
+
+  if (mobile) {
+    return (
+      <MobileHeader
+        rootRef={rootRef}
+        rootProps={{
+          "data-type": type,
+          "data-client-type": type === "client" ? clientHeaderType : undefined,
+          "data-pinned": pinned || undefined,
+        }}
+        className={className}
+        showActions={showNavRow}
+        showCreate={showCreate}
+        pinned={pinnedRoot}
+        openPanel={openPanel}
+        onOpenPanelChange={setOpenPanel}
+        favouritesEnabled={favouritesEnabled}
+        messageCount={messageCount}
+        onMessagesClick={onMessagesClick}
+        notificationItems={notificationItems}
+        organizations={organizations}
+        organizationId={organizationId}
+        onOrganizationChange={onOrganizationChange}
+        contactPerson={contactPerson}
+        showOrgSettings={showOrgSettings}
+        onOrgSettingsClick={onOrgSettingsClick}
+        onLogoutClick={() => setLogoutOpen(true)}
+        menuGroups={menuGroups}
+        menuBanners={menuBanners}
+        createItems={createItems}
+        favourites={favourites}
+        onFavouritesChange={onFavouritesChange}
+        activeSection={activeSection}
+        onFavouritesSettingsOpen={() => setFavouritesSettingsOpen(true)}
+      >
+        {modals}
+      </MobileHeader>
+    )
+  }
 
   return (
     <div
@@ -188,21 +258,7 @@ function Header(rawProps: HeaderProps) {
         />
       )}
 
-      {onFavouritesChange && (
-        <FavouritesSettings
-          open={favouritesSettingsOpen}
-          onOpenChange={setFavouritesSettingsOpen}
-          groups={menuGroups}
-          favourites={favourites}
-          onSave={onFavouritesChange}
-        />
-      )}
-
-      <LogoutModal
-        open={logoutOpen}
-        onOpenChange={setLogoutOpen}
-        onConfirm={() => onLogout?.()}
-      />
+      {modals}
     </div>
   )
 }

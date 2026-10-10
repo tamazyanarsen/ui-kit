@@ -10,6 +10,6 @@ export function Bookmark({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M10 1a3 3 0 0 1 3 3v10a1 1 0 0 1-1.53.848L8 12.679l-3.47 2.169A1 1 0 0 1 3 14V4a3 3 0 0 1 3-3zM6 3a1 1 0 0 0-1 1v8.195l2.47-1.543.126-.066a1 1 0 0 1 .934.066L11 12.195V4a1 1 0 0 0-1-1z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M10 1a3 3 0 0 1 3 3v10a1 1 0 0 1-1.53.848L8 12.679l-3.47 2.169A1 1 0 0 1 3 14V4a3 3 0 0 1 3-3zM6 3a1 1 0 0 0-1 1v8.195l2.47-1.543.126-.066a1 1 0 0 1 .934.066L11 12.195V4a1 1 0 0 0-1-1z"/></svg>
   )
 }

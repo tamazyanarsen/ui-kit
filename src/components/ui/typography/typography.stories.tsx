@@ -27,7 +27,9 @@ const SECTIONS: TypeSection[] = [
   {
     name: "Заголовок",
     styles: [
-      { name: "Factoid", sample: "Factoid", weight: 800, desktop: { size: 68, lineHeight: 68, spacing: 16 }, mobile: { size: 28, lineHeight: 38, spacing: 8 } },
+      /* Дизайн-чек от 08.10, замечание 38: Factoid — Medium, как и прочие
+         заголовки (витрина показывала Heavy 800, утилита text-factoid уже 500). */
+      { name: "Factoid Medium", sample: "Factoid", weight: 500, desktop: { size: 68, lineHeight: 68, spacing: 16 }, mobile: { size: 28, lineHeight: 38, spacing: 8 } },
       { name: "H1 Medium", sample: "Заголовок H1", weight: 500, desktop: { size: 44, lineHeight: 56, spacing: 16 }, mobile: { size: 28, lineHeight: 38, spacing: 8 } },
       { name: "H2 Medium", sample: "Заголовок H2", weight: 500, desktop: { size: 32, lineHeight: 44, spacing: 8 }, mobile: { size: 22, lineHeight: 30, spacing: 8 } },
       { name: "H3 Medium", sample: "Заголовок H3", weight: 500, desktop: { size: 24, lineHeight: 32, spacing: 8 }, mobile: { size: 18, lineHeight: 24, spacing: 8 } },

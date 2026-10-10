@@ -43,14 +43,54 @@ import { RightElement, type RightElementType } from "./right-element"
 // высот (96 против 88) выходит из одного только кегля. Первый проход этого
 // не знал и ужал поля и зазоры «по аналогии» — числа были выдуманы.
 //
-// Когда мобильный мастер приедет в саму ДС, перемерить по нему.
+// ⚠️ ОБНОВЛЕНО ПО МАСТЕРУ `ELK / item` v1.0.1 (Release 69.36, канвас Item в
+// копии, сет 70453:25879) — дизайн-чек от 08.10, замечание 14 «Развить
+// компонент Item». Мобильная форма теперь есть в самой ДС, и она перемерена
+// по ней:
+//
+//   • поля строки 16 со всех сторон (`p-[16px]`), зазор между плашкой,
+//     текстом и правым элементом — 16 (раньше до правого элемента стояло
+//     24 из `IB / item`);
+//   • плашка 48 (desktop) / 40 (mobile), подкатегория — `pl-[80px]` на
+//     ОБОИХ размерах (72 на мобиле было из чужого кита);
+//   • разделитель больше не рамка строки, а отдельная линия 1px внизу
+//     (`Divider`: absolute, bottom 0, left/right 16), которая начинается
+//     от колонки текста — перед ней пустая вставка 64/56 под плашку;
+//   • Hover: заливка Grey 114, у десктопа скругление 16, у мобильного —
+//     прямые углы; разделителя в символе Hover нет вовсе;
+//   • Comment Item (ELK): Text Color = Success / Error / Attention /
+//     Information.
+//
+// Механика из документации (её «нельзя реализовать в Figma», поэтому она
+// передана директивно): при наведении/нажатии на строку в группе у
+// прилегающих строк гаснут разделители, чтобы линии не торчали у залитой
+// зоны. Правило — в styles/component-rules.css, рядом с правилом последней
+// строки.
 
-type CommentColor = "grey" | "red" | "yellow"
+/**
+ * Цвет комментария — свойство `Text Color` вложенного `Comment Item (ELK)`:
+ * Information (`grey`), Error (`red`), Attention (`yellow`), Success
+ * (`green`). Имена значений исторические, подписи в Storybook — по Figma.
+ */
+type CommentColor = "grey" | "red" | "yellow" | "green"
 
 const COMMENT_COLOR: Record<CommentColor, string> = {
   grey: "text-[var(--item-comment-grey-fg)]",
   red: "text-[var(--item-comment-red-fg)]",
   yellow: "text-[var(--item-comment-yellow-fg)]",
+  green: "text-[var(--item-comment-green-fg)]",
+}
+
+/**
+ * Левый край разделителя: поля строки 16, плюс собственный отступ
+ * подкатегории 64, плюс вставка под плашку (48 + 16 на десктопе, 40 + 16 на
+ * мобиле) — линия в мастере начинается от колонки текста.
+ */
+function dividerInset(subCategory: boolean, thumbnail: boolean): string {
+  if (subCategory && thumbnail) return "left-[136px] desktop:left-[144px]"
+  if (subCategory) return "left-20"
+  if (thumbnail) return "left-[72px] desktop:left-20"
+  return "left-4"
 }
 
 /** Цвет подписи и значения у отключённой строки — один на всех. */
@@ -69,10 +109,14 @@ interface ItemProps {
    * Разделитель под строкой.
    *
    * Три состояния, а не два. `undefined` — «как в списке»: линия есть у
-   * всех строк, кроме последней (правило `:last-child` в styles/base.css —
-   * список у нас произвольный контейнер, и строка сама не знает, последняя
-   * ли она). `true` и `false` — явное решение вызывающего, и оно сильнее
-   * правила списка.
+   * всех строк, кроме последней (правило `:last-child` в
+   * styles/component-rules.css — список у нас произвольный контейнер, и
+   * строка сама не знает, последняя ли она). `false` — линии нет.
+   * `true` — линия есть, НО у последней строки группы её всё равно нет:
+   * дизайн-чек от 08.10, замечание 46 — «завести для item корневое правило,
+   * чтобы последний разделитель не показывался». Явный `true` сильнее
+   * правила только у ОДИНОЧНОЙ строки (`:only-child`), иначе контрол Show
+   * Divider в Playground выглядел бы мёртвым (замечание 20 от 07.09).
    *
    * Дизайн-чек от 07.09, замечание 20: «В Item не отрабатывает включение
    * разделителя». Отрабатывало, но не было видно: в Playground строка одна,
@@ -164,36 +208,40 @@ function Item({
       {...press}
       data-slot="item"
       data-disabled={disabled || undefined}
-      // Явное решение вызывающего — атрибутом: правило `:last-child` в
-      // styles/base.css гасит линию только у строк БЕЗ него (см. `divider`).
+      // Явное решение вызывающего — атрибутом: правила списка в
+      // styles/component-rules.css читают его (см. `divider`).
       data-divider={divider === undefined ? undefined : divider ? "on" : "off"}
       className={cn(
-        // 16 над содержимым, 15 под ним, затем разделитель 1px — строка с
-        // значением и комментарием так или иначе высотой 80px. Вариант
-        // макета с выключенным разделителем сохраняет тот же зазор 15px и
-        // прозрачную линию 1px, а не схлопывается, поэтому рамка здесь
-        // присутствует всегда и лишь меняет цвет: иначе последняя строка
-        // списка была бы на 1px короче.
-        "flex w-full cursor-pointer items-center gap-6 border-b px-4 pt-4 pb-[15px] text-left outline-none transition-colors",
-        // Sub Category отодвигает *содержимое* на 64px относительно
-        // обычной строки (в макете на коробке варианта `Сategory=True`
-        // стоит `pl-[64px]` поверх собственных боковых отступов строки в
-        // 16px из примечания «Боковые отступы»), то есть здесь получается
-        // 80px. Разделитель и заливка наведения при этом по-прежнему идут во
-        // всю ширину, потому что отступ стоит на самой строке.
-        // 72 на мобиле против 80 на десктопе: собственный отступ
-        // подкатегории в `IB / item` — 56 и 64 соответственно, поля строки
-        // (16) одни и те же.
-        subCategory && "pl-[72px] desktop:pl-20",
-        divider === false
-          ? "border-transparent"
-          : "border-[var(--item-divider)]",
+        // Поля 16 со всех сторон, линия — отдельный абсолютный слой поверх
+        // нижнего поля, поэтому высота строки от разделителя не зависит
+        // (80 на десктопе и 72 на мобиле при значении с комментарием).
+        "relative flex w-full cursor-pointer items-center gap-4 p-4 text-left outline-none transition-colors",
+        // Sub Category: `pl-[80px]` в мастере на обоих размерах. Заливка
+        // наведения при этом идёт во всю ширину строки.
+        subCategory && "pl-20",
+        // Скругление заливки — только у десктопа (символы Hover: desktop
+        // `rounded-[16px]`, mobile — без скругления).
+        "desktop:rounded-[16px]",
+        // Hover и Active — одна заливка Grey 114 (документация: «По
+        // наведению и нажатию компонент переходит в состояние Hover/Active.
+        // Цвет Grey 114»). `active:` нужен тачу, где `hover:` не срабатывает.
         "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
+        "not-data-[disabled]:active:bg-[var(--item-hover-bg)]",
         "data-[disabled]:cursor-not-allowed",
         "focus-visible:focus-ring-inset",
         className
       )}
     >
+      {divider !== false && (
+        <span
+          aria-hidden="true"
+          data-slot="item-divider"
+          className={cn(
+            "pointer-events-none absolute right-4 bottom-0 h-px bg-[var(--item-divider)] transition-opacity",
+            dividerInset(subCategory, hasThumbnail)
+          )}
+        />
+      )}
       {/* ⚠️ `items-start`, а не `items-center`: плашка ПРИЖАТА К ВЕРХУ,
           вровень с первой строкой значения (кит объявляет `items-start`) —
           48 × 48 на top 16, радиус 8, фон Grey 106, значок 24. По центру

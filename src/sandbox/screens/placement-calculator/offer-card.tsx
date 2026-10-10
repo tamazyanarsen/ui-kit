@@ -37,18 +37,35 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
 
   return (
     <SandboxCard bordered className="gap-4">
+      {/* Дизайн-чек от 08.10, замечание 41: «У не предодобренных карточек не
+          должно быть пустого угла». Строка бейджа живёт ВНУТРИ левой колонки
+          и есть только у одобренного предложения; без неё заголовок
+          поднимается, а «i» и «Выбрать» остаются справа в одной строке с
+          первым содержимым карточки — бейджем или заголовком. Продуктовый
+          файл макета закрыт, раскладка — по тексту замечания. */}
       <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-col gap-4">
           {approved && (
-            <Tag color="orange" icon={<Flashlight aria-hidden="true" />}>
-              Одобрено
-            </Tag>
+            <div className="flex flex-wrap items-center gap-2">
+              <Tag color="orange" icon={<Flashlight aria-hidden="true" />}>
+                Одобрено
+              </Tag>
+              {approved.amount > 0 && (
+                <span className="text-p2-medium text-[var(--grey-1514)]">
+                  {money(approved.amount)} на {approved.days} дней
+                </span>
+              )}
+            </div>
           )}
-          {approved && approved.amount > 0 && (
-            <span className="text-p2-medium text-[var(--grey-1514)]">
-              {money(approved.amount)} на {approved.days} дней
-            </span>
-          )}
+
+          <div className="flex flex-col gap-1">
+            <h4 className="text-h4 text-[var(--grey-1514)]">{offer.title}</h4>
+            {offer.subtitle && (
+              <p className="text-p2-medium text-[var(--grey-284)]">
+                {offer.subtitle}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-4">
@@ -65,15 +82,6 @@ function OfferCard({ offer, amount, days, onSelect }: OfferCardProps) {
             Выбрать
           </Button>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <h4 className="text-h4 text-[var(--grey-1514)]">{offer.title}</h4>
-        {offer.subtitle && (
-          <p className="text-p2-medium text-[var(--grey-284)]">
-            {offer.subtitle}
-          </p>
-        )}
       </div>
 
       <div className="flex flex-wrap gap-16">

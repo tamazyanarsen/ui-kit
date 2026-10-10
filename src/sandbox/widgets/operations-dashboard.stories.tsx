@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { CardBox } from "@/components/ui/card-box"
 import { EmptySearchResults } from "@/components/ui/empty-search"
 import { FilterTableSelect } from "@/components/ui/filter-table"
-import { Table, TableHeader, TableBody, TableRow, TableHeadCell, TableCell } from "@/components/ui/table"
+import { Table, TableBlockPagination, TableHeader, TableBody, TableRow, TableHeadCell, TableCell } from "@/components/ui/table"
 import { Pagination } from "@/components/ui/pagination"
 import {
   TableTop,
@@ -129,12 +129,14 @@ function OperationsDashboard() {
         <EmptySearchResults title="Операций с таким статусом нет" />
       )}
 
-      <Pagination
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        showPages={pageRows.length > 0}
-      />
+      <TableBlockPagination>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          showPages={pageRows.length > 0}
+        />
+      </TableBlockPagination>
     </CardBox>
   )
 }

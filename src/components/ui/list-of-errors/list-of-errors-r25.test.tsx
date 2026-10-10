@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { render } from "@testing-library/react"
 
-import { IssueItem } from "@/components/ui/issue-item"
+import { SampleError } from "@/components/ui/sample-error"
 
 import { ListOfErrors } from "./list-of-errors"
 
@@ -13,7 +13,7 @@ describe("ListOfErrors с пустыми строками", () => {
     const { container } = render(
       <ListOfErrors>
         {""}
-        <IssueItem>Ошибка</IssueItem>
+        <SampleError>Ошибка</SampleError>
         {""}
       </ListOfErrors>
     )

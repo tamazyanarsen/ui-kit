@@ -85,7 +85,9 @@ const meta = {
   /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
      на него не влияет), поэтому он повторяет порядок свойств мастера. */
   args: {
-    figmaSize: "default-desktop" as FigmaSize,
+    // L — размер по умолчанию (дизайн-чек от 08.10, замечание 5), и он же
+    // первым в списке.
+    figmaSize: "lg-desktop" as FigmaSize,
     state: "default" as PlaygroundState,
     variant: "secondary-grey",
     showCount: true,
@@ -99,7 +101,7 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, figmaSize = "default-desktop", showCount, ...args }) => {
+  render: ({ state, figmaSize = "lg-desktop", showCount, ...args }) => {
     const [size, viewport] = figmaSize.split("-") as [
       NonNullable<CountButtonProps["size"]>,
       Viewport,
@@ -139,8 +141,9 @@ export const Matrix: Story = {
         // У собственного мастера `ELK / count button` значок красный, но
         // инстанс «Ещё фильтры» в Table Top переопределяет его на тёмный.
         { label: "Тёмный счётчик\n(Table Top)", props: { countColor: "black" } },
+        // Строки выше — размер по умолчанию, то есть L.
+        { label: "M", props: { size: "default" } },
         { label: "S", props: { size: "sm" } },
-        { label: "L", props: { size: "lg" } },
         { label: "Disabled", props: { disabled: true } },
       ]}
       render={(props) => <CountButton {...props} />}

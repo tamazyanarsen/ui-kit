@@ -161,7 +161,7 @@ function NotificationMenu({
       <HeaderMenuPopup
         slot="notification-menu-content"
         align="start"
-        className="flex w-[380px] flex-col"
+        className="flex w-[380px] max-w-[calc(100vw-2rem)] flex-col"
       >
         <p className="border-b border-[var(--header-divider)] px-4 py-3 text-p1-medium text-[var(--header-fg)]">
           Уведомления

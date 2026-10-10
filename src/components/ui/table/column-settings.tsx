@@ -18,6 +18,7 @@ import {
 
 import { isColumnVisible } from "./column-visibility"
 import { nodeText } from "./node-text"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 // TableColumnSettings — «Управление столбцами», всплывающее окно за кнопкой
 // «Настроить столбцы» в верху таблицы.
@@ -201,6 +202,7 @@ function TableColumnSettings({
           side="bottom"
           align="end"
           sideOffset={8}
+          collisionAvoidance={POPUP_COLLISION}
           className="isolate z-50"
         >
           <PopoverPrimitive.Popup

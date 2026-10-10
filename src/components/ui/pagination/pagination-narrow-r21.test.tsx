@@ -10,8 +10,9 @@ import { Pagination } from "./pagination"
 //    6000-ю страница 5 оставалась сжатой, хотя полный ряд помещался.
 
 /**
- * Полоса шириной `width`. Ширина ряда — сумма ячеек: 30 на стрелку и
- * многоточие, плюс по 10 на каждую цифру номера.
+ * Полоса шириной `width`. Ширина ряда — сумма ячеек: 30 на многоточие и
+ * номер, плюс по 10 на каждую цифру номера. Стрелок с v1.0.1 нет
+ * (дизайн-чек от 08.10, №17).
  */
 function mockStrip(width: number) {
   vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function (
@@ -45,24 +46,24 @@ describe("Pagination: самый узкий ряд и память ширины"
   afterEach(() => vi.restoreAllMocks())
 
   it("не помещается и сжатый — остаются текущая и последняя страница", () => {
-    // Сжатый «‹ 1 … 10 … 20 ›» = 30+40+30+50+30+50+30 = 260 > 250.
-    mockStrip(250)
+    // Сжатый «1 … 10 … 20» = 40+30+50+30+50 = 200 > 190.
+    mockStrip(190)
     render(<Pagination page={10} totalPages={20} />)
     expect(pageNumbers()).toEqual(["10", "20"])
     expect(root()).toHaveAttribute("data-compact", "minimal")
-    expect(screen.getByRole("button", { name: "Следующая страница" })).toBeInTheDocument()
   })
 
   it("на последней странице самый узкий ряд — первая и последняя", () => {
-    mockStrip(200)
+    // Сжатый «1 … 19 20» = 170 > 150.
+    mockStrip(150)
     render(<Pagination page={20} totalPages={20} />)
     expect(pageNumbers()).toEqual(["1", "20"])
   })
 
   it("после дальней страницы ближняя снова показывает полный ряд", () => {
-    // Страница 6000: полный ряд 440 > 400 — сжатый.
-    // Страница 5: полный ряд «1 … 4 5 6 … 9999» = 350 ≤ 400 — целиком.
-    mockStrip(400)
+    // Страница 6000: полный ряд 380 > 340 — сжатый.
+    // Страница 5: полный ряд «1 … 4 5 6 … 9999» = 290 ≤ 340 — целиком.
+    mockStrip(340)
     const { rerender } = render(<Pagination page={6000} totalPages={9999} />)
     expect(root()).toHaveAttribute("data-compact")
     rerender(<Pagination page={5} totalPages={9999} />)

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
 import { Steps } from "./steps"
@@ -90,18 +90,62 @@ describe("Steps", () => {
     ).toBeInTheDocument()
   })
 
-  it("renders left/right fade nav buttons and calls their handlers", async () => {
+  // Ширина ленты 300, содержимого 900: в jsdom раскладки нет, поэтому
+  // геометрию подставляем, а положение прокрутки двигаем сами.
+  function mockStrip(scrollLeft: { value: number }) {
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(300)
+    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(900)
+    vi.spyOn(HTMLElement.prototype, "scrollLeft", "get").mockImplementation(
+      () => scrollLeft.value
+    )
+  }
+
+  const MANY = Array.from({ length: 6 }, (_, i) => ({
+    title: `Шаг ${i + 1}`,
+    description: "Заполнение",
+  }))
+
+  // Дизайн-чек от 08.10, замечание 20.
+  it("в начале ленты — только правая стрелка, в середине — обе, в конце — только левая", () => {
+    const position = { value: 0 }
+    mockStrip(position)
+    render(<Steps steps={MANY} />)
+    const strip = document.querySelector('[data-slot="steps-strip"]')!
+
+    expect(screen.queryByRole("button", { name: "Назад" })).toBeNull()
+    expect(screen.getByRole("button", { name: "Далее" })).toBeInTheDocument()
+
+    position.value = 300
+    fireEvent.scroll(strip)
+    expect(screen.getByRole("button", { name: "Назад" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Далее" })).toBeInTheDocument()
+
+    position.value = 600
+    fireEvent.scroll(strip)
+    expect(screen.getByRole("button", { name: "Назад" })).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Далее" })).toBeNull()
+  })
+
+  it("лента помещается целиком — стрелок нет", () => {
+    render(<Steps steps={[{ title: "Шаг 1", description: "Заполнение" }]} />)
+    expect(screen.queryByRole("button", { name: "Назад" })).toBeNull()
+    expect(screen.queryByRole("button", { name: "Далее" })).toBeNull()
+  })
+
+  it("showLeftFade/showRightFade = false запрещают стрелки даже при переполнении", () => {
+    mockStrip({ value: 300 })
+    render(<Steps steps={MANY} showLeftFade={false} showRightFade={false} />)
+    expect(screen.queryByRole("button", { name: "Назад" })).toBeNull()
+    expect(screen.queryByRole("button", { name: "Далее" })).toBeNull()
+  })
+
+  it("стрелки вызывают свои обработчики", async () => {
+    mockStrip({ value: 300 })
     const user = userEvent.setup()
     const onClickLeft = vi.fn()
     const onClickRight = vi.fn()
     render(
-      <Steps
-        steps={[{ title: "Шаг 1", description: "Заполнение" }]}
-        showLeftFade
-        showRightFade
-        onClickLeft={onClickLeft}
-        onClickRight={onClickRight}
-      />
+      <Steps steps={MANY} onClickLeft={onClickLeft} onClickRight={onClickRight} />
     )
 
     await user.click(screen.getByRole("button", { name: "Назад" }))

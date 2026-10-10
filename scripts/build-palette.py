@@ -167,7 +167,76 @@ def ts_module(palette, derived, named, root: str, odl: str) -> str:
     )
 
 
+def ts_from_palette_css() -> str:
+    """`palette.ts` из самого `palette.css` — единственного источника палитры.
+
+    Семантика давно ссылается на палитру через `var()`, а не литералами, и
+    старый путь (вывод палитры из hex-литералов семантики) находил пустоту:
+    `palette.ts` замёрз и разошёлся с CSS (имена `green-223` вместо
+    `odl-green-223`, исчезнувшие `red-147-alt`). Поэтому файл строится прямо из
+    объявлений `palette.css`: имя, hex и имя Figma из комментария (`выведено`
+    -> null). Палитра старого бренда (`odl-*`) сюда не входит — её витрина
+    берёт листы «Было» из Figma (src/stories/palette-odl-fixtures.ts).
+    """
+    palette_css = (STYLES / "palette.css").read_text(encoding="utf-8")
+    entries = re.findall(
+        r"--([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6});\s*/\*\s*([^*]+?)\s*\*/", palette_css
+    )
+    css = re.sub(r"/\*.*?\*/", "", read_css(), flags=re.S)
+    root = css[: css.index('[data-product="odl-elk"]')]
+    refs = dict(re.findall(r"--([a-z0-9-]+):\s*var\(--([a-z0-9-]+)\)\s*;", root))
+    names = {name for name, _, _ in entries}
+
+    def resolve(token: str):
+        ref = refs.get(token)
+        for _ in range(10):
+            if ref is None or ref in names:
+                return ref
+            ref = refs.get(ref)
+        return None
+
+    users: "dict[str, list[str]]" = {}
+    for token in refs:
+        color = resolve(token)
+        if color:
+            users.setdefault(color, []).append(token)
+
+    rows = []
+    for name, hex_value, note in entries:
+        if name.startswith("odl-"):
+            continue
+        figma = "null" if note == "выведено" else f'"{note}"'
+        rows.append(
+            f'  {{ name: "{name}", family: "{family(name)}", '
+            f'hex: "{hex_value.upper()}", figma: {figma}, '
+            f"usedBy: {json.dumps(users.get(name, []), ensure_ascii=False)} }},"
+        )
+    return (
+        "// СГЕНЕРИРОВАНО: python scripts/build-palette.py --ts\n"
+        "// Правьте палитру в src/styles/palette.css и перегенерируйте — руками\n"
+        "// этот файл не редактируется. `figma: null` — имя выведено по правилу\n"
+        "// контраста, а не взято из набора Figma.\n"
+        "\nexport interface PaletteColor {\n"
+        "  /** Имя CSS-переменной без `--`, как в Figma. */\n"
+        "  name: string\n"
+        "  family: string\n"
+        "  /** Значение в теме ЕЛК; живое значение история читает из CSS. */\n"
+        "  hex: string\n"
+        "  /** Имя переменной в наборе Figma; null — выведено. */\n"
+        "  figma: string | null\n"
+        "  /** Семантические токены, которые на неё ссылаются. */\n"
+        "  usedBy: string[]\n"
+        "}\n\n"
+        "export const PALETTE: PaletteColor[] = [\n" + "\n".join(rows) + "\n]\n"
+    )
+
+
 def main() -> None:
+    if "--ts" in sys.argv:
+        out = Path("src/components/ui/colors/palette.ts")
+        out.write_text(ts_from_palette_css(), encoding="utf-8")
+        print(f"записано: {out}")
+        return
     known = PALETTE_TS.read_text(encoding="utf-8")
     named = {
         h.upper(): f

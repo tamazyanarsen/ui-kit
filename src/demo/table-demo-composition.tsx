@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/pagination"
 import {
   Table,
   TableBlock,
+  TableBlockPagination,
   TableBlockEmpty,
   TableBody,
   TableCell,
@@ -125,7 +126,7 @@ function TableCompositionDemo() {
           onColumnsChange={setColumns}
         />
 
-        <Table fixed stickyHeader containerClassName="max-h-[340px]">
+        <Table fixed stickyHeader>
           <TableDemoHead
             visibleColumns={visibleColumns}
             allSelected={allSelected}
@@ -216,7 +217,9 @@ function TableCompositionDemo() {
           </TableBlockEmpty>
         )}
 
-        <Pagination page={1} totalPages={26} onPageChange={() => {}} />
+        <TableBlockPagination>
+          <Pagination page={1} totalPages={26} onPageChange={() => {}} />
+        </TableBlockPagination>
       </TableBlock>
 
       {/* "Кнопка массового выбора: Позволяет пользователю выбрать все строки

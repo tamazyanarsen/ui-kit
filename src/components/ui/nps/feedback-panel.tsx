@@ -37,9 +37,9 @@ interface FeedbackPanelProps {
   question?: React.ReactNode
   showChips: boolean
   chips: string[]
-  /** Выбранный чип или `null`, если текст в поле с ним разошёлся. */
-  activeChip: string | null
-  onChipSelect: (chip: string) => void
+  /** Выбранные чипы — независимый мультивыбор, текст поля не трогают. */
+  selectedChips: string[]
+  onChipToggle: (chip: string) => void
   comment: string
   onCommentChange: (comment: string) => void
   onSubmit: () => void
@@ -51,8 +51,8 @@ function FeedbackPanel({
   question,
   showChips,
   chips,
-  activeChip,
-  onChipSelect,
+  selectedChips,
+  onChipToggle,
   comment,
   onCommentChange,
   onSubmit,
@@ -98,19 +98,22 @@ function FeedbackPanel({
                     невыбранном виде (Checked=False): кадр на канвасе
                     называется «Chips», но инстансы внутри — это
                     filter-table, а не `ELK / chips`. */}
-                {chips.map((chip) => (
-                  <FilterTable
-                    key={chip}
-                    selected={activeChip === chip}
-                    // Крестика у выбранного чипа тут нет: выбор снимается
-                    // правкой текста в поле, а не кнопкой на самом чипе.
-                    showClose={false}
-                    aria-pressed={activeChip === chip}
-                    onClick={() => onChipSelect(chip)}
-                  >
-                    {chip}
-                  </FilterTable>
-                ))}
+                {chips.map((chip) => {
+                  const selected = selectedChips.includes(chip)
+                  return (
+                    <FilterTable
+                      key={chip}
+                      selected={selected}
+                      // Крестика у выбранного чипа нет: выбор снимается
+                      // повторным нажатием на сам чип (мультивыбор).
+                      showClose={false}
+                      aria-pressed={selected}
+                      onClick={() => onChipToggle(chip)}
+                    >
+                      {chip}
+                    </FilterTable>
+                  )
+                })}
               </div>
             )}
           </div>

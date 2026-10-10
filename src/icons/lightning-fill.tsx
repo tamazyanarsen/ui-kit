@@ -1,8 +1,8 @@
 import type { IconProps } from "./types"
 
-// icon / Lghtning Fill — 10. Fav Like, набор ALL ICONS.
+// icon / Lightning Fill — 10. Fav Like, набор ALL ICONS.
 // 16 и 24 — отдельные начертания мастера, а не масштаб одного.
-export function LghtningFill({ size = 16, ...props }: IconProps) {
+export function LightningFill({ size = 16, ...props }: IconProps) {
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M13.914 4.571a.625.625 0 0 1 .323.679l-.892 4.385 3.496 1.287a.626.626 0 0 1 .237 1.017l-7 7.367a.625.625 0 0 1-1.065-.556l.893-4.385-3.497-1.287a.626.626 0 0 1-.237-1.017l7-7.367a.625.625 0 0 1 .742-.123"/></svg>

@@ -43,7 +43,7 @@ function AutocompleteItem({
       // зазор до подписи 4, подпись P3 Medium 12/16; строка с подписью
       // 16 + 24 + 4 + 16 + 16 = 76.
       className={cn(
-        "flex w-full cursor-default flex-col gap-1 p-4 text-p1-medium outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "flex w-full cursor-default flex-col gap-1 p-4 text-p1-medium press-scale-content [--press-origin:left_center] outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       {...props}

@@ -4,10 +4,10 @@ import { render, screen } from "@testing-library/react"
 import { Pagination } from "./pagination"
 
 // Проверка r26: правка r25 (защита от NaN) перестала понимать числовые строки
-// из query-параметров и JSON: `totalPages="5"` рисовало одну страницу без стрелок.
+// из query-параметров и JSON: `totalPages="5"` рисовало одну страницу.
 
 describe("Pagination: числовые строки", () => {
-  it.each(["5", "12"])("totalPages=%s даёт номера страниц и стрелки", (total) => {
+  it.each(["5", "12"])("totalPages=%s даёт номера страниц до последней", (total) => {
     render(
       <Pagination
         totalPages={total as unknown as number}
@@ -15,8 +15,8 @@ describe("Pagination: числовые строки", () => {
         onPageChange={() => {}}
       />
     )
-    expect(screen.getByRole("button", { name: /Следующая/ })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: /Предыдущая/ })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: total })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "2" })).toHaveAttribute("aria-current", "page")
   })
 
   it("нечисловая строка по-прежнему не рисует «NaN»", () => {

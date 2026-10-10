@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { ChevronDown, ChevronUp, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
 import { NAV_POPUP_WIDTH } from "@/components/ui/button-menu/popup-width"
@@ -129,6 +130,7 @@ function SelectionButton({
           side={side}
           align={align}
           sideOffset={8}
+          collisionAvoidance={POPUP_COLLISION}
           className="isolate z-50"
         >
           <MenuPrimitive.Popup

@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { OverflowItemText } from "@/components/ui/button-menu/overflow-item-text"
 import { Dropdown } from "@/components/ui/dropdown"
@@ -325,6 +326,7 @@ function Tabs({
               side="bottom"
               align="start"
               sideOffset={8}
+              collisionAvoidance={POPUP_COLLISION}
               className="isolate z-50"
             >
               <MenuPrimitive.Popup

@@ -65,6 +65,9 @@
   --button-menu-black-bg: var(--dark-blue-1412);
   --button-menu-black-fg: var(--white-101);
   --button-menu-black-muted-fg: var(--grey-166);
+  /* «Нет общих действий для выбранных элементов» (Number Of Buttons=None) —
+     Grey 284 мастера, не подпись полосы. */
+  --button-menu-black-empty-fg: var(--grey-284);
   /* Светлая панель Button Menu: белая заливка в рамке grey-114. Граница
      держалась литералом в root.tsx и не переключалась вместе с темой. */
   --button-menu-bg: var(--white-101);
@@ -208,7 +211,15 @@
   --header-menu-group-fg: var(--grey-868);
   --header-menu-star-fg: var(--grey-166);
   --header-menu-tile-bg: var(--grey-109);
+  /* OnClick (Active) плитки — Grey 124: дизайн-чек от 08.10, замечание 28
+     («всем серым блочным элементам создать состояние OnClick», пример —
+     плитка меню «Создать»). */
+  --header-menu-tile-bg-active: var(--grey-124);
   --header-menu-tile-icon-bg: var(--white-101);
+  /* Карточка организации в мобильном меню (`Company`, 70467:11710):
+     подложка Grey 109, `ELK / thumbnail` белый. */
+  --header-org-card-bg: var(--grey-109);
+  --header-org-card-thumb-bg: var(--white-101);
 
   /* Баннер в меню ЕЛК — три заливки по свойству «Цвет» плюс размытое
      пятно-градиент 320px поверх (в макете это SVG: круг r=160 с линейным

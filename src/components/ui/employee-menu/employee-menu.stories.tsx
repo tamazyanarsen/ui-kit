@@ -17,7 +17,7 @@ import type { EmployeeMenuProps } from "./employee-menu"
    на белом холсте Storybook их границ не было бы видно вовсе. Подложка
    здесь та же, что и у `Canvas` в макете. */
 function MenuStage({ children }: { children: React.ReactNode }) {
-  return <div className="w-full bg-[#F4F4F4] p-10">{children}</div>
+  return <div className="w-full bg-[var(--page-bg)] p-10">{children}</div>
 }
 
 type PlaygroundArgs = Omit<
@@ -115,7 +115,7 @@ function EmployeeScreen({
 }) {
   const [favourites, setFavourites] = useState(initialFavourites)
   return (
-    <GridRoot className="bg-[#F4F4F4]">
+    <GridRoot className="bg-[var(--page-bg)]">
       <Header
         type="employee"
         employeeName="Константинопольский К. К."

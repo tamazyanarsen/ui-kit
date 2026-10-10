@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button"
 import { StatesMatrix } from "@/stories/matrix"
 import { orderedOptionLabels } from "@/stories/options"
 
-import { Nps, type NpsEstimateType, type NpsProps, type NpsShowChips } from "./nps"
+import {
+  Nps,
+  type NpsEstimateType,
+  type NpsProps,
+  type NpsShowChips,
+  type NpsSubmitData,
+} from "./nps"
 
 /* Дизайн-чек №4 №11: контрол оценки называется «Estimate Type» и выбирается
    из None, 1–5 — по элементу «Estimate (ELK)».
@@ -39,6 +45,9 @@ const meta = {
     value: { table: { disable: true } },
     defaultValue: { table: { disable: true } },
     chips: { table: { disable: true } },
+    // Выбор чипов — живой (кликом по чипам), сырые пропы скрыты.
+    selectedChips: { table: { disable: true } },
+    defaultSelectedChips: { table: { disable: true } },
     showDescription: { control: "boolean", name: "Show Description" },
     showChips: {
       name: "Show Chips",
@@ -103,7 +112,7 @@ function NpsLive({
   const [session, setSession] = React.useState(0)
   const [submitted, setSubmitted] = React.useState(submittedArg)
   const [rating, setRating] = React.useState<number | null>(null)
-  const [sent, setSent] = React.useState<{ value: number; comment: string } | null>(null)
+  const [sent, setSent] = React.useState<NpsSubmitData | null>(null)
   const restoreRef = React.useRef<HTMLButtonElement>(null)
   const cardBoxRef = React.useRef<HTMLDivElement>(null)
   const wasClosed = React.useRef(false)
@@ -172,6 +181,12 @@ function NpsLive({
         <p data-slot="story-status-sent">
           {sent ? `Отправлено: ${sent.value}, «${sent.comment}»` : "Не отправлено"}
         </p>
+        {/* Дизайн-чек 08.10, замечание 16: чипы уходят отдельным полем. */}
+        {sent && (
+          <p data-slot="story-status-chips">
+            Чипы: {sent.chips.length ? sent.chips.join(", ") : "нет"}
+          </p>
+        )}
         <p data-slot="story-status-closed">Закрыто раз: {closes}</p>
       </div>
     </div>
@@ -197,6 +212,16 @@ export const Matrix: Story = {
         // Оба блока продолжения включаются независимо.
         { label: "Show Chips: none", props: { defaultValue: 3, showChips: "none" } },
         { label: "Show Chips: 2", props: { defaultValue: 3, showChips: 2 } },
+        // Как в макете «Заполненное состояние, две звезды»: свой текст и
+        // выбранный чип одновременно — одно другого не затирает.
+        {
+          label: "Комментарий + выбранный чип",
+          props: {
+            defaultValue: 2,
+            defaultSelectedChips: ["Долго заполнять"],
+            comment: "Платёжные поручения были оформлены корректно, но обработка долгая",
+          },
+        },
         {
           label: "Без поля комментария",
           props: { defaultValue: 3, showDescription: false },

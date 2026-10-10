@@ -89,7 +89,13 @@ function CostTable({ items, edits, onEdit, funds, onResetSearch }: CostTableProp
           const value = resolved(row, edits)
           // Сметная стоимость всегда производная — сумма заёмных и
           // собственных, — поэтому не редактируется ни у одной строки.
-          return <AmountCell readOnly value={value.borrowed + value.own} />
+          return (
+            <AmountCell
+              readOnly
+              value={value.borrowed + value.own}
+              label={`Сметная стоимость, ${row.title}`}
+            />
+          )
         },
       },
     ]

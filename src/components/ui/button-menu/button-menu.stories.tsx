@@ -217,7 +217,7 @@ export const Playground: Story = {
     showDropdown,
   }) => (
     <ViewportScope viewport={viewport}>
-    <div className={viewport === "mobile" ? "w-[360px]" : undefined}>
+    <div className={viewport === "mobile" ? "w-full max-w-[360px]" : undefined}>
     <StoryContentArea height="h-72">
       <div className="flex flex-col gap-4 p-6">
         {Array.from({ length: 10 }, (_, index) => (
@@ -318,7 +318,7 @@ export const Examples: Story = {
         description="Мобильная форма (360×72): без рамки, тени и скруглений, поля 16 и снизу 24, белая маска, проявляющаяся снизу вверх; Primary тянется на всю ширину, рядом — «ещё»."
       >
         <ViewportScope viewport="mobile">
-          <div className="w-[360px]">
+          <div className="w-full max-w-[360px]">
             <ButtonMenu pinned={false}>
               {menuButtons("With Primary", 1)}
               {overflow()}

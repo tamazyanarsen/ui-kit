@@ -10,6 +10,13 @@ import { cva } from "class-variance-authority"
 // одинаково для всех размеров, хотя пара отдельных инстансов в файле меняет
 // зелёный и синий местами. Эта перестановка — не намеренный вариант, а
 // разнобой между инстансами, которые рисовали порознь.
+//
+// Дизайн-чек от 08.10, замечание 40: цвета слоёв — токены `--banner-*`, а не
+// литералы. Макет нарисован старой палитрой, и в новой теме баннеры
+// оставались зелёно-розовыми; замены по таблицам «Было → Стало» лежат в
+// tokens-surfaces.css, старая тема возвращает исходные цвета. Промежуточные
+// ступени тёмного слоя остаются литералами — Grey 1514 и его блики при
+// ребрендинге не менялись.
 export type BannerSize = "desktop" | "compact" | "mobile"
 export type BannerColor = "black" | "pink" | "green" | "blue"
 
@@ -18,26 +25,26 @@ type Layer = "dark" | "pink" | "green" | "blue" | "flat"
 const GRADIENT_LAYERS: Record<BannerSize, Partial<Record<Layer, string>>> = {
   desktop: {
     dark: "linear-gradient(59.11982202810347deg, rgb(37, 38, 40) 8.0996%, rgb(52, 53, 54) 13.698%, rgb(66, 66, 66) 23.415%, rgb(37, 38, 40) 34.877%)",
-    pink: "linear-gradient(-23.836338655091353deg, rgb(255, 201, 181) 6.9643%, rgb(248, 248, 248) 103.57%)",
+    pink: "linear-gradient(-23.836338655091353deg, var(--banner-pink) 6.9643%, var(--banner-fade) 103.57%)",
     green:
-      "linear-gradient(-23.836338655091353deg, rgb(163, 213, 98) 6.9643%, rgb(248, 248, 248) 103.57%)",
-    blue: "linear-gradient(-23.836338655091353deg, rgb(154, 195, 255) 6.9643%, rgb(248, 248, 248) 103.57%)",
-    flat: "linear-gradient(90deg, rgb(248, 248, 248) 0%, rgb(248, 248, 248) 100%)",
+      "linear-gradient(-23.836338655091353deg, var(--banner-green) 6.9643%, var(--banner-fade) 103.57%)",
+    blue: "linear-gradient(-23.836338655091353deg, var(--banner-blue) 6.9643%, var(--banner-fade) 103.57%)",
+    flat: "linear-gradient(90deg, var(--banner-fade) 0%, var(--banner-fade) 100%)",
   },
   compact: {
     dark: "linear-gradient(29.391007407561382deg, rgb(37, 38, 40) 8.0996%, rgb(52, 53, 54) 13.698%, rgb(66, 66, 66) 23.415%, rgb(37, 38, 40) 34.877%)",
-    pink: "linear-gradient(-8.464651650710692deg, rgb(255, 201, 181) 6.9643%, rgb(248, 248, 248) 103.57%)",
+    pink: "linear-gradient(-8.464651650710692deg, var(--banner-pink) 6.9643%, var(--banner-fade) 103.57%)",
     green:
-      "linear-gradient(-8.464651650710692deg, rgb(163, 213, 98) 6.9643%, rgb(248, 248, 248) 103.57%)",
-    blue: "linear-gradient(-8.464651650710692deg, rgb(154, 195, 255) 6.9643%, rgb(248, 248, 248) 103.57%)",
+      "linear-gradient(-8.464651650710692deg, var(--banner-green) 6.9643%, var(--banner-fade) 103.57%)",
+    blue: "linear-gradient(-8.464651650710692deg, var(--banner-blue) 6.9643%, var(--banner-fade) 103.57%)",
   },
   mobile: {
-    dark: "linear-gradient(26.446733882400935deg, rgb(37, 38, 40) 19.195%, rgb(37, 38, 40) 40.73%, rgb(41, 42, 44) 50.65%, rgb(59, 60, 62) 70.534%, rgb(248, 248, 248) 163.43%)",
-    pink: "linear-gradient(-61.084576932599504deg, rgb(255, 201, 181) 6.9643%, rgb(248, 248, 248) 103.57%)",
+    dark: "linear-gradient(26.446733882400935deg, rgb(37, 38, 40) 19.195%, rgb(37, 38, 40) 40.73%, rgb(41, 42, 44) 50.65%, rgb(59, 60, 62) 70.534%, var(--banner-fade) 163.43%)",
+    pink: "linear-gradient(-61.084576932599504deg, var(--banner-pink) 6.9643%, var(--banner-fade) 103.57%)",
     green:
-      "linear-gradient(-61.084576932599504deg, rgb(163, 213, 98) 6.9643%, rgb(248, 248, 248) 103.57%)",
-    blue: "linear-gradient(-61.084576932599504deg, rgb(154, 195, 255) 6.9643%, rgb(248, 248, 248) 103.57%)",
-    flat: "linear-gradient(90deg, rgb(248, 248, 248) 0%, rgb(248, 248, 248) 100%)",
+      "linear-gradient(-61.084576932599504deg, var(--banner-green) 6.9643%, var(--banner-fade) 103.57%)",
+    blue: "linear-gradient(-61.084576932599504deg, var(--banner-blue) 6.9643%, var(--banner-fade) 103.57%)",
+    flat: "linear-gradient(90deg, var(--banner-fade) 0%, var(--banner-fade) 100%)",
   },
 }
 

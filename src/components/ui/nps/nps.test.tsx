@@ -36,14 +36,31 @@ describe("Nps", () => {
     expect(screen.getByLabelText("Комментарий")).toBeInTheDocument()
   })
 
-  it("appends a chip's text to the comment", async () => {
+  // Дизайн-чек 08.10, замечание 16: чипы — независимый мультивыбор, текст
+  // комментария они не трогают.
+  it("toggles chips without touching the comment text", async () => {
     const user = userEvent.setup()
-    render(<Nps />)
+    const onSubmit = vi.fn()
+    render(<Nps onSubmit={onSubmit} />)
 
     await user.click(screen.getByRole("radio", { name: /^2 из 5/ }))
+    await user.type(screen.getByLabelText("Комментарий"), "Неудобно подписыват")
+    await user.click(screen.getByRole("button", { name: "Неудобно подписывать" }))
     await user.click(screen.getByRole("button", { name: "Долго заполнять" }))
 
-    expect(screen.getByLabelText("Комментарий")).toHaveValue("Долго заполнять")
+    expect(screen.getByLabelText("Комментарий")).toHaveValue("Неудобно подписыват")
+    expect(screen.getByRole("button", { name: "Долго заполнять" })).toHaveAttribute("aria-pressed", "true")
+
+    // Повторное нажатие снимает выбор.
+    await user.click(screen.getByRole("button", { name: "Долго заполнять" }))
+    expect(screen.getByRole("button", { name: "Долго заполнять" })).toHaveAttribute("aria-pressed", "false")
+
+    await user.click(screen.getByRole("button", { name: "Отправить" }))
+    expect(onSubmit).toHaveBeenCalledWith({
+      value: 2,
+      comment: "Неудобно подписыват",
+      chips: ["Неудобно подписывать"],
+    })
   })
 
   it("submits the rating and comment", async () => {
@@ -55,7 +72,7 @@ describe("Nps", () => {
     await user.type(screen.getByLabelText("Комментарий"), "Отлично")
     await user.click(screen.getByRole("button", { name: "Отправить" }))
 
-    expect(onSubmit).toHaveBeenCalledWith({ value: 5, comment: "Отлично" })
+    expect(onSubmit).toHaveBeenCalledWith({ value: 5, comment: "Отлично", chips: [] })
   })
 
   it("calls onClose from the close button", async () => {

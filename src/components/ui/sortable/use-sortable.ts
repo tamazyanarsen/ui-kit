@@ -1,6 +1,8 @@
 import * as React from "react"
 
 import { startAutoscroll } from "./autoscroll"
+import { hideDragGhost } from "./drag-image"
+import { exceedsGroupLimit, landingDepth } from "./landing"
 
 /**
  * Перетаскивание списка — единые правила кита по макету «03. ELK /
@@ -40,6 +42,23 @@ interface SortableEntry {
   expanded?: boolean
   /** Строку нельзя ни двигать, ни ронять на неё. */
   locked?: boolean
+  /**
+   * Предельное число строк в группе (только у `group`). У полной группы нет
+   * линии под последней строкой: такой бросок ничего не меняет (дизайн-чек
+   * 08.10, замечание 7). Место вместо последней строки остаётся доступным.
+   */
+  limit?: number
+}
+
+/** Подробности броска для `onReorder`. */
+interface SortableDropMeta {
+  /**
+   * Глубина, на которой строка окажется после броска: 0 — верхний уровень,
+   * 1 и глубже — внутри группы. По ней потребитель понимает, что строка
+   * перешла в другую группу (и, если группа была полной, вытесняет из неё
+   * последнюю строку).
+   */
+  depth: number
 }
 
 interface SortableIndicator {
@@ -52,7 +71,7 @@ interface SortableIndicator {
 interface UseSortableOptions {
   items: SortableEntry[]
   /** Перенести элемент `from` на позицию `to` (индексы в `items`). */
-  onReorder: (from: number, to: number) => void
+  onReorder: (from: number, to: number, meta: SortableDropMeta) => void
   /** Уронить элемент внутрь группы. Без него бросок в группу невозможен. */
   onDropInto?: (groupId: string, dragId: string) => void
   /** Раскрыть свёрнутую группу, над которой держат элемент. */
@@ -66,7 +85,7 @@ interface UseSortableOptions {
    * между видимыми: без него линия вставки рисовалась бы над местом,
    * бросок на которое `onReorder` всё равно отклонит.
    */
-  canMove?: (from: number, to: number) => boolean
+  canMove?: (from: number, to: number, meta: SortableDropMeta) => boolean
 }
 
 /**
@@ -102,8 +121,11 @@ function useSortable({
   // из-за новой функции на каждом рендере потребителя.
   const canMoveRef = React.useRef(canMove)
   canMoveRef.current = canMove
-  const allowed = (entries: SortableEntry[], from: number, to: number) =>
-    canReorder(entries, from, to) && (canMoveRef.current?.(from, to) ?? true)
+  // `to === from` с другой глубиной — переход в группу или из неё на том же
+  // индексе: закреплённых строк он не сдвигает, `canReorder` для него не нужен.
+  const allowed = (entries: SortableEntry[], from: number, to: number, depth: number) =>
+    (to === from ? !entries[from]?.locked : canReorder(entries, from, to)) &&
+    (canMoveRef.current?.(from, to, { depth }) ?? true)
   const listRef = React.useRef<HTMLDivElement>(null)
   const rowRefs = React.useRef(new Map<string, HTMLElement>())
   const [armedId, setArmedId] = React.useState<string | null>(null)
@@ -112,6 +134,8 @@ function useSortable({
   const [indicator, setIndicator] = React.useState<SortableIndicator | null>(null)
   /** Куда встанет элемент, если отпустить сейчас. Индекс в `items`. */
   const dropIndex = React.useRef<number | null>(null)
+  /** Глубина приземления для текущего `dropIndex`. */
+  const dropDepth = React.useRef(0)
   const expandTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   /** Остановка текущего цикла автопрокрутки; цикл всегда один. */
   const stopScroll = React.useRef<(() => void) | null>(null)
@@ -224,12 +248,21 @@ function useSortable({
       const insertAt = half === "top" ? hoverIndex : hoverIndex + 1
       const from = items.findIndex((item) => item.id === dragId)
       const target = insertAt > from ? insertAt - 1 : insertAt
-      if (target !== from && !allowed(items, from, target)) {
+      const depth = landingDepth(items, dragId, insertAt, hovered.depth ?? 0)
+      // Строка над самой собой на своей же глубине — бросок ничего не
+      // меняет, линия остаётся как была (проверять тут нечего).
+      const noop = target === from && depth === (items[from]?.depth ?? 0)
+      if (
+        !noop &&
+        (!allowed(items, from, target, depth) ||
+          exceedsGroupLimit(items, dragId, insertAt, depth))
+      ) {
         setIndicator(null)
         dropIndex.current = null
         return
       }
       dropIndex.current = insertAt
+      dropDepth.current = depth
       setIndicator({
         // Линия НЕ раздвигает список: её место считается от границы строки, а
         // 1px вычитается, чтобы двухпиксельная полоса села на границу
@@ -281,7 +314,12 @@ function useSortable({
         // Индекс вставки посчитан ДО изъятия элемента, поэтому при движении
         // вниз он на единицу больше конечного.
         const to = dropIndex.current > from ? dropIndex.current - 1 : dropIndex.current
-        if (allowed(items, from, to)) onReorder(from, to)
+        // Та же позиция, но другая глубина — переход в группу или из неё:
+        // это тоже перенос, хотя индекс и не меняется.
+        const moved = to !== from || dropDepth.current !== (items[from].depth ?? 0)
+        if (moved && allowed(items, from, to, dropDepth.current)) {
+          onReorder(from, to, { depth: dropDepth.current })
+        }
       }
       reset()
     },
@@ -305,6 +343,8 @@ function useSortable({
           event.dataTransfer.setData("text/plain", id)
           event.dataTransfer.effectAllowed = "move"
         }
+        // Фантома у курсора нет — только заливка на месте и линия вставки.
+        hideDragGhost(event.dataTransfer)
         draggingRef.current = true
         setDragId(id)
       },
@@ -334,7 +374,10 @@ function useSortable({
           event.key === "ArrowUp" ? index - 1 : event.key === "ArrowDown" ? index + 1 : -1
         if (to < 0 || to >= items.length) return
         event.preventDefault()
-        if (allowed(items, index, to)) onReorder(index, to)
+        const depth = items[index].depth ?? 0
+        if (allowed(items, index, to, depth)) {
+          onReorder(index, to, { depth })
+        }
       },
     }
   }
@@ -343,4 +386,4 @@ function useSortable({
 }
 
 export { useSortable, canReorder }
-export type { SortableEntry, SortableIndicator, UseSortableOptions }
+export type { SortableDropMeta, SortableEntry, SortableIndicator, UseSortableOptions }

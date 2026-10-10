@@ -39,7 +39,8 @@ const meta = {
     // соответствует настройкам в Figma» — порядок и имена ниже взяты из
     // приложенного к замечанию списка.
     viewport: sizeArgType,
-    state: stateArgTypeOf(["default", "hover"]),
+    // Active (OnClick, Grey 124) — дизайн-чек от 08.10, замечание 28.
+    state: stateArgTypeOf(["default", "hover", "active"]),
     type: {
       ...optionsArgType(
         "Type",
@@ -110,6 +111,7 @@ export const Matrix: Story = {
       rows={[
         { label: "Свёрнута", props: {} },
         { label: "Hover", props: {}, pseudo: "hover" },
+        { label: "Active (OnClick)", props: {}, pseudo: "active" },
         { label: "Раскрыта", props: { defaultOpen: true } },
         // `blocked` держит карточку раскрытой и убирает возможность её свернуть.
         { label: "Blocked", props: { blocked: true, defaultOpen: true } },

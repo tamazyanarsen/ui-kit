@@ -1,167 +1,180 @@
-import { useState } from "react"
-import type { Meta, StoryObj } from "@storybook/react-vite"
+import { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import {
+  PseudoBox,
   StatesMatrix,
+  StorySection,
+  optionsArgType,
   sizeArgType,
   stateArgTypeOf,
   toggleArgType,
   type PlaygroundState,
-} from "@/stories/matrix"
-import { ViewportScope, type Viewport } from "@/lib/viewport"
+} from "@/stories/matrix";
+import { ViewportScope, type Viewport } from "@/lib/viewport";
 
-import { Item, type ItemProps, type RightElementType } from "./item"
+import {
+  Item,
+  type CommentColor,
+  type ItemProps,
+  type RightElementType,
+} from "./item";
 
-/* Дизайн-чек №33: «набор атрибутов компонента Item не соответствует
-   таковому в Figma… необходимо привести атрибуты в Storybook в соответствие
-   с тем, как это оформлено в Figma, чтобы можно было проверять компоненты».
+/* Контролы — по таблице «Свойства компонента» мастера `ELK / item` v1.0.1
+   (Release 69.36, документация на канвасе Item, дизайн-чек от 08.10,
+   замечание 14):
 
-   Компонент-сет «ELK / item» объявляет ровно пять
-   свойств, и все они теперь есть в контролах под своими именами:
+     State               Default, Hover, Disabled
+     Category            Default, Sub                → `subCategory`
+     Show Right Element  True, False
+     Show Thumbnail      True, False                 → `thumbnail`
+     Show Divider        True, False                 → `divider`
+     Right Element
+       Type              Navigation, Information, Select (Accordion),
+                         Check, Text, Toggle, Checkbox
+     Content
+       Type              Default, Label              → строка `text`
+       Show Comment      True, False
+     Comment
+       Text Color        Success, Error, Attention, Information
 
-     State        = Default | Disabled            → `disabled`
-     Type         = Value | Thumbneil             → `thumbnail`
-     Сonclusion   = False | True                  → строка `text` над Value
-     Sub Сategory = False | True                  → `subCategory`
-     Text Color   = Grey | Red | Yellow           → `commentColor`
+   Size — ось самого сета (Desktop / Mobile). Наш `accordion` давно назван
+   `select`: в сете правого элемента значение так и подписано (`Type=Select`),
+   а в таблице свойств документации — Accordion. */
+const RIGHT_ELEMENT_LABELS: Record<
+  Exclude<RightElementType, "none">,
+  string
+> = {
+  navigation: "Navigation",
+  information: "Information",
+  select: "Select (Accordion)",
+  check: "Check",
+  text: "Text",
+  toggle: "Toggle",
+  checkbox: "Checkbox",
+};
 
-   Плюс два булевых слота самого мастера — `showComment` и
-   `showRightElement` — и вложенный сет «Right Element (Desktop, ELK)» со
-   своими семью значениями.
+const RIGHT_ELEMENTS = Object.keys(RIGHT_ELEMENT_LABELS) as Exclude<
+  RightElementType,
+  "none"
+>[];
 
-   Заодно исправлено имя: наш `accordion` — это Figma-шный `Select`
-   (он рисует ровно `icon / arrow down chevron`), так что
-   значение переименовано, чтобы список совпадал с макетом. `none` —
-   единственное добавленное сверх Figma значение: в макете правый элемент
-   выключается отдельным булевым слотом, а у нас это его же список. */
-const RIGHT_ELEMENTS: RightElementType[] = [
-  "none",
-  "check",
-  "text",
-  "navigation",
-  "information",
-  "select",
-  "checkbox",
-  "toggle",
-]
+const COMMENT_COLOR_LABELS: Record<CommentColor, string> = {
+  green: "Success",
+  red: "Error",
+  yellow: "Attention",
+  grey: "Information",
+};
 
-const FIGMA_TYPES = ["Value", "Thumbneil"] as const
-type FigmaType = (typeof FIGMA_TYPES)[number]
+type Category = "default" | "sub";
+type ContentType = "default" | "label";
 
 type PlaygroundArgs = ItemProps & {
-  figmaType?: FigmaType
-  conclusion?: boolean
-  showComment?: boolean
-  showRightElement?: boolean
-  state?: PlaygroundState
-  viewport?: Viewport
-}
+  category?: Category;
+  showThumbnail?: boolean;
+  contentType?: ContentType;
+  showComment?: boolean;
+  showRightElement?: boolean;
+  state?: PlaygroundState;
+  viewport?: Viewport;
+};
 
 const meta = {
   title: "Компоненты/Item",
   component: Item,
   parameters: { layout: "padded" },
-  // `thumbnail` держит JSX-элемент (или значение-маркер `true`, при котором
-  // рисуется встроенный в компонент `DefaultThumbnail`), поэтому понятный
-  // выбор «None» и «Default» отображается в `undefined` и `true`, а не
-  // контрол выключается (тот же приём, что и с `icon` у Button).
   argTypes: {
-    /* Порядок и имена — как в таблице «Свойства компонента»:
-       State / Type / Conclusion / Sub Category / Show Comment /
-       Show Right Element / Show Divider. */
-    // У самого сета `ELK / item` оси Size нет: Desktop и Mobile разведены
-    // отдельными мастерами вложенных элементов (`Right Element (Desktop,
-    // ELK)`), поэтому форма всё равно должна переключаться контролом.
     viewport: sizeArgType,
-    state: stateArgTypeOf(["default", "disabled"]),
-    // Type в Figma — это наличие тумбнейла: Value (без) / Thumbneil (с).
-    figmaType: {
-      name: "Type",
-      description: "Свойство Type компонента ELK / item",
-      control: "inline-radio",
-      options: FIGMA_TYPES,
-    },
-    thumbnail: { table: { disable: true } },
-    // Сonclusion=True добавляет строку Text над Value (P2 Medium над P1
-    // Medium) — сверено на символах True и False.
-    conclusion: {
-      name: "Сonclusion",
-      description: "Строка Text над значением",
-      control: "boolean",
-    },
-    subCategory: { name: "Sub Сategory", control: "boolean" },
-    showComment: toggleArgType("Show Comment"),
+    state: stateArgTypeOf(["default", "hover", "disabled"]),
+    category: optionsArgType<Category>(
+      "Category",
+      { default: "Default", sub: "Sub" },
+      "inline-radio",
+    ),
     showRightElement: toggleArgType("Show Right Element"),
+    showThumbnail: toggleArgType("Show Thumbnail"),
     divider: toggleArgType("Show Divider"),
-    // Вложенные сеты мастера: «Right Element (Desktop, ELK)»
-    // и «Comment (Desktop, ELK)» — своими категориями, как в
-    // Figma они показаны отдельными блоками свойств вложенного инстанса.
     rightElement: {
-      name: "Type",
-      control: "select",
-      options: RIGHT_ELEMENTS,
+      ...optionsArgType("Type", RIGHT_ELEMENT_LABELS),
       table: { category: "Right Element (ELK)" },
     },
     open: {
       name: "Раскрыта",
       control: "boolean",
       description:
-        "Панель, которую раскрывает строка, сейчас открыта (Right Element = select): шеврон смотрит вверх и выставляется aria-expanded",
+        "Панель, которую раскрывает строка, сейчас открыта (Right Element = Select): шеврон смотрит вверх и выставляется aria-expanded",
       table: { category: "Right Element (ELK)" },
     },
-    // Имеет смысл только при rightElement="toggle" и "checkbox".
-    // Playground оставляет их кликабельными через собственное состояние, но
-    // заданный контрол закрепляет значение (та же схема, что и с `checked`
-    // у Checkbox).
-    toggleChecked: { control: "boolean", table: { category: "Right Element (ELK)" } },
-    checkboxChecked: { control: "boolean", table: { category: "Right Element (ELK)" } },
+    // Имеют смысл только при Toggle и Checkbox. Playground оставляет их
+    // кликабельными через собственное состояние, но заданный контрол
+    // закрепляет значение.
+    toggleChecked: {
+      control: "boolean",
+      table: { category: "Right Element (ELK)" },
+    },
+    checkboxChecked: {
+      control: "boolean",
+      table: { category: "Right Element (ELK)" },
+    },
     rightText: { control: "text", table: { category: "Right Element (ELK)" } },
+    contentType: {
+      ...optionsArgType<ContentType>(
+        "Type",
+        { default: "Default", label: "Label" },
+        "inline-radio",
+      ),
+      table: { category: "Content Item (ELK)" },
+    },
+    showComment: {
+      ...toggleArgType("Show Comment"),
+      table: { category: "Content Item (ELK)" },
+    },
     commentColor: {
-      name: "Text Color",
-      control: "inline-radio",
-      options: ["grey", "red", "yellow"],
-      table: { category: "Comment (ELK)" },
+      ...optionsArgType("Text Color", COMMENT_COLOR_LABELS, "inline-radio"),
+      table: { category: "Comment Item (ELK)" },
     },
     // `text`, `comment`, `informationText` и `rightText` объявлены как
     // `React.ReactNode`, но везде используются обычными строками. Без этого
-    // незаданное значение откатывается на универсальный JSON-редактор
-    // «Set object».
+    // незаданное значение откатывается на универсальный JSON-редактор.
     text: { control: "text", table: { category: "Контент" } },
     value: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
     informationText: { control: "text", table: { category: "Контент" } },
-    // Значение оси State — отдельного контрола у него нет.
+    // Значения осей State / Category / Show Thumbnail — своих контролов нет.
     disabled: { table: { disable: true } },
+    subCategory: { table: { disable: true } },
+    thumbnail: { table: { disable: true } },
   },
   /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
      на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
     viewport: "desktop",
     state: "default" as PlaygroundState,
-    figmaType: "Value",
-    conclusion: true,
-    subCategory: false,
-    showComment: true,
+    category: "default",
     showRightElement: true,
+    showThumbnail: true,
     divider: true,
     rightElement: "navigation",
     open: false,
     rightText: "+1,5%",
+    contentType: "label",
+    showComment: true,
     commentColor: "grey",
     text: "Тип операции",
     value: "Перевод между счетами",
     comment: "Comment",
     informationText: "Дополнительная информация об операции",
   },
-} satisfies Meta<PlaygroundArgs>
+} satisfies Meta<PlaygroundArgs>;
 
-export default meta
-type Story = StoryObj<PlaygroundArgs>
+export default meta;
+type Story = StoryObj<PlaygroundArgs>;
 
 export const Playground: Story = {
   render: ({
-    figmaType,
-    conclusion,
+    category,
+    showThumbnail,
+    contentType,
     showComment,
     showRightElement,
     text,
@@ -171,25 +184,34 @@ export const Playground: Story = {
     state,
     ...args
   }) => (
-    <ViewportScope viewport={viewport}>
+    <PseudoBox
+      viewport={viewport}
+      state={state === "disabled" ? "default" : state}
+      className="w-full"
+    >
       <InteractiveItem
         {...args}
         disabled={state === "disabled"}
-        thumbnail={figmaType === "Thumbneil" ? true : undefined}
-        text={conclusion ? text : undefined}
+        subCategory={category === "sub"}
+        thumbnail={showThumbnail ? true : undefined}
+        text={contentType === "label" ? text : undefined}
         comment={showComment ? comment : undefined}
         rightElement={showRightElement ? rightElement : "none"}
       />
-    </ViewportScope>
+    </PseudoBox>
   ),
-}
+};
 
 // Оставляет правые элементы toggle и checkbox кликабельными, но при этом
 // позволяет контролам `toggleChecked` и `checkboxChecked` закрепить
 // значение, когда они заданы.
-function InteractiveItem({ toggleChecked, checkboxChecked, ...props }: ItemProps) {
-  const [toggle, setToggle] = useState(true)
-  const [checkbox, setCheckbox] = useState(false)
+function InteractiveItem({
+  toggleChecked,
+  checkboxChecked,
+  ...props
+}: ItemProps) {
+  const [toggle, setToggle] = useState(true);
+  const [checkbox, setCheckbox] = useState(false);
   return (
     <Item
       {...props}
@@ -198,7 +220,7 @@ function InteractiveItem({ toggleChecked, checkboxChecked, ...props }: ItemProps
       checkboxChecked={checkboxChecked ?? checkbox}
       onCheckboxChange={setCheckbox}
     />
-  )
+  );
 }
 
 export const Matrix: Story = {
@@ -220,10 +242,15 @@ export const Matrix: Story = {
         columnGroups={[
           {
             label: "Right Element",
-            columns: RIGHT_ELEMENTS.map((rightElement) => ({
-              label: rightElement,
-              props: { rightElement },
-            })),
+            columns: (["none", ...RIGHT_ELEMENTS] as RightElementType[]).map(
+              (rightElement) => ({
+                label:
+                  rightElement === "none"
+                    ? "None"
+                    : RIGHT_ELEMENT_LABELS[rightElement],
+                props: { rightElement },
+              }),
+            ),
           },
         ]}
         rows={[
@@ -243,9 +270,12 @@ export const Matrix: Story = {
         cellClassName="min-w-[320px]"
         baseProps={{ text: "Title", value: "Value" }}
         columns={[
-          { label: "Comment: grey", props: { comment: "Comment", commentColor: "grey" } },
-          { label: "Comment: red", props: { comment: "Comment", commentColor: "red" } },
-          { label: "Comment: yellow", props: { comment: "Comment", commentColor: "yellow" } },
+          ...(Object.keys(COMMENT_COLOR_LABELS) as CommentColor[]).map(
+            (commentColor) => ({
+              label: `Text Color: ${COMMENT_COLOR_LABELS[commentColor]}`,
+              props: { comment: "Comment", commentColor },
+            }),
+          ),
         ]}
         rows={[
           { label: "С заголовком", props: {} },
@@ -266,6 +296,42 @@ export const Matrix: Story = {
         ]}
         render={(props) => <Item {...props} />}
       />
+
+      {/* Механика группы (замечания 14 и 46 дизайн-чека от 08.10): у
+          последней строки линии нет даже при явном `divider`, а при
+          наведении/нажатии гаснут линии, прилегающие к залитой зоне. Живая —
+          наведите курсор на строку. */}
+      <div className="p-8">
+        <StorySection
+          title="Группа"
+          description="Наведите или нажмите на строку: прилегающие к заливке разделители гаснут. У последней строки разделителя нет."
+        >
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {(["desktop", "mobile"] as Viewport[]).map((viewport) => (
+              <ViewportScope key={viewport} viewport={viewport}>
+                <div className="flex flex-col rounded-2xl bg-white p-2">
+                  {[
+                    "Перевод между счетами",
+                    "Оплата по реквизитам",
+                    "Платёж по СБП",
+                    "Автоплатёж",
+                  ].map((value, index) => (
+                    <Item
+                      key={value}
+                      value={value}
+                      comment="Comment"
+                      thumbnail={index % 2 === 0 ? true : undefined}
+                      rightElement="navigation"
+                      divider
+                      onClick={() => {}}
+                    />
+                  ))}
+                </div>
+              </ViewportScope>
+            ))}
+          </div>
+        </StorySection>
+      </div>
     </div>
   ),
-}
+};

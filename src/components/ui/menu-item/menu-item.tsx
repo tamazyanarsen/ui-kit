@@ -32,8 +32,11 @@ import { hasContent } from "@/lib/has-content"
  * сам, без подкручивания отступами.
  */
 
+// `press-scale-content`: на зажатие сжимается содержимое строки, а заливка
+// стоит от края до края — иначе строка отлипла бы от границ панели
+// (дизайн-чек 08.10, замечание 37; см. styles/motion.css).
 const MENU_ITEM_ROW_CLASS =
-  "relative flex w-full cursor-default items-start gap-4 p-4 text-left outline-hidden select-none"
+  "relative flex w-full cursor-default items-start gap-4 p-4 text-left outline-hidden select-none press-scale-content [--press-origin:left_center]"
 
 /**
  * Свойство `Type` компонент-сета — уровень вложенности строки.

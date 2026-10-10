@@ -41,7 +41,7 @@ describe("Nps: комментарий", () => {
     const user = await rate(4)
     await user.type(screen.getByLabelText("Комментарий"), "  Хорошо  ")
     await user.click(screen.getByRole("button", { name: "Отправить" }))
-    expect(onSubmit).toHaveBeenCalledWith({ value: 4, comment: "Хорошо" })
+    expect(onSubmit).toHaveBeenCalledWith({ value: 4, comment: "Хорошо", chips: [] })
   })
 
   it("комментарий из одних пробелов приходит пустым", async () => {
@@ -50,6 +50,6 @@ describe("Nps: комментарий", () => {
     const user = await rate(5)
     await user.type(screen.getByLabelText("Комментарий"), "   ")
     await user.click(screen.getByRole("button", { name: "Отправить" }))
-    expect(onSubmit).toHaveBeenCalledWith({ value: 5, comment: "" })
+    expect(onSubmit).toHaveBeenCalledWith({ value: 5, comment: "", chips: [] })
   })
 })

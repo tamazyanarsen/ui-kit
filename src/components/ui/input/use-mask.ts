@@ -160,9 +160,20 @@ function useMask({
   const [amountWidth, setAmountWidth] = React.useState<number>()
   const showAmountSuffix = mask === "amount" && Boolean(maskValue)
 
+  // ⚠️ Ширина — `getBoundingClientRect` с округлением ВВЕРХ, а не
+  // `offsetWidth`. Последний округляет до целого по правилам арифметики:
+  // число шириной 87,31px получало поле в 87px, недостающая треть пикселя
+  // включала многоточие, и «30 000 000 ₽» рисовалось как «30 000 00… ₽»
+  // (дизайн-чек от 08.10, замечание 33, — замерено на суммах ССР: обрезались
+  // ровно те, у кого дробная часть ширины меньше 0,5).
+  const measureAmount = () => {
+    const twin = measureRef.current
+    return twin ? Math.ceil(twin.getBoundingClientRect().width) : undefined
+  }
+
   React.useLayoutEffect(() => {
     if (mask !== "amount") return
-    setAmountWidth(measureRef.current?.offsetWidth)
+    setAmountWidth(measureAmount())
   }, [mask, maskValue])
 
   // ⚠️ Повторный замер после загрузки гарнитуры. Первый проходит на
@@ -177,7 +188,7 @@ function useMask({
     if (!fonts?.ready) return
     let cancelled = false
     fonts.ready.then(() => {
-      if (!cancelled) setAmountWidth(measureRef.current?.offsetWidth)
+      if (!cancelled) setAmountWidth(measureAmount())
     })
     return () => {
       cancelled = true

@@ -2,6 +2,7 @@ import * as React from "react"
 import { CloseCross } from "@/components/ui/close-cross"
 
 import { cn } from "@/lib/utils"
+import { useCollapseExit } from "@/lib/use-collapse-exit"
 import { hasContent } from "@/lib/has-content"
 import { Button } from "@/components/ui/button"
 import { Icon as KitIcon, type IconName } from "@/components/ui/icon"
@@ -36,7 +37,7 @@ interface InformerProps {
    * задаётся `customIconColor`, по умолчанию тем же серым, что у
    * `information`.
    *
-   * Принимает имя из набора (молния в ките зовётся `"lghtning-fill"`) или
+   * Принимает имя из набора (молния в ките зовётся `"lightning-fill"`) или
    * готовый узел, если нужен нестандартный размер или своя обёртка.
    */
   customIcon?: IconName | React.ReactNode
@@ -72,9 +73,14 @@ function Informer({
   className,
 }: InformerProps) {
   const Icon = ICON_COMPONENT[icon]
+  // Крестик не снимает карточку одним кадром: она гаснет, место
+  // схлопывается, и `onClose` приходит уже после (дизайн-чек 08.10,
+  // замечание 11; см. lib/use-collapse-exit).
+  const { ref, exit } = useCollapseExit<HTMLDivElement>(onClose)
 
   return (
     <div
+      ref={ref}
       data-slot="informer"
       // Дизайн-чек, замечание 27: отступ и зазор до значка прочитаны прямо
       // с листа анатомии — отступ 24px (был 16, p-4) и зазор 16px между
@@ -191,7 +197,7 @@ function Informer({
         {showCross && (
           <span className="flex shrink-0 items-center py-1">
             <CloseCross
-              onClick={onClose}
+              onClick={exit}
               className="text-[var(--informer-title-fg)]"
             />
           </span>

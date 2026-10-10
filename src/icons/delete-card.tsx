@@ -10,6 +10,6 @@ export function DeleteCard({ size = 16, ...props }: IconProps) {
   }
 
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="#000" d="M13.709 9.875a1 1 0 0 1 1.414 1.414l-.711.711.711.711a1 1 0 0 1-1.415 1.414l-.711-.711-.703.704a1 1 0 1 1-1.414-1.414l.703-.704-.703-.703a1 1 0 1 1 1.414-1.415l.704.704zM12 2a2 2 0 0 1 2 2v3a1 1 0 0 1-2 0H2v4h6a1 1 0 0 1 0 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM2 5h10V4H2z"/></svg>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" d="M13.709 9.875a1 1 0 0 1 1.414 1.414l-.711.711.711.711a1 1 0 0 1-1.415 1.414l-.711-.711-.703.704a1 1 0 1 1-1.414-1.414l.703-.704-.703-.703a1 1 0 1 1 1.414-1.415l.704.704zM12 2a2 2 0 0 1 2 2v3a1 1 0 0 1-2 0H2v4h6a1 1 0 0 1 0 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM2 5h10V4H2z"/></svg>
   )
 }

@@ -2,6 +2,13 @@
    Ссылаются на палитру (`palette.css`); компоненты ходят только сюда. */
 
 :root {
+  /* Фон страницы — серая подложка, на которой лежат белые блоки. Один токен
+     на весь продукт: превью Storybook, оболочка песочниц, маска затухания
+     Steps и любой микросервис кита красят «серый фон страницы» только им.
+     Тема его меняет: в новой палитре Grey 109, в старой — Grey 106
+     (дизайн-чек от 08.10, замечание 9). Правило — docs/conventions.md. */
+  --page-bg: var(--grey-109);
+
   /* Токены аккордеона-карточки. Цвета сняты с сетки состояний
      Default/Blocked × Close/Open/Hover: наведение затемняет только шапку и
      никогда саму панель, поэтому пары bg/bg-hover относятся исключительно к
@@ -13,6 +20,10 @@
      настоящий. */
   --accordion-card-bg: var(--grey-109);
   --accordion-card-bg-hover: var(--grey-114);
+  /* OnClick (Active) серых кликабельных блоков — Grey 124: дизайн-чек от
+     08.10, замечание 28 («всем серым блочным элементам создать состояние
+     OnClick… в нём такие элементы имеют заливку Grey 124»). */
+  --accordion-card-bg-active: var(--grey-124);
   --accordion-card-blocked-bg: var(--red-110);
   --accordion-card-blocked-bg-hover: var(--red-117);
   --accordion-card-title-fg: var(--grey-1514);
@@ -59,6 +70,8 @@
      переменную незачем. */
   --block-widget-bg: var(--grey-106);
   --block-widget-bg-hover: var(--grey-114);
+  /* OnClick — Grey 124 (замечание 28 от 08.10, см. --accordion-card-bg-active). */
+  --block-widget-bg-active: var(--grey-124);
   --block-widget-border: var(--divider);
   --block-widget-title-fg: var(--grey-1514);
   --block-widget-muted-fg: var(--grey-284);
@@ -72,6 +85,8 @@
      PaymentLogo из Thumbnail, а не заводит свою пару логотип/цвет. */
   --card-bg: var(--grey-106);
   --card-bg-hover: var(--grey-114);
+  /* OnClick — Grey 124 (замечание 28 от 08.10, см. --accordion-card-bg-active). */
+  --card-bg-active: var(--grey-124);
   --card-title-fg: var(--grey-1514);
   --card-meta-fg: var(--grey-284);
   --card-thumb-bg: var(--grey-1514);
@@ -86,6 +101,17 @@
      нужен только чёрному варианту. Стояло литералом `#252628`. */
   --banner-fg: var(--grey-1514);
   --banner-fg-inverse: var(--white-101);
+  /* Цветные подложки баннера — ведущие цвета градиентов (дизайн-чек от
+     08.10, замечание 40). Макет баннера нарисован ещё старой палитрой
+     (Red 147 #FFC9B5, Green 171 #A3D562, Blue 182 #9AC2FF); в новой теме
+     каждый цвет заменён своей строкой таблиц «Было → Стало» страницы
+     палитры: Red 147 → Red 158 (#FFBEB5), Green 171 → Blue 130 (Банк),
+     Blue 182 → Dark blue 264. Старая тема возвращает исходные. Затухание к
+     Grey 106 и тёмный вариант (Grey 1514) при ребрендинге не менялись. */
+  --banner-pink: var(--red-147);
+  --banner-green: var(--blue-130);
+  --banner-blue: var(--dark-blue-264);
+  --banner-fade: var(--grey-106);
 
   /* Токены Progress Bar. Значения сняты пипеткой с макета. Заливка
      шагового мастера (#2FCEEF) в точности совпала с
@@ -117,10 +143,11 @@
   --steps-active-ring: var(--blue-223);
   --steps-disabled-fg: var(--grey-284);
   --steps-fade-arrow-bg: var(--dark-blue-1412);
-  /* Повторная сверка: маска затухания над прокручиваемым рядом — свой
-     собственный серый (#F8F8F8, «grey-106» в макете), литерально отличный
-     от белого фона карточки (--steps-bg), который переиспользовали раньше. */
-  --steps-fade-bg: var(--grey-106);
+  /* Маска затухания над прокручиваемым рядом сливается с фоном СТРАНИЦЫ, а
+     не с белым фоном карточки (--steps-bg). В макете она grey-106 — это фон
+     страницы старой темы; в новой фон страницы Grey 109, и маска идёт за ним
+     (дизайн-чек от 08.10, замечание 20). */
+  --steps-fade-bg: var(--page-bg);
   --steps-tooltip-bg: var(--grey-517);
   --steps-tooltip-fg: var(--white-101);
 
@@ -191,7 +218,7 @@
   --informer-icon-green: var(--mint-230);
   --informer-icon-grey: var(--grey-284);
 
-  /* Issue Item / List of Errors — строка «что не так» и её список
+  /* Sample Error (бывш. Issue Item) / List of Errors — строка «что не так» и её список
      (`Sample Error (ELK)` / `ELK / list-errors`). Цвет значка по темам:
      ошибка rgb(215,75,84) в «Голубой» и rgb(222,74,42) в «Зелёной» — ровно
      та же красная ступень, что у информера, поэтому берётся её токен, а не
@@ -314,6 +341,9 @@
    подложку (правило у FLOATING_CLASS в nps/nps.tsx), а тосты подняты над
    окном. */
 :root {
+  /* Закреплённые колонки страницы (lib/use-hybrid-sticky.ts) — под шапкой и
+     нижними панелями; колонка с открытым меню поднимается на 1. */
+  --z-sticky: 10;
   --z-bottom-bar: 30;
   --z-header: 40;
   --z-toast: 70;

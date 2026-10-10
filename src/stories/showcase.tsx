@@ -4,7 +4,10 @@ import { cn } from "@/lib/utils"
 
 /* Более свободная раскладка для компонентов, которые слишком широки или
    слишком составные для настоящей сетки (Modal, Header, Table и прочие):
-   стопка разделов с подписями. */
+   стопка разделов с подписями.
+
+   Подложка — `--page-bg`, фон страницы продукта: он меняется темой (Grey 109
+   в новой, Grey 106 в старой), см. docs/conventions.md. */
 export function StoryShowcase({
   children,
   className,
@@ -13,7 +16,7 @@ export function StoryShowcase({
   className?: string
 }) {
   return (
-    <div className={cn("flex flex-col gap-10 bg-[#F8F8F8] p-8", className)}>
+    <div className={cn("flex flex-col gap-10 bg-[var(--page-bg)] p-8", className)}>
       {children}
     </div>
   )

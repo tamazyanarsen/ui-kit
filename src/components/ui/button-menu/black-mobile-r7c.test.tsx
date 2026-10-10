@@ -3,7 +3,19 @@ import { render, screen } from "@testing-library/react"
 
 import { Button } from "@/components/ui/button"
 
+import type * as React from "react"
+
+import { ViewportScope } from "@/lib/viewport"
+
 import { ButtonMenuBlack } from "./black"
+
+// Сверки ниже — про десктопную форму панели: с v1.1.0 у неё есть Mobile,
+// а jsdom без медиазапроса видит именно мобильную.
+const desktop = {
+  wrapper: ({ children }: { children: React.ReactNode }) => (
+    <ViewportScope viewport="desktop">{children}</ViewportScope>
+  ),
+}
 
 // Сверка r7 на 375: информация чёрной панели (412) была шире самой панели
 // (326), ряд действий сжимался до нуля — а нулевую ширину хук ряда считает
@@ -40,7 +52,8 @@ function renderPanel(buttons = ["Подписать", "Скачать"]) {
       {buttons.map((label) => (
         <Button key={label}>{label}</Button>
       ))}
-    </ButtonMenuBlack>
+    </ButtonMenuBlack>,
+    desktop
   )
 }
 

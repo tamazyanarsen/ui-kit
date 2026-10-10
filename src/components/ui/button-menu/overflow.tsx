@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
@@ -84,6 +85,7 @@ function ButtonMenuOverflow({
           side={side}
           align={align}
           sideOffset={8}
+          collisionAvoidance={POPUP_COLLISION}
           className="isolate z-50"
         >
           {/* Высота — не больше места до края окна: у закреплённой нижней

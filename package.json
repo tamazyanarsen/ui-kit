@@ -6,7 +6,9 @@
     "dist"
   ],
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./dist/node_modules/imask/**",
+    "./dist/node_modules/react-imask/**"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",

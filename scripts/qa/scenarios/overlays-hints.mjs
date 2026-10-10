@@ -3,16 +3,8 @@ const wait = (page, fn, arg, what) =>
   page.waitForFunction(fn, arg, { timeout: 8000 }).catch(() => { throw new Error('не дождались: ' + what) })
 // Базовый UI ставит и снимает блокировку прокрутки через setTimeout(0) и кадр — даём хвостам отработать
 const settle = (page) => page.evaluate(() => new Promise((res) => setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(res, 30))), 30)))
-const MODAL = 'компоненты-modal--playground'
-const MODALS = 'компоненты-modal--examples'
 const dlgOpen = (page) => wait(page, () => { const d = document.querySelector('[role=dialog]'); return !!d && d.getBoundingClientRect().width > 0 }, null, 'открытие диалога')
 const dlgGone = (page) => wait(page, () => !document.querySelector('[role=dialog]'), null, 'закрытие диалога')
-const pageUnlocked = (page) => wait(page, () => getComputedStyle(document.body).overflow !== 'hidden' && document.body.style.paddingRight === '' && document.documentElement.style.getPropertyValue('--scroll-lock-gap') === '', null, 'снятие блокировки прокрутки страницы')
-const pageLocked = (page) => wait(page, () => getComputedStyle(document.body).overflow === 'hidden', null, 'блокировка прокрутки страницы')
-const activeIn = (page) => page.evaluate(() => !!document.activeElement?.closest('[role=dialog]'))
-const activeName = (page) => page.evaluate(() => document.activeElement?.getAttribute('aria-label') || document.activeElement?.textContent?.trim().slice(0, 30))
-const trigger = (page, name) => page.getByRole('button', { name, exact: true })
-const focusBack = (page, name) => wait(page, (n) => document.activeElement?.textContent?.trim() === n, name, 'фокус вернулся на «' + name + '»')
 const rect = (page, sel) => page.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom, w: r.width, h: r.height } }, sel)
 // вывести всплывающий слой: ждём, когда он появится и получит размер
 const popRect = async (page, sel) => {
@@ -20,7 +12,6 @@ const popRect = async (page, sel) => {
   await settle(page)
   return rect(page, sel)
 }
-const centerOf = (r) => ({ x: (r.l + r.r) / 2, y: (r.t + r.b) / 2 })
 
 export default [
   {
@@ -102,7 +93,7 @@ export default [
   {
     name: 'tooltip: наведение открывает подсказку, уход курсора закрывает',
     story: 'компоненты-tooltip--playground',
-    run: async ({ page, expect, step }) => {
+    run: async ({ page, _expect, step }) => {
       const t = page.locator('[data-slot=button]').first()
       step('навести')
       await t.hover()

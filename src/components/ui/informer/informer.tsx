@@ -116,7 +116,8 @@ function Informer({
           // шестнадцатого до двадцати четырёх даёт слишком жирный штрих
           // (дизайн-чек от 08.09, замечание 31).
           <KitIcon
-            name={customIcon}
+            // // Имя пришло строкой (контрол, данные): типом не проверить, проверит Icon — пусто и предупреждение в разработке.
+            name={customIcon as IconName}
             size={24}
             aria-hidden="true"
             className="size-6 shrink-0"

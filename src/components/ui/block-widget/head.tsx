@@ -3,7 +3,10 @@ import * as React from "react"
 import { Info } from "@/icons"
 import { cn } from "@/lib/utils"
 import { useIsDesktop } from "@/lib/use-is-desktop"
+import { hasNode } from "@/lib/has-node"
 import { Tooltip } from "@/components/ui/tooltip"
+
+import { useRegisterBlockWidgetTitle } from "./title-context"
 
 // Шапка блока-виджета — фрейм `Top` компонент-сета плюс мобильный `Bottom`.
 //
@@ -59,10 +62,6 @@ const TITLE_BLOCK_PT: Record<BlockWidgetTitleType, string> = {
 const TAG_22 =
   "[&_[data-slot=tag]]:h-[22px] [&_[data-slot=tag]]:pt-0 [&_[data-slot=tag]]:text-p2-medium"
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 interface BlockWidgetHeadProps
   extends Omit<React.ComponentProps<"div">, "title"> {
   title: React.ReactNode
@@ -112,8 +111,10 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
   ...props
 }, ref) {
   const isDesktop = useIsDesktop()
+  const titleId = React.useId()
+  useRegisterBlockWidgetTitle(titleId)
 
-  const infoIcon = hasValue(info) ? (
+  const infoIcon = hasNode(info) ? (
     <Tooltip content={info}>
       <button
         type="button"
@@ -125,7 +126,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
     </Tooltip>
   ) : null
 
-  const statusNode = hasValue(status) ? (
+  const statusNode = hasNode(status) ? (
     <div
       data-slot="block-widget-status"
       className={cn(
@@ -147,7 +148,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
   // (зазор 8), у Small Text стоит после неё (зазор 4, как у описания).
   const mobileLabel = !isDesktop && labelFirst
 
-  const subtitleBelow = !isDesktop && hasValue(subtitle) && (
+  const subtitleBelow = !isDesktop && hasNode(subtitle) && (
     <span
       className={cn(
         "min-w-0 truncate text-[var(--block-widget-muted-fg)]",
@@ -162,6 +163,10 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
     <div className="flex w-full items-center gap-2">
       {labelFirst && !mobileLabel && tag}
       <span
+        // По `id` кликабельный BlockWidget называет свою кнопку-подложку
+        // (см. `PressTarget` и `title-context.ts`).
+        id={titleId}
+        data-slot="block-widget-title"
         className={cn(
           "min-w-0 truncate text-[var(--block-widget-title-fg)]",
           TITLE_CLASS[titleType],
@@ -172,7 +177,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       >
         {title}
       </span>
-      {isDesktop && hasValue(subtitle) && (
+      {isDesktop && hasNode(subtitle) && (
         <span
           className={cn(
             "min-w-0 truncate text-[var(--block-widget-muted-fg)]",
@@ -207,7 +212,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
     >
       {mobileLabel ? (
         <div className="flex w-full flex-col items-start gap-2">
-          {hasValue(tag) && tag}
+          {hasNode(tag) && tag}
           {titleRow}
           {titleType === "large" && subtitleBelow}
         </div>
@@ -215,7 +220,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
         titleRow
       )}
       {(!mobileLabel || titleType === "small") && subtitleBelow}
-      {hasValue(description) && (
+      {hasNode(description) && (
         <p
           className={cn(
             "w-full break-words text-[var(--block-widget-muted-fg)]",
@@ -255,7 +260,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       {/* Верхний ряд мобильной формы (`Top`); на десктопе он «прозрачен»,
           и левый слот с заголовком — прямые дети ряда шапки. */}
       <div className="flex w-full items-start gap-4 desktop:contents">
-        {hasValue(leading) && (
+        {hasNode(leading) && (
           <div
             data-slot="block-widget-leading"
             className={cn(

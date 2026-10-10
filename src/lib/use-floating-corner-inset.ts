@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { useComposedRefs } from "@/lib/compose-refs"
+import { sharedRegistry } from "@/lib/shared-registry"
 
 // Сколько правого нижнего угла экрана занято плавающей карточкой (NPS).
 // Кнопка «Наверх» живёт в том же углу и без этого ложилась под карточку:
@@ -35,10 +36,14 @@ function readInset(): number {
 const GAP = 16
 
 /** Живые карточки и их высота над занятым низом. Две карточки в одном
- * углу стоят друг на друге, а не складываются — берётся наибольшая. */
-const cards = new Map<symbol, number>()
+ * углу стоят друг на друге, а не складываются — берётся наибольшая. Реестр
+ * общий для всех копий кита (см. `shared-registry`). */
+function cardsOf() {
+  return sharedRegistry("floating-corner-inset", () => new Map<symbol, number>())
+}
 
 function publish() {
+  const cards = cardsOf()
   const root = document.documentElement
   if (cards.size === 0) {
     root.style.removeProperty(VARIABLE)
@@ -79,6 +84,7 @@ export function useFloatingCornerInset<T extends HTMLElement>(
       const inset = readInset()
       const height = element.getBoundingClientRect().height
       const occupied = Math.max(0, bottom - inset) + height + GAP
+      const cards = cardsOf()
       if (cards.get(key) === occupied) return
       cards.set(key, occupied)
       publish()
@@ -93,7 +99,7 @@ export function useFloatingCornerInset<T extends HTMLElement>(
     return () => {
       window.removeEventListener("resize", measure)
       observer.disconnect()
-      cards.delete(key)
+      cardsOf().delete(key)
       publish()
     }
   }, [element, active])

@@ -63,6 +63,14 @@ function TabHeadings({
   )
   // Единственный заголовок — «в активном состоянии без возможности клика».
   const single = items.length === 1
+  // В порядок Tab попадает активная вкладка, а если она выключена — первая
+  // доступная. Выключенная кнопка фокус не принимает, и `tabIndex=0` на ней
+  // при `-1` у остальных вычёркивал группу из обхода по Tab целиком (ревью
+  // 10.10, п. 5; то же правило, что у Tabs).
+  const enabledItems = items.filter((item) => !item.disabled)
+  const focusValue = enabledItems.some((item) => item.value === activeValue)
+    ? activeValue
+    : enabledItems[0]?.value
 
   function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     const enabled = items.filter((item) => !item.disabled)
@@ -109,7 +117,7 @@ function TabHeadings({
             data-value={item.value}
             data-active={active || undefined}
             aria-selected={active}
-            tabIndex={active ? 0 : -1}
+            tabIndex={item.value === focusValue ? 0 : -1}
             disabled={item.disabled}
             onClick={() => {
               if (!active) setValue(item.value)

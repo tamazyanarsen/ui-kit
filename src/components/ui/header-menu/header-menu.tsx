@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils"
 import { Grid } from "@/components/ui/grid"
-import { useMediaQuery } from "@/lib/use-media-query"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
 import {
@@ -10,6 +9,7 @@ import {
 } from "./header-menu-parts"
 import { BannerCarousel } from "./banner-carousel"
 import { compactGroups, compactList } from "./compact-list"
+import { MENU_COLUMN_SPAN, useMenuColumns } from "./menu-columns"
 import type { MenuBannerProps } from "./menu-banner"
 
 // HeaderMenu — «Раскрытое меню навигации» (MENU DOCS):
@@ -57,10 +57,11 @@ interface HeaderMenuProps {
   className?: string
 }
 
-const COLUMN_SPAN: Record<2 | 3 | 4, string> = {
-  2: "col-span-6",
-  3: "col-span-4",
-  4: "col-span-3",
+/** Класс пролёта колонки (`MENU_COLUMN_SPAN`) — литералами, чтобы Tailwind их нашёл. */
+const SPAN_CLASS: Record<6 | 4 | 3, string> = {
+  6: "col-span-6",
+  4: "col-span-4",
+  3: "col-span-3",
 }
 
 /** Распределяет группы по колонкам, добирая каждый раз самую короткую. */
@@ -83,8 +84,6 @@ function distribute(groups: HeaderMenuGroup[], columns: number, offsets: number[
   return buckets
 }
 
-/** Порог из замечания 3: с него и выше — четыре колонки, ниже — три. */
-const WIDE_MENU_QUERY = "(min-width: 1536px)"
 
 function HeaderMenu({
   groups: rawGroups = [],
@@ -100,9 +99,8 @@ function HeaderMenu({
   // Пустые элементы списков отбрасываются: `[cond && group]` не роняет меню.
   const groups = compactGroups(rawGroups) ?? []
   const banners = compactList(rawBanners) ?? []
-  const wide = useMediaQuery(WIDE_MENU_QUERY)
   // Четыре колонки по три колонки грида (12/4) с 1536; ниже — три по четыре.
-  const columns = columnsProp ?? (wide ? 4 : 3)
+  const columns = useMenuColumns(columnsProp)
 
   // Баннер занимает верх последней колонки, поэтому она стартует не с нуля
   // — иначе балансировка свалит в неё столько же карточек, сколько и в
@@ -122,7 +120,7 @@ function HeaderMenu({
         <div
           key={index}
           data-slot="header-menu-column"
-          className={cn("flex flex-col gap-6 self-start", COLUMN_SPAN[columns])}
+          className={cn("flex flex-col gap-6 self-start", SPAN_CLASS[MENU_COLUMN_SPAN[columns]])}
         >
           {index === columns - 1 && banners.length > 0 && (
             // Карусель, а не один кадр: баннеры листаются сами и едут

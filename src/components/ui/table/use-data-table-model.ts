@@ -46,6 +46,34 @@ const INTERACTIVE_SELECTOR = [
   "[data-slot='table-resize-handle']",
 ].join(", ")
 
+/**
+ * Ключи строк обязаны быть уникальны: по ним React различает строки, а выбор
+ * и раскрытие хранят состояние. Две РАЗНЫЕ записи с одинаковым `id` молча
+ * делили выбор и раскрытие, а React путал их узлы (ревью 10.10, п. 24).
+ * Таблица не может решить за потребителя, какая из записей «настоящая»,
+ * поэтому только предупреждает — в разработке, один раз на набор ключей.
+ */
+/** Пустой список — один на модуль, чтобы ссылка не менялась от рендера к рендеру. */
+const EMPTY_LIST: never[] = []
+
+let lastDuplicateWarning = ""
+function warnDuplicateKeys(keys: string[]) {
+  const seen = new Set<string>()
+  const duplicates = new Set<string>()
+  for (const key of keys) {
+    if (seen.has(key)) duplicates.add(key)
+    else seen.add(key)
+  }
+  if (duplicates.size === 0) return
+  const list = [...duplicates].slice(0, 5).join(", ")
+  if (list === lastDuplicateWarning) return
+  lastDuplicateWarning = list
+  console.warn(
+    `DataTable: повторяющиеся ключи строк (${list}). Строки с одним ключом делят выбор ` +
+      "и раскрытие; задайте уникальный `id` или `getRowKey`."
+  )
+}
+
 function useDataTableModel<Row>({
   fields: fieldsProp,
   rows: rowsProp,
@@ -74,11 +102,16 @@ function useDataTableModel<Row>({
   total,
 }: DataTableProps<Row>) {
   // Пустые элементы (`cond && field`, `cond && row`) отбрасываются: иначе
-  // `field.hidden` и `row.id` падали на `false`/`null`. Без пустых отдаётся
-  // тот же массив — ссылка для `useMemo` остаётся стабильной.
-  const fields = compactList(fieldsProp) ?? []
-  const rows = compactList(rowsProp) ?? []
-  const columnSettings = compactList(columnSettingsProp)
+  // `field.hidden` и `row.id` падали на `false`/`null`.
+  //
+  // ⚠️ Под `useMemo` по самому пропу. `compactList` отдаёт тот же массив,
+  // только если выбрасывать нечего; при `[a, cond && b]` и при не заданном
+  // списке (`?? []`) получался новый массив на каждый рендер, и
+  // `resolveColumns`, `flatten` и сортировка пересчитывались на любую
+  // перерисовку (ревью 10.10, КК-3; oxlint exhaustive-deps).
+  const fields = React.useMemo(() => compactList(fieldsProp) ?? EMPTY_LIST, [fieldsProp])
+  const rows = React.useMemo(() => compactList(rowsProp) ?? EMPTY_LIST, [rowsProp])
+  const columnSettings = React.useMemo(() => compactList(columnSettingsProp), [columnSettingsProp])
   const { columnWidth, setColumnWidth } = useColumnWidths({
     columnWidths,
     defaultColumnWidths,
@@ -126,6 +159,7 @@ function useDataTableModel<Row>({
       else siblings.set(row, [key])
       return key
     })
+    if (import.meta.env.DEV) warnDuplicateKeys(flat.map((entry) => entry.key))
     return { allRows: flat, originalKeys: index }
   }, [rows, childrenOf, keyOf])
   const hierarchical = allRows.some((entry) => entry.hasChildren)

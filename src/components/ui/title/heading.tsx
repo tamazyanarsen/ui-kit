@@ -19,8 +19,15 @@ import { Tooltip } from "@/components/ui/tooltip"
    заголовок в момент смены ширины окна — тот же приём, что у поля ввода в
    input/hover-tooltip.tsx. */
 
-/** Обрезан ли текст внутри элемента по вертикали (сработал ли line-clamp). */
-function useIsClamped(ref: React.RefObject<HTMLElement | null>, key: unknown) {
+/**
+ * Обрезан ли текст внутри элемента по вертикали (сработал ли line-clamp).
+ *
+ * Наблюдение ставится один раз: смену ширины ловит `ResizeObserver`, смену
+ * текста — `MutationObserver`. Раньше эффект зависел от `children`, то есть
+ * от нового объекта на каждом рендере родителя, и наблюдатель пересоздавался
+ * при любом ре-рендере (ревью 10.10, КК-3).
+ */
+function useIsClamped(ref: React.RefObject<HTMLElement | null>) {
   const [clamped, setClamped] = React.useState(false)
 
   React.useEffect(() => {
@@ -32,8 +39,13 @@ function useIsClamped(ref: React.RefObject<HTMLElement | null>, key: unknown) {
     check()
     const observer = new ResizeObserver(check)
     observer.observe(el)
-    return () => observer.disconnect()
-  }, [ref, key])
+    const text = typeof MutationObserver === "undefined" ? null : new MutationObserver(check)
+    text?.observe(el, { childList: true, characterData: true, subtree: true })
+    return () => {
+      observer.disconnect()
+      text?.disconnect()
+    }
+  }, [ref])
 
   return clamped
 }
@@ -48,7 +60,7 @@ function TitleHeading({ children, className }: TitleHeadingProps) {
   const ref = React.useRef<HTMLHeadingElement>(null)
   // Ключ пересчёта — сам текст: смена заголовка не меняет размеров бокса,
   // поэтому ResizeObserver об этом не узнает.
-  const clamped = useIsClamped(ref, children)
+  const clamped = useIsClamped(ref)
 
   return (
     <Tooltip

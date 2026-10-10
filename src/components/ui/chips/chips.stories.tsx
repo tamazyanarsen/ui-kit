@@ -122,6 +122,8 @@ export const Playground: Story = {
         {...args}
         count={showCount ? count : undefined}
         disabled={state === "disabled"}
+        // Крестик рисуется только с обработчиком удаления.
+        onRemove={() => {}}
       />
     </PseudoBox>
   ),

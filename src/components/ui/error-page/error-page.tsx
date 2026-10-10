@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 
 import { ErrorPageIllustration } from "./illustration"
@@ -46,10 +47,6 @@ interface ErrorPageProps {
   className?: string
 }
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 function ErrorPage({
   type = "image",
   title,
@@ -59,9 +56,9 @@ function ErrorPage({
   className,
 }: ErrorPageProps) {
   const showCode = type === "403" || type === "404"
-  const hasTitle = hasValue(title)
-  const hasDescription = hasValue(description)
-  const hasButton = hasValue(buttonLabel)
+  const hasTitle = hasNode(title)
+  const hasDescription = hasNode(description)
+  const hasButton = hasNode(buttonLabel)
   return (
     // Мобильная форма (мастер `Size=Mobile`): боковые 16, сверху 88, кадр не
     // ниже 640; заголовок 22/30, описание 14/20, зазор до кнопки 24.

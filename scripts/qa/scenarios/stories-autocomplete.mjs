@@ -212,7 +212,7 @@ export default [
   {
     name: 'autocomplete: filterMode=local — список полный до набора и сужается фильтром Base UI',
     story: PLAY,
-    run: async ({ page, expect }) => {
+    run: async ({ page, _expect }) => {
       await reopen(page, { id: PLAY }, 'filterMode:local')
       await page.locator(F).click()
       await wait(page, () => document.querySelectorAll('[role=option]').length === 8, null, '8 пунктов без запроса')

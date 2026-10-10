@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useLatest } from "@/lib/use-latest"
 
 /**
  * Зовёт `onReset` после нативного сброса формы, в которой стоит `node`:
@@ -11,8 +12,7 @@ import * as React from "react"
  * (`preventDefault`) ничего не сбрасывает — и обработчик не зовётся.
  */
 function useFormReset(node: HTMLElement | null, onReset: () => void) {
-  const onResetRef = React.useRef(onReset)
-  onResetRef.current = onReset
+  const onResetRef = useLatest(onReset)
   React.useEffect(() => {
     if (!node) return
     const timers = new Set<ReturnType<typeof setTimeout>>()
@@ -31,7 +31,7 @@ function useFormReset(node: HTMLElement | null, onReset: () => void) {
       doc.removeEventListener("reset", handle)
       timers.forEach(clearTimeout)
     }
-  }, [node])
+  }, [node, onResetRef])
 }
 
 function formOf(node: HTMLElement) {

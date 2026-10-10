@@ -26,10 +26,11 @@ describe("Окна фильтров не шире экрана", () => {
     expect(popup().style.maxWidth).toBe("calc(100vw - 32px)")
   })
 
+  // С ревью 10.10 (КК-2) окно FilterTableSelect — общее окно FilterShell.
   it("FilterTableSelect: ширина ограничена видимой областью", async () => {
     render(<FilterTableSelect label="Счёт" />)
     await open("Счёт")
-    expect(popup().className).toContain("max-w-[calc(100vw-32px)]")
+    expect(popup().style.maxWidth).toBe("calc(100vw - 32px)")
   })
 
   // Прятать второй месяц теперь решает сам Calendar (r10, см.

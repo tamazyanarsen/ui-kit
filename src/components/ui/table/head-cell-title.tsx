@@ -2,8 +2,7 @@ import * as React from "react"
 
 import { ChevronsUpDown } from "@/icons"
 import { cn } from "@/lib/utils"
-import { Tooltip } from "@/components/ui/tooltip"
-
+import { TruncationTooltip } from "./truncation-tooltip"
 import { useTruncated } from "./use-truncated"
 
 /**
@@ -30,16 +29,16 @@ function TableHeadCellTitle({
   onSortClick?: () => void
   alignRight: boolean
 }) {
-  const title = useTruncated<HTMLSpanElement>()
+  const title = useTruncated<HTMLSpanElement>([children])
 
   const label = (
     <>
       {icon && <span aria-hidden="true">{icon}</span>}
-      <Tooltip content={children} disabled={!title.truncated}>
+      <TruncationTooltip truncated={title.truncated} content={children}>
         <span ref={title.ref} className="truncate">
           {children}
         </span>
-      </Tooltip>
+      </TruncationTooltip>
     </>
   )
 

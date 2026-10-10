@@ -1,7 +1,6 @@
 // По одному текстовому аргументу: какой из них растягивает страницу на 375 и каким элементом.
 import { chromium } from 'playwright-core'
 import { chromePath } from './chrome.mjs'
-import fs from 'node:fs'
 const SB = process.env.SB || 'http://localhost:6411'
 const ids = process.argv.slice(2)
 const LONG = 'Непрерывноеслововбезпробелов'.repeat(3)

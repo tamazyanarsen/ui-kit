@@ -1,8 +1,9 @@
 import * as React from "react"
+import { useLatest } from "@/lib/use-latest"
 
 import { startAutoscroll } from "./autoscroll"
 import { hideDragGhost } from "./drag-image"
-import { exceedsGroupLimit, landingDepth } from "./landing"
+import { exceedsGroupLimit, landingDepth, landingDepthOptions } from "./landing"
 
 /**
  * Перетаскивание списка — единые правила кита по макету «03. ELK /
@@ -31,6 +32,15 @@ import { exceedsGroupLimit, landingDepth } from "./landing"
  *      вставки берётся из половины (верхняя — перед строкой, нижняя — после).
  *   5. «При перетаскивании объекта к нижней границе видимой области
  *      происходит прокрутка вниз, к верхней — вверх» — автопрокрутка ниже.
+ *
+ * ⚠️ Механика — нативный HTML5 drag&drop (`draggable`, `dragstart`,
+ * `dragover`, `drop`); pointer-события только взводят строку по ручке.
+ * Мобильные браузеры (Android Chrome, iOS Safari до 15) `dragstart` с
+ * касания не шлют, поэтому на телефоне мышиного переноса НЕТ — порядок
+ * меняется стрелками ↑/↓ на ручке (она фокусируемая кнопка). Экраны, где
+ * перенос на мобильном нужен, должны показать альтернативу (кнопки
+ * «Выше/Ниже» или режим редактирования) — сам хук pointer-перенос не
+ * эмулирует (ревью 10.10, КК-5).
  */
 interface SortableEntry {
   id: string
@@ -119,13 +129,15 @@ function useSortable({
 }: UseSortableOptions) {
   // Последний `canMove` — в ref: колбэки ниже не должны пересоздаваться
   // из-за новой функции на каждом рендере потребителя.
-  const canMoveRef = React.useRef(canMove)
-  canMoveRef.current = canMove
+  const canMoveRef = useLatest(canMove)
   // `to === from` с другой глубиной — переход в группу или из неё на том же
   // индексе: закреплённых строк он не сдвигает, `canReorder` для него не нужен.
-  const allowed = (entries: SortableEntry[], from: number, to: number, depth: number) =>
-    (to === from ? !entries[from]?.locked : canReorder(entries, from, to)) &&
-    (canMoveRef.current?.(from, to, { depth }) ?? true)
+  const allowed = React.useCallback(
+    (entries: SortableEntry[], from: number, to: number, depth: number) =>
+      (to === from ? !entries[from]?.locked : canReorder(entries, from, to)) &&
+      (canMoveRef.current?.(from, to, { depth }) ?? true),
+    [canMoveRef]
+  )
   const listRef = React.useRef<HTMLDivElement>(null)
   const rowRefs = React.useRef(new Map<string, HTMLElement>())
   const [armedId, setArmedId] = React.useState<string | null>(null)
@@ -225,7 +237,18 @@ function useSortable({
       const hovered = items[hoverIndex]
 
       // Свёрнутая группа под курсором — бросок ВНУТРЬ неё, линии нет.
-      if (hovered.group && !hovered.expanded && hovered.id !== dragId && !hovered.locked) {
+      // Только если группе есть что с этим делать: уронить внутрь
+      // (`onDropInto`) или раскрыть, чтобы бросить между её строками
+      // (`onExpandGroup`). Без обоих заливка обещала бросок, который потом
+      // молча ничего не делал (ревью 10.10, п. 15), — тогда заголовок
+      // остаётся обычной строкой с линией.
+      if (
+        (onDropInto || onExpandGroup) &&
+        hovered.group &&
+        !hovered.expanded &&
+        hovered.id !== dragId &&
+        !hovered.locked
+      ) {
         setIndicator(null)
         dropIndex.current = null
         if (dropIntoId !== hovered.id) {
@@ -277,7 +300,7 @@ function useSortable({
         depth: hovered.depth ?? 0,
       })
     },
-    [items, dragId, dropIntoId, cancelExpand, onExpandGroup, expandDelay]
+    [items, dragId, dropIntoId, cancelExpand, onExpandGroup, onDropInto, expandDelay, allowed]
   )
 
   const listProps = {
@@ -337,7 +360,11 @@ function useSortable({
       "data-dragging": dragId === id || undefined,
       "data-drop-into": dropIntoId === id || undefined,
       onDragStart: (event: React.DragEvent) => {
-        if (!movable) return
+        // `dragstart` всплывает и от draggable-потомка невзведённой строки:
+        // протянутое выделение текста, ссылка, картинка. Такой жест — не
+        // перенос строки (макет: «захват по иконке»), и данные браузера мы
+        // ему не подменяем (ревью 10.10, п. 4).
+        if (!movable || armedId !== id) return
         // Данные обязательны: Firefox не начинает перетаскивание без них.
         if (event.dataTransfer) {
           event.dataTransfer.setData("text/plain", id)
@@ -374,10 +401,13 @@ function useSortable({
           event.key === "ArrowUp" ? index - 1 : event.key === "ArrowDown" ? index + 1 : -1
         if (to < 0 || to >= items.length) return
         event.preventDefault()
-        const depth = items[index].depth ?? 0
-        if (allowed(items, index, to, depth)) {
-          onReorder(index, to, { depth })
-        }
+        // Место вставки в координатах `items` до изъятия строки — как у мыши.
+        const insertAt = to < index ? to : to + 1
+        const depth = landingDepthOptions(items, id, insertAt, items[index].depth ?? 0).find(
+          (option) =>
+            !exceedsGroupLimit(items, id, insertAt, option) && allowed(items, index, to, option)
+        )
+        if (depth !== undefined) onReorder(index, to, { depth })
       },
     }
   }

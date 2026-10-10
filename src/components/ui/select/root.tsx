@@ -2,6 +2,8 @@ import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 
 import { cn } from "@/lib/utils"
+import { manualChangeDetails } from "@/lib/change-details"
+import { useLatest } from "@/lib/use-latest"
 
 import { clipText } from "./clip-text"
 
@@ -24,20 +26,7 @@ type RootValue<Value, Multiple extends boolean | undefined> = RootProps<Value, M
 
 /** Детали события сброса в форме, которую ждёт `onValueChange` Base UI. */
 function clearDetails(event: Event): SelectPrimitive.Root.ChangeEventDetails {
-  const details = {
-    reason: "none" as const,
-    event,
-    isCanceled: false,
-    isPropagationAllowed: false,
-    trigger: undefined,
-    cancel() {
-      details.isCanceled = true
-    },
-    allowPropagation() {
-      details.isPropagationAllowed = true
-    },
-  }
-  return details
+  return manualChangeDetails("none", event)
 }
 
 export function Select<Value, Multiple extends boolean | undefined = false>({
@@ -63,12 +52,11 @@ export function Select<Value, Multiple extends boolean | undefined = false>({
     if (!controlled && !details.isCanceled) setOwnValue(next as RootValue<Value, Multiple>)
   }
 
-  const changeRef = React.useRef(change)
-  changeRef.current = change
+  const changeRef = useLatest(change)
   const clear = React.useCallback((event: Event) => {
     const empty = (multiple ? [] : null) as Parameters<typeof change>[0]
     changeRef.current(empty, clearDetails(event))
-  }, [multiple])
+  }, [multiple, changeRef])
 
   return (
     <SelectClearContext.Provider value={clear}>

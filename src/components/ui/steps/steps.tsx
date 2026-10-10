@@ -39,6 +39,13 @@ import { statusColor, type StepState, type StepStatus } from "./variants"
 // обе со своей маской. Положение пересчитывается на прокрутке ленты и на
 // изменении её размеров (ResizeObserver), а не только при монтировании.
 interface Step {
+  /**
+   * Устойчивый ключ элемента. Без него ключ — позиция в списке, и при
+   * вставке или перестановке элемент получает чужой узел вместе с его
+   * состоянием (открытая подсказка выключенного шага) (ревью 10.10, КК-5). Передавайте, если список
+   * меняется на месте.
+   */
+  id?: string | number
   title: React.ReactNode
   description: React.ReactNode
   statusText?: React.ReactNode
@@ -221,7 +228,9 @@ function FadeArrow({
 /** Есть ли у ленты куда прокручиваться влево и вправо. Допуск в 1px гасит
  * дробные scrollLeft при масштабе страницы, иначе в конце ленты правая
  * стрелка мигала бы из-за полупикселя. */
-function useScrollEdges(stripRef: React.RefObject<HTMLDivElement | null>, count: number) {
+// Своё имя, а не `useScrollEdges`: тот в `lib/use-scroll-edges.ts` следит за
+// ВЕРТИКАЛЬНЫМИ краями и отдаёт другое (ревью 10.10, КК-2).
+function useStripScrollEdges(stripRef: React.RefObject<HTMLDivElement | null>, count: number) {
   const [edges, setEdges] = React.useState({ left: false, right: false })
 
   React.useEffect(() => {
@@ -265,7 +274,7 @@ function Steps({
   const cardRefs = React.useRef<Array<HTMLDivElement | null>>([])
   const stripRef = React.useRef<HTMLDivElement>(null)
   const activeIndex = steps.findIndex((step) => step.state === "active")
-  const edges = useScrollEdges(stripRef, steps.length)
+  const edges = useStripScrollEdges(stripRef, steps.length)
 
   // Активный шаг выводится в центр ЛЕНТЫ — и только её. `scrollIntoView`
   // прокручивает всех прокручиваемых предков, включая окно: Steps ниже
@@ -322,7 +331,7 @@ function Steps({
       >
         {steps.map((step, index) => (
           <StepCard
-            key={index}
+            key={step.id ?? index}
             step={step}
             cardRef={(el) => {
               cardRefs.current[index] = el

@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
+import { hasNode } from "@/lib/has-node"
 
 // AccordionCard — самостоятельный аккордеон-«карточка» из макета
 // (`ELK / accordion`: шапка с заголовком и подзаголовком, цветовые типы
@@ -16,10 +17,6 @@ import { hasContent } from "@/lib/has-content"
 // Accordion.Root из Base UI на один пункт, поэтому несколько карточек на
 // странице открываются и закрываются независимо.
 const ITEM_VALUE = "item"
-
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
 
 interface AccordionCardProps {
   title: React.ReactNode
@@ -93,7 +90,7 @@ function AccordionCard({
                 className="size-4 shrink-0 text-[var(--accordion-card-icon-fg)] transition-transform duration-200"
               />
             </span>
-            {hasValue(subtitle) && (
+            {hasNode(subtitle) && (
               <span className="text-p2-medium [overflow-wrap:anywhere] text-[var(--accordion-card-subtitle-fg)] desktop:text-p1-medium">
                 {subtitle}
               </span>

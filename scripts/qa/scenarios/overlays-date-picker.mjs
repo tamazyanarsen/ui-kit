@@ -8,7 +8,6 @@ const load = async (page, story, args, viewport) => {
   await page.addStyleTag({ content: '*,*::before,*::after{animation:none!important;transition:none!important}' })
 }
 const DP = 'компоненты-date-picker--playground'
-const CAL = 'компоненты-calendar--playground'
 const INPUT = 'input[data-slot=input]'
 const day = (page, d, m = 1, y = 2024) => page.locator(`[data-date="${y}-${m}-${d}"]`)
 const isOpen = (page) => page.evaluate((s) => document.querySelector(s).getAttribute('aria-expanded') === 'true', INPUT)
@@ -32,7 +31,6 @@ const val = async (page) => {
 // фокус в поле ввода (после закрытия Base UI возвращает его отдельным шагом)
 const focusInInput = (page) => wait(page, (s) => document.activeElement === document.querySelector(s), INPUT, 'фокус в поле')
 const selected = (page) => page.evaluate(() => [...document.querySelectorAll('[data-selected=true]')].map((b) => b.dataset.date))
-const activeDate = (page) => page.evaluate(() => document.activeElement?.dataset?.date ?? document.activeElement?.getAttribute('aria-label') ?? document.activeElement?.textContent)
 const title = (page) => page.evaluate(() => [...document.querySelectorAll('[data-slot=calendar] > div:first-child [data-slot=button]')].filter((b) => !b.getAttribute('aria-label')).map((b) => b.textContent).join(' '))
 
 export default [
@@ -180,7 +178,7 @@ export default [
   {
     name: 'date-picker: диапазон — два щелчка, обратный порядок выравнивается, «Применить» записывает в поле',
     story: DP,
-    run: async ({ page, expect, step, story }) => {
+    run: async ({ page, _expect, step, story }) => {
       await load(page, story, 'mode:range')
       await valIs(page, '10.01.2024 — 20.01.2024', 'начальный диапазон')
       await page.locator(INPUT).click()
@@ -197,7 +195,7 @@ export default [
   {
     name: 'date-picker: месяц — выбор «Мар» и «Применить» пишут «Март 2026»',
     story: DP,
-    run: async ({ page, expect, story }) => {
+    run: async ({ page, _expect, story }) => {
       await load(page, story, 'mode:month')
       await page.locator(INPUT).click()
       await openWait(page)
@@ -210,7 +208,7 @@ export default [
   {
     name: 'date-picker: год — выбор 2022 и «Применить» пишут «2022»',
     story: DP,
-    run: async ({ page, expect, story }) => {
+    run: async ({ page, _expect, story }) => {
       await load(page, story, 'mode:year')
       await page.locator(INPUT).click()
       await openWait(page)

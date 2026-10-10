@@ -4,6 +4,7 @@ import { ChevronDownIcon, Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -12,11 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 // шевроном и подзаголовок, справа описание, кнопка и меню-«кебаб»), в
 // противоположность самостоятельной карточке из ./accordion-card.tsx. Клик
 // в любом месте строки переключает её, а флажок, кнопка и «кебаб» —
-// настоящие вложенные контролы, которые останавливают всплытие, чтобы не
-// переключать заодно и строку (тот же приём `nativeButton={false}` плюс
-// `render={<div/>}`, которым пользуется SelectTrigger для своей вложенной
-// кнопки очистки: триггер в Base UI по умолчанию настоящий <button> и не
-// может содержать других интерактивных элементов).
+// самостоятельные контролы рядом с триггером (см. шапку строки ниже).
 
 const ITEM_VALUE = "item"
 
@@ -32,11 +29,6 @@ type DescriptionType =
   | "attention"
   | "error"
   | "information"
-
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-function hasValue(node: React.ReactNode) {
-  return node != null && node !== false && node !== ""
-}
 
 const DESCRIPTION_COLOR: Record<DescriptionType, string> = {
   default: "text-[var(--accordion-list-description-default-fg)]",
@@ -78,10 +70,6 @@ interface AccordionListItemProps {
   onOpenChange?: (open: boolean) => void
   children?: React.ReactNode
   className?: string
-}
-
-function stopPropagation(event: React.SyntheticEvent) {
-  event.stopPropagation()
 }
 
 function AccordionListItem({
@@ -134,70 +122,81 @@ function AccordionListItem({
       className={cn("w-full", className)}
     >
       <AccordionPrimitive.Item value={ITEM_VALUE}>
-        <AccordionPrimitive.Header render={titleAs === "h4" ? <h4 /> : <h3 />}>
-          <AccordionPrimitive.Trigger
-            nativeButton={false}
-            render={<div />}
-            data-slot="accordion-list-trigger"
-            // Без собственных отступов: в мастере строка `content
-            // accordion` начинается прямо от края (Top-фрейм x=0..719,
-            // дети от x=0) — отступы даёт контентный блок страницы, в
-            // который компонент вкладывается.
-            // Size=Mobile: рамка «Top» — колонка с зазором 12: сверху флажок
-            // и Title.Subtitle, ниже строка Description (описание слева,
-            // кнопки справа) от самого края, под флажком тоже. Тот же DOM
-            // раскладывается сеткой из трёх колонок; промежуточные обёртки
-            // на мобиле `contents`, а с desktop снова flex-строка.
-            className="grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-start text-left outline-none focus-visible:focus-ring transition-colors desktop:flex desktop:gap-4 [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
-          >
-            {showCheckbox && (
-              <span
-                className="col-start-1 row-span-2 row-start-1 mt-0.5 mr-4 shrink-0 desktop:mr-0"
-                onMouseDown={stopPropagation}
-                onClick={stopPropagation}
+        {/* Шапка строки — по образцу APG «Accordion»: заголовок, внутри него
+            настоящая кнопка-триггер, а флажок и кнопки действий — СОСЕДИ
+            заголовка, а не его дети. Раньше вся строка была триггером
+            `role="button"` (`render={<div/>}`) внутри `<h3>`: дети роли
+            `button` по ARIA «презентационные», и флажок с кнопками
+            скринридер складывал в имя строки, а `<div>` внутри заголовка —
+            невалидная вложенность (ревью 10.10, п. 25).
+
+            «Клик в любом месте строки переключает её» держится на
+            растянутом псевдоэлементе кнопки (`after:absolute after:inset-0`
+            от `relative`-шапки): он и есть область нажатия строки. Флажок и
+            кнопки стоят над ним (`relative z-[1]`) и нажимаются сами. */}
+        <div
+          data-slot="accordion-list-header"
+          // Без собственных отступов: в мастере строка `content
+          // accordion` начинается прямо от края (Top-фрейм x=0..719,
+          // дети от x=0) — отступы даёт контентный блок страницы, в
+          // который компонент вкладывается.
+          // Size=Mobile: рамка «Top» — колонка с зазором 12: сверху флажок
+          // и Title.Subtitle, ниже строка Description (описание слева,
+          // кнопки справа) от самого края, под флажком тоже. Тот же DOM
+          // раскладывается сеткой из трёх колонок; промежуточные обёртки
+          // на мобиле `contents`, а с desktop снова flex-строка.
+          className="relative grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-start text-left transition-colors desktop:flex desktop:gap-4"
+        >
+          {showCheckbox && (
+            <span className="relative z-[1] col-start-1 row-span-2 row-start-1 mt-0.5 mr-4 shrink-0 desktop:mr-0">
+              <Checkbox
+                checked={checked}
+                defaultChecked={defaultChecked}
+                onCheckedChange={onCheckedChange}
+                aria-label={checkboxName}
+                aria-labelledby={checkboxName ? undefined : titleId}
+              />
+            </span>
+          )}
+
+          {/* Колонка Title.Subtitle из мастера: `flex-1 flex-col gap-4`,
+              внутри — строка Title (Text + Status) и под ней Subtitle.
+              Status («Подписано») живёт
+              именно здесь, на строке заголовка, а не в группе кнопок —
+              отсюда и претензия дизайн-чека №24, что он «располагается
+              выше чем середина по кнопкам». */}
+          <span className="contents desktop:flex desktop:min-w-0 desktop:flex-1 desktop:flex-col desktop:gap-1">
+            <span className="contents desktop:flex desktop:w-full desktop:items-start desktop:gap-3">
+              {/* Дизайн-чек №23: заголовок больше не обрезается в
+                  многоточие. «Длинный текст становится многострочным, а
+                  иконка шеврона ставится не по концу контейнера текста, а
+                  ставится с небольшим пробелом от последнего символа в
+                  конце строки, то есть располагается inline». Поэтому
+                  шеврон — inline-элемент внутри самого текста, а не
+                  отдельная flex-колонка: так он едет за последним словом
+                  при переносе. В мастере он лежит во вложенном фрейме
+                  `Text` (flex gap-12, items-end), что для одной строки
+                  даёт тот же результат, а многострочный случай в
+                  документации просто не нарисован.
+
+                  Зазор до шеврона — единственная метрика, различающаяся
+                  между размерами заголовка: 12px на H3 и 8px на H4
+                  (Text-фрейм H3 — gap-[12px]; в H4 заголовок шириной 43
+                  заканчивается на 43, а Box начинается на 51). */}
+              <AccordionPrimitive.Header
+                render={titleAs === "h4" ? <h4 /> : <h3 />}
+                className={cn(
+                  "col-span-2 col-start-2 row-start-1 min-w-0 flex-1 [overflow-wrap:anywhere] text-[var(--accordion-list-title-fg)]",
+                  TITLE_SIZE[titleAs]
+                )}
               >
-                <Checkbox
-                  checked={checked}
-                  defaultChecked={defaultChecked}
-                  onCheckedChange={onCheckedChange}
-                  aria-label={checkboxName}
-                  aria-labelledby={checkboxName ? undefined : titleId}
-                />
-              </span>
-            )}
-
-            {/* Колонка Title.Subtitle из мастера: `flex-1 flex-col gap-4`,
-                внутри — строка Title (Text + Status) и под ней Subtitle.
-                Status («Подписано») живёт
-                именно здесь, на строке заголовка, а не в группе кнопок —
-                отсюда и претензия дизайн-чека №24, что он «располагается
-                выше чем середина по кнопкам». */}
-            <span className="contents desktop:flex desktop:min-w-0 desktop:flex-1 desktop:flex-col desktop:gap-1">
-              <span className="contents desktop:flex desktop:w-full desktop:items-start desktop:gap-3">
-                {/* Дизайн-чек №23: заголовок больше не обрезается в
-                    многоточие. «Длинный текст становится многострочным, а
-                    иконка шеврона ставится не по концу контейнера текста, а
-                    ставится с небольшим пробелом от последнего символа в
-                    конце строки, то есть располагается inline». Поэтому
-                    шеврон — inline-элемент внутри самого текста, а не
-                    отдельная flex-колонка: так он едет за последним словом
-                    при переносе. В мастере он лежит во вложенном фрейме
-                    `Text` (flex gap-12, items-end), что для одной строки
-                    даёт тот же результат, а многострочный случай в
-                    документации просто не нарисован.
-
-                    Зазор до шеврона — единственная метрика, различающаяся
-                    между размерами заголовка: 12px на H3 и 8px на H4
-                    (Text-фрейм H3 — gap-[12px]; в H4 заголовок шириной 43
-                    заканчивается на 43, а Box начинается на 51). */}
-                <span
-                  id={titleId}
-                  className={cn(
-                    "col-span-2 col-start-2 row-start-1 min-w-0 flex-1 [overflow-wrap:anywhere] text-[var(--accordion-list-title-fg)]",
-                    TITLE_SIZE[titleAs]
-                  )}
+                <AccordionPrimitive.Trigger
+                  data-slot="accordion-list-trigger"
+                  // Кольцо фокуса — на растянутой области, то есть вокруг
+                  // всей строки, как было у прежнего триггера-строки.
+                  className="cursor-pointer text-left outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:focus-ring [&[data-panel-open]_[data-slot=accordion-list-chevron]]:rotate-180"
                 >
-                  {title}
+                  <span id={titleId}>{title}</span>
                   <ChevronDownIcon
                     aria-hidden="true"
                     data-slot="accordion-list-chevron"
@@ -212,76 +211,72 @@ function AccordionListItem({
                         : "top-1 ml-2 desktop:top-2 desktop:ml-3"
                     )}
                   />
-                </span>
+                </AccordionPrimitive.Trigger>
+              </AccordionPrimitive.Header>
 
-                {/* Проверка на «есть что показать», а не на истинность: 0 —
-                    настоящее значение (сумма, счётчик), а `0 && …` выводил
-                    голую цифру за заголовком, вне своей колонки. */}
-                {hasValue(description) && (
-                  <span
-                    className={cn(
-                      // `py` из мастера (Status — `flex items-start py-[4px]`)
-                      // центрирует 24px-строку в 32px-строке заголовка H3;
-                      // на H4 строка заголовка 28px, поэтому 2px.
-                      // Мобила: строка Description — слева, 14/20, `py-1.5`.
-                      "col-span-2 col-start-1 row-start-3 mt-3 mr-3 shrink-0 py-1.5 text-p2-medium desktop:m-0 desktop:text-right desktop:text-p1-medium",
-                      titleAs === "h4" ? "desktop:py-0.5" : "desktop:py-1",
-                      DESCRIPTION_COLOR[descriptionType]
-                    )}
-                  >
-                    {description}
-                  </span>
-                )}
-              </span>
-              {hasValue(subtitle) && (
-                // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
-                <span className="col-span-2 col-start-2 row-start-2 mt-1 text-p2-medium [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)] desktop:m-0 desktop:text-p1-medium">
-                  {subtitle}
+              {/* Проверка на «есть что показать», а не на истинность: 0 —
+                  настоящее значение (сумма, счётчик), а `0 && …` выводил
+                  голую цифру за заголовком, вне своей колонки. */}
+              {hasNode(description) && (
+                <span
+                  className={cn(
+                    // `py` из мастера (Status — `flex items-start py-[4px]`)
+                    // центрирует 24px-строку в 32px-строке заголовка H3;
+                    // на H4 строка заголовка 28px, поэтому 2px.
+                    // Мобила: строка Description — слева, 14/20, `py-1.5`.
+                    "col-span-2 col-start-1 row-start-3 mt-3 mr-3 shrink-0 py-1.5 text-p2-medium desktop:m-0 desktop:text-right desktop:text-p1-medium",
+                    titleAs === "h4" ? "desktop:py-0.5" : "desktop:py-1",
+                    DESCRIPTION_COLOR[descriptionType]
+                  )}
+                >
+                  {description}
                 </span>
               )}
             </span>
+            {hasNode(subtitle) && (
+              // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
+              <span className="col-span-2 col-start-2 row-start-2 mt-1 text-p2-medium [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)] desktop:m-0 desktop:text-p1-medium">
+                {subtitle}
+              </span>
+            )}
+          </span>
 
-            {(showButton || showMore) && (
+          {(showButton || showMore) && (
             <span
               className={cn(
-                "row-start-3 mt-3 flex shrink-0 items-start gap-4 desktop:mt-0",
+                "relative z-[1] row-start-3 mt-3 flex shrink-0 items-start gap-4 desktop:mt-0",
                 // Без описания кнопки в строке Description стоят от левого края.
-                hasValue(description)
+                hasNode(description)
                   ? "col-start-3"
                   : "col-span-3 col-start-1 justify-self-start"
               )}
             >
               <span className="flex items-start gap-2">
-                  {showButton && (
-                    <span onMouseDown={stopPropagation} onClick={stopPropagation}>
-                      <Button
-                        type="button"
-                        variant="secondary-grey"
-                        size="sm"
-                        onClick={onButtonClick}
-                      >
-                        {buttonLabel}
-                      </Button>
-                    </span>
-                  )}
-                  {showMore && (
-                    <span onMouseDown={stopPropagation} onClick={stopPropagation}>
-                      <Button
-                        type="button"
-                        variant="secondary-grey"
-                        size="sm"
-                        icon={Ellipsis}
-                        iconPosition="only"
-                        aria-label="Ещё"
-                        onClick={onMoreClick}
-                      />
-                    </span>
-                  )}
-                </span>
+                {showButton && (
+                  <Button
+                    type="button"
+                    variant="secondary-grey"
+                    size="sm"
+                    onClick={onButtonClick}
+                  >
+                    {buttonLabel}
+                  </Button>
+                )}
+                {showMore && (
+                  <Button
+                    type="button"
+                    variant="secondary-grey"
+                    size="sm"
+                    icon={Ellipsis}
+                    iconPosition="only"
+                    aria-label="Ещё"
+                    onClick={onMoreClick}
+                  />
+                )}
+              </span>
             </span>
-            )}
-          </AccordionPrimitive.Trigger>
-        </AccordionPrimitive.Header>
+          )}
+        </div>
 
         {hasContent(children) && (
           <AccordionPrimitive.Panel

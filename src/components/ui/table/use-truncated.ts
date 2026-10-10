@@ -1,43 +1,51 @@
 import * as React from "react"
 
-/** Подсказка при обрезке: макет показывает подсказку с полным значением
+import { observeSize } from "@/lib/observe-size"
+
+/**
+ * Подсказка при обрезке: макет показывает подсказку с полным значением
  * всякий раз, когда текст ячейки подрезан («При наведении на усечённый текст
  * появляется подсказка с полным содержимым»). Перезамеряется при изменении
- * ширины колонки. */
-function useTruncated<T extends HTMLElement>() {
-  const ref = React.useRef<T>(null)
+ * ширины колонки.
+ *
+ * Ревью 10.10, КК-3: хук стоит в каждой ячейке Text/Number/Tag, и прежний
+ * вариант на каждую отрисовку таблицы читал раскладку во всех ячейках
+ * (`useLayoutEffect` без зависимостей), а каждая ячейка держала свой
+ * `ResizeObserver`. 300 строк × 8 колонок и один клик по флажку — ~2400
+ * синхронных замеров и столько же живых наблюдателей. Теперь:
+ *
+ *  • замер по отрисовке — только когда сменилось то, что показывает узел
+ *    (`deps`: текст, знак, пояснение);
+ *  • размер узла слушает один общий наблюдатель (`lib/observe-size`);
+ *  • `ref` — callback: ячейка, обёрнутая подсказкой только при обрезке,
+ *    перемонтирует измеряемый узел, и хук обязан подхватить новый.
+ *
+ * @param deps то, что показывает узел, — при смене любого из значений замер
+ *   повторяется. Число значений у одного места вызова постоянно.
+ */
+function useTruncated<T extends HTMLElement>(deps: React.DependencyList = []) {
+  const [node, setNode] = React.useState<T | null>(null)
   const [truncated, setTruncated] = React.useState(false)
 
   const measure = React.useCallback(() => {
-    const el = ref.current
-    if (!el) return
+    if (!node) return
     // Защита в +1px: субпиксельные метрики текста могут сделать
     // scrollWidth больше clientWidth даже у текста, который визуально
     // помещается (та же защита, что и у Input).
-    setTruncated(el.scrollWidth > el.clientWidth + 1)
-  }, [])
+    setTruncated(node.scrollWidth > node.clientWidth + 1)
+  }, [node])
 
-  // Два эффекта намеренно. Содержимое может измениться без изменения
-  // размеров коробки, поэтому этот перезамеряет на каждую отрисовку
-  // (запись того же самого булева значения прерывается до повторной
-  // отрисовки React, так что зацикливания быть не может)...
-  React.useLayoutEffect(measure)
+  // Содержимое сменилось при той же коробке — наблюдатель размера молчит.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useLayoutEffect(measure, [measure, ...deps])
 
-  // ...а коробка может изменить размер без отрисовки — перетаскивание
-  // границы колонки не перерисовывает ячейки тела, — поэтому этот следит за
-  // размером и заводится один раз, а не разбирается и собирается заново для
-  // каждой ячейки на каждую отрисовку таблицы.
-  React.useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const observer = new ResizeObserver(measure)
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [measure])
+  // Коробка может изменить размер без отрисовки — перетаскивание границы
+  // колонки не перерисовывает ячейки тела.
+  React.useLayoutEffect(() => (node ? observeSize(node, measure) : undefined), [node, measure])
 
-  // ...и третий — шрифт. Object Sans грузится асинхронно и меняет ширину
-  // текста при той же коробке: наблюдатель молчит, отрисовки нет, и ячейка
-  // навсегда оставалась с признаком, снятым со шрифта запасной гарнитуры.
+  // Шрифт: Object Sans грузится асинхронно и меняет ширину текста при той
+  // же коробке — наблюдатель молчит, отрисовки нет, и ячейка навсегда
+  // оставалась бы с признаком, снятым со шрифта запасной гарнитуры.
   React.useEffect(() => {
     let alive = true
     void document.fonts?.ready.then(() => {
@@ -48,7 +56,7 @@ function useTruncated<T extends HTMLElement>() {
     }
   }, [measure])
 
-  return { ref, truncated }
+  return { ref: setNode as React.RefCallback<T>, truncated }
 }
 
 export { useTruncated }

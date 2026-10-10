@@ -4,6 +4,7 @@ import { Info } from "@/icons"
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
 import { NoOrphan } from "@/lib/no-orphan"
+import { hasNode } from "@/lib/has-node"
 import { Tooltip } from "@/components/ui/tooltip"
 
 import { CopyButton } from "./copy-button"
@@ -202,7 +203,7 @@ function ItemInformationField({
 
   // Не `subText && …`: 0 — значение (комиссия, остаток), а так он выводился
   // голой цифрой без своей строки и цвета.
-  const subTextRow = subText != null && subText !== false && subText !== "" && (
+  const subTextRow = hasNode(subText) && (
     <span
       className={cn(
         "text-p3-medium [overflow-wrap:anywhere] desktop:text-p2-medium",

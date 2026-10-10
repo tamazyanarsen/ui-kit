@@ -31,7 +31,13 @@ function getCompactPageList(page: number, totalPages: number): (number | "ellips
  * Ячейки те же, что у сжатого списка, новых форм нет.
  */
 function getMinimalPageList(page: number, totalPages: number): (number | "ellipsis")[] {
-  const anchors = page >= totalPages ? [1, totalPages] : [page, totalPages]
+  if (totalPages < 1) return []
+  // Текущая страница — в пределах `1…totalPages` и целая: вне их ряд рисовал
+  // чип «0» или «2.5» (ревью 10.10, п. 8). Сжатый список отсекает такие
+  // номера фильтром; здесь якорей всего два, и без текущей ряд потерял бы
+  // смысл, поэтому она приводится к ближайшей настоящей.
+  const current = Math.min(totalPages, Math.max(1, Math.round(page)))
+  const anchors = current >= totalPages ? [1, totalPages] : [current, totalPages]
   const list: (number | "ellipsis")[] = []
   ;[...new Set(anchors)].forEach((entry, index, all) => {
     const previous = all[index - 1]

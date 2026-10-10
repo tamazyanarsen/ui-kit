@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import { sharedRegistry } from "@/lib/shared-registry"
+
 // Сколько ВЕРХНЕГО края вьюпорта занято закреплёнными узлами — прежде всего
 // липкой шапкой страницы. Зеркало `useViewportInsetBottom`: живые узлы
 // публикуют сюда занятую высоту, а всё, что липнет к верху, отсчитывает
@@ -18,9 +20,13 @@ import * as React from "react"
 
 const VARIABLE = "--viewport-inset-top"
 
-const bars = new Map<symbol, number>()
+/** Живые узлы и их вклад — общие для всех копий кита (см. `shared-registry`). */
+function barsOf() {
+  return sharedRegistry("viewport-inset-top", () => new Map<symbol, number>())
+}
 
 function publish() {
+  const bars = barsOf()
   const inset = bars.size === 0 ? 0 : Math.max(0, ...bars.values())
   document.documentElement.style.setProperty(VARIABLE, `${Math.round(inset)}px`)
 }
@@ -47,6 +53,7 @@ export function useViewportInsetTop(
     const measure = () => {
       const rect = element.getBoundingClientRect()
       const overlap = Math.min(rect.height, Math.max(0, rect.bottom))
+      const bars = barsOf()
       const previous = bars.get(key)
       if (previous === overlap) return
       bars.set(key, overlap)
@@ -63,7 +70,7 @@ export function useViewportInsetTop(
       window.removeEventListener("scroll", measure, { capture: true })
       window.removeEventListener("resize", measure)
       observer.disconnect()
-      bars.delete(key)
+      barsOf().delete(key)
       publish()
     }
   }, [ref, active])

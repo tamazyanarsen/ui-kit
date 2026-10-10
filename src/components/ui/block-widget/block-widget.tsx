@@ -3,8 +3,11 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { flattenChildren } from "@/lib/flatten-children"
 import { pressHandlers } from "@/lib/press"
+import { PressTarget } from "@/lib/press-target"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Divider } from "@/components/ui/divider"
+
+import { BlockWidgetTitleContext, useBlockWidgetTitles } from "./title-context"
 
 // BlockWidget — «блок-виджет»: карточка с шапкой и слотом содержимого,
 // из которой собираются виджеты дашборда.
@@ -59,35 +62,41 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
   variant = "solid",
   type = "default",
   onClick,
-  onKeyDown,
-  role,
-  tabIndex,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  id,
   className,
   children,
   ...props
-}, ref) {
+}, forwardedRef) {
   const interactive = variant === "solid" && Boolean(onClick)
 
   // Внутри блока живут своя кнопка и своё управление — нажатие по ним это
   // не нажатие по блоку. Тот же приём, что у строки таблицы.
   const press = pressHandlers<HTMLDivElement>(interactive ? onClick : undefined)
 
+  // Клавиатурный и экранный вход в кликабельный блок — кнопка-подложка
+  // (`PressTarget`), а не `role="button"` на корне: у роли `button` дети
+  // «презентационные», и вложенные «Действие», флажок и радио скринридер
+  // складывал в имя блока (ревью 10.10, п. 25). Имя подложки — заголовок
+  // первой шапки блока либо `aria-label`/`aria-labelledby` потребителя.
+  // `onKeyDown` потребителя по-прежнему видит Enter/Space (событие
+  // всплывает от подложки), и его `preventDefault()` отменяет нажатие.
+  const [titleId, registerTitle] = useBlockWidgetTitles()
+  // Ни шапки, ни своего имени (блок с произвольным содержимым) — имя
+  // подложки собирается из текста всего блока, как у прежней роли `button`.
+  const ownId = React.useId()
+  const rootId = id ?? ownId
+
   return (
     <div
       data-slot="block-widget"
       data-variant={variant}
       data-type={type}
-      role={role ?? (interactive ? "button" : undefined)}
-      tabIndex={tabIndex ?? (interactive ? 0 : undefined)}
+      id={interactive ? rootId : id}
       onClick={press.onClick}
-      // Свой `onKeyDown` потребителя (аналитика, горячие клавиши) раньше
-      // разворачивался из `props` поверх внутреннего и отключал Enter/Space:
-      // кликабельный блок переставал нажиматься с клавиатуры. Теперь оба
-      // вызываются, а `preventDefault()` потребителя отменяет нажатие.
-      onKeyDown={(event) => {
-        onKeyDown?.(event)
-        if (!event.defaultPrevented) press.onKeyDown?.(event)
-      }}
+      aria-label={interactive ? undefined : ariaLabel}
+      aria-labelledby={interactive ? undefined : ariaLabelledBy}
       className={cn(
         "group/block-widget flex w-full flex-col items-center gap-2 rounded-[12px] p-4 desktop:gap-4 desktop:p-6",
         variant === "solid"
@@ -97,7 +106,7 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
             // разъезжаются на 2px по ширине там, где стоят рядом.
             "box-border border border-[var(--block-widget-border)]",
         interactive &&
-          "cursor-pointer outline-none transition-colors hover:bg-[var(--block-widget-bg-hover)] focus-visible:focus-ring",
+          "relative cursor-pointer transition-colors hover:bg-[var(--block-widget-bg-hover)]",
         // OnClick (Active) серого блока — Grey 124 (дизайн-чек от 08.10,
         // замечание 28). Только у сплошного: обведённый блок не серый.
         interactive &&
@@ -105,10 +114,19 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
           "active:bg-[var(--block-widget-bg-active)]",
         className
       )}
-      ref={ref}
+      ref={forwardedRef}
       {...props}
     >
-      {type === "double" ? <DoubleLayout>{children}</DoubleLayout> : children}
+      {interactive && onClick && (
+        <PressTarget
+          onPress={onClick}
+          label={ariaLabel}
+          labelledBy={ariaLabelledBy ?? (ariaLabel ? undefined : (titleId ?? rootId))}
+        />
+      )}
+      <BlockWidgetTitleContext.Provider value={registerTitle}>
+        {type === "double" ? <DoubleLayout>{children}</DoubleLayout> : children}
+      </BlockWidgetTitleContext.Provider>
     </div>
   )
 })

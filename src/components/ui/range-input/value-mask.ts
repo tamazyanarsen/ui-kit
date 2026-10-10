@@ -125,6 +125,17 @@ function parseRangeValue(text: string) {
   return Number.isFinite(value) ? value : null
 }
 
+/**
+ * Знаков после запятой в записи числа — с учётом экспоненты: `String(1e-7)`
+ * это «1e-7», и подсчёт по точке давал 0.
+ */
+function decimalsOf(value: number) {
+  if (!Number.isFinite(value)) return 0
+  const [mantissa, exponent = "0"] = String(value).toLowerCase().split("e")
+  const fraction = (mantissa.split(".")[1] ?? "").length
+  return Math.min(100, Math.max(0, fraction - Number(exponent)))
+}
+
 /** Ограничить диапазоном и, если задан, привязать к шагу. */
 function clampToRange(value: number, min: number, max: number, step?: number) {
   let next = Math.min(max, Math.max(min, value))
@@ -132,8 +143,11 @@ function clampToRange(value: number, min: number, max: number, step?: number) {
     next = min + Math.round((next - min) / step) * step
     // Шаг не делит диапазон нацело — последнее деление всё равно `max`.
     next = Math.min(max, next)
-    // Хвост двоичной дроби (0.1 + 0.2): округляем до точности шага.
-    const decimals = (String(step).split(".")[1] ?? "").length
+    // Хвост двоичной дроби (0.1 + 0.2): округляем до точности сетки. Сетка —
+    // это `min + k·step` и `max`, поэтому точность — наибольшая из трёх.
+    // Раньше бралась только точность шага: при `min=0.5, step=1` значение
+    // 3.5 округлялось до 4 — мимо сетки ползунка (ревью 10.10, п. 11).
+    const decimals = Math.max(decimalsOf(step), decimalsOf(min), decimalsOf(max))
     next = Number(next.toFixed(decimals))
   }
   return next

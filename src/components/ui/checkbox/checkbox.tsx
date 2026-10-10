@@ -4,13 +4,10 @@ import { Check, Minus } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { resolveCaption } from "@/components/ui/input/caption"
+import { hasNode } from "@/lib/has-node"
 import { CONTROL_TEXT_COLUMN_CLASS } from "@/lib/control-text-column"
 
 import { useBridgedChecked, useNativeInputBridge } from "./native-input-bridge"
-
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
 
 interface CheckboxOwnProps {
   label?: React.ReactNode
@@ -68,7 +65,9 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
   const generatedId = React.useId()
   const checkboxId = id ?? generatedId
   const { caption } = resolveCaption(error, comment)
-  const hasCaption = Boolean(caption)
+  // Число 0 — содержимое, как и у `label` ниже: `Boolean` прятал
+  // комментарий «0» вместе с его `aria-describedby` (ревью 10.10, п. 12).
+  const hasCaption = hasNode(caption)
   const captionId = hasCaption ? `${checkboxId}-caption` : undefined
 
   const box = (
@@ -98,9 +97,14 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
         // Tailwind случайно выведет в таблицу стилей позже, и тёмная рамка
         // наведения снова вылезает на отмеченной коробке вместо
         // прозрачной.
-        "not-data-[disabled]:not-data-[checked]:not-data-[indeterminate]:hover:border-[var(--checkbox-border-hover)]",
-        "data-[checked]:border-transparent data-[checked]:bg-[var(--checkbox-checked-bg)] data-[checked]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:data-[checked]:hover:bg-[var(--checkbox-checked-bg-hover)]",
-        "data-[indeterminate]:border-transparent data-[indeterminate]:bg-[var(--checkbox-checked-bg)] data-[indeterminate]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:data-[indeterminate]:hover:bg-[var(--checkbox-checked-bg-hover)]",
+        //
+        // Только для чтения (`readOnly`, ячейка-флажок таблицы без
+        // обработчика) — без наведения и с обычным курсором: коробка
+        // показывает состояние, но не обещает нажатия (ревью 10.10, п. 19).
+        "not-data-[disabled]:not-data-[readonly]:not-data-[checked]:not-data-[indeterminate]:hover:border-[var(--checkbox-border-hover)]",
+        "data-[checked]:border-transparent data-[checked]:bg-[var(--checkbox-checked-bg)] data-[checked]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:not-data-[readonly]:data-[checked]:hover:bg-[var(--checkbox-checked-bg-hover)]",
+        "data-[indeterminate]:border-transparent data-[indeterminate]:bg-[var(--checkbox-checked-bg)] data-[indeterminate]:text-[var(--checkbox-checked-fg)] not-data-[disabled]:not-data-[readonly]:data-[indeterminate]:hover:bg-[var(--checkbox-checked-bg-hover)]",
+        "data-[readonly]:cursor-default",
         "focus-visible:focus-ring",
         "data-[disabled]:cursor-not-allowed data-[disabled]:!border-[var(--checkbox-disabled-border)] data-[disabled]:!bg-[var(--checkbox-disabled-bg)] data-[disabled]:data-[checked]:!text-[var(--checkbox-disabled-fg)] data-[disabled]:data-[indeterminate]:!text-[var(--checkbox-disabled-fg)]",
         error && "!border-[var(--checkbox-border-error)]",
@@ -122,7 +126,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
     </CheckboxPrimitive.Root>
   )
 
-  if (!hasValue(label) && !hasCaption) {
+  if (!hasNode(label) && !hasCaption) {
     return box
   }
 
@@ -159,7 +163,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
           перестановка в разметке, и остальные правила колонки — в
           `lib/control-text-column.ts`. */}
       <span className={CONTROL_TEXT_COLUMN_CLASS}>
-        {hasValue(label) && (
+        {hasNode(label) && (
           <span
             className={cn(
               "text-p2-medium text-[var(--checkbox-label-fg)] desktop:text-p1-medium",

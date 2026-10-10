@@ -25,7 +25,7 @@ const ModalBody = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
   forwardedRef
 ) {
   const { ref, scrolledFromTop, scrolledToEnd, update } =
-    useScrollEdges<HTMLDivElement>([children])
+    useScrollEdges<HTMLDivElement>()
   const setRef = useComposedRefs(ref, forwardedRef)
 
   return (

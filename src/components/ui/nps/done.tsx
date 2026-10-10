@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useLatest } from "@/lib/use-latest"
 import { CloseCross } from "@/components/ui/close-cross"
 
 // Карточка NPS: общие классы, крестик и состояние «Спасибо за оценку».
@@ -95,15 +96,14 @@ function NpsDone({
   // Текст состояния обещает «Окно закроется автоматически» — раньше таймера
   // не было вовсе. Последний `onClose` держится в ref: новый колбэк на
   // каждом рендере родителя не должен перезапускать отсчёт.
-  const onCloseRef = React.useRef(onClose)
-  onCloseRef.current = onClose
+  const onCloseRef = useLatest(onClose)
   const autoClose = Boolean(onClose) && autoCloseMs > 0
 
   React.useEffect(() => {
     if (!autoClose) return
     const timer = window.setTimeout(() => onCloseRef.current?.(), autoCloseMs)
     return () => window.clearTimeout(timer)
-  }, [autoClose, autoCloseMs])
+  }, [autoClose, autoCloseMs, onCloseRef])
 
   return (
     <div

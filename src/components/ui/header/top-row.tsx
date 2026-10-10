@@ -12,6 +12,7 @@ import {
   HEADER_ICON_TILE_LOGOUT,
 } from "./menu-popup"
 import { NotificationMenu, type NotificationMenuItem } from "./notification-menu"
+import { countUnread } from "./notification-count"
 import { ProfileMenu, type ProfileMenuOrganization } from "./profile-menu"
 import { DocumentMenu, type HeaderDocumentMenuItem } from "./top-row-menus"
 import { EmployeeUserMenu } from "./top-row-menus"
@@ -27,10 +28,6 @@ import { useOrganization } from "./use-organization"
  * просмотрены, показывали «5» (а подсветка счётчика срабатывала и на
  * добавление прочитанного пункта).
  */
-function countUnread(items: NotificationMenuItem[]) {
-  return items.filter((item) => !item.viewed).length
-}
-
 function Logo() {
   return (
     <DomRfLogo

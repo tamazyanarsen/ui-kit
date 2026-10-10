@@ -26,6 +26,22 @@ import { Dropdown } from "@/components/ui/dropdown"
 
 const ICON_SIZE = "size-4"
 
+/**
+ * `Type` фильтра — из чего собран его элемент вызова.
+ *
+ * Дизайн-чек «Сторибук Ч.2» от 10.09.2026, замечание 6. В макете
+ * (`ELK / filter-table`) это два независимых булевых свойства `Select` и
+ * `Counter`, но встречаются они только по одному: символов `Select=True,
+ * Counter=True` в сете нет. Дизайнер и свёл их в один список из трёх
+ * значений — здесь ровно он.
+ *
+ * ⚠️ Триггер фильтра в ките ОДИН — этот. Раньше у `FilterTableSelect` был
+ * свой (`select-trigger.tsx`) с тем же видом, и правки расходились: обёртка
+ * под узкую колонку и минимальная ширина 80 из правил триггера жили только
+ * в одной из копий (ревью 10.10, п. 10 и КК-2).
+ */
+type FilterType = "text" | "select" | "counter"
+
 // Дизайн-чек «Сторибук Ч.2» от 10.09.2026, замечание 5: коробка chips-filter
 // из фильтра убрана целиком — элемент вызова у всех видов фильтра один и тот
 // же, пилюля `ELK / filter-table`. Свойства коробки (`Type` со значениями
@@ -33,6 +49,12 @@ const ICON_SIZE = "size-4"
 // здесь больше нельзя.
 interface FilterShellProps {
   label: React.ReactNode
+  /**
+   * Вид элемента вызова: `select` — с шевроном (умолчание всех видов окна),
+   * `text` — подпись без значка, `counter` — с плашкой счётчика. Крестик
+   * сброса у выбранного фильтра — при любом виде.
+   */
+  type?: FilterType
   /** Текст, который показывается вместо подписи, когда фильтр применён. */
   valueLabel?: React.ReactNode
   count?: number
@@ -49,6 +71,7 @@ interface FilterShellProps {
 
 function FilterShell({
   label,
+  type = "select",
   valueLabel,
   count,
   disabled = false,
@@ -87,6 +110,7 @@ function FilterShell({
         </button>
       )
     }
+    if (type !== "select") return null
     const Chevron = open ? ChevronUp : ChevronDown
     return (
       <Chevron
@@ -97,7 +121,12 @@ function FilterShell({
   }
 
   return (
-    <div className="w-fit">
+    // Обёртка — флекс-контейнер с `max-w-full`, как у `FilterTableSelect`:
+    // в блочном `w-fit` минимальная ширина пилюли — вся её подпись без
+    // переноса, и колонка уже 256 выпускала чип за край. Флекс даёт пилюле
+    // сжаться до колонки, а подписи — обрезаться многоточием (ревью 10.10,
+    // п. 10: правка была только в одном из двух триггеров).
+    <div className="flex w-fit max-w-full min-w-0">
       <PopoverPrimitive.Root
         open={disabled ? false : open}
         onOpenChange={onOpenChange}
@@ -109,6 +138,7 @@ function FilterShell({
             <div
               ref={anchorRef}
               data-slot="filter"
+              data-type={type}
               data-checked={active || undefined}
               data-disabled={disabled || undefined}
               className={cn(
@@ -136,7 +166,7 @@ function FilterShell({
                 disabled={disabled}
               />
             )}
-            <span className="ml-auto flex shrink-0 items-center">
+            <span className="ml-auto flex shrink-0 items-center empty:hidden">
               {renderTriggerAction()}
             </span>
           </span>
@@ -181,4 +211,4 @@ function filterApplyLabel(count: number) {
 }
 
 export { FilterShell, filterApplyLabel }
-export type { FilterShellProps }
+export type { FilterShellProps, FilterType }

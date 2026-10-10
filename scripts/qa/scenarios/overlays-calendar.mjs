@@ -7,30 +7,11 @@ const load = async (page, story, args, viewport) => {
   await page.waitForFunction(() => document.body.classList.contains('sb-show-main'))
   await page.addStyleTag({ content: '*,*::before,*::after{animation:none!important;transition:none!important}' })
 }
-const DP = 'компоненты-date-picker--playground'
 const CAL = 'компоненты-calendar--playground'
-const INPUT = 'input[data-slot=input]'
 const day = (page, d, m = 1, y = 2024) => page.locator(`[data-date="${y}-${m}-${d}"]`)
-const isOpen = (page) => page.evaluate((s) => document.querySelector(s).getAttribute('aria-expanded') === 'true', INPUT)
-const openWait = (page) => wait(page, (s) => document.querySelector(s).getAttribute('aria-expanded') === 'true' && !!document.querySelector('[role=dialog]'), INPUT, 'открытие календаря')
-const closeWait = (page) => wait(page, (s) => document.querySelector(s).getAttribute('aria-expanded') === 'false' && !document.querySelector('[role=dialog]'), INPUT, 'закрытие календаря')
 // значение поля дописывается эффектом уже после клика, поэтому ждём, пока оно перестанет меняться
 // ждём известное ожидаемое значение поля, а не «пока перестанет меняться»
-const valIs = async (page, want, msg) => {
-  await wait(page, ([sel, w]) => document.querySelector(sel).value === w, [INPUT, want], msg + ' (ждали «' + want + '»)')
-}
-const val = async (page) => {
-  let prev = await page.locator(INPUT).inputValue()
-  for (let i = 0; i < 20; i++) {
-    await page.waitForTimeout(60)
-    const cur = await page.locator(INPUT).inputValue()
-    if (cur === prev) return cur
-    prev = cur
-  }
-  return prev
-}
 // фокус в поле ввода (после закрытия Base UI возвращает его отдельным шагом)
-const focusInInput = (page) => wait(page, (s) => document.activeElement === document.querySelector(s), INPUT, 'фокус в поле')
 const selected = (page) => page.evaluate(() => [...document.querySelectorAll('[data-selected=true]')].map((b) => b.dataset.date))
 const activeDate = (page) => page.evaluate(() => document.activeElement?.dataset?.date ?? document.activeElement?.getAttribute('aria-label') ?? document.activeElement?.textContent)
 const title = (page) => page.evaluate(() => [...document.querySelectorAll('[data-slot=calendar] > div:first-child [data-slot=button]')].filter((b) => !b.getAttribute('aria-label')).map((b) => b.textContent).join(' '))

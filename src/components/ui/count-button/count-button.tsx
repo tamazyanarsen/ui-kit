@@ -3,6 +3,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import type { ButtonProps } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 import type { BadgeColor } from "@/components/ui/badge"
 
 // Count Button — «Кнопка с индикатором уведомлений»: любая Button
@@ -21,6 +22,17 @@ interface CountButtonProps extends ButtonProps {
    * (`ELK / count button`), но инстанс «Ещё фильтры» в Table Top
    * переопределяет его на `black`, поэтому это пропс, а не константа. */
   countColor?: BadgeColor
+  /**
+   * Классы обёртки «кнопка + значок».
+   *
+   * `className`, как и все остальные пропсы и `ref`, уходит в саму кнопку:
+   * это её стили, её фокус, её якорь для попапа. Но место в раскладке
+   * занимает обёртка, и `className="w-full"` или внешний отступ на кнопке
+   * не давали видимого эффекта — растягивалась кнопка внутри обёртки по
+   * содержимому, а значок оставался у обёртки (ревью 10.10, п. 13). Для
+   * раскладки — этот проп: `rootClassName="w-full" className="w-full"`.
+   */
+  rootClassName?: string
 }
 
 // forwardRef обязателен: CountButton подставляют триггером меню и поповера
@@ -30,11 +42,11 @@ interface CountButtonProps extends ButtonProps {
 // оставалось невидимым (opacity 0, без якоря). Ref уходит на саму кнопку,
 // а не на обёртку-span.
 const CountButton = React.forwardRef<HTMLButtonElement, CountButtonProps>(function CountButton(
-  { count, countColor = "red", size = "lg", className, ...props },
+  { count, countColor = "red", size = "lg", className, rootClassName, ...props },
   ref
 ) {
   return (
-    <span data-slot="count-button" className="relative inline-flex">
+    <span data-slot="count-button" className={cn("relative inline-flex", rootClassName)}>
       {/* Размер по умолчанию — L, а не M, как у самой Button: дизайн-чек от
           08.10, замечание 5 — «кнопки размера M крайне редко используются в
           проекте, исключение — модальные окна». */}

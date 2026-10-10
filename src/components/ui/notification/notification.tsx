@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
+import { PressTarget } from "@/lib/press-target"
 import { hasContent } from "@/lib/has-content"
 import { hasNode } from "@/lib/has-node"
 import { useScrollEdges } from "@/lib/use-scroll-edges"
@@ -17,6 +18,13 @@ import { Scrollbar } from "@/components/ui/scrollbar"
 // нет); все остальные разделы (сумма, статус, описание, кнопка)
 // необязательны так же, как у Event и Informer.
 interface NotificationItemProps {
+  /**
+   * Устойчивый ключ элемента. Без него ключ — позиция в списке, и при
+   * вставке или перестановке элемент получает чужой узел вместе с его
+   * состоянием (фокус, наведение) (ревью 10.10, КК-5). Передавайте, если список
+   * меняется на месте.
+   */
+  id?: string | number
   title: React.ReactNode
   viewed?: boolean
   sum?: React.ReactNode
@@ -42,16 +50,20 @@ function NotificationItem({
   className,
 }: NotificationItemProps) {
   const clickable = Boolean(onClick)
+  const rootId = React.useId()
 
   return (
     <div
       data-slot="notification-item"
       data-viewed={viewed || undefined}
-      role={clickable ? "button" : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      {...pressHandlers<HTMLDivElement>(onClick)}
+      id={rootId}
+      // Нажатие с клавиатуры — кнопка-подложка (`PressTarget`), а не
+      // `role="button"` на корне: у роли `button` дети «презентационные», и
+      // вложенные кнопку действия скринридер складывал в имя блока (ревью 10.10,
+      // п. 25). Имя подложки — текст блока, как у прежней роли.
+      onClick={pressHandlers<HTMLDivElement>(onClick).onClick}
       className={cn(
-        "flex items-start gap-4 bg-[var(--notification-bg)] px-4 py-6",
+        "relative flex items-start gap-4 bg-[var(--notification-bg)] px-4 py-6",
         // Наведение и нажатие дают ОДНУ заливку: отдельного Pressed у
         // набора в макете нет, см. комментарий к --notification-bg-hover.
         clickable &&
@@ -59,6 +71,9 @@ function NotificationItem({
         className
       )}
     >
+      {onClick && (
+        <PressTarget onPress={onClick} labelledBy={rootId} className="focus-visible:focus-ring-inset" />
+      )}
       <span
         aria-hidden="true"
         className="flex h-5 w-2 shrink-0 items-center justify-center"
@@ -81,7 +96,7 @@ function NotificationItem({
             {title}
           </span>
           {/* Не `sum &&`: сумма `0` рисовалась голым нулём без стиля. */}
-          {sum != null && sum !== false && sum !== "" && (
+          {hasNode(sum) && (
             <p
               className={cn(
                 "text-p2-medium [overflow-wrap:anywhere]",
@@ -171,7 +186,7 @@ function NotificationPanel({
   // том же виде уже работает в теле модалки, поэтому вынесено в общий
   // `useScrollEdges`.
   const { ref, scrolledFromTop, scrolledToEnd, update } =
-    useScrollEdges<HTMLDivElement>([items])
+    useScrollEdges<HTMLDivElement>()
 
   return (
     <div
@@ -205,7 +220,7 @@ function NotificationPanel({
         style={{ maxHeight }}
       >
         {items.filter(Boolean).map((item, index) => (
-          <NotificationItem key={index} {...item} />
+          <NotificationItem key={item.id ?? index} {...item} />
         ))}
       </Scrollbar>
 

@@ -4,7 +4,7 @@ import { CirclePlus } from "@/icons"
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
 
-import { splitFiles, toFileList } from "./accept"
+import { splitFiles, toFileList, type FileRejection } from "./accept"
 
 // FileUploadDropzone — цель для перетаскивания файлов. Состояния: обычное,
 // наведение (файл тащат над зоной — по макету заливается Grey 100),
@@ -36,10 +36,21 @@ interface FileUploadDropzoneProps
   disabled?: boolean
   multiple?: boolean
   accept?: string
+  /**
+   * Сколько файлов принять за один выбор или бросок (при `multiple`). Зона
+   * не знает, сколько файлов уже загружено, — передавайте остаток:
+   * `maxFiles={limit - files.length}`.
+   */
+  maxFiles?: number
+  /** Предел размера одного файла, MB — тот же, что печатает подзаголовок. */
+  maxFileSizeMb?: number
+  /** Предел суммарного размера файлов одного выбора, MB. */
+  maxTotalSizeMb?: number
   onFilesSelected?: (files: FileList) => void
-  /** Файлы, отброшенные по `accept` или `multiple` (перетаскивание или
-   * «Все файлы» в окне выбора) — чтобы показать пользователю причину. */
-  onFilesRejected?: (files: File[]) => void
+  /** Файлы, отброшенные по `accept`, числу или размеру (перетаскивание или
+   * «Все файлы» в окне выбора), и причина по каждому — чтобы показать её
+   * пользователю. */
+  onFilesRejected?: (files: File[], rejections: FileRejection[]) => void
 }
 
 // `forwardRef`: тип пропсов объявляет `ref`, а на React 18 обычная функция
@@ -54,6 +65,9 @@ export const FileUploadDropzone = React.forwardRef<
   disabled = false,
   multiple = true,
   accept,
+  maxFiles,
+  maxFileSizeMb,
+  maxTotalSizeMb,
   onFilesSelected,
   onFilesRejected,
   children,
@@ -76,7 +90,13 @@ export const FileUploadDropzone = React.forwardRef<
     }
   }, [disabled])
   const inputRef = React.useRef<HTMLInputElement>(null)
+  // Поле `sr-only` — единственный фокусируемый узел зоны, и имя ему дают
+  // видимая подпись и подзаголовок (форматы, лимиты). Без ссылок на них
+  // скринридер объявлял безымянный выбор файла (ревью 10.10, п. 3).
   const inputId = React.useId()
+  const labelId = `${inputId}-label`
+  const subtitleId = `${inputId}-subtitle`
+  const showSubtitle = hasContent(subtitle)
 
   // Программный `input.click()` всплывает обратно в `onClick` зоны. Метка
   // отличает этот отражённый клик от настоящего: иначе потребитель получал
@@ -94,13 +114,19 @@ export const FileUploadDropzone = React.forwardRef<
   }
 
   function deliver(files: FileList) {
-    const { accepted, rejected } = splitFiles(files, accept, multiple)
+    const { accepted, rejected, rejections } = splitFiles(files, {
+      accept,
+      multiple,
+      maxFiles,
+      maxFileSizeMb,
+      maxTotalSizeMb,
+    })
     // Наружу — всегда копия, а не `input.files`: после выбора поле
     // очищается (`value = ""`, чтобы тот же файл можно было выбрать снова),
     // и Chromium обнуляет этот же объект FileList на месте. Сохранённый в
     // состояние или в форму список оказывался пустым.
     if (accepted.length > 0) onFilesSelected?.(toFileList(accepted))
-    if (rejected.length > 0) onFilesRejected?.(rejected)
+    if (rejected.length > 0) onFilesRejected?.(rejected, rejections)
   }
 
   const tone: DropzoneTone = disabled ? "disabled" : error ? "error" : "default"
@@ -199,6 +225,8 @@ export const FileUploadDropzone = React.forwardRef<
         // Ошибку видно не только глазами: без `aria-invalid` скринридер
         // объявляет поле обычным, сколько бы красного вокруг ни нарисовали.
         aria-invalid={error || undefined}
+        aria-labelledby={labelId}
+        aria-describedby={showSubtitle ? subtitleId : undefined}
         className="sr-only"
         onChange={(event) => {
           if (event.target.files && event.target.files.length > 0) {
@@ -209,7 +237,7 @@ export const FileUploadDropzone = React.forwardRef<
       />
       <span className="flex min-w-0 items-center gap-2">
         <CirclePlus size={24} aria-hidden="true" className={cn("size-6 shrink-0", CONTENT_COLOR[tone])} />
-        <span className={cn("min-w-0 text-p2-medium [overflow-wrap:anywhere] desktop:text-p1-medium", CONTENT_COLOR[tone])}>
+        <span id={labelId} className={cn("min-w-0 text-p2-medium [overflow-wrap:anywhere] desktop:text-p1-medium", CONTENT_COLOR[tone])}>
           {children ?? (
             <>
               {/* Мобильная форма макета (M / Mobile) — просто «Загрузите
@@ -229,11 +257,11 @@ export const FileUploadDropzone = React.forwardRef<
           )}
         </span>
       </span>
-      {hasContent(subtitle) && (
+      {showSubtitle && (
         // Подзаголовок — элемент колонки `items-center`, его ширина по
         // содержимому: без `max-w-full` и `anywhere` (он уменьшает и
         // min-content) неразрывное имя файла вылезало в обе стороны.
-        <span className={cn("max-w-full text-p3-regular [overflow-wrap:anywhere]", SUBTITLE_COLOR[tone])}>
+        <span id={subtitleId} className={cn("max-w-full text-p3-regular [overflow-wrap:anywhere]", SUBTITLE_COLOR[tone])}>
           {subtitle}
         </span>
       )}

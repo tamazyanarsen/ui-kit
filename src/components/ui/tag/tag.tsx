@@ -69,7 +69,8 @@ function Tag({
       }}
     >
       {typeof icon === "string" ? (
-        <Icon name={icon} aria-hidden="true" className="size-4 shrink-0" />
+        // // Имя пришло строкой (контрол, данные): типом не проверить, проверит Icon — пусто и предупреждение в разработке.
+        <Icon name={icon as IconName} aria-hidden="true" className="size-4 shrink-0" />
       ) : (
         icon
       )}

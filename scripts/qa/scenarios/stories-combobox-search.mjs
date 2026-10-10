@@ -215,7 +215,7 @@ export default [
   {
     name: 'combobox search: пример «С полем поиска» в Matrix открывается и фильтрует',
     story: 'компоненты-combobox--matrix',
-    run: async ({ page, expect }) => {
+    run: async ({ page, _expect }) => {
       const section = page.locator('section', { hasText: 'С полем поиска' }).last()
       await section.locator(T).scrollIntoViewIfNeeded()
       await section.locator(T).click()

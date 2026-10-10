@@ -73,4 +73,35 @@ function exceedsGroupLimit(
   return count >= limit && insertAt > last
 }
 
-export { landingDepth, exceedsGroupLimit }
+/**
+ * Глубины, на которых строка может приземлиться в место `insertAt`, — от
+ * ближайшей к `ownDepth`.
+ *
+ * Мышь выбирает одну из двух линий на одном и том же месте вставки: нижняя
+ * половина строки выше (её глубина) или верхняя половина строки ниже (её
+ * глубина). Перенос стрелкой обязан давать те же ответы, что и бросок мышью
+ * в ту же точку, — иначе `meta.depth` у потребителя зависел от устройства
+ * ввода (ревью 10.10, п. 16). Из двух вариантов предпочитается тот, что
+ * ближе к нынешней глубине строки: стрелка двигает строку, а не перекладывает
+ * её между уровнями без нужды.
+ */
+function landingDepthOptions(
+  items: SortableEntry[],
+  dragId: string,
+  insertAt: number,
+  ownDepth: number
+) {
+  const lines: number[] = []
+  for (let i = insertAt - 1; i >= 0; i -= 1) {
+    if (items[i].id === dragId) continue
+    lines.push(items[i].depth ?? 0)
+    break
+  }
+  const next = nextRow(items, dragId, insertAt)
+  if (next >= 0) lines.push(items[next].depth ?? 0)
+  if (lines.length === 0) lines.push(0)
+  const options = [...new Set(lines.map((line) => landingDepth(items, dragId, insertAt, line)))]
+  return options.sort((a, b) => Math.abs(a - ownDepth) - Math.abs(b - ownDepth) || a - b)
+}
+
+export { landingDepth, landingDepthOptions, exceedsGroupLimit }

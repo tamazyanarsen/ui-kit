@@ -150,7 +150,7 @@ const TableHeadCell = React.forwardRef<
   const canSort = sortable && !collapsible
   const canResize = resizable && !collapsible
 
-  const { resolvedWidth, startResize } = useColumnResize({
+  const { resolvedWidth, startResize, resizeByKey, minWidth: resizeMin } = useColumnResize({
     type,
     pin,
     width,
@@ -303,12 +303,23 @@ const TableHeadCell = React.forwardRef<
         // наложения, и следующая ячейка рисовалась поверх вылезшей половины —
         // из 9px хватались только 4 (итоговая проверка №5, замер
         // `elementFromPoint`).
+        // С клавиатуры ручка — фокусируемый `separator` со значением
+        // (ширина в пикселях): ←/→ меняют ширину (ревью 10.10, п. 27).
+        //
+        // ⚠️ Подсказка — `aria-description`, а не `aria-label`: имя
+        // заголовка столбца собирается из содержимого `th`, и имя ручки
+        // входило бы в него — «Дата Ширина столбца» вместо «Дата».
         <span
           role="separator"
           aria-orientation="vertical"
+          aria-description="Ширина столбца: стрелки влево и вправо"
+          aria-valuenow={resolvedWidth !== undefined ? Math.round(resolvedWidth) : undefined}
+          aria-valuemin={resizeMin}
+          tabIndex={0}
           data-slot="table-resize-handle"
           onPointerDown={startResize}
-          className="absolute inset-y-0 right-0 z-10 w-[9px] cursor-col-resize touch-none select-none"
+          onKeyDown={resizeByKey}
+          className="absolute inset-y-0 right-0 z-10 w-[9px] cursor-col-resize touch-none outline-none select-none focus-visible:bg-[var(--focus-ring)]"
         />
       )}
 

@@ -1,15 +1,15 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
-import { Check, ChevronDown, Menu, Plus, Star, X } from "@/icons"
+import { Check, Menu, Plus, X } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 import { Divider } from "@/components/ui/divider"
 import { Grid } from "@/components/ui/grid"
-import { useOverflowCount } from "@/lib/use-overflow-count"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
-import { useOverflowFocusRescue } from "@/lib/overflow-focus-rescue"
+import { NavEmptyHint, NavOverflowTriggerButton, NavRowItem } from "@/lib/nav-overflow-row"
+import { useNavOverflow } from "@/lib/use-nav-overflow"
 
 import { HeaderMenuPopup } from "./menu-popup"
 
@@ -40,43 +40,6 @@ interface HeaderNavItem {
 }
 
 /**
- * Место, которое ряд держит про запас под пункт «Ещё».
- *
- * 56 на сам пункт (P1 Medium «Ещё» + интервал 4 + шеврон 16) плюс 32 —
- * интервал `gap-8` до него; ровно тот же пункт стоит в меню сотрудника
- * (`MORE_RESERVED`). Прежние 72 остались от первой вёрстки ряда (`text-sm`,
- * `gap-1`): впритык «Ещё» вылезал за ряд до 16px.
- */
-const ELLIPSIS_RESERVED = 88
-
-/** Интервал между пунктами в `Menu Header (ELK)` — 32px, не 24. */
-const NAV_GAP = 32
-
-function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
-  // `self-stretch`, а не вертикальный отступ: `Menu Point Header (ELK)` в
-  // макете занимает всю высоту строки в 64px, поэтому целью нажатия служит
-  // вся полоса, хотя закрашена только подпись высотой 24px.
-  return (
-    <button
-      type="button"
-      data-slot="header-nav-item"
-      data-active={active || undefined}
-      // Активный раздел объявляется и в видимом ряду, а не только когда
-      // пункт спрятан в «Ещё»: раньше там стоял лишь `data-active`.
-      aria-current={active ? "page" : undefined}
-      onClick={item.onClick}
-      className={cn(
-        "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
-        active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
-      )}
-    >
-      {item.icon}
-      {item.label}
-    </button>
-  )
-}
-
-/**
  * Вариант `Size=None` у `Menu Header (ELK)` — подсказка
  * на месте пунктов навигации, когда избранное пустое. То есть пункты в
  * нижнем ряду — это и есть избранные разделы, которые пользователь
@@ -84,26 +47,10 @@ function NavItem({ item, active }: { item: HeaderNavItem; active: boolean }) {
  */
 function EmptyFavouritesHint() {
   return (
-    // ⚠️ Подсказка обязана обрезать себя: одна строка `whitespace-nowrap`
-    // без обрезки на узкой шапке вылезала за ряд — под колокольчик и в
-    // горизонтальную прокрутку страницы. Строка — ОДИН `truncate`-блок, а
-    // звезда стоит в её потоке строчным элементом: при двух сжимаемых
-    // кусках текста многоточие появлялось и посреди фразы («…нажмит… ☆»).
-    // Отступы звезды `mx-1` повторяют прежний `gap-1` флекса, а сдвиг
-    // `-0.125em` от базовой линии — прежнее центрирование (сверено в Chrome
-    // до долей пикселя).
-    <p
-      data-slot="header-nav-empty-hint"
-      className="min-w-0 flex-1 truncate text-p1-medium text-[var(--header-meta-fg)]"
-    >
-      Избранное — наведите курсор на элемент в меню и нажмите
-      <Star
-        size={16}
-        aria-hidden="true"
-        className="mx-1 inline-block size-4 align-[-0.125em]"
-      />
-      справа, чтобы добавить его сюда
-    </p>
+    <NavEmptyHint
+      slot="header-nav-empty-hint"
+      before="Избранное — наведите курсор на элемент в меню и нажмите"
+    />
   )
 }
 
@@ -118,22 +65,8 @@ function NavOverflow({
   return (
     <MenuPrimitive.Root modal={false}>
       <MenuPrimitive.Trigger
-        render={
-          <button
-            type="button"
-            data-slot="header-nav-overflow-trigger"
-            // Раскрытое «Ещё» — брендового цвета вместе с шевроном (макет
-            // «Свёрнутое меню — избранные разделы уходят в „Ещё“»).
-            className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
-          />
-        }
-      >
-        Ещё
-        <ChevronDown
-          aria-hidden="true"
-          className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
-        />
-      </MenuPrimitive.Trigger>
+        render={<NavOverflowTriggerButton slot="header-nav-overflow-trigger" />}
+      />
       <HeaderMenuPopup slot="header-nav-overflow-content" align="start">
         {/* Текущий раздел, ушедший в «Ещё», отмечен так же, как в меню
             сотрудника: галочкой для глаз и `aria-current` для
@@ -195,23 +128,15 @@ function NavRow({
   menuTriggerRef,
   createTriggerRef,
 }: NavRowProps) {
-  const { containerRef, itemRefs, visibleCount } = useOverflowCount(
-    items.length,
-    ELLIPSIS_RESERVED,
-    NAV_GAP
-  )
+  const { containerRef, itemRefs, visibleCount, focusSentinel, floorStyle, floorClass } =
+    useNavOverflow({
+      count: items.length,
+      overflowSelector: NAV_OVERFLOW_SELECTOR,
+      itemSelector: '[data-slot="header-nav-item"]',
+    })
   const visibleItems = items.slice(0, visibleCount)
   const hiddenItems = items.slice(visibleCount)
   const isActive = (item: HeaderNavItem) => item.active ?? item.value === activeSection
-  // «Ещё» снялось с фокусом внутри (ряд расширился) — фокус переходит на
-  // раздел ряда, а не на body (аудит 17).
-  const focusSentinel = useOverflowFocusRescue({
-    hasOverflow: hiddenItems.length > 0,
-    rowRef: containerRef,
-    overflowSelector: NAV_OVERFLOW_SELECTOR,
-    itemSelector: '[data-slot="header-nav-item"]',
-    isActive: (item) => item.getAttribute("aria-current") === "page",
-  })
 
   return (
     <div
@@ -276,19 +201,24 @@ function NavRow({
             замер не входят, иначе «Ещё» считал бы их место свободным. */}
         <div
           ref={containerRef}
-          className="relative flex h-full min-w-0 flex-1 items-center gap-8"
+          style={floorStyle}
+          className={cn("relative flex h-full min-w-0 flex-1 items-center gap-8", floorClass)}
         >
           {items.length === 0 && favouritesEnabled && <EmptyFavouritesHint />}
 
           {visibleItems.map((item) => (
-            <NavItem
+            <NavRowItem
               key={item.value}
-              item={item}
+              slot="header-nav-item"
               active={isActive(item)}
-            />
+              onClick={item.onClick}
+            >
+              {item.icon}
+              {item.label}
+            </NavRowItem>
           ))}
 
-          {hiddenItems.length > 0 && focusSentinel}
+          {focusSentinel}
           {hiddenItems.length > 0 && (
             <NavOverflow items={hiddenItems} isActive={isActive} />
           )}

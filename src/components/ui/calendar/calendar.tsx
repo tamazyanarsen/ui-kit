@@ -1,7 +1,8 @@
 import * as React from "react"
 
-import { addMonths, isSameDay, normalizeRange } from "@/lib/calendar"
+import { addMonths, dateKey, isSameDay, normalizeRange } from "@/lib/calendar"
 import { useMediaQuery } from "@/lib/use-media-query"
+import { useToday } from "./use-today"
 import { CalendarDesktop } from "./calendar-desktop"
 import { CalendarMobile } from "./calendar-mobile"
 import type { CalendarProps, CalendarSingleMonth, CalendarView } from "./types"
@@ -11,11 +12,6 @@ import type { CalendarProps, CalendarSingleMonth, CalendarView } from "./types"
 // 2015–2026 открывалось без выбора, и найти его можно было только листанием.
 function decadeEndFor(year: number, currentYear: number) {
   return year > currentYear - 12 ? Math.max(year, currentYear) : year
-}
-
-/** Ключ календарного дня: два объекта Date одного дня дают один ключ. */
-function dayKey(date: Date | null | undefined) {
-  return date ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}` : ""
 }
 
 function viewFor(mode: CalendarProps["mode"]): CalendarView {
@@ -34,7 +30,7 @@ function rangeAnchor(range: [Date | null, Date | null] | undefined) {
 
 /** Ключ диапазона: пара ключей дней. */
 function rangeKeyOf(range: [Date | null, Date | null]) {
-  return `${dayKey(range[0])}|${dayKey(range[1])}`
+  return `${dateKey(range[0])}|${dateKey(range[1])}`
 }
 
 function sameDayOrEmpty(a: Date | null, b: Date | null) {
@@ -69,7 +65,7 @@ function Calendar({
   yearValue,
   onYearChange,
 }: CalendarProps) {
-  const today = React.useMemo(() => new Date(), [])
+  const today = useToday()
   const narrow = useMediaQuery(NARROW_RANGE_QUERY)
   // Сколько месяцев диапазона на экране. Шторка листает ленту и считает как
   // раньше; во всплывающем виде на узком экране — один.
@@ -137,7 +133,7 @@ function Calendar({
   // рендере (`value={iso ? new Date(iso) : null}` в Controller из
   // react-hook-form, `rangeValue={[null, null]}` прямо в JSX), на каждой
   // перерисовке отдаёт новый объект того же дня — и черновик стирался.
-  const valueKey = dayKey(value)
+  const valueKey = dateKey(value)
   const [syncedValue, setSyncedValue] = React.useState(valueKey)
   // Значение, которое календарь только что отдал сам (клик без подвала,
   // «Применить»). Вернувшись через `value` / `rangeValue`, оно вид не
@@ -235,14 +231,14 @@ function Calendar({
       return
     }
     if (valueProp === undefined) setOwnValue(date)
-    if (!sameDayOrEmpty(date, value)) setEmitted(dayKey(date))
+    if (!sameDayOrEmpty(date, value)) setEmitted(dateKey(date))
     onChange?.(date)
   }
 
   function handleApply() {
     if (mode === "single") {
       if (valueProp === undefined) setOwnValue(draftValue)
-      if (!sameDayOrEmpty(draftValue, value)) setEmitted(dayKey(draftValue))
+      if (!sameDayOrEmpty(draftValue, value)) setEmitted(dateKey(draftValue))
       // «Сбросить» → «Применить» — это подтверждённый сброс: родитель
       // должен о нём узнать и без `onReset`.
       // `onChange` — «подтверждённое значение изменилось». Черновик, равный

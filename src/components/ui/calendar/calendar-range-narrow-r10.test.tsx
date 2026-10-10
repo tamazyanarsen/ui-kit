@@ -40,7 +40,7 @@ describe("Calendar range на узком экране: один месяц", () 
   it("DatePicker range показывает один месяц", async () => {
     const user = userEvent.setup()
     render(<DatePicker mode="range" rangeValue={[new Date(2026, 4, 10), new Date(2026, 4, 20)]} />)
-    await user.click(screen.getByRole("textbox"))
+    await user.click(screen.getByRole("combobox"))
     await screen.findByRole("button", { name: "Применить" })
     expect(rangeMonths()).toHaveLength(1)
     expect(screen.getByText("Май")).toBeInTheDocument()

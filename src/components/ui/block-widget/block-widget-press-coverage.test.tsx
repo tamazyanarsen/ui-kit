@@ -39,12 +39,15 @@ describe("BlockWidget: нажатие только по самому блоку"
     expect(onClick).not.toHaveBeenCalled()
   })
 
-  it("клик и Enter по самому блоку по-прежнему вызывают onClick", () => {
+  it("клик и Enter по самому блоку по-прежнему вызывают onClick", async () => {
+    const user = userEvent.setup()
     const onClick = vi.fn()
     render(<BlockWidget onClick={onClick}>Лимит</BlockWidget>)
-    const block = screen.getByRole("button", { name: "Лимит" })
-    fireEvent.click(block)
-    fireEvent.keyDown(block, { key: "Enter" })
+    // Клик мышью ловит сам блок, Enter — его кнопка-подложка с именем из
+    // текста блока (ревью 10.10, п. 25).
+    fireEvent.click(screen.getByText("Лимит"))
+    screen.getByRole("button", { name: "Лимит" }).focus()
+    await user.keyboard("{Enter}")
     expect(onClick).toHaveBeenCalledTimes(2)
   })
 })

@@ -3,6 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
 import { pressHandlers } from "@/lib/press"
+import { PressTarget } from "@/lib/press-target"
 import { Checkbox } from "@/components/ui/checkbox"
 
 export type MailFeedState = "default" | "new" | "used" | "error"
@@ -60,27 +61,32 @@ function MailFeed({
   className,
 }: MailFeedProps) {
   const clickable = Boolean(onClick)
+  const rootId = React.useId()
 
   return (
     <div
       data-slot="mail-feed"
       data-state={state}
+      id={rootId}
       // Карточка с `onClick` — кнопка и для клавиатуры: раньше это был
       // голый `div` с `cursor-pointer`, недоступный без мыши.
-      role={clickable ? "button" : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      {...pressHandlers<HTMLDivElement>(onClick)}
+      // Нажатие с клавиатуры — кнопка-подложка (`PressTarget`), а не
+      // `role="button"` на корне: у роли `button` дети «презентационные», и
+      // вложенные флажок скринридер складывал в имя блока (ревью 10.10,
+      // п. 25). Имя подложки — текст блока, как у прежней роли.
+      onClick={pressHandlers<HTMLDivElement>(onClick).onClick}
       className={cn(
         // Тень на наведении — общая `shadow-universal` кита (0/4/12
         // #8B99A9 24%), а не свой литерал: значение то же, но оно уже живёт
         // токеном, и переписанное вручную расходится с ним при следующей
         // правке темы.
-        "flex w-full flex-col items-start gap-4 rounded-[16px] p-4 outline-none transition-shadow hover:shadow-universal focus-visible:focus-ring",
-        clickable && "cursor-pointer",
+        "flex w-full flex-col items-start gap-4 rounded-[16px] p-4 transition-shadow hover:shadow-universal",
+        clickable && "relative cursor-pointer",
         className
       )}
       style={{ backgroundColor: STATE_BG[state] }}
     >
+      {onClick && <PressTarget onPress={onClick} labelledBy={rootId} />}
       <div className="flex w-full items-center gap-2">
         {showCheckbox && (
           <div onClick={(event) => event.stopPropagation()} className="shrink-0">

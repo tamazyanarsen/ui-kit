@@ -214,6 +214,9 @@ function Pagination({
   const totalPages = Number.isFinite(totalPagesNum) ? Math.max(0, Math.ceil(totalPagesNum)) : 0
   const page = Number.isFinite(pageNum) ? pageNum : 1
   const pageSizeOptions = PAGE_COUNT_OPTIONS[pageCount]
+  // Размер страницы приходит оттуда же, откуда номер (query, JSON), и так же
+  // бывает строкой: «25» не подсвечивало ни одной кнопки (ревью 10.10, п. 18).
+  const pageSizeNum = Number(pageSize)
   const listRef = React.useRef<HTMLDivElement>(null)
   const rootRef = React.useRef<HTMLDivElement>(null)
   const compactLevel = useCompactPages(rootRef, listRef, {
@@ -315,7 +318,7 @@ function Pagination({
             <SizeButton
               key={option}
               size={option}
-              active={option === pageSize}
+              active={option === pageSizeNum}
               onClick={() => onPageSizeChange?.(option)}
             />
           ))}

@@ -9,7 +9,8 @@ import { hasNode } from "@/lib/has-node"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
 import { RangeValueField } from "./value-field"
-import { rangeValueSpec } from "./value-mask"
+import { formatRangeValue, rangeValueSpec } from "./value-mask"
+import { manualChangeDetails } from "@/lib/change-details"
 
 interface RangeInputOwnProps {
   label?: React.ReactNode
@@ -40,16 +41,9 @@ type RangeInputProps = Omit<
 
 /** Подробности события для изменения с клавиатуры в поле значения. */
 function typedChangeDetails(event: Event) {
-  return {
-    reason: "input-change",
-    event,
-    cancel: () => {},
-    allowPropagation: () => {},
-    isCanceled: false,
-    isPropagationAllowed: false,
-    trigger: undefined,
+  return manualChangeDetails("input-change", event, {
     activeThumbIndex: 0,
-  } as unknown as SliderPrimitive.Root.ChangeEventDetails
+  }) as unknown as SliderPrimitive.Root.ChangeEventDetails
 }
 
 // Ползунок с одной ручкой, оформленный как поле в рамке по образцу Input:
@@ -86,9 +80,13 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
     typeof defaultValue === "number" ? defaultValue : min
   )
   const value = typeof valueProp === "number" ? valueProp : internalValue
+  // Потребитель вправе отменить изменение (`details.cancel()`): и у
+  // перетаскивания, и у набранного в поле — один контракт.
   function change(next: number, details: SliderPrimitive.Root.ChangeEventDetails) {
-    if (valueProp === undefined) setInternalValue(next)
     onValueChange?.(next, details)
+    if (details.isCanceled) return false
+    if (valueProp === undefined) setInternalValue(next)
+    return true
   }
   const spec = rangeValueSpec({ mask, format, unit, min })
   const valueFieldRef = React.useRef<HTMLInputElement>(null)
@@ -144,9 +142,12 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
       <SliderPrimitive.Root
         data-slot="range-input"
         disabled={disabled}
-        format={format}
-        // Разряды и запятая — по-русски при любой локали браузера: иначе
-        // aria-valuetext ползунка звучал бы «23,700,000».
+        // `format` в Base UI НЕ передаётся: тот печатает им aria-valuetext
+        // через `Intl`, и `style: "percent"` умножал значение на 100 —
+        // ползунок на 50 звучал «5 000 %», а поле показывало «50 %» (ревью
+        // 10.10, п. 17). Текст для скринридера собирает Thumb из той же
+        // маски, что и поле значения (см. `getAriaValueText` ниже).
+        // Разряды и запятая — по-русски при любой локали браузера.
         locale="ru-RU"
         min={min}
         max={max}
@@ -235,8 +236,10 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
             inputRef={valueFieldRef}
             onType={(next, event) => change(next, typedChangeDetails(event))}
             onCommit={(next, event) => {
-              change(next, typedChangeDetails(event))
-              onValueCommitted?.(next, typedChangeDetails(event))
+              // Отменённое изменение не фиксируется.
+              if (change(next, typedChangeDetails(event))) {
+                onValueCommitted?.(next, typedChangeDetails(event))
+              }
             }}
           />
           {/* Дорожка лежит НА нижней рамке коробки, а не внутри отступов —
@@ -286,6 +289,11 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
               <SliderPrimitive.Thumb
                 data-slot="range-input-thumb"
                 aria-describedby={hasCaption ? captionId : undefined}
+                // Скринридер слышит ровно то, что видно в поле: число по маске
+                // и знак единицы («400 000 ₽», «50 %», «12 дн.»).
+                getAriaValueText={(_formatted, current) =>
+                  `${formatRangeValue(spec, current)}${spec.suffix}`
+                }
                 inputRef={setSliderInputRef}
                 className={cn(
                   // Между двумя стрелками зазора нет, а радиус — литеральные

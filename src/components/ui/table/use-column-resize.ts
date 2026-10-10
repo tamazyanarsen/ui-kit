@@ -35,6 +35,9 @@ function pinnedMaxWidth(cell: HTMLElement): number | null {
   )
 }
 
+/** Шаг ширины колонки стрелкой на ручке; с Shift — вчетверо больше. */
+const KEYBOARD_RESIZE_STEP = 16
+
 interface ColumnResizeOptions {
   type: TableHeadCellType
   /** Закреплённая колонка — только у неё есть верхний предел ширины. */
@@ -122,8 +125,14 @@ function useColumnResize({
     // или потеря захвата присылают `pointercancel` / `lostpointercapture`.
     // Без них `pointermove` оставался висеть на ручке, и следующее движение
     // над ней БЕЗ нажатия продолжало менять ширину колонки.
+    //
+    // ⚠️ Но итог фиксирует ТОЛЬКО отпускание. Отменённый жест (палец ушёл
+    // в прокрутку, окно потеряло фокус, сменилась вкладка) — это не решение
+    // пользователя: ширина возвращается к той, что была до захвата, а
+    // `onWidthCommit` не зовётся. Раньше отмена сохраняла случайную
+    // промежуточную ширину (ревью 10.10, п. 6).
     let finished = false
-    const onUp = () => {
+    const finish = (commit: boolean) => {
       // `pointerup` и следом `lostpointercapture` — один конец жеста.
       if (finished) return
       finished = true
@@ -132,25 +141,57 @@ function useColumnResize({
       // промежуточного кадра со старой шириной нет. Управляемую ширину,
       // которую родитель не принял, ячейка после этого честно возвращает.
       if (last !== null) {
-        if (width === undefined) setUncontrolledWidth(last)
-        onWidthCommit?.(last)
+        if (commit) {
+          if (width === undefined) setUncontrolledWidth(last)
+          onWidthCommit?.(last)
+        } else if (last !== startWidth) {
+          // Родитель, который вёл ширину по каждому движению, получает
+          // исходную обратно — иначе у него осталось бы последнее значение.
+          onWidthChange?.(startWidth)
+        }
       }
       setDragWidth(null)
       handle.removeEventListener("pointermove", onMove)
       handle.removeEventListener("pointerup", onUp)
-      handle.removeEventListener("pointercancel", onUp)
-      handle.removeEventListener("lostpointercapture", onUp)
+      handle.removeEventListener("pointercancel", onCancel)
+      handle.removeEventListener("lostpointercapture", onCancel)
       if (handle.hasPointerCapture?.(event.pointerId)) {
         handle.releasePointerCapture(event.pointerId)
       }
     }
+    const onUp = () => finish(true)
+    const onCancel = () => finish(false)
     handle.addEventListener("pointermove", onMove)
     handle.addEventListener("pointerup", onUp)
-    handle.addEventListener("pointercancel", onUp)
-    handle.addEventListener("lostpointercapture", onUp)
+    handle.addEventListener("pointercancel", onCancel)
+    handle.addEventListener("lostpointercapture", onCancel)
   }
 
-  return { resolvedWidth, startResize }
+  /**
+   * Ширина стрелками на ручке: ←/→ — на 16px, с Shift — на 64. Без этого
+   * ширину колонки меняла только мышь (ревью 10.10, п. 27). Каждое нажатие
+   * — законченное изменение, поэтому и `onWidthChange`, и `onWidthCommit`.
+   */
+  const resizeByKey = (event: React.KeyboardEvent<HTMLSpanElement>) => {
+    const direction = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
+    if (direction === 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    const cell = event.currentTarget.parentElement as HTMLElement | null
+    const edgePadding = edge ? ROW_EDGE_PADDING : 0
+    const pinnedMax = pin && cell ? pinnedMaxWidth(cell) : null
+    const maxWidth = pinnedMax === null ? null : pinnedMax - edgePadding
+    const current = resolvedWidth ?? (cell ? cell.offsetWidth - edgePadding : minWidth)
+    const step = (event.shiftKey ? 4 : 1) * KEYBOARD_RESIZE_STEP
+    let next = Math.max(minWidth, current + direction * step)
+    if (maxWidth !== null) next = Math.min(next, maxWidth)
+    if (next === current) return
+    if (width === undefined) setUncontrolledWidth(next)
+    onWidthChange?.(next)
+    onWidthCommit?.(next)
+  }
+
+  return { resolvedWidth, startResize, resizeByKey, minWidth }
 }
 
 export { useColumnResize }

@@ -2,6 +2,8 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
+import { PressTarget } from "@/lib/press-target"
+import { hasNode } from "@/lib/has-node"
 import { SelectionButton } from "@/components/ui/selection-button"
 import type { SelectionButtonItem } from "@/components/ui/selection-button"
 import { Tag } from "@/components/ui/tag"
@@ -48,10 +50,6 @@ interface CardProps {
   className?: string
 }
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 function Card({
   title,
   titleSuffix,
@@ -69,15 +67,17 @@ function Card({
   const clickable = Boolean(onClick)
   // `[can && item]` с одними false — пунктов нет, и кнопки «…» тоже.
   const items = compactList(menuItems)
+  const titleId = React.useId()
+  const subtitleId = `${titleId}-subtitle`
 
   return (
     <div
       data-slot="card"
-      role={clickable ? "button" : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      // Клик и Enter по «…» и по пунктам его меню (они в портале, но
-      // всплывают по дереву React) — не нажатие на карточку.
-      {...pressHandlers<HTMLDivElement>(onClick)}
+      // Клик по «…» и по пунктам его меню (они в портале, но всплывают по
+      // дереву React) — не нажатие на карточку. С клавиатуры карточку
+      // нажимает кнопка-подложка: `role="button"` на корне прятал «…» от
+      // скринридера внутри имени карточки (ревью 10.10, п. 25).
+      onClick={pressHandlers<HTMLDivElement>(onClick).onClick}
       className={cn(
         // ⚠️ Выключка по ВЕРХУ, а не по центру. Дизайн-чек «Storybook 3»,
         // замечание 11: «проверить и скорректировать расположение кнопки в
@@ -94,10 +94,17 @@ function Card({
         "flex min-h-20 items-start gap-6 rounded-[12px] bg-[var(--card-bg)] p-6 transition-colors",
         // OnClick (Active) — Grey 124, дизайн-чек от 08.10, замечание 28.
         clickable &&
-          "cursor-pointer hover:bg-[var(--card-bg-hover)] active:bg-[var(--card-bg-active)]",
+          "relative cursor-pointer hover:bg-[var(--card-bg-hover)] active:bg-[var(--card-bg-active)]",
         className
       )}
     >
+      {onClick && (
+        <PressTarget
+          onPress={onClick}
+          labelledBy={titleId}
+          describedBy={hasNode(subtitle) ? subtitleId : undefined}
+        />
+      )}
       {showThumbnail && (
         <CardAccount
           number={thumbnailNumber}
@@ -115,16 +122,16 @@ function Card({
               мастере) и режется многоточием, только когда не помещается
               один в группе (`max-w-full`); сумма справа не сжимается вовсе. */}
           <span className="flex min-w-0 items-center gap-2 text-h4">
-            <span className="min-w-0 truncate text-[var(--card-title-fg)]">
+            <span id={titleId} className="min-w-0 truncate text-[var(--card-title-fg)]">
               {title}
             </span>
-            {hasValue(titleSuffix) && (
+            {hasNode(titleSuffix) && (
               <span className="max-w-full shrink-0 truncate font-medium text-[var(--card-meta-fg)]">
                 • {titleSuffix}
               </span>
             )}
           </span>
-          {hasValue(tag) && (
+          {hasNode(tag) && (
             // `Box` тега в мастере: `self-stretch` и `pt-2` — тег сидит на
             // y+2 от верха ряда, а не по центру (там y+3).
             <span className="flex shrink-0 items-start self-stretch pt-0.5">
@@ -132,14 +139,14 @@ function Card({
             </span>
           )}
           {/* Не `value &&`: номер `0` рисовался голым нулём вне колонки. */}
-          {value != null && value !== false && value !== "" && (
+          {hasNode(value) && (
             <span className="max-w-full min-w-0 flex-auto shrink-0 truncate text-right text-p1-medium text-[var(--card-meta-fg)]">
               {value}
             </span>
           )}
         </div>
-        {hasValue(subtitle) && (
-          <span className="truncate text-p2-medium text-[var(--card-meta-fg)]">
+        {hasNode(subtitle) && (
+          <span id={subtitleId} className="truncate text-p2-medium text-[var(--card-meta-fg)]">
             {subtitle}
           </span>
         )}

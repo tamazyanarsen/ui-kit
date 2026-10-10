@@ -64,7 +64,7 @@ describe("Маска даты: диапазоны дня и месяца", () =>
     const user = userEvent.setup()
     const dates: unknown[] = []
     render(<DatePicker label="Дата" onChange={(d) => dates.push(d)} />)
-    const input = screen.getByRole("textbox") as HTMLInputElement
+    const input = screen.getByRole("combobox") as HTMLInputElement
     await user.click(input)
     await user.paste("45.13.2024")
     expect(dates).toEqual([])

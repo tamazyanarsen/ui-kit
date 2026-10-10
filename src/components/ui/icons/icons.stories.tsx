@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { useEffect, useRef, useState } from "react"
 
-import { Icon, ICON_NAMES, type IconProps } from "@/components/ui/icon"
+import { Icon, ICON_NAMES, type IconName, type IconProps } from "@/components/ui/icon"
 
 /**
  * Превью набора иконок.
@@ -17,7 +17,7 @@ import { Icon, ICON_NAMES, type IconProps } from "@/components/ui/icon"
  * по той же причине: набор вырос до пяти сотен, и листать его глазами
  * бессмысленно.
  */
-function IconTile({ name }: { name: string }) {
+function IconTile({ name }: { name: IconName }) {
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle")
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 

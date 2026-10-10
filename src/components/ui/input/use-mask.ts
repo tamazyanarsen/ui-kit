@@ -229,7 +229,12 @@ function useMask({
     }
     if (controlled) rerender()
     else setInternalValue(next)
-    onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
+    // Родителю — событие в форме React `ChangeEvent`, а не нативный
+    // `InputEvent` под видом синтетического: у того нет `persist`,
+    // `isPropagationStopped` и прочего, что обещает тип, и обработчик падал
+    // только на полях с маской (ревью 10.10, п. 7). Тот же помощник, что у
+    // очистки крестиком.
+    onChange?.(createChangeEvent(event.target as HTMLInputElement, event))
   }
 
   return {

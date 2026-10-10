@@ -22,6 +22,30 @@ import { cn } from "@/lib/utils"
 
 type GlyphComponent = React.ComponentType<glyphs.IconProps & { filled?: boolean }>
 
+/*
+ * Имя иконки на уровне типов — то же преобразование, что `toKebab` ниже:
+ * дефис перед заглавной, если до неё строчная буква или цифра, всё в нижний
+ * регистр. `CircleAlert` → `circle-alert`, `Loader2` → `loader2`.
+ *
+ * Ревью 10.10, КК-5: `IconName` был просто `string`, и опечатка в имени
+ * (`<Icon name="chek" />`) типами не ловилась — только `console.warn` в
+ * разработке и пустое место в продукте.
+ */
+type IsUpper<C extends string> = C extends Lowercase<C> ? false : true
+type IsLowerOrDigit<C extends string> = C extends ""
+  ? false
+  : C extends Uppercase<C>
+    ? C extends `${number}`
+      ? true
+      : false
+    : true
+type KebabFrom<S extends string, Prev extends string> = S extends `${infer C}${infer Rest}`
+  ? `${IsUpper<C> extends true ? (IsLowerOrDigit<Prev> extends true ? "-" : "") : ""}${Lowercase<C>}${KebabFrom<Rest, C>}`
+  : ""
+type GlyphExport = {
+  [K in keyof typeof glyphs]: (typeof glyphs)[K] extends (...args: never[]) => unknown ? K : never
+}[keyof typeof glyphs]
+
 /** `CircleAlert` -> `circle-alert`, `Loader2` -> `loader2`. */
 function toKebab(name: string) {
   return name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()
@@ -49,10 +73,21 @@ for (const [exportName, value] of Object.entries(glyphs)) {
   canonical.push(name)
 }
 
-/** Имена всех иконок набора — годится как `options` для контролов. */
-const ICON_NAMES = canonical.sort() as readonly string[]
+/** Имя иконки набора: `check`, `circle-alert`, `arrow-down-chevron`… */
+type IconName = KebabFrom<GlyphExport & string, "">
 
-type IconName = string
+/** Имена всех иконок набора — годится как `options` для контролов. */
+const ICON_NAMES = canonical.sort() as readonly IconName[]
+
+/**
+ * Строка — имя иконки набора. Для пропов, которые принимают имя ИЛИ
+ * разметку (`icon` у Tag, Thumbnail, Switcher, Informer): строку из
+ * контрола Storybook или с сервера типами не проверить, а проверить в
+ * рантайме — можно.
+ */
+function isIconName(value: unknown): value is IconName {
+  return typeof value === "string" && REGISTRY.has(value)
+}
 
 interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, "name"> {
   /** Имя из набора, например `check` или `circle-alert`. */
@@ -104,5 +139,5 @@ function Icon({ name, size = 16, filled, className, ...props }: IconProps) {
   )
 }
 
-export { Icon, ICON_NAMES, REGISTRY as ICON_REGISTRY }
+export { Icon, ICON_NAMES, REGISTRY as ICON_REGISTRY, isIconName }
 export type { IconProps, IconName }

@@ -2,6 +2,7 @@ import { ChevronUp, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { useCollapseExit } from "@/lib/use-collapse-exit"
+import { hasNode } from "@/lib/has-node"
 import { Badge } from "@/components/ui/badge"
 
 // Chips — «Чипсы»: обычная неинтерактивная таблетка со значением и
@@ -67,10 +68,6 @@ const HAS_SUBTITLE: Record<ChipsType, boolean> = {
   "filter-subtitle-grey": true,
 }
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 interface ChipsProps {
   children: React.ReactNode
   /** Свойство `Type` компонент-сета. По умолчанию — `Type=Chips`. */
@@ -102,8 +99,13 @@ interface ChipsProps {
    * Панель, которую открывает эта чипса, СЕЙЧАС РАСКРЫТА.
    *
    * Признак раскрытия обязателен: шеврон не переворачивался не из-за CSS, а
-   * потому что компонент просто не знал, что панель открыта. Заодно это
-   * `aria-expanded` — без него чипса-триггер молчит о своём состоянии.
+   * потому что компонент просто не знал, что панель открыта.
+   *
+   * ⚠️ `aria-expanded` чипса НЕ ставит: она `<span>` без роли, и на нём
+   * атрибут недопустим — скринридер его не объявлял, а axe отмечал ошибку
+   * (ревью 10.10, п. 26). Состояние раскрытия объявляет триггер, который
+   * открывает панель (`Popover.Trigger`, `Menu.Trigger` вокруг чипсы), —
+   * Base UI ставит ему `aria-expanded` сам.
    *
    * Сквозное правило кита: свёрнуто — вниз, развёрнуто — ВВЕРХ. Вправо или
    * влево шеврон разворачивания не смотрит никогда, даже там, где в сете он
@@ -111,6 +113,12 @@ interface ChipsProps {
    */
   open?: boolean
   count?: number
+  /**
+   * Крестик удаления. Рисуется только вместе с `onRemove`: без обработчика
+   * он играл схлопывание и возвращал чипс на место — выглядело как сбой
+   * (ревью 10.10, КК-5). Так же `ComboboxTrigger` рисует крестик только с
+   * `onClear`.
+   */
   closable?: boolean
   onRemove?: () => void
   /**
@@ -142,7 +150,7 @@ function Chips({
   className,
 }: ChipsProps) {
   const isFilter = type !== "chips"
-  const withSubtitle = HAS_SUBTITLE[type] && hasValue(subtitle)
+  const withSubtitle = HAS_SUBTITLE[type] && hasNode(subtitle)
   const tone = CHIPS_TONE[type]
   // Удаление крестиком: чипс гаснет и схлопывается по ширине, соседи в
   // ряду съезжают на его место; `onRemove` приходит после (дизайн-чек 08.10,
@@ -157,7 +165,6 @@ function Chips({
       data-selected={selected || undefined}
       data-disabled={disabled || undefined}
       data-open={(showSelect && open) || undefined}
-      aria-expanded={showSelect ? open : undefined}
       className={cn(
         // Дизайн-чек, замечание 14: rounded-2xl (18px на собственной шкале
         // радиусов этого кита) при такой высоте читается как полная
@@ -211,7 +218,7 @@ function Chips({
         </span>
       )}
       <span className="flex w-full min-w-0 items-center gap-2">
-        {hasValue(iconLeft) && (
+        {hasNode(iconLeft) && (
           <span
             aria-hidden="true"
             data-slot="chips-icon-left"
@@ -236,7 +243,7 @@ function Chips({
         {count !== undefined && (
           <Badge type="counter" value={count} color="light-grey" disabled={disabled} />
         )}
-        {hasValue(icon) && (
+        {hasNode(icon) && (
           <span
             aria-hidden="true"
             className={cn(
@@ -261,7 +268,7 @@ function Chips({
             )}
           />
         )}
-        {closable && (
+        {closable && onRemove && (
           <button
             type="button"
             aria-label="Удалить"

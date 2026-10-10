@@ -168,7 +168,13 @@ const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(function 
   const [internalYear, setInternalYear] = React.useState<number | null>(null)
 
   const activeValue = value !== undefined ? value : internalValue
-  const activeRange = rangeValue ?? internalRange
+  // Одно условие управляемости на чтение и на запись. Раньше чтение шло
+  // через `??`, а запись — через `=== undefined`: `rangeValue={null}` из JS
+  // показывал внутреннее значение, но не давал его менять (ревью 10.10,
+  // КК-5). Диапазон — кортеж, «пустой» диапазон — `[null, null]`, поэтому
+  // `null` вместо кортежа — это «не задано».
+  const rangeControlled = rangeValue != null
+  const activeRange = rangeControlled ? rangeValue : internalRange
   const activeMonth = monthValue !== undefined ? monthValue : internalMonth
   const activeYear = yearValue !== undefined ? yearValue : internalYear
 
@@ -199,7 +205,7 @@ const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(function 
   }
 
   function handleRangeChange(range: [Date | null, Date | null]) {
-    if (rangeValue === undefined) setInternalRange(range)
+    if (!rangeControlled) setInternalRange(range)
     onRangeChange?.(range)
   }
 

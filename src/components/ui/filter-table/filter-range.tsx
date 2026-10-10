@@ -29,14 +29,20 @@ interface FilterRangeProps {
   className?: string
 }
 
-const EMPTY = { from: "", to: "" }
+/**
+ * Пустое значение — НОВЫЙ объект на каждый вызов, а не общая константа.
+ * Константа уходила наружу через `onValueChange` и в черновик, и
+ * потребитель, поправивший полученное значение на месте, портил её для всех
+ * фильтров до конца сессии (ревью 10.10, КК-5).
+ */
+const empty = () => ({ from: "", to: "" })
 
 function FilterRange({
   label,
   fromLabel = "От",
   toLabel = "До",
   value,
-  defaultValue = EMPTY,
+  defaultValue = empty(),
   onValueChange,
   error,
   suffix,
@@ -84,7 +90,7 @@ function FilterRange({
       label={label}
       valueLabel={valueLabel}
       active={active}
-      onClear={() => commit(EMPTY)}
+      onClear={() => commit(empty())}
       disabled={disabled}
       open={open}
       onOpenChange={handleOpenChange}
@@ -111,8 +117,8 @@ function FilterRange({
       <ComboboxFooter
         applyLabel={filterApplyLabel(filled(draft))}
         onReset={() => {
-          setDraft(EMPTY)
-          commit(EMPTY)
+          setDraft(empty())
+          commit(empty())
           setOpen(false)
         }}
         onApply={() => {

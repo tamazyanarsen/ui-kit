@@ -31,7 +31,16 @@ interface CheckboxGroupItem {
 interface CheckboxGroupProps
   extends Omit<React.ComponentProps<"div">, "onChange" | "defaultValue"> {
   items: (CheckboxGroupItem | null | false)[]
-  /** Controlled set of checked values. */
+  /**
+   * Отмеченные значения — управляемый режим.
+   *
+   * ⚠️ `null` значит «значения формы ещё нет» и ведёт себя как НЕ заданный
+   * проп: группа неуправляемая, клик отмечает флажок и зовёт
+   * `onValueChange` (круг 27). Пустой выбор в управляемом режиме — `[]`.
+   * В остальном ките `null` у `value` — это «пусто», а управляемость
+   * решает `value !== undefined`; здесь исключение задокументировано
+   * типом (ревью 10.10, КК-5).
+   */
   value?: string[] | null
   defaultValue?: string[]
   onValueChange?: (value: string[]) => void

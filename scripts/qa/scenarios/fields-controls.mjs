@@ -6,7 +6,6 @@ const COUNT = 'компоненты-count-button--playground'
 
 const slider = (page) => page.locator('input[type=range]')
 const num = async (el, attr) => Number(await el.getAttribute(attr))
-const activeLabel = (page) => page.evaluate(() => document.activeElement?.getAttribute('aria-labelledby') && document.getElementById(document.activeElement.getAttribute('aria-labelledby'))?.innerText.split('\n')[0])
 
 const all = [
   {

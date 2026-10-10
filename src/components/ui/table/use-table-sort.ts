@@ -54,6 +54,8 @@ function useTableSort<Row>({
   // Скрытый столбец в расчёт не идёт — сортировку, индикатора которой нигде
   // не видно, пользователь прочитать не может. По той же причине своя
   // сортировка по столбцу, который потом скрыли, уступает умолчанию.
+  // Управляемую (`sort`) кит не переписывает: её владелец сам решает, что
+  // делать со скрытым столбцом (см. JSDoc `sort` в data-table-props.ts).
   const visibleKeys = new Set(columns.map((field) => field.key))
   const firstSortable = hierarchical
     ? undefined

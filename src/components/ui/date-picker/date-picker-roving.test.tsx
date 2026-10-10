@@ -16,7 +16,7 @@ describe("DatePicker: фокус на дне-остановке сетки", () 
   it("range, календарь уже открыт: ArrowDown — на начало диапазона", async () => {
     const user = userEvent.setup()
     render(<DatePicker mode="range" rangeValue={RANGE} />)
-    const field = screen.getByRole("textbox")
+    const field = screen.getByRole("combobox")
 
     await user.click(field)
     await screen.findByRole("button", { name: "Применить" })
@@ -29,7 +29,7 @@ describe("DatePicker: фокус на дне-остановке сетки", () 
   it("range: открытие стрелкой вниз ставит фокус на начало диапазона", async () => {
     const user = userEvent.setup()
     render(<DatePicker mode="range" rangeValue={RANGE} />)
-    screen.getByRole("textbox").focus()
+    screen.getByRole("combobox").focus()
     await user.keyboard("{ArrowDown}")
 
     await waitFor(() => expect(focusedDate()).toBe("2026-5-10"))

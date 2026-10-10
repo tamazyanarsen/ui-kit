@@ -67,15 +67,10 @@ function ToastProvider({
   const lifeTimers = React.useRef(new Map<string, number>())
   const remaining = React.useRef(new Map<string, number>())
   const startedAt = React.useRef(new Map<string, number>())
-
-  const forget = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
-    const exit = exitTimers.current.get(id)
-    if (exit !== undefined) window.clearTimeout(exit)
-    exitTimers.current.delete(id)
-    remaining.current.delete(id)
-    startedAt.current.delete(id)
-  }, [])
+  // Уходящие тосты. Ref, а не флаг, вычисленный в апдейтере `setToasts`:
+  // React 18 выполняет апдейтер лениво, и такой флаг почти всегда читался
+  // `false` — второй `close` заводил второй таймер ухода (ревью 10.10, п. 23).
+  const closing = React.useRef(new Set<string>())
 
   const clearLife = React.useCallback((id: string) => {
     const timer = lifeTimers.current.get(id)
@@ -83,21 +78,36 @@ function ToastProvider({
     lifeTimers.current.delete(id)
   }, [])
 
+  const forget = React.useCallback(
+    (id: string) => {
+      setToasts((prev) => prev.filter((toast) => toast.id !== id))
+      const exit = exitTimers.current.get(id)
+      if (exit !== undefined) window.clearTimeout(exit)
+      exitTimers.current.delete(id)
+      clearLife(id)
+      remaining.current.delete(id)
+      startedAt.current.delete(id)
+      closing.current.delete(id)
+    },
+    [clearLife]
+  )
+
   // Закрытие идёт в два шага: сначала карточка помечается уходящей и
   // доигрывает свою анимацию, и только потом снимается. Одним шагом она
   // исчезала кадром — дизайн-чек от 08.09, замечание 15.
   const close = React.useCallback(
     (id: string) => {
       clearLife(id)
-      let alreadyClosing = false
+      // Остаток жизни уходящему не нужен: `resume()` после ховера заводил
+      // по нему полный таймер жизни тосту, который уже доигрывает уход, и
+      // этот таймер потом никто не снимал.
+      remaining.current.delete(id)
+      startedAt.current.delete(id)
+      if (closing.current.has(id)) return
+      closing.current.add(id)
       setToasts((prev) =>
-        prev.map((toast) => {
-          if (toast.id !== id) return toast
-          alreadyClosing = Boolean(toast.closing)
-          return { ...toast, closing: true }
-        })
+        prev.map((toast) => (toast.id === id ? { ...toast, closing: true } : toast))
       )
-      if (alreadyClosing) return
       exitTimers.current.set(
         id,
         window.setTimeout(() => forget(id), TOAST_EXIT_MS)

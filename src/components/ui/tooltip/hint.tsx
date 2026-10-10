@@ -75,9 +75,21 @@ function Hint({
   const { side, align } = DIRECTION_PLACEMENT[direction]
   const isDesktop = useIsDesktop()
 
+  // Открытость держит сам Hint, а не каждая из двух форм. Шторка и поповер
+  // — разные компоненты, и смена брейкпоинта (поворот планшета, ресайз
+  // окна) монтирует другой: неуправляемое `open` жило внутри старого и
+  // терялось — открытая подсказка закрывалась на пересечении границы
+  // (ревью 10.10, КК-5).
+  const [ownOpen, setOwnOpen] = React.useState(defaultOpen ?? false)
+  const isOpen = open ?? ownOpen
+  const handleOpenChange = (next: boolean) => {
+    if (open === undefined) setOwnOpen(next)
+    onOpenChange?.(next)
+  }
+
   if (!isDesktop) {
     return (
-      <Modal open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+      <Modal open={isOpen} onOpenChange={handleOpenChange}>
         <ModalTrigger render={children} />
         {/* Ниже `md` размер не имеет значения — там шторка всегда во всю
             ширину, — но `m` оставляет десктопный запасной вариант на
@@ -127,11 +139,7 @@ function Hint({
   }
 
   return (
-    <PopoverPrimitive.Root
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-    >
+    <PopoverPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverPrimitive.Trigger render={children} />
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Positioner

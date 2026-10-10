@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { useScrollEdges } from "@/lib/use-scroll-edges"
+import { hasNode } from "@/lib/has-node"
 import { Scrollbar } from "@/components/ui/scrollbar"
 
 import { CARD_BOX_MAX_HEIGHT, type CardBoxType } from "./variants"
@@ -74,7 +75,7 @@ function CardBox({
   // Пустой заголовок (`false` из условной разметки, `""`) — это «без
   // заголовка»: иначе рисовалась пустая шапка, а верхний отступ контента,
   // рассчитанный на её отсутствие, не применялся.
-  const hasTitle = title != null && title !== false && title !== ""
+  const hasTitle = hasNode(title)
   const withTitle = (showTitle ?? hasTitle) && hasTitle
 
   if (type === "large") {
@@ -138,7 +139,7 @@ function CardBoxSmall({
   "title" | "showScrollbar" | "maxHeight" | "contentClassName" | "children" | "className"
 >) {
   const { ref, scrolledFromTop, scrolledToEnd, update } =
-    useScrollEdges<HTMLDivElement>([children])
+    useScrollEdges<HTMLDivElement>()
 
   // ⚠️ Положение прокрутки решает ВСЕГДА, а `showScrollbar` может только
   // погасить оба разделителя.

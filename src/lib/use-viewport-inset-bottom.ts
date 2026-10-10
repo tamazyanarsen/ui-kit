@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { useComposedRefs } from "@/lib/compose-refs"
+import { sharedRegistry } from "@/lib/shared-registry"
 
 // Сколько нижнего края вьюпорта занято закреплёнными полосами — Button Menu
 // (88) и Button Menu Black (72). Живые полосы публикуют сюда свою занятую
@@ -24,10 +25,12 @@ const VARIABLE = "--viewport-inset-bottom"
 
 /** Живые полосы и их вклад — по каждой переменной отдельно. Максимум из них
  * и есть занятая высота: две полосы одновременно стоят друг на друге, а не
- * складываются. */
-const registries = new Map<string, Map<symbol, number>>()
-
+ * складываются. Реестр общий для всех копий кита (см. `shared-registry`). */
 function barsOf(variable: string) {
+  const registries = sharedRegistry(
+    "viewport-inset-bottom",
+    () => new Map<string, Map<symbol, number>>()
+  )
   let bars = registries.get(variable)
   if (!bars) registries.set(variable, (bars = new Map()))
   return bars

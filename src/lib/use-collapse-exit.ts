@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useLatest } from "@/lib/use-latest"
 
 /**
  * Плавный уход закрываемого элемента: он гаснет, а его место схлопывается,
@@ -102,8 +103,7 @@ function useCollapseExit<T extends HTMLElement>(
 ) {
   const ref = React.useRef<T>(null)
   const leaving = React.useRef(false)
-  const onCloseRef = React.useRef(onClose)
-  onCloseRef.current = onClose
+  const onCloseRef = useLatest(onClose)
 
   const exit = React.useCallback(() => {
     const el = ref.current
@@ -157,7 +157,7 @@ function useCollapseExit<T extends HTMLElement>(
         // Анимацию отменили (узел сняли раньше конца) — звать нечего.
         leaving.current = false
       })
-  }, [axis, lift])
+  }, [axis, lift, onCloseRef])
 
   return { ref, exit }
 }

@@ -3,12 +3,12 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
 import { Tag, type TagColor, type TagVariant } from "@/components/ui/tag"
-import { Tooltip } from "@/components/ui/tooltip"
 
 import {
   TableCellUnit,
   withTabularDigits,
 } from "./number-cell"
+import { TruncationTooltip } from "./truncation-tooltip"
 import { useTruncated } from "./use-truncated"
 
 /** Статусный цвет знака у пояснения — см. `descriptionSign` у ячейки. */
@@ -75,12 +75,13 @@ function TableCellValue({
   unit?: string
   unitVariants?: string[]
 }) {
-  const value = useTruncated<HTMLSpanElement>()
-  const sub = useTruncated<HTMLSpanElement>()
+  const value = useTruncated<HTMLSpanElement>([children, unit, unitVariants?.join("\u0000")])
+  const sub = useTruncated<HTMLSpanElement>([description, descriptionSign])
   const truncated = value.truncated || sub.truncated
 
   return (
-    <Tooltip
+    <TruncationTooltip
+      truncated={truncated}
       content={
         hasNode(description) ? (
           <span className="flex flex-col gap-2">
@@ -91,11 +92,19 @@ function TableCellValue({
           children
         )
       }
-      disabled={!truncated}
     >
       <span
-        className={cn("flex min-w-0 flex-col", alignRight && "items-end")}
+        className={cn(
+          "flex min-w-0 flex-col",
+          alignRight && "items-end",
+          truncated && "rounded-[4px] outline-none focus-visible:focus-ring"
+        )}
         data-truncated={truncated || undefined}
+        // Подсказка с полным значением открывается и по фокусу, но только у
+        // узла, который фокус принимает. Обрезанное значение встаёт в обход
+        // по Tab, иначе с клавиатуры его не дочитать (ревью 10.10, п. 27).
+        // Необрезанные ячейки остановками не становятся.
+        tabIndex={truncated ? 0 : undefined}
       >
         {/* `max-w-full` у обеих строк обязателен: при `items-end` (правая
             выключка чисел) ширина строки считается по содержимому, текст
@@ -168,7 +177,7 @@ function TableCellValue({
           </span>
         )}
       </span>
-    </Tooltip>
+    </TruncationTooltip>
   )
 }
 
@@ -189,13 +198,18 @@ function TableCellTag({
   /** Вариант тега (сплошной/контурный). Без него — умолчание самого Tag. */
   variant?: TagVariant
 }) {
-  const tag = useTruncated<HTMLSpanElement>()
+  const tag = useTruncated<HTMLSpanElement>([children])
 
   return (
-    <Tooltip content={children} disabled={!tag.truncated}>
+    <TruncationTooltip truncated={tag.truncated} content={children}>
       <span
-        className="flex min-w-0 overflow-hidden"
+        className={cn(
+          "flex min-w-0 overflow-hidden",
+          tag.truncated && "rounded-[4px] outline-none focus-visible:focus-ring-inset"
+        )}
         data-truncated={tag.truncated || undefined}
+        // См. `TableCellValue`: обрезанный тег дочитывается и с клавиатуры.
+        tabIndex={tag.truncated ? 0 : undefined}
       >
         <Tag color={color} variant={variant} className="min-w-0">
           <span ref={tag.ref} className="truncate">
@@ -203,7 +217,7 @@ function TableCellTag({
           </span>
         </Tag>
       </span>
-    </Tooltip>
+    </TruncationTooltip>
   )
 }
 

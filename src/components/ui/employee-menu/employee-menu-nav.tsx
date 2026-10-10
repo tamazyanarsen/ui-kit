@@ -1,10 +1,11 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
-import { Check, ChevronDown, Star } from "@/icons"
+import { Check } from "@/icons"
 import { cn } from "@/lib/utils"
-import { useOverflowCount } from "@/lib/use-overflow-count"
 import { OverflowMeasureLayer } from "@/lib/overflow-measure"
+import { NavEmptyHint, NavOverflowTriggerButton, NavRowItem } from "@/lib/nav-overflow-row"
+import { useNavOverflow } from "@/lib/use-nav-overflow"
 import { Dropdown } from "@/components/ui/dropdown"
 import { MenuItemContent, menuItemRowClass } from "@/components/ui/menu-item"
 import type { HeaderMenuLink } from "@/components/ui/header-menu"
@@ -31,42 +32,8 @@ import { POPUP_COLLISION } from "@/lib/popup-position"
 //  • у строк «Ещё» есть галочка на текущем разделе — в кадре «раскрыт
 //    элемент „Ещё“» отмечена «Отчётность и аналитика».
 
-/** Интервал между пунктами — 32px, как в `Content` макета. */
-const NAV_GAP = 32
-
-/**
- * Место, которое ряд держит про запас под пункт «Ещё».
- *
- * 56 на сам пункт (P1 Medium «Ещё» + интервал 4 + шеврон 16) плюс 32 —
- * интервал до него.
- */
-const MORE_RESERVED = 88
-
 /** Ширина списка «Ещё» — `ELK / dropdown` в макете стоит на 280px. */
 const MORE_WIDTH = "min-w-[280px]"
-
-function NavItem({ link, active }: { link: HeaderMenuLink; active: boolean }) {
-  // `self-stretch`, а не вертикальные поля: `Menu Point Header (ELK)` — вся
-  // высота полосы (64px), поэтому нажимается вся полоса, а не только строка
-  // текста высотой 24.
-  return (
-    <button
-      type="button"
-      data-slot="employee-menu-nav-item"
-      data-active={active || undefined}
-      // Активный раздел объявляется и в видимом ряду, а не только когда
-      // пункт спрятан в «Ещё»: раньше там стоял лишь `data-active`.
-      aria-current={active ? "page" : undefined}
-      onClick={link.onClick}
-      className={cn(
-        "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
-        active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
-      )}
-    >
-      {link.label}
-    </button>
-  )
-}
 
 /**
  * Подсказка на месте пунктов, пока избранного нет (кадр «Главная — Нет
@@ -75,26 +42,10 @@ function NavItem({ link, active }: { link: HeaderMenuLink; active: boolean }) {
  */
 function EmptyFavouritesHint() {
   return (
-    // ⚠️ Подсказка обязана обрезать себя: одна строка `whitespace-nowrap`
-    // без обрезки на узкой шапке вылезала за ряд — под колокольчик и в
-    // горизонтальную прокрутку страницы. Строка — ОДИН `truncate`-блок, а
-    // звезда стоит в её потоке строчным элементом: при двух сжимаемых
-    // кусках текста многоточие появлялось и посреди фразы («…нажмит… ☆»).
-    // Отступы звезды `mx-1` повторяют прежний `gap-1` флекса, а сдвиг
-    // `-0.125em` от базовой линии — прежнее центрирование (сверено в Chrome
-    // до долей пикселя).
-    <p
-      data-slot="employee-menu-nav-empty-hint"
-      className="min-w-0 flex-1 truncate text-p1-medium text-[var(--header-meta-fg)]"
-    >
-      Наведите курсор на элемент на главной и нажмите
-      <Star
-        size={16}
-        aria-hidden="true"
-        className="mx-1 inline-block size-4 align-[-0.125em]"
-      />
-      справа, чтобы добавить его сюда
-    </p>
+    <NavEmptyHint
+      slot="employee-menu-nav-empty-hint"
+      before="Наведите курсор на элемент на главной и нажмите"
+    />
   )
 }
 
@@ -109,21 +60,8 @@ function NavOverflow({
   return (
     <MenuPrimitive.Root modal={false}>
       <MenuPrimitive.Trigger
-        render={
-          <button
-            type="button"
-            // Раскрытое «Ещё» — брендового цвета вместе с шевроном: в
-            // кадре подпись «Ещё» нарисована Blue 254, а шеврон перевёрнут.
-            className="group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]"
-          />
-        }
-      >
-        Ещё
-        <ChevronDown
-          aria-hidden="true"
-          className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
-        />
-      </MenuPrimitive.Trigger>
+        render={<NavOverflowTriggerButton slot="employee-menu-nav-overflow-trigger" />}
+      />
       <MenuPrimitive.Portal>
         <MenuPrimitive.Positioner
           side="bottom"
@@ -195,11 +133,13 @@ function EmployeeMenuNav({
 }: EmployeeMenuNavProps) {
   // Пустые ссылки (`[cond && {...}]`) отбрасываются: иначе `link.value` падал.
   const links = React.useMemo(() => compactList(rawLinks) ?? [], [rawLinks])
-  const { containerRef, itemRefs, visibleCount, minFitWidth } = useOverflowCount(
-    links.length,
-    MORE_RESERVED,
-    NAV_GAP
-  )
+  const { containerRef, itemRefs, visibleCount, focusSentinel, floorStyle, floorClass } =
+    useNavOverflow({
+      count: links.length,
+      overflowSelector:
+        '[data-slot="employee-menu-nav-overflow-trigger"], [data-slot="employee-menu-nav-overflow-content"]',
+      itemSelector: '[data-slot="employee-menu-nav-item"]',
+    })
   const visibleLinks = links.slice(0, visibleCount)
   const hiddenLinks = links.slice(visibleCount)
 
@@ -214,25 +154,27 @@ function EmployeeMenuNav({
       // Пол действует на любой ширине: у шапки нет мобильной формы, и ниже
       // ~480px она шире экрана и прокручивается вбок (как шапка клиента на
       // 375) — но пункты и «Ещё» не ложатся на колокольчик и профиль.
-      style={
-        hiddenLinks.length > 0
-          ? ({ "--nav-min-width": `${minFitWidth}px` } as React.CSSProperties)
-          : undefined
-      }
+      style={floorStyle}
       className={cn(
-        "relative flex h-16 min-w-0 flex-1 items-center gap-8 min-w-[var(--nav-min-width,0px)]",
+        "relative flex h-16 min-w-0 flex-1 items-center gap-8",
+        floorClass,
         className
       )}
     >
       {links.length === 0 && showHint && <EmptyFavouritesHint />}
 
       {visibleLinks.map((link) => (
-        <NavItem
+        <NavRowItem
           key={link.value}
-          link={link}
+          slot="employee-menu-nav-item"
           active={link.value === activeLink}
-        />
+          onClick={link.onClick}
+        >
+          {link.label}
+        </NavRowItem>
       ))}
+
+      {focusSentinel}
 
       {hiddenLinks.length > 0 && (
         <NavOverflow links={hiddenLinks} activeLink={activeLink} />

@@ -257,7 +257,7 @@ export default [
   {
     name: 'informer и верхнее сообщение: кнопки доступны с клавиатуры по порядку, крестик подписан',
     story: 'компоненты-informer--playground',
-    run: async ({ page, expect, step, story }) => {
+    run: async ({ page, expect, step, _story }) => {
       step('informer')
       await page.waitForSelector('[data-slot=informer]')
       await page.getByRole('button', { name: 'Подписать' }).focus()

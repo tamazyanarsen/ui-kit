@@ -1,10 +1,10 @@
-import { useMediaQuery } from "@/lib/use-media-query"
 import { GridCol, GridRow } from "@/components/ui/grid"
 import { compactGroups } from "@/components/ui/header-menu/compact-list"
 import {
   distributeMenuGroups,
   type HeaderMenuGroup,
 } from "@/components/ui/header-menu"
+import { MENU_COLUMN_SPAN, useMenuColumns } from "@/components/ui/header-menu/menu-columns"
 
 import { EmployeeMenuGroup } from "./employee-menu-group"
 
@@ -56,12 +56,6 @@ interface EmployeeMenuProps {
   className?: string
 }
 
-/** Порог из дизайн-чека 08.09 №3: с него и выше — четыре колонки. */
-const WIDE_MENU_QUERY = "(min-width: 1536px)"
-
-/** Пролёт одной колонки меню в 12-колоночной сетке продукта. */
-const COLUMN_SPAN: Record<2 | 3 | 4, number> = { 2: 6, 3: 4, 4: 3 }
-
 function EmployeeMenu({
   groups: rawGroups = [],
   columns: columnsProp,
@@ -73,8 +67,8 @@ function EmployeeMenu({
 }: EmployeeMenuProps) {
   // Пустые группы и ссылки (`[cond && {...}]`) отбрасываются, как в HeaderMenu.
   const groups = compactGroups(rawGroups) ?? []
-  const wide = useMediaQuery(WIDE_MENU_QUERY)
-  const columns = columnsProp ?? (wide ? 4 : 3)
+  // Порог колонок и их пролёт — общие с раскрытым меню клиента.
+  const columns = useMenuColumns(columnsProp)
 
   // Балансировка — общая с раскрытым меню клиента: карточка каждый раз
   // падает в самую короткую колонку, порядок групп при этом сохраняется.
@@ -92,7 +86,7 @@ function EmployeeMenu({
         <GridCol
           key={index}
           data-slot="employee-menu-column"
-          span={COLUMN_SPAN[columns]}
+          span={MENU_COLUMN_SPAN[columns]}
           className="flex flex-col gap-6 self-start"
         >
           {bucket.map((group) => (

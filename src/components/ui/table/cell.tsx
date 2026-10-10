@@ -149,6 +149,7 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
     pin,
     edge = false,
     style,
+    onCopy,
     ...props
   }, forwardedRef) {
     const pinned = usePinPresentation<HTMLTableDataCellElement>(pin, false)
@@ -177,7 +178,18 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
         data-slot="table-cell"
         data-type={type}
         data-pin={pin}
-        onCopy={type === "number" ? handleNumberCopy : undefined}
+        // Спейсер — пустая служебная ячейка; у спейсера шапки `aria-hidden`
+        // стоял, у тела — нет, и скринридер объявлял пустую ячейку в каждой
+        // строке и разное число столбцов в шапке и теле (ревью 10.10, п. 27).
+        aria-hidden={type === "spacer" || undefined}
+        // `onCopy` потребителя (через `cellProps`) зовётся ВМЕСТЕ с
+        // чисткой копирования числа, а не вместо неё: раньше он подменял
+        // обработчик, и сумма копировалась с переносом перед «₽» (ревью
+        // 10.10, п. 20). Отменивший действие сам распорядился буфером.
+        onCopy={(event) => {
+          onCopy?.(event)
+          if (type === "number" && !event.defaultPrevented) handleNumberCopy(event)
+        }}
         style={{ ...style, ...pinned.style }}
         className={cn(
           cellPaddingYClass(type),
@@ -222,6 +234,10 @@ const TableCell = React.forwardRef<HTMLTableDataCellElement, TableCellProps>(
           <Checkbox
             checked={checked}
             onCheckedChange={onCheckedChange}
+            // Без обработчика флажок только показывает значение: управляемый
+            // `checked` без `onCheckedChange` выглядел рабочим (наведение,
+            // курсор-рука) и не нажимался (ревью 10.10, п. 19).
+            readOnly={onCheckedChange === undefined}
             aria-label="Выбрать строку"
           />
         )}

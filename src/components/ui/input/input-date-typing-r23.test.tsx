@@ -52,7 +52,7 @@ describe("DatePicker: дата, набранная без ведущего ну�
     const user = userEvent.setup()
     const onChange = vi.fn()
     render(<DatePicker label="Дата" onChange={onChange} />)
-    const input = screen.getByRole("textbox") as HTMLInputElement
+    const input = screen.getByRole("combobox") as HTMLInputElement
     await user.click(input)
     await user.keyboard("10.1.2026")
     await user.tab()

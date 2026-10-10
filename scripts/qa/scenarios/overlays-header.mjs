@@ -9,7 +9,6 @@ const overlay = (page) => page.evaluate(() => !!document.querySelector('[data-sl
 const overlayWait = (page, want) => wait(page, (w) => !!document.querySelector('[data-slot=header-menu-overlay]') === w, want, want ? 'открытие панели' : 'закрытие панели')
 const locked = (page) => page.evaluate(() => getComputedStyle(document.body).overflow === 'hidden')
 const unlocked = (page) => wait(page, () => getComputedStyle(document.body).overflow !== 'hidden', null, 'снятие блокировки прокрутки')
-const focusLabel = (page) => page.evaluate(() => document.activeElement?.getAttribute('aria-label') || document.activeElement?.getAttribute('data-slot') || document.activeElement?.textContent?.trim().slice(0, 30))
 const focusOn = (page, text) => wait(page, (t) => { const a = document.activeElement; return !!a && (a.textContent || '').trim().startsWith(t) || a?.getAttribute('aria-label') === t }, text, 'фокус на «' + text + '»')
 const menuBtn = (page) => page.getByRole('button', { name: 'Меню', exact: true })
 const modalTitle = (page) => page.evaluate(() => document.querySelector('[role=dialog] [data-slot=modal-title]')?.textContent ?? null)
@@ -99,7 +98,7 @@ export default [
       for (const [w, h] of [[900, 600], [1280, 500], [1280, 900]]) {
         step(`${w}x${h}`)
         await page.setViewportSize({ width: w, height: h })
-        await wait(page, ([ww, hh]) => { const o = document.querySelector('[data-slot=header-menu-overlay]'); return !!o && Math.abs(o.getBoundingClientRect().bottom - hh) <= 200 }, [w, h], 'пересчёт панели')
+        await wait(page, ([_ww, hh]) => { const o = document.querySelector('[data-slot=header-menu-overlay]'); return !!o && Math.abs(o.getBoundingClientRect().bottom - hh) <= 200 }, [w, h], 'пересчёт панели')
         const r = await stable(page, () => page.evaluate(() => { const p = document.querySelector('[data-slot=header-menu-overlay] [data-slot=header-menu]').getBoundingClientRect(); return { l: p.left, r: p.right, b: p.bottom, sw: document.documentElement.scrollWidth } }))
         expect(r.l >= 0 && r.r <= w, `${w}x${h}: по ширине в окне: ${r.l}..${r.r}`)
         expect(r.b <= h, `${w}x${h}: по высоте в окне: ${r.b}`)

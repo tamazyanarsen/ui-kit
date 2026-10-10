@@ -28,6 +28,13 @@ export type SelectionButtonDirection =
   | "down-right"
 
 interface SelectionButtonItem {
+  /**
+   * Устойчивый ключ элемента. Без него ключ — позиция в списке, и при
+   * вставке или перестановке элемент получает чужой узел вместе с его
+   * состоянием (подсветка пункта) (ревью 10.10, КК-5). Передавайте, если список
+   * меняется на месте.
+   */
+  id?: string | number
   text: React.ReactNode
   description?: React.ReactNode
   onSelect?: () => void
@@ -141,7 +148,7 @@ function SelectionButton({
           >
             {items.filter(Boolean).map((item, index) => (
               <MenuPrimitive.Item
-                key={index}
+                key={item.id ?? index}
                 disabled={item.disabled}
                 onClick={item.onSelect}
                 data-slot="selection-button-item"

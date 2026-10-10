@@ -52,13 +52,24 @@ const DropdownSearch = React.forwardRef<HTMLInputElement, DropdownSearchProps>(
     const inputRef = React.useRef<HTMLInputElement>(null)
     const composedRef = useComposedRefs(inputRef, ref)
 
+    // Крестик очищает поле НАСТОЯЩИМ событием `input`, как и у `Input`:
+    // React видит его и зовёт `onChange` с пустым полем. Раньше значение
+    // писалось в узел мимо React, и неуправляемый поиск, фильтрующий список
+    // по `onChange`, оставался отфильтрованным (ревью 10.10, п. 21).
+    // Управляемый родитель получает тот же `onChange("")` — его `value`
+    // обязан и так стать пустым после `onClear`.
     function clear() {
-      if (!controlled && inputRef.current) {
-        inputRef.current.value = ""
-        setOwnValue("")
+      const input = inputRef.current
+      if (input) {
+        const setter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value"
+        )?.set
+        setter?.call(input, "")
+        input.dispatchEvent(new Event("input", { bubbles: true }))
       }
       onClear?.()
-      inputRef.current?.focus()
+      input?.focus()
     }
 
     return (

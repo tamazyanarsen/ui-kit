@@ -1,15 +1,11 @@
 // Управляющие элементы вокруг таблиц: filter-table (чипы, попап значения), sortable (перестановка клавишами и
 // сброс взвода), selection-button, чёрная панель выбора, аккордеоны, панель уведомлений, копирование значения.
-import { eventually, ready, until, withArgs } from './tables-0-helpers.mjs'
+import { eventually, ready, until } from './tables-0-helpers.mjs'
 
 const FILTER = 'компоненты-filter-table--opened'
 const DND = 'компоненты-drag-and-drop--playground'
 const SEL = 'компоненты-selection-button--playground'
 const SEL_EX = 'компоненты-selection-button--examples'
-const ACC_LIST = 'компоненты-content-accordion--playground'
-const ACC_CARD = 'компоненты-accordion--playground'
-const NOTIF = 'компоненты-notification--playground'
-const INFO = 'компоненты-information-field--playground'
 
 const chips = (page) =>
   page.locator('[data-slot=filter]').evaluateAll((fs) =>
@@ -25,30 +21,8 @@ const dndHandle = (page, name) => page.locator(`[data-slot=sortable-list] [aria-
 const dndRow = (page, name) => dndHandle(page, name).locator('xpath=ancestor::div[@draggable][1]')
 
 /** Подменяет запись в буфер обмена: всё, что уходит в writeText, копится в window.__copied. */
-async function stubClipboard(page) {
-  await page.evaluate(() => {
-    window.__copied = []
-    navigator.clipboard.writeText = (text) => {
-      window.__copied.push(text)
-      return Promise.resolve()
-    }
-  })
-}
 
 /** Ставит значение поля через канал Storybook, жмёт «Копировать» и возвращает то, что ушло в буфер. */
-async function copyOf(page, expect, value) {
-  await stubClipboard(page)
-  await page.evaluate(
-    ([id, v]) => window.__STORYBOOK_ADDONS_CHANNEL__.emit('updateStoryArgs', { storyId: id, updatedArgs: { value: v, copyable: true, copyValue: undefined } }),
-    [INFO, value]
-  )
-  await until(async () => (await page.locator('[data-slot=item-information-field-value]').first().innerText()).trim() === value, 'значение «' + value + '» на экране')
-  await page.locator('[aria-label="Копировать"]').first().click()
-  await until(async () => (await page.evaluate(() => window.__copied.length)) > 0, 'запись в буфер для «' + value + '»')
-  const copied = await page.evaluate(() => window.__copied)
-  expect.eq(copied.length, 1, 'одна запись в буфер')
-  return copied[0]
-}
 
 export default ready([
   // ——— filter-table ———

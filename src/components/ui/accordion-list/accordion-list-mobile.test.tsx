@@ -6,16 +6,18 @@ import { AccordionList, AccordionListItem } from "./accordion-list"
 // Size=Mobile: описание и кнопки уезжают в отдельную строку под заголовком
 // той же сеткой, что и desktop-строка (раскладку выбирает вариант `desktop:`).
 describe("AccordionListItem — мобильная раскладка", () => {
-  const trigger = (el: HTMLElement) =>
-    el.querySelector("[data-slot=accordion-list-trigger]") as HTMLElement
+  // Сетку держит шапка строки, а не сам триггер: триггер с ревью 10.10
+  // (п. 25) — кнопка внутри заголовка.
+  const header = (el: HTMLElement) =>
+    el.querySelector("[data-slot=accordion-list-header]") as HTMLElement
 
-  it("триггер — сетка на мобиле и flex с desktop", () => {
+  it("шапка — сетка на мобиле и flex с desktop", () => {
     const { container } = render(
       <AccordionList>
         <AccordionListItem title="T" description="Подписано" showButtons />
       </AccordionList>
     )
-    const cls = trigger(container).className
+    const cls = header(container).className
     expect(cls).toContain("grid")
     expect(cls).toContain("desktop:flex")
   })
@@ -27,7 +29,7 @@ describe("AccordionListItem — мобильная раскладка", () => {
       </AccordionList>
     )
     expect(getByText("Подписано").className).toContain("row-start-3")
-    expect(getByText("Заголовок").className).toContain("row-start-1")
+    expect(getByText("Заголовок").closest("h3")!.className).toContain("row-start-1")
     expect(getByText("Под").className).toContain("row-start-2")
   })
 
@@ -37,7 +39,9 @@ describe("AccordionListItem — мобильная раскладка", () => {
         <AccordionListItem title="T" showButtons />
       </AccordionList>
     )
-    const group = container.querySelector("button")!.closest("span.row-start-3") as HTMLElement
+    const group = container
+      .querySelector('[aria-label="Ещё"]')!
+      .closest("span.row-start-3") as HTMLElement
     expect(group.className).toContain("col-start-1")
   })
 

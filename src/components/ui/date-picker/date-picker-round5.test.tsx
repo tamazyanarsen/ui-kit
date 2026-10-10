@@ -52,7 +52,7 @@ describe("DatePicker focus with a real trigger", () => {
           <button type="button">Дальше</button>
         </>
       )
-      const field = screen.getByRole("textbox")
+      const field = screen.getByRole("combobox")
 
       await user.click(field)
       if (mode === "single") await user.keyboard("{ArrowDown}")

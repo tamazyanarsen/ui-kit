@@ -79,9 +79,9 @@ const ModalColumns = React.forwardRef<HTMLDivElement, ModalColumnsProps>(functio
 ) {
   // Три окна прокрутки: на мобильном прокручивается общий ряд, на десктопе —
   // каждая колонка. Разделитель решает «хоть одно» из них.
-  const row = useScrollEdges<HTMLDivElement>([left, right])
-  const leftEdges = useScrollEdges<HTMLDivElement>([left])
-  const rightEdges = useScrollEdges<HTMLDivElement>([right])
+  const row = useScrollEdges<HTMLDivElement>()
+  const leftEdges = useScrollEdges<HTMLDivElement>()
+  const rightEdges = useScrollEdges<HTMLDivElement>()
   const all = [row, leftEdges, rightEdges]
   const dividerTop = all.some((edge) => edge.scrolledFromTop)
   const dividerBottom = all.some((edge) => !edge.scrolledToEnd)

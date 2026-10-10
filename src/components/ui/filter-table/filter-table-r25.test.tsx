@@ -16,7 +16,8 @@ describe("FilterTableSelect", () => {
     await user.click(screen.getByText("Поиск"))
     const popup = document.querySelector('[data-slot="filter-content"]') as HTMLElement
     expect(popup.className).toContain("max-h-[min(504px,var(--available-height,504px))]")
-    expect(popup.className).toContain("max-w-[calc(100vw-32px)]")
+    // С ревью 10.10 (КК-2) окно — общее окно FilterShell: ширина стилем.
+    expect(popup.style.maxWidth).toBe("calc(100vw - 32px)")
   })
 
   it("значение из одних пробелов — пустой фильтр, без кнопки сброса", () => {

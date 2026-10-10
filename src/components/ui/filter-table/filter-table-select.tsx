@@ -1,12 +1,9 @@
 import * as React from "react"
-import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 
 import { ComboboxFooter } from "@/components/ui/combobox"
-import { Dropdown } from "@/components/ui/dropdown"
 import { Input } from "@/components/ui/input"
 
-import { FilterTrigger, type FilterType } from "./select-trigger"
-import { POPUP_COLLISION } from "@/lib/popup-position"
+import { FilterShell, type FilterType } from "./shell"
 
 // FilterTableSelect — «Фильтр таблицы» с выпадающим списком: элемент
 // вызова ведёт себя как у Select, а во всплывашке одно поле значения и
@@ -31,8 +28,10 @@ import { POPUP_COLLISION } from "@/lib/popup-position"
 // (коробка chips-filter) и его заливка `background` из фильтра убраны — все
 // пять значений `Type` компонент-сета `ELK / chips, filter` живут в `Chips`.
 //
-// Внешний вид триггера целиком живёт в `select-trigger.tsx`; здесь —
-// состояние значения и попап с полем ввода.
+// Триггер и окно — общие для всех фильтров, из `FilterShell`; здесь —
+// состояние значения и тело окна с полем ввода. Раньше у этого фильтра был
+// свой триггер и своё окно, и правки двух копий расходились (ревью 10.10,
+// КК-2).
 //
 // Дизайн-чек от 13.09, замечание 6: компонент назывался `Filter` и стоял в
 // витрине отдельной папкой рядом с `Filter Table`, хотя рисует ровно ту же
@@ -74,28 +73,29 @@ function FilterTableSelect({
   )
   const activeValue = value !== undefined ? value : internalValue
   const [draft, setDraft] = React.useState(activeValue ?? "")
-  const anchorRef = React.useRef<HTMLDivElement>(null)
 
   // Всплывающее окно размонтируется при закрытии (умолчание Base UI),
   // поэтому иначе каждое повторное открытие начинало бы черновик с пустой
-  // строки. Вместо этого он пересинхронизируется с последним *применённым*
-  // значением — так же, как Calendar и DatePicker показывают при повторном
-  // открытии текущее значение.
-  React.useEffect(() => {
+  // строки. Вместо этого он берётся с последнего *применённого* значения —
+  // так же, как Calendar и DatePicker показывают при повторном открытии
+  // текущее значение.
+  //
+  // ⚠️ Ровно в МОМЕНТ открытия, а не эффектом по `[open, activeValue]`, — как
+  // у FilterSelect, FilterRange и FilterDate. Эффект перезаписывал набранное,
+  // стоило управляемому родителю обновить `value` при открытом окне
+  // (обновление стора, синхронизация с адресной строкой) (ревью 10.10,
+  // п. 22). Открытие ловится сравнением с прошлым рендером, а не в `setOpen`:
+  // окно открывает и управляемый `open` снаружи.
+  const [openSeen, setOpenSeen] = React.useState(open)
+  if (openSeen !== open) {
+    setOpenSeen(open)
     if (open) setDraft(activeValue ?? "")
-  }, [open, activeValue])
+  }
 
   function setOpen(next: boolean) {
     if (openProp === undefined) setInternalOpen(next)
     onOpenChange?.(next)
   }
-
-  // См. `FilterShell`: отключение закрывает окно по-настоящему, иначе после
-  // включения оно открывалось бы само.
-  React.useEffect(() => {
-    if (disabled && open) setOpen(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [disabled, open])
 
   function commitValue(next: string | null) {
     if (value === undefined) setInternalValue(next)
@@ -123,11 +123,6 @@ function FilterTableSelect({
     setOpen(false)
   }
 
-  function handleClear(event: React.SyntheticEvent) {
-    event.stopPropagation()
-    commitValue(null)
-  }
-
   // У фильтра со свободным вводом ровно одно значение; счётчик существует
   // для того, чтобы виды с множественным выбором могли сообщить, сколько
   // опций охватывает черновик.
@@ -138,78 +133,48 @@ function FilterTableSelect({
   const hasValue = shownValue !== null
 
   return (
-    // ⚠️ Обёртка — флекс-контейнер с `max-w-full`, чтобы пилюля (её потолок
-    // 256 задан в `filterTablePillClass`) СЖИМАЛАСЬ до колонки, а не торчала
-    // из неё: в блочном `w-fit` минимальная ширина пилюли — вся её подпись
-    // без переноса, и колонка уже 256 (или 288 с соседями) выпускала чип за
-    // край. Процент в `max-w` самой пилюли не годится: в контейнере по
-    // ширине содержимого он считается «нет предела» и снимает потолок 256.
-    <div className="flex w-fit max-w-full min-w-0">
-      <PopoverPrimitive.Root
-        open={disabled ? false : open}
-        onOpenChange={setOpen}
-      >
-        <FilterTrigger
-          label={label}
-          type={type}
-          count={count}
-          disabled={disabled}
-          checked={hasValue}
-          open={open}
-          activeValue={shownValue}
-          onClear={handleClear}
-          anchorRef={anchorRef}
-          className={className}
+    // Отключение закрывает окно по-настоящему — это делает `FilterShell`.
+    <FilterShell
+      label={label}
+      type={type}
+      // Плашка счётчика — только у типа `counter`, как в сете.
+      count={type === "counter" ? count : undefined}
+      disabled={disabled}
+      active={hasValue}
+      valueLabel={shownValue}
+      // Крестик очищает и НЕ открывает список заново.
+      onClear={() => commitValue(null)}
+      open={open}
+      onOpenChange={setOpen}
+      className={className}
+    >
+      {/* Исправление второго прохода: внешний отступ равен 16px
+          (обёртка «Input area» в макете), а не 12px, — и сама коробка поля
+          там тоже литерально `px-[16px]`, то есть шире, чем собственный
+          `px-3` у общего размера `sm` у Input. Переопределено локально через
+          `containerClassName`, а не правкой самого токена `sm` у Input: этот
+          размер используют и другие потребители, не охваченные данной
+          сверкой. */}
+      <div className="p-4">
+        <Input
+          size="sm"
+          placeholder={placeholder}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          clearable={false}
+          containerClassName="px-4"
         />
-        <PopoverPrimitive.Portal>
-          <PopoverPrimitive.Positioner
-            anchor={anchorRef}
-            side="bottom"
-            align="start"
-            sideOffset={8}
-            collisionAvoidance={POPUP_COLLISION}
-            className="z-50"
-          >
-            <PopoverPrimitive.Popup
-              data-slot="filter-content"
-              // Не шире видимой области минус поля — как у окон `FilterShell`.
-              render={<Dropdown className="flex w-96 max-w-[calc(100vw-32px)] flex-col overflow-hidden" />}
-            >
-              {/* Исправление второго прохода: внешний отступ равен 16px
-                  (обёртка «Input area» в макете), а не 12px, — и сама
-                  коробка поля там тоже литерально `px-[16px]`, то есть
-                  шире, чем собственный `px-3` у общего размера `sm` у
-                  Input. Переопределено локально через `containerClassName`,
-                  а не правкой самого токена `sm` у Input: этот размер
-                  используют и другие потребители, не охваченные данной
-                  сверкой. */}
-              <div className="p-4">
-                <Input
-                  size="sm"
-                  placeholder={placeholder}
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  clearable={false}
-                  containerClassName="px-4"
-                />
-              </div>
-              {/* "Если выбранно несколько значений, то пишем количество в
-                  кнопке – «Применить: 1»". Buttons are never disabled:
-                  "Кнопки в фильтрах не блокируются. Если нет выбранных
-                  значений — кнопки сброса и применения фильтра в любом
-                  случае доступны". */}
-              <ComboboxFooter
-                applyLabel={
-                  draft.trim() ? `Применить: ${selectedCount}` : "Применить"
-                }
-                onReset={handleReset}
-                onApply={handleApply}
-              />
-            </PopoverPrimitive.Popup>
-          </PopoverPrimitive.Positioner>
-        </PopoverPrimitive.Portal>
-      </PopoverPrimitive.Root>
-    </div>
+      </div>
+      {/* "Если выбранно несколько значений, то пишем количество в кнопке –
+          «Применить: 1»". Buttons are never disabled: "Кнопки в фильтрах
+          не блокируются. Если нет выбранных значений — кнопки сброса и
+          применения фильтра в любом случае доступны". */}
+      <ComboboxFooter
+        applyLabel={draft.trim() ? `Применить: ${selectedCount}` : "Применить"}
+        onReset={handleReset}
+        onApply={handleApply}
+      />
+    </FilterShell>
   )
 }
 

@@ -37,6 +37,8 @@ describe("Icon", () => {
 
   it("renders nothing and warns for an unknown name", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    // Ревью 10.10, КК-5: неизвестное имя теперь ловят и типы.
+    // @ts-expect-error — такой иконки в наборе нет
     const { container } = render(<Icon name="нет-такой" />)
     expect(container.querySelector("svg")).toBeNull()
     expect(warn).toHaveBeenCalled()

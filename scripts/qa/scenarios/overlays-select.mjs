@@ -8,7 +8,6 @@ const load = async (page, story, args) => {
 }
 // фокус возвращается на триггер уже после закрытия — ждём его, а не читаем сразу
 const focusSlot = (page, name) => wait(page, (n) => document.activeElement?.getAttribute('data-slot') === n, name, 'фокус на ' + name)
-const slot = (page) => page.evaluate(() => document.activeElement?.getAttribute('data-slot'))
 const expanded = (page, sel) => page.evaluate((s) => document.querySelector(s).getAttribute('aria-expanded'), sel)
 const opened = (page, sel) => wait(page, (s) => document.querySelector(s).getAttribute('aria-expanded') === 'true' && document.activeElement !== document.body, sel, 'открытие')
 // закрыт: aria-expanded снят и фокус ушёл из попапа (возврат фокуса и снятие блокировки идут следом)
@@ -218,7 +217,6 @@ export default [
       await page.keyboard.press('Enter')
       await opened(page, CMB)
       await wait(page, () => !!document.activeElement?.closest('[data-slot=combobox-list]') || document.activeElement?.getAttribute('data-slot') === 'combobox-list', null, 'фокус в списке')
-      const hl = () => page.evaluate(() => document.querySelector('[role=option][data-highlighted]')?.textContent)
       step('две стрелки с Enter')
       await page.keyboard.press('ArrowDown')
       await wait(page, () => document.querySelector('[role=option][data-highlighted]')?.textContent === 'Паспорт РФ', null, 'подсветка первого пункта')

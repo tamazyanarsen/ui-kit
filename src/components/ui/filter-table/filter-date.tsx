@@ -40,7 +40,13 @@ interface FilterDateProps {
   className?: string
 }
 
-const EMPTY: [Date | null, Date | null] = [null, null]
+/**
+ * Пустое значение — НОВЫЙ объект на каждый вызов, а не общая константа.
+ * Константа уходила наружу через `onValueChange` и в черновик, и
+ * потребитель, поправивший полученное значение на месте, портил её для всех
+ * фильтров до конца сессии (ревью 10.10, КК-5).
+ */
+const empty = (): [Date | null, Date | null] => [null, null]
 
 function formatDate(date: Date | null) {
   if (!date) return ""
@@ -57,7 +63,7 @@ function datePresetWeek(from: Date = new Date()): [Date, Date] {
 function FilterDate({
   label,
   value,
-  defaultValue = EMPTY,
+  defaultValue = empty(),
   onValueChange,
   presets = [],
   disabled = false,
@@ -100,7 +106,7 @@ function FilterDate({
       label={label}
       valueLabel={valueLabel}
       active={active}
-      onClear={() => commit(EMPTY)}
+      onClear={() => commit(empty())}
       disabled={disabled}
       open={open}
       onOpenChange={handleOpenChange}
@@ -184,8 +190,8 @@ function FilterDate({
         className="relative z-10"
         applyLabel={filterApplyLabel(filled(draft))}
         onReset={() => {
-          setDraft(EMPTY)
-          commit(EMPTY)
+          setDraft(empty())
+          commit(empty())
           setOpen(false)
         }}
         onApply={() => {

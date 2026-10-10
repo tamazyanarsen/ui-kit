@@ -2,25 +2,15 @@
 // Проверяются значения: сколько результатов, какие строки, что выбрано и на какую сумму.
 import { eventually, ready, until } from './tables-0-helpers.mjs'
 
-const LOC = 'песочница-реестр-заявок-на-аккредитив--default'
 const CARDS = 'песочница-реестр-бизнес-карт--default'
 const COST = 'песочница-перераспределение-сср--default'
 
 const norm = (s) => s.replace(/[\s  ]+/g, ' ').trim()
 const table = (page) => page.locator('#storybook-root table').first()
 /** Колонки реестра аккредитивов: 0 чекбокс, 1 статус, 2 номер, 3 дата, 4 вид, 5 сумма, 6 срок, 7 бенефициар, 8 банк. */
-const cellsOf = (page, col) => table(page).locator('tbody tr').evaluateAll((rs, c) => rs.map((r) => r.querySelectorAll('td')[c]?.innerText.replace(/[\s  ]+/g, ' ').trim()), col)
 const summary = (page) => page.locator('[data-slot=table-top-summary-item]').evaluateAll((e) => e.map((x) => x.innerText.replace(/\s+/g, ' ').trim()))
-const panel = (page) =>
-  page.evaluate(() => {
-    const el = document.querySelector('[data-slot=button-menu-black-info]')
-    return el ? el.innerText.replace(/[\s  ]+/g, ' ').trim() : null
-  })
 const pageNums = (page) => page.locator('[data-slot=pagination-page]').evaluateAll((p) => p.map((x) => x.innerText + (x.getAttribute('aria-current') ? '*' : '')))
-const search = (page) => page.locator('input[placeholder^="Поиск"]')
 const chip = (page, name) => page.locator('[data-slot=filter]', { hasText: name })
-const rowBox = (page, i) => table(page).locator('tbody tr').nth(i).locator('[role=checkbox]').first()
-const number = (s) => Number(s.replace(/[^\d,-]/g, '').replace(',', '.'))
 
 async function applyChip(page, name, value) {
   await chip(page, name).click()

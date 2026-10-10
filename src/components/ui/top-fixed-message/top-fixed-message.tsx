@@ -74,11 +74,12 @@ interface TopFixedMessageProps {
 // поставил многоточие: безусловный Tooltip дублировал бы и короткий текст
 // (то же правило, что у заголовка страницы, title/heading.tsx). Обёртка
 // Tooltip стоит всегда и держится выключенной, пока обрезки нет.
-function useIsTruncated(
-  ref: React.RefObject<HTMLElement | null>,
-  text: React.ReactNode,
-  active: boolean
-) {
+//
+// Наблюдение ставится один раз на включённое состояние: смену ширины ловит
+// `ResizeObserver`, смену текста — `MutationObserver`. Раньше эффект
+// зависел от `text` — нового объекта-разметки на каждом рендере родителя —
+// и наблюдатель пересоздавался при любом ре-рендере (ревью 10.10, КК-3).
+function useIsTruncated(ref: React.RefObject<HTMLElement | null>, active: boolean) {
   const [truncated, setTruncated] = React.useState(false)
 
   React.useEffect(() => {
@@ -89,8 +90,13 @@ function useIsTruncated(
     check()
     const observer = new ResizeObserver(check)
     observer.observe(el)
-    return () => observer.disconnect()
-  }, [ref, text, active])
+    const content = typeof MutationObserver === "undefined" ? null : new MutationObserver(check)
+    content?.observe(el, { childList: true, characterData: true, subtree: true })
+    return () => {
+      observer.disconnect()
+      content?.disconnect()
+    }
+  }, [ref, active])
 
   return truncated
 }
@@ -114,7 +120,7 @@ function TopFixedMessage({
   // колонки Desktop/Mobile в матрице.
   const isDesktop = useIsDesktop()
   const textRef = React.useRef<HTMLSpanElement>(null)
-  const truncated = useIsTruncated(textRef, text, isDesktop)
+  const truncated = useIsTruncated(textRef, isDesktop)
   // Закрытие — «фейд ап» (дизайн-чек 08.10, замечание 24): полоса гаснет с
   // подъёмом, а её высота схлопывается в ту же анимацию, так что контент
   // под ней поднимается параллельно. `onClose` приходит после ухода.

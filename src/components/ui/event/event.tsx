@@ -2,6 +2,7 @@ import * as React from "react"
 import { CircleCheck, CircleX, Clock, FileIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 import { Tag } from "@/components/ui/tag"
 
@@ -52,10 +53,6 @@ interface EventDocument {
  * (только линия вверх).
  */
 type EventStepType = "first" | "middle" | "end"
-
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
 
 /** Без пустых элементов: массив собирают условиями, и `null` в нём — обычное дело. */
 const present = <T,>(items: (T | null | undefined | false)[] | undefined): T[] =>
@@ -163,14 +160,14 @@ function Event({
                 {title}
               </span>
             )}
-            {hasValue(timestamp) && (
+            {hasNode(timestamp) && (
               <span className="shrink-0 text-p2-medium text-[var(--event-meta-fg)]">
                 {timestamp}
               </span>
             )}
           </div>
 
-          {hasValue(author) && (
+          {hasNode(author) && (
             // В мастере строка автора — `whitespace-nowrap` + ellipsis, а не
             // перенос: длинное «ФИО • должность» обрезается многоточием.
             <p className="truncate text-p1-medium text-[var(--event-author-fg)]">
@@ -202,7 +199,7 @@ function Event({
                       одну строку, хвост обрезается многоточием. */}
                   <span className="min-w-0 flex-1 truncate text-[var(--event-title-fg)]">
                     {signatory.name}
-                    {hasValue(signatory.attribute) && (
+                    {hasNode(signatory.attribute) && (
                       <span className="text-[var(--event-meta-fg)]">
                         {" "}
                         – {signatory.attribute}
@@ -236,7 +233,7 @@ function Event({
           </div>
         )}
 
-        {hasValue(comment) && (
+        {hasNode(comment) && (
           <div className="text-p1-medium">
             {/* Подпись — nowrap + ellipsis, текст комментария переносится
                 (мастер `Comment`). */}
@@ -295,7 +292,7 @@ function Event({
           </div>
         )}
 
-        {hasValue(buttonLabel) && (
+        {hasNode(buttonLabel) && (
           <div className="pt-1">
             <Button
               type="button"

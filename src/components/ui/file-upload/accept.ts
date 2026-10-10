@@ -77,23 +77,71 @@ function matchesAccept(file: File, accept: string | undefined) {
   // не подходит»: иначе поле отвергало каждый файл.
   if (tokens.length === 0) return true
   return tokens.some((token) => {
+    // `*/*` и голая `*` — «любой тип», как их понимает окно выбора файлов,
+    // включая файл без типа и без знакомого расширения. Без этой ветки
+    // `startsWith("*/")` отвергал каждый файл (ревью 10.10, п. 2).
+    if (token === "*" || token === "*/*") return true
     if (token.startsWith(".")) return name.endsWith(token)
     if (type && matchesMime(type, token)) return true
     return byExtension ? matchesMime(byExtension, token) : false
   })
 }
 
-function splitFiles(files: FileList, accept: string | undefined, multiple: boolean) {
+/** Почему файл не принят: формат, число файлов или размер. */
+type FileRejectReason = "type" | "count" | "size" | "total-size"
+
+interface FileRejection {
+  file: File
+  reason: FileRejectReason
+}
+
+interface SplitFilesOptions {
+  accept?: string
+  multiple: boolean
+  /** Сколько файлов принять за один выбор или бросок. */
+  maxFiles?: number
+  /** Предел размера одного файла, MB (1 MB = 1024 × 1024 байт). */
+  maxFileSizeMb?: number
+  /** Предел суммарного размера принятых за раз файлов, MB. */
+  maxTotalSizeMb?: number
+}
+
+const MB = 1024 * 1024
+
+/**
+ * Делит файлы на принятые и отклонённые — с причиной для каждого
+ * отклонённого.
+ *
+ * Ревью 10.10, КК-5: подзаголовок зоны печатает лимиты («До 5 файлов…,
+ * не более 10 MB»), а зона проверяла только `accept` и `multiple` — файл
+ * больше предела уходил в `onFilesSelected`, и каждый потребитель проверял
+ * размер сам. Порядок проверок: формат, число, размер файла, общий размер.
+ * Суммарный предел считается по уже принятым в этом выборе файлам.
+ */
+function splitFiles(
+  files: FileList,
+  { accept, multiple, maxFiles, maxFileSizeMb, maxTotalSizeMb }: SplitFilesOptions
+) {
   const accepted: File[] = []
-  const rejected: File[] = []
+  const rejections: FileRejection[] = []
+  const countLimit = multiple ? (maxFiles ?? Infinity) : 1
+  let total = 0
   for (const file of Array.from(files)) {
-    if (matchesAccept(file, accept) && (multiple || accepted.length === 0)) {
-      accepted.push(file)
+    let reason: FileRejectReason | null = null
+    if (!matchesAccept(file, accept)) reason = "type"
+    else if (accepted.length >= countLimit) reason = "count"
+    else if (maxFileSizeMb !== undefined && file.size > maxFileSizeMb * MB) reason = "size"
+    else if (maxTotalSizeMb !== undefined && total + file.size > maxTotalSizeMb * MB) {
+      reason = "total-size"
+    }
+    if (reason) {
+      rejections.push({ file, reason })
     } else {
-      rejected.push(file)
+      accepted.push(file)
+      total += file.size
     }
   }
-  return { accepted, rejected }
+  return { accepted, rejected: rejections.map(({ file }) => file), rejections }
 }
 
 /**
@@ -127,3 +175,4 @@ function toFileList(files: File[]): FileList {
 }
 
 export { matchesAccept, splitFiles, toFileList }
+export type { FileRejection, FileRejectReason, SplitFilesOptions }

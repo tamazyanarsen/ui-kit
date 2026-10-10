@@ -15,10 +15,6 @@ const setArgs = async (page, updatedArgs) => {
   await page.waitForTimeout(400)
   await page.addStyleTag({ content: OFF })
 }
-const box = (e) => {
-  const b = e.getBoundingClientRect()
-  return { x: Math.round(b.left * 10) / 10, y: Math.round(b.top * 10) / 10, w: Math.round(b.width * 10) / 10, h: Math.round(b.height * 10) / 10 }
-}
 
 // Строки списка с перетаскиванием: метрики относительно самой строки.
 const rowsOf = async (page, rootSel, rowSel) => {

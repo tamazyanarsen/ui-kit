@@ -4,6 +4,7 @@ import { Image as ImageIcon } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ViewportScope } from "@/lib/viewport"
+import { hasNode } from "@/lib/has-node"
 
 import {
   bannerBackgroundImage,
@@ -92,15 +93,10 @@ function BannerImage({
   )
 }
 
-/**
- * Строка описания, которую стоит рисовать. Потребитель собирает массив
- * условиями (`["До 10 млн", hasB && "Решение за день", null]`), и пустые
- * значения раньше становились пунктами — маркер без текста; пустой массив
- * давал пустой блок и лишний зазор под заголовком (аудит 18).
- */
-function isFilled(line: React.ReactNode) {
-  return line != null && line !== false && line !== true && line !== ""
-}
+// Строки описания фильтруются `hasNode`: потребитель собирает массив
+// условиями (`["До 10 млн", hasB && "Решение за день", null]`), и пустые
+// значения раньше становились пунктами — маркер без текста; пустой массив
+// давал пустой блок и лишний зазор под заголовком (аудит 18).
 
 function BannerDescription({
   description,
@@ -116,7 +112,7 @@ function BannerDescription({
   // `className` достаёт только до зазора между строками, а не до этого).
   itemGap?: string
 }) {
-  const lines = (Array.isArray(description) ? description : [description]).filter(isFilled)
+  const lines = (Array.isArray(description) ? description : [description]).filter(hasNode)
 
   return (
     <div
@@ -151,8 +147,8 @@ function Banner({
   const fg = bannerForegroundClassName(color)
   // Пустые строки описания отбрасываются здесь, чтобы и проверка «есть ли
   // описание», и выбор раскладки (массив или одна строка) видели одно и то же.
-  const lines = Array.isArray(description) ? description.filter(isFilled) : description
-  const hasDescription = Array.isArray(lines) ? lines.length > 0 : isFilled(lines)
+  const lines = Array.isArray(description) ? description.filter(hasNode) : description
+  const hasDescription = Array.isArray(lines) ? lines.length > 0 : hasNode(lines)
   // По мастерам «mobile» и «desktop small» (compact): у мобильного кнопка
   // с той же синей заливкой `primary`, что и у десктопного (фон #80E3FF), и
   // только у compact кнопка белая, `secondary-white`. Размер «lg» сам по
@@ -176,7 +172,7 @@ function Banner({
   // остальная карточка была мобильной. Скоуп `display: contents`, раскладку
   // колонки не трогает.
   const cta =
-    isFilled(ctaLabel) &&
+    hasNode(ctaLabel) &&
     (size === "mobile" ? (
       <ViewportScope viewport="mobile">{ctaButton}</ViewportScope>
     ) : (

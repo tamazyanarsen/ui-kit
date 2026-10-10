@@ -13,11 +13,14 @@ import * as React from "react"
  * Логика раньше жила прямо в `ModalBody`; Notification нуждается ровно в
  * ней же, поэтому вынесена сюда, а не продублирована.
  *
- * `deps` — то, от чего зависит высота содержимого (обычно `children`):
- * пересчёт нужен и когда меняется контейнер, и когда меняется контент
- * внутри него.
+ * Пересчёт нужен и когда меняется контейнер, и когда меняется контент
+ * внутри него. Раньше второе ловилось зависимостями эффекта (`[children]`),
+ * а `children` — новый объект на каждом рендере родителя: наблюдатель
+ * снимался и ставился заново при любом ре-рендере диалога (ревью 10.10,
+ * КК-3). Теперь наблюдение ставится один раз, а смену состава детей ловит
+ * `MutationObserver`.
  */
-export function useScrollEdges<T extends HTMLElement>(deps?: React.DependencyList) {
+export function useScrollEdges<T extends HTMLElement>() {
   const ref = React.useRef<T>(null)
   const [scrolledFromTop, setScrolledFromTop] = React.useState(false)
   const [scrolledToEnd, setScrolledToEnd] = React.useState(true)
@@ -41,9 +44,28 @@ export function useScrollEdges<T extends HTMLElement>(deps?: React.DependencyLis
     // веб-шрифты) не пересчитывало состояние, и разделитель залипал.
     observer.observe(el)
     for (const child of el.children) observer.observe(child)
-    return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [update, ...(deps ?? [])])
+    // Дети пришли или ушли (новый список, другой шаг диалога): новые
+    // наблюдаются, ушедшие снимаются, края пересчитываются.
+    const mutations =
+      typeof MutationObserver === "undefined"
+        ? null
+        : new MutationObserver((records) => {
+            for (const record of records) {
+              record.addedNodes.forEach((node) => {
+                if (node instanceof Element) observer.observe(node)
+              })
+              record.removedNodes.forEach((node) => {
+                if (node instanceof Element) observer.unobserve(node)
+              })
+            }
+            update()
+          })
+    mutations?.observe(el, { childList: true })
+    return () => {
+      observer.disconnect()
+      mutations?.disconnect()
+    }
+  }, [update])
 
   return { ref, scrolledFromTop, scrolledToEnd, update }
 }

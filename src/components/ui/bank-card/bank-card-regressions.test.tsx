@@ -76,14 +76,17 @@ describe("BankCard: регрессии", () => {
     expect(document.activeElement).toBe(screen.getAllByLabelText("Показать и скопировать")[0])
   })
 
-  it("переворот кликом по карте оставляет фокус на карте", async () => {
+  it("переворот с клавиатуры оставляет фокус на карте", async () => {
     const user = userEvent.setup()
     const { card } = renderCard()
+    // Клавиатурный вход в карту — её кнопка-подложка, а не сам корень
+    // (ревью 10.10, п. 25).
+    const target = card.querySelector<HTMLElement>('[data-slot="press-target"]')!
 
-    card.focus()
+    target.focus()
     await user.keyboard("{Enter}")
 
-    expect(document.activeElement).toBe(card)
+    expect(document.activeElement).toBe(target)
   })
 
   it("управляемая карта без onTypeChange держит подпись «Показать реквизиты» текстом, а не кнопкой", () => {

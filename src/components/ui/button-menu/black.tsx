@@ -165,11 +165,15 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
         variant: "secondary-white",
       })
     }
-    // Меню «ещё» — такая же кнопка панели, значит тоже белая и 32px.
+    // Меню «ещё» — такая же кнопка панели, значит тоже белая и того же
+    // размера, что кнопки рядом: 32px на десктопе, 48 на мобильном. Без
+    // размера «…» брал умолчание тёмного тона (`sm`) и на мобильном стоял
+    // 32px рядом с кнопками L (ревью 10.10, п. 9).
     if (React.isValidElement(child) && child.type === ButtonMenuOverflow) {
-      return React.cloneElement(child as React.ReactElement<{ tone?: "light" | "dark" }>, {
-        tone: "dark",
-      })
+      return React.cloneElement(
+        child as React.ReactElement<{ tone?: "light" | "dark"; size?: "sm" | "lg" }>,
+        { tone: "dark", size: isDesktop ? "sm" : "lg" }
+      )
     }
     return child
   })

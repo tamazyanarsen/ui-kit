@@ -70,7 +70,6 @@ const sbState = (page) => page.evaluate(() => {
     nested: [...document.querySelectorAll('[data-slot=sidebar-group] [data-slot=sidebar-item]')].filter(vis).map((i) => i.textContent),
   }
 })
-const tipsOpen = (page) => page.evaluate(() => [...document.querySelectorAll('[data-side][data-open]')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => e.textContent).filter(Boolean))
 
 export default [
   {
@@ -110,7 +109,7 @@ export default [
     name: 'button-menu: «Ещё» — Esc закрывает и возвращает фокус, ArrowDown идёт по пунктам, Enter закрывает список',
     story: BM,
     viewport: [420, 900],
-    run: async ({ page, expect, step }) => {
+    run: async ({ page, _expect, step }) => {
       await page.waitForSelector('[data-slot=button-menu-row]')
       await stable(page, () => bmState(page))
       const more = page.getByRole('button', { name: 'Ещё' })

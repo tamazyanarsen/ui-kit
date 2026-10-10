@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils"
-import { WEEKDAYS_RU, getMonthMatrix, isSameDay, type DayCell } from "@/lib/calendar"
-import { dateKey } from "./use-day-focus"
+import { WEEKDAYS_RU, dateKey, getMonthMatrix, isSameDay, type DayCell } from "@/lib/calendar"
 
 /** Габариты ячейки дня: десктоп 36px, мобила 48px — с Figma Day (Desktop/
  * Mobile) ELK/calendar. Отсюда же поля карточки и зазоры сетки. */

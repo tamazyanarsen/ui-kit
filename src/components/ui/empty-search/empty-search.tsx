@@ -2,6 +2,7 @@ import * as React from "react"
 import { CircleAlert } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { Button } from "@/components/ui/button"
 import { Thumbnail, type ThumbnailType } from "@/components/ui/thumbnail"
 
@@ -71,10 +72,6 @@ interface EmptySearchResultsProps {
   className?: string
 }
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 function EmptySearchResults({
   icon,
   thumbnailType = "icon",
@@ -128,7 +125,7 @@ function EmptySearchResults({
         <h3 className="text-h4-mobile [overflow-wrap:anywhere] text-[var(--empty-search-title-fg)] desktop:text-h4">
           {title}
         </h3>
-        {hasValue(description) && (
+        {hasNode(description) && (
           <p className="text-p2-medium [overflow-wrap:anywhere] text-[var(--empty-search-description-fg)] desktop:text-p1-medium">
             {description}
           </p>

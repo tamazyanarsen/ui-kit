@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
+import { PressTarget } from "@/lib/press-target"
 import type { PaymentSystem } from "@/components/ui/thumbnail"
 import { useToastOptional } from "@/components/ui/toast-message"
 
@@ -103,6 +104,7 @@ function BankCard({
   // рисуется и копирует молча, а не роняет дерево.
   const toast = useToastOptional()
   const rootRef = React.useRef<HTMLDivElement>(null)
+  const pressRef = React.useRef<HTMLButtonElement>(null)
   const prevSide = React.useRef(side)
 
   // Отвёрнутая сторона становится `inert`, и если фокус был в ней (Enter на
@@ -121,8 +123,7 @@ function BankCard({
     const hiddenSide = slot(side === "back" ? "face" : "back")
     if (!hiddenSide?.contains(active)) return
     const target =
-      slot(side)?.querySelector<HTMLElement>("button:not([disabled])") ??
-      (root.tabIndex >= 0 ? root : null)
+      slot(side)?.querySelector<HTMLElement>("button:not([disabled])") ?? pressRef.current
     target?.focus()
   }, [side])
 
@@ -167,19 +168,27 @@ function BankCard({
     <div
       ref={rootRef}
       data-slot="bank-card"
-      role={flippable ? "button" : undefined}
-      tabIndex={flippable ? 0 : undefined}
-      // Enter на «глазе» или «Показать реквизиты» — нажатие ИХ кнопки, а
-      // не переворот карты.
-      {...pressHandlers<HTMLDivElement>(flippable ? flip : undefined)}
+      // Клик мышью по карте — переворот; клик по «глазу» или «Показать
+      // реквизиты» — нажатие ИХ кнопки (см. `pressHandlers`). С клавиатуры
+      // карту переворачивает `PressTarget`: роль `button` на самой карте
+      // прятала бы вложенные кнопки от скринридера (ревью 10.10, п. 25).
+      onClick={flippable ? pressHandlers<HTMLDivElement>(flip).onClick : undefined}
       className={cn(
-        "relative outline-none focus-visible:focus-ring",
+        "relative",
         flippable && "cursor-pointer",
         size === "mobile" ? "h-[160px] w-[254px]" : "h-[208px] w-[332px]",
         className
       )}
       style={{ perspective: "1200px" }}
     >
+      {flippable && (
+        <PressTarget
+          ref={pressRef}
+          onPress={flip}
+          label={`${side === "face" ? "Показать" : "Скрыть"} реквизиты карты •• ${last4}`}
+          className="rounded-[16px]"
+        />
+      )}
       <div
         className="relative size-full transition-transform duration-250 ease-out"
         style={{

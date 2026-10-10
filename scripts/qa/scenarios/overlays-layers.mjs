@@ -15,12 +15,6 @@ const trigger = (page, name) => page.getByRole('button', { name, exact: true })
 const focusBack = (page, name) => wait(page, (n) => document.activeElement?.textContent?.trim() === n, name, 'фокус вернулся на «' + name + '»')
 const rect = (page, sel) => page.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom, w: r.width, h: r.height } }, sel)
 // вывести всплывающий слой: ждём, когда он появится и получит размер
-const popRect = async (page, sel) => {
-  await wait(page, (s) => { const e = document.querySelector(s); return !!e && e.getBoundingClientRect().width > 0 }, sel, 'появление ' + sel)
-  await settle(page)
-  return rect(page, sel)
-}
-const centerOf = (r) => ({ x: (r.l + r.r) / 2, y: (r.t + r.b) / 2 })
 
 export default [
   {
@@ -45,7 +39,7 @@ export default [
   {
     name: 'modal: Esc закрывает окно, фокус возвращается на кнопку, блокировка снимается',
     story: MODAL,
-    run: async ({ page, expect }) => {
+    run: async ({ page, _expect }) => {
       await trigger(page, 'Открыть модалку').click()
       await dlgOpen(page)
       await settle(page)

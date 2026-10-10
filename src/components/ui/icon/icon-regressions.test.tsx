@@ -18,7 +18,7 @@ describe("Icon: псевдонимы", () => {
   })
 
   it("open-eye и chevron-down рисуются, а не дают пустоту", () => {
-    for (const name of ["open-eye", "chevron-down"]) {
+    for (const name of ["open-eye", "chevron-down"] as const) {
       const { container, unmount } = render(<Icon name={name} />)
       expect(container.querySelector("svg")).not.toBeNull()
       unmount()

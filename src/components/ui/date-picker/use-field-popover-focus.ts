@@ -161,6 +161,11 @@ function useFieldPopoverFocus({
         openFromField(true)
       }
     },
+    // Поле, открывающее календарь, — `combobox` с всплывающим диалогом (APG
+    // «Date Picker Combobox»): у роли `textbox` атрибута `aria-expanded` нет,
+    // и скринридер молчал о том, открыт ли календарь (ревью 10.10, п. 26).
+    // Ввод даты руками роль `combobox` не отнимает — это по-прежнему поле.
+    role: "combobox" as const,
     "aria-haspopup": "dialog" as const,
     "aria-expanded": open,
   }

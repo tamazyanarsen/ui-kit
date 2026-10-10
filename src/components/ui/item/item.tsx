@@ -4,6 +4,7 @@ import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
 import { pressHandlers } from "@/lib/press"
+import { PressTarget } from "@/lib/press-target"
 
 import { RightElement, type RightElementType } from "./right-element"
 
@@ -197,15 +198,17 @@ function Item({
   // Toggle, Checkbox и «i» внутри строки — свои кнопки: Enter/Space на них
   // не должны доходить до строки (см. `pressHandlers`).
   const press = pressHandlers<HTMLDivElement>(disabled ? undefined : onClick)
+  const rootId = React.useId()
 
   return (
     <div
-      role="button"
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled || undefined}
-      aria-expanded={rightElement === "select" ? open : undefined}
+      // Нажатие с клавиатуры — кнопка-подложка (`PressTarget`), а не
+      // `role="button"` на корне: у роли `button` дети «презентационные», и
+      // вложенные Toggle, Checkbox и «i» скринридер складывал в имя блока (ревью 10.10,
+      // п. 25). Имя подложки — текст блока, как у прежней роли.
+      id={rootId}
       data-open={(rightElement === "select" && open) || undefined}
-      {...press}
+      onClick={press.onClick}
       data-slot="item"
       data-disabled={disabled || undefined}
       // Явное решение вызывающего — атрибутом: правила списка в
@@ -228,10 +231,16 @@ function Item({
         "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
         "not-data-[disabled]:active:bg-[var(--item-hover-bg)]",
         "data-[disabled]:cursor-not-allowed",
-        "focus-visible:focus-ring-inset",
         className
       )}
     >
+      <PressTarget
+        onPress={() => onClick?.()}
+        labelledBy={rootId}
+        disabled={disabled}
+        expanded={rightElement === "select" ? open : undefined}
+        className="focus-visible:focus-ring-inset"
+      />
       {divider !== false && (
         <span
           aria-hidden="true"

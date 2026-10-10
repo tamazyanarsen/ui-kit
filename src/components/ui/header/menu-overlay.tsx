@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
 import { usePageScrollLock } from "@/lib/use-page-scroll-lock"
 import { usePresence } from "@/lib/use-presence"
+import { useLatest } from "@/lib/use-latest"
 
 /**
  * Минимум между кнопкой «Настроить избранное» и нижней кромкой экрана. При
@@ -72,8 +73,7 @@ function MenuOverlay({
   // пользователь клавиатуры мог закрыть меню только кнопкой «Меню» или
   // кликом по затемнению. Escape внутри ЧУЖОГО диалога (модалка «Настройка
   // избранного» открывается поверх меню) — дело того диалога.
-  const onCloseRef = React.useRef(onClose)
-  onCloseRef.current = onClose
+  const onCloseRef = useLatest(onClose)
   React.useEffect(() => {
     if (!open) return
     const onKeyDown = (event: KeyboardEvent) => {
@@ -86,7 +86,7 @@ function MenuOverlay({
     }
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
-  }, [open, returnFocusRef])
+  }, [open, returnFocusRef, onCloseRef])
 
   // Закрытие не по Escape — выбор ссылки, плитки, пункта ряда, щелчок по
   // затемнению — тоже возвращает фокус на кнопку, открывшую панель. Раньше
@@ -120,6 +120,12 @@ function MenuOverlay({
   // доступное место по высоте, КРОМЕ кнопки настройки избранного и её
   // марджинов» (замечание 1). Кнопка меряется, а не берётся константой, —
   // ровно по той же причине, по которой не берётся константой высота шапки.
+  //
+  // Зависимость — НАЛИЧИЕ подвала, а не сам `footer`: это разметка, новая на
+  // каждом рендере шапки, и при открытом меню слушатели `scroll`/`resize`
+  // снимались и ставились заново на любой ре-рендер (ревью 10.10, КК-3).
+  // Высота кнопки меряется в `measure` заново при каждом вызове.
+  const hasFooter = hasContent(footer)
   React.useLayoutEffect(() => {
     const element = ref.current
     if (!element || !present) return
@@ -175,7 +181,7 @@ function MenuOverlay({
       window.removeEventListener("scroll", measure, { capture: true })
       window.removeEventListener("resize", measure)
     }
-  }, [footer, present])
+  }, [hasFooter, present])
 
   if (!present) return null
 
@@ -225,7 +231,7 @@ function MenuOverlay({
         )}
       >
         {children}
-        {hasContent(footer) && (
+        {hasFooter && (
           <div ref={footerRef} className="flex justify-center pt-8">
             {footer}
           </div>

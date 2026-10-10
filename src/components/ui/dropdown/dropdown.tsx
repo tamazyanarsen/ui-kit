@@ -3,6 +3,7 @@ import { X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { usePressTracking } from "@/lib/use-press-tracking"
+import { hasNode } from "@/lib/has-node"
 
 // Dropdown — всплывающая поверхность, которую макет описывает как
 // отдельный переиспользуемый компонент (на канвасе самого Select лежат три
@@ -113,10 +114,6 @@ function DropdownHeader({
   )
 }
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 interface DropdownItemProps extends React.ComponentProps<"div"> {
   text: React.ReactNode
   description?: React.ReactNode
@@ -173,7 +170,7 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         {...props}
       >
         <span className="text-p1-medium [overflow-wrap:anywhere] text-[var(--menu-item-fg)]">{text}</span>
-        {hasValue(description) && (
+        {hasNode(description) && (
           <span className="text-p3-medium [overflow-wrap:anywhere] text-[var(--menu-item-description-fg)]">{description}</span>
         )}
         {children}

@@ -154,7 +154,8 @@ function SegmentButton({
       )}
     >
       {typeof item.icon === "string" ? (
-        <Icon name={item.icon} aria-hidden="true" className="size-4 shrink-0" />
+        // // Имя пришло строкой (контрол, данные): типом не проверить, проверит Icon — пусто и предупреждение в разработке.
+        <Icon name={item.icon as IconName} aria-hidden="true" className="size-4 shrink-0" />
       ) : (
         item.icon
       )}

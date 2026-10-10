@@ -3,8 +3,6 @@
 import { eventually, ready, until } from './tables-0-helpers.mjs'
 
 const LOC = 'песочница-реестр-заявок-на-аккредитив--default'
-const CARDS = 'песочница-реестр-бизнес-карт--default'
-const COST = 'песочница-перераспределение-сср--default'
 
 const norm = (s) => s.replace(/[\s  ]+/g, ' ').trim()
 const table = (page) => page.locator('#storybook-root table').first()

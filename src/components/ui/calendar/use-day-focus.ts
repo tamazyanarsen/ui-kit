@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { isSameDay, isSameMonth } from "@/lib/calendar"
+import { dateKey, isSameDay, isSameMonth } from "@/lib/calendar"
 import type { CalendarSingleMonth } from "./types"
 
 // Клавиатура сетки дней по образцу APG «Date Picker Dialog»: в порядке Tab
@@ -30,10 +30,6 @@ interface UseDayFocusOptions {
   isDisabled?: (date: Date) => boolean
   /** Сдвинуть показанные месяцы на `delta`. */
   onShiftMonths?: (delta: number) => void
-}
-
-function dateKey(date: Date) {
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 }
 
 function shiftDays(date: Date, days: number) {
@@ -206,4 +202,4 @@ function useDayFocus({
   }
 }
 
-export { useDayFocus, dateKey }
+export { useDayFocus }

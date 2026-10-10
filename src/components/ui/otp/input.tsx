@@ -100,7 +100,7 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
   const sync = React.useCallback(() => {
     const input = inputRef.current
     if (!input) return
-    const digits = input.value.replace(/D/g, "")
+    const digits = input.value.replace(/\D/g, "")
     const start = Math.min(input.selectionStart ?? digits.length, digits.length)
     const end = Math.min(input.selectionEnd ?? start, digits.length)
     const focused = document.activeElement === input

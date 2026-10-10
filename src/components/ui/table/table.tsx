@@ -74,7 +74,10 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(function Table({
   ...props
 }, ref) {
   const innerRef = React.useRef<HTMLDivElement>(null)
-  React.useImperativeHandle(containerRef, () => innerRef.current as HTMLDivElement)
+  // Без зависимостей хэндл пересоздавался на каждый рендер, и callback-ref
+  // потребителя получал `null`, а следом узел — на любую перерисовку
+  // (ревью 10.10, КК-3). Узел окна прокрутки не меняется за жизнь таблицы.
+  React.useImperativeHandle(containerRef, () => innerRef.current as HTMLDivElement, [])
 
   const scrollState = useHorizontalScrollState(innerRef)
 
@@ -165,11 +168,29 @@ interface TableRowProps extends React.ComponentProps<"tr"> {
    * и Active и курсор-указатель. Без этого макет оставляет строку инертной.
    * Такая строка встаёт в обход по Tab и открывается по Enter и пробелу. */
   clickable?: boolean
+  /**
+   * Что делает нажатие на кликабельную строку — для скринридера.
+   *
+   * Строка остаётся `row` (роль `button` сломала бы таблицу), и без
+   * описания фокус на ней объявлялся как обычная строка: о том, что её
+   * можно открыть, человек не узнавал (ревью 10.10, п. 27). Уходит в
+   * `aria-description`.
+   */
+  actionDescription?: string
 }
 
 const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
   function TableRow(
-    { className, selected, added, clickable, tabIndex, onKeyDown, ...props },
+    {
+      className,
+      selected,
+      added,
+      clickable,
+      actionDescription = "Открывается по Enter",
+      tabIndex,
+      onKeyDown,
+      ...props
+    },
     ref
   ) {
     // Клавиатура для кликабельной строки: без неё карточку можно было открыть
@@ -203,6 +224,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         tabIndex={tabIndex ?? (clickable ? 0 : undefined)}
+        aria-description={clickable ? actionDescription : undefined}
         onKeyDown={handleKeyDown}
         data-slot="table-row"
         data-selected={selected || undefined}

@@ -1,6 +1,7 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { hasNode } from "@/lib/has-node"
 import { PaymentIcon, type PaymentSystem } from "@/components/ui/thumbnail"
 
 /**
@@ -37,10 +38,6 @@ interface CardAccountProps {
   className?: string
 }
 
-/** Есть что показать: 0 — значение, а `null`, `false` и `""` — нет. */
-const hasValue = (node: React.ReactNode) =>
-  node != null && node !== false && node !== ""
-
 function CardAccount({
   paymentSystem = "mir",
   number,
@@ -72,7 +69,7 @@ function CardAccount({
           (`bottom-12` + сдвиг вниз на свою высоту). Строка встаёт на 20–32 из
           32 внутри рамки, то есть вплотную к низу; прежние `bottom-[3px]`
           поднимали цифры на 3px выше эталона (сверено по пикселям узла). */}
-      {hasValue(number) && (
+      {hasNode(number) && (
         <span className="absolute right-[3px] bottom-0 text-p4-regular text-[var(--card-thumb-fg)]">
           {number}
         </span>

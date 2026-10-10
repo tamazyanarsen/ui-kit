@@ -11,6 +11,7 @@ import type {
 
 import { HeaderPanels, type HeaderPanel } from "./header-panels"
 import { NotificationMenu, type NotificationMenuItem } from "./notification-menu"
+import { countUnread } from "./notification-count"
 import { ProfileMenu, type ProfileMenuOrganization } from "./profile-menu"
 import { Logo, MessagesButton } from "./top-row"
 import { useOrganization } from "./use-organization"
@@ -138,8 +139,8 @@ function MobileHeader({
               <NotificationMenu
                 items={notificationItems}
                 // Только непрочитанные — то же правило, что у плитки на
-                // десктопе (`countUnread` в top-row.tsx).
-                unreadCount={notificationItems.filter((item) => !item.viewed).length}
+                // десктопе.
+                unreadCount={countUnread(notificationItems)}
                 className={MOBILE_ICON_TILE}
               />
               <MessagesButton

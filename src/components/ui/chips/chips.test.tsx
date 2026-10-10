@@ -37,7 +37,7 @@ describe("Chips", () => {
 
   it("disables the remove button when disabled", () => {
     render(
-      <Chips closable disabled>
+      <Chips closable disabled onRemove={() => {}}>
         Значение
       </Chips>
     )

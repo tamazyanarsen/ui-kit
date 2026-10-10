@@ -67,9 +67,11 @@ describe("Кликабельное доступно с клавиатуры", ()
     const user = userEvent.setup()
     const onClick = vi.fn()
     const { container } = render(<MailFeed {...mail} onClick={onClick} />)
-    const root = container.querySelector('[data-slot="mail-feed"]') as HTMLElement
-    expect(root).toHaveAttribute("role", "button")
-    root.focus()
+    // С ревью 10.10 (п. 25) кнопка — подложка карточки, а не сам корень:
+    // роль `button` на корне прятала флажок от скринридера.
+    const target = container.querySelector('[data-slot="mail-feed"] > [data-slot="press-target"]') as HTMLElement
+    expect(target.tagName).toBe("BUTTON")
+    target.focus()
     await user.keyboard("{Enter}")
     expect(onClick).toHaveBeenCalledTimes(1)
   })

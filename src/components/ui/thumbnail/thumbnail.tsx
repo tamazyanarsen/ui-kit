@@ -156,7 +156,8 @@ function Thumbnail({
         {isIconTile &&
           (typeof icon === "string" ? (
             <Icon
-              name={icon}
+              // // Имя пришло строкой (контрол, данные): типом не проверить, проверит Icon — пусто и предупреждение в разработке.
+              name={icon as IconName}
               size={24}
               aria-hidden="true"
               className={cn("size-6", THUMBNAIL_ICON_FG[background])}

@@ -2,27 +2,10 @@
 // сброс взвода), selection-button, чёрная панель выбора, аккордеоны, панель уведомлений, копирование значения.
 import { eventually, ready, until, withArgs } from './tables-0-helpers.mjs'
 
-const FILTER = 'компоненты-filter-table--opened'
-const DND = 'компоненты-drag-and-drop--playground'
-const SEL = 'компоненты-selection-button--playground'
-const SEL_EX = 'компоненты-selection-button--examples'
 const ACC_LIST = 'компоненты-content-accordion--playground'
 const ACC_CARD = 'компоненты-accordion--playground'
 const NOTIF = 'компоненты-notification--playground'
 const INFO = 'компоненты-information-field--playground'
-
-const chips = (page) =>
-  page.locator('[data-slot=filter]').evaluateAll((fs) =>
-    fs.map((e) => e.innerText.replace(/\s+/g, ' ').trim() + '|' + (e.getAttribute('data-checked') ? 'выбран' : '') + '|' + e.getAttribute('aria-expanded'))
-  )
-const dialogs = (page) => page.locator('[data-slot=filter-content]').count()
-
-const order = (page) =>
-  page.locator('[data-slot=sortable-list]').first().locator('[data-slot=sortable-handle]').evaluateAll((hs) =>
-    hs.map((h) => h.getAttribute('aria-label').replace(/^Переместить «|»$/g, ''))
-  )
-const dndHandle = (page, name) => page.locator(`[data-slot=sortable-list] [aria-label="Переместить «${name}»"]`).first()
-const dndRow = (page, name) => dndHandle(page, name).locator('xpath=ancestor::div[@draggable][1]')
 
 /** Подменяет запись в буфер обмена: всё, что уходит в writeText, копится в window.__copied. */
 async function stubClipboard(page) {

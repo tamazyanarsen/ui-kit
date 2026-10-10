@@ -180,9 +180,12 @@ describe("изменение ширины колонки", () => {
     fireEvent.pointerMove(handle, { pointerId: 1, clientX: 10 })
     expect(onWidthChange).toHaveBeenCalledTimes(1)
 
+    // Отмена возвращает исходную ширину (ревью 10.10, п. 6) — это последний
+    // вызов: дальнейшие движения над ручкой ширину не меняют.
     fireEvent(handle, new Event("pointercancel"))
+    expect(onWidthChange).toHaveBeenCalledTimes(2)
     fireEvent.pointerMove(handle, { pointerId: 1, clientX: 30 })
-    expect(onWidthChange).toHaveBeenCalledTimes(1)
+    expect(onWidthChange).toHaveBeenCalledTimes(2)
   })
 })
 

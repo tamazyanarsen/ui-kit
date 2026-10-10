@@ -58,6 +58,20 @@ export function getMonthMatrix(year: number, month: number): (DayCell | null)[][
   return weeks
 }
 
+/**
+ * Ключ календарного дня «ГГГГ-М-Д» (месяц с единицы): два объекта Date
+ * одного дня дают один ключ, пустая дата — пустую строку. Им же подписаны
+ * дни сетки (`data-date`).
+ *
+ * Один на весь календарь: раньше их было два с разными форматами — `dayKey`
+ * (месяц с нуля) в `calendar.tsx` и `dateKey` (с единицы) в
+ * `use-day-focus.ts`, и ключи из разных мест не совпадали (ревью 10.10,
+ * КК-2).
+ */
+export function dateKey(date: Date | null | undefined) {
+  return date ? `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` : ""
+}
+
 export function isSameDay(a: Date | null | undefined, b: Date | null | undefined) {
   if (!a || !b) return false
   return (

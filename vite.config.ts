@@ -40,7 +40,7 @@ export default defineConfig(({ command }) => ({
         "src/icons/**/*.ts",
         "src/icons/**/*.tsx",
       ],
-      exclude: ["**/*.stories.tsx", "**/*.test.tsx"],
+      exclude: ["**/*.stories.tsx", "**/*.test.tsx", "**/*.test.ts"],
       insertTypesEntry: true,
     }),
   ],

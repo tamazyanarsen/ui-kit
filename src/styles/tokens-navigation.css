@@ -92,6 +92,15 @@
   --filter-disabled-bg: var(--grey-109);
   --filter-disabled-fg: var(--grey-166);
 
+  /* Токены Navbar (ui/navbar) — `ELK / navbar`. Подложка полосы — стиль
+     «NavBar Color»: градиент от Grey 109 к прозрачному, то есть от цвета
+     страницы, поэтому токен ссылается на --page-bg (в старой теме это
+     Grey 106, и полоса не должна выделяться на ней пятном). Плашка даты
+     типа Scroll — белая, подпись Grey 284. */
+  --navbar-bg: var(--page-bg);
+  --navbar-date-bg: var(--white-101);
+  --navbar-date-fg: var(--grey-284);
+
   /* Токены Sidebar («Боковая панель для сотрудников», ui/sidebar).
      Значения Hover и Active у пункта прямо выписаны в тексте макета
      («Gray 114 (#EFEFEF)» и «Gray 109 (#F4F4F4)»), снимать их пипеткой не

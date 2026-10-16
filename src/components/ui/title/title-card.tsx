@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ArrowLeftSmall, CircleHelp } from "@/icons"
+import { ArrowLeftSmall, ChevronDown, CircleHelp } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
@@ -28,6 +28,17 @@ import { TitleInformationText } from "./information-text"
 // фиксированная кнопка справки против свободной группы действий). Один
 // компонент оказался бы объединением двух непересекающихся наборов
 // пропсов.
+//
+// Мобильная форма — `Size=Mobile, Type=Title Card` (70482:8886, сет
+// 70482:8875 версии 1.0.2): ни «Назад», ни «Справки» в ней нет — они живут
+// в навигационной полосе над заголовком (`ELK / navbar`, см. ui/navbar).
+// Остальное сжимается: заголовок H2 Mobile 22/30, описание и строка
+// статуса — P2 Mobile 12/16, все слоты идут через 4px, тег и информация —
+// через 12.
+//
+// Кнопка справа — `Button Title (ELK)` с двумя типами: `Support`
+// («Справка» с вопросом) и `More` («Ещё» с шевроном вниз, поля 20/16).
+// В «Вариантах» доки Title Card почти везде нарисован именно `More`.
 
 interface TitleCardProps extends Omit<React.ComponentProps<"div">, "title"> {
   title: React.ReactNode
@@ -39,9 +50,12 @@ interface TitleCardProps extends Omit<React.ComponentProps<"div">, "title"> {
    */
   backLabel?: React.ReactNode
   onBack?: () => void
-  /** «Справка» — её оформление задано макетом, меняется только обработчик. */
+  /** «Справка» — её оформление задано макетом, меняется только обработчик.
+   * `null` убирает кнопку. По умолчанию подпись зависит от `helpType`. */
   helpLabel?: React.ReactNode
   onHelp?: () => void
+  /** `Button Title (ELK)` · Type: `support` — «Справка», `more` — «Ещё ⌄». */
+  helpType?: "support" | "more"
   /** The status Tag. */
   tag?: React.ReactNode
   tagColor?: TagColor
@@ -55,7 +69,8 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
   description,
   backLabel = "Назад",
   onBack,
-  helpLabel = "Справка",
+  helpType = "support",
+  helpLabel = helpType === "more" ? "Ещё" : "Справка",
   onHelp,
   tag,
   tagColor = "green",
@@ -73,7 +88,7 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
   return (
     <div
       data-slot="title-card"
-      className={cn("flex w-full flex-col items-start gap-4", className)}
+      className={cn("flex w-full flex-col items-start gap-1 desktop:gap-4", className)}
       ref={ref}
       {...props}
     >
@@ -87,26 +102,30 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
           iconPosition={backHasText ? "left" : "only"}
           onClick={onBack}
           aria-label={backAriaLabel}
+          // В мобильной форме «Назад» — в навигационной полосе (Navbar).
+          className="hidden desktop:inline-flex"
         >
           {backLabel}
         </Button>
       )}
 
       {/* Заголовок и описание — одна группа с зазором 8px; корневой зазор
-          16px разделяет эту группу, кнопку «Назад» и строку статуса. */}
-      <div className="flex w-full flex-col items-start gap-2">
+          16px разделяет эту группу, кнопку «Назад» и строку статуса. В
+          мобильной форме оба зазора — 4px. */}
+      <div className="flex w-full flex-col items-start gap-1 desktop:gap-2">
         <div className="flex w-full items-start gap-12">
           <TitleHeading>{title}</TitleHeading>
           {showHelp && (
             // `pt-6` стоит на обёртке, а не на кнопке: в макете кнопка
             // 32px выровнена оптически относительно строки заголовка
-            // высотой 44px, а не по её верхнему краю.
-            <div className="flex shrink-0 flex-col items-start pt-1.5">
+            // высотой 44px, а не по её верхнему краю. В мобильной форме
+            // кнопки нет — справка уезжает в Navbar.
+            <div className="hidden shrink-0 flex-col items-start pt-1.5 desktop:flex">
               <Button
                 variant="secondary-white"
                 size="sm"
-                icon={CircleHelp}
-                iconPosition="left"
+                icon={helpType === "more" ? ChevronDown : CircleHelp}
+                iconPosition={helpType === "more" ? "right" : "left"}
                 onClick={onHelp}
               >
                 {helpLabel}
@@ -115,7 +134,7 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
           )}
         </div>
         {hasNode(description) && (
-          <p className="w-full text-p2-medium [overflow-wrap:anywhere] text-[var(--title-description-fg)]">
+          <p className="w-full text-p3-medium [overflow-wrap:anywhere] text-[var(--title-description-fg)] desktop:text-p2-medium">
             {description}
           </p>
         )}
@@ -126,7 +145,7 @@ const TitleCard = React.forwardRef<HTMLDivElement, TitleCardProps>(function Titl
           data-slot="title-card-status"
           // Перенос: тег и длинная информация на узкой полосе не помещались в
           // одну строку и уходили за край.
-          className="flex w-full flex-wrap items-center gap-x-4 gap-y-2"
+          className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 desktop:gap-x-4"
         >
           {hasNode(tag) && <Tag color={tagColor}>{tag}</Tag>}
           {information}

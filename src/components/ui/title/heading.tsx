@@ -55,7 +55,8 @@ interface TitleHeadingProps {
   className?: string
 }
 
-/** H2-заголовок страницы: максимум две строки, полный текст — в Tooltip. */
+/** H2-заголовок страницы (22/30 в мобильной форме, 32/44 на десктопе):
+ * максимум две строки, полный текст — в Tooltip. */
 function TitleHeading({ children, className }: TitleHeadingProps) {
   const ref = React.useRef<HTMLHeadingElement>(null)
   // Ключ пересчёта — сам текст: смена заголовка не меняет размеров бокса,
@@ -71,7 +72,7 @@ function TitleHeading({ children, className }: TitleHeadingProps) {
       <h1
         ref={ref}
         className={cn(
-          "line-clamp-2 min-w-0 flex-1 text-h2 text-[var(--title-fg)]",
+          "line-clamp-2 min-w-0 flex-1 text-h2-mobile text-[var(--title-fg)] desktop:text-h2",
           className
         )}
       >

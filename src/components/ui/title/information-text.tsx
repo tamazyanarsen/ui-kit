@@ -52,11 +52,12 @@ const TitleInformationText = React.forwardRef<HTMLDivElement, TitleInformationTe
       data-slot="title-information-text"
       data-type={type}
       className={cn(
-        "flex items-start text-p2-medium",
+        // Size=Mobile мастера — P2 Mobile 12/16 и 12px между парами.
+        "flex items-start text-p3-medium desktop:text-p2-medium",
         // Пары переносятся на следующую строку целиком: без переноса три
         // пары на полосе 343 уходили за край до 587px. Внутри пары подпись и
         // значение не разрываются.
-        type === "text" && "flex-wrap gap-x-4 gap-y-1 whitespace-nowrap",
+        type === "text" && "flex-wrap gap-x-3 gap-y-1 whitespace-nowrap desktop:gap-x-4",
         className
       )}
       ref={ref}

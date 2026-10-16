@@ -17,6 +17,12 @@ import { TitleHeading } from "./heading"
 // Title Card, здесь нет кнопки «Назад» и нет строки статуса, а корневой
 // зазор равен 8px, а не 16, — именно поэтому это отдельный компонент (см.
 // примечание в title-card.tsx).
+//
+// Мобильная форма — `Size=Mobile, Type=Registry` (70482:8892): только
+// заголовок H2 Mobile 22/30 и описание P2 Mobile 12/16 через 4px. Кнопок в
+// ней нет вовсе: справка уезжает в навигационную полосу (Navbar), действия
+// страницы — в нижнее меню кнопок (Button Menu), как в примерах
+// «Использование в макете».
 
 interface TitleRegistryProps extends Omit<React.ComponentProps<"div">, "title"> {
   title: React.ReactNode
@@ -44,18 +50,17 @@ const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(funct
   return (
     <div
       data-slot="title-registry"
-      className={cn("flex w-full flex-col items-start gap-2", className)}
+      className={cn("flex w-full flex-col items-start gap-1 desktop:gap-2", className)}
       ref={ref}
       {...props}
     >
       {/* Действия не должны съедать заголовок (аудит 20): ряд кнопок стоял
           `shrink-0` без переноса, и на узкой ширине заголовок сжимался до
-          пары букв, а две кнопки вылезали за край.
-          - В мобильной форме действия идут под заголовком.
-          - На десктопе ряд прежний, пока всё помещается; если заголовку
-            не остаётся хотя бы 200px, кнопки переносятся на свою строку.
-            Зазор по горизонтали прежний (48px), поэтому в широком
-            контейнере раскладка не меняется. */}
+          пары букв, а две кнопки вылезали за край. Ряд прежний, пока всё
+          помещается; если заголовку не остаётся хотя бы 200px, кнопки
+          переносятся на свою строку. Зазор по горизонтали прежний (48px),
+          поэтому в широком контейнере раскладка не меняется.
+          В мобильной форме кнопок нет (см. шапку файла). */}
       <div className="flex w-full flex-col items-start gap-2 desktop:flex-row desktop:flex-wrap desktop:gap-x-12">
         <TitleHeading className="w-full flex-none desktop:w-auto desktop:min-w-[min(100%,200px)] desktop:flex-1">
           {title}
@@ -63,7 +68,7 @@ const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(funct
         {showButtons && (
           // Тот же оптический `pt-6`, что и у кнопки справки в Title Card,
           // — только рядом с заголовком, на десктопе.
-          <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2 desktop:pt-1.5">
+          <div className="hidden max-w-full shrink-0 flex-wrap items-center gap-2 desktop:flex desktop:pt-1.5">
             {showHelp && (
               <Button
                 variant="secondary-white"
@@ -80,7 +85,7 @@ const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(funct
         )}
       </div>
       {hasNode(description) && (
-        <p className="w-full text-p2-medium [overflow-wrap:anywhere] text-[var(--title-description-fg)]">
+        <p className="w-full text-p3-medium [overflow-wrap:anywhere] text-[var(--title-description-fg)] desktop:text-p2-medium">
           {description}
         </p>
       )}

@@ -188,6 +188,10 @@
       "types": "./dist/components/ui/modal/index.d.ts",
       "import": "./dist/components/ui/modal/index.js"
     },
+    "./navbar": {
+      "types": "./dist/components/ui/navbar/index.d.ts",
+      "import": "./dist/components/ui/navbar/index.js"
+    },
     "./notification": {
       "types": "./dist/components/ui/notification/index.d.ts",
       "import": "./dist/components/ui/notification/index.js"

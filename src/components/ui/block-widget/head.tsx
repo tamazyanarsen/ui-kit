@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { Info } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -111,7 +112,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
   ...props
 }, ref) {
   const isDesktop = useIsDesktop()
-  const titleId = React.useId()
+  const titleId = useStableId()
   useRegisterBlockWidgetTitle(titleId)
 
   const infoIcon = hasNode(info) ? (

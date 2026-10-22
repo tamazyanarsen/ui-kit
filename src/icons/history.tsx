@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / history — 14. Device, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function History({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M12 3a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12m11-5.545a1 1 0 0 1 1 1v4.867l3.559 1.987a1 1 0 1 1-.975 1.746l-4.071-2.273a1 1 0 0 1-.513-.873V7.455a1 1 0 0 1 1-1" clipRule="evenodd"/></svg>

@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / question — 04. Errors Allert Info, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Question({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-156 -180)"><defs><clipPath id={`${uid}-question-24-clip2_70326_26`}><path fill="#fff" d="M156 180h24v24h-24z"/></clipPath></defs><g fill="currentColor" clipPath={`url(#${uid}-question-24-clip2_70326_26)`}><path fillRule="evenodd" d="M168 182c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10m-12 10c0-6.627 5.373-12 12-12s12 5.373 12 12-5.373 12-12 12-12-5.373-12-12" clipRule="evenodd"/><path fillRule="evenodd" d="M168 187c-1.467 0-2.5 1.067-2.5 2.2a1 1 0 0 1-2 0c0-2.402 2.101-4.2 4.5-4.2s4.5 1.798 4.5 4.2c0 2.061-1.546 3.677-3.5 4.094V194a1 1 0 0 1-2 0v-1.6a1 1 0 0 1 1-1c1.467 0 2.5-1.067 2.5-2.2s-1.033-2.2-2.5-2.2" clipRule="evenodd"/><path d="M169 198a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></g></g></svg>

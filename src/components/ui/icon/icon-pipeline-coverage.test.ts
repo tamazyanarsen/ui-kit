@@ -35,18 +35,18 @@ describe("конвейер иконок: id", () => {
     expect(placeholderToUid(markup)).toBe(jsx)
   })
 
-  it("хук useId добавляется, когда разметке нужен uid, и снимается, когда нет", () => {
+  it("хук useStableId добавляется, когда разметке нужен uid, и снимается, когда нет", () => {
     const icon = (body: string) =>
       `import type { IconProps } from "./types"\n` +
       `export function Sample({ size = 24 }: IconProps) {\n  return <svg>${body}</svg>\n}\n`
 
     const withHook = ensureUidHook(icon("<g clip-path={`url(#${uid}-c)`}/>"))
-    expect(withHook).toContain('import { useId } from "react"')
-    expect(withHook).toContain("const uid = useId()")
+    expect(withHook).toContain('import { useStableId } from "@/lib/use-stable-id"')
+    expect(withHook).toContain("const uid = useStableId()")
 
     const withoutRefs = withHook.replace("<g clip-path={`url(#${uid}-c)`}/>", "<g/>")
     const cleaned = ensureUidHook(withoutRefs)
-    expect(cleaned).not.toContain("useId")
+    expect(cleaned).not.toContain("useStableId")
   })
 })
 

@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / ticket — 13. Money Card, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Ticket({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M12.272 2.23c.973-.97 2.55-.97 3.522 0l1.191 1.19c.607.61.487 1.45.196 1.94a1.07 1.07 0 0 0 .918 1.61c.201 0 .386-.06.544-.15.491-.29 1.33-.41 1.936.19l1.192 1.2a2.49 2.49 0 0 1 0 3.52L11.728 21.77c-.973.97-2.55.97-3.522 0l-1.191-1.19c-.607-.61-.487-1.45-.196-1.94a1.07 1.07 0 0 0-.919-1.61c-.2 0-.385.06-.544.15-.49.29-1.329.41-1.936-.19l-1.191-1.2a2.49 2.49 0 0 1 0-3.52zm2.157 1.37a.557.557 0 0 0-.791 0L3.595 13.64a.56.56 0 0 0 0 .79l.98.98a2.997 2.997 0 0 1 4.016 4.01l.98.98c.219.22.573.22.791 0l10.043-10.04a.56.56 0 0 0 0-.79l-.98-.98a2.998 2.998 0 0 1-4.016-4.01z" clipRule="evenodd"/></svg>

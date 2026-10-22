@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / whater transport — 19. Categories, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function WhaterTransport({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M8 2c0-.55.448-1 1-1h6c.553 0 1 .45 1 1v2h2c1.105 0 2 .9 2 2v4.61l1.316.44c.252.09.46.27.579.5.118.24.138.51.054.77l-2 6a1.002 1.002 0 0 1-1.396.57l-2.22-1.11a1 1 0 0 0-.798-.04l-2.481.93c-.68.26-1.428.26-2.107 0l-2.481-.93a1 1 0 0 0-.799.04l-2.22 1.11a1 1 0 0 1-1.395-.57l-2-6c-.175-.53.108-1.09.632-1.27L4 10.61V6c0-1.1.896-2 2-2h2zM6 6v3.95l5.684-1.9a.98.98 0 0 1 .632 0L18 9.95V6zm8-2h-4V3h4zm-2 6.05-7.735 2.58 1.319 3.96L6.773 16a2.98 2.98 0 0 1 2.395-.13l2.481.93c.227.09.476.09.702 0l2.482-.93a2.98 2.98 0 0 1 2.395.13l1.188.59 1.319-3.96zM9.416 22.33a3.77 3.77 0 0 0-3.015-.16l-2.05.77a1.003 1.003 0 0 1-.702-1.88l2.049-.76a5.75 5.75 0 0 1 4.613.24 3.79 3.79 0 0 0 3.379 0 5.75 5.75 0 0 1 4.612-.24l2.049.76a1.004 1.004 0 0 1-.702 1.88l-2.049-.77a3.77 3.77 0 0 0-3.016.16 5.8 5.8 0 0 1-5.168 0" clipRule="evenodd"/></svg>

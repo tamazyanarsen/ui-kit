@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Information, Lock } from "@/icons"
 
@@ -117,7 +118,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
   placeholder,
   ...props
 }, ref) {
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const textareaId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)

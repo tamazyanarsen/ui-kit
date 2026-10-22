@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
@@ -67,7 +68,7 @@ function Card({
   const clickable = Boolean(onClick)
   // `[can && item]` с одними false — пунктов нет, и кнопки «…» тоже.
   const items = compactList(menuItems)
-  const titleId = React.useId()
+  const titleId = useStableId()
   const subtitleId = `${titleId}-subtitle`
 
   return (

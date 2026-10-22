@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / kindergartens — 19. Categories, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Kindergartens({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-104 -1140)"><defs><clipPath id={`${uid}-kindergartens-24-clip7_70326_26`}><path fill="#fff" d="M104 1140h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-kindergartens-24-clip7_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M113.241 1142.39A9.99 9.99 0 0 0 106 1152c0 5.52 4.477 10 10 10s10-4.48 10-10-4.477-10-10-10c-.189 0-.377.01-.564.02a8 8 0 0 0-.361 1.37 6 6 0 0 0-.074.66l-.001.03h-.997.997c.001.29.112.56.302.75.19.2.441.3.698.3s.508-.1.698-.3c.19-.19.302-.46.302-.75 0-.56.448-1 1-1s1 .44 1 1c0 .8-.31 1.57-.869 2.15-.561.57-1.327.9-2.131.9s-1.57-.33-2.131-.9a3.1 3.1 0 0 1-.869-2.15h.997H113v-.04l.002-.06a8 8 0 0 1 .239-1.59M104 1152c0-6.63 5.373-12 12-12s12 5.37 12 12-5.373 12-12 12-12-5.37-12-12m8-1c-.552 0-1 .45-1 1s-.448 1-1 1-1-.45-1-1c0-1.66 1.343-3 3-3s3 1.34 3 3c0 .55-.448 1-1 1s-1-.45-1-1-.448-1-1-1m8 0c-.552 0-1 .45-1 1s-.448 1-1 1-1-.45-1-1c0-1.66 1.343-3 3-3s3 1.34 3 3c0 .55-.448 1-1 1s-1-.45-1-1-.448-1-1-1m-.194 5.41c.327.44.231 1.07-.215 1.4A6.1 6.1 0 0 1 116 1159a6.1 6.1 0 0 1-3.591-1.19 1.003 1.003 0 0 1 1.182-1.62c.724.53 1.562.81 2.409.81s1.685-.28 2.409-.81a1 1 0 0 1 1.397.22" clipRule="evenodd"/></g></g></svg>

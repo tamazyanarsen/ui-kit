@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { useComposedRefs } from "@/lib/compose-refs"
 import { cn } from "@/lib/utils"
@@ -59,7 +60,7 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
   defaultValue,
   ...props
 }, ref) {
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   // `error={true}` — только красный цвет кода, без пустой строки подписи.

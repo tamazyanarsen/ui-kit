@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { VariantProps } from "class-variance-authority"
 import { IMaskInput } from "react-imask"
 
@@ -97,7 +98,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   value,
   ...props
 }, ref) {
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)

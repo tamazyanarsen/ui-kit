@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { Loader2, X } from "@/icons"
 
@@ -45,7 +46,7 @@ const AutocompleteField = React.forwardRef<
   placeholder,
   ...props
 }, ref) {
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const inputId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)

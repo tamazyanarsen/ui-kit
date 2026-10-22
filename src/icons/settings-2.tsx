@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / settings 2 — 09. Settings Menus, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Settings2({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M5.333 3.5c.553 0 1 .45 1 1v5.83c0 .56-.447 1-1 1s-1-.44-1-1V4.5c0-.55.448-1 1-1M12 3.5c.552 0 1 .45 1 1v3.17h1.5c.552 0 1 .44 1 1 0 .55-.448 1-1 1h-5c-.552 0-1-.45-1-1 0-.56.448-1 1-1H11V4.5c0-.55.448-1 1-1m6.667 0c.552 0 1 .45 1 1V12c0 .55-.448 1-1 1s-1-.45-1-1V4.5c0-.55.448-1 1-1M12 11c.552 0 1 .45 1 1v7.5c0 .55-.448 1-1 1s-1-.45-1-1V12c0-.55.448-1 1-1M1.833 13.67c0-.56.448-1 1-1h5a1.001 1.001 0 0 1 0 2h-1.5v4.83a1.001 1.001 0 0 1-2 0v-4.83h-1.5c-.552 0-1-.45-1-1m13.334 1.66c0-.55.448-1 1-1h5c.552 0 1 .45 1 1 0 .56-.448 1-1 1h-1.5v3.17c0 .55-.448 1-1 1s-1-.45-1-1v-3.17h-1.5c-.552 0-1-.44-1-1" clipRule="evenodd"/></svg>

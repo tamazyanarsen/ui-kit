@@ -10,7 +10,8 @@
 //    Так уходит большая часть id: Figma кладёт такую обрезку по рамке почти
 //    в каждую иконку.
 // 2. Оставшиеся id (настоящие обрезки, маски) делаются уникальными на
-//    экземпляр: `id={`${uid}-…`}`, где `uid` — `useId()` компонента.
+//    экземпляр: `id={`${uid}-…`}`, где `uid` — `useStableId()` компонента
+//    (обёртка над `useId`, которая работает и на React 17).
 //
 // Внутри SVGO id живут в виде `__uid__-…` (JSX-выражения в XML недопустимы),
 // в JSX они переводятся функциями `uidToPlaceholder` / `placeholderToUid`.
@@ -39,23 +40,23 @@ export function placeholderToUid(s) {
     .replace(/="url\(#__uid__-([^")]+)\)"/g, "={`url(#${uid}-$1)`}")
 }
 
-/** Вставляет `const uid = useId()` в компонент, если разметка его требует. */
+const UID_IMPORT = 'import { useStableId } from "@/lib/use-stable-id"'
+
+/** Вставляет `const uid = useStableId()` в компонент, если разметка его требует. */
 export function ensureUidHook(source) {
-  const hasHook = /const uid = useId\(\)/.test(source)
+  const hasHook = /const uid = useStableId\(\)/.test(source)
   // Хук больше не нужен: `dropNoopClips` снял последнюю обрезку, и ни одной
   // ссылки на `uid` не осталось. Иначе `noUnusedLocals` роняет сборку типов.
   if (!source.includes("${uid}")) return hasHook ? dropUidHook(source) : source
   if (hasHook) return source
   // Файлы иконок бывают и в CRLF: перевод строки берётся из самого файла.
   const nl = source.includes("\r\n") ? "\r\n" : "\n"
-  const withImport = source.includes('from "react"')
-    ? source
-    : `import { useId } from "react"${nl}${source}`
+  const withImport = source.includes(UID_IMPORT) ? source : `${UID_IMPORT}${nl}${source}`
   return withImport.replace(
     /(export function \w+\(\{[^)]*\}: IconProps\) \{\r?\n)/,
     `$1  // id внутри svg общие для документа: две одинаковые иконки на${nl}` +
       `  // странице иначе ссылались бы на одну маску или обрезку.${nl}` +
-      `  const uid = useId().replace(/:/g, "")${nl}`
+      `  const uid = useStableId().replace(/:/g, "")${nl}`
   )
 }
 
@@ -64,8 +65,9 @@ function dropUidHook(source) {
   const drop = [
     /^ {2}\/\/ id внутри svg общие для документа/,
     /^ {2}\/\/ странице иначе ссылались бы/,
-    /^ {2}const uid = useId\(\)/,
+    /^ {2}const uid = use(?:Stable)?Id\(\)/,
     /^import \{ useId \} from "react"/,
+    /^import \{ useStableId \} from "@\/lib\/use-stable-id"/,
   ]
   const nl = source.includes("\r\n") ? "\r\n" : "\n"
   return source

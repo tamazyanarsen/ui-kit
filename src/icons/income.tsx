@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / income — 22. Product, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Income({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-104 -1652)"><defs><clipPath id={`${uid}-income-24-clip7_70326_26`}><path fill="#fff" d="M104 1652h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-income-24-clip7_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M116 1654c-5.523 0-10 4.48-10 10s4.477 10 10 10 10-4.48 10-10-4.477-10-10-10m-12 10c0-6.63 5.373-12 12-12s12 5.37 12 12-5.373 12-12 12-12-5.37-12-12m9-6c0-.55.448-1 1-1h3.75c1.127 0 2.208.45 3.005 1.24a4.26 4.26 0 0 1 0 6.02 4.28 4.28 0 0 1-3.005 1.24H115v1.5h1c.552 0 1 .45 1 1s-.448 1-1 1h-1v1c0 .55-.448 1-1 1s-1-.45-1-1v-1h-1c-.552 0-1-.45-1-1s.448-1 1-1h1v-1.5h-1c-.552 0-1-.45-1-1s.448-1 1-1h1zm2 5.5h2.75c.597 0 1.169-.24 1.591-.66s.659-.99.659-1.59-.237-1.17-.659-1.59a2.26 2.26 0 0 0-1.591-.66H115z" clipRule="evenodd"/></g></g></svg>

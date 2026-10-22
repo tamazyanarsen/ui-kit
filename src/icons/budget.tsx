@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / budget — 22. Product, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Budget({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M11.432 1.431a1 1 0 0 1 1.147 0l10 7a1 1 0 0 1-.573 1.819h-1.984v7.5H21a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h1.011v-7.5H2.006a1 1 0 0 1-.574-1.819zM6.011 10.25v7.5H8.65v-7.5zm4.639 0v7.5h2.722v-7.5zm4.722 0v7.5h2.65v-7.5zm-10.194-2h13.655l-6.827-4.779zM0 21.75a1 1 0 0 1 1-1h22a1 1 0 0 1 0 2H1a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>

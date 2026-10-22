@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { cn } from "@/lib/utils"
 import { flattenChildren } from "@/lib/flatten-children"
@@ -85,7 +86,7 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
   const [titleId, registerTitle] = useBlockWidgetTitles()
   // Ни шапки, ни своего имени (блок с произвольным содержимым) — имя
   // подложки собирается из текста всего блока, как у прежней роли `button`.
-  const ownId = React.useId()
+  const ownId = useStableId()
   const rootId = id ?? ownId
 
   return (

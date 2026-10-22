@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
 import { ChevronDown, X } from "@/icons"
 
@@ -54,7 +55,7 @@ export const ComboboxTrigger = React.forwardRef<
   disabled,
   ...props
 }, ref) {
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const triggerId = id ?? generatedId
   const invalid = Boolean(error)
   const { caption } = resolveCaption(error, comment)

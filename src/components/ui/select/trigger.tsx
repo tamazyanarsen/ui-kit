@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { ChevronDownIcon, Lock, X } from "@/icons"
 
@@ -44,7 +45,7 @@ export const SelectTrigger = React.forwardRef<
   id,
   ...props
 }, ref) {
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const triggerId = id ?? generatedId
   const clearValue = useSelectClear()
   const invalid = Boolean(error)

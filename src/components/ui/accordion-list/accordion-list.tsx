@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { ChevronDownIcon, Ellipsis } from "@/icons"
 
@@ -96,7 +97,7 @@ function AccordionListItem({
 }: AccordionListItemProps) {
   const controlled = open !== undefined
   const inList = React.useContext(InListContext)
-  const titleId = React.useId()
+  const titleId = useStableId()
   // Флажок без имени скринридер объявлял просто «флажок»: подпись бралась
   // только из строкового заголовка, а заголовок-разметка оставался без неё.
   const checkboxName =

@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { Ellipsis } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -198,7 +199,7 @@ function Item({
   // Toggle, Checkbox и «i» внутри строки — свои кнопки: Enter/Space на них
   // не должны доходить до строки (см. `pressHandlers`).
   const press = pressHandlers<HTMLDivElement>(disabled ? undefined : onClick)
-  const rootId = React.useId()
+  const rootId = useStableId()
 
   return (
     <div

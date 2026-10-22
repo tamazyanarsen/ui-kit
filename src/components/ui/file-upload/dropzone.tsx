@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { CirclePlus } from "@/icons"
 
 import { cn } from "@/lib/utils"
@@ -93,7 +94,7 @@ export const FileUploadDropzone = React.forwardRef<
   // Поле `sr-only` — единственный фокусируемый узел зоны, и имя ему дают
   // видимая подпись и подзаголовок (форматы, лимиты). Без ссылок на них
   // скринридер объявлял безымянный выбор файла (ревью 10.10, п. 3).
-  const inputId = React.useId()
+  const inputId = useStableId()
   const labelId = `${inputId}-label`
   const subtitleId = `${inputId}-subtitle`
   const showSubtitle = hasContent(subtitle)

@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / minus circle, delete widget — 05. Check Plus Minus Close, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function MinusCircleDeleteWidget({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-160 -500)"><defs><clipPath id={`${uid}-minus-circle-delete-widget-24-clip2_70326_26`}><path fill="#fff" d="M160 500h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-minus-circle-delete-widget-24-clip2_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M172 502c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10m-12 10c0-6.627 5.373-12 12-12s12 5.373 12 12-5.373 12-12 12-12-5.373-12-12m6.286 0a1 1 0 0 1 1-1h9.428a1 1 0 1 1 0 2h-9.428a1 1 0 0 1-1-1" clipRule="evenodd"/></g></g></svg>

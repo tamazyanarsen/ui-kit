@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / email — 11. Call Message, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Email({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M12 9c-1.657 0-3 1.34-3 3s1.343 3 3 3 3-1.34 3-3-1.343-3-3-3m-5 3a5.001 5.001 0 0 1 10 0 5.001 5.001 0 0 1-10 0" clipRule="evenodd"/><path fill="currentColor" fillRule="evenodd" d="M7.3 2.06a10.9 10.9 0 0 1 7.2-.77c2.418.56 4.573 1.93 6.117 3.87A11.03 11.03 0 0 1 23 12v1a4.002 4.002 0 0 1-6.828 2.83A4 4 0 0 1 15 13V8c0-.55.448-1 1-1s1 .45 1 1v5c0 .53.211 1.04.586 1.41.375.38.884.59 1.414.59s1.039-.21 1.414-.59c.375-.37.586-.88.586-1.41v-1c0-2.03-.687-4-1.95-5.59a8.94 8.94 0 0 0-5.005-3.17 9 9 0 0 0-5.89.62A9.03 9.03 0 0 0 3.93 8.02a8.99 8.99 0 0 0 2.356 10.93A9.03 9.03 0 0 0 11.845 21a9.06 9.06 0 0 0 5.627-1.85.997.997 0 1 1 1.216 1.58A11.02 11.02 0 0 1 11.811 23a10.96 10.96 0 0 1-6.795-2.5 11.03 11.03 0 0 1-3.769-6.18c-.523-2.43-.209-4.96.89-7.19A10.96 10.96 0 0 1 7.3 2.06" clipRule="evenodd"/></svg>

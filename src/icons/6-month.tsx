@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / 6 month — 20. User Interface, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Icon6Month({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M7 .5a1 1 0 0 1 1 1v1h8v-1a1 1 0 0 1 2 0v1h3.091C22.096 2.5 23 3.287 23 4.364v17.272c0 1.077-.904 1.864-1.909 1.864H2.909C1.904 23.5 1 22.713 1 21.636V4.364C1 3.287 1.904 2.5 2.909 2.5H6v-1a1 1 0 0 1 1-1m-1 4H3v3h18v-3h-3v1a1 1 0 0 1-2 0v-1H8v1a1 1 0 0 1-2 0zm15 5H3v12h18zm-9 3.05c-.601 0-1 .451-1 .901v1.038a3 3 0 1 1-2 2.83v-3.868c0-1.649 1.391-2.901 3-2.901 1.402 0 2.626.942 2.93 2.276a1 1 0 1 1-1.95.443c-.086-.378-.465-.719-.98-.719m-1 4.769a1 1 0 1 0 2 0 1 1 0 0 0-2 0" clipRule="evenodd"/></svg>

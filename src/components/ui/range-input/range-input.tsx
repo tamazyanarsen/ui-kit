@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 // У ползунка свои стрелки из макета (тоньше символов набора) — см.
 // thumb-arrow.tsx.
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
@@ -119,7 +120,7 @@ const RangeInput = React.forwardRef<HTMLInputElement, RangeInputProps>(function 
   const scale = (scaleLabels ?? []).filter((label) => label != null && typeof label !== "boolean")
   // Подпись связана с ползунком: без `aria-describedby` скринридер не
   // зачитывал ни комментарий, ни текст ошибки.
-  const captionId = `${React.useId()}-caption`
+  const captionId = `${useStableId()}-caption`
   // Ошибку видно не только глазами: без `aria-invalid` скринридер объявляет
   // ползунок обычным, сколько бы красного вокруг ни нарисовали. Ставится на
   // сам `input role=slider`: корень — `role=group`, у которого атрибут не

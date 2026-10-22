@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 
 import { cn } from "@/lib/utils"
@@ -77,7 +78,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Radio({
         }
       : undefined,
   })
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const radioId = id ?? generatedId
   // Дизайн-чек 3/3 №2: состояние ошибки и её текст переключаются отдельно,
   // поэтому `error` принимает и `true` (только красная обводка, без текста).

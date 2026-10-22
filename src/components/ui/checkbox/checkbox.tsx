@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 import { Check, Minus } from "@/icons"
 
@@ -62,7 +63,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
     onExternalChecked: state.onExternalChecked,
     resetChecked: state.resetChecked,
   })
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const checkboxId = id ?? generatedId
   const { caption } = resolveCaption(error, comment)
   // Число 0 — содержимое, как и у `label` ниже: `Boolean` прятал

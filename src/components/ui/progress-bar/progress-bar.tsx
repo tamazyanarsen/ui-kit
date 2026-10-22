@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
@@ -180,7 +181,7 @@ function ProgressBar({
     showStatus && statusLine !== "subtitle" && hasNode(statusDescription)
   // Сама шкала — `role="progressbar"`: раньше все её полосы были под
   // `aria-hidden`, и прогресс скринридеру не сообщался вовсе.
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   // Ссылка на пустую подпись давала progressbar с пустым именем — ссылаемся
   // только на реальный заголовок.
   const labelId = title ? generatedId : undefined

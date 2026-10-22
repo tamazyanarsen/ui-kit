@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / trash — 09. Settings Menus, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Trash({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M10 3a.997.997 0 0 0-1 1v1h6V4a.997.997 0 0 0-1-1zm7 2V4c0-.796-.316-1.559-.879-2.121A3 3 0 0 0 14 1h-4c-.796 0-1.559.316-2.121.879A3 3 0 0 0 7 4v1H3a1 1 0 0 0 0 2h1v13c0 .796.316 1.559.879 2.121A3 3 0 0 0 7 23h10c.796 0 1.559-.316 2.121-.879A3 3 0 0 0 20 20V7h1a1 1 0 0 0 0-2zM6 7v13a.997.997 0 0 0 1 1h10a.997.997 0 0 0 1-1V7zm4 3a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1m3 1a1 1 0 0 1 2 0v6a1 1 0 0 1-2 0z" clipRule="evenodd"/></svg>

@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 
 import { cn } from "@/lib/utils"
 import { pressHandlers } from "@/lib/press"
@@ -50,7 +51,7 @@ function NotificationItem({
   className,
 }: NotificationItemProps) {
   const clickable = Boolean(onClick)
-  const rootId = React.useId()
+  const rootId = useStableId()
 
   return (
     <div

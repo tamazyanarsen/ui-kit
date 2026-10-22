@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / to bank — 22. Product, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function ToBank({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M11.432 1.102a1 1 0 0 1 1.147 0l10 7a1.002 1.002 0 0 1-.574 1.82h-1.983v7.5H21a1 1 0 1 1 0 2h-8.5a1 1 0 0 1 0-2h.872v-7.5H10.65v4a1 1 0 0 1-2 0v-4H6.011v2a1 1 0 0 1-2 0v-2H2.005a1 1 0 0 1-.573-1.82zm3.94 8.82v7.5h2.65v-7.5zm-10.194-2h13.655l-6.828-4.78zm-.468 6.893a1 1 0 0 1 1.414 0l2.9 2.899c.39.391.39 1.024 0 1.415l-2.9 2.899a.999.999 0 1 1-1.414-1.414l1.192-1.192H1.003a1 1 0 0 1 0-2h4.899L4.71 16.229a1 1 0 0 1 0-1.414M10 21.422a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H11a1 1 0 0 1-1-1" clipRule="evenodd"/></svg>

@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / plus circle, add — 05. Check Plus Minus Close, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function PlusCircleAdd({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-160 -372)"><defs><clipPath id={`${uid}-plus-circle-add-24-clip0_70326_26`}><path fill="#fff" d="M160 372h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-plus-circle-add-24-clip0_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M172 374c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10m-12 10c0-6.627 5.373-12 12-12s12 5.373 12 12-5.373 12-12 12-12-5.373-12-12m12-5.714a1 1 0 0 1 1 1V383h3.714a1 1 0 1 1 0 2H173v3.714a1 1 0 1 1-2 0V385h-3.714a1 1 0 1 1 0-2H171v-3.714a1 1 0 0 1 1-1" clipRule="evenodd"/></g></g></svg>

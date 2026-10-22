@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / rename — 01. Text Editing, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Rename({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M16.168 3.047 14.04 5.175l4.785 4.785 2.128-2.128zm3.371 9.027 2.909-2.909a1.89 1.89 0 0 0 0-2.666l-4.947-4.947a1.886 1.886 0 0 0-2.666 0L1.552 14.835a1.9 1.9 0 0 0-.408.612l-.02.049-.007.02a1.9 1.9 0 0 0-.117.652v4.946A1.89 1.89 0 0 0 2.886 23h4.946a1.88 1.88 0 0 0 1.333-.552l10.36-10.36.007-.007zm-2.128-.7-4.785-4.785-9.212 9.212 4.785 4.785zM5.784 21H3v-2.784z" clipRule="evenodd"/></svg>

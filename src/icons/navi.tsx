@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / navi — 02. Map, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Navi({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M22.707 1.293a1 1 0 0 1 .197 1.135l-9 19a1 1 0 0 1-1.874-.185l-1.855-7.418-7.418-1.855a1 1 0 0 1-.185-1.874l19-9a1 1 0 0 1 1.135.197M5.953 10.708l5.29 1.322a1 1 0 0 1 .727.727l1.322 5.29 6.606-13.945z" clipRule="evenodd"/></svg>

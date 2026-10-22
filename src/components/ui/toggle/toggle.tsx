@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
 
 import { cn } from "@/lib/utils"
@@ -52,7 +53,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
     onExternalChecked: state.onExternalChecked,
     resetChecked: state.resetChecked,
   })
-  const generatedId = React.useId()
+  const generatedId = useStableId()
   const toggleId = id ?? generatedId
   // Дизайн-чек 3/3 №6: `error` принимает и `true` — состояние ошибки без
   // текста (у тогла трек не краснеет, поэтому визуально это ничего не

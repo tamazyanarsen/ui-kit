@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / medical services — 19. Categories, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function MedicalServices({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-102 -884)"><defs><clipPath id={`${uid}-medical-services-24-clip5_70326_26`}><path fill="#fff" d="M102 884h24v24h-24z"/></clipPath></defs><g fill="currentColor" clipPath={`url(#${uid}-medical-services-24-clip5_70326_26)`}><path fillRule="evenodd" d="M109.56 892c.34 0 .67.18.85.47l2.9 4.64 1.03-1.64c.18-.29.5-.47.85-.47H118c.55 0 1 .45 1 1s-.45 1-1 1h-2.26l-1.58 2.53c-.18.29-.5.47-.85.47s-.67-.18-.85-.47l-2.9-4.64-1.03 1.64c-.18.29-.5.47-.85.47H103c-.55 0-1-.45-1-1s.45-1 1-1h4.13l1.58-2.53c.18-.29.5-.47.85-.47" clipRule="evenodd"/><path d="M114 907c-.17 0-.35-.04-.5-.13-.19-.11-4.58-2.67-7.89-6.58a1 1 0 0 1 .12-1.41c.42-.35 1.05-.3 1.41.12 2.45 2.9 5.65 5.06 6.86 5.83 2.09-1.33 10-6.76 10-12.92 0-1.14-.38-2.25-1.08-3.12a4.7 4.7 0 0 0-2.72-1.69 4.6 4.6 0 0 0-3.13.47c-.96.53-1.73 1.4-2.15 2.44a1 1 0 0 1-1.86 0 4.84 4.84 0 0 0-2.15-2.44c-.96-.52-2.06-.69-3.13-.47-1.06.22-2.03.82-2.72 1.69-.7.88-1.08 1.99-1.08 3.12 0 .13 0 .27.01.4a.996.996 0 1 1-1.99.11c0-.17-.01-.34-.01-.51 0-1.59.54-3.14 1.51-4.37a6.7 6.7 0 0 1 3.89-2.4 6.5 6.5 0 0 1 4.49.68c.82.45 1.54 1.07 2.11 1.82.57-.75 1.29-1.37 2.11-1.82 1.37-.75 2.97-1 4.5-.68a6.67 6.67 0 0 1 3.88 2.41 7.02 7.02 0 0 1 1.51 4.37c0 8.21-11.03 14.68-11.5 14.96-.15.09-.33.13-.5.13z"/></g></g></svg>

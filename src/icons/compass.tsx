@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / compass — 02. Map, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Compass({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><g transform="translate(-160 -180)"><defs><clipPath id={`${uid}-compass-24-clip0_70326_26`}><path fill="#fff" d="M160 180h24v24h-24z"/></clipPath></defs><g clipPath={`url(#${uid}-compass-24-clip0_70326_26)`}><path fill="currentColor" fillRule="evenodd" d="M172 182c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10m-12 10c0-6.627 5.373-12 12-12s12 5.373 12 12-5.373 12-12 12-12-5.373-12-12m18.216-6.198a1 1 0 0 1 .203 1.092l-3 7a1 1 0 0 1-.472.5l-7.999 4a.999.999 0 0 1-1.364-1.295l3.5-8a1 1 0 0 1 .545-.527l7.5-3a1 1 0 0 1 1.087.23m-7.464 4.474-2.228 5.094 5.201-2.601 1.905-4.444z" clipRule="evenodd"/></g></g></svg>

@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / share — 03. Copy Link Share Download Upload, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Share({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M11.298 2.693a1 1 0 0 1 1.414 0l4.535 4.53a1 1 0 1 1-1.414 1.415L13 5.807V15.5a1 1 0 0 1-2 0V5.818l-2.823 2.82a1 1 0 0 1-1.414-1.415zM3 15a1 1 0 0 1 1 1v5h16v-5a1 1 0 0 1 2 0v5.25c0 .529-.254.99-.623 1.299A2 2 0 0 1 20.1 23H3.9c-.451 0-.912-.148-1.277-.451A1.7 1.7 0 0 1 2 21.25V16a1 1 0 0 1 1-1" clipRule="evenodd"/></svg>

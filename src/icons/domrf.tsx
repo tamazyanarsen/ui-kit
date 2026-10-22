@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useStableId } from "@/lib/use-stable-id"
 import type { IconProps } from "./types"
 
 // icon / DOMRF — 22. Product, набор ALL ICONS.
@@ -6,7 +6,7 @@ import type { IconProps } from "./types"
 export function Domrf({ size = 16, ...props }: IconProps) {
   // id внутри svg общие для документа: две одинаковые иконки на
   // странице иначе ссылались бы на одну маску или обрезку.
-  const uid = useId().replace(/:/g, "")
+  const uid = useStableId().replace(/:/g, "")
   if (size === 24) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}><path fill="currentColor" fillRule="evenodd" d="M7.681 12.475h5.247V1H7.681zm1.366-1.273h2.514V2.29H9.047zM1 13.918h22v1.121H1zM1 23h1.35v-1.511h7.71v-5.194H1zm1.35-2.835h6.36v-2.529H2.35zM17.736 2.29v10.185h1.35V4.819l2.497-2.529v10.185h1.367V1.016h-1.924l-1.94 1.97v-1.97H17.18l-3.29 3.328v8.131h1.349V4.819zm-6.242 19.199h5.011V23h1.383v-1.511h5.045v-5.194H11.494zm6.411-1.324h3.712v-2.529h-3.712zm-5.078 0h3.695v-2.529h-3.695zm-6.58-7.69V1H4.324L1 4.327v8.148zM2.383 4.819l2.514-2.546v8.929H2.383z" clipRule="evenodd"/></svg>

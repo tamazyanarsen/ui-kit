@@ -25,13 +25,24 @@ interface ProfileMenuOrganization {
  * `items-start`. Поэтому строка тянется во всю ширину панели и подсветка
  * идёт от края до края — скругления у неё нет.
  *
- * Подсветка — ДВУМЯ селекторами, как у Dropdown кита: `data-highlighted`
- * ставит Base UI (клавиатура и наведение), а `hover:` нужен, когда
- * наведение подсветку не ставит — при поиске организаций у меню
- * `highlightItemOnHover={false}`, иначе фокус уходил из поля (аудит 14).
+ * Подсветка и нажатие — общий `menu-row` (Правки UI-Kit от 25.10: у всех
+ * строк выпадающих списков одно поведение): наведение мышью и
+ * `data-highlighted` от Base UI — Grey 114, нажатие — Grey 124, цвет 200 мс
+ * `ease`. Наведение `menu-row` ловит само, без `data-highlighted`, — это
+ * нужно при поиске организаций, где у меню `highlightItemOnHover={false}`
+ * (иначе фокус уходил из поля, аудит 14). Прежние свои цвета шапки
+ * (`--header-item-hover-bg`) сняты.
+ *
+ * Нажатие сжимает содержимое строки до 0,97 к её центру
+ * (`press-scale-content`), поэтому всё содержимое пункта лежит в ОДНОЙ
+ * обёртке `MENU_ITEM_CONTENT`: голый текстовый узел рядом со значком не
+ * сжимался, и ряд «разъезжался». Курсор — рука, как над любым нажимаемым.
  */
 const MENU_ITEM =
-  "flex w-full cursor-default items-start gap-2 p-4 outline-none select-none hover:bg-[var(--header-item-hover-bg)] data-highlighted:bg-[var(--header-item-hover-bg)]"
+  "menu-row press-scale-content flex w-full cursor-pointer items-start p-4 outline-none select-none"
+
+/** Обёртка содержимого пункта — сжимается при нажатии одним целым. */
+const MENU_ITEM_CONTENT = "flex min-w-0 flex-1 items-start gap-2"
 
 /**
  * Строка организации.
@@ -40,8 +51,11 @@ const MENU_ITEM =
  * должен быть 32 px, а не 16 px» — в мастере строки списка организаций
  * действительно сдвинуты внутрь: `pl-[32px] pr-[16px]`,
  * в отличие от «Профиля и настроек» и «Выйти», у которых `p-[16px]`.
+ *
+ * Из-за несимметричных полей центр обёртки стоит на 8 левее центра строки —
+ * опора сжатия сдвинута на эти 8, чтобы ряд сжимался к центру СТРОКИ.
  */
-const ORG_ITEM = "pl-8 pr-4"
+const ORG_ITEM = "pl-8 pr-4 [--press-origin:calc(50%_-_8px)_center]"
 
 /** Единственная организация — статичная карточка без поиска и списка. */
 function SingleOrganization({
@@ -96,27 +110,29 @@ function OrganizationList({
           // организации, как и раньше, его закрывает.
           closeOnClick
           data-slot="profile-menu-org-item"
-          className={cn(MENU_ITEM, ORG_ITEM, "justify-between")}
+          className={cn(MENU_ITEM, ORG_ITEM)}
         >
-          <span className="flex min-w-0 flex-col">
-            {/* Дизайн-чек Storybook (Аня Багрова) №5: «наименование
-                организации не должно обрезаться; если не помещается в две
-                [строки], то применяется коллапс». В мастере название —
-                многострочный абзац с переносом по словам, а не одна
-                обрезаемая строка. */}
-            <span className="min-w-0 line-clamp-2 text-p1-medium break-words text-[var(--header-fg)]">
-              {org.name}
+          <span className={cn(MENU_ITEM_CONTENT, "justify-between")}>
+            <span className="flex min-w-0 flex-col">
+              {/* Дизайн-чек Storybook (Аня Багрова) №5: «наименование
+                  организации не должно обрезаться; если не помещается в две
+                  [строки], то применяется коллапс». В мастере название —
+                  многострочный абзац с переносом по словам, а не одна
+                  обрезаемая строка. */}
+              <span className="min-w-0 line-clamp-2 text-p1-medium break-words text-[var(--header-fg)]">
+                {org.name}
+              </span>
+              <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
+                ИНН {org.inn} · {org.role}
+              </span>
             </span>
-            <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
-              ИНН {org.inn} · {org.role}
-            </span>
+            {org.id === value && (
+              <Check
+                aria-hidden="true"
+                className="size-6 shrink-0 text-[var(--header-check-fg)]"
+              />
+            )}
           </span>
-          {org.id === value && (
-            <Check
-              aria-hidden="true"
-              className="size-6 shrink-0 text-[var(--header-check-fg)]"
-            />
-          )}
         </MenuPrimitive.RadioItem>
       ))}
       {/* Отдельного кадра «ничего не найдено» для Profile Menu в макете
@@ -159,8 +175,10 @@ function SettingsBlock({
           {/* Дизайн-чек Storybook (Аня Багрова) №4: «должна быть icon /admin
               из Library Image» — в мастере у этой строки
               действительно `icon / admin`, а не шестерёнка настроек. */}
-          <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
-          Профиль и настройки
+          <span className={MENU_ITEM_CONTENT}>
+            <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
+            <span>Профиль и настройки</span>
+          </span>
         </MenuPrimitive.Item>
         )}
         {showLogout && (
@@ -172,8 +190,10 @@ function SettingsBlock({
             "text-p1-medium text-[var(--header-logout-fg)]"
           )}
         >
-          <LogOut size={24} aria-hidden="true" className="size-6 shrink-0" />
-          Выйти
+          <span className={MENU_ITEM_CONTENT}>
+            <LogOut size={24} aria-hidden="true" className="size-6 shrink-0" />
+            <span>Выйти</span>
+          </span>
         </MenuPrimitive.Item>
         )}
       </div>
@@ -181,6 +201,6 @@ function SettingsBlock({
   )
 }
 
-export { MENU_ITEM, OrganizationList, SettingsBlock, SingleOrganization }
+export { MENU_ITEM, MENU_ITEM_CONTENT, OrganizationList, SettingsBlock, SingleOrganization }
 export type { ProfileMenuOrganization }
 

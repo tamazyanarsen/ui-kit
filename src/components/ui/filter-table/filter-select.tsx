@@ -1,13 +1,15 @@
 import * as React from "react"
 import { Search } from "@/icons"
 
-import { cn } from "@/lib/utils"
 import { compactList } from "@/components/ui/header-menu/compact-list"
-import { Checkbox } from "@/components/ui/checkbox"
 import { ComboboxFooter } from "@/components/ui/combobox"
 import { Input } from "@/components/ui/input"
 
 import { FilterShell, filterApplyLabel } from "./shell"
+import { FilterSelectList } from "./filter-select-list"
+import { FilterSheetButtons } from "./sheet-buttons"
+import { useFilterBarField } from "./filter-bar-context"
+import { FilterBarGroup, FilterBarPills } from "./filter-bar-fields"
 
 // FilterSelect — вид «Множественный выбор».
 //
@@ -28,6 +30,10 @@ import { FilterShell, filterApplyLabel } from "./shell"
 // меняет сам выбор, никогда не меняет порядок и ищет на всех уровнях
 // вложенности, включая заголовки групп, — поэтому группа, у которой совпало
 // *название*, сохраняет всех своих детей.
+//
+// Мобильный вид (Правки UI-Kit от 25.10): штора с теми же строками-чекбоксами
+// и кнопками «Применить: N» / «Сбросить» во всю ширину; в свёрнутом
+// `FilterBar` — группа таблеток `FilterTable`.
 
 interface FilterSelectOption {
   value: string
@@ -49,13 +55,27 @@ interface FilterSelectProps {
   value?: string[]
   defaultValue?: string[]
   onValueChange?: (value: string[]) => void
+  /**
+   * Поле поиска над списком. По умолчанию — только у списка от
+   * {@link SEARCH_THRESHOLD} вариантов; явное `true`/`false` решает само.
+   */
   searchable?: boolean
   searchPlaceholder?: string
   disabled?: boolean
   className?: string
 }
 
-const NESTING_INDENT = 16
+/**
+ * С какого числа вариантов поиск включается сам.
+ *
+ * Правки UI-Kit от 25.10, «FilterSelect — поиск по умолчанию»: раньше
+ * `searchable` по умолчанию был `true`, и поле поиска стояло даже над списком
+ * из 2–3 вариантов. Теперь поиск появляется, когда список длинный (от 8).
+ */
+const SEARCH_THRESHOLD = 8
+
+const sameSet = (a: string[], b: string[]) =>
+  a.length === b.length && a.every((entry) => b.includes(entry))
 
 function FilterSelect({
   label,
@@ -64,7 +84,7 @@ function FilterSelect({
   value,
   defaultValue = [],
   onValueChange,
-  searchable = true,
+  searchable,
   searchPlaceholder = "Поиск",
   disabled = false,
   className,
@@ -147,10 +167,48 @@ function FilterSelect({
   const appliedCount = applied.length
   const active = appliedCount > 0
   const allOptions = resolvedGroups.flatMap((group) => group.options)
+  const showSearch = searchable ?? allOptions.length >= SEARCH_THRESHOLD
   const singleLabel =
     appliedCount === 1
       ? allOptions.find((option) => option.value === applied[0])?.label
       : undefined
+
+  const collapsed = useFilterBarField<string[]>({
+    label,
+    active,
+    value: applied,
+    empty: () => [],
+    commit,
+    equals: sameSet,
+    render: ({ draft: barDraft, setDraft: setBarDraft }) => (
+      <FilterBarGroup title={label}>
+        <FilterBarPills
+          options={allOptions}
+          selected={barDraft}
+          onToggle={(optionValue) =>
+            setBarDraft(
+              barDraft.includes(optionValue)
+                ? barDraft.filter((entry) => entry !== optionValue)
+                : [...barDraft, optionValue]
+            )
+          }
+        />
+      </FilterBarGroup>
+    ),
+  })
+  if (collapsed) return null
+
+  const search = showSearch && (
+    <div className="p-4 pb-0">
+      <Input
+        size="sm"
+        placeholder={searchPlaceholder}
+        iconLeft={<Search aria-hidden="true" className="size-4" />}
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
+    </div>
+  )
 
   return (
     <FilterShell
@@ -180,69 +238,32 @@ function FilterSelect({
       onOpenChange={handleOpenChange}
       width={384}
       className={className}
-    >
-      {searchable && (
-        <div className="p-4 pb-0">
-          <Input
-            size="sm"
-            placeholder={searchPlaceholder}
-            iconLeft={<Search aria-hidden="true" className="size-4" />}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
+      sheetBody={
+        <>
+          {search}
+          <FilterSelectList
+            groups={visibleGroups}
+            selected={draft}
+            onToggle={toggle}
           />
-        </div>
-      )}
+        </>
+      }
+      sheetFooter={
+        <FilterSheetButtons
+          applyLabel={filterApplyLabel(draft.length)}
+          onApply={handleApply}
+          onReset={handleReset}
+        />
+      }
+    >
+      {search}
 
-      <div className="themed-scrollbar max-h-[336px] min-h-0 overflow-y-auto py-2">
-        {visibleGroups.map((group, groupIndex) => (
-          <div key={group.label || groupIndex} data-slot="filter-select-group">
-            {group.label && (
-              <p className="px-4 py-2 text-p3-medium text-[var(--filter-icon-fg)]">
-                {group.label}
-              </p>
-            )}
-            {group.options.map((option) => (
-              <label
-                key={option.value}
-                data-slot="filter-select-option"
-                className={cn(
-                  // `items-start`: у двухстрочного варианта флажок стоит у первой
-                  // строки, как у Checkbox и ComboboxItem. Однострочные не
-                  // меняются — флажок и строка одной высоты (24px).
-                  "flex cursor-pointer items-start gap-4 p-4",
-                  option.disabled && "pointer-events-none opacity-50"
-                )}
-                style={
-                  option.level
-                    ? { paddingLeft: 16 + option.level * NESTING_INDENT }
-                    : undefined
-                }
-              >
-                <Checkbox
-                  checked={draft.includes(option.value)}
-                  disabled={option.disabled}
-                  onCheckedChange={() => toggle(option.value)}
-                />
-                {/* Две строки с переносом, а не одна с многоточием: варианты вида
-                    «Расчётный счёт в рублях № 40702810000000001234» различаются
-                    хвостом, и в одну строку они обрезались одинаково — выбрать
-                    нужный было невозможно (аудит 20). Полный текст — в `title`. */}
-                <span
-                  title={option.label}
-                  className="line-clamp-2 min-w-0 flex-1 break-words text-p1-medium text-[var(--filter-fg)]"
-                >
-                  {option.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        ))}
-        {visibleGroups.length === 0 && (
-          <p className="px-4 py-3 text-p2-medium text-[var(--filter-icon-fg)]">
-            Ничего не найдено
-          </p>
-        )}
-      </div>
+      <FilterSelectList
+        className="themed-scrollbar max-h-[336px] min-h-0 overflow-y-auto"
+        groups={visibleGroups}
+        selected={draft}
+        onToggle={toggle}
+      />
 
       <ComboboxFooter
         applyLabel={filterApplyLabel(draft.length)}

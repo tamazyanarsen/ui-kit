@@ -67,7 +67,11 @@ import { RightElement, type RightElementType } from "./right-element"
 // передана директивно): при наведении/нажатии на строку в группе у
 // прилегающих строк гаснут разделители, чтобы линии не торчали у залитой
 // зоны. Правило — в styles/component-rules.css, рядом с правилом последней
-// строки.
+// строки. Список строк — `ItemGroup` (item-group.tsx): он решает, какая
+// строка последняя, независимо от обёрток вокруг строк.
+//
+// ⚠️ Правки UI-Kit от 25.10 пересмотрели состояния: наведение Grey 114,
+// нажатие Grey 124 и сжатие при нажатии — см. `ITEM_STATES` ниже.
 
 /**
  * Цвет комментария — свойство `Text Color` вложенного `Comment Item (ELK)`:
@@ -98,6 +102,55 @@ function dividerInset(subCategory: boolean, thumbnail: boolean): string {
 /** Цвет подписи и значения у отключённой строки — один на всех. */
 const DISABLED_FG = "text-[var(--item-value-fg-disabled)]"
 
+/*
+ * Наведение и нажатие строки — Правки UI-Kit от 25.10 (Item: наведение и
+ * нажатие; Item, мобильный вид). Пересматривает дизайн-чек от 08.10 («Hover и
+ * Active — одна заливка Grey 114»):
+ *
+ *   • наведение — Grey 114, только у настоящего курсора
+ *     (`(hover: hover) and (pointer: fine)`): на таче `:hover` залипает
+ *     после касания;
+ *   • нажатие — Grey 124 (`--item-pressed-bg`), цвет — 200 мс `ease`;
+ *   • десктоп: при нажатии строка ЦЕЛИКОМ сжимается до 0,98 к центру;
+ *   • мобильный вид: строка стоит во всю ширину блока, поэтому заливка
+ *     остаётся от края до края и не масштабируется, а сжимается только
+ *     содержимое — ОДНОЙ обёрткой (`item-content`) до 0,97 к центру строки.
+ *     Разделитель лежит вне обёртки и не сжимается;
+ *   • нажатие 140 мс `--ease-out`, отпускание 280 мс по мягкой кривой —
+ *     через переменную `--press-t`, как у `press-scale` (styles/motion.css);
+ *   • нажатие вложенного контрола (Toggle, Checkbox, «i», ссылка) — не
+ *     нажатие строки: ни заливки, ни сжатия. Отсюда
+ *     `:not(:has(<контрол>:active))`. Собственная кнопка-подложка
+ *     (`press-target`) из списка исключена: её `:active` — это нажатие
+ *     строки с клавиатуры (пробел).
+ *
+ * Классы — литералами (их читает сканер Tailwind), поэтому селектор
+ * повторяется. Специфичность «нажато» (0,4,1) выше, чем у наведения
+ * (0,3,0), — заливка нажатия видна и под курсором.
+ */
+const ITEM_STATES = cn(
+  "[--press-t:var(--duration-release)_var(--ease-soft)]",
+  "[transition:background-color_var(--duration-color)_var(--ease-color),scale_var(--press-t)]",
+  "[@media(pointer:fine)]:not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
+  "[&:active:not([data-disabled],:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:bg-[var(--item-pressed-bg)]",
+  "[&:active:not([data-disabled],:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:[--press-t:var(--duration-press)_var(--ease-out)]",
+  "motion-safe:desktop:[&:active:not([data-disabled],:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:scale-[.98]"
+)
+
+/**
+ * Обёртка содержимого: сжимается в мобильном виде (см. `ITEM_STATES`).
+ * Точка сжатия — центр СТРОКИ: у подкатегории левое поле 80 против 16
+ * справа, и центр обёртки лежит на 32 правее центра строки.
+ */
+function contentPress(subCategory: boolean): string {
+  return cn(
+    "flex min-w-0 flex-1 items-center gap-4 [transition:scale_var(--press-t)]",
+    subCategory ? "origin-[calc(50%-32px)_50%]" : "origin-center",
+    "motion-safe:[[data-slot=item]:active:not([data-disabled],:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))>&]:scale-[.97]",
+    "desktop:[[data-slot=item]:active:not([data-disabled],:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))>&]:scale-none"
+  )
+}
+
 interface ItemProps {
   value: React.ReactNode
   text?: React.ReactNode
@@ -124,6 +177,10 @@ interface ItemProps {
    * разделителя». Отрабатывало, но не было видно: в Playground строка одна,
    * то есть всегда `:last-child`, и правило списка гасило линию быстрее,
    * чем проп успевал её включить.
+   *
+   * Внутри `ItemGroup` «последняя» — строка последнего ряда группы, даже
+   * если каждая строка обёрнута в свой `div` (Правки UI-Kit от 25.10): без
+   * группы обёрнутая строка — `:only-child` и теряла линию.
    */
   divider?: boolean
   onClick?: () => void
@@ -138,6 +195,12 @@ interface ItemProps {
    */
   open?: boolean
   informationText?: React.ReactNode
+  /**
+   * Особый заголовок мобильной шторы подсказки `informationText` (Правки
+   * UI-Kit от 25.10: значок «i» в мобильном виде открывает штору). По
+   * умолчанию «Информация».
+   */
+  informationTitle?: React.ReactNode
   rightText?: React.ReactNode
   toggleChecked?: boolean
   onToggleChange?: (checked: boolean) => void
@@ -186,6 +249,7 @@ function Item({
   rightElement = "none",
   open = false,
   informationText,
+  informationTitle,
   rightText,
   toggleChecked,
   onToggleChange,
@@ -219,18 +283,14 @@ function Item({
         // Поля 16 со всех сторон, линия — отдельный абсолютный слой поверх
         // нижнего поля, поэтому высота строки от разделителя не зависит
         // (80 на десктопе и 72 на мобиле при значении с комментарием).
-        "relative flex w-full cursor-pointer items-center gap-4 p-4 text-left outline-none transition-colors",
+        "relative flex w-full cursor-pointer items-center p-4 text-left outline-none",
         // Sub Category: `pl-[80px]` в мастере на обоих размерах. Заливка
         // наведения при этом идёт во всю ширину строки.
         subCategory && "pl-20",
         // Скругление заливки — только у десктопа (символы Hover: desktop
         // `rounded-[16px]`, mobile — без скругления).
         "desktop:rounded-[16px]",
-        // Hover и Active — одна заливка Grey 114 (документация: «По
-        // наведению и нажатию компонент переходит в состояние Hover/Active.
-        // Цвет Grey 114»). `active:` нужен тачу, где `hover:` не срабатывает.
-        "not-data-[disabled]:hover:bg-[var(--item-hover-bg)]",
-        "not-data-[disabled]:active:bg-[var(--item-hover-bg)]",
+        ITEM_STATES,
         "data-[disabled]:cursor-not-allowed",
         className
       )}
@@ -252,74 +312,82 @@ function Item({
           )}
         />
       )}
-      {/* ⚠️ `items-start`, а не `items-center`: плашка ПРИЖАТА К ВЕРХУ,
-          вровень с первой строкой значения (кит объявляет `items-start`) —
-          48 × 48 на top 16, радиус 8, фон Grey 106, значок 24. По центру
-          высоты строки она стояла только у однострочного значения, а на
-          двух строках уезжала вниз. */}
-      <span className="flex min-w-0 flex-1 items-start gap-4">
-        {hasThumbnail && (
-          <span className={cn("shrink-0", disabled && "opacity-50")}>
-            {thumbnail === true ? <DefaultThumbnail /> : thumbnail}
-          </span>
-        )}
+      {/* Содержимое строки — одна обёртка: в мобильном виде она сжимается
+          целиком к центру строки (Правки UI-Kit от 25.10). */}
+      <span data-slot="item-content" className={contentPress(subCategory)}>
+        {/* ⚠️ `items-start`, а не `items-center`: плашка ПРИЖАТА К ВЕРХУ,
+            вровень с первой строкой значения (кит объявляет `items-start`) —
+            48 × 48 на top 16, радиус 8, фон Grey 106, значок 24. По центру
+            высоты строки она стояла только у однострочного значения, а на
+            двух строках уезжала вниз. */}
+        <span className="flex min-w-0 flex-1 items-start gap-4">
+          {hasThumbnail && (
+            // `flex`: плашка кита — inline-flex, и в блочной обёртке под
+            // ней оставалось место строки (+6px к высоте: строка шторы
+            // «Создать» выходила 78 вместо 72).
+            <span className={cn("flex shrink-0", disabled && "opacity-50")}>
+              {thumbnail === true ? <DefaultThumbnail /> : thumbnail}
+            </span>
+          )}
 
-        {/* ⚠️ Прижата к верху ПЛАШКА, а текст остаётся по центру: в мастере
-            колонка содержимого — `self-stretch justify-center`.
-            Разница видна только у короткого содержимого: рядом с плашкой 48
-            однострочное значение 24 должно стоять по её центру, а не по
-            верхней кромке. */}
-        <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 self-stretch">
-          <span className="flex min-w-0 flex-col">
-            {hasContent(text) && (
+          {/* ⚠️ Прижата к верху ПЛАШКА, а текст остаётся по центру: в мастере
+              колонка содержимого — `self-stretch justify-center`.
+              Разница видна только у короткого содержимого: рядом с плашкой 48
+              однострочное значение 24 должно стоять по её центру, а не по
+              верхней кромке. */}
+          <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 self-stretch">
+            <span className="flex min-w-0 flex-col">
+              {hasContent(text) && (
+                <span
+                  className={cn(
+                    "truncate text-p2-medium-adaptive",
+                    valueColor
+                  )}
+                >
+                  {text}
+                </span>
+              )}
+              {/* Значение переносится максимум на 3 строки, комментарий — на
+                  5, по примечанию макета «Максимальное количество строк».
+                  Однострочный `truncate` обрезал длинные заголовки, которые в
+                  макете показаны с переносом. */}
               <span
                 className={cn(
-                  "truncate text-p3-medium desktop:text-p2-medium",
+                  "line-clamp-3 text-p1-medium-adaptive",
                   valueColor
                 )}
               >
-                {text}
+                {value}
+              </span>
+            </span>
+            {hasContent(comment) && (
+              <span
+                className={cn(
+                  "line-clamp-5 text-p2-medium-adaptive",
+                  disabled ? DISABLED_FG : COMMENT_COLOR[commentColor]
+                )}
+              >
+                {comment}
               </span>
             )}
-            {/* Значение переносится максимум на 3 строки, комментарий — на
-                5, по примечанию макета «Максимальное количество строк».
-                Однострочный `truncate` обрезал длинные заголовки, которые в
-                макете показаны с переносом. */}
-            <span
-              className={cn(
-                "line-clamp-3 text-p2-medium desktop:text-p1-medium",
-                valueColor
-              )}
-            >
-              {value}
-            </span>
           </span>
-          {hasContent(comment) && (
-            <span
-              className={cn(
-                "line-clamp-5 text-p3-medium desktop:text-p2-medium",
-                disabled ? DISABLED_FG : COMMENT_COLOR[commentColor]
-              )}
-            >
-              {comment}
-            </span>
-          )}
         </span>
-      </span>
 
-      {rightElement !== "none" && (
-        <RightElement
-          type={rightElement}
-          disabled={disabled}
-          open={open}
-          informationText={informationText}
-          rightText={rightText}
-          toggleChecked={toggleChecked}
-          onToggleChange={onToggleChange}
-          checkboxChecked={checkboxChecked}
-          onCheckboxChange={onCheckboxChange}
-        />
-      )}
+        {rightElement !== "none" && (
+          <RightElement
+            type={rightElement}
+            disabled={disabled}
+            open={open}
+            informationText={informationText}
+            informationTitle={informationTitle}
+            rightText={rightText}
+            toggleChecked={toggleChecked}
+            onToggleChange={onToggleChange}
+            checkboxChecked={checkboxChecked}
+            onCheckboxChange={onCheckboxChange}
+          />
+        )}
+      </span>
     </div>
   )
 }

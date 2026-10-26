@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Accordion } from "@/demo/scaffold"
 import { Button } from "@/components/ui/button"
 import { ToastProvider, Toaster } from "@/components/ui/toast-message"
+import { PageScrollbar } from "@/components/ui/scrollbar"
 
 import { ButtonDemo } from "@/demo/button-demo"
 import { InputDemo } from "@/demo/input-demo"
@@ -57,6 +58,7 @@ import { TableTopDemo } from "@/demo/table-top-demo"
 import { ShimmerDemo } from "@/demo/shimmer-demo"
 import { ScrollbarDemo } from "@/demo/scrollbar-demo"
 import { MailFeedDemo } from "@/demo/mail-feed-demo"
+import { BlockWithBannerDemo, CarouselsDemo, ChartsDemo } from "@/demo/new-components-2510-demo"
 
 function App() {
   const [product, setProduct] = useState<"elk" | "odl-elk">(
@@ -145,9 +147,13 @@ function App() {
           <ShimmerDemo />
           <ScrollbarDemo />
           <MailFeedDemo />
+          <ChartsDemo />
+          <CarouselsDemo />
+          <BlockWithBannerDemo />
         </Accordion>
       </main>
       <Toaster />
+      <PageScrollbar />
     </ToastProvider>
   )
 }

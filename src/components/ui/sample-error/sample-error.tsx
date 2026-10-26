@@ -81,7 +81,7 @@ const SampleError = React.forwardRef<HTMLDivElement, SampleErrorProps>(function 
       >
         <Alert className="size-4" />
       </span>
-      <span className="min-w-0 text-p2-medium [overflow-wrap:anywhere] text-[var(--issue-fg)] desktop:text-p1-medium">
+      <span className="min-w-0 text-p1-medium-adaptive [overflow-wrap:anywhere] text-[var(--issue-fg)]">
         {children}
       </span>
     </div>

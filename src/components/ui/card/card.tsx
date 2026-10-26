@@ -2,7 +2,7 @@ import * as React from "react"
 import { useStableId } from "@/lib/use-stable-id"
 
 import { cn } from "@/lib/utils"
-import { pressHandlers } from "@/lib/press"
+import { PRESSABLE_CARD, pressHandlers } from "@/lib/press"
 import { PressTarget } from "@/lib/press-target"
 import { hasNode } from "@/lib/has-node"
 import { SelectionButton } from "@/components/ui/selection-button"
@@ -92,10 +92,16 @@ function Card({
         // Из всей строки по центру стоит только плашка карты: `Card` в сете —
         // y=32 при росте 36 в карточке 100, то есть ровно середина. Отсюда
         // `self-center` на ней ниже.
-        "flex min-h-20 items-start gap-6 rounded-[12px] bg-[var(--card-bg)] p-6 transition-colors",
+        "flex min-h-20 items-start gap-6 rounded-[12px] bg-[var(--card-bg)] p-6",
+        !clickable && "transition-colors",
         // OnClick (Active) — Grey 124, дизайн-чек от 08.10, замечание 28.
+        // Правки UI-Kit от 25.10 («Нажимаемые серые карточки»): наведение —
+        // только у настоящего курсора, при нажатии карточка сжимается до
+        // 0,98, а нажатие «…» её не подсвечивает и не сжимает
+        // (`PRESSABLE_CARD`).
+        clickable && cn("relative cursor-pointer", PRESSABLE_CARD),
         clickable &&
-          "relative cursor-pointer hover:bg-[var(--card-bg-hover)] active:bg-[var(--card-bg-active)]",
+          "[@media(pointer:fine)]:hover:bg-[var(--card-bg-hover)] [&:active:not(:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:bg-[var(--card-bg-active)]",
         className
       )}
     >

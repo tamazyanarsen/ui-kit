@@ -1,0 +1,16 @@
+/* Сквозные правила: scroll. Вне слоёв — перебивают утилиты порядком. */
+
+/* ── Полоса страницы (Правки UI-Kit от 25.10) ───────────────────────────
+   «Родные полосы скрыты везде, у страницы тоже»: пока смонтирован
+   `PageScrollbar`, на `<html>` стоит `data-page-scrollbar`, и родная полоса
+   окна не рисуется и места не занимает — вместо неё наложенная полоса кита
+   (src/lib/overlay-scrollbar/page.ts). Без `PageScrollbar` страница
+   остаётся с родной полосой, а не без полосы вовсе. */
+html[data-page-scrollbar],
+html[data-page-scrollbar] body {
+  scrollbar-width: none;
+}
+html[data-page-scrollbar]::-webkit-scrollbar,
+html[data-page-scrollbar] body::-webkit-scrollbar {
+  display: none;
+}

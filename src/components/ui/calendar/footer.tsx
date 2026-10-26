@@ -1,20 +1,21 @@
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { DropdownFooterButton } from "@/components/ui/dropdown/dropdown-footer"
 import { Divider } from "@/components/ui/divider"
 
-// Оба действия подвала макет собирает инстансами `ELK / button`, поэтому
-// здесь рисуется настоящий Button, а не подделка, — отсюда и берутся токены
-// белого фона, #252628 и наведения #EFEFEF. Переопределения ниже вызваны
-// двумя оговорками:
+// Кнопки подвала — общая кнопка подвала выпадающих списков
+// (`DropdownFooterButton`), а не `Button`: Правки UI-Kit от 25.10 («Button
+// внутри выпадающих списков — своё поведение») — заливка наведения и нажатия
+// на всю ячейку без скругления, ячейка при нажатии не ужимается, сжимается
+// только подпись. Прежде здесь стоял Button secondary-white, и его заливка
+// при нажатии ужималась внутри карточки. Классы ниже вызваны двумя
+// оговорками:
 //   * радиус — кнопки стоят вровень с собственной скруглённой оболочкой
 //     карточки с overflow-hidden (та же схема «ряд вровень», что у Dropdown
 //     и DropdownItem), поэтому их заливка наведения обязана идти от края до
 //     края без собственного радиуса;
 //   * размер — форму подвала календарь выбирает по пропсу `compact`, а не по
-//     брейкпоинту, поэтому десктопную половину варианта `lg` у Button
-//     приходится закреплять на том же значении, что и базовую: иначе
-//     мобильная шторка, открытая при ширине ≥768px, молча выросла бы до
-//     десктопной формы 56px/32px/16px.
+//     брейкпоинту, поэтому высота и кегль задаются явно (у общей кнопки
+//     размер по умолчанию — десктопный).
 // Desktop — высота 56px, бока 32px, P1 Medium 16/24; mobile — высота 48px,
 // бока 24px, P1 Medium Mobile 14/20.
 // Дизайн-чек №25 («лишнее свободное место в выпадающем календаре»): карточка
@@ -32,10 +33,8 @@ import { Divider } from "@/components/ui/divider"
 // макетом, а карточка приходит к своим 280px.
 const FOOTER_BUTTON = "min-w-0 flex-1 rounded-none"
 const FOOTER_SIZE = {
-  regular:
-    "h-full px-2 text-p1-medium desktop:h-full desktop:px-2 desktop:text-p1-medium",
-  compact:
-    "h-full px-2 text-p2-medium desktop:h-full desktop:px-2 desktop:text-p2-medium",
+  regular: "h-full min-h-0 px-2 py-0 text-p1-medium",
+  compact: "h-full min-h-0 px-2 py-0 text-p2-medium",
 }
 
 function CalendarFooter({
@@ -71,25 +70,21 @@ function CalendarFooter({
     >
       {showSecondary && (
         <>
-          <Button
-            variant="secondary-white"
-            size="lg"
+          <DropdownFooterButton
             onClick={onReset}
             className={cn(FOOTER_BUTTON, sizeClass)}
           >
             Сбросить
-          </Button>
+          </DropdownFooterButton>
           <Divider orientation="vertical" />
         </>
       )}
-      <Button
-        variant="secondary-white"
-        size="lg"
+      <DropdownFooterButton
         onClick={onApply}
         className={cn(FOOTER_BUTTON, sizeClass)}
       >
         Применить
-      </Button>
+      </DropdownFooterButton>
     </div>
   )
 }

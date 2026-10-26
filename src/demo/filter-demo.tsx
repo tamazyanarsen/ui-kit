@@ -1,6 +1,16 @@
 import * as React from "react"
 
-import { FilterTableSelect } from "@/components/ui/filter-table"
+import { Search } from "@/icons"
+
+import {
+  FilterBar,
+  FilterBoolean,
+  FilterRange,
+  FilterSelect,
+  FilterSingleSelect,
+  FilterTableSelect,
+} from "@/components/ui/filter-table"
+import { Input } from "@/components/ui/input"
 import {
   AccordionItem,
   AccordionTrigger,
@@ -94,6 +104,40 @@ function FilterDemo() {
             сворачивается в тёмный чипс с крестиком
           </RowLabel>
           <FilterTableExample />
+        </div>
+
+        <div className="mt-8 flex flex-col gap-2">
+          <RowLabel>
+            FilterBar — ряд фильтров: на десктопе в ряд, уже 1280 — кнопка
+            «Фильтры» со счётчиком и штора с полями (черновик до «Применить»)
+          </RowLabel>
+          <FilterBar
+            search={
+              <Input
+                variant="filter-search"
+                size="sm"
+                placeholder="Поиск"
+                iconLeft={<Search />}
+              />
+            }
+          >
+            <FilterSelect
+              label="Направление"
+              options={[
+                { value: "in", label: "Поступления" },
+                { value: "out", label: "Списания" },
+              ]}
+            />
+            <FilterRange label="Сумма" amount />
+            <FilterSingleSelect
+              label="Срок"
+              options={[
+                { value: "3", label: "В ближайшие 3 дня" },
+                { value: "7", label: "В ближайшие 7 дней" },
+              ]}
+            />
+            <FilterBoolean label="Ненулевой баланс" />
+          </FilterBar>
         </div>
 
         <p className="mt-6 text-p3-medium text-muted-foreground">

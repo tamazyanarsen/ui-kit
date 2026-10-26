@@ -1,4 +1,7 @@
+import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
+
+import { ViewportScope } from "@/lib/viewport"
 
 /**
  * Типографская шкала, снятая с выгрузки макета «01. Typography Object Sans»
@@ -40,8 +43,9 @@ const SECTIONS: TypeSection[] = [
     name: "Параграф",
     styles: [
       /* Дизайн-чек №3: стиль P1.1 в продукте не используется — удалён и из
-         Desktop, и из Mobile. (Он есть на канвасе Figma, но его метрики
-         совпадают с P1 Medium, отдельного текст-стиля за ним нет.) */
+         Desktop, и из Mobile. Правки UI-Kit от 25.10 вернули только его
+         мобильный вариант — `text-p1_1-medium-mobile` 16/24 (стиль, который
+         на телефоне не уменьшается); он показан в истории «Adaptive». */
       { name: "P1 Heavy", sample: "Наборный текст первого порядка", weight: 800, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 14, lineHeight: 20, spacing: 8 } },
       { name: "P1 Medium", sample: "Наборный текст первого порядка", weight: 500, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 14, lineHeight: 20, spacing: 8 } },
       { name: "P1 Regular", sample: "Наборный текст первого порядка", weight: 400, desktop: { size: 16, lineHeight: 24, spacing: 8 }, mobile: { size: 14, lineHeight: 20, spacing: 8 } },
@@ -163,4 +167,76 @@ type Story = StoryObj<typeof meta>
 
 export const Scale: Story = {
   render: () => <TypographyPage />,
+}
+
+/* Правки UI-Kit от 25.10 (мобильная типографика): адаптивные утилиты — одна
+   на стиль, мобильная пара уже 1280 и десктопный стиль от 1280 по варианту
+   `desktop:`. Витрина ставит одни и те же классы в две формы через
+   ViewportScope и подписывает фактический кегль/интерлиньяж, снятый с
+   отрисованного узла, — так видно, что пара переключилась сама. */
+const ADAPTIVE_CLASSES = [
+  "text-factoid-adaptive",
+  "text-h1-adaptive",
+  "text-h2-adaptive",
+  "text-h3-adaptive",
+  "text-h4-adaptive",
+  "text-p1-heavy-adaptive",
+  "text-p1-medium-adaptive",
+  "text-p1-regular-adaptive",
+  "text-p2-heavy-adaptive",
+  "text-p2-medium-adaptive",
+  "text-p2-regular-adaptive",
+  "text-p3-medium-adaptive",
+  "text-p3-regular-adaptive",
+  "text-p4-medium-adaptive",
+  "text-p4-regular-adaptive",
+  "text-p1-medium-adaptive text-link",
+  "text-p2-medium-adaptive text-link",
+  "text-p3-medium-adaptive text-link",
+]
+
+function MeasuredSample({ className }: { className: string }) {
+  const ref = React.useRef<HTMLSpanElement>(null)
+  const [metrics, setMetrics] = React.useState("")
+  React.useLayoutEffect(() => {
+    if (!ref.current) return
+    const style = getComputedStyle(ref.current)
+    setMetrics(`${parseFloat(style.fontSize)}/${parseFloat(style.lineHeight)} · ${style.fontWeight}`)
+  }, [])
+  return (
+    <div className="border-b border-[#EFEFEF] py-3 last:border-0">
+      <span ref={ref} className={`${className} block text-[#252628]`}>
+        Счёт для оплаты
+      </span>
+      <div className="mt-1 flex gap-3 text-xs text-[#999999]">
+        <code>{className}</code>
+        <span className="tabular-nums" data-testid="metrics">{metrics}</span>
+      </div>
+    </div>
+  )
+}
+
+function AdaptiveColumn({ viewport }: { viewport: "desktop" | "mobile" }) {
+  return (
+    <ViewportScope viewport={viewport}>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h2 className="mb-2 text-h4 text-[#252628]">
+          {viewport === "desktop" ? "Desktop (от 1280)" : "Mobile (уже 1280)"}
+        </h2>
+        {ADAPTIVE_CLASSES.map((className) => (
+          <MeasuredSample key={className} className={className} />
+        ))}
+        {viewport === "mobile" && <MeasuredSample className="text-p1_1-medium-mobile" />}
+      </div>
+    </ViewportScope>
+  )
+}
+
+export const Adaptive: Story = {
+  render: () => (
+    <div className="flex flex-col gap-12 bg-white p-8 lg:flex-row">
+      <AdaptiveColumn viewport="desktop" />
+      <AdaptiveColumn viewport="mobile" />
+    </div>
+  ),
 }

@@ -42,6 +42,7 @@ function MenuOverlay({
   footer,
   onClose,
   returnFocusRef,
+  fade = false,
 }: {
   /**
    * Раскрыта ли панель.
@@ -59,6 +60,14 @@ function MenuOverlay({
    * на `<body>`: клавиатурный пользователь терял место на странице.
    */
   returnFocusRef?: React.RefObject<HTMLElement | null>
+  /**
+   * Мобильное меню (Правки UI-Kit от 25.10): панель появляется и уходит
+   * простым фейдом (`--duration-panel` / `--duration-panel-out`, `ease`) —
+   * одним движением с белым фоном шапки, без выезда, — и без затемнения:
+   * панель во всю высоту экрана, и подложка на фейде только проступала бы
+   * серым.
+   */
+  fade?: boolean
 }) {
   const ref = React.useRef<HTMLDivElement>(null)
   const footerRef = React.useRef<HTMLDivElement>(null)
@@ -212,10 +221,15 @@ function MenuOverlay({
         // ниже экрана дешевле, чем ловить каждую комбинацию масштабов: под
         // экраном этого пикселя не видно, а просвета больше не бывает.
         className={cn(
-          "absolute inset-x-0 top-0 -bottom-px cursor-default bg-[var(--modal-backdrop)]/70",
-          // Затемнение только гаснет и проявляется — никуда не едет.
-          "motion-safe:animate-[menu-backdrop-in_var(--duration-panel)_var(--ease-out)_both]",
-          "motion-safe:group-data-[state=closed]/overlay:animate-[menu-backdrop-out_var(--duration-panel-out)_var(--ease-out)_both]"
+          "absolute inset-x-0 top-0 -bottom-px cursor-default",
+          fade
+            ? "bg-transparent"
+            : [
+                "bg-[var(--modal-backdrop)]/70",
+                // Затемнение только гаснет и проявляется — никуда не едет.
+                "motion-safe:animate-[menu-backdrop-in_var(--duration-panel)_var(--ease-out)_both]",
+                "motion-safe:group-data-[state=closed]/overlay:animate-[menu-backdrop-out_var(--duration-panel-out)_var(--ease-out)_both]",
+              ]
         )}
       />
       {/* Появление и уход — дизайн-чек от 13.09, замечание 17; направление
@@ -224,10 +238,21 @@ function MenuOverlay({
           только этот узел: панель вместе с кнопкой «Настроить избранное»,
           но НЕ затемнение под ними. */}
       <div
+        data-slot="header-menu-overlay-panel"
         className={cn(
           "relative",
-          "motion-safe:animate-[menu-panel-in_var(--duration-panel)_var(--ease-out)_both]",
-          "motion-safe:group-data-[state=closed]/overlay:animate-[menu-panel-out_var(--duration-panel-out)_var(--ease-out)_both]"
+          fade
+            ? [
+                // Фейд — те же кадры прозрачности, что у затемнения. Без
+                // `motion-safe`: прозрачность не движение, и при
+                // `prefers-reduced-motion` панель тоже проявляется.
+                "animate-[menu-backdrop-in_var(--duration-panel)_ease_both]",
+                "group-data-[state=closed]/overlay:animate-[menu-backdrop-out_var(--duration-panel-out)_ease_both]",
+              ]
+            : [
+                "motion-safe:animate-[menu-panel-in_var(--duration-panel)_var(--ease-out)_both]",
+                "motion-safe:group-data-[state=closed]/overlay:animate-[menu-panel-out_var(--duration-panel-out)_var(--ease-out)_both]",
+              ]
         )}
       >
         {children}

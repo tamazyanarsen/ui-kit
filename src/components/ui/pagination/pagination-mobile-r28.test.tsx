@@ -11,9 +11,8 @@ describe("Pagination — мобильные размеры блока стран
     const page = container.querySelector("[data-slot=pagination-page]")!.className
     expect(page).toContain("min-w-10")
     expect(page).toContain("px-1.5")
-    expect(page).toContain("text-p3-medium")
+    expect(page).toContain("text-p2-medium-adaptive")
     expect(page).toContain("desktop:min-w-11")
-    expect(page).toContain("desktop:text-p2-medium")
     const dots = container.querySelector("[data-slot=pagination-ellipsis]")!.className
     expect(dots).toContain("size-8")
     expect(dots).toContain("desktop:size-9")

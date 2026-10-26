@@ -11,6 +11,6 @@ describe("ItemInformationField: subText={0} — своя строка", () => {
     render(<ItemInformationField label="Комиссия" value="100" subText={0} />)
     const zero = screen.getByText("0")
     expect(zero.tagName).toBe("SPAN")
-    expect(zero.className).toContain("text-p3-medium")
+    expect(zero.className).toContain("text-p2-medium-adaptive")
   })
 })

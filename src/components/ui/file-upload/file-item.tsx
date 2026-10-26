@@ -200,7 +200,7 @@ export const FileListItem = React.forwardRef<
             "truncate",
             // L на мобильном: имя P1 Medium Mobile 14/20 (строка 40 =
             // 20 + 4 + 16), на десктопе 16/24.
-            small ? "text-p3-medium" : "text-p2-medium desktop:text-p1-medium",
+            small ? "text-p3-medium" : "text-p1-medium-adaptive",
             disabled
               ? "text-[var(--file-item-meta-fg)]"
               : "text-[var(--file-item-fg)]"

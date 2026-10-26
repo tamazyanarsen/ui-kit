@@ -14,13 +14,16 @@ describe("Title — мобильная форма и Button Title (ELK)", () => 
       "hidden",
       "desktop:flex"
     )
-    expect(screen.getByRole("heading")).toHaveClass("text-h2-mobile", "desktop:text-h2")
+    expect(screen.getByRole("heading")).toHaveClass("text-h2-adaptive")
   })
 
   it("Title Card: тип More — «Ещё» с шевроном справа", () => {
     render(<TitleCard title="Договор" helpType="more" />)
     const more = screen.getByRole("button", { name: "Ещё" })
-    expect(more.lastElementChild?.tagName.toLowerCase()).toBe("svg")
+    // Содержимое кнопки — в одной обёртке (нажатие `press-clip`, Правки
+    // UI-Kit от 25.10).
+    const content = more.querySelector('[data-slot="button-content"]')
+    expect(content?.lastElementChild?.tagName.toLowerCase()).toBe("svg")
     expect(screen.queryByRole("button", { name: "Справка" })).toBeNull()
   })
 

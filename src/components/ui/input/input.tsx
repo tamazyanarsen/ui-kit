@@ -60,6 +60,9 @@ interface InputOwnProps {
   mask?: MaskName
 }
 
+// `variant` приходит из `inputBoxVariants`: `"default"` — обычное поле,
+// `"filter-search"` — поиск в ряду фильтров (Правки UI-Kit от 25.10): серая
+// заливка фильтров, скругление 16, рамка только в фокусе и при ошибке.
 type InputProps = Omit<React.ComponentProps<"input">, "size"> &
   Omit<VariantProps<typeof inputBoxVariants>, "invalid" | "interactive"> &
   InputOwnProps
@@ -75,6 +78,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   className,
   containerClassName,
   size = "lg",
+  variant = "default",
   label,
   comment,
   error,
@@ -241,7 +245,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
             ? { width: amountWidth }
             : undefined,
         className: cn(
-          inputFieldVariants({ size, floating }),
+          inputFieldVariants({ size, floating, variant }),
           showAmountSuffix && "flex-none",
           className
         ),
@@ -257,7 +261,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
       <FieldTooltip content={hoverTooltip}>
         <div
           className={cn(
-            inputBoxVariants({ size, invalid, interactive: !locked }),
+            inputBoxVariants({ size, variant, invalid, interactive: !locked }),
             containerClassName
           )}
           onClick={() => {
@@ -308,7 +312,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
               value={value}
               defaultValue={defaultValue}
               onChange={onChange}
-              className={cn(inputFieldVariants({ size, floating }), className)}
+              className={cn(inputFieldVariants({ size, floating, variant }), className)}
               {...props}
             />
           )}

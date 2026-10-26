@@ -85,7 +85,7 @@ const TitleRegistry = React.forwardRef<HTMLDivElement, TitleRegistryProps>(funct
         )}
       </div>
       {hasNode(description) && (
-        <p className="w-full text-p3-medium [overflow-wrap:anywhere] text-[var(--title-description-fg)] desktop:text-p2-medium">
+        <p className="w-full text-p2-medium-adaptive [overflow-wrap:anywhere] text-[var(--title-description-fg)]">
           {description}
         </p>
       )}

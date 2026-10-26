@@ -1,3 +1,6 @@
+// Поповер фильтра — десктопная форма: в мобильном виде (уже 1280) вместо
+// него штора (Правки UI-Kit от 25.10), а jsdom по умолчанию — «телефон».
+import "@/test/desktop-viewport"
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"

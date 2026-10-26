@@ -63,7 +63,7 @@ const ModalTitle = React.forwardRef<HTMLHeadingElement, DialogPrimitive.Title.Pr
     <DialogPrimitive.Title
       data-slot="modal-title"
       className={stateClassName(
-        "pr-12 text-h2-mobile text-[var(--modal-title-fg)] desktop:pr-0 desktop:text-h2",
+        "pr-12 text-h2-adaptive text-[var(--modal-title-fg)] desktop:pr-0",
         className
       )}
       ref={ref}
@@ -85,7 +85,7 @@ const ModalDescription = React.forwardRef<HTMLParagraphElement, DialogPrimitive.
       // Medium на мобильном (14/20), вырастающий до P1 Medium на десктопе
       // (16/24): макет «Modal Top» применяет здесь десктопный параграфный
       // стиль, а не фиксированный мобильный размер.
-      className={stateClassName("text-p2-medium text-[var(--modal-title-fg)] desktop:text-p1-medium", className)}
+      className={stateClassName("text-p1-medium-adaptive text-[var(--modal-title-fg)]", className)}
       ref={ref}
       {...props}
     />

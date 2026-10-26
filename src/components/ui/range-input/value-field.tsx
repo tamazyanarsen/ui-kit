@@ -76,7 +76,7 @@ function RangeValueField({
       data-slot="range-input-value"
       className={cn(
         "flex min-w-0 items-baseline",
-        "text-p2-medium text-[var(--range-input-value-fg)] desktop:text-p1-medium",
+        "text-p1-medium-adaptive text-[var(--range-input-value-fg)]",
         disabled && "!text-[var(--range-input-value-fg-disabled)]"
       )}
     >

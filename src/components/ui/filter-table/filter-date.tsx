@@ -6,8 +6,11 @@ import { Calendar } from "@/components/ui/calendar"
 import { ComboboxFooter } from "@/components/ui/combobox"
 import { filterTablePillClass } from "./filter-table"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 
 import { FilterShell, filterApplyLabel } from "./shell"
+import { FilterSheetButtons } from "./sheet-buttons"
+import { useFilterBarField } from "./filter-bar-context"
 
 // FilterDate — вид «Date».
 //
@@ -101,18 +104,40 @@ function FilterDate({
           ? `До ${formatDate(applied[1])}`
           : undefined
 
-  return (
-    <FilterShell
-      label={label}
-      valueLabel={valueLabel}
-      active={active}
-      onClear={() => commit(empty())}
-      disabled={disabled}
-      open={open}
-      onOpenChange={handleOpenChange}
-      width={560}
-      className={className}
-    >
+  function handleApply() {
+    commit(draft)
+    setOpen(false)
+  }
+
+  function handleReset() {
+    setDraft(empty())
+    commit(empty())
+    setOpen(false)
+  }
+
+  const collapsed = useFilterBarField<[Date | null, Date | null]>({
+    label,
+    active,
+    value: applied,
+    empty,
+    commit,
+    equals: (a, b) =>
+      a[0]?.getTime() === b[0]?.getTime() && a[1]?.getTime() === b[1]?.getTime(),
+    // Свёрнутый `FilterBar`: дата — полем даты (правило каркаса «Фильтры над
+    // списком в мобильном виде»).
+    render: ({ draft: barDraft, setDraft: setBarDraft }) => (
+      <DatePicker
+        mode="range"
+        label={label}
+        rangeValue={barDraft}
+        onRangeChange={setBarDraft}
+      />
+    ),
+  })
+  if (collapsed) return null
+
+  const body = (
+    <>
       <div className="flex flex-col gap-4 p-4">
         {/* Каждое поле — в своей половине ряда, коробка 176px, но на узком
             окне сжимается: жёсткая `w-44` держала ряд, и второе поле
@@ -181,6 +206,32 @@ function FilterDate({
           className="w-full"
         />
       </div>
+    </>
+  )
+
+  return (
+    <FilterShell
+      label={label}
+      valueLabel={valueLabel}
+      active={active}
+      onClear={() => commit(empty())}
+      disabled={disabled}
+      open={open}
+      onOpenChange={handleOpenChange}
+      width={560}
+      className={className}
+      // Мобильная штора: те же поля, заготовки и календарь (он сам
+      // показывает один месяц на узком экране), кнопки во всю ширину.
+      sheetBody={body}
+      sheetFooter={
+        <FilterSheetButtons
+          applyLabel={filterApplyLabel(filled(draft))}
+          onApply={handleApply}
+          onReset={handleReset}
+        />
+      }
+    >
+      {body}
       {/* Подвал — над календарём (`relative z-10`): поле -mb-4 под тень
           заходит на подвал, и в низком окне прокрученные дни рисовались
           поверх его линии, а щелчок в «Сбросить» попадал в день — ячейки
@@ -189,15 +240,8 @@ function FilterDate({
       <ComboboxFooter
         className="relative z-10"
         applyLabel={filterApplyLabel(filled(draft))}
-        onReset={() => {
-          setDraft(empty())
-          commit(empty())
-          setOpen(false)
-        }}
-        onApply={() => {
-          commit(draft)
-          setOpen(false)
-        }}
+        onReset={handleReset}
+        onApply={handleApply}
       />
     </FilterShell>
   )

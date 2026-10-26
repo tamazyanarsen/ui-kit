@@ -69,6 +69,10 @@ interface ConfirmModalProps {
   showFooter?: boolean
   triggerLabel?: string
   longBody?: boolean
+  /** Мобильный вид на весь экран принудительно (`fullScreen`). */
+  fullScreen?: boolean
+  /** Кнопка в теле, которая разом меняет объём содержимого. */
+  switchable?: boolean
   viewport?: Viewport
 }
 
@@ -83,9 +87,15 @@ function ConfirmModal({
   showFooter = true,
   triggerLabel = "Открыть модалку",
   longBody = false,
+  fullScreen = false,
+  switchable = false,
   viewport,
 }: ConfirmModalProps) {
   const [open, setOpen] = useState(false)
+  // Правки UI-Kit от 25.10, «Высоты перестраиваются с анимацией»: смена
+  // содержимого разом (как фильтр) — окно меняет высоту плавно.
+  const [expanded, setExpanded] = useState(false)
+  const long = longBody || (switchable && expanded)
   // Large Modal — коробка 1008px (size="l"), Small Modal и With Image — 592
   // (size="m"). Иллюстрация есть только у третьего типа.
   const size = type === "large" ? "l" : "m"
@@ -103,7 +113,11 @@ function ConfirmModal({
       <ModalTrigger render={<Button variant="secondary-grey" />}>
         {triggerLabel}
       </ModalTrigger>
-      <ModalContent size={twoColumns ? "l" : size} showClose={showClose}>
+      <ModalContent
+        size={twoColumns ? "l" : size}
+        showClose={showClose}
+        fullScreen={fullScreen}
+      >
         {/* `Show Title=False` — вариант «Modal Top: None»: шапки нет вовсе,
             и тело начинается сразу с содержимого. */}
         {showTitle && (
@@ -132,7 +146,17 @@ function ConfirmModal({
                 className="mb-4 h-40 rounded-2xl bg-[var(--card-bg)]"
               />
             )}
-            {longBody ? (
+            {switchable && (
+              <Button
+                variant="secondary-grey"
+                size="sm"
+                className="mb-4"
+                onClick={() => setExpanded((value) => !value)}
+              >
+                {expanded ? "Короче" : "Длиннее"}
+              </Button>
+            )}
+            {long ? (
               <div className="flex flex-col gap-4 text-p2-medium text-[#6D6D6D]">
                 {Array.from({ length: 20 }, (_, i) => (
                   <p key={i}>
@@ -201,6 +225,18 @@ const meta = {
     },
     showClose: { name: "Крестик", control: "boolean" },
     longBody: { name: "Длинное содержимое", control: "boolean" },
+    fullScreen: {
+      name: "На весь экран (fullScreen)",
+      description:
+        "Мобильный вид Large Modal принудительно. Без пропа окно решает само: штора, пока естественная высота помещается в 87% экрана, иначе — на весь экран. На десктопе не действует",
+      control: "boolean",
+    },
+    switchable: {
+      name: "Смена содержимого",
+      description:
+        "Кнопка «Длиннее/Короче» в теле: содержимое меняется разом, окно меняет высоту плавно (300 мс, мягкая кривая)",
+      control: "boolean",
+    },
     title: { control: "text", table: { category: "Контент" } },
     description: { control: "text", table: { category: "Контент" } },
     triggerLabel: { control: "text", table: { category: "Контент" } },
@@ -217,6 +253,8 @@ const meta = {
     showClose: true,
     showFooter: true,
     longBody: false,
+    fullScreen: false,
+    switchable: true,
   },
 } satisfies Meta<ConfirmModalProps>
 
@@ -298,6 +336,31 @@ export const Examples: Story = {
           description=""
           longBody
         />
+      </StorySection>
+
+      {/* Правки UI-Kit от 25.10: мобильная штора, которой не хватает
+          высоты, — на весь экран; плавная смена высоты окна. */}
+      <StorySection
+        title="Мобильный вид: штора и на весь экран"
+        description="Помещается в 87% экрана — штора снизу со скруглением 24; больше — Large Modal: от верха, 100dvh, без скруглений, кнопки у нижнего края."
+      >
+        <ConfirmModal viewport="mobile" triggerLabel="Короткая — штора" />
+        <ConfirmModal
+          viewport="mobile"
+          triggerLabel="Длинная — на весь экран"
+          title="Пользовательское соглашение"
+          description=""
+          longBody
+        />
+        <ConfirmModal viewport="mobile" triggerLabel="fullScreen" fullScreen />
+      </StorySection>
+
+      <StorySection
+        title="Плавная смена высоты"
+        description="«Длиннее/Короче» меняет содержимое разом — окно меняет высоту за 300 мс; на весь экран — без анимации."
+      >
+        <ConfirmModal triggerLabel="Десктоп" switchable />
+        <ConfirmModal viewport="mobile" triggerLabel="Мобильная штора" switchable />
       </StorySection>
     </StoryShowcase>
   ),

@@ -93,6 +93,12 @@ const meta = {
         "time",
       ] satisfies MaskName[],
     },
+    // Правки UI-Kit от 25.10: вид поля поиска в ряду фильтров — серая
+    // заливка фильтров, скругление 16, рамка только в фокусе и при ошибке.
+    variant: optionsArgType("Вид", {
+      default: "Default",
+      "filter-search": "Filter Search",
+    }, "inline-radio"),
     // Ниже — то, чего в панели Figma нет: у макета иконки и очистка живут
     // отдельными вложенными инстансами, а не свойствами компонент-сета.
     // `iconLeft`/`trailingIcon` — готовые JSX-узлы, значением из контрола
@@ -126,6 +132,7 @@ const meta = {
     add: "none" as FigmaAdd,
     showErrorText: true,
     showCommentIcon: false,
+    variant: "default",
     clearable: false,
     loading: false,
     label: "Label",
@@ -201,6 +208,17 @@ export const Matrix: Story = {
             iconLeft: <Search />,
             clearable: true,
             defaultValue: "Value",
+          },
+        },
+        {
+          // Правки UI-Kit от 25.10: поле поиска в ряду фильтров.
+          label: "S filter-search",
+          props: {
+            size: "sm",
+            variant: "filter-search",
+            iconLeft: <Search />,
+            label: undefined,
+            placeholder: "Поиск",
           },
         },
       ]}

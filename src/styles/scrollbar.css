@@ -1,6 +1,13 @@
 /* Полоса прокрутки в стиле кита: правила `.themed-scrollbar` и отступы
    `<Scrollbar inset>`. Вынесено из base.css — там это была треть файла.
 
+   Правки UI-Kit от 25.10, «Scrollbar — родные полосы браузера вместо полос
+   кита»: у области с подключённой наложенной полосой (`data-ovs`, механика
+   в src/lib/overlay-scrollbar) родная полоса скрыта, а рисует её узел
+   `.kit-ovs` — правила в конце файла. Оформление `::-webkit-scrollbar` ниже
+   остаётся запасным видом областей, к которым полоса ещё не подключена
+   (голый `.themed-scrollbar` без `PageScrollbar` на экране).
+
    ⚠️ Порядок импорта в index.css значим: файл идёт сразу после base.css,
    потому что часть правил объявлена ВНЕ `@layer` и рассчитывает победить
    утилиты по порядку, а не по специфичности. */
@@ -109,6 +116,10 @@
    меньше, чем срезанное содержимое. */
 .themed-scrollbar[data-inset="panel"][data-orientation="vertical"] {
   border-inline-end: 8px solid transparent;
+  /* Наложенная полоса (Правки UI-Kit от 25.10): те же 8 сверху и 48 снизу
+     задаются отступами дорожки, окно прокрутки остаётся во всю высоту. */
+  --ovs-start: 8px;
+  --ovs-end: 48px;
 }
 .themed-scrollbar[data-inset="panel"][data-orientation="vertical"]::-webkit-scrollbar-track {
   margin-block: 8px 48px;
@@ -127,4 +138,97 @@
   border-block-end: 8px solid transparent;
   border-inline-start: 8px solid transparent;
   border-inline-end: 48px solid transparent;
+}
+
+/* ── Наложенная полоса (Правки UI-Kit от 25.10) ─────────────────────────
+   Родная полоса подключённой области скрыта во всех браузерах: и
+   стандартным свойством (Firefox, Chromium 121+), и псевдоэлементом
+   (Safari, старый Chromium). Места она больше не занимает:
+   `offsetWidth − clientWidth` у области равно одной её рамке.
+
+   ⚠️ Вне `@layer`: запасное `scrollbar-width: thin` выше лежит в
+   `@layer base`, а утилиты потребителя — в `utilities`; правило обязано
+   перебить и то и другое. */
+.themed-scrollbar[data-ovs] {
+  scrollbar-width: none;
+}
+.themed-scrollbar[data-ovs]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Дорожка 4 (`--scrollbar-track-bg`, Grey 109) с бегунком
+   (`--scrollbar-thumb-bg`, Grey 166), скругление полное. Положение и длину
+   ставит скрипт (у внутреннего края рамки области, с отступами
+   `--ovs-start` / `--ovs-end`). Видимость — атрибут `data-visible`:
+   появление 150 мс, угасание 400 мс (когда гаснуть — решает скрипт).
+   Инлайн-стилей у узла мало, поэтому всё, что могли бы навязать правила
+   родителя для детей (`divide-y`, `space-y`, `[&>*]`), перекрыто здесь с
+   `!important`. */
+.kit-ovs {
+  position: absolute !important;
+  z-index: var(--ovs-z, 4);
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  flex: none !important;
+  border-radius: 9999px;
+  background: var(--scrollbar-track-bg);
+  opacity: 0;
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+  transition: opacity 400ms ease;
+}
+.kit-ovs[data-visible] {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 150ms;
+}
+.kit-ovs[data-ovs-bar="y"] {
+  width: 4px;
+}
+/* Горизонтальная полоса области толще — 8 по макету («Горизонтальный
+   скролл… имеет большую толщину»). */
+.kit-ovs[data-ovs-bar="x"] {
+  height: 8px;
+}
+/* Зона захвата шире полосы на 6 px с каждой стороны. */
+.kit-ovs::before {
+  content: "";
+  position: absolute;
+}
+.kit-ovs[data-ovs-bar="y"]::before {
+  inset: 0 -6px;
+}
+.kit-ovs[data-ovs-bar="x"]::before {
+  inset: -6px 0;
+}
+.kit-ovs-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: inherit;
+  background: var(--scrollbar-thumb-bg);
+}
+.kit-ovs[data-ovs-bar="y"] > .kit-ovs-thumb {
+  width: 100%;
+}
+.kit-ovs[data-ovs-bar="x"] > .kit-ovs-thumb {
+  height: 100%;
+}
+
+/* Полоса страницы: тонкая (4 по обеим осям), поверх страницы, только
+   бегунок. Слой ниже всплывающих слоёв кита (z-50), но выше закреплённой
+   шапки (z-40). */
+.kit-ovs[data-kind="page"] {
+  position: fixed !important;
+  z-index: var(--page-scrollbar-z, 45);
+  background: transparent;
+}
+.kit-ovs[data-kind="page"][data-ovs-bar="x"] {
+  height: 4px;
+}
+.kit-ovs[hidden] {
+  display: none;
 }

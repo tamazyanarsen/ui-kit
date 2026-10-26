@@ -1,5 +1,5 @@
 import * as React from "react"
-import { X } from "@/icons"
+import { CheckIcon, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { usePressTracking } from "@/lib/use-press-tracking"
@@ -117,6 +117,14 @@ function DropdownHeader({
 interface DropdownItemProps extends React.ComponentProps<"div"> {
   text: React.ReactNode
   description?: React.ReactNode
+  /**
+   * Отметка выбранного пункта (Правки UI-Kit от 25.10): не задано — строка
+   * без галки и без места под неё; `false` — место справа 48 под галку
+   * оставлено, галки нет; `true` — голубая галка 16 у правого поля, как у
+   * `SelectItem`. Места под галку держат все строки списка, а не только
+   * выбранная, — иначе текст выбранной переносился бы раньше соседних.
+   */
+  checked?: boolean
 }
 
 // Вариант строки «Menu Point», которым пользуются списки действий выше:
@@ -132,48 +140,56 @@ interface DropdownItemProps extends React.ComponentProps<"div"> {
 // ряд «контрол + текст». Новые строки с чекбоксом или иконкой собирайте на
 // `MenuItemContent`, как это делает Combobox.
 //
-// Строка идёт от края до края, без собственных скруглений, с отступом p-4 и
-// плоской заливкой подсветки --menu-item-bg-highlighted (#F8F8F8). Сверено
-// с литеральной разметкой «Menu Point (ELK)» внутри канонического компонента
-// «ELK / dropdown» и с состоянием наведения «Уровень 2» на канвасе
-// использования Select/Dropdown: пункты идут `p-[16px]` во всю ширину и без
-// своего радиуса, с тем же цветом подсвеченной строки #F8F8F8, что и у
-// пунктов Select и Combobox. Скруглён только сам контейнер Dropdown, и он же
-// подрезает верхнюю и нижнюю строки по своим углам (см. `overflow-hidden`,
-// который добавляет каждый потребитель).
+// Строка идёт от края до края, без собственных скруглений, с полем 16.
+// Скруглён только сам контейнер Dropdown, и он же подрезает верхнюю и
+// нижнюю строки по своим углам.
+//
+// Правки UI-Kit от 25.10 — одно поведение у всех строк выпадающих списков:
+//   • наведение (только мышь) и подсветка с клавиатуры — Grey 114, нажатие —
+//     Grey 124, смена цвета 200 мс `ease` — общий класс `menu-row`. Он
+//     работает и по `:hover`, и по `data-highlighted`: строка законно
+//     используется и сама по себе (витрина Dropdown), где Base UI
+//     `data-highlighted` не ставит (дизайн-чек от 07.09, замечание 12);
+//   • на зажатие содержимое сжимается к центру строки одним целым: всё
+//     содержимое — в одной обёртке, и поля 16 лежат на ней, а не на строке,
+//     поэтому центр обёртки и есть центр строки. Прежняя опора на левый
+//     край (дизайн-чек 08.10, замечание 37) снята;
+//   • текст переносится, многоточия нет — строка растёт по высоте;
+//   • курсор — рука, у выключенной строки not-allowed (styles/rules-lists.css),
+//     поэтому `pointer-events: none` у выключенной больше не ставится:
+//     нажатие выключенного пункта гасит сам примитив Base UI.
 const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
-  function DropdownItem({ className, text, description, children, ...props }, ref) {
+  function DropdownItem({ className, text, description, checked, children, ...props }, ref) {
     return (
       <div
         ref={ref}
         data-slot="dropdown-item"
         className={cn(
-          "flex cursor-pointer flex-col gap-1 p-4 outline-none transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-40",
-          // ⚠️ ДВА селектора подсветки, а не один. `data-highlighted` ставит
-          // примитив Base UI, когда строка лежит внутри его меню — этим
-          // живут Select, Combobox, меню «ещё». Но `DropdownItem` законно
-          // используется и сам по себе (так собрана вся витрина Dropdown), а
-          // там `data-highlighted` не появляется НИКОГДА, и строка выглядела
-          // мёртвой: дизайн-чек от 07.09, замечание 12 — «строки выпадающего
-          // списка не меняют цвет при ховере, должны, см. компонент Menu
-          // Item». Обычный `hover:` — та же половина правила, что у
-          // `menuItemRowClass` (см. components/ui/menu-item).
-          "hover:bg-[var(--menu-item-bg-highlighted)] data-highlighted:bg-[var(--menu-item-bg-highlighted)]",
-          // Нажатие сжимает содержимое строки, а не её заливку: строка идёт
-          // от края до края панели, и сжатая коробка отлипла бы от границ
-          // (дизайн-чек 08.10, замечание 37). Опора — левый край, чтобы текст
-          // не уплывал от поля 16.
-          "press-scale-content [--press-origin:left_center]",
-          "data-disabled:hover:bg-transparent",
+          "flex outline-none select-none menu-row press-scale-content data-disabled:opacity-40",
           className
         )}
         {...props}
       >
-        <span className="text-p1-medium [overflow-wrap:anywhere] text-[var(--menu-item-fg)]">{text}</span>
-        {hasNode(description) && (
-          <span className="text-p3-medium [overflow-wrap:anywhere] text-[var(--menu-item-description-fg)]">{description}</span>
-        )}
-        {children}
+        <span
+          data-slot="dropdown-item-content"
+          className={cn(
+            "relative flex w-full min-w-0 flex-col gap-1 p-4 [overflow-wrap:anywhere]",
+            checked !== undefined && "pr-12"
+          )}
+        >
+          <span className="text-p1-medium text-[var(--menu-item-fg)]">{text}</span>
+          {hasNode(description) && (
+            <span className="text-p3-medium text-[var(--menu-item-description-fg)]">{description}</span>
+          )}
+          {children}
+          {checked && (
+            <CheckIcon
+              aria-hidden="true"
+              data-slot="dropdown-item-check"
+              className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-[var(--check-mark-fg)]"
+            />
+          )}
+        </span>
       </div>
     )
   }

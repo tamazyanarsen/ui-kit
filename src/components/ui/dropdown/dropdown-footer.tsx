@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { usePressTracking } from "@/lib/use-press-tracking"
 
 /**
  * Нижняя панель кнопок выпадающего списка — свойство `Add` компонент-сета
@@ -44,8 +45,28 @@ const DropdownFooter = React.forwardRef<HTMLDivElement, DropdownFooterProps>(
 })
 
 /**
- * Кнопка нижней панели. Своя, а не `Button`: у той пилюля с радиусом 16 и
- * собственными полями, а здесь плоская ячейка панели (см. выше).
+ * Кнопка подвала выпадающего списка — ОДНА на весь кит: её рисуют и
+ * `DropdownFooter`, и `ComboboxFooter` («Сбросить / Применить» у фильтров).
+ *
+ * Своя, а не `Button`: у той пилюля с радиусом и собственными полями, а
+ * здесь плоская ячейка панели (см. выше).
+ *
+ * Правки UI-Kit от 25.10 («Button внутри выпадающих списков — своё
+ * поведение»): кнопки подвала ведут себя как строки списка, а не как
+ * отдельные кнопки. Заливка наведения и нажатия — на всю ячейку и без
+ * скругления (углы закругляет сам список), цвета — как у строк (`menu-row`:
+ * наведение Grey 114 только мышью, нажатие Grey 124, смена 200 мс `ease`).
+ * Ячейка при нажатии НЕ ужимается (ни `scale`, ни `clip-path`): прижатая к
+ * краям списка и к соседней кнопке, она обнажила бы полосы вдоль границ
+ * панели. Сжимается только содержимое — одна обёртка — до 0.97 к центру
+ * (`press-scale-content`). Прежде `ComboboxFooter` рисовал здесь `Button`
+ * secondary-white: заливка со скруглением 16 ужималась при нажатии, и кнопка
+ * выглядела запертой в маленьком белом контейнере.
+ *
+ * Размер по умолчанию — десктопный (ячейка 56, поля 32/16, P1 Medium); в
+ * мобильном `Dropdown` (`size="mobile…"`) — 48, поля 24/14, P1 Medium Mobile
+ * 14/20. Место применения с другой схемой форм (`ComboboxFooter` —
+ * вариантом `desktop:`) переопределяет размер классами.
  */
 interface DropdownFooterButtonProps
   extends React.ComponentProps<"button"> {}
@@ -57,20 +78,16 @@ const DropdownFooterButton = React.forwardRef<
   { className, type = "button", children, ...props },
   ref
 ) {
+  usePressTracking()
   return (
     <button
       ref={ref}
       type={type}
       data-slot="dropdown-footer-button"
       className={cn(
-        // Нажатие (дизайн-чек 08.10, замечания 8 и 37): сжимается подпись, а
-        // не ячейка — ячейка прижата к краям списка и к соседней кнопке, и её
-        // сжатие обнажило бы полосы вдоль границ панели.
-        "press-scale-content",
-        "flex min-h-14 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium group-data-[size^=mobile]/dropdown:min-h-12 group-data-[size^=mobile]/dropdown:px-6 group-data-[size^=mobile]/dropdown:py-[14px] group-data-[size^=mobile]/dropdown:text-p2-medium text-[var(--menu-item-fg)] outline-none transition-colors",
-        "hover:bg-[var(--menu-item-bg-highlighted)] focus-visible:focus-ring",
-        // Мобильные формы (мастер, узел `Buttons`): ячейка 48, поля 24/14 и
-        // подпись P1 Medium Mobile 14/20, а не десктопные 32/16 и 16/24.
+        "menu-row press-scale-content rounded-none",
+        "flex min-h-14 min-w-0 flex-1 cursor-pointer items-center justify-center px-8 py-4 text-p1-medium group-data-[size^=mobile]/dropdown:min-h-12 group-data-[size^=mobile]/dropdown:px-6 group-data-[size^=mobile]/dropdown:py-[14px] group-data-[size^=mobile]/dropdown:text-p2-medium text-[var(--menu-item-fg)] outline-none",
+        "focus-visible:focus-ring",
         // Выключенная кнопка — Grey 114 / Grey 166 из сета, теми же токенами,
         // что и у обычной кнопки кита.
         "disabled:cursor-not-allowed disabled:bg-[var(--btn-muted-bg)] disabled:text-[var(--btn-muted-fg)]",
@@ -78,7 +95,15 @@ const DropdownFooterButton = React.forwardRef<
       )}
       {...props}
     >
-      <span>{children}</span>
+      {/* Единственная обёртка содержимого — её и сжимает
+          `press-scale-content`. Флекс, чтобы подпись-узел внутри
+          (`ComboboxFooter`) была блоком и получала многоточие. */}
+      <span
+        data-slot="dropdown-footer-button-content"
+        className="flex max-w-full min-w-0 items-center justify-center"
+      >
+        {children}
+      </span>
     </button>
   )
 })

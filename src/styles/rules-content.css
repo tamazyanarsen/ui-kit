@@ -1,0 +1,150 @@
+/* Сквозные правила: content. Вне слоёв — перебивают утилиты порядком. */
+
+/* Адаптивная типографика (Правки UI-Kit от 25.10, правило «мобильная
+   типографика» каркаса). Одна утилита на стиль: уже 1280 — мобильная пара
+   из Figma («Mobile. …»), от 1280 — десктопный стиль. Переключение идёт
+   вариантом `desktop:`, то есть с учётом `data-viewport` (ViewportScope,
+   порталы), а не голым медиазапросом.
+
+   Пары (десктоп → мобильный): Factoid 68/68 → 28/38, H1 44/56 → 28/38,
+   H2 32/44 → 22/30, H3 24/32 → 18/24, H4 20/28 → 18/24, P1 16/24 → 14/20,
+   P2 14/20 → 12/16, P3 12/16 → 12/16, P4 10/12 без изменений (утилита
+   заведена, чтобы текст экранов набирался одной системой). Начертание пара
+   сохраняет. Ссылки — та же утилита плюс `text-link`
+   (`text-p2-medium-adaptive text-link`).
+
+   Нет намеренно у P1.1: это мобильный стиль, который не уменьшается, и его
+   десктопная пара и так P1 Medium 16/24 — на мобиле берите
+   `text-p1_1-medium-mobile` осознанно.
+
+   Каждая утилита — `@apply` мобильного ключа и `desktop:` десктопного,
+   поэтому размеры живут только в шкале theme.css. Новые имена
+   зарегистрированы в extendTailwindMerge (src/lib/utils.ts). */
+@utility text-factoid-adaptive {
+  @apply text-factoid-mobile desktop:text-factoid;
+}
+@utility text-h1-adaptive {
+  @apply text-h1-mobile desktop:text-h1;
+}
+@utility text-h2-adaptive {
+  @apply text-h2-mobile desktop:text-h2;
+}
+@utility text-h3-adaptive {
+  @apply text-h3-mobile desktop:text-h3;
+}
+@utility text-h4-adaptive {
+  @apply text-h4-mobile desktop:text-h4;
+}
+@utility text-p1-adaptive {
+  @apply text-p1-mobile desktop:text-p1;
+}
+@utility text-p1-regular-adaptive {
+  @apply text-p1-regular-mobile desktop:text-p1-regular;
+}
+@utility text-p1-medium-adaptive {
+  @apply text-p1-medium-mobile desktop:text-p1-medium;
+}
+@utility text-p1-heavy-adaptive {
+  @apply text-p1-heavy-mobile desktop:text-p1-heavy;
+}
+@utility text-p2-adaptive {
+  @apply text-p2-mobile desktop:text-p2;
+}
+@utility text-p2-regular-adaptive {
+  @apply text-p2-regular-mobile desktop:text-p2-regular;
+}
+@utility text-p2-medium-adaptive {
+  @apply text-p2-medium-mobile desktop:text-p2-medium;
+}
+@utility text-p2-heavy-adaptive {
+  @apply text-p2-heavy-mobile desktop:text-p2-heavy;
+}
+@utility text-p3-adaptive {
+  @apply text-p3-mobile desktop:text-p3;
+}
+@utility text-p3-regular-adaptive {
+  @apply text-p3-regular-mobile desktop:text-p3-regular;
+}
+@utility text-p3-medium-adaptive {
+  @apply text-p3-medium-mobile desktop:text-p3-medium;
+}
+@utility text-p4-adaptive {
+  @apply text-p4;
+}
+@utility text-p4-regular-adaptive {
+  @apply text-p4-regular;
+}
+@utility text-p4-medium-adaptive {
+  @apply text-p4-medium;
+}
+
+/* Утилиты шкалы нужны экранам потребителя, а не только компонентам кита:
+   Tailwind собирает в dist/index.css лишь классы, найденные в исходниках
+   кита, и мобильные пары и адаптивные утилиты, которых ни один компонент
+   ещё не использует, в бандл бы не попали. Поэтому вся шкала заявлена
+   явно (Правки UI-Kit от 25.10: «в бандле есть утилиты всех стилей»). */
+@source inline("text-{factoid,h1,h2,h3,h4}{,-mobile,-adaptive}");
+@source inline("text-{p1,p2,p3}{,-regular,-medium}{,-mobile,-adaptive}");
+@source inline("text-{p1-heavy,p1_1-medium}{,-mobile,-adaptive}");
+@source inline("text-{p4,p4-regular,p4-medium}{,-adaptive}");
+@source inline("text-p2-heavy{,-mobile,-adaptive}");
+/* Явные пары `desktop:text-…`, которыми компоненты кита набирались до
+   перевода на адаптивные утилиты. В самом ките их почти не осталось, но
+   экраны потребителей могли собирать так же (`text-h2-mobile
+   desktop:text-h2`) — правила остаются в бандле, как были. */
+@source inline("desktop:text-{h1,h2,h3,h4,p1-medium,p2-medium}");
+
+/* ── Графики, точки карусели, промо-баннеры, баннер под блоком ──────────
+   Токены и движение новых компонентов по Правкам UI-Kit от 25.10: Donut,
+   StackBar, CarouselDots, PromoBanner, BlockWithBanner. */
+:root {
+  /* Палитра графиков по умолчанию (пункт «Кольцевая диаграмма»): Blue 223,
+     Lavender 187, Grey 134, Mint 151, Yellow 134, Red 147 — в этом порядке
+     (см. CHART_PALETTE в components/ui/donut/chart-palette.ts). */
+  --chart-blue: var(--blue-223);
+  --chart-lavender: var(--lavender-187);
+  --chart-grey: var(--grey-134);
+  --chart-mint: var(--mint-151);
+  --chart-yellow: var(--yellow-134);
+  --chart-red: var(--red-147);
+  /* Фон блока, с которым смешиваются притушенные сегменты Donut. */
+  --chart-surface: var(--white-101);
+  /* Подпись и значение в центре кольца и над полосой. */
+  --chart-label-fg: var(--grey-284);
+  --chart-value-fg: var(--grey-1514);
+
+  /* Точки карусели: обычная Grey 166, наведение Grey 284, текущая и
+     нажатая Grey 1514. */
+  --carousel-dots-fg: var(--grey-166);
+  --carousel-dots-fg-hover: var(--grey-284);
+  --carousel-dots-fg-current: var(--grey-1514);
+
+  /* Баннер витрины предложений. */
+  --promo-banner-fg: var(--grey-1514);
+  --promo-banner-muted-fg: var(--grey-1514);
+  --promo-banner-blue-bg: var(--blue-114);
+  --promo-banner-lavender-bg: var(--lavender-116);
+  --promo-banner-mint-bg: var(--mint-107);
+  --promo-banner-grey-bg: var(--grey-114);
+
+  /* Инлайн-баннер под блоком: подложка Blue 114, текст Grey 1514. */
+  --block-with-banner-bg: var(--blue-114);
+  --block-with-banner-fg: var(--grey-1514);
+}
+
+/* StackBar: при появлении и смене данных полоса разворачивается целиком —
+   ширина заливки 0 → 100 %, сегменты в своих долях, 1000 мс cubicInOut
+   (решение 25.10, «Механики главной»). Полоса монтируется заново при смене
+   данных, поэтому анимация перезапускается. */
+@keyframes stack-bar-unfold {
+  from { width: 0; }
+  to { width: 100%; }
+}
+[data-slot="stack-bar-track"][data-animated] > [data-slot="stack-bar-fill"] {
+  animation: stack-bar-unfold 1000ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="stack-bar-track"][data-animated] > [data-slot="stack-bar-fill"] {
+    animation: none;
+  }
+}

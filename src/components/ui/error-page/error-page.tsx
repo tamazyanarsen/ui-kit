@@ -77,7 +77,7 @@ function ErrorPage({
           {(hasTitle || hasDescription) && (
             <div className="flex w-full flex-col items-center gap-2">
               {hasTitle && (
-                <h1 className="max-w-full text-h2-mobile [overflow-wrap:anywhere] text-[var(--error-page-title-fg)] desktop:text-h2">
+                <h1 className="max-w-full text-h2-adaptive [overflow-wrap:anywhere] text-[var(--error-page-title-fg)]">
                   {title}
                 </h1>
               )}
@@ -85,7 +85,7 @@ function ErrorPage({
                 // 592px — ширина, которую макет даёт этому абзацу внутри
                 // текстовой колонки 1008px; `max-w-md` (448) переносил его на
                 // строку раньше.
-                <p className="max-w-[592px] text-p2-medium [overflow-wrap:anywhere] text-[var(--error-page-description-fg)] desktop:text-p1-medium">
+                <p className="max-w-[592px] text-p1-medium-adaptive [overflow-wrap:anywhere] text-[var(--error-page-description-fg)]">
                   {description}
                 </p>
               )}

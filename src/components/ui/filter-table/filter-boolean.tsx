@@ -1,7 +1,9 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Checkbox } from "@/components/ui/checkbox"
 import { filterTablePillClass } from "./filter-table"
+import { useFilterBarField } from "./filter-bar-context"
 
 // FilterBoolean — «Булев фильтр».
 //
@@ -14,6 +16,10 @@ import { filterTablePillClass } from "./filter-table"
 // значения для показа. Это таблетка-переключатель, которая либо включена
 // («фильтр действует»), либо выключена («фильтр не действует»), нарисованная
 // той же заливкой `ELK / filter-table`, что и любой другой чип.
+//
+// В свёрнутом `FilterBar` (мобильный вид, Правки UI-Kit от 25.10) флаг —
+// `Checkbox` с подписью в шторе «Фильтры», и, как всё в шторе, — черновик до
+// «Применить».
 
 interface FilterBooleanProps
   extends Omit<
@@ -42,6 +48,28 @@ const FilterBoolean = React.forwardRef<
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
   const active = value ?? uncontrolled
 
+  function commit(next: boolean) {
+    if (value === undefined) setUncontrolled(next)
+    onValueChange?.(next)
+  }
+
+  const collapsed = useFilterBarField<boolean>({
+    label,
+    active,
+    value: active,
+    empty: () => false,
+    commit,
+    render: ({ draft, setDraft }) => (
+      <Checkbox
+        label={label}
+        checked={draft}
+        disabled={disabled}
+        onCheckedChange={(next) => setDraft(next === true)}
+      />
+    ),
+  })
+  if (collapsed) return null
+
   return (
     <button
       ref={ref}
@@ -50,9 +78,7 @@ const FilterBoolean = React.forwardRef<
       aria-pressed={active}
       disabled={disabled}
       onClick={(event) => {
-        const next = !active
-        if (value === undefined) setUncontrolled(next)
-        onValueChange?.(next)
+        commit(!active)
         onClick?.(event)
       }}
       className={cn(

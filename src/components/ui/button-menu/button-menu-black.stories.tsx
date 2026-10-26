@@ -68,6 +68,8 @@ interface PlaygroundArgs {
   showClose: boolean
   pinned: boolean
   detached: boolean
+  open: boolean
+  maxVisible: number
 }
 
 /** Поля информационного бара по трём переключателям панели свойств. */
@@ -158,6 +160,19 @@ const meta = {
         "«Button Menu всегда закрепляется в нижней части контентной области» — поэтому включено по умолчанию",
       control: "boolean",
     },
+    // Правки UI-Kit от 25.10: появление выездом снизу и уход вниз.
+    open: {
+      name: "Показана (open)",
+      description:
+        "Снять — панель уезжает вниз за 200 мс и только потом пропадает; включить — выезжает снизу на свою высоту за 320 мс. Без пропа панель видна, пока смонтирована",
+      control: "boolean",
+    },
+    maxVisible: {
+      name: "Команд разом (maxVisible)",
+      description:
+        "Сколько команд на десктопе видно разом, остальные — в «…». По умолчанию 3 (Правки UI-Kit от 25.10)",
+      control: { type: "number", min: 0, max: 6 },
+    },
     detached: {
       name: "Отлипшая",
       description:
@@ -179,6 +194,8 @@ const meta = {
     showClose: true,
     pinned: true,
     detached: false,
+    open: true,
+    maxVisible: 3,
     placement: "full",
     span: 6,
   },
@@ -200,6 +217,8 @@ export const Playground: Story = {
     selectedCount,
     placement,
     span,
+    open,
+    maxVisible,
     ...bar
   }) => (
     // Mobile — карточка 360, как символ Size=Mobile мастера.
@@ -214,6 +233,8 @@ export const Playground: Story = {
         ))}
       </div>
       <ButtonMenuBlack
+        open={open}
+        maxVisible={maxVisible}
         pinned={pinned}
         detached={detached}
         placement={placement}

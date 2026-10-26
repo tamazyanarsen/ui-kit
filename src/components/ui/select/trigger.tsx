@@ -13,6 +13,7 @@ import {
   selectTriggerVariants,
 } from "./variants"
 import { useSelectClear } from "./root"
+import { useSelectSheet } from "./sheet"
 
 interface SelectTriggerOwnProps {
   size?: "sm" | "lg"
@@ -43,9 +44,18 @@ export const SelectTrigger = React.forwardRef<
   onClear,
   children,
   id,
+  onClick,
   ...props
 }, ref) {
   const generatedId = useStableId()
+  // Мобильная штора (Правки UI-Kit от 25.10, см. ./sheet.tsx): щелчок по
+  // полю открывает её, а подпись поля становится её заголовком. Пока штора
+  // открыта, поле ведёт себя как раскрытое (`data-popup-open`): подпись
+  // всплывает, шеврон смотрит вверх — триггер тот же, что у поповера.
+  const sheet = useSelectSheet()
+  React.useEffect(() => {
+    if (sheet) sheet.titleRef.current = label
+  })
   const triggerId = id ?? generatedId
   const clearValue = useSelectClear()
   const invalid = Boolean(error)
@@ -77,7 +87,14 @@ export const SelectTrigger = React.forwardRef<
         aria-describedby={captionId}
         nativeButton={false}
         render={<div className={cn(selectTriggerVariants({ size, invalid }), className)} />}
+        {...(sheet?.open ? { "data-popup-open": "" } : {})}
         {...props}
+        onClick={(event) => {
+          onClick?.(event)
+          if (sheet && !sheet.locked && !event.defaultPrevented) {
+            sheet.setOpen(true, event.nativeEvent)
+          }
+        }}
       >
         {hasNode(label) && (
           <span
@@ -157,7 +174,7 @@ export const SelectTrigger = React.forwardRef<
             aria-hidden="true"
             className={cn(
               SELECT_ICON_SIZE[size],
-              "shrink-0 text-[var(--select-icon-fg)] transition-transform group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-popup-open/trigger:rotate-180"
+              "shrink-0 text-[var(--select-icon-fg)] transition-transform duration-200 ease-out group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-popup-open/trigger:rotate-180"
             )}
           />
         </span>

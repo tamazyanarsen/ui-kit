@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react-vite'
 import { useEffect } from 'react'
 
 import '../src/index.css'
+import { PageScrollbar } from '../src/components/ui/scrollbar'
 
 const preview: Preview = {
   parameters: {
@@ -121,7 +122,15 @@ const preview: Preview = {
         document.body.style.background = grey ? 'var(--page-bg)' : ''
       }, [context.globals.canvas])
 
-      return <Story />
+      // Правки UI-Kit от 25.10 («Scrollbar — родные полосы браузера вместо
+      // полос кита»): своя наложенная полоса страницы и автоподключение
+      // полос ко всем областям `themed-scrollbar` — один раз на всё превью.
+      return (
+        <>
+          <Story />
+          <PageScrollbar />
+        </>
+      )
     },
   ],
 };

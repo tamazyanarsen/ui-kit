@@ -5,10 +5,20 @@ import { ChevronDownIcon, ChevronUpIcon } from "@/icons"
 import { cn } from "@/lib/utils"
 import { POPUP_COLLISION } from "@/lib/popup-position"
 import { Dropdown } from "@/components/ui/dropdown"
+import { MenuSheet } from "@/components/ui/menu-sheet"
 
+import { useSelectSheet } from "./sheet"
+
+/**
+ * Окно списка. В мобильном виде (Правки UI-Kit от 25.10) — штора
+ * `MenuSheet` вместо поповера: заголовок — `sheetTitle`, иначе подпись поля
+ * (`label` у `SelectTrigger`); строки во всю ширину, у выбранной галка,
+ * нажатие применяет выбор и закрывает штору.
+ */
 export function SelectContent({
   className,
   children,
+  sheetTitle,
   side = "bottom",
   // По макету: зазор 8px между триггером и выпадающим списком.
   sideOffset = 8,
@@ -24,7 +34,24 @@ export function SelectContent({
   Pick<
     SelectPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
-  >) {
+  > & {
+    /** Заголовок мобильной шторы. Не задан — подпись поля. */
+    sheetTitle?: React.ReactNode
+  }) {
+  const sheet = useSelectSheet()
+  if (sheet) {
+    return (
+      <MenuSheet
+        role="listbox"
+        title={sheetTitle ?? sheet.titleRef.current}
+        open={sheet.open}
+        // `className` окна (ширина поповера) к шторе не относится.
+        onOpenChange={(next) => sheet.setOpen(next)}
+      >
+        {children}
+      </MenuSheet>
+    )
+  }
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner

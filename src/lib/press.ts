@@ -131,7 +131,31 @@ function pressHandlers<T extends Element>(onPress: (() => void) | undefined) {
   }
 }
 
+/**
+ * Нажатие крупной серой карточки (BlockWidget, Card) — Правки UI-Kit от
+ * 25.10, «Нажимаемые серые карточки» и правило каркаса «0,98 у крупных серых
+ * карточек»:
+ *   • при нажатии карточка целиком сжимается до 0,98 к своему центру;
+ *   • нажатие 140 мс `--ease-out`, отпускание 280 мс по мягкой кривой
+ *     (переменная `--press-t`, как у `press-scale` в styles/motion.css),
+ *     смена цвета — 200 мс `ease`;
+ *   • нажатие вложенного контрола (кнопка, ссылка, поле, чекбокс, «i»,
+ *     переключатель) — не нажатие карточки: ни сжатия, ни заливки. Своя
+ *     кнопка-подложка (`press-target`) из списка исключена: её `:active` —
+ *     нажатие самой карточки с клавиатуры.
+ *
+ * Цвета наведения и нажатия у каждой карточки свои — их ставит компонент
+ * тем же селектором нажатия. Классы — литералами, их читает сканер Tailwind.
+ */
+const PRESSABLE_CARD = [
+  "[--press-t:var(--duration-release)_var(--ease-soft)]",
+  "[transition:background-color_var(--duration-color)_var(--ease-color),scale_var(--press-t)]",
+  "[&:active:not(:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:[--press-t:var(--duration-press)_var(--ease-out)]",
+  "motion-safe:[&:active:not(:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:scale-[.98]",
+].join(" ")
+
 export {
+  PRESSABLE_CARD,
   NESTED_CONTROL_SELECTOR,
   endsTextSelection,
   fromNestedControl,

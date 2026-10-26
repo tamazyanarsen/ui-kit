@@ -27,7 +27,7 @@ describe("SelectItem: текст и число — один узел", () => {
     )
     await user.click(screen.getByRole("combobox"))
     const option = await screen.findByRole("option", { name: "Счёт 5" })
-    const clipped = option.querySelectorAll("span.text-ellipsis")
+    const clipped = option.querySelectorAll('[data-slot="clip-text"]')
     expect(clipped).toHaveLength(1)
     expect(clipped[0].textContent).toBe("Счёт 5")
   })

@@ -45,6 +45,8 @@ describe("ProfileMenu: наведение не уводит фокус из по
     render(<ProfileMenu organizations={ORG_MANY} value="1" />)
     await user.click(screen.getByRole("button", { name: /ИП Константинопольский/ }))
     const [row] = await screen.findAllByRole("menuitemradio")
-    expect(row.className).toContain("hover:bg-[var(--header-item-hover-bg)]")
+    // Правки UI-Kit от 25.10: наведение ловит общий `menu-row` (свой
+    // `:hover`, без `data-highlighted`) — прежний свой токен шапки снят.
+    expect(row.className).toContain("menu-row")
   })
 })

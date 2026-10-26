@@ -24,4 +24,14 @@ const POPUP_COLLISION = {
   fallbackAxisSide: "none",
 } as const
 
-export { POPUP_COLLISION, POPUP_SIDE_OFFSET }
+/**
+ * Поворот шеврона открытия (Правки UI-Kit от 25.10): у триггера один шеврон,
+ * при открытии списка он поворачивается на 180° — 200 мс, ease-out — и
+ * обратно при закрытии, а не подменяется значком «вверх» (смена значка
+ * читалась вспышкой). Сам поворот (`group-data-popup-open/…:rotate-180`)
+ * ставит компонент — у каждого своя группа; общее здесь только движение,
+ * чтобы у Select, Combobox и SelectionButton оно не расходилось.
+ */
+const POPUP_CHEVRON_TRANSITION = "transition-transform duration-200 ease-out"
+
+export { POPUP_CHEVRON_TRANSITION, POPUP_COLLISION, POPUP_SIDE_OFFSET }

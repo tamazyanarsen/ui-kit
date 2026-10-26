@@ -38,14 +38,18 @@ function resolveFavouriteLinks(
     .filter((link, index, all) => all.indexOf(link) === index)
 }
 
-/** Остальные разделы — не добавленные в избранное, по алфавиту. */
+/**
+ * Остальные разделы — не добавленные в избранное, по алфавиту. Разделы,
+ * которые в избранное добавить нельзя (`favouritable: false`), сюда не
+ * попадают: добавить их всё равно нечем.
+ */
 function resolveRemainingLinks(
   groups: HeaderMenuGroup[],
   favourites: string[]
 ): HeaderMenuLink[] {
   const chosen = new Set(favourites)
   return collectMenuLinks(groups)
-    .filter((link) => !chosen.has(link.value))
+    .filter((link) => !chosen.has(link.value) && link.favouritable !== false)
     .sort((a, b) => linkText(a).localeCompare(linkText(b), "ru"))
 }
 

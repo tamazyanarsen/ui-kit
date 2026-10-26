@@ -9,13 +9,13 @@ import { DropdownItem } from "./dropdown"
 describe("DropdownItem: описание 0", () => {
   it("рисуется второй строкой пункта", () => {
     const { container } = render(<DropdownItem text="Пункт" description={0} />)
-    const rows = container.querySelectorAll('[data-slot="dropdown-item"] > span')
+    const rows = container.querySelectorAll('[data-slot="dropdown-item-content"] > span')
     expect(rows).toHaveLength(2)
     expect(rows[1]).toHaveTextContent("0")
   })
 
   it("пустая строка вторую строку не рисует", () => {
     const { container } = render(<DropdownItem text="Пункт" description="" />)
-    expect(container.querySelectorAll('[data-slot="dropdown-item"] > span')).toHaveLength(1)
+    expect(container.querySelectorAll('[data-slot="dropdown-item-content"] > span')).toHaveLength(1)
   })
 })

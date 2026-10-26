@@ -62,9 +62,24 @@
    при явном `divider`: экраны ставят его каждой строке подряд, и висящая
    линия возвращалась (так было на «Рекомендациях комиссии»). Исключение
    одно — одиночная строка с явным `divider="on"`: иначе контрол Show Divider
-   в Playground снова стал бы мёртвым (замечание 20 от 07.09). */
-[data-slot="item"]:last-child:not(:only-child) > [data-slot="item-divider"],
-[data-slot="item"]:only-child:not([data-divider="on"]) > [data-slot="item-divider"] {
+   в Playground снова стал бы мёртвым (замечание 20 от 07.09).
+
+   Правки UI-Kit от 25.10: «разделитель не должен зависеть от того, обёрнута
+   ли строка». По соседям строки этого не решить: строка, обёрнутая в свой
+   `div` (анимация появления), — `:only-child`, и правило выше гасило линию у
+   каждой. Границу списка теперь задаёт `ItemGroup` (`[data-slot=item-group]`):
+   ряд — его прямой ребёнок (строка или обёртка с ней), линии нет только в
+   последнем ряду. Внутри группы правила по соседям не действуют
+   (`:not([data-slot=item-group] *)`); вне группы — прежние, чтобы
+   существующие раскладки не поменялись. */
+[data-slot="item"]:last-child:not(:only-child, [data-slot="item-group"] *)
+  > [data-slot="item-divider"],
+[data-slot="item"]:only-child:not([data-divider="on"], [data-slot="item-group"] *)
+  > [data-slot="item-divider"],
+[data-slot="item-group"] > :last-child:not(:only-child) [data-slot="item-divider"],
+[data-slot="item-group"]
+  > :only-child:not([data-divider="on"], :has([data-divider="on"]))
+  [data-slot="item-divider"] {
   opacity: 0;
 }
 
@@ -72,22 +87,45 @@
    залитой зоне, — дизайн-чек от 08.10, замечание 14: «при ховере или
    онклике на один айтем в группе у соседних пропадали дивайдеры, чтобы
    косметически они не торчали около залитой зоны». Нижняя кромка залитой
-   строки — её собственная линия, верхняя — линия строки над ней (`:has(+ …)`).
+   строки — её собственная линия, верхняя — линия строки над ней (`:has(+ …)`;
+   в `ItemGroup` — линия предыдущего ряда, даже если ряды — обёртки).
 
-   Наведение — только на устройствах с настоящим курсором: на таче `:hover`
-   залипает после касания, а заливка (утилита `hover:` Tailwind v4) там уже
-   выключена тем же условием, и линии пропадали бы у незалитой строки. */
-@media (hover: hover) {
+   Наведение — только у настоящего курсора (`(hover: hover) and
+   (pointer: fine)`, как и заливка строки): на таче `:hover` залипает после
+   касания, и линии пропадали бы у незалитой строки.
+
+   Нажатие вложенного контрола (Toggle, Checkbox, «i») — не нажатие строки:
+   заливки нет, и линии остаются (Правки UI-Kit от 25.10). Кнопка-подложка
+   `press-target` — нажатие самой строки с клавиатуры, она не исключается. */
+@media (hover: hover) and (pointer: fine) {
   [data-slot="item"]:not([data-disabled]):hover > [data-slot="item-divider"],
   [data-slot="item"]:has(+ [data-slot="item"]:not([data-disabled]):hover)
-    > [data-slot="item-divider"] {
+    > [data-slot="item-divider"],
+  [data-slot="item-group"]
+    > :has(
+      + [data-slot="item"]:not([data-disabled]):hover,
+      + * [data-slot="item"]:not([data-disabled]):hover
+    )
+    [data-slot="item-divider"] {
     opacity: 0;
   }
 }
 
-[data-slot="item"]:not([data-disabled]):active > [data-slot="item-divider"],
-[data-slot="item"]:has(+ [data-slot="item"]:not([data-disabled]):active)
-  > [data-slot="item-divider"] {
+/* `:has()` внутри `:has()` запрещён (правило с ним отбрасывается целиком),
+   поэтому у соседних линий «нажат не вложенный контрол» — отдельным
+   `:not(:has(...))` на самом соседе. */
+[data-slot="item"]:active:not([data-disabled], :has(:is(button:not([data-slot="press-target"]), a, input, label, select, textarea, [role="checkbox"], [role="radio"], [role="switch"], [role="button"]):is(:active, [data-pressing])))
+  > [data-slot="item-divider"],
+[data-slot="item"]:has(+ [data-slot="item"]:active:not([data-disabled])):not(
+    :has(+ [data-slot="item"] :is(button:not([data-slot="press-target"]), a, input, label, select, textarea, [role="checkbox"], [role="radio"], [role="switch"], [role="button"]):is(:active, [data-pressing]))
+  )
+  > [data-slot="item-divider"],
+[data-slot="item-group"]
+  > :has(
+    + [data-slot="item"]:active:not([data-disabled]),
+    + * [data-slot="item"]:active:not([data-disabled])
+  ):not(:has(+ * :is(button:not([data-slot="press-target"]), a, input, label, select, textarea, [role="checkbox"], [role="radio"], [role="switch"], [role="button"]):is(:active, [data-pressing])))
+  [data-slot="item-divider"] {
   opacity: 0;
 }
 
@@ -252,6 +290,21 @@
   to {
     opacity: 0;
     transform: translateX(520px);
+  }
+}
+
+/* Уход тоста в мобильном виде — ВВЕРХ у обоих типов (Правки UI-Kit от
+   25.10, правило каркаса «Тосты в мобильном виде»): стопка прижата к
+   верхней кромке экрана, и тост уходит за неё — на свою высоту и ещё 16 (поле
+   стопки), с гашением; время и кривая — как у остальных уходов. */
+@keyframes toast-out-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(-100% - 16px));
   }
 }
 

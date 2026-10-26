@@ -3,7 +3,7 @@ import { useStableId } from "@/lib/use-stable-id"
 
 import { cn } from "@/lib/utils"
 import { flattenChildren } from "@/lib/flatten-children"
-import { pressHandlers } from "@/lib/press"
+import { PRESSABLE_CARD, pressHandlers } from "@/lib/press"
 import { PressTarget } from "@/lib/press-target"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { Divider } from "@/components/ui/divider"
@@ -106,13 +106,17 @@ const BlockWidget = React.forwardRef<HTMLDivElement, BlockWidgetProps>(function 
             // прибавляется к нему — иначе сплошной и обведённый варианты
             // разъезжаются на 2px по ширине там, где стоят рядом.
             "box-border border border-[var(--block-widget-border)]",
+        // Наведение — Grey 114, OnClick (Active) — Grey 124 (дизайн-чек от
+        // 08.10, замечание 28); кликабельным бывает только сплошной блок.
+        // Правки UI-Kit от 25.10 («Нажимаемые серые карточки»): нажатие ловит
+        // сам блок, наведение — только у настоящего курсора, при нажатии
+        // блок сжимается до 0,98 к центру (крупная серая карточка), а
+        // нажатие вложенного контрола (чекбокс, «…», «i», кнопка) блок не
+        // подсвечивает и не сжимает. Механика — `PRESSABLE_CARD`.
+        interactive && "relative cursor-pointer",
+        interactive && PRESSABLE_CARD,
         interactive &&
-          "relative cursor-pointer transition-colors hover:bg-[var(--block-widget-bg-hover)]",
-        // OnClick (Active) серого блока — Grey 124 (дизайн-чек от 08.10,
-        // замечание 28). Только у сплошного: обведённый блок не серый.
-        interactive &&
-          variant === "solid" &&
-          "active:bg-[var(--block-widget-bg-active)]",
+          "[@media(pointer:fine)]:hover:bg-[var(--block-widget-bg-hover)] [&:active:not(:has(:is(button:not([data-slot=press-target]),a,input,label,select,textarea,[role=checkbox],[role=radio],[role=switch],[role=button]):is(:active,[data-pressing])))]:bg-[var(--block-widget-bg-active)]",
         className
       )}
       ref={forwardedRef}

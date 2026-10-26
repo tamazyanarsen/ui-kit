@@ -42,7 +42,7 @@ describe("Autocomplete: длинные тексты", () => {
     )
     await userEvent.type(screen.getByRole("combobox"), "Д")
     const option = await screen.findByRole("option")
-    const spans = option.querySelectorAll(":scope > span")
+    const spans = option.querySelectorAll('[data-slot="autocomplete-item-content"] > span')
     expect(spans).toHaveLength(2)
     for (const span of spans) expect(span).toHaveClass("[overflow-wrap:anywhere]")
   })

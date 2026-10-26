@@ -24,8 +24,11 @@
                             чтобы текст не плыл от поля).
 
    Нажатие читается и по `:active`, и по атрибуту `data-pressing`: триггеры
-   всплывашек Base UI гасят `mousedown`, и `:active` у них не наступает —
-   атрибут ставит `usePressTracking` (src/lib/use-press-tracking.ts).
+   всплывашек Base UI (Select и др.) гасят `mousedown`, и `:active` у них не
+   наступает — атрибут ставит `usePressTracking` (src/lib/use-press-tracking.ts).
+   Триггеры меню с Правок UI-Kit от 25.10 раскрываются по клику, а не на
+   `mousedown` (`menuClickOpenProps`, src/lib/menu-click-open.ts), но атрибут
+   остаётся и для них — сжатие не зависит от того, кто гасит `mousedown`.
 
    Вложенное нажимаемое (крестик внутри чипса, кнопка внутри строки) жмёт
    только себя: `:active` поднимается по всем предкам, и без `:has(...)`
@@ -40,14 +43,45 @@
    конфликтует с `translate`/`rotate`-утилитами Tailwind v4 на том же узле
    (центровка `-translate-y-1/2`, поворот шеврона). */
 
-@utility press-scale {
-  transition-property: color, background-color, border-color, outline-color,
-    text-decoration-color, fill, stroke, box-shadow, opacity, scale;
-  transition-duration: var(--duration-press);
-  transition-timing-function: var(--ease-out);
+/* ── Правки UI-Kit от 25.10 ─────────────────────────────────────────────
+   Поверх правил выше:
+     • цвет (фон, текст, обводка) — 200 мс `ease` (`--duration-color`), а не
+       вместе со сжатием 140 мс ease-out: тот переход почти весь путь
+       проходил за ~50 мс и на маленьких кнопках читался скачком;
+     • нажатие — 140 мс `--ease-out`, ОТПУСКАНИЕ — 280 мс по мягкой кривой
+       (`--ease-soft`). Это пересматривает «отпускание той же кривой» из
+       замечаний 8 и 37 от 08.10. Делается переменной `--press-t`: в
+       нажатом состоянии она быстрая, и браузер берёт переход НОВОГО
+       состояния — нажатие идёт по быстрой, отпускание по мягкой;
+     • коэффициент — переменная `--press-scale` (0.97 по умолчанию; у
+       кнопок-значков 32×32 — 0.92: сжатие на 3% там полпикселя);
+     • `press-scale-content` сжимает к ЦЕНТРУ (опора по умолчанию —
+       `center`). Сжимаемое содержимое должно лежать в ОДНОЙ обёртке:
+       каждый ребёнок сжимается к своей точке, и несколько детей
+       разъезжались бы. Прежняя опора строк списка — левый край
+       (`--press-origin:left_center`, замечание 37) — снята: «нажатый
+       элемент сжимается к своему центру»;
+     • `press-clip` — нажатие кнопки с заливкой без изменения её габарита:
+       сам элемент не масштабируется (выпадающий список, открытый с
+       зажатой кнопки, цеплялся к уменьшенной рамке и отпрыгивал), фон
+       ужимается `clip-path`, а содержимое — единственная обёртка — `scale`. */
 
-  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content):is(:active, [data-pressing]))) {
-    scale: 0.97;
+@utility press-scale {
+  --press-t: var(--duration-release) var(--ease-soft);
+  transition: color var(--duration-color) var(--ease-color),
+    background-color var(--duration-color) var(--ease-color),
+    border-color var(--duration-color) var(--ease-color),
+    outline-color var(--duration-color) var(--ease-color),
+    text-decoration-color var(--duration-color) var(--ease-color),
+    fill var(--duration-color) var(--ease-color),
+    stroke var(--duration-color) var(--ease-color),
+    box-shadow var(--duration-color) var(--ease-color),
+    opacity var(--duration-color) var(--ease-color),
+    scale var(--press-t);
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content, .press-clip):is(:active, [data-pressing]))) {
+    --press-t: var(--duration-press) var(--ease-out);
+    scale: var(--press-scale, 0.97);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -58,21 +92,87 @@
 }
 
 @utility press-scale-content {
-  /* Своего перехода цвета строка не получает: подсветку строки списка
-     двигает и клавиатура, а отклик на клавиши анимироваться не должен. */
+  --press-t: var(--duration-release) var(--ease-soft);
+
   & > * {
     transform-origin: var(--press-origin, center);
-    transition: scale var(--duration-press) var(--ease-out);
+    transition: scale var(--press-t);
   }
 
-  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content):is(:active, [data-pressing]))) > * {
-    scale: 0.97;
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content, .press-clip):is(:active, [data-pressing]))) {
+    --press-t: var(--duration-press) var(--ease-out);
+  }
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content, .press-clip):is(:active, [data-pressing]))) > * {
+    scale: var(--press-scale, 0.97);
   }
 
   @media (prefers-reduced-motion: reduce) {
     &:is(:active, [data-pressing]) > * {
       scale: none;
     }
+  }
+}
+
+/* Кнопка с заливкой. В покое `clip-path` выходит за коробку на 6px, чтобы
+   не резать кольцо фокуса (обводка 2 + отступ 2); при нажатии — внутрь на
+   `--press-inset` (1,5% по умолчанию, у 32×32 — 1.5px). Скругление
+   обрезки — `--press-radius` (радиус самой кнопки). */
+@utility press-clip {
+  --press-t: var(--duration-release) var(--ease-soft);
+  clip-path: inset(-6px round calc(var(--press-radius, 0px) + 6px));
+  transition: color var(--duration-color) var(--ease-color),
+    background-color var(--duration-color) var(--ease-color),
+    border-color var(--duration-color) var(--ease-color),
+    outline-color var(--duration-color) var(--ease-color),
+    box-shadow var(--duration-color) var(--ease-color),
+    opacity var(--duration-color) var(--ease-color),
+    clip-path var(--press-t);
+
+  & > * {
+    transform-origin: center;
+    transition: scale var(--press-t);
+  }
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content, .press-clip):is(:active, [data-pressing]))) {
+    --press-t: var(--duration-press) var(--ease-out);
+    clip-path: inset(var(--press-inset, 1.5%) round var(--press-radius, 0px));
+  }
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(.press-scale, .press-scale-content, .press-clip):is(:active, [data-pressing]))) > * {
+    scale: var(--press-scale, 0.97);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:is(:active, [data-pressing]) {
+      clip-path: inset(-6px round calc(var(--press-radius, 0px) + 6px));
+    }
+    &:is(:active, [data-pressing]) > * {
+      scale: none;
+    }
+  }
+}
+
+/* Строка выпадающего списка — одно поведение у всех (Правки UI-Kit от
+   25.10): наведение (только мышь) и подсветка с клавиатуры — Grey 114,
+   нажатие — Grey 124, смена цвета 200 мс `ease`. Сжатие содержимого —
+   вместе с `press-scale-content` (содержимое строки — одна обёртка). */
+@utility menu-row {
+  transition: background-color var(--duration-color) var(--ease-color),
+    color var(--duration-color) var(--ease-color);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled, [aria-disabled="true"], [data-disabled]) {
+      background-color: var(--menu-item-bg-highlighted);
+    }
+  }
+
+  &[data-highlighted]:not([data-disabled]) {
+    background-color: var(--menu-item-bg-highlighted);
+  }
+
+  &:is(:active, [data-pressing]):not(:disabled, [aria-disabled="true"], [data-disabled], :has(:is(button, a, input, [role="checkbox"], [role="switch"]):active)) {
+    background-color: var(--menu-item-bg-pressed);
   }
 }
 

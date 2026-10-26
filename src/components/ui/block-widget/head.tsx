@@ -5,7 +5,7 @@ import { Info } from "@/icons"
 import { cn } from "@/lib/utils"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { hasNode } from "@/lib/has-node"
-import { Tooltip } from "@/components/ui/tooltip"
+import { InfoHint } from "@/components/ui/info-hint"
 
 import { useRegisterBlockWidgetTitle } from "./title-context"
 
@@ -36,14 +36,14 @@ type BlockWidgetTitleType = "large" | "small"
 
 const TITLE_CLASS: Record<BlockWidgetTitleType, string> = {
   // Large Text: H4 20/28 на десктопе, H4 Mobile 18/24 на мобиле.
-  large: "text-h4-mobile desktop:text-h4",
+  large: "text-h4-adaptive",
   // Small Text: P1 16/24 на десктопе, P1 Mobile 14/20 на мобиле.
-  small: "text-p2-medium desktop:text-p1-medium",
+  small: "text-p1-medium-adaptive",
 }
 
 const DESCRIPTION_CLASS: Record<BlockWidgetTitleType, string> = {
-  large: "text-p2-medium desktop:text-p1-medium",
-  small: "text-p3-medium desktop:text-p2-medium",
+  large: "text-p1-medium-adaptive",
+  small: "text-p2-medium-adaptive",
 }
 
 // Собственный верхний отступ блока заголовка — он выравнивает первую строку
@@ -72,6 +72,12 @@ interface BlockWidgetHeadProps
   tag?: React.ReactNode
   /** Содержимое подсказки у значка `icon / information`. Нет — нет и значка. */
   info?: React.ReactNode
+  /**
+   * Особый заголовок мобильной шторы подсказки `info` (Правки UI-Kit от
+   * 25.10: значок «i» в мобильном виде открывает штору). По умолчанию
+   * «Информация».
+   */
+  infoTitle?: React.ReactNode
   /**
    * `Block Element` — левый слот: радиокнопка, чекбокс или мини-карта.
    * Есть только у типа `Default`: у `Label` его в сете нет вовсе.
@@ -102,6 +108,7 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
   description,
   tag,
   info,
+  infoTitle,
   leading,
   leadingAlign = "start",
   status,
@@ -115,8 +122,10 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
   const titleId = useStableId()
   useRegisterBlockWidgetTitle(titleId)
 
+  // Значок «i» — `InfoHint`: тултип на десктопе, штора в мобильном виде;
+  // нажатие не открывает карточку, в которой стоит шапка.
   const infoIcon = hasNode(info) ? (
-    <Tooltip content={info}>
+    <InfoHint content={info} title={infoTitle}>
       <button
         type="button"
         aria-label="Информация"
@@ -124,18 +133,18 @@ const BlockWidgetHead = React.forwardRef<HTMLDivElement, BlockWidgetHeadProps>(f
       >
         <Info aria-hidden="true" className="size-4" />
       </button>
-    </Tooltip>
+    </InfoHint>
   ) : null
 
   const statusNode = hasNode(status) ? (
     <div
       data-slot="block-widget-status"
       className={cn(
-        "flex shrink-0 items-start gap-2 text-p2-medium text-[var(--block-widget-muted-fg)]",
+        "flex shrink-0 items-start gap-2 text-p1-medium-adaptive text-[var(--block-widget-muted-fg)]",
         // Приписка на десктопе стоит в верхнем ряду и опущена на 4, чтобы
         // сесть на строку заголовка; на мобиле она в нижнем ряду и тянется
         // по ширине, оттесняя кнопку вправо.
-        "min-w-0 flex-1 desktop:flex-none desktop:py-1 desktop:text-p1-medium"
+        "min-w-0 flex-1 desktop:flex-none desktop:py-1"
       )}
     >
       {status}

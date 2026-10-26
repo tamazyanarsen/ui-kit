@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
@@ -298,7 +299,7 @@ function Switcher({
       {hasOverflow && focusSentinel}
       {hasOverflow && (
         <MenuPrimitive.Root modal={false}>
-          <MenuPrimitive.Trigger
+          <MenuPrimitive.Trigger {...menuClickOpenProps}
             // Выключенный переключатель гасит и «Ещё»: раньше видимые
             // сегменты гасли, а многоточие оставалось живым — подсвечивалось,
             // открывало список из одних выключенных пунктов и при спрятанном

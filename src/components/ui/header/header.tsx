@@ -9,6 +9,7 @@ import { FavouritesSettings } from "@/components/ui/header-menu"
 import {
   compactHeaderProps,
   type ClientHeaderType,
+  type HeaderPinned,
   type HeaderProps,
   type HeaderType,
 } from "./header-props"
@@ -64,6 +65,7 @@ function Header(rawProps: HeaderProps) {
     messageCount = 0,
     onMessagesClick,
     notificationItems = [],
+    onNotificationsClick,
     organizations = [],
     organizationId,
     onOrganizationChange,
@@ -133,7 +135,7 @@ function Header(rawProps: HeaderProps) {
         rootProps={{
           "data-type": type,
           "data-client-type": type === "client" ? clientHeaderType : undefined,
-          "data-pinned": pinned || undefined,
+          "data-pinned": pinnedRoot || undefined,
         }}
         className={className}
         showActions={showNavRow}
@@ -145,6 +147,7 @@ function Header(rawProps: HeaderProps) {
         messageCount={messageCount}
         onMessagesClick={onMessagesClick}
         notificationItems={notificationItems}
+        onNotificationsClick={onNotificationsClick}
         organizations={organizations}
         organizationId={organizationId}
         onOrganizationChange={onOrganizationChange}
@@ -171,7 +174,7 @@ function Header(rawProps: HeaderProps) {
       data-slot="header"
       data-type={type}
       data-client-type={type === "client" ? clientHeaderType : undefined}
-      data-pinned={pinned || undefined}
+      data-pinned={pinned ? true : undefined}
       className={cn(
         // ⚠️ `display: contents`, когда липнет только нижний ряд.
         //
@@ -266,6 +269,7 @@ function Header(rawProps: HeaderProps) {
 export { Header }
 export type {
   ClientHeaderType,
+  HeaderPinned,
   HeaderDocumentMenuItem,
   HeaderNavItem,
   HeaderProps,

@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
@@ -269,7 +270,7 @@ function Tabs({
           open={menuOpen && hasOverflow}
           onOpenChange={setMenuOpen}
         >
-          <MenuPrimitive.Trigger
+          <MenuPrimitive.Trigger {...menuClickOpenProps}
             render={
               <button
                 type="button"

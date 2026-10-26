@@ -72,7 +72,7 @@ function TitleHeading({ children, className }: TitleHeadingProps) {
       <h1
         ref={ref}
         className={cn(
-          "line-clamp-2 min-w-0 flex-1 text-h2-mobile text-[var(--title-fg)] desktop:text-h2",
+          "line-clamp-2 min-w-0 flex-1 text-h2-adaptive text-[var(--title-fg)]",
           className
         )}
       >

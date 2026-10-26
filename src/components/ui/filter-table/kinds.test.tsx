@@ -1,3 +1,6 @@
+// Поповер фильтра — десктопная форма: в мобильном виде (уже 1280) вместо
+// него штора (Правки UI-Kit от 25.10), а jsdom по умолчанию — «телефон».
+import "@/test/desktop-viewport"
 import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
@@ -64,11 +67,14 @@ describe("FilterSelect — вид «Множественный выбор»", ()
 
   // "Поиск срабатывает по всем уровням вложенности списка — как выбираемым,
   // так и заголовкам групп."
+  // С Правок UI-Kit от 25.10 поиск по умолчанию — только от 8 вариантов,
+  // здесь он включён явно.
   it("filters options and keeps a group whose heading matches", async () => {
     const user = userEvent.setup()
     render(
       <FilterSelect
         label="Статус"
+        searchable
         groups={[
           { label: "Активные", options: [{ value: "a", label: "Исполнен" }] },
           { label: "Прочие", options: [{ value: "b", label: "Черновик" }] },

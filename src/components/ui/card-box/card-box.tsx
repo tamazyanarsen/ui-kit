@@ -52,6 +52,20 @@ interface CardBoxProps {
    * Применяется только в десктопной форме.
    */
   maxHeight?: number | string
+  /**
+   * Низ области прокрутки у `type="small"`.
+   *
+   *   • `divider` (по умолчанию) — прежний низ макета: непрозрачная полоса
+   *     в нижний отступ блока и разделитель над ней, пока не домотано;
+   *   • `fade` — белый фейд высотой 96 поверх содержимого (Правки UI-Kit от
+   *     25.10, «Блок с внутренней прокруткой — фейд у нижней кромки»):
+   *     прежний Tint 32 ложился на нижнее поле списка и почти не читался.
+   *     Указатель не ловит; докручено до конца или всё помещается — гаснет
+   *     (`opacity` 200 мс `ease`), прокрутили обратно — появляется. Признак
+   *     конца пересчитывается при прокрутке и при смене размеров области и
+   *     содержимого.
+   */
+  bottom?: "divider" | "fade"
   /** Классы на прокручиваемую область (`small`) или на слот контента. */
   contentClassName?: string
   children?: React.ReactNode
@@ -60,7 +74,7 @@ interface CardBoxProps {
 
 // Общий корень: белая заливка + радиус 16px во всех типах и формах.
 const ROOT = "w-full rounded-[16px] bg-[var(--card-box-bg)]"
-const TITLE = "text-h3-mobile [overflow-wrap:anywhere] text-[var(--card-box-title-fg)] desktop:text-h3"
+const TITLE = "text-h3-adaptive [overflow-wrap:anywhere] text-[var(--card-box-title-fg)]"
 
 function CardBox({
   type = "large",
@@ -68,6 +82,7 @@ function CardBox({
   showTitle,
   showScrollbar,
   maxHeight = CARD_BOX_MAX_HEIGHT,
+  bottom = "divider",
   contentClassName,
   children,
   className,
@@ -119,6 +134,7 @@ function CardBox({
       title={withTitle ? title : undefined}
       showScrollbar={showScrollbar}
       maxHeight={maxHeight}
+      bottom={bottom}
       contentClassName={contentClassName}
       className={className}
     >
@@ -131,12 +147,19 @@ function CardBoxSmall({
   title,
   showScrollbar,
   maxHeight,
+  bottom,
   contentClassName,
   children,
   className,
 }: Pick<
   CardBoxProps,
-  "title" | "showScrollbar" | "maxHeight" | "contentClassName" | "children" | "className"
+  | "title"
+  | "showScrollbar"
+  | "maxHeight"
+  | "bottom"
+  | "contentClassName"
+  | "children"
+  | "className"
 >) {
   const { ref, scrolledFromTop, scrolledToEnd, update } =
     useScrollEdges<HTMLDivElement>()
@@ -190,15 +213,24 @@ function CardBoxSmall({
 
       {/* Внешняя обёртка отодвигает саму полосу прокрутки на 8px от края
           карточки (в макете скроллбар стоит `right: 8px`), а внутренние
-          отступы догоняют контент до 32/16px от края. Вертикальный отступ
-          полосы (8px сверху и снизу) нативным скроллбаром не выражается —
-          он всегда во всю высоту области прокрутки. */}
+          отступы догоняют контент до 32/16px от края.
+
+          Правки UI-Kit от 25.10 («Scrollbar — родные полосы браузера вместо
+          полос кита»): полоса наложенная и места не занимает, поэтому поле
+          справа считается без её ширины — 8 (обёртка) + 24 = 32, как слева;
+          раньше при переполнении выходило 36. Дорожка — 8 от верха области
+          и 32 от низа (`--ovs-start` / `--ovs-end`). Полоса блока видна при
+          наведении и во время прокрутки, у края блок передаёт колесо
+          странице (`visibility="hover"`, «Scrollbar — видимость полосы и
+          передача прокрутки странице»). */}
       <div className="relative z-[1] flex min-h-0 flex-1 flex-col desktop:pr-2">
         <Scrollbar
           ref={ref}
           onScroll={update}
+          visibility="hover"
           className={cn(
             "min-h-0 flex-1 px-4 pb-4 desktop:pr-6 desktop:pb-8 desktop:pl-8",
+            "desktop:[--ovs-start:8px] desktop:[--ovs-end:32px]",
             // Верхний отступ обычно даёт шапка (`p-4 desktop:p-8`). Без неё
             // контент упирался в верхний край карточки при 16/32 слева и снизу.
             title == null && "pt-4 desktop:pt-8",
@@ -209,16 +241,32 @@ function CardBoxSmall({
         </Scrollbar>
       </div>
 
-      {/* «Bottom» — непрозрачная полоса высотой в нижний
-          отступ блока: контент уходит под неё, а разделитель над ней
-          показывает, что прокрутка ещё не домотана. На мобайле её нет. */}
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 z-[3] hidden h-8 border-t border-transparent bg-[var(--card-box-bg)] desktop:block",
-          bottomDivider && "border-t-[var(--card-box-divider)]"
-        )}
-      />
+      {bottom === "fade" ? (
+        // Фейд 96 поверх содержимого: белый блока → прозрачный. Гаснет в
+        // конце прокрутки и когда всё помещается (`scrolledToEnd` считает
+        // и то и другое, `useScrollEdges` следит за размерами области и
+        // содержимого). Не зависит от `showScrollbar`: тот про разделители.
+        <div
+          aria-hidden="true"
+          data-slot="card-box-fade"
+          data-end={scrolledToEnd || undefined}
+          className={cn(
+            "pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-24 rounded-b-[inherit] bg-linear-to-t from-(--card-box-bg) to-transparent transition-opacity duration-200 ease-[ease]",
+            scrolledToEnd && "opacity-0"
+          )}
+        />
+      ) : (
+        // «Bottom» — непрозрачная полоса высотой в нижний отступ блока:
+        // контент уходит под неё, а разделитель над ней показывает, что
+        // прокрутка ещё не домотана. На мобайле её нет.
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-x-0 bottom-0 z-[3] hidden h-8 border-t border-transparent bg-[var(--card-box-bg)] desktop:block",
+            bottomDivider && "border-t-[var(--card-box-divider)]"
+          )}
+        />
+      )}
     </section>
   )
 }

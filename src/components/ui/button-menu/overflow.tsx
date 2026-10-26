@@ -3,10 +3,13 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Ellipsis } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 import { POPUP_COLLISION } from "@/lib/popup-position"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 
 import { Button } from "@/components/ui/button"
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
+import { MenuSheet, MenuSheetItem, useMenuSheet } from "@/components/ui/menu-sheet"
 import {
   SELECTION_BUTTON_PLACEMENT,
   type SelectionButtonDirection,
@@ -20,6 +23,15 @@ import { NAV_POPUP_WIDTH } from "./popup-width"
 // вместо Select, потому что пункты вызывают действия, а не задают значение,
 // — но рисующий настоящие общие компоненты Dropdown и DropdownItem (через
 // пропс `render` в Base UI), а не просто занимающий их className.
+//
+// Правки UI-Kit от 25.10, «Выпадающие списки — нет мобильного варианта
+// „штора“»: в мобильном виде (уже 1280) «…»/«Ещё» открывает не поповер, а
+// штору `MenuSheet` (заголовок — `sheetTitle`, по умолчанию «Ещё», как
+// подпись триггера); пункты `ButtonMenuOverflowItem` внутри шторы сами
+// становятся её строками — нажатие выполняет действие и закрывает штору.
+// Так это работает и в `ButtonMenuRow`, и в `ButtonMenuBlack`: обе панели
+// рисуют этот же компонент. На десктопе — прежний поповер, раскрывается по
+// клику (`menuClickOpenProps`).
 interface ButtonMenuOverflowProps
   extends Omit<MenuPrimitive.Root.Props, "children"> {
   children?: React.ReactNode
@@ -51,6 +63,8 @@ interface ButtonMenuOverflowProps
   /** Свойство `Show Dropdown`: выключенное значение оставляет один триггер
    *  без выпадающего списка. */
   showDropdown?: boolean
+  /** Заголовок мобильной шторы — подпись триггера; по умолчанию «Ещё». */
+  sheetTitle?: React.ReactNode
 }
 
 function ButtonMenuOverflow({
@@ -60,8 +74,10 @@ function ButtonMenuOverflow({
   direction = "down-right",
   size,
   showDropdown = true,
+  sheetTitle = "Ещё",
   ...props
 }: ButtonMenuOverflowProps) {
+  const isDesktop = useIsDesktop()
   const resolvedSize = size ?? (tone === "dark" ? "sm" : "lg")
   const trigger = (
     <Button
@@ -75,11 +91,32 @@ function ButtonMenuOverflow({
 
   if (!showDropdown) return trigger
 
+  if (!isDesktop) {
+    // Открытость шторы — та же, что у меню: `open`/`defaultOpen`/
+    // `onOpenChange` потребителя доходят и сюда.
+    return (
+      <MenuSheet
+        title={sheetTitle}
+        trigger={trigger}
+        open={props.open}
+        defaultOpen={props.defaultOpen}
+        onOpenChange={
+          props.onOpenChange
+            ? (open) =>
+                (props.onOpenChange as (open: boolean, details?: unknown) => void)(open)
+            : undefined
+        }
+      >
+        {children}
+      </MenuSheet>
+    )
+  }
+
   const { side, align } = SELECTION_BUTTON_PLACEMENT[direction]
 
   return (
     <MenuPrimitive.Root modal={modal} {...props}>
-      <MenuPrimitive.Trigger render={trigger} />
+      <MenuPrimitive.Trigger {...menuClickOpenProps} render={trigger} />
       <MenuPrimitive.Portal>
         <MenuPrimitive.Positioner
           side={side}
@@ -112,10 +149,37 @@ interface ButtonMenuOverflowItemProps
 
 // forwardRef: тип пропсов унаследован от `Menu.Item` и обещает `ref`, а на
 // React 18 обычная функция его молча теряет.
+//
+// Внутри мобильной шторы (`MenuSheet`) пункт — строка шторы, а не
+// `Menu.Item`: примитиву меню там нет корня. Действие (`onClick`) и
+// `disabled` те же; штора закрывается после нажатия.
 const ButtonMenuOverflowItem = React.forwardRef<
   HTMLDivElement,
   ButtonMenuOverflowItemProps
 >(function ButtonMenuOverflowItem({ className, text, description, ...props }, ref) {
+  const sheet = useMenuSheet()
+  if (sheet) {
+    const { onClick, disabled, id, style } = props
+    return (
+      <MenuSheetItem
+        ref={ref}
+        id={id}
+        style={typeof style === "function" ? undefined : style}
+        text={text}
+        description={description}
+        disabled={disabled}
+        className={className}
+        aria-current={props["aria-current"]}
+        data-slot="button-menu-overflow-item"
+        onSelect={
+          onClick
+            ? (event) =>
+                (onClick as unknown as (event: React.SyntheticEvent) => void)(event)
+            : undefined
+        }
+      />
+    )
+  }
   return (
     <MenuPrimitive.Item
       ref={ref}

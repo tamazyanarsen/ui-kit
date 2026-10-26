@@ -35,8 +35,17 @@ import { hasContent } from "@/lib/has-content"
 // `press-scale-content`: на зажатие сжимается содержимое строки, а заливка
 // стоит от края до края — иначе строка отлипла бы от границ панели
 // (дизайн-чек 08.10, замечание 37; см. styles/motion.css).
+//
+// Правки UI-Kit от 25.10: содержимое сжимается к ЦЕНТРУ строки одним целым
+// (`MenuItemContent` кладёт всё в одну обёртку), прежняя опора на левый
+// край снята. Наведение, подсветку и нажатие строки списка даёт общий класс
+// `menu-row` — его передаёт потребитель первым аргументом
+// `menuItemRowClass("menu-row")`; в базу он не зашит, потому что на этой же
+// строке стоят списки с перетаскиванием, где наведение гасится на время
+// переноса. Курсор (рука, у выключенной — not-allowed) задаёт
+// styles/rules-lists.css по `menu-row`.
 const MENU_ITEM_ROW_CLASS =
-  "relative flex w-full cursor-default items-start gap-4 p-4 text-left outline-hidden select-none press-scale-content [--press-origin:left_center]"
+  "relative flex w-full items-start gap-4 p-4 text-left outline-hidden select-none press-scale-content"
 
 /**
  * Свойство `Type` компонент-сета — уровень вложенности строки.
@@ -80,26 +89,39 @@ function MenuItemContent({
   description,
   trailing,
 }: MenuItemContentProps) {
+  // Одна обёртка на всё содержимое (Правки UI-Kit от 25.10): строка
+  // сжимается на зажатие к своему центру одним целым — по отдельности
+  // значок, текст и замыкающий элемент сжимались бы каждый к своей точке и
+  // разъезжались. Раскладку обёртка наследует от строки (`align-items` и
+  // `gap`), поэтому потребитель, перекрывший их у строки
+  // (`items-center gap-2`), получает ту же раскладку, что и раньше.
+  //
+  // Текст переносится, а не обрезается многоточием: строка растёт по
+  // высоте (Правки UI-Kit от 25.10). `anywhere`, а не `break-words`: только
+  // он уменьшает min-content, и неразрывное слово не раздвигает список.
   return (
-    <>
+    <span
+      data-slot="menu-item-content"
+      className="flex min-w-0 flex-1 [align-items:inherit] [gap:inherit]"
+    >
       {leading}
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
+      <span className="flex min-w-0 flex-1 flex-col gap-1 [overflow-wrap:anywhere]">
         {hasContent(label) && (
-          <span className="truncate text-p2-medium text-[var(--menu-item-description-fg)]">
+          <span className="text-p2-medium text-[var(--menu-item-description-fg)]">
             {label}
           </span>
         )}
-        <span className="truncate text-p1-medium text-[var(--menu-item-fg)]">
+        <span className="text-p1-medium text-[var(--menu-item-fg)]">
           {children}
         </span>
         {hasContent(description) && (
-          <span className="truncate text-p3-medium text-[var(--menu-item-description-fg)]">
+          <span className="text-p3-medium text-[var(--menu-item-description-fg)]">
             {description}
           </span>
         )}
       </span>
       {trailing}
-    </>
+    </span>
   )
 }
 

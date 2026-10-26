@@ -4,19 +4,21 @@ import * as React from "react"
  * Помечает нажатый элемент атрибутом `data-pressing`, пока палец/кнопка мыши
  * не отпущены.
  *
- * Зачем, если есть `:active`: триггеры Base UI (меню, Select) открывают
+ * Зачем, если есть `:active`: триггеры Base UI (Select и др.) открывают
  * всплывашку на `mousedown` и гасят его действие по умолчанию — в Chrome
  * вместе с ним пропадает и `:active`. Кнопка «Ещё», кнопки-триггеры Dropdown
  * и Selection Button на зажатие не отвечали вовсе (дизайн-чек 08.10,
- * замечание 8). Атрибут ставится по `pointerdown` в фазе ПЕРЕХВАТА на
+ * замечание 8). Триггеры меню по Правкам UI-Kit от 25.10 открываются уже по
+ * клику (`menuClickOpenProps`, src/lib/menu-click-open.ts), но сжатие при
+ * зажатии по-прежнему держит этот атрибут — одинаково для всех триггеров. Атрибут ставится по `pointerdown` в фазе ПЕРЕХВАТА на
  * документе — раньше любого обработчика компонента, — так что ему
  * `preventDefault` не помеха.
  *
  * Слушатели одни на документ и ставятся один раз; метятся только узлы с утилитами
- * `press-scale`/`press-scale-content` (см. styles/motion.css — они читают
+ * `press-scale`/`press-scale-content`/`press-clip`/`menu-row` (см. styles/motion.css — они читают
  * атрибут наравне с `:active`).
  */
-const PRESS_SELECTOR = ".press-scale, .press-scale-content"
+const PRESS_SELECTOR = ".press-scale, .press-scale-content, .press-clip, .menu-row"
 
 let installed = false
 let pressed: Element | null = null

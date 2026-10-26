@@ -195,12 +195,12 @@ function FavouritesSettings({
             появляется серый разделитель (верхняя грань `ModalBody`). Свой
             `desktop:pt-12` тут больше не нужен — полоса его и заменяет. */}
         <ModalBody ref={bodyRef} className="flex flex-col gap-8">
-          <ModalTitle className="text-h2-mobile desktop:text-h2">
+          <ModalTitle className="text-h2-adaptive">
             Настройка избранного
           </ModalTitle>
 
           <section className="flex flex-col gap-4">
-            <h3 className="text-h4-mobile text-[var(--modal-title-fg)] desktop:text-h3">
+            <h3 className="text-h3-adaptive text-[var(--modal-title-fg)]">
               Добавлено
             </h3>
             {added.length === 0 ? (
@@ -232,7 +232,7 @@ function FavouritesSettings({
             // так заданы интервалы двух секций в «Настройке быстрого доступа» (у
             // мобильной формы своих чисел в макете нет).
             <section className="flex flex-col gap-4 desktop:gap-6">
-              <h3 className="text-h4-mobile text-[var(--modal-title-fg)] desktop:text-h3">
+              <h3 className="text-h3-adaptive text-[var(--modal-title-fg)]">
                 Остальные разделы
               </h3>
               <div className="flex flex-col">

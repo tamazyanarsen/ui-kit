@@ -3,7 +3,9 @@ import * as React from "react"
 import { ComboboxFooter } from "@/components/ui/combobox"
 import { Input } from "@/components/ui/input"
 
-import { FilterShell, type FilterType } from "./shell"
+import { FilterShell, filterApplyLabel, type FilterType } from "./shell"
+import { FilterSheetButtons } from "./sheet-buttons"
+import { useFilterBarField } from "./filter-bar-context"
 
 // FilterTableSelect — «Фильтр таблицы» с выпадающим списком: элемент
 // вызова ведёт себя как у Select, а во всплывашке одно поле значения и
@@ -132,6 +134,24 @@ function FilterTableSelect({
   const shownValue = activeValue?.trim() || null
   const hasValue = shownValue !== null
 
+  // Свёрнутый `FilterBar` (мобильный вид, Правки UI-Kit от 25.10): свободный
+  // ввод — полем `Input` в шторе «Фильтры».
+  const collapsed = useFilterBarField<string>({
+    label,
+    active: hasValue,
+    value: shownValue ?? "",
+    empty: () => "",
+    commit: (next) => commitValue(next.trim() ? next.trim() : null),
+    render: ({ draft: barDraft, setDraft: setBarDraft }) => (
+      <Input
+        label={label}
+        value={barDraft}
+        onChange={(event) => setBarDraft(event.target.value)}
+      />
+    ),
+  })
+  if (collapsed) return null
+
   return (
     // Отключение закрывает окно по-настоящему — это делает `FilterShell`.
     <FilterShell
@@ -147,6 +167,22 @@ function FilterTableSelect({
       open={open}
       onOpenChange={setOpen}
       className={className}
+      sheetBody={
+        <div className="px-4 py-3">
+          <Input
+            placeholder={placeholder}
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+          />
+        </div>
+      }
+      sheetFooter={
+        <FilterSheetButtons
+          applyLabel={filterApplyLabel(selectedCount)}
+          onApply={handleApply}
+          onReset={handleReset}
+        />
+      }
     >
       {/* Исправление второго прохода: внешний отступ равен 16px
           (обёртка «Input area» в макете), а не 12px, — и сама коробка поля

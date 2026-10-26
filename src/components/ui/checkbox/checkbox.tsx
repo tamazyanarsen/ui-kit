@@ -167,7 +167,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(function Chec
         {hasNode(label) && (
           <span
             className={cn(
-              "text-p2-medium text-[var(--checkbox-label-fg)] desktop:text-p1-medium",
+              "text-p1-medium-adaptive text-[var(--checkbox-label-fg)]",
               disabled && "text-[var(--checkbox-label-fg-disabled)]"
             )}
           >

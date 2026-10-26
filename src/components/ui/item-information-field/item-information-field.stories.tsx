@@ -106,6 +106,20 @@ const meta = {
       if: { arg: "showInformation", truthy: true },
       ...CONTENT,
     },
+    // Правки UI-Kit от 25.10: в мобильном виде «i» открывает штору; это её
+    // особые заголовки (пусто — «Информация»).
+    labelInfoTitle: {
+      name: "Заголовок шторы labelInfo (мобайл)",
+      control: "text",
+      if: { arg: "showInformation", truthy: true },
+      ...CONTENT,
+    },
+    valueInfoTitle: {
+      name: "Заголовок шторы valueInfo (мобайл)",
+      control: "text",
+      if: { arg: "showInformation", truthy: true },
+      ...CONTENT,
+    },
     // Что попадёт в буфер обмена; без значения копируется `value`.
     copyValue: {
       control: "text",
@@ -127,6 +141,8 @@ const meta = {
     subText: "Подтверждён",
     labelInfo: "Идентификационный номер налогоплательщика",
     valueInfo: "Значение получено из ЕГРЮЛ",
+    labelInfoTitle: "",
+    valueInfoTitle: "Источник",
     copyValue: "7710140123",
   },
   decorators: [
@@ -150,6 +166,8 @@ export const Playground: Story = {
         subText={showSubText ? args.subText : undefined}
         labelInfo={showInformation ? args.labelInfo : undefined}
         valueInfo={showInformation ? args.valueInfo : undefined}
+        labelInfoTitle={args.labelInfoTitle || undefined}
+        valueInfoTitle={args.valueInfoTitle || undefined}
       />
     </ViewportScope>
   ),

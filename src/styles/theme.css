@@ -2,6 +2,11 @@
    типографическая шкала, радиусы, тени, цвета shadcn-слоя. */
 
 @theme inline {
+    /* Переход по умолчанию у `transition-*` утилит — 200 мс `ease`
+       (Правки UI-Kit от 25.10: «наведение везде — фейдом»). Без этого
+       Tailwind берёт 150 мс и свою кривую. */
+    --default-transition-duration: 200ms;
+    --default-transition-timing-function: ease;
     --font-heading: var(--font-sans);
     --font-sans: 'Object Sans', sans-serif;
     /* Каноническая типографская шкала (страница «Typography» в макете) —
@@ -112,6 +117,60 @@
     --text-p4-medium: 10px;
     --text-p4-medium--line-height: 12px;
     --text-p4-medium--font-weight: 500;
+    /* Мобильные параграфы («Mobile. Параграф/… Mobile», Object Sans | Web
+       LK). Правки UI-Kit от 25.10: раньше в коде были мобильные ступени
+       только у заголовков, и компоненты обходились «ступенью вниз»
+       (`text-p2-medium desktop:text-p1-medium`). Теперь у каждого
+       параграфного стиля своя мобильная пара с тем же начертанием:
+       P1 → 14/20, P2 → 12/16, P3 → 12/16 (P2 Heavy Mobile 12/16 — с листа
+       «01. Typography Object Sans», в таблице правила каркаса его нет) (P3 на мобиле не уменьшается),
+       P4 остаётся 10/12 и пары не имеет. Голые `text-pN-mobile` — как
+       голые `text-pN` выше: только размер и интерлиньяж.
+
+       `p1_1-medium-mobile` — «P1.1 Medium Mobile» 16/24: мобильный стиль,
+       который НЕ уменьшается (текст, который на телефоне должен остаться
+       16, например ввод). Пара по умолчанию для P1 — P1 Mobile 14/20,
+       P1.1 — только осознанно.
+
+       Ссылки («Ссылка/P1–P3 Link (Mobile)» 14/20, 12/16, 12/16) — как и на
+       десктопе, не отдельная шкала: мобильная ступень параграфа плюс
+       `text-link`, например `text-p1-medium-mobile text-link`.
+
+       Адаптивные утилиты `text-*-adaptive` (мобильная пара, от 1280 —
+       десктопный стиль по варианту `desktop:`) — в rules-content.css. */
+    --text-p1-mobile: 14px;
+    --text-p1-mobile--line-height: 20px;
+    --text-p2-mobile: 12px;
+    --text-p2-mobile--line-height: 16px;
+    --text-p3-mobile: 12px;
+    --text-p3-mobile--line-height: 16px;
+    --text-p1-regular-mobile: 14px;
+    --text-p1-regular-mobile--line-height: 20px;
+    --text-p1-regular-mobile--font-weight: 400;
+    --text-p1-medium-mobile: 14px;
+    --text-p1-medium-mobile--line-height: 20px;
+    --text-p1-medium-mobile--font-weight: 500;
+    --text-p1-heavy-mobile: 14px;
+    --text-p1-heavy-mobile--line-height: 20px;
+    --text-p1-heavy-mobile--font-weight: 800;
+    --text-p1_1-medium-mobile: 16px;
+    --text-p1_1-medium-mobile--line-height: 24px;
+    --text-p1_1-medium-mobile--font-weight: 500;
+    --text-p2-regular-mobile: 12px;
+    --text-p2-regular-mobile--line-height: 16px;
+    --text-p2-regular-mobile--font-weight: 400;
+    --text-p2-medium-mobile: 12px;
+    --text-p2-medium-mobile--line-height: 16px;
+    --text-p2-medium-mobile--font-weight: 500;
+    --text-p2-heavy-mobile: 12px;
+    --text-p2-heavy-mobile--line-height: 16px;
+    --text-p2-heavy-mobile--font-weight: 800;
+    --text-p3-regular-mobile: 12px;
+    --text-p3-regular-mobile--line-height: 16px;
+    --text-p3-regular-mobile--font-weight: 400;
+    --text-p3-medium-mobile: 12px;
+    --text-p3-medium-mobile--line-height: 16px;
+    --text-p3-medium-mobile--font-weight: 500;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

@@ -19,3 +19,5 @@ export {
 } from "./favourites"
 export { MobileHeaderMenu } from "./mobile-menu"
 export type { MobileHeaderMenuProps } from "./mobile-menu"
+export { FavouritesHelpSheet } from "./favourites-help-sheet"
+export type { FavouritesHelpSheetProps } from "./favourites-help-sheet"

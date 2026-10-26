@@ -9,18 +9,18 @@ import { Informer } from "./informer"
 describe("Informer с числом 0", () => {
   it("описание 0 рисуется внутри оформленной строки", () => {
     render(<Informer title="Заголовок" description={0} />)
-    expect(screen.getByText("0").className).toContain("text-p3-medium")
+    expect(screen.getByText("0").className).toContain("text-p2-medium-adaptive")
   })
 
   it("дата 0 рисуется внутри оформленной строки", () => {
     render(<Informer title="Заголовок" date={0} />)
-    expect(screen.getByText("0").className).toContain("text-p3-medium")
+    expect(screen.getByText("0").className).toContain("text-p2-medium-adaptive")
   })
 
   it("пустая строка и false по-прежнему ничего не рисуют", () => {
     const { container } = render(
       <Informer title="Заголовок" description="" date={false} />
     )
-    expect(container.querySelectorAll(".text-p3-medium")).toHaveLength(0)
+    expect(container.querySelectorAll(".text-p2-medium-adaptive")).toHaveLength(0)
   })
 })

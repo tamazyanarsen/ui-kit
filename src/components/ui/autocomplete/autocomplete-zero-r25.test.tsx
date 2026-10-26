@@ -30,7 +30,7 @@ describe("AutocompleteItem: подзаголовок 0", () => {
     )
     await userEvent.type(screen.getByRole("combobox"), "Д")
     const option = await screen.findByRole("option")
-    const rows = option.querySelectorAll(":scope > span")
+    const rows = option.querySelectorAll('[data-slot="autocomplete-item-content"] > span')
     expect(rows).toHaveLength(2)
     expect(rows[1]).toHaveTextContent("0")
   })

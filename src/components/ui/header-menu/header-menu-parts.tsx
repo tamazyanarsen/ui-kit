@@ -2,6 +2,7 @@ import type * as React from "react"
 import { Star } from "@/icons"
 
 import { cn } from "@/lib/utils"
+import { CarouselDots } from "@/components/ui/carousel-dots"
 
 // Части раскрытого меню: ссылка, карточка группы и переключатель баннеров.
 // Вынесены из `header-menu.tsx` — там остаётся сама панель с раскладкой по
@@ -12,6 +13,12 @@ interface HeaderMenuLink {
   value: string
   label: React.ReactNode
   onClick?: () => void
+  /**
+   * `false` — раздел нельзя добавить в избранное: звезды у ссылки нет, и в
+   * «Настройке избранного» среди добавляемых её тоже нет (Правки UI-Kit от
+   * 25.10). По умолчанию можно.
+   */
+  favouritable?: boolean
 }
 
 interface HeaderMenuGroup {
@@ -28,6 +35,7 @@ function PageLink({
   showStar,
   active,
   onFavouriteToggle,
+  onStarHint,
   mobile = false,
 }: {
   link: HeaderMenuLink
@@ -36,6 +44,12 @@ function PageLink({
   active: boolean
   onFavouriteToggle?: (value: string) => void
   /**
+   * Звезда не переключает избранное, а открывает подсказку «Настройте
+   * избранное с компьютера» (мобильное меню, Правки UI-Kit от 25.10): на
+   * телефоне избранное не настраивается, звезда только показывает состояние.
+   */
+  onStarHint?: () => void
+  /**
    * Строка мобильного меню (`Меню / Избранное`, 70467:11707): подпись
    * P1 Medium Mobile — 14/20 вместо 16/24, а звезда видна всегда. Наведения
    * на телефоне нет, и звезда, которая проявляется по нему, там была бы
@@ -43,6 +57,7 @@ function PageLink({
    */
   mobile?: boolean
 }) {
+  const star = showStar && link.favouritable !== false
   return (
     // `group/link`, а не hover на самой звезде: в макете незаполненная
     // звезда прозрачна (opacity 0) и проявляется по наведению на всю
@@ -56,24 +71,50 @@ function PageLink({
         onClick={link.onClick}
         className={cn(
           "min-w-0 flex-1 cursor-pointer pr-2 text-left [overflow-wrap:anywhere] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]",
-          mobile ? "text-p2-medium" : "text-p1-medium",
+          // На телефоне нажатие сжимает только подпись — до 0,97 к центру
+          // САМОГО ТЕКСТА, а не кнопки во всю строку (Правки UI-Kit от
+          // 25.10): подпись — строчный блок по ширине текста.
+          mobile ? "press-scale-content text-p2-medium" : "text-p1-medium",
           active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
         )}
       >
-        {link.label}
+        {mobile ? (
+          <span data-slot="header-menu-link-label" className="inline-block max-w-full">
+            {link.label}
+          </span>
+        ) : (
+          link.label
+        )}
       </button>
-      {showStar && (
+      {star && (
         <button
           type="button"
-          aria-pressed={favourite}
-          aria-label={favourite ? "Убрать из избранного" : "Добавить в избранное"}
-          onClick={() => onFavouriteToggle?.(link.value)}
+          {...(onStarHint
+            ? {
+                // Звезда-подсказка: состояние — в подписи, нажатие —
+                // диалог, а не переключатель.
+                "aria-haspopup": "dialog" as const,
+                "aria-label": favourite
+                  ? "В избранном. Как настроить избранное"
+                  : "Не в избранном. Как настроить избранное",
+                onClick: onStarHint,
+              }
+            : {
+                "aria-pressed": favourite,
+                "aria-label": favourite
+                  ? "Убрать из избранного"
+                  : "Добавить в избранное",
+                onClick: () => onFavouriteToggle?.(link.value),
+              })}
           className={cn(
             // Цвет звезды в макете один и тот же в обоих состояниях —
             // отличается только заливка контура (см. «Настройку
             // избранного», где добавленные разделы помечены такой же серой
             // звездой, а не брендовой).
-            "flex cursor-pointer flex-col items-start pl-1 text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring transition-opacity",
+            "flex cursor-pointer flex-col items-start pl-1 text-[var(--header-menu-star-fg)] outline-none focus-visible:focus-ring",
+            // На телефоне звезда при нажатии сжимается сама, до 0,92, как
+            // маленькие значки (Правки UI-Kit от 25.10).
+            mobile ? "press-scale [--press-scale:0.92]" : "transition-opacity",
             // У мобильной строки высотой 20 звезда стоит с полями 2
             // (`Star Container py-[2px]` макета); десктопные 3 — как были.
             mobile ? "py-0.5" : "py-[3px]",
@@ -133,7 +174,10 @@ function PageGroup({
   )
 }
 
-/** «Bank / Dots» — переключатель баннеров: точки 8px с шагом 16. */
+/** «Bank / Dots» — переключатель баннеров. Правки UI-Kit от 25.10: общие
+ *  точки карусели кита (CarouselDots) — те же круги 8 с шагом 16, плюс
+ *  наведение Grey 284 и зона нажатия 24. `mt-1` с зазором карусели 8 даёт
+ *  12 от низа баннера до кругов, как у карусели баннеров. */
 function BannerDots({
   count,
   active,
@@ -144,27 +188,14 @@ function BannerDots({
   onSelect: (index: number) => void
 }) {
   return (
-    <div className="flex w-full items-center justify-center">
-      {Array.from({ length: count }, (_, index) => (
-        <button
-          key={index}
-          type="button"
-          aria-label={`Баннер ${index + 1}`}
-          aria-current={index === active}
-          onClick={() => onSelect(index)}
-          className="flex cursor-pointer items-center p-1 outline-none focus-visible:focus-ring"
-        >
-          <span
-            className={cn(
-              "size-2 rounded-full transition-colors",
-              index === active
-                ? "bg-[var(--header-fg)]"
-                : "bg-[var(--header-menu-star-fg)]"
-            )}
-          />
-        </button>
-      ))}
-    </div>
+    <CarouselDots
+      count={count}
+      active={active}
+      onSelect={onSelect}
+      aria-label="Баннеры"
+      getDotLabel={(index) => `Баннер ${index + 1}`}
+      className="mt-1 w-full"
+    />
   )
 }
 

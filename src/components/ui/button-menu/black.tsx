@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useComposedRefs } from "@/lib/compose-refs"
 import { flattenChildren } from "@/lib/flatten-children"
 import { useIsDesktop } from "@/lib/use-is-desktop"
 import { useViewportInsetBottom } from "@/lib/use-viewport-inset-bottom"
@@ -17,11 +18,9 @@ import {
   BlackInfoMobile,
   type ButtonMenuBlackInfoItem,
 } from "./black-parts"
-import {
-  BAR_PLACEMENT_CLASS,
-  barPlacementStyle,
-  type ButtonMenuPlacement,
-} from "./placement"
+import { BAR_PLACEMENT_CLASS, barPlacementStyle } from "./placement"
+import { useBlackPresence } from "./black-motion"
+import type { ButtonMenuBlackProps } from "./black-props"
 
 // ButtonMenuBlack — «ELK / button menu (black)» (v1.0.0). Макет описывает
 // это как самостоятельный компонент, а не как вариант белого ButtonMenu:
@@ -55,76 +54,14 @@ import {
 // следует, что закрепление работает относительно прокручиваемого
 // контейнера: панель прижимается к низу контентной области, а не окна.
 
-interface ButtonMenuBlackProps extends React.ComponentProps<"div"> {
-  /** Полоса «Information (ELK)» — пары «подпись/значение», описывающие
-   * текущее выделение. Опустите её целиком, чтобы получить форму
-   * `showBar = false`. */
-  info?: (ButtonMenuBlackInfoItem | null | false)[]
-  /** Закрывает панель. В макете это голый `icon / close cross` 24px, а не
-   * инстанс `ELK / button`, — то есть это ПЛОСКИЙ крестик кита
-   * (`CloseCross`), а не кнопка на плашке. */
-  onClose?: () => void
-  /**
-   * Прижимать панель к низу контейнера. По умолчанию включено — она
-   * подменяет собой закреплённую белую панель, пока выделены строки
-   * таблицы, и стоит там же.
-   */
-  pinned?: boolean
-  /**
-   * «Отлипшая» полоса — дизайн-чек от 08.09, замечание 9. В продукте такого
-   * состояния быть не должно, пропс заведён на будущее: полоса становится
-   * островом в потоке и получает нижние скругления, такие же как верхние.
-   */
-  detached?: boolean
-  /**
-   * Размещение на сетке: во всю полосу (12 колонок), слева или справа.
-   * Дизайн-чек от 13.09, замечание 19 — см. `./placement`.
-   */
-  placement?: ButtonMenuPlacement
-  /** Сколько колонок занимает панель при размещении слева/справа, 1…12. */
-  span?: number
-
-  /**
-   * `Show Button` — кнопка «Выбрать на всех страницах (N)» над полосой.
-   *
-   * Умолчание снимается с мастера Figma: возможность, спрятанная по
-   * умолчанию, просто не находится. Экран, которому она не нужна, гасит её.
-   */
-  showSelectAllPages?: boolean
-  /**
-   * N в подписи — сколько строк под текущим отбором СО ВСЕХ страниц.
-   *
-   * Считать это число обязан табличный блок, а не экран: отбор живёт в нём
-   * (поиск по всем ячейкам, чипы по колонкам, фильтр вкладок, дерево с
-   * детьми), и вторая копия расчёта на странице разошлась бы молча — в
-   * кнопке одно число, выбралось бы другое. Готовую функцию отдаёт
-   * `selectableRowKeys` из ui/table.
-   *
-   * Не передано — скобок нет вовсе, а не «(0)».
-   */
-  selectAllPagesCount?: number
-  /**
-   * Сколько строк выбрано сейчас. Нужно ровно для одного правила: кнопка
-   * ПРОПАДАЕТ, когда выбрано всё, и возвращается, как только снята хотя бы
-   * одна галка. Правило живёт в компоненте, а не на экране — оба числа у
-   * полосы уже есть, а оставленное экрану оно повторялось бы на каждом
-   * реестре.
-   */
-  selectedCount?: number
-  /**
-   * Обработчик кнопки. Без него кнопка не рисуется даже при включённом
-   * `showSelectAllPages`: она называла бы событие, которого не происходит.
-   */
-  onSelectAllPages?: () => void
-  /**
-   * Подпись на месте действий, когда общих действий у выбранных строк нет
-   * (`Number Of Buttons=None`). По умолчанию — текст мастера «Нет общих
-   * действий для выбранных элементов».
-   */
-  emptyActionsText?: React.ReactNode
+interface BlackViewProps extends Omit<ButtonMenuBlackProps, "open"> {
+  /** Класс движения внешнего узла (выезд/уход, см. `./black-motion`). */
+  motionClass?: string
+  /** Узел самой панели — для перемера занятого низа после выезда. */
+  panelRef?: React.Ref<HTMLDivElement>
 }
 
-const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(function ButtonMenuBlack({
+const ButtonMenuBlackView = React.forwardRef<HTMLDivElement, BlackViewProps>(function ButtonMenuBlackView({
   className,
   info,
   onClose,
@@ -137,6 +74,9 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   selectedCount,
   onSelectAllPages,
   emptyActionsText = BLACK_EMPTY_ACTIONS_TEXT,
+  maxVisible = 3,
+  motionClass,
+  panelRef,
   children,
   style,
   ...props
@@ -195,7 +135,8 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   // ref висит на ПАНЕЛИ, а не на внешнем узле. Сам узел панели стабилен (см.
   // возврат ниже), но хук всё равно отдаёт callback-ref и перемеряет любой
   // новый узел — например, после перемонтирования панели снаружи.
-  const ref = useViewportInsetBottom(pinned && !detached, forwardedRef)
+  const ownRef = useComposedRefs<HTMLDivElement>(forwardedRef, panelRef)
+  const ref = useViewportInsetBottom(pinned && !detached, ownRef)
 
   // Кнопка пропадает, когда выбрано всё, и возвращается, как только снята
   // хотя бы одна галка.
@@ -243,10 +184,14 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
     actions = <BlackEmptyActions mobile={!isDesktop}>{emptyActionsText}</BlackEmptyActions>
   } else if (onlyButtons && isDesktop) {
     actions = (
+      // Не больше `maxVisible` команд разом (по умолчанию 3) — Правки UI-Kit
+      // от 25.10, «не больше трёх команд, остальные в „…“»: при широкой ленте
+      // ряд раскладывал четыре и больше. Места меньше — видно меньше.
       <ButtonMenuRow
         size="sm"
         tone="dark"
         minVisible={0}
+        maxVisible={maxVisible}
         data-slot="button-menu-black-actions"
         className="min-w-8 items-start"
       >
@@ -303,6 +248,7 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
         // принимает (см. ниже).
         withSelectAll && "pointer-events-auto",
         pinnedHere && !withSelectAll && PINNED_CLASS,
+        !withSelectAll && motionClass,
         className
       )}
       style={
@@ -371,6 +317,7 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
               isDesktop ? "gap-8" : "gap-4",
               outerPlacementClass,
               pinnedHere && PINNED_CLASS,
+              motionClass,
             ]
           : "contents"
       )}
@@ -397,5 +344,34 @@ const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(f
   )
 })
 
+/**
+ * Обёртка с появлением и уходом (`./black-motion`): держит панель в разметке
+ * на время ухода с последним показанным составом. Узел внешнего блока и
+ * панели при этом не пересоздаётся — пропсы подменяются, а не компонент.
+ */
+const ButtonMenuBlack = React.forwardRef<HTMLDivElement, ButtonMenuBlackProps>(function ButtonMenuBlack(
+  { open, ...props },
+  ref
+) {
+  const panelNode = React.useRef<HTMLDivElement | null>(null)
+  const presence = useBlackPresence(open, props, () => {
+    // Выезд доиграл — занятый низ вьюпорта перемеряется: на первом кадре
+    // панель была сдвинута вниз на свою высоту и «не перекрывала» ничего.
+    // Хук публикации слушает `scroll` в фазе захвата на window, поэтому
+    // событие на самой панели доходит до него, никого больше не задевая.
+    panelNode.current?.dispatchEvent(new Event("scroll"))
+  })
+  if (!presence.present) return null
+  return (
+    <ButtonMenuBlackView
+      {...presence.props}
+      ref={ref}
+      panelRef={panelNode}
+      motionClass={presence.motionClass}
+    />
+  )
+})
+
 export { ButtonMenuBlack }
-export type { ButtonMenuBlackProps, ButtonMenuBlackInfoItem }
+export type { ButtonMenuBlackProps } from "./black-props"
+export type { ButtonMenuBlackInfoItem }

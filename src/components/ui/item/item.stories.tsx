@@ -19,6 +19,7 @@ import {
   type ItemProps,
   type RightElementType,
 } from "./item";
+import { ItemGroup } from "./item-group";
 
 /* Контролы — по таблице «Свойства компонента» мастера `ELK / item` v1.0.1
    (Release 69.36, документация на канвасе Item, дизайн-чек от 08.10,
@@ -85,7 +86,9 @@ const meta = {
   parameters: { layout: "padded" },
   argTypes: {
     viewport: sizeArgType,
-    state: stateArgTypeOf(["default", "hover", "disabled"]),
+    // Active — Правки UI-Kit от 25.10: нажатие Grey 124, на десктопе строка
+    // сжимается до 0,98, в мобильном виде — только содержимое до 0,97.
+    state: stateArgTypeOf(["default", "hover", "active", "disabled"]),
     category: optionsArgType<Category>(
       "Category",
       { default: "Default", sub: "Sub" },
@@ -140,6 +143,12 @@ const meta = {
     value: { control: "text", table: { category: "Контент" } },
     comment: { control: "text", table: { category: "Контент" } },
     informationText: { control: "text", table: { category: "Контент" } },
+    informationTitle: {
+      name: "Заголовок шторы «i» (мобайл)",
+      description: "Правки UI-Kit от 25.10: в мобильном виде «i» открывает штору; пусто — «Информация»",
+      control: "text",
+      table: { category: "Контент" },
+    },
     // Значения осей State / Category / Show Thumbnail — своих контролов нет.
     disabled: { table: { disable: true } },
     subCategory: { table: { disable: true } },
@@ -164,6 +173,7 @@ const meta = {
     value: "Перевод между счетами",
     comment: "Comment",
     informationText: "Дополнительная информация об операции",
+    informationTitle: "",
   },
 } satisfies Meta<PlaygroundArgs>;
 
@@ -256,6 +266,9 @@ export const Matrix: Story = {
         rows={[
           { label: "Default", props: {} },
           { label: "Hover", props: {}, pseudo: "hover" },
+          // У Toggle, Checkbox и Information нажатие строки эмулируется так
+          // же: правило «нажат вложенный контрол» аддон не включает.
+          { label: "Active", props: {}, pseudo: "active" },
           { label: "С миниатюрой", props: { thumbnail: true } },
           { label: "Sub category", props: { subCategory: true } },
           { label: "Disabled", props: { disabled: true } },
@@ -300,32 +313,31 @@ export const Matrix: Story = {
       {/* Механика группы (замечания 14 и 46 дизайн-чека от 08.10): у
           последней строки линии нет даже при явном `divider`, а при
           наведении/нажатии гаснут линии, прилегающие к залитой зоне. Живая —
-          наведите курсор на строку. */}
+          наведите курсор на строку. Правки UI-Kit от 25.10: список —
+          `ItemGroup`, каждая строка обёрнута в свой `div`, и линии на месте. */}
       <div className="p-8">
         <StorySection
           title="Группа"
-          description="Наведите или нажмите на строку: прилегающие к заливке разделители гаснут. У последней строки разделителя нет."
+          description="ItemGroup, каждая строка в своём div. Наведите или нажмите на строку: прилегающие к заливке разделители гаснут. У последней строки разделителя нет. В мобильном виде группа во всю ширину блока (bleed)."
         >
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {(["desktop", "mobile"] as Viewport[]).map((viewport) => (
               <ViewportScope key={viewport} viewport={viewport}>
-                <div className="flex flex-col rounded-2xl bg-white p-2">
-                  {[
-                    "Перевод между счетами",
-                    "Оплата по реквизитам",
-                    "Платёж по СБП",
-                    "Автоплатёж",
-                  ].map((value, index) => (
-                    <Item
-                      key={value}
-                      value={value}
-                      comment="Comment"
-                      thumbnail={index % 2 === 0 ? true : undefined}
-                      rightElement="navigation"
-                      divider
-                      onClick={() => {}}
-                    />
-                  ))}
+                <div className="flex flex-col rounded-2xl bg-white p-4 desktop:p-2">
+                  <ItemGroup bleed>
+                    {GROUP_ROWS.map((value, index) => (
+                      <div key={value}>
+                        <Item
+                          value={value}
+                          comment="Comment"
+                          thumbnail={index % 2 === 0 ? true : undefined}
+                          rightElement={index === 1 ? "toggle" : "navigation"}
+                          divider
+                          onClick={() => {}}
+                        />
+                      </div>
+                    ))}
+                  </ItemGroup>
                 </div>
               </ViewportScope>
             ))}
@@ -333,5 +345,69 @@ export const Matrix: Story = {
         </StorySection>
       </div>
     </div>
+  ),
+};
+
+const GROUP_ROWS = [
+  "Перевод между счетами",
+  "Оплата по реквизитам",
+  "Платёж по СБП",
+  "Автоплатёж",
+];
+
+type GroupArgs = {
+  viewport?: Viewport;
+  bleed?: boolean;
+  wrapped?: boolean;
+};
+
+/* ItemGroup — список строк в блоке (Правки UI-Kit от 25.10). Группа решает,
+   какая строка последняя, — и когда строки обёрнуты каждая в свой `div`
+   (контрол «Строки в обёртках»). `bleed` — правило мобильного каркаса:
+   в мобильном виде список во всю ширину блока, без внешних полей, с обрезкой
+   по скруглению блока. */
+export const Group: StoryObj<GroupArgs> = {
+  name: "ItemGroup",
+  parameters: {
+    layout: "padded",
+    // Контролы строки из meta здесь не к месту — только свои.
+    controls: { include: ["viewport", "bleed", "wrapped"] },
+  },
+  argTypes: {
+    viewport: sizeArgType,
+    bleed: {
+      name: "bleed",
+      control: "boolean",
+      description:
+        "В мобильном виде выйти на боковые и нижнее поля блока (16): строки от края до края, обрезка по скруглению",
+    },
+    wrapped: {
+      name: "Строки в обёртках",
+      control: "boolean",
+      description:
+        "Каждая строка в своём div (как при анимации появления) — разделители не пропадают",
+    },
+  },
+  args: { viewport: "mobile", bleed: true, wrapped: true },
+  render: ({ viewport, bleed, wrapped }) => (
+    <ViewportScope viewport={viewport}>
+      <div className="max-w-[400px] rounded-2xl bg-white p-4 desktop:max-w-[640px] desktop:p-2">
+        <ItemGroup bleed={bleed}>
+          {GROUP_ROWS.map((value, index) => {
+            const row = (
+              <Item
+                key={value}
+                value={value}
+                comment="Comment"
+                thumbnail
+                rightElement={index === 1 ? "toggle" : "navigation"}
+                onClick={() => {}}
+              />
+            );
+            return wrapped ? <div key={value}>{row}</div> : row;
+          })}
+        </ItemGroup>
+      </div>
+    </ViewportScope>
   ),
 };

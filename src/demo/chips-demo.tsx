@@ -1,3 +1,5 @@
+import * as React from "react"
+
 import { Chips } from "@/components/ui/chips"
 import {
   AccordionItem,
@@ -6,6 +8,32 @@ import {
 } from "@/demo/scaffold"
 
 import { RowLabel } from "./shared"
+
+const PRESSABLE = ["Все", "Активные", "Архив"] as const
+
+// Правки UI-Kit от 25.10: нажимаемый режим чипса — кнопка с aria-pressed,
+// Tab / Enter / Space. Выбор хранит потребитель.
+function PressableChipsRow() {
+  const [selected, setSelected] = React.useState<string[]>(["Все"])
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      {PRESSABLE.map((label) => (
+        <Chips
+          key={label}
+          selected={selected.includes(label)}
+          onPressedChange={(on) =>
+            setSelected((prev) => (on ? [...prev, label] : prev.filter((v) => v !== label)))
+          }
+        >
+          {label}
+        </Chips>
+      ))}
+      <Chips disabled onPressedChange={() => {}}>
+        Выключена
+      </Chips>
+    </div>
+  )
+}
 
 function ChipsDemo() {
   return (
@@ -38,6 +66,11 @@ function ChipsDemo() {
               Chips
             </Chips>
           </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-2">
+          <RowLabel>Нажимаемые (onPressedChange) — фильтр-чипсы с aria-pressed</RowLabel>
+          <PressableChipsRow />
         </div>
 
         <div className="mt-8 flex flex-col gap-2">

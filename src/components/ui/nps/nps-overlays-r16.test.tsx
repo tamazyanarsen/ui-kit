@@ -1,3 +1,6 @@
+// Поповер — десктопная форма: в мобильном виде (уже 1280) список — штора
+// (Правки UI-Kit от 25.10).
+import "@/test/desktop-viewport"
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"

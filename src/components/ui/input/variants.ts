@@ -5,6 +5,9 @@ import { cva } from "class-variance-authority"
 // мобильный, через `desktop:`). Размера M нет.
 type InputSize = "sm" | "lg"
 
+/** Вид поля: обычный или поиск в ряду фильтров (Правки UI-Kit от 25.10). */
+type InputVariant = "default" | "filter-search"
+
 const inputBoxVariants = cva(
   // ⚠️ Заблокированное поле помечается `aria-disabled`, а НЕ нативным
   // `disabled` — см. комментарий у `fieldProps` в input.tsx. Поэтому все
@@ -20,6 +23,20 @@ const inputBoxVariants = cva(
         sm: "h-8 gap-2 rounded-[8px] px-4",
         lg: "h-12 gap-2 rounded-[16px] px-4 desktop:h-14",
       },
+      // Правки UI-Kit от 25.10, «Поле поиска в ряду фильтров»: отдельный вид
+      // поля для ряда фильтров над таблицей или реестром. Заливка и
+      // скругление — как у соседних фильтров (`--filter-grey-bg`, 16), обводки
+      // в покое нет, при наведении заливка НЕ меняется (высветление поля ввода
+      // выглядит странно), в фокусе — та же обводка 1px, что у обычного поля.
+      // Ошибка и выключенное поле — как у Input: красная рамка идёт из
+      // `invalid` ниже (ключ объявлен позже и перебивает прозрачную), серая
+      // заливка выключенного — из базовых `has-[[aria-disabled]]`.
+      // Базовый вид (`default`) не меняется ни в чём.
+      variant: {
+        default: "",
+        "filter-search":
+          "rounded-[16px] border-transparent bg-[var(--filter-grey-bg)]",
+      },
       invalid: {
         true: "border-[var(--input-border-error)]",
         false: "",
@@ -31,10 +48,18 @@ const inputBoxVariants = cva(
     },
     compoundVariants: [
       {
+        variant: "default",
         invalid: false,
         interactive: true,
         class:
           "hover:border-[var(--input-border-hover)] has-[input:focus]:border-[var(--input-border-hover)]",
+      },
+      {
+        // Поиск в ряду фильтров: наведение ничего не меняет, фокус — рамка.
+        variant: "filter-search",
+        invalid: false,
+        interactive: true,
+        class: "has-[input:focus]:border-[var(--input-border-hover)]",
       },
       {
         invalid: true,
@@ -45,6 +70,7 @@ const inputBoxVariants = cva(
     ],
     defaultVariants: {
       size: "lg",
+      variant: "default",
       invalid: false,
       interactive: true,
     },
@@ -65,8 +91,8 @@ const inputBoxVariants = cva(
  * суммы. Разъедутся они — поле начнёт прокручиваться и обрежет начало числа.
  */
 const FIELD_TEXT_SIZE: Record<InputSize, string> = {
-  sm: "text-p3-medium desktop:text-p2-medium",
-  lg: "text-p2-medium desktop:text-p1-medium",
+  sm: "text-p2-medium-adaptive",
+  lg: "text-p1-medium-adaptive",
 }
 
 const inputFieldVariants = cva(
@@ -103,10 +129,19 @@ const inputFieldVariants = cva(
         true: "placeholder:text-transparent [&:not(:placeholder-shown)]:pt-[18px] focus:pt-[18px] desktop:[&:not(:placeholder-shown)]:pt-4 desktop:focus:pt-4",
         false: "",
       },
+      // Поиск в ряду фильтров: подсказка Grey 517, введённый текст Grey 1514
+      // (Правки UI-Kit от 25.10). Токен подсказки — с запасным значением,
+      // пока его нет в tokens-forms.css.
+      variant: {
+        default: "",
+        "filter-search":
+          "text-[var(--input-fg)] placeholder:text-[var(--filter-search-placeholder-fg,var(--grey-517))]",
+      },
     },
     defaultVariants: {
       size: "lg",
       floating: false,
+      variant: "default",
     },
   }
 )
@@ -127,7 +162,7 @@ const floatingLabelVariants =
   // своём внутреннем пространстве 54 — подпись на 7 от внутреннего края
   // (8 от внешнего, как y=8 в макете). Мобильный блок 36 в макете стоит на
   // y=7 от внешнего края (7 сверху, 5 снизу), то есть 6 от внутреннего.
-  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p2-medium text-[var(--input-label-fg)] transition-all desktop:text-p1-medium peer-focus:top-[6px] peer-focus:translate-y-0 desktop:peer-focus:top-[7px] peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[6px] peer-[&:not(:placeholder-shown)]:translate-y-0 desktop:peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[[aria-disabled=true]]/input:text-[var(--input-label-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 -translate-y-1/2 truncate text-p1-medium-adaptive text-[var(--input-label-fg)] transition-all peer-focus:top-[6px] peer-focus:translate-y-0 desktop:peer-focus:top-[7px] peer-focus:text-p3-medium desktop:peer-focus:text-p3-medium peer-[&:not(:placeholder-shown)]:top-[6px] peer-[&:not(:placeholder-shown)]:translate-y-0 desktop:peer-[&:not(:placeholder-shown)]:top-[7px] peer-[&:not(:placeholder-shown)]:text-p3-medium desktop:peer-[&:not(:placeholder-shown)]:text-p3-medium group-has-[[aria-disabled=true]]/input:text-[var(--input-label-fg-disabled)]"
 
 // Замыкающие глифы (крестик очистки, глаз, замок, крутилка) — 16px на
 // любом размере: `icon / close cross` в макете это `size-[16px]` и в ряду
@@ -155,4 +190,4 @@ export {
   inputBoxVariants,
   inputFieldVariants,
 }
-export type { InputSize }
+export type { InputSize, InputVariant }

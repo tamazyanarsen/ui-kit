@@ -1,8 +1,6 @@
 import * as React from "react"
-import { Information } from "@/icons"
-
 import { cn } from "@/lib/utils"
-import { Hint } from "@/components/ui/tooltip"
+import { CaptionInfo } from "@/components/ui/input/caption-info"
 
 interface InputCaptionProps {
   id?: string
@@ -23,7 +21,8 @@ interface InputCaptionProps {
  *
  * Значок в обоих вариантах серый (#999, как подпись Comment): в Error Input &
  * Icon текст красный, а значок остаётся серым — цвет значка не следует за
- * текстом. Как и у Textarea, значок с `hint` раскрывает подсказку по клику.
+ * текстом. Как и у Textarea, значок с `hint` раскрывает подсказку по клику
+ * (на мобиле — штора, см. `CaptionInfo`).
  */
 function InputCaption({ id, children, error, showIcon, hint }: InputCaptionProps) {
   return (
@@ -46,23 +45,7 @@ function InputCaption({ id, children, error, showIcon, hint }: InputCaptionProps
       >
         {children}
       </p>
-      {showIcon &&
-        (hint ? (
-          <Hint content={hint} direction="down-center">
-            <button
-              type="button"
-              aria-label="Дополнительная информация"
-              className="shrink-0 text-[var(--input-caption-fg)] outline-none focus-visible:focus-ring"
-            >
-              <Information aria-hidden="true" className="size-4" />
-            </button>
-          </Hint>
-        ) : (
-          <Information
-            aria-hidden="true"
-            className="size-4 shrink-0 text-[var(--input-caption-fg)]"
-          />
-        ))}
+      {showIcon && <CaptionInfo hint={hint} />}
     </div>
   )
 }

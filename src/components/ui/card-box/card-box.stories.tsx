@@ -83,6 +83,14 @@ const meta = {
       description:
         "Разделители «контент не поместился» у типа small. По умолчанию (пусто) считаются сами по положению скролла",
     },
+    // Правки UI-Kit от 25.10: фейд 96 у нижней кромки вместо полосы.
+    bottom: {
+      name: "Низ (small)",
+      control: "inline-radio",
+      options: ["divider", "fade"],
+      description:
+        "divider — прежняя полоса с разделителем; fade — белый фейд 96 поверх содержимого, гаснет в конце прокрутки и когда всё помещается",
+    },
     title: { control: "text", table: { category: "Контент" } },
     maxHeight: {
       control: { type: "number" },
@@ -96,6 +104,7 @@ const meta = {
     viewport: "desktop" as Viewport,
     type: "large",
     showTitle: true,
+    bottom: "divider",
     title: "Title",
     maxHeight: 280,
   },
@@ -148,6 +157,15 @@ export const Matrix: Story = {
             // showScrollbar здесь НЕ форсится: строка прокручивается
             // по-настоящему, а сторону разделителя решает положение
             // прокрутки (дизайн-чек от 07.09, замечание 6).
+            children: <SampleFields count={8} />,
+          },
+        },
+        {
+          label: "Small, фейд\n(скролл)",
+          props: {
+            type: "small",
+            maxHeight: 260,
+            bottom: "fade",
             children: <SampleFields count={8} />,
           },
         },

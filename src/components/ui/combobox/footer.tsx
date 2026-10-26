@@ -1,22 +1,30 @@
 import type * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { DropdownFooterButton } from "@/components/ui/dropdown/dropdown-footer"
 import { Divider } from "@/components/ui/divider"
 
 // «Сбросить» слева и «Применить» или «Выбрать N» справа, разделённые
 // вертикальной линией, вровень с нижними углами всплывающего окна.
 //
-// Оба действия в макете — инстансы `ELK / button` (56px высотой, 32px по
-// бокам, P1 Medium 16/24), та же конструкция подвала, что и у карточки
-// Calendar, поэтому здесь рисуется настоящий Button. Важнее всего это для
-// выключенного состояния: макет гасит кнопку целиком (заливка grey-114
-// #EFEFEF, подпись grey-166 #C8C8CB), а это ровно пара
-// --btn-muted-bg и --btn-muted-fg у Button. Самодельный вариант, который
-// это заменило, приглушал только *подпись*, оставляя заливку белой.
+// Кнопки — общая кнопка подвала выпадающих списков `DropdownFooterButton`
+// (Правки UI-Kit от 25.10, «Button внутри выпадающих списков — своё
+// поведение»): заливка наведения и нажатия на всю ячейку без скругления,
+// цвета строк списка (Grey 114 / Grey 124), при нажатии сжимается только
+// подпись до 0.97. Прежде здесь стоял `Button` secondary-white L: его
+// скруглённая заливка ужималась при нажатии, и кнопка выглядела запертой в
+// маленьком белом контейнере. Выключенное состояние у общей кнопки то же,
+// что было у Button: заливка grey-114 и подпись grey-166
+// (--btn-muted-bg / --btn-muted-fg).
 //
-// `rounded-none` — потому что подвал стоит вровень внутри собственной
-// скруглённой оболочки всплывающего окна с overflow-hidden (см. Dropdown).
+// Размер — из «ELK / button» L, которым кнопки были в макете: 48 и P2 Medium
+// в мобильной форме, 56 и P1 Medium на десктопе (вариант `desktop:`, а не
+// `size` мобильного Dropdown — комбобокс переключает форму по окну).
+// Боковое поле подписи — 8px (сверка r19: короткое «Сбросить» в поле 200px
+// иначе обрезалось, хотя раньше помещалось, заходя в поле кнопки).
+
+const FOOTER_BUTTON =
+  "min-h-12 px-2 py-0 text-p1-medium-adaptive whitespace-nowrap desktop:min-h-14"
 
 export function ComboboxFooter({
   className,
@@ -53,37 +61,28 @@ export function ComboboxFooter({
         className
       )}
     >
-      <Button
-        variant="secondary-white"
-        size="lg"
+      <DropdownFooterButton
         onClick={onReset}
         disabled={resetDisabled}
-        className="min-w-0 flex-1 rounded-none whitespace-nowrap"
+        className={FOOTER_BUTTON}
       >
-        {/* Своим узлом: текст прямо во флексе кнопки — анонимный элемент,
+        {/* Своим узлом: текст прямо во флексе — анонимный элемент,
             многоточия он не получает, и в узком поле подпись срезалась
-            краем без него (аудит 18). `-mx-4` / `desktop:-mx-6` отдают
-            подписи боковые поля кнопки (24/32px → 8px): без этого короткое
-            «Сбросить» в поле 200px обрезалось, хотя раньше помещалось,
-            заходя в поле. Отступы симметричны — подпись стоит по центру.
-            `overflow-clip` с запасом 4px, а не `truncate`: тот срезает
-            сглаживание последней буквы. */}
-        <span className="-mx-4 min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px] desktop:-mx-6">{resetLabel}</span>
-      </Button>
+            краем без него (аудит 18). `overflow-clip` с запасом 4px, а не
+            `truncate`: тот срезает сглаживание последней буквы. */}
+        <span className="min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px]">{resetLabel}</span>
+      </DropdownFooterButton>
       {/* Макет рисует разделение собственным элементом «Devider» толщиной
-          1px, а не рамкой на одной из кнопок; да и border-r здесь всё равно
-          проиграл бы собственному базовому `border-transparent` у Button.
-          Этот элемент — общий компонент «ELK / divider». */}
+          1px, а не рамкой на одной из кнопок. Этот элемент — общий
+          компонент «ELK / divider». */}
       <Divider orientation="vertical" />
-      <Button
-        variant="secondary-white"
-        size="lg"
+      <DropdownFooterButton
         onClick={onApply}
         disabled={applyDisabled}
-        className="min-w-0 flex-1 rounded-none whitespace-nowrap"
+        className={FOOTER_BUTTON}
       >
-        <span className="-mx-4 min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px] desktop:-mx-6">{applyLabel}</span>
-      </Button>
+        <span className="min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px]">{applyLabel}</span>
+      </DropdownFooterButton>
     </div>
   )
 }

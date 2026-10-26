@@ -59,11 +59,18 @@ function ToastCard({
       // уезжал за край экрана.
       // Появление общее у всех, уход — по судьбе сообщения. Числа и кадры —
       // в styles/base.css, длительности в tokens-motion.css.
+      //
+      // Мобильный вид (Правки UI-Kit от 25.10, правило каркаса «Тосты в
+      // мобильном виде»): стопка у верхней кромки экрана, поэтому тост любого
+      // типа уходит ВВЕРХ — на свою высоту и ещё 16 (`toast-out-up`), а не
+      // вбок: вбок он уезжал бы за край узкого экрана посреди стопки.
       className={cn(
         "w-full shrink-0 rounded-[16px] p-4 shadow-universal desktop:min-w-[320px] desktop:p-6",
         "motion-safe:animate-[toast-in_var(--duration-overlay)_var(--ease-out)_both]",
         toast.closing &&
-          (behavior === "collected"
+          (!isDesktop
+            ? "motion-safe:animate-[toast-out-up_var(--duration-overlay)_var(--ease-out)_forwards]"
+            : behavior === "collected"
             ? "motion-safe:animate-[toast-out-collected_var(--duration-overlay)_var(--ease-out)_forwards]"
             : "motion-safe:animate-[toast-out-transient_var(--duration-overlay)_var(--ease-out)_forwards]"),
         // При выключенном движении карточка всё равно должна пропадать, иначе
@@ -100,12 +107,12 @@ function ToastCard({
               делает Informer: заголовок 14/20 и описание 12/16 против
               16/24 и 14/20 при Size=Desktop (мастер `ELK / toast message`
               v2.0.0). */}
-          <span className="text-p2-medium break-words text-[var(--toast-title-fg)] desktop:text-p1-medium">
+          <span className="text-p1-medium-adaptive break-words text-[var(--toast-title-fg)]">
             {toast.title}
           </span>
 
           {hasNode(toast.description) && (
-            <p className="text-p3-medium break-words text-[var(--toast-description-fg)] desktop:text-p2-medium">
+            <p className="text-p2-medium-adaptive break-words text-[var(--toast-description-fg)]">
               {toast.description}
             </p>
           )}
@@ -160,19 +167,25 @@ function ToastCard({
 
 // Toaster — закреплённая область показа. По макету: на десктопе сверху
 // справа, 32px от шапки, 40px от правого края, зазор 24px между тостами в
-// стопке; на мобильном — сверху, отступ от краёв 16px.
+// стопке; на мобильном — сверху, отступ от краёв 16px, зазор 16.
 //
-// «От ШАПКИ», а не от края вьюпорта — и это разные числа, как только шапка
-// закреплена (`Header pinned`). Отсчёт от нуля клал тост ПОВЕРХ шапки,
-// закрывая переключатель организации и значки уведомлений; поймано на
-// песочном экране «Реестр заявок на аккредитив», где тост нарисован ниже
-// шапки, а рисовался на ней.
+// Десктоп — «от ШАПКИ», а не от края вьюпорта. Правки UI-Kit от 25.10,
+// «Toaster — стопка тостов наезжает на шапку»: прежде отсчёт шёл от
+// `--viewport-inset-top`, куда шапка кладёт только ЗАКРЕПЛЁННЫЙ ряд, и в
+// начале страницы тост ложился на верхнюю полосу шапки. Теперь отсчёт — от
+// нижней кромки корня шапки (`--header-bottom`, её публикует Header на
+// `<html>`, всегда, а не только у закреплённого ряда) плюс 32. Без шапки на
+// странице — прежний `--viewport-inset-top`, без него — 0.
 //
-// Занятую высоту публикует сама шапка (`useViewportInsetTop`), и это тот же
-// механизм, которым уже пользуются липкая шапка таблицы сверху и полоса
-// прокрутки снизу (`--viewport-inset-bottom`). Отступ спецификации (16
-// мобильный / 32 десктопный) прибавляется к нему, а не заменяет: без
-// закреплённой шапки переменная равна нулю и поведение прежнее.
+// Мобильный вид (правило каркаса «Тосты в мобильном виде»): стопка прижата
+// к верху ВЬЮПОРТА с полем 16 и лежит поверх шапки, закреплённых элементов и
+// штор (слой тостов выше модалок); высота — не больше вьюпорта минус 32.
+//
+// Зазор стопки — переменная `--toast-gap` (16 мобильный, 24 десктоп): из
+// неё же берут отрицательный отступ схлопывающейся строки и высоту
+// «мостика» для наведения (см. `ToastRow`). Прежде у строки было зашито −24
+// под десктопный зазор, и при зазоре 16 следующий тост подлетал на 8 выше и
+// одним кадром падал на место.
 function Toaster() {
   const { toasts, close, pause, resume } = useToast()
   const pauseHandlers = useToasterPause(toasts, pause, resume)
@@ -224,7 +237,8 @@ function Toaster() {
       // свойством разные поля по сторонам задаёт только `clip-path`:
       // 560 px запаса справа под полёт, 24 по низу и слева под тень, а сверху
       // отрицательное поле ровно в тот отступ, с которым колонка стоит от
-      // шапки (16 / 32). Из-за него «информирующий» тост, уходящий вверх на
+      // шапки на десктопе (32; в мобильном виде — 16 от верха экрана, то есть
+      // подрезка по кромке экрана). Из-за него «информирующий» тост, уходящий вверх на
       // 200 px, виден до самой кромки шапки и там пропадает — то есть уходит
       // ПОД ШАПКУ, как и написано в документации, хотя лежит слоем выше неё
       // (`--z-toast` 70 против `z-40` у шапки).
@@ -236,7 +250,7 @@ function Toaster() {
       // широком экране тост отрывается от содержимого страницы. Выражение то
       // же, которым меряет себя полоса: половина того, что осталось от
       // ширины за вычетом контентной полосы.
-      className="pointer-events-none fixed inset-x-4 top-[calc(var(--viewport-inset-top,0px)+1rem)] z-(--z-toast) flex max-h-[calc(100vh-var(--viewport-inset-top,0px)-2rem)] flex-col justify-end gap-6 [clip-path:inset(-1rem_-560px_-1.5rem_-1.5rem)] desktop:inset-x-auto desktop:top-[calc(var(--viewport-inset-top,0px)+2rem)] desktop:right-[calc((100%-var(--grid-content-width))/2)] desktop:max-h-[calc(100vh-var(--viewport-inset-top,0px)-4rem)] desktop:w-[480px] desktop:[clip-path:inset(-2rem_-560px_-1.5rem_-1.5rem)]"
+      className="pointer-events-none fixed inset-x-4 top-4 z-(--z-toast) flex max-h-[calc(100dvh-2rem)] flex-col justify-end gap-(--toast-gap) [--toast-gap:1rem] [clip-path:inset(-1rem_-560px_-1.5rem_-1.5rem)] desktop:inset-x-auto desktop:top-[calc(var(--header-bottom,var(--viewport-inset-top,0px))+2rem)] desktop:right-[calc((100%-var(--grid-content-width))/2)] desktop:max-h-[calc(100vh-var(--header-bottom,var(--viewport-inset-top,0px))-4rem)] desktop:w-[480px] desktop:[--toast-gap:1.5rem] desktop:[clip-path:inset(-2rem_-560px_-1.5rem_-1.5rem)]"
     >
       {/* Порядок прямой: первый в списке — самый старый, он же выше всех. */}
       {toasts.map((toast) => (
@@ -266,8 +280,10 @@ function Toaster() {
  * 520 px вправо. Видимое переполнение схлопывающейся строки не мешает:
  * карточка в этот момент уже улетает и гаснет.
  *
- * `-mb-6` съедает зазор колонки (24) — без него на месте ушедшей карточки
- * оставался бы пустой интервал.
+ * Отрицательный нижний отступ съедает зазор колонки — без него на месте
+ * ушедшей карточки оставался бы пустой интервал. Он берётся из той же
+ * переменной `--toast-gap`, что и зазор (16 мобильный, 24 десктоп), иначе
+ * следующий тост вставал не ровно и в конце падал на место рывком.
  *
  * Псевдоэлемент `after` закрывает этот самый зазор для НАВЕДЕНИЯ: без него
  * курсор, идущий между карточками, ронял бы паузу и время жизни дёргалось бы.
@@ -285,8 +301,8 @@ function ToastRow({
       data-closing={closing || undefined}
       className={cn(
         "pointer-events-auto relative grid grid-cols-[minmax(0,1fr)] transition-all duration-300 ease-out",
-        "after:absolute after:inset-x-0 after:top-full after:h-6 after:content-['']",
-        closing ? "-mb-6 grid-rows-[0fr]" : "grid-rows-[1fr]"
+        "after:absolute after:inset-x-0 after:top-full after:h-(--toast-gap) after:content-['']",
+        closing ? "-mb-(--toast-gap) grid-rows-[0fr]" : "grid-rows-[1fr]"
       )}
     >
       <div className="min-h-0">{children}</div>

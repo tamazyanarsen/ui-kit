@@ -11,7 +11,11 @@ import {
   HEADER_ICON_TILE_ACCENT,
   HEADER_ICON_TILE_LOGOUT,
 } from "./menu-popup"
-import { NotificationMenu, type NotificationMenuItem } from "./notification-menu"
+import {
+  HEADER_ICON_PRESS,
+  NotificationMenu,
+  type NotificationMenuItem,
+} from "./notification-menu"
 import { countUnread } from "./notification-count"
 import { ProfileMenu, type ProfileMenuOrganization } from "./profile-menu"
 import { DocumentMenu, type HeaderDocumentMenuItem } from "./top-row-menus"
@@ -58,7 +62,9 @@ function MessagesButton({
       type="button"
       aria-label="Сообщения"
       onClick={onClick}
-      className={cn(HEADER_ICON_TILE_ACCENT, className)}
+      // Сжатие значка со счётчиком до 0,92 — как у колокольчика (Правки
+      // UI-Kit от 25.10).
+      className={cn(HEADER_ICON_TILE_ACCENT, HEADER_ICON_PRESS, className)}
     >
       {/* Бейдж крепится к самой иконке, а не к плитке: иначе он уезжает в
           угол блока 56×64 вместо угла глифа 24×24. */}

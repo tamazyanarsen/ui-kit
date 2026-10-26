@@ -51,6 +51,17 @@ const NOTIFICATIONS: NotificationMenuItem[] = [
   },
 ]
 
+/* Разделы, которые нельзя добавить в избранное (`favouritable: false`, Правки
+   UI-Kit от 25.10): «Неснижаемые остатки» и «Заявки на размещение средств» —
+   без звезды. */
+const NOT_FAVOURITABLE = new Set(["min-balance", "placement"])
+const DEMO_GROUPS = MENU_GROUPS.map((group) => ({
+  ...group,
+  links: group.links.map((link) =>
+    NOT_FAVOURITABLE.has(link.value) ? { ...link, favouritable: false } : link
+  ),
+}))
+
 const DOCUMENT_MENU_ITEMS = [
   { value: "statements", label: "Выписки" },
   { value: "acts", label: "Акты" },
@@ -111,7 +122,7 @@ function HeaderDemo({
   const header = (
     <Header
       {...props}
-      menuGroups={MENU_GROUPS.slice(0, menuGroupCount)}
+      menuGroups={DEMO_GROUPS.slice(0, menuGroupCount)}
       menuBanners={MENU_BANNERS.slice(0, menuBannerCount)}
       createItems={CREATE_ITEMS.slice(0, createItemCount)}
       favourites={favourites}
@@ -177,6 +188,16 @@ const meta = {
       description: "Текущий раздел — подсвечивается в ряду и в раскрытом меню",
     },
     messageCount: { control: { type: "number", min: 0, max: 99 } },
+    pinned: {
+      control: { type: "select" },
+      options: [false, true, "desktop", "always"],
+      description:
+        "Закрепление: true = «desktop» — только десктоп (мобильная прозрачная шапка едет со страницей), «always» — и мобильная",
+    },
+    onNotificationsClick: {
+      action: "onNotificationsClick",
+      description: "Мобильная форма: колокольчик ведёт в раздел уведомлений вместо списка",
+    },
     contactPerson: { control: "text" },
     employeeName: { control: "text" },
     phoneNumber: { control: "text" },
@@ -229,6 +250,7 @@ const meta = {
     menuBannerCount: MENU_BANNERS.length,
     createItemCount: CREATE_ITEMS.length,
     messageCount: 3,
+    pinned: false,
     contactPerson: "Константинопольский К. К.",
     showOrgSettings: true,
     employeeName: "Константинопольский К. К.",
@@ -314,7 +336,7 @@ export const Examples: Story = {
 
       <StorySection
         title="Мобильная форма (Size=Mobile)"
-        description="Одна полоса 56px: логотип, уведомления и письма плитками 32, круглые «Создать» и «Меню». «Меню» раскрывает экран с карточкой организации и вкладками «Избранное / Все разделы» (Tab Headings), иконка меняется на крестик."
+        description="Одна полоса 64px без подложки: логотип, уведомления и письма плитками 32, круглые «Создать» и «Меню». Колокольчик ведёт в раздел (onNotificationsClick), «+» открывает штору «Создать». «Меню» раскрывает белый экран (фейдом вместе с шапкой): строка организации со шторой «Мои организации», вкладки «Избранное / Все разделы» листаются свайпом, звёзды и «Как настроить избранное» открывают подсказку."
       >
         <div className="flex flex-wrap items-start gap-10">
           <HeaderDemo viewport="mobile" type="client" activeSection="payments" />

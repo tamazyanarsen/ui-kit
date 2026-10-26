@@ -53,7 +53,7 @@ const TitleInformationText = React.forwardRef<HTMLDivElement, TitleInformationTe
       data-type={type}
       className={cn(
         // Size=Mobile мастера — P2 Mobile 12/16 и 12px между парами.
-        "flex items-start text-p3-medium desktop:text-p2-medium",
+        "flex items-start text-p2-medium-adaptive",
         // Пары переносятся на следующую строку целиком: без переноса три
         // пары на полосе 343 уходили за край до 587px. Внутри пары подпись и
         // значение не разрываются.

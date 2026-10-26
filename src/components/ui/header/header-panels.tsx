@@ -49,6 +49,15 @@ interface HeaderPanelsProps {
  */
 const PANEL_HEIGHT = "var(--menu-overlay-panel, calc(100vh - 14rem))"
 
+/**
+ * То же для мобильного меню: оно идёт до нижней кромки экрана сразу под
+ * строкой шапки 64 (Правки UI-Kit от 25.10: строка 64, а не 56). Замер у
+ * `MenuOverlay` тот же — от фактического верха панели, поэтому и шапка,
+ * частично уехавшая со страницей (мобильная больше не закреплена), даёт
+ * верную высоту.
+ */
+const MOBILE_PANEL_HEIGHT = "var(--menu-overlay-panel, calc(100dvh - 4rem))"
+
 function HeaderPanels({
   mobile,
   openPanel,
@@ -118,6 +127,7 @@ function HeaderPanels({
         open={openPanel === "menu"}
         onClose={close}
         returnFocusRef={menuTriggerRef}
+        fade={mobile}
         footer={
           // На телефоне кнопка настройки стоит внутри самого меню, в
           // закреплённой нижней панели (`Button Menu` макета).
@@ -144,7 +154,7 @@ function HeaderPanels({
             header={mobileMenuHeader}
             onFavouritesSettingsOpen={onFavouritesSettingsOpen}
             // Мобильное меню занимает экран целиком, до нижней кромки.
-            height={PANEL_HEIGHT}
+            height={MOBILE_PANEL_HEIGHT}
           />
         ) : (
           <HeaderMenu
@@ -164,15 +174,19 @@ function HeaderPanels({
         )}
       </MenuOverlay>
 
-      <MenuOverlay
-        open={openPanel === "create"}
-        onClose={close}
-        returnFocusRef={createTriggerRef}
-      >
-        {/* Аудит 14: предел высоты тот же, что у меню навигации, — иначе в
-            низком окне нижние плитки обрезались и были недостижимы. */}
-        <CreateMenu items={closingCreateItems} maxHeight={PANEL_HEIGHT} />
-      </MenuOverlay>
+      {/* На телефоне «Создать» — не панель, а штора (`CreateSheet` в
+          мобильной шапке, Правки UI-Kit от 25.10). */}
+      {!mobile && (
+        <MenuOverlay
+          open={openPanel === "create"}
+          onClose={close}
+          returnFocusRef={createTriggerRef}
+        >
+          {/* Аудит 14: предел высоты тот же, что у меню навигации, — иначе в
+              низком окне нижние плитки обрезались и были недостижимы. */}
+          <CreateMenu items={closingCreateItems} maxHeight={PANEL_HEIGHT} />
+        </MenuOverlay>
+      )}
     </>
   )
 }

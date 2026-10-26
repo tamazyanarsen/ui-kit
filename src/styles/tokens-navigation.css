@@ -88,6 +88,9 @@
   --filter-white-bg-hover: var(--grey-106);
   --filter-grey-bg: var(--grey-109);
   --filter-grey-bg-hover: var(--grey-106);
+  /* Подсказка поля поиска в ряду фильтров (`Input variant="filter-search"`,
+     Правки UI-Kit от 25.10) — Grey 517. */
+  --filter-search-placeholder-fg: var(--grey-517);
   --filter-active-border: var(--blue-223);
   --filter-disabled-bg: var(--grey-109);
   --filter-disabled-fg: var(--grey-166);
@@ -139,8 +142,9 @@
      заливкой наведения #F8F8F8, в отличие от всех прочих значков шапки,
      которые идут тёмным #252628 из --header-icon-fg.
 
-     --header-item-hover-bg остаётся ТОЛЬКО за строками выпадающих списков
-     шапки. У плиток панели иконок заливки на наведении нет вовсе —
+     Строки выпадающих списков шапки красятся общей строкой списка
+     (`menu-row`, Правки UI-Kit от 25.10), своего токена у них больше нет.
+     У плиток панели иконок заливки на наведении нет вовсе —
      проверено рендером состояний в изоляции: Hover у Notification
      , Letter, Wallet и обоих
      профилей прозрачен насквозь (альфа 0), а
@@ -150,8 +154,7 @@
      --header-notification-highlight-bg — подсветка колокольчика, когда
      счётчик уведомлений вырос. Дизайн-чек от 13.09, замечание 20: «Меняется
      счетчик на колокольчике. Подсветка кнопки колокольчика на 1 секунду
-     (Grey 114)». Свой токен, а не --header-item-hover-bg с тем же значением:
-     тот закреплён за строками выпадающих списков (см. абзац выше), и
+     (Grey 114)». Свой токен, а не заливка строки списка с тем же значением:
      совпадение цвета здесь случайное — это разные элементы с разными
      макетами. Заливки по наведению у плитки по-прежнему нет.
 
@@ -166,7 +169,6 @@
   --header-meta-fg: var(--grey-284);
   --header-icon-fg: var(--grey-1514);
   --header-hover-fg: var(--blue-254);
-  --header-item-hover-bg: var(--grey-114);
   --header-notification-highlight-bg: var(--grey-114);
   --header-logout-hover-bg: var(--grey-106);
   --header-menu-toggle-hover-bg: var(--grey-106);

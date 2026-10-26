@@ -8,11 +8,11 @@ import { MenuItemContent } from "./menu-item"
 describe("MenuItemContent с числом 0", () => {
   it("label = 0 рисуется в оформленной строке", () => {
     render(<MenuItemContent label={0}>Пункт</MenuItemContent>)
-    expect(screen.getByText("0").className).toContain("truncate")
+    expect(screen.getByText("0").className).toContain("text-p")
   })
 
   it("description = 0 рисуется в оформленной строке", () => {
     render(<MenuItemContent description={0}>Пункт</MenuItemContent>)
-    expect(screen.getByText("0").className).toContain("truncate")
+    expect(screen.getByText("0").className).toContain("text-p")
   })
 })

@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event"
 
 import { TableColumnSettings, type TableColumn } from "./column-settings"
 import { TableRowMenu } from "./row-menu"
+import { ViewportScope } from "@/lib/viewport"
 
 // Аудит 11: поиск в «Настроить столбцы» жил дольше окна — после закрытия с
 // «Сум» в поле окно открывалось с одной строкой, и остальные столбцы
@@ -39,7 +40,13 @@ describe("TableColumnSettings: поиск сбрасывается на откр
 describe("TableRowMenu: высота не больше места до края окна", () => {
   it("список ограничен --available-height и прокручивается", async () => {
     const user = userEvent.setup()
-    render(<TableRowMenu menu={<div>Пункт</div>} />)
+    // Поповер — десктопная форма; в мобильном виде меню — штора (Правки
+    // UI-Kit от 25.10).
+    render(
+      <ViewportScope viewport="desktop">
+        <TableRowMenu menu={<div>Пункт</div>} />
+      </ViewportScope>
+    )
     await user.click(screen.getByRole("button", { name: "Открыть меню строки" }))
     const list = await screen.findByRole("menu")
     // Предел `min(504, --available-height)` живёт в базе Dropdown.

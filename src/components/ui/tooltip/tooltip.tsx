@@ -3,6 +3,7 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
 
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
+import { POPUP_COLLISION } from "@/lib/popup-position"
 
 import {
   ARROW_BASE,
@@ -29,6 +30,16 @@ interface TooltipProps {
    * . У Tooltip по умолчанию выключен — он закрывается уводом
    * курсора, крестик нужен не всегда. */
   showCross?: boolean
+  /**
+   * Сторона ХВОСТИКА, а не самого тултипа: `down-center` — хвостик снизу,
+   * значит тултип НАД элементом; `top-center` — хвостик сверху, тултип под
+   * элементом (так направления названы в макете «Tooltip & Hint»).
+   *
+   * По умолчанию `down-center` — тултип над элементом с отступом 8 (Правки
+   * UI-Kit от 25.10: подсказка снизу закрывала строку под значком). Это
+   * предпочтение, а не жёсткая сторона: не хватает места сверху — тултип
+   * переворачивается вниз, как выпадающие списки (`POPUP_COLLISION`).
+   */
   direction?: TooltipDirection
   /**
    * Режим ширины: `base` — 256px, `auto` — по содержимому.
@@ -70,7 +81,7 @@ const Tooltip = React.forwardRef<
   content,
   title,
   showCross = false,
-  direction = "top-center",
+  direction = "down-center",
   width = "base",
   children,
   className,
@@ -127,6 +138,10 @@ const Tooltip = React.forwardRef<
             side={side}
             align={align}
             sideOffset={8}
+            // Переворот по месту — как у выпадающих списков (Правки UI-Kit
+            // от 25.10): флип по оси раскрытия и сдвиг по другой оси, без
+            // ухода вбок, когда не помещается ни сверху, ни снизу.
+            collisionAvoidance={POPUP_COLLISION}
             className="z-50"
           >
             {/* Дизайн-чек 3/3 №4: стрелка рисуется вручную и прижимается к

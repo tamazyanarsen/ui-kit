@@ -300,7 +300,7 @@ const OtpInput = React.forwardRef<HTMLInputElement, OtpInputProps>(function OtpI
             // Текст и каретка поля прозрачны: цифры, каретку и выделение рисует
             // слой `OtpCells` (см. code-cells.tsx). Высота и нижний отступ те
             // же, что у слоя, — от них зависит положение placeholder.
-            "box-border h-12 w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-[10px] text-center text-h1-mobile text-transparent caret-transparent outline-none selection:bg-transparent selection:text-transparent placeholder-shown:pb-[23px] desktop:h-14 desktop:pb-[7px] desktop:text-h1 desktop:placeholder-shown:pb-[21px]",
+            "box-border h-12 w-full border-0 border-b border-[var(--otp-underline)] bg-transparent pb-[10px] text-center text-h1-adaptive text-transparent caret-transparent outline-none selection:bg-transparent selection:text-transparent placeholder-shown:pb-[23px] desktop:h-14 desktop:pb-[7px] desktop:placeholder-shown:pb-[21px]",
             "desktop:@max-[367px]/otp:h-12 desktop:@max-[367px]/otp:pb-[10px] desktop:@max-[367px]/otp:text-h1-mobile desktop:@max-[367px]/otp:placeholder-shown:pb-[23px]",
             // В состоянии Focused мастера («Input Code» Focused) текста нет —
             // только каретка и линия; подсказка «Введите код из СМС» есть

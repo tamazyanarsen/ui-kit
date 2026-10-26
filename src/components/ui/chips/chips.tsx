@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge"
 // Chips — «Чипсы»: обычная неинтерактивная таблетка со значением и
 // необязательной подписью над ним.
 //
+// Нажимаемый режим (Правки UI-Kit от 25.10, «Chips — нет нажимаемого
+// режима»): с `onPressedChange` чипс — фильтр-переключатель. Корень тогда
+// `<button aria-pressed>`: фокус по Tab, кольцо фокуса, переключение по
+// Enter/Space (родное поведение кнопки), сжатие `press-scale`. Выбор держит
+// потребитель через `selected`. Без `onPressedChange` чипс, как и раньше, —
+// `<span>` только для вида.
+//
 // Chips и Filter — один компонент-сет в Figma («ELK / chips, filter») со
 // свойством `Type` на пять значений. Раньше в коде жило
 // только `Type=Chips`, а белый и серый вид считались чужими — «см. компонент
@@ -130,6 +137,18 @@ interface ChipsProps {
    * курсора. У типов `Filter …` — брендовая рамка поверх той же заливки.
    */
   selected?: boolean
+  /**
+   * Нажимаемый режим — фильтр-чипс. Задан — корень становится
+   * `<button aria-pressed={selected}>`, нажатие (мышь, Enter, Space) зовёт
+   * обработчик с НОВЫМ значением выбора (`!selected`). Выбор хранит
+   * потребитель и возвращает его в `selected`.
+   *
+   * ⚠️ Крестик (`closable` + `onRemove`) в этом режиме НЕ рисуется: кнопка
+   * внутри кнопки недопустима — ни по разметке, ни для экранного диктора, —
+   * а нажатие на крестик заодно переключало бы сам чипс. Снимать выбор у
+   * нажимаемого чипса — повторным нажатием.
+   */
+  onPressedChange?: (pressed: boolean) => void
   disabled?: boolean
   className?: string
 }
@@ -146,9 +165,16 @@ function Chips({
   closable = false,
   onRemove,
   selected = false,
+  onPressedChange,
   disabled = false,
   className,
 }: ChipsProps) {
+  const pressable = onPressedChange !== undefined
+  if (import.meta.env.DEV && pressable && closable && onRemove) {
+    console.warn(
+      "Chips: в нажимаемом режиме (`onPressedChange`) крестик не рисуется — кнопка внутри кнопки недопустима."
+    )
+  }
   const isFilter = type !== "chips"
   const withSubtitle = HAS_SUBTITLE[type] && hasNode(subtitle)
   const tone = CHIPS_TONE[type]
@@ -157,53 +183,59 @@ function Chips({
   // замечание 11; см. lib/use-collapse-exit).
   const { ref, exit } = useCollapseExit<HTMLSpanElement>(onRemove, { axis: "width" })
 
-  return (
-    <span
-      ref={ref}
-      data-slot="chips"
-      data-type={type}
-      data-selected={selected || undefined}
-      data-disabled={disabled || undefined}
-      data-open={(showSelect && open) || undefined}
-      className={cn(
-        // Дизайн-чек, замечание 14: rounded-2xl (18px на собственной шкале
-        // радиусов этого кита) при такой высоте читается как полная
-        // таблетка, тогда как источник в макете использует радиус углов 8px
-        // повсюду, а это здесь rounded-md, а не rounded-2xl.
-        // Дизайн-чек от 08.10, замечание 30: «убрать обрезку текста —
-        // длинный текст ушёл в многоточие». Потолка ширины (`max-w-64`) и
-        // `truncate` больше нет: чипс всегда во всю длину подписи, в одну
-        // строку. Единственный предел — ширина контейнера (`max-w-full`):
-        // уже неё подпись не режется, а переносится.
-        "group/chips inline-flex w-fit max-w-full flex-col items-start gap-0 rounded-md transition-colors",
-        // У типов Filter рамка Active (2px, Blue 223) лежит ВНУТРИ коробки
-        // мастера: символы Default и Active оба 145 × 36 (Desktop) и 140 × 32
-        // (Mobile), то есть поля 16/6 считаются от внешнего края. Поэтому
-        // рамка постоянная, прозрачная, а поля у неё на 2px меньше (14/4 и
-        // 14/6 с подписью): коробка не прыгает при переходе в Active и не
-        // разрастается на 4px против мастера.
-        isFilter
-          ? withSubtitle
-            ? "px-3.5 py-1.5"
-            : "px-3.5 py-1"
-          : withSubtitle
-            ? "px-4 py-2"
-            : "px-4 py-1.5",
-        isFilter && "border-2 border-transparent",
-        isFilter && selected && !disabled && "border-[var(--filter-active-border)]",
-        disabled
-          ? isFilter
-            ? "bg-[var(--filter-disabled-bg)]"
-            : "bg-[var(--chips-disabled-bg)]"
-          : cn(
-              tone.base,
-              tone.hover,
-              // У Type=Chips выбранное состояние — заливка, а не рамка.
-              !isFilter && selected && "bg-[var(--chips-light-bg-hover)]"
-            ),
-        className
-      )}
-    >
+  const shared = {
+    "data-slot": "chips",
+    "data-type": type,
+    "data-selected": selected || undefined,
+    "data-disabled": disabled || undefined,
+    "data-open": (showSelect && open) || undefined,
+    className: cn(
+      // Дизайн-чек, замечание 14: rounded-2xl (18px на собственной шкале
+      // радиусов этого кита) при такой высоте читается как полная
+      // таблетка, тогда как источник в макете использует радиус углов 8px
+      // повсюду, а это здесь rounded-md, а не rounded-2xl.
+      // Дизайн-чек от 08.10, замечание 30: «убрать обрезку текста —
+      // длинный текст ушёл в многоточие». Потолка ширины (`max-w-64`) и
+      // `truncate` больше нет: чипс всегда во всю длину подписи, в одну
+      // строку. Единственный предел — ширина контейнера (`max-w-full`):
+      // уже неё подпись не режется, а переносится.
+      "group/chips inline-flex w-fit max-w-full flex-col items-start gap-0 rounded-md",
+      // Нажимаемый режим: переход цвета и сжатия даёт `press-scale` — он
+      // ставится ВМЕСТО `transition-colors` (см. styles/motion.css).
+      pressable
+        ? "cursor-pointer press-scale text-left outline-none focus-visible:focus-ring disabled:cursor-not-allowed"
+        : "transition-colors",
+      // У типов Filter рамка Active (2px, Blue 223) лежит ВНУТРИ коробки
+      // мастера: символы Default и Active оба 145 × 36 (Desktop) и 140 × 32
+      // (Mobile), то есть поля 16/6 считаются от внешнего края. Поэтому
+      // рамка постоянная, прозрачная, а поля у неё на 2px меньше (14/4 и
+      // 14/6 с подписью): коробка не прыгает при переходе в Active и не
+      // разрастается на 4px против мастера.
+      isFilter
+        ? withSubtitle
+          ? "px-3.5 py-1.5"
+          : "px-3.5 py-1"
+        : withSubtitle
+          ? "px-4 py-2"
+          : "px-4 py-1.5",
+      isFilter && "border-2 border-transparent",
+      isFilter && selected && !disabled && "border-[var(--filter-active-border)]",
+      disabled
+        ? isFilter
+          ? "bg-[var(--filter-disabled-bg)]"
+          : "bg-[var(--chips-disabled-bg)]"
+        : cn(
+            tone.base,
+            tone.hover,
+            // У Type=Chips выбранное состояние — заливка, а не рамка.
+            !isFilter && selected && "bg-[var(--chips-light-bg-hover)]"
+          ),
+      className
+    ),
+  }
+
+  const content = (
+    <>
       {withSubtitle && (
         // `max-w-full`: в колонке `items-start` ширина узла — ширина текста,
         // и без предела длинная подпись шла бы за плашку. Многоточия нет
@@ -234,7 +266,7 @@ function Chips({
         )}
         <span
           className={cn(
-            "min-w-0 [overflow-wrap:anywhere] text-p2-medium desktop:text-p1-medium",
+            "min-w-0 [overflow-wrap:anywhere] text-p1-medium-adaptive",
             disabled ? "text-[var(--chips-disabled-fg)]" : "text-[var(--chips-fg)]"
           )}
         >
@@ -268,7 +300,7 @@ function Chips({
             )}
           />
         )}
-        {closable && onRemove && (
+        {closable && onRemove && !pressable && (
           <button
             type="button"
             aria-label="Удалить"
@@ -283,6 +315,26 @@ function Chips({
           </button>
         )}
       </span>
+    </>
+  )
+
+  if (pressable) {
+    return (
+      <button
+        type="button"
+        {...shared}
+        aria-pressed={selected}
+        disabled={disabled}
+        onClick={() => onPressedChange(!selected)}
+      >
+        {content}
+      </button>
+    )
+  }
+
+  return (
+    <span ref={ref} {...shared}>
+      {content}
     </span>
   )
 }

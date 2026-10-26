@@ -39,29 +39,41 @@ function AutocompleteItem({
       // радиуса. Метрики — «Menu Point (ELK)»: заголовок P1 Medium 16/24,
       // зазор до подписи 4, подпись P3 Medium 12/16; строка с подписью
       // 16 + 24 + 4 + 16 + 16 = 76.
+      //
+      // Правки UI-Kit от 25.10 — одно поведение у всех строк выпадающих
+      // списков: наведение/подсветка Grey 114 и нажатие Grey 124 (`menu-row`),
+      // курсор — рука, у выключенной not-allowed; на зажатие содержимое
+      // сжимается к центру строки одним целым — заголовок и подпись лежат в
+      // одной обёртке, и поля строки стоят на ней. Прежняя опора на левый
+      // край снята.
       className={cn(
-        "flex w-full cursor-default flex-col gap-1 p-4 text-p1-medium press-scale-content [--press-origin:left_center] outline-hidden select-none data-highlighted:bg-[var(--autocomplete-highlighted-bg)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "flex w-full text-p1-medium outline-hidden select-none menu-row press-scale-content data-disabled:opacity-50",
         className
       )}
       {...props}
     >
-      {/* `anywhere`, а не `break-words`: ширина списка берётся по
-          содержимому, и только `anywhere` уменьшает min-content —
-          иначе неразрывное слово давало прокрутку вбок (аудит 18). */}
-      <span className="text-p1-medium text-[var(--autocomplete-title-fg)] [overflow-wrap:anywhere]">
-        {highlightMatch(children, match)}
-      </span>
-      {hasNode(subtitle) && (
-        // Второй проход: добавлен font-medium — каждая литеральная строка
-        // «Description», снятая с инстансов Menu Point (ELK), использует
-        // Object Sans Medium (500), а не Regular, при том же размере 12px.
-        // Отдельного кадра Autocomplete, однако, не существует, поэтому это
-        // перенос с общего компонента пункта списка у Select и Combobox, а
-        // не значение, подтверждённое по собственному макету Autocomplete.
-        <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)] [overflow-wrap:anywhere]">
-          {highlightMatch(subtitle, match)}
+      <span
+        data-slot="autocomplete-item-content"
+        className="flex w-full min-w-0 flex-col gap-1 p-4"
+      >
+        {/* `anywhere`, а не `break-words`: ширина списка берётся по
+            содержимому, и только `anywhere` уменьшает min-content —
+            иначе неразрывное слово давало прокрутку вбок (аудит 18). */}
+        <span className="text-p1-medium text-[var(--autocomplete-title-fg)] [overflow-wrap:anywhere]">
+          {highlightMatch(children, match)}
         </span>
-      )}
+        {hasNode(subtitle) && (
+          // Второй проход: добавлен font-medium — каждая литеральная строка
+          // «Description», снятая с инстансов Menu Point (ELK), использует
+          // Object Sans Medium (500), а не Regular, при том же размере 12px.
+          // Отдельного кадра Autocomplete, однако, не существует, поэтому это
+          // перенос с общего компонента пункта списка у Select и Combobox, а
+          // не значение, подтверждённое по собственному макету Autocomplete.
+          <span className="text-p3-medium text-[var(--autocomplete-subtitle-fg)] [overflow-wrap:anywhere]">
+            {highlightMatch(subtitle, match)}
+          </span>
+        )}
+      </span>
     </ComboboxPrimitive.Item>
   )
 }

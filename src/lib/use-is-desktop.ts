@@ -2,8 +2,13 @@ import * as React from "react"
 
 import { ViewportContext } from "./viewport"
 
-/** Совпадает с брейкпоинтом `md` в Tailwind (768px) — той же границей, по
- * которой переключаются мобильные и десктопные варианты кита.
+/** Порог десктопа — 1280px, та же граница, по которой переключаются
+ * мобильные и десктопные варианты кита (вариант `desktop:` в
+ * src/styles/variants.css). Правки UI-Kit от 25.10, правило каркаса «Порог
+ * десктопа — 1280 вместо 768»: десктопная раскладка не бывает уже 1280
+ * (`GRID_VIEWPORT_MIN`), поэтому всё, что уже, — мобильный/планшетный вид.
+ * До 25.10 порог совпадал с `md` Tailwind (768px), а на 768–1279 страница
+ * держала 1280 с горизонтальной прокруткой.
  *
  * Нужен везде, где брейкпоинт меняет *что именно рисуется*, а не только
  * внешний вид: Hint ниже `md` подменяет десктопный поповер на нижнюю
@@ -35,7 +40,7 @@ function readIsDesktop(): boolean {
   return window.matchMedia(DESKTOP_QUERY).matches
 }
 
-const DESKTOP_QUERY = "(min-width: 768px)"
+export const DESKTOP_QUERY = "(min-width: 1280px)"
 
 export function useIsDesktop(): boolean {
   const forced = React.useContext(ViewportContext)

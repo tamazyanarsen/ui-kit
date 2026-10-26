@@ -1,0 +1,81 @@
+/* Сквозные правила: overlays. Вне слоёв — перебивают утилиты порядком. */
+
+:root {
+  /* Запас под кольцо фокуса (Правки UI-Kit от 25.10, «Начальный фокус
+     модалки и место под кольцо фокуса»): утилита `focus-ring` — обводка 2
+     с отступом 2, то есть выходит за элемент на 4. Прокручиваемый ряд
+     (overflow не visible) режет всё за своей кромкой, поэтому ряд с
+     фокусируемыми элементами берёт поле `--ring-room` внутри и такое же
+     отрицательное снаружи: кольцо помещается, раскладка не двигается. */
+  --ring-room: 4px;
+}
+
+/* ── Modal: черты над подвалом и под шапкой ──────────────────────────────
+   Правки UI-Kit от 25.10, «Черты рисуются соседями, а не телом». Признаки
+   `data-divider-top` / `data-divider-bottom` по-прежнему ставит тело (или
+   двухколоночное тело), но черту рисует СОСЕД, поверх которого содержимое не
+   ездит: подвал — своей верхней кромкой, шапка или холдер — нижней. Тень
+   прокручиваемого тела лежит под его содержимым, и карточка со своей
+   заливкой, доехавшая до края, черту закрывала. У соседа черта ещё и во всю
+   ширину окна, а не до полосы прокрутки.
+
+   Нет соседа (штора без кнопок) — черта остаётся на теле: его собственная
+   тень гасится только там, где сосед есть. */
+:is([data-slot="modal-body"], [data-slot="modal-columns"])[data-divider-bottom]
+  + [data-slot="modal-footer"] {
+  box-shadow: inset 0 1px 0 var(--modal-divider);
+}
+
+:is([data-slot="modal-header"], [data-slot="modal-top-holder"]):has(
+    + :is([data-slot="modal-body"], [data-slot="modal-columns"])[data-divider-top]
+  ) {
+  box-shadow: inset 0 -1px 0 var(--modal-divider);
+}
+
+[data-slot="modal-body"]:has(+ [data-slot="modal-footer"]),
+[data-slot="modal-columns"]:has(+ [data-slot="modal-footer"]) > * {
+  --divider-bottom: 0 0 #0000;
+}
+
+:is([data-slot="modal-header"], [data-slot="modal-top-holder"])
+  + [data-slot="modal-body"],
+:is([data-slot="modal-header"], [data-slot="modal-top-holder"])
+  + [data-slot="modal-columns"]
+  > * {
+  --divider-top: 0 0 #0000;
+}
+
+/* ── Modal, мобильный вид на весь экран (Large Modal) ─────────────────────
+   Правки UI-Kit от 25.10, «Modal, мобильный вид — переход в полноэкранный
+   вариант»: у кнопок поле 8 сверху и 24 снизу (у шторы — 20 и 24). Признак
+   `data-full` ставит сам ModalContent (см. modal/use-full-screen.ts). */
+[data-full] > div > [data-slot="modal-footer"] {
+  padding-top: 8px;
+  /* Кнопки прижаты к низу экрана, даже когда тело не растягивается само
+     (у шторы Hint тело — описание без `flex-1`). */
+  margin-top: auto;
+}
+
+/* ── ButtonMenuBlack: выезд снизу и уход вниз ─────────────────────────────
+   Правки UI-Kit от 25.10, «ButtonMenuBlack — появление и уход движением»:
+   появление — выезд на свою высоту (320 мс, мягкая кривая), уход — вниз
+   (200 мс, `--ease-out`). Свойство `translate`, а не `transform`, — так
+   проверка в документе и читает анимацию. Классы с этими кадрами стоят под
+   `motion-safe:` — при «уменьшить движение» сдвига нет. */
+@keyframes button-menu-black-in {
+  from {
+    translate: 0 100%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes button-menu-black-out {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 100%;
+  }
+}

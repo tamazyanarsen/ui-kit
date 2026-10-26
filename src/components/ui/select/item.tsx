@@ -1,15 +1,28 @@
+import type * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { CheckIcon } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { Divider } from "@/components/ui/divider"
+import { MenuSheetItem } from "@/components/ui/menu-sheet"
 
 import { clipText } from "./clip-text"
+import { useSelectSheet } from "./sheet"
 
 export function SelectLabel({
   className,
   ...props
 }: SelectPrimitive.GroupLabel.Props) {
+  if (useSelectSheet()) {
+    return (
+      <div
+        data-slot="select-label"
+        className={cn("px-4 py-2 text-p3-medium text-muted-foreground", typeof className === "string" ? className : undefined)}
+      >
+        {props.children as React.ReactNode}
+      </div>
+    )
+  }
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
@@ -24,6 +37,24 @@ export function SelectItem({
   children,
   ...props
 }: SelectPrimitive.Item.Props) {
+  // Мобильная штора (Правки UI-Kit от 25.10, см. ./sheet.tsx): пункт — строка
+  // шторы с галкой у выбранного; нажатие применяет выбор и закрывает штору
+  // (у множественного выбора — переключает и оставляет открытой).
+  const sheet = useSelectSheet()
+  if (sheet) {
+    return (
+      <MenuSheetItem
+        role="option"
+        data-slot="select-item"
+        text={clipText(children as React.ReactNode, "wrap")}
+        checked={sheet.isSelected(props.value)}
+        disabled={props.disabled}
+        closeOnSelect={!sheet.multiple}
+        className={typeof className === "string" ? className : undefined}
+        onSelect={(event) => sheet.choose(props.value, event.nativeEvent)}
+      />
+    )
+  }
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
@@ -44,33 +75,44 @@ export function SelectItem({
       // selected и disabled, но не настоящий хук фокуса DOM, поэтому
       // `focus:` здесь никогда не совпадал с оформлением наведения из
       // макета при навигации с клавиатуры.
+      //
+      // Правки UI-Kit от 25.10 — одно поведение у всех строк выпадающих
+      // списков: наведение/подсветка Grey 114, нажатие Grey 124 (`menu-row`),
+      // курсор — рука, у выключенной not-allowed (styles/rules-lists.css);
+      // на зажатие содержимое сжимается к центру строки одним целым — поэтому
+      // текст и галочка лежат в одной обёртке, и поля строки стоят на ней:
+      // центр обёртки и есть центр строки. Прежняя опора на левый край
+      // (`--press-origin:left_center`) снята.
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 press-scale-content [--press-origin:left_center] py-4 pr-12 pl-4 text-p1-medium text-[var(--select-fg)] outline-hidden select-none data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "flex w-full text-p1-medium text-[var(--select-fg)] outline-hidden select-none menu-row press-scale-content data-disabled:text-[var(--select-label-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
     >
-      {/* Длинная подпись обрезается многоточием до галочки: раньше текст был
-          `shrink-0`, шёл под галочку и срезался краем списка без многоточия.
-          Голый текст во флексе — анонимный блок, многоточия он не получает,
-          поэтому строки и числа обёрнуты в свой узел с многоточием.
-          `overflow-clip` с запасом, а не `truncate`: `overflow-hidden`
-          срезал у «Д» выносной элемент левее начала строки, и короткие
-          пункты переставали совпадать с прежними до пикселя. */}
-      <SelectPrimitive.ItemText className="flex min-w-0 flex-1 gap-2 whitespace-nowrap">
-        {clipText(children)}
-      </SelectPrimitive.ItemText>
-      <SelectPrimitive.ItemIndicator
-        render={
-          <span className="pointer-events-none absolute right-4 flex size-4 items-center justify-center" />
-        }
+      <span
+        data-slot="select-item-content"
+        className="relative flex w-full min-w-0 items-center gap-2 py-4 pr-12 pl-4"
       >
-        {/* Дизайн-чек от 08.09, замечание 19: галочка выбранного всегда
-            цветная — зелёная в зелёной теме, голубая в голубой. Своего цвета
-            у иконки не было вовсе, и она наследовала почти чёрный цвет
-            подписи строки. */}
-        <CheckIcon className="pointer-events-none text-[var(--check-mark-fg)]" />
-      </SelectPrimitive.ItemIndicator>
+        {/* Правки UI-Kit от 25.10: длинная подпись переносится, строка
+            растёт по высоте — многоточия в строках списков нет. Подряд
+            идущий текст по-прежнему склеивается в один узел (`clipText`),
+            только в режиме переноса. Многоточие осталось в значении
+            триггера Select — там высота поля фиксирована. */}
+        <SelectPrimitive.ItemText className="flex min-w-0 flex-1 gap-2">
+          {clipText(children, "wrap")}
+        </SelectPrimitive.ItemText>
+        <SelectPrimitive.ItemIndicator
+          render={
+            <span className="pointer-events-none absolute right-4 flex size-4 items-center justify-center" />
+          }
+        >
+          {/* Дизайн-чек от 08.09, замечание 19: галочка выбранного всегда
+              цветная — зелёная в зелёной теме, голубая в голубой. Своего цвета
+              у иконки не было вовсе, и она наследовала почти чёрный цвет
+              подписи строки. */}
+          <CheckIcon className="pointer-events-none text-[var(--check-mark-fg)]" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
     </SelectPrimitive.Item>
   )
 }
@@ -79,6 +121,9 @@ export function SelectSeparator({
   className,
   ...props
 }: SelectPrimitive.Separator.Props) {
+  if (useSelectSheet()) {
+    return <Divider className="pointer-events-none my-1" />
+  }
   return (
     // Рисует общий Divider («ELK / divider» из макета, grey-134 #DEDEDE).
     // Раньше здесь стоял `bg-border` — общий токен shadcn,

@@ -64,6 +64,8 @@ type PlaygroundArgs = Omit<BlockWidgetProps, "children" | "onClick"> & {
   showSubtitle?: boolean
   showDescription?: boolean
   showIcon?: boolean
+  /** Заголовок мобильной шторы значка «i» (Правки UI-Kit от 25.10). */
+  infoTitle?: string
   showTag?: boolean
   showStatus?: boolean
   showButton?: boolean
@@ -122,6 +124,13 @@ const meta = {
     subtitle: { control: "text", ...CONTENT },
     description: { control: "text", ...CONTENT },
     status: { control: "text", ...CONTENT },
+    infoTitle: {
+      name: "Заголовок шторы «i» (мобайл)",
+      description: "В мобильном виде значок «i» открывает штору; пусто — «Информация»",
+      control: "text",
+      if: { arg: "showIcon", truthy: true },
+      ...CONTENT,
+    },
   },
   args: {
     viewport: "desktop" as Viewport,
@@ -143,6 +152,7 @@ const meta = {
     subtitle: "Subtitle",
     description: "Description",
     status: "Description",
+    infoTitle: "",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -156,6 +166,7 @@ function headProps(args: PlaygroundArgs) {
     description: args.showDescription ? args.description : undefined,
     status: args.showStatus ? args.status : undefined,
     info: args.showIcon ? "Пояснение к заголовку блока" : undefined,
+    infoTitle: args.showIcon && args.infoTitle ? args.infoTitle : undefined,
     tag: args.showTag ? <Tag color="green">Label</Tag> : undefined,
     action: args.showButton ? (
       <Button variant="primary" size="sm">

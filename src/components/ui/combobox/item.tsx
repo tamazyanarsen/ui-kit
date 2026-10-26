@@ -42,9 +42,14 @@ export function ComboboxItem({
       // блоком (а не gap-2.5) и отсутствие собственного радиуса углов
       // (снято пипеткой с Menu Point в состоянии наведения: жёсткий прямой
       // угол, скругление приходит только от обрезки самим всплывающим
-      // окном), плюс фон подсветки #F8F8F8 вместо общего токена --accent.
+      // окном).
+      //
+      // Правки UI-Kit от 25.10: наведение, подсветка и нажатие — общий
+      // `menu-row` (Grey 114 / Grey 124), курсор — рука, у выключенной
+      // not-allowed, поэтому `pointer-events: none` у неё снят (выбор
+      // выключенного пункта гасит сам Base UI).
       className={menuItemRowClass(
-        "group/item data-highlighted:bg-[var(--menu-item-bg-highlighted)] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "group/item menu-row data-disabled:opacity-50",
         className
       )}
       style={
@@ -107,7 +112,7 @@ export function ComboboxGroupRow({
       onClick={onToggle}
       data-slot="combobox-group-row"
       className={menuItemRowClass(
-        "hover:bg-[var(--menu-item-bg-highlighted)] disabled:pointer-events-none disabled:opacity-50",
+        "menu-row disabled:opacity-50",
         className
       )}
     >

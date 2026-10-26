@@ -130,7 +130,7 @@ const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(function Toggle({
         {hasNode(label) && (
           <span
             className={cn(
-              "text-p2-medium text-[var(--toggle-label-fg)] desktop:text-p1-medium",
+              "text-p1-medium-adaptive text-[var(--toggle-label-fg)]",
               disabled && "text-[var(--toggle-label-fg-disabled)]"
             )}
           >

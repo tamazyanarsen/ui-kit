@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 
 import { Briefcase, ChevronDown, Search } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -67,7 +68,7 @@ function ProfileMenuTrigger({
   className?: string
 }) {
   return (
-    <MenuPrimitive.Trigger
+    <MenuPrimitive.Trigger {...menuClickOpenProps}
       render={
         <button
           type="button"
@@ -92,45 +93,53 @@ function ProfileMenuTrigger({
             // Заливки на наведении нет: у `Profile Client Header (ELK)` в
             // Hover фон прозрачен, меняется только цвет
             // названия и знаков — его дают `group-hover` ниже.
-            "group flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center gap-4 pl-4 text-left outline-none focus-visible:focus-ring transition-colors",
+            //
+            // Правки UI-Kit от 25.10: цвет меняют ДЕТИ, поэтому переход
+            // цвета (200 мс `ease`) стоит на них, а не на кнопке — иначе
+            // они перекрашивались скачком. Нажатие сжимает всё содержимое
+            // одной обёрткой до 0,97 (`press-scale-content`), ширина
+            // плитки не меняется.
+            "group press-scale-content flex h-16 max-w-[304px] min-w-0 cursor-pointer items-center pl-4 text-left outline-none focus-visible:focus-ring",
             className
           )}
         />
       }
     >
-      <span className="flex min-w-0 items-center gap-3">
-        {/* Дизайн-чек №3 №12: «Некорректная иконка». В шапке кейс идёт
-            24px-начертанием (`icon / company` — контурный кейс с двумя
-            полосами); без `size={24}` сюда подставлялся 16px-рисунок с
-            центральной защёлкой, растянутый до 24. */}
-        <Briefcase
-          size={24}
-          aria-hidden="true"
-          className="size-6 shrink-0 text-[var(--header-icon-fg)] group-hover:text-[var(--header-hover-fg)]"
-        />
-        <span className="flex min-w-0 flex-col">
-          <span className="min-w-0 truncate text-p1-medium text-[var(--header-fg)] group-hover:text-[var(--header-hover-fg)]">
-            {organization?.name}
-          </span>
-          {hasContent(contactPerson) && (
-            // У подзаголовка «ИНН ... • Оператор» в ProfileMenuElk
-            // подтверждено Object Sans Medium (P3 Medium), а не Regular,
-            // для этой второстепенной строки.
-            <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
-              {contactPerson}
+      <span className="flex min-w-0 items-center gap-4">
+        <span className="flex min-w-0 items-center gap-3">
+          {/* Дизайн-чек №3 №12: «Некорректная иконка». В шапке кейс идёт
+              24px-начертанием (`icon / company` — контурный кейс с двумя
+              полосами); без `size={24}` сюда подставлялся 16px-рисунок с
+              центральной защёлкой, растянутый до 24. */}
+          <Briefcase
+            size={24}
+            aria-hidden="true"
+            className="size-6 shrink-0 text-[var(--header-icon-fg)] transition-colors group-hover:text-[var(--header-hover-fg)]"
+          />
+          <span className="flex min-w-0 flex-col">
+            <span className="min-w-0 truncate text-p1-medium text-[var(--header-fg)] transition-colors group-hover:text-[var(--header-hover-fg)]">
+              {organization?.name}
             </span>
-          )}
+            {hasContent(contactPerson) && (
+              // У подзаголовка «ИНН ... • Оператор» в ProfileMenuElk
+              // подтверждено Object Sans Medium (P3 Medium), а не Regular,
+              // для этой второстепенной строки.
+              <span className="min-w-0 truncate text-p3-medium text-[var(--header-meta-fg)]">
+                {contactPerson}
+              </span>
+            )}
+          </span>
         </span>
+        {/* Дизайн-чек Storybook (Аня Багрова) №1: «при hover иконка чемодана и
+            наименование организации окрашиваются в Blue 254… шеврон остаётся
+            Grey 1514». Проверено по ассетам состояний `Profile Client Header
+            (ELK)`: SVG шеврона в Default и Hover
+            один и тот же, брендовыми становятся только кейс и название. */}
+        <ChevronDown
+          aria-hidden="true"
+          className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-data-popup-open:rotate-180"
+        />
       </span>
-      {/* Дизайн-чек Storybook (Аня Багрова) №1: «при hover иконка чемодана и
-          наименование организации окрашиваются в Blue 254… шеврон остаётся
-          Grey 1514». Проверено по ассетам состояний `Profile Client Header
-          (ELK)`: SVG шеврона в Default и Hover
-          один и тот же, брендовыми становятся только кейс и название. */}
-      <ChevronDown
-        aria-hidden="true"
-        className="size-4 shrink-0 text-[var(--header-icon-fg)] transition-transform group-data-popup-open:rotate-180"
-      />
     </MenuPrimitive.Trigger>
   )
 }
@@ -153,7 +162,7 @@ function ProfileMenuCardTrigger({
   className?: string
 }) {
   return (
-    <MenuPrimitive.Trigger
+    <MenuPrimitive.Trigger {...menuClickOpenProps}
       render={
         <button
           type="button"

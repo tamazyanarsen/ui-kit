@@ -199,7 +199,9 @@ export function ComboboxGroup({
   return (
     <ComboboxPrimitive.Group
       data-slot="combobox-group"
-      className={cn("py-1 first:pt-0 last:pb-0", className)}
+      // Первая группа — и когда перед ней узел наложенной полосы прокрутки
+      // (`.kit-ovs` встаёт первым ребёнком прокручиваемой области).
+      className={cn("py-1 first:pt-0 [.kit-ovs+&]:pt-0 last:pb-0", className)}
       {...props}
     />
   )

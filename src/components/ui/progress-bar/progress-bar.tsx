@@ -197,7 +197,7 @@ function ProgressBar({
             заголовок шёл одной строкой за контейнер и давал странице
             горизонтальную прокрутку. Теперь он переносится по словам, а
             описание сжимается до нуля первым (у него нулевая основа). */}
-        <div className="flex items-start gap-2 text-p2-medium text-[var(--progress-title-fg)] desktop:text-p1-medium">
+        <div className="flex items-start gap-2 text-p1-medium-adaptive text-[var(--progress-title-fg)]">
           <span id={generatedId} className="min-w-0 break-words">{title}</span>
           {showDescription && hasNode(description) && (
             <span className="min-w-0 flex-1 truncate text-right">
@@ -217,7 +217,7 @@ function ProgressBar({
       {(showSubtitle || showStatusDescription) && (
         // «Status Line (ELK)» — зазор 16px, замыкающее описание тянется и
         // прижимается вправо.
-        <div className="flex items-center gap-4 text-p2-medium desktop:text-p1-medium">
+        <div className="flex items-center gap-4 text-p1-medium-adaptive">
           {/* Подпись статуса, как и заголовок выше, переносится по словам:
               с `shrink-0` длинный статус шёл одной строкой за контейнер (до
               549px при полосе 343). Описание справа сжимается первым. */}

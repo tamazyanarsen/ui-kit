@@ -73,13 +73,15 @@ describe("ButtonMenuBlack: не поместившиеся действия ух
     )
   })
 
-  it("когда место есть, все действия на месте и «…» нет", () => {
+  // Правки UI-Kit от 25.10: разом не больше трёх команд — четвёртая уходит
+  // в «…», даже когда место есть.
+  it("когда место есть, видны три действия, четвёртое — в «…»", () => {
     mockActions(1000)
     renderPanel()
     const visible = visibleButtons()
     expect(visible).toEqual(
-      expect.arrayContaining(["Подписать", "Отправить в банк", "Скачать", "Удалить"])
+      expect.arrayContaining(["Подписать", "Отправить в банк", "Скачать", "Ещё"])
     )
-    expect(visible).not.toContain("Ещё")
+    expect(visible).not.toContain("Удалить")
   })
 })

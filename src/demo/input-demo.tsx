@@ -161,6 +161,31 @@ function InputDemo() {
           </div>
 
           <div className="mt-8 flex flex-col gap-2">
+            <RowLabel>
+              variant=&quot;filter-search&quot; — поиск в ряду фильтров (заливка
+              фильтров, скругление 16, рамка только в фокусе и при ошибке)
+            </RowLabel>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Input variant="filter-search" size="sm" placeholder="Поиск" iconLeft={<Search />} />
+              <Input
+                variant="filter-search"
+                size="sm"
+                placeholder="Поиск"
+                iconLeft={<Search />}
+                defaultValue="Платёж"
+                clearable
+              />
+              <Input
+                variant="filter-search"
+                size="sm"
+                placeholder="Поиск"
+                iconLeft={<Search />}
+                error="Ошибка"
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-2">
             <RowLabel>Icon Left / Trailing Icon — универсальные слоты</RowLabel>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input

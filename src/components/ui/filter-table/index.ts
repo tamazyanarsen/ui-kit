@@ -25,3 +25,16 @@ export { FilterDate, datePresetWeek } from "./filter-date"
 export type { FilterDateProps, FilterDatePreset } from "./filter-date"
 export { FilterBoolean } from "./filter-boolean"
 export type { FilterBooleanProps } from "./filter-boolean"
+export { FilterSingleSelect } from "./filter-single-select"
+export type {
+  FilterSingleSelectProps,
+  FilterSingleSelectOption,
+} from "./filter-single-select"
+export { FilterBar } from "./filter-bar"
+export type { FilterBarProps } from "./filter-bar"
+export { FilterSheetButtons } from "./sheet-buttons"
+export { useFilterBarField } from "./filter-bar-context"
+export type {
+  FilterBarField,
+  FilterBarFieldRenderArgs,
+} from "./filter-bar-context"

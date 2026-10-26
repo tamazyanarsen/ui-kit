@@ -1,3 +1,4 @@
+import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import {
@@ -7,8 +8,11 @@ import {
   toggleArgType,
 } from "@/stories/matrix"
 
+import { Button } from "@/components/ui/button"
+
 import {
   SelectionButton,
+  SelectionButtonChevron,
   type SelectionButtonDirection,
   type SelectionButtonProps,
 } from "./selection-button"
@@ -21,17 +25,53 @@ const DIRECTIONS: SelectionButtonDirection[] = [
 ]
 
 const ITEMS = [
-  { text: "Редактировать" },
-  { text: "Дублировать", description: "Создать копию" },
-  { text: "Удалить" },
-  { text: "Архивировать" },
+  { id: "edit", text: "Редактировать" },
+  { id: "copy", text: "Дублировать", description: "Создать копию" },
+  { id: "delete", text: "Удалить" },
+  { id: "archive", text: "Архивировать" },
+  // Длинный пункт — проверка переноса (Правки UI-Kit от 25.10): текст
+  // строки списка переносится, многоточия нет.
+  {
+    id: "long",
+    text: "40801 810 7 0024 0011708 · Спецсчёт закупок для расчётов с поставщиками",
+  },
+]
+
+/* Режимы переключателя — пример меню с отметкой выбранного. */
+const MODES = [
+  { id: "list", text: "Списком" },
+  { id: "cards", text: "Карточками" },
+  { id: "table", text: "Таблицей", description: "Все колонки" },
 ]
 
 /* Дизайн-чек №17: количество пунктов меню — списком, а не правкой JSON. */
-const ITEM_COUNTS = [1, 2, 3, 4] as const
+const ITEM_COUNTS = [1, 2, 3, 4, 5] as const
 type ItemCount = (typeof ITEM_COUNTS)[number]
 
-type PlaygroundArgs = SelectionButtonProps & { itemsCount?: ItemCount }
+type PlaygroundArgs = SelectionButtonProps & {
+  itemsCount?: ItemCount
+  /** Отметка выбранного (`value`): выбор пункта переставляет галку. */
+  showCheck?: boolean
+}
+
+/** Меню с отметкой: `value` живёт в состоянии и меняется выбором пункта. */
+function CheckedSelectionButton({
+  items,
+  initial,
+  ...props
+}: Omit<SelectionButtonProps, "value"> & { initial: string | null }) {
+  const [value, setValue] = React.useState<string | null>(initial)
+  return (
+    <SelectionButton
+      {...props}
+      value={value}
+      items={items.map((item) => ({
+        ...item,
+        onSelect: () => setValue(String(item.id)),
+      }))}
+    />
+  )
+}
 
 /* Панель повторяет «Свойства компонента» `ELK / selection button`:
    Size / Show Dropdown / Direction — те же имена и подписи, что в правой
@@ -52,7 +92,20 @@ const meta = {
     // Ниже — то, чего в панели Figma нет: пункты меню там нарисованы
     // вложенными инстансами `Menu Point (ELK)`, а не свойствами сета.
     triggerLabel: { control: "text", table: { category: "Контент" } },
+    // Правки UI-Kit от 25.10: в мобильном виде список — штора; пусто —
+    // подпись триггера.
+    sheetTitle: {
+      name: "Заголовок шторы (мобайл)",
+      control: "text",
+      table: { category: "Контент" },
+    },
     modal: { control: "boolean", table: { category: "Контент" } },
+    showCheck: {
+      name: "Отметка выбранного (value)",
+      control: "boolean",
+      table: { category: "Контент" },
+    },
+    value: { table: { disable: true } },
     itemsCount: {
       name: "Количество пунктов",
       control: "select",
@@ -84,6 +137,8 @@ const meta = {
     direction: "down-right",
     items: ITEMS,
     itemsCount: 3,
+    showCheck: false,
+    sheetTitle: "",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -91,9 +146,18 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ itemsCount = 3, ...args }) => (
-    <SelectionButton {...args} items={ITEMS.slice(0, itemsCount)} />
-  ),
+  render: ({ itemsCount = 3, showCheck, sheetTitle, ...rest }) => {
+    const args = { ...rest, sheetTitle: sheetTitle || undefined }
+    return showCheck ? (
+      <CheckedSelectionButton
+        {...args}
+        items={ITEMS.slice(0, itemsCount)}
+        initial={ITEMS[0].id}
+      />
+    ) : (
+      <SelectionButton {...args} items={ITEMS.slice(0, itemsCount)} />
+    )
+  },
 }
 
 /* Меню — это всплывающее окно в портале, поэтому в настоящей сетке каждая
@@ -127,12 +191,48 @@ export const Examples: Story = {
 
       <StorySection
         title="Свой триггер"
-        description="Любой элемент вместо кнопки «⋯»."
+        description="Любой элемент вместо кнопки «⋯». Шеврон SelectionButtonChevron при открытии поворачивается на 180°."
       >
-        <SelectionButton
-          items={ITEMS}
-          trigger={<button type="button">Открыть меню</button>}
-        />
+        <div className="flex gap-16">
+          <SelectionButton
+            items={ITEMS}
+            trigger={<button type="button">Открыть меню</button>}
+          />
+          <SelectionButton
+            items={MODES}
+            trigger={
+              <Button
+                variant="secondary-grey"
+                icon={SelectionButtonChevron}
+                iconPosition="right"
+              >
+                Вид
+              </Button>
+            }
+          />
+        </div>
+      </StorySection>
+
+      <StorySection
+        title="Отметка выбранного"
+        description="С value — голубая галка у выбранного пункта и место 48 справа у всех; без value — меню действий без галок."
+      >
+        <div className="flex gap-16">
+          <CheckedSelectionButton
+            items={MODES}
+            initial="list"
+            trigger={
+              <Button
+                variant="secondary-grey"
+                icon={SelectionButtonChevron}
+                iconPosition="right"
+              >
+                Режим
+              </Button>
+            }
+          />
+          <CheckedSelectionButton items={MODES} initial={null} />
+        </div>
       </StorySection>
     </StoryShowcase>
   ),

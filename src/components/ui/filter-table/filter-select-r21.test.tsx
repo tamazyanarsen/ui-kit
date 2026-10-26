@@ -1,3 +1,6 @@
+// Поповер фильтра — десктопная форма: в мобильном виде (уже 1280) вместо
+// него штора (Правки UI-Kit от 25.10), а jsdom по умолчанию — «телефон».
+import "@/test/desktop-viewport"
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
@@ -11,14 +14,16 @@ import { FilterSelect } from "./filter-select"
 const LONG = "Расчётный счёт в рублях № 40702810000000001234"
 
 describe("FilterSelect: длинная подпись варианта", () => {
-  it("переносится до двух строк, полный текст в title", async () => {
+  // Правки UI-Kit от 25.10: высота строки не ограничена — текст переносится
+  // целиком, без `line-clamp-2` и многоточия, так что `title` больше не нужен.
+  it("переносится целиком, без обрезки в две строки", async () => {
     const user = userEvent.setup()
     render(<FilterSelect label="Счёт" options={[{ value: "a", label: LONG }]} />)
     await user.click(screen.getByRole("button", { name: /Счёт/ }))
     const text = await screen.findByText(LONG)
-    expect(text).toHaveAttribute("title", LONG)
-    expect(text).toHaveClass("line-clamp-2", "break-words")
+    expect(text).not.toHaveClass("line-clamp-2")
     expect(text).not.toHaveClass("truncate")
+    expect(text.className).toContain("[overflow-wrap:anywhere]")
   })
 
   // Проверка правок r21: у двухстрочного варианта флажок стоял по центру

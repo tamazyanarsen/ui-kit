@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useLatest } from "@/lib/use-latest"
+import { sharedRegistry } from "@/lib/shared-registry"
 
 /**
  * Плавный уход закрываемого элемента: он гаснет, а его место схлопывается,
@@ -47,6 +48,24 @@ function prefersReducedMotion() {
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
   )
+}
+
+/**
+ * Признак «идёт схлопывание» на `<html>` — атрибут `data-collapsing`.
+ *
+ * Правки UI-Kit от 25.10, «Высоты перестраиваются с анимацией»: контейнер с
+ * высотой по содержимому (модалка, мобильный блок) меняет высоту плавно
+ * (`useSmoothHeight`), но НЕ во время схлопывания элемента — контейнер и так
+ * ужимается следом, вторая анимация поверх дала бы рывок. Атрибут стоит,
+ * пока схлопывается хоть один элемент (несколько разом — «Скрыть все»).
+ * Счётчик общий для всех копий кита, как и атрибут.
+ */
+function markCollapsing(delta: 1 | -1) {
+  const state = sharedRegistry("collapse-exit", () => ({ count: 0 }))
+  state.count = Math.max(0, state.count + delta)
+  const root = document.documentElement
+  if (state.count > 0) root.setAttribute("data-collapsing", "")
+  else root.removeAttribute("data-collapsing")
 }
 
 /** Зазор родителя по оси, который узел занимает рядом с соседом. */
@@ -120,6 +139,14 @@ function useCollapseExit<T extends HTMLElement>(
     el.style.overflow = "hidden"
     el.style.pointerEvents = "none"
 
+    markCollapsing(1)
+    let marked = true
+    const unmark = () => {
+      if (!marked) return
+      marked = false
+      markCollapsing(-1)
+    }
+
     const size = el.animate(sizeKeyframes(el, axis), {
       duration: DURATION,
       easing: EASE_IN_OUT,
@@ -139,6 +166,7 @@ function useCollapseExit<T extends HTMLElement>(
 
     size.finished
       .then(() => {
+        unmark()
         done()
         // Вызывающий код обычно снимает узел в том же такте. Не снял за два
         // кадра — значит, решил оставить: возвращаем как было.
@@ -155,6 +183,7 @@ function useCollapseExit<T extends HTMLElement>(
       })
       .catch(() => {
         // Анимацию отменили (узел сняли раньше конца) — звать нечего.
+        unmark()
         leaving.current = false
       })
   }, [axis, lift, onCloseRef])

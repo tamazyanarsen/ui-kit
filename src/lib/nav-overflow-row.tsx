@@ -17,9 +17,20 @@ import { cn } from "@/lib/utils"
 // попап «Ещё» (у шапки сотрудника — с галочкой текущего раздела), свой
 // текст подсказки пустого избранного и место ряда в шапке.
 
-/** Пункт ряда. `self-stretch`: нажимается вся полоса 64px, а не строка текста. */
+/**
+ * Пункт ряда. `self-stretch`: нажимается вся полоса 64px, а не строка текста.
+ *
+ * Правки UI-Kit от 25.10: при нажатии сжимается не кнопка, а её содержимое —
+ * текст (и значок) лежат в ОДНОЙ обёртке `NAV_ITEM_CONTENT`, и
+ * `press-scale-content` сжимает её до 0,97 к её же центру. Габарит кнопки
+ * не меняется, соседи не сдвигаются. Цвет при наведении — 200 мс `ease`
+ * (переход Tailwind по умолчанию).
+ */
 const NAV_ITEM_CLASS =
-  "flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]"
+  "press-scale-content flex shrink-0 cursor-pointer items-center self-stretch text-p1-medium whitespace-nowrap outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)]"
+
+/** Обёртка содержимого пункта — то, что сжимается при нажатии. */
+const NAV_ITEM_CONTENT = "flex items-center gap-1"
 
 function NavRowItem({
   slot,
@@ -46,7 +57,7 @@ function NavRowItem({
         active ? "text-[var(--header-hover-fg)]" : "text-[var(--header-fg)]"
       )}
     >
-      {children}
+      <span className={NAV_ITEM_CONTENT}>{children}</span>
     </button>
   )
 }
@@ -65,20 +76,24 @@ const NavOverflowTriggerButton = React.forwardRef<
       type="button"
       data-slot={slot}
       className={cn(
-        "group flex shrink-0 cursor-pointer items-center gap-1 self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]",
+        "group press-scale-content flex shrink-0 cursor-pointer items-center self-stretch text-p1-medium whitespace-nowrap text-[var(--header-fg)] outline-none focus-visible:focus-ring transition-colors hover:text-[var(--header-hover-fg)] data-popup-open:text-[var(--header-hover-fg)]",
         className
       )}
       {...props}
     >
-      {children ?? (
-        <>
-          Ещё
-          <ChevronDown
-            aria-hidden="true"
-            className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
-          />
-        </>
-      )}
+      {/* Подпись и шеврон — одной обёрткой: сжимаются целиком к центру
+          (Правки UI-Kit от 25.10), шеврон при этом поворачивается сам. */}
+      <span className={NAV_ITEM_CONTENT}>
+        {children ?? (
+          <>
+            Ещё
+            <ChevronDown
+              aria-hidden="true"
+              className="size-4 shrink-0 transition-transform group-data-popup-open:rotate-180"
+            />
+          </>
+        )}
+      </span>
     </button>
   )
 })

@@ -57,9 +57,11 @@ function ModalColumn({
         onScroll={edges.update}
         className={cn(
           // Полоса — в 8px от правого края колонки (поле справа у окна
-          // прокрутки) и с отступом 8 сверху и снизу (поле дорожки, а не
-          // рамка: содержимое обрезается краем колонки, а не на 8px раньше).
-          "min-h-0 flex-1 desktop:mr-2 desktop:[&::-webkit-scrollbar-track]:my-2",
+          // прокрутки) и с отступом 8 сверху и снизу (отступы дорожки
+          // наложенной полосы, а не рамка: содержимое обрезается краем
+          // колонки, а не на 8px раньше). Полоса места не занимает (Правки
+          // UI-Kit от 25.10), поля ниже считаются без её ширины.
+          "min-h-0 flex-1 desktop:mr-2 desktop:[--ovs-start:8px] desktop:[--ovs-end:8px]",
           side === "left"
             ? // 12 + 8 (поле под полосу) = 20 справа, как в макете.
               "px-4 py-4 desktop:pt-4 desktop:pr-3 desktop:pb-4 desktop:pl-(--modal-px)"
@@ -90,6 +92,11 @@ const ModalColumns = React.forwardRef<HTMLDivElement, ModalColumnsProps>(functio
     <div
       ref={ref}
       data-slot="modal-columns"
+      // Признаки черт дублируются на корне: черту над подвалом и под шапкой
+      // рисуют соседи (правило в styles/rules-overlays.css, Правки UI-Kit от
+      // 25.10), а соседи корня — шапка и подвал, а не внутреннее окно.
+      data-divider-top={dividerTop ? "" : undefined}
+      data-divider-bottom={dividerBottom ? "" : undefined}
       className={cn(
         "flex min-h-0 flex-1 flex-col",
         // Последний в окне (подвала нет) — холдер 48px снизу, как

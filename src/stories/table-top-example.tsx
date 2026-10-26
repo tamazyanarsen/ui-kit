@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 
@@ -76,6 +77,7 @@ function DownloadMenu() {
   return (
     <MenuPrimitive.Root modal={false}>
       <MenuPrimitive.Trigger
+        {...menuClickOpenProps}
         render={
           <Button variant="secondary-grey" size="sm" icon={ChevronDown} iconPosition="right">
             Скачать

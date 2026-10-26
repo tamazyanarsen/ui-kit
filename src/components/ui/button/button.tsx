@@ -31,17 +31,37 @@ import { GosuslugiLogo } from "./gosuslugi-logo"
 // «Скачать», меню шапки), а не только у таблицы. `active:` при этом остаётся:
 // это разные события — «палец на кнопке» и «список раскрыт».
 //
-// Нажатие — `press-scale` (styles/motion.css): дизайн-чек 08.10, замечания
-// 8 и 37 заменили съезд вниз на 1px лёгким сжатием до 0.97. Прежде съезд был
-// отключён у триггеров всплывашек (`not-aria-[haspopup]`), из-за чего кнопки
-// Dropdown/«Ещё» на зажатие не отвечали вовсе (замечание 8); сжатие идёт от
-// центра и позиционер его переживает, так что исключения больше нет.
+// Нажатие — `press-clip` (styles/motion.css), Правки UI-Kit от 25.10. Сама
+// кнопка НЕ масштабируется: прежний `press-scale` сжимал её целиком, и
+// выпадающий список, открытый с зажатой кнопки, цеплялся к уменьшенной рамке
+// и отпрыгивал при отпускании. Теперь фон ужимается `clip-path` до
+// `--press-inset` (1,5%) со скруглением `--press-radius`, а содержимое —
+// одна обёртка `button-content` (см. ниже) — сжимается до `--press-scale`
+// (0.97) к центру кнопки целиком: значок и подпись больше не съезжаются друг
+// к другу, а голый текст подписи тоже сжимается. Сжатие на триггерах
+// всплывашек работает и здесь (дизайн-чек 08.10, замечание 8) — `data-pressing`
+// ставит `usePressTracking`.
+//
+// `--press-radius` равен радиусу кнопки и задан у каждого размера рядом с
+// `rounded-*`. Потребитель, который скругление переопределяет `rounded-none`
+// или `rounded-full` (подвал календаря, стрелки ленты шагов), получает
+// согласованный радиус обрезки из styles/rules-press.css.
+//
+// Кнопки 32×32 (`size-8`: `icon-sm` и любая кнопка с классом `size-8`,
+// в том числе крестик модалки) — фон ужимается на 1.5px с каждой стороны,
+// содержимое до 0.92: сжатие на 3% там полпикселя, нажатия не видно. Тоже
+// в rules-press.css: правило должно доставать и кнопки, которым размер
+// задал потребитель классом.
+//
+// Тень (`shadow-universal` у потребителя: «Наверх», кнопки Navbar при прокрутке) в
+// покое не режется: обрезка покоя расширена до 24px. На нажатии фон
+// ужимается вместе с тенью — кнопка «вдавливается».
 const buttonVariants = cva(
   // Насыщенность теперь живёт в суффиксе text-pN-medium у каждого
   // размерного варианта ниже (все Medium, как в макете), а не здесь:
   // отдельный класс font-medium тут лишь продублировал бы насыщенность,
   // уже зашитую в составной класс.
-  "group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap press-scale outline-none select-none focus-visible:focus-ring disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap press-clip [&.shadow-universal]:[clip-path:inset(-24px_round_calc(var(--press-radius,0px)+24px))] outline-none select-none focus-visible:focus-ring disabled:cursor-not-allowed disabled:!bg-[var(--btn-muted-bg)] disabled:!text-[var(--btn-muted-fg)] aria-disabled:cursor-not-allowed aria-disabled:!bg-[var(--btn-muted-bg)] aria-disabled:!text-[var(--btn-muted-fg)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -98,14 +118,14 @@ const buttonVariants = cva(
         // Раньше переопределялась только одна сторона, и у кнопки со значком
         // в конце сторона значка получала 20, а сторона текста оставалась
         // базовой — то есть асимметрия шла наоборот.
-        sm: "h-8 gap-2 rounded-[16px] px-4 text-p3-medium desktop:text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4",
+        sm: "h-8 gap-2 rounded-[16px] [--press-radius:16px] px-4 text-p2-medium-adaptive has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4",
         default:
-          "h-10 gap-2 rounded-[12px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-12 desktop:rounded-[16px] desktop:text-p1-medium",
-        lg: "h-12 gap-2 rounded-[16px] px-6 text-p2-medium has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-14 desktop:px-8 desktop:text-p1-medium desktop:has-data-[icon=inline-start]:pl-6 desktop:has-data-[icon=inline-start]:pr-8 desktop:has-data-[icon=inline-end]:pl-8 desktop:has-data-[icon=inline-end]:pr-6 desktop:[&_svg:not([class*='size-'])]:size-6",
-        icon: "size-10 rounded-[12px] desktop:size-12 desktop:rounded-[16px]",
-        "icon-sm": "size-8 rounded-[16px]",
+          "h-10 gap-2 rounded-[12px] [--press-radius:12px] px-6 text-p1-medium-adaptive has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-12 desktop:rounded-[16px] desktop:[--press-radius:16px]",
+        lg: "h-12 gap-2 rounded-[16px] [--press-radius:16px] px-6 text-p1-medium-adaptive has-data-[icon=inline-start]:pl-4 has-data-[icon=inline-start]:pr-5 has-data-[icon=inline-end]:pl-5 has-data-[icon=inline-end]:pr-4 desktop:h-14 desktop:px-8 desktop:has-data-[icon=inline-start]:pl-6 desktop:has-data-[icon=inline-start]:pr-8 desktop:has-data-[icon=inline-end]:pl-8 desktop:has-data-[icon=inline-end]:pr-6 desktop:[&_svg:not([class*='size-'])]:size-6",
+        icon: "size-10 rounded-[12px] [--press-radius:12px] desktop:size-12 desktop:rounded-[16px] desktop:[--press-radius:16px]",
+        "icon-sm": "size-8 rounded-[16px] [--press-radius:16px]",
         "icon-lg":
-          "size-12 rounded-[16px] desktop:size-14 desktop:[&_svg:not([class*='size-'])]:size-6",
+          "size-12 rounded-[16px] [--press-radius:16px] desktop:size-14 desktop:[&_svg:not([class*='size-'])]:size-6",
       },
     },
     // ⚠️ Умолчание `default` — это размер **Medium**, и в продукте он почти
@@ -240,48 +260,59 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(function Button(
       )}
       {...props}
     >
-      {isLoading ? (
-        // Дизайн-чек №10: «кнопка в состоянии лоудинг не должна менять свою
-        // ширину и должна сохранять размер, исходя из содержащегося внутри
-        // текста и иконки при наличии». Поэтому обычное содержимое остаётся в
-        // потоке и продолжает задавать ширину, просто становится невидимым, а
-        // спиннер кладётся поверх по центру.
-        //
-        // Всё остальное в этом состоянии взято из макета один в один:
-        // заливка grey-114 (--btn-muted-bg), высота и паддинги те же, что у
-        // обычной кнопки, спиннер 24px на размере L.
-        // Расходится только ширина: символы Loading в Figma уже обычных
-        // (L/Desktop/Text — 118px в Default против 88px в Loading).
-        // Это ограничение документации, а не правило:
-        // дизайнер отдельно оговорил, что «на продукте при переходе кнопки в
-        // состояние загрузки она не должна менять свой размер», и просил
-        // прописать это в корне компонента.
-        <>
-          <span
-            aria-hidden="true"
-            className="invisible inline-flex items-center gap-2"
-          >
-            {content}
-          </span>
-          {/* `invisible` убирает подпись и из дерева доступности, и кнопка
-              «Сохранить» на время загрузки становилась безымянной. Копия
-              подписи для скринридера держит имя, а `aria-busy` выше говорит,
-              что идёт загрузка. */}
-          {!iconOnly && children != null && (
-            <span className="sr-only">{children}</span>
-          )}
-          {/* Спиннер в мастере: 24px у M и L (и на десктопе, и на мобильном,
-              ширины символов Loading 72/88 = отступы + 24), 16px только у
-              S. Раньше 24px брался лишь у desktop-L, а L-Mobile и M
-              получали 16px. */}
-          <Loader
-            size={resolvedSize === "sm" || resolvedSize === "icon-sm" ? "sm" : "md"}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          />
-        </>
-      ) : (
-        content
-      )}
+      {/* Правки UI-Kit от 25.10: всё содержимое — в ОДНОЙ обёртке, и
+          `press-clip` сжимает её целиком к центру кнопки. Без обёртки каждый
+          ребёнок сжимался к своему центру и они съезжались, а голый текст
+          подписи не сжимался вовсе. Обёртка занимает всю коробку кнопки
+          (`grow`) и наследует от неё зазор и выравнивание по главной оси —
+          `gap-*` и `justify-*` потребителя на кнопке работают как раньше. */}
+      <span
+        data-slot="button-content"
+        className="flex min-w-0 grow items-center [justify-content:inherit] [gap:inherit]"
+      >
+        {isLoading ? (
+          // Дизайн-чек №10: «кнопка в состоянии лоудинг не должна менять свою
+          // ширину и должна сохранять размер, исходя из содержащегося внутри
+          // текста и иконки при наличии». Поэтому обычное содержимое остаётся в
+          // потоке и продолжает задавать ширину, просто становится невидимым, а
+          // спиннер кладётся поверх по центру.
+          //
+          // Всё остальное в этом состоянии взято из макета один в один:
+          // заливка grey-114 (--btn-muted-bg), высота и паддинги те же, что у
+          // обычной кнопки, спиннер 24px на размере L.
+          // Расходится только ширина: символы Loading в Figma уже обычных
+          // (L/Desktop/Text — 118px в Default против 88px в Loading).
+          // Это ограничение документации, а не правило:
+          // дизайнер отдельно оговорил, что «на продукте при переходе кнопки в
+          // состояние загрузки она не должна менять свой размер», и просил
+          // прописать это в корне компонента.
+          <>
+            <span
+              aria-hidden="true"
+              className="invisible inline-flex items-center gap-2"
+            >
+              {content}
+            </span>
+            {/* `invisible` убирает подпись и из дерева доступности, и кнопка
+                «Сохранить» на время загрузки становилась безымянной. Копия
+                подписи для скринридера держит имя, а `aria-busy` выше говорит,
+                что идёт загрузка. */}
+            {!iconOnly && children != null && (
+              <span className="sr-only">{children}</span>
+            )}
+            {/* Спиннер в мастере: 24px у M и L (и на десктопе, и на мобильном,
+                ширины символов Loading 72/88 = отступы + 24), 16px только у
+                S. Раньше 24px брался лишь у desktop-L, а L-Mobile и M
+                получали 16px. */}
+            <Loader
+              size={resolvedSize === "sm" || resolvedSize === "icon-sm" ? "sm" : "md"}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            />
+          </>
+        ) : (
+          content
+        )}
+      </span>
     </ButtonPrimitive>
   )
 })

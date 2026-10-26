@@ -142,7 +142,7 @@ export const ComboboxTrigger = React.forwardRef<
               <X aria-hidden="true" className={SELECT_ICON_SIZE[size]} />
             </button>
           )}
-          <ComboboxPrimitive.Icon className="text-[var(--select-icon-fg)] transition-transform group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-popup-open/trigger:rotate-180">
+          <ComboboxPrimitive.Icon className="text-[var(--select-icon-fg)] transition-transform duration-200 ease-out group-data-disabled/trigger:text-[var(--select-icon-fg-disabled)] group-data-popup-open/trigger:rotate-180">
             <ChevronDown className={SELECT_ICON_SIZE[size]} />
           </ComboboxPrimitive.Icon>
         </span>

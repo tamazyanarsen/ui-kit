@@ -16,8 +16,18 @@ import { flattenChildren } from "@/lib/flatten-children"
  *
  * Используют пункт списка Select, значение Select и значение
  * ComboboxTrigger — всюду, где текст лежит прямо во флексе.
+ *
+ * Режим `wrap` — для строк выпадающих списков (Правки UI-Kit от 25.10):
+ * текст не обрезается, а переносится, строка растёт по высоте. `anywhere`,
+ * а не `break-words`: только он уменьшает min-content, и неразрывное слово
+ * не раздвигает список вбок. Многоточие (`clip`) остаётся в значении
+ * триггера, у которого высота фиксирована.
  */
-function clipText(children: React.ReactNode) {
+function clipText(children: React.ReactNode, mode: "clip" | "wrap" = "clip") {
+  const textClass =
+    mode === "wrap"
+      ? "min-w-0 [overflow-wrap:anywhere]"
+      : "min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px]"
   const out: React.ReactNode[] = []
   let text: Array<string | number> = []
   const flush = () => {
@@ -26,7 +36,8 @@ function clipText(children: React.ReactNode) {
       <span
         key={`text-${out.length}`}
         data-slot="clip-text"
-        className="min-w-0 overflow-clip text-ellipsis whitespace-nowrap [overflow-clip-margin:4px]"
+        data-mode={mode}
+        className={textClass}
       >
         {text.join("")}
       </span>

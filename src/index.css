@@ -33,5 +33,14 @@
 @import "./styles/tokens-content.css";
 @import "./styles/tokens-table.css";
 
+/* Сквозные правила по областям (Правки UI-Kit от 25.10). Вне
+   слоёв, как и component-rules.css: перебивают утилиты порядком. */
+@import "./styles/rules-press.css";
+@import "./styles/rules-lists.css";
+@import "./styles/rules-overlays.css";
+@import "./styles/rules-scroll.css";
+@import "./styles/rules-header.css";
+@import "./styles/rules-content.css";
+
 @import "./styles/theme-odl-elk.css";
 @import "./styles/theme-test-mono.css";

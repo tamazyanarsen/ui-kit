@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { useArgs } from "storybook/preview-api"
 
 import {
   PseudoBox,
@@ -55,6 +56,8 @@ type PlaygroundArgs = ChipsProps & {
   state?: PlaygroundState
   viewport?: Viewport
   showCount?: boolean
+  /** Нажимаемый режим (`onPressedChange`): в Playground нажатие переключает «Выбрана». */
+  pressable?: boolean
 }
 
 const CONTENT = { table: { category: "Контент" } }
@@ -91,6 +94,14 @@ const meta = {
     // Дизайн-чек №19: состояние «выбрана» (State=Active в макете).
     selected: { name: "Выбрана", control: "boolean" },
     closable: { name: "Крестик", control: "boolean" },
+    // Правки UI-Kit от 25.10: нажимаемый режим фильтр-чипса.
+    pressable: {
+      name: "Нажимаемая",
+      control: "boolean",
+      description:
+        "Проп onPressedChange: чипс становится кнопкой с aria-pressed (Tab, Enter/Space), нажатие переключает «Выбрана». Крестик в этом режиме не рисуется — кнопка внутри кнопки недопустима",
+    },
+    onPressedChange: { table: { disable: true } },
     children: { control: "text", ...CONTENT },
     subtitle: { control: "text", ...CONTENT },
     count: { control: { type: "number", min: 0, max: 99 }, ...CONTENT },
@@ -106,6 +117,7 @@ const meta = {
     open: false,
     selected: false,
     closable: false,
+    pressable: false,
     children: "Значение",
     subtitle: "Подпись",
     count: 5,
@@ -116,17 +128,22 @@ export default meta
 type Story = StoryObj<PlaygroundArgs>
 
 export const Playground: Story = {
-  render: ({ state, viewport, showCount, count, ...args }) => (
-    <PseudoBox state={state} viewport={viewport}>
-      <Chips
-        {...args}
-        count={showCount ? count : undefined}
-        disabled={state === "disabled"}
-        // Крестик рисуется только с обработчиком удаления.
-        onRemove={() => {}}
-      />
-    </PseudoBox>
-  ),
+  render: function Render({ state, viewport, showCount, count, pressable, ...args }) {
+    const [, updateArgs] = useArgs<PlaygroundArgs>()
+    return (
+      <PseudoBox state={state} viewport={viewport}>
+        <Chips
+          {...args}
+          count={showCount ? count : undefined}
+          disabled={state === "disabled"}
+          // Крестик рисуется только с обработчиком удаления.
+          onRemove={() => {}}
+          // Выбор возвращается в контрол «Выбрана».
+          onPressedChange={pressable ? (selected) => updateArgs({ selected }) : undefined}
+        />
+      </PseudoBox>
+    )
+  },
 }
 
 export const Matrix: Story = {
@@ -170,6 +187,8 @@ export const Matrix: Story = {
           { label: "+ подпись", props: { subtitle: "Подпись" } },
           { label: "+ счётчик", props: { count: 5 } },
           { label: "+ крестик", props: { closable: true } },
+          // Нажимаемый режим: кнопка с aria-pressed, крестика нет.
+          { label: "Нажимаемая", props: { onPressedChange: () => {} } },
           {
             label: "+ иконки",
             props: {

@@ -11,6 +11,7 @@ import {
   type PlaygroundState,
 } from "@/stories/matrix"
 import { type Viewport } from "@/lib/viewport"
+import { useIsDesktop } from "@/lib/use-is-desktop"
 
 import { Select, SelectValue } from "./root"
 import { SelectTrigger } from "./trigger"
@@ -62,6 +63,8 @@ interface DemoSelectProps {
   disabled?: boolean
   readOnly?: boolean
   open?: boolean
+  /** Заголовок мобильной шторы (Правки UI-Kit от 25.10); пусто — подпись поля. */
+  sheetTitle?: string
 }
 
 function DemoSelect({
@@ -76,7 +79,13 @@ function DemoSelect({
   disabled,
   readOnly,
   open,
+  sheetTitle,
 }: DemoSelectProps) {
+  // В мобильном виде раскрытое поле — штора на весь экран с затемнением.
+  // Состояние Active матрицы и контрола не открывает её само (иначе ячейка
+  // матрицы накрывала бы всю витрину) — штора открывается нажатием.
+  const isDesktop = useIsDesktop()
+  if (!isDesktop) open = false
   const withLogo = mask === "Logotype" || mask === "Logotype BIK"
   const options = withLogo ? BANK_OPTIONS : FRUIT_OPTIONS
   // Маска Empty — это незаполненное поле, Lock — заблокированное.
@@ -140,7 +149,7 @@ function DemoSelect({
           }}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent sheetTitle={sheetTitle || undefined}>
         {options.map((o) => (
           <SelectItem key={o.value} value={o.value}>
             {o.label}
@@ -218,6 +227,12 @@ const meta = {
     comment: { control: "text", table: { category: "Контент" } },
     errorText: { control: "text", table: { category: "Контент" } },
     clearable: { control: "boolean", table: { category: "Контент" } },
+    sheetTitle: {
+      name: "Заголовок шторы (мобайл)",
+      description: "Правки UI-Kit от 25.10: в мобильном виде список — штора; пусто — подпись поля",
+      control: "text",
+      table: { category: "Контент" },
+    },
     defaultValue: { table: { disable: true } },
     // Значения осей Type и State — отдельных контролов у них нет.
     disabled: { table: { disable: true } },
@@ -237,6 +252,7 @@ const meta = {
     comment: "Comment",
     errorText: "Text about error here",
     clearable: true,
+    sheetTitle: "",
   },
 } satisfies Meta<PlaygroundArgs>
 

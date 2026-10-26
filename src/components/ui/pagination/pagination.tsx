@@ -142,7 +142,7 @@ function PageButton({
         // своей коробки 36px. Высота по-прежнему складывается в 36
         // (9 + 20 + 7), ширина — в 44 (8 + 28 + 8).
         // Size=Mobile: 12/16, px 6 — 40 × 32 (9 + 16 + 7, 6 + 28 + 6).
-        "flex min-w-10 shrink-0 cursor-pointer items-center justify-center rounded-full px-1.5 pt-[9px] pb-[7px] text-p3-medium text-[var(--pagination-fg)] outline-none focus-visible:focus-ring press-scale desktop:min-w-11 desktop:px-2 desktop:text-p2-medium",
+        "flex min-w-10 shrink-0 cursor-pointer items-center justify-center rounded-full px-1.5 pt-[9px] pb-[7px] text-p2-medium-adaptive text-[var(--pagination-fg)] outline-none focus-visible:focus-ring press-scale desktop:min-w-11 desktop:px-2",
         "not-data-active:hover:bg-[var(--pagination-hover-bg)]",
         "not-data-active:active:bg-[var(--pagination-onclick-bg)]",
         "data-active:bg-[var(--pagination-active-bg)]"

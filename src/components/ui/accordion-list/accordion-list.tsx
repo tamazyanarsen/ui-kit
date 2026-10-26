@@ -42,8 +42,8 @@ const DESCRIPTION_COLOR: Record<DescriptionType, string> = {
 // На мобиле H3 и H4 одинаковы — 18/24 (в мастере Size=Mobile у Large Title и
 // Small Title один и тот же кегль), разница появляется только с desktop.
 const TITLE_SIZE = {
-  h3: "text-h3-mobile desktop:text-h3",
-  h4: "text-h4-mobile desktop:text-h4",
+  h3: "text-h3-adaptive",
+  h4: "text-h4-adaptive",
 } as const
 
 interface AccordionListItemProps {
@@ -225,7 +225,7 @@ function AccordionListItem({
                     // центрирует 24px-строку в 32px-строке заголовка H3;
                     // на H4 строка заголовка 28px, поэтому 2px.
                     // Мобила: строка Description — слева, 14/20, `py-1.5`.
-                    "col-span-2 col-start-1 row-start-3 mt-3 mr-3 shrink-0 py-1.5 text-p2-medium desktop:m-0 desktop:text-right desktop:text-p1-medium",
+                    "col-span-2 col-start-1 row-start-3 mt-3 mr-3 shrink-0 py-1.5 text-p1-medium-adaptive desktop:m-0 desktop:text-right",
                     titleAs === "h4" ? "desktop:py-0.5" : "desktop:py-1",
                     DESCRIPTION_COLOR[descriptionType]
                   )}
@@ -236,7 +236,7 @@ function AccordionListItem({
             </span>
             {hasNode(subtitle) && (
               // Подзаголовок в мастере тоже `w-full` без обрезки — переносится.
-              <span className="col-span-2 col-start-2 row-start-2 mt-1 text-p2-medium [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)] desktop:m-0 desktop:text-p1-medium">
+              <span className="col-span-2 col-start-2 row-start-2 mt-1 text-p1-medium-adaptive [overflow-wrap:anywhere] text-[var(--accordion-list-subtitle-fg)] desktop:m-0">
                 {subtitle}
               </span>
             )}

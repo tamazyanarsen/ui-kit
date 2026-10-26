@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { hasContent } from "@/lib/has-content"
 import { NoOrphan } from "@/lib/no-orphan"
 import { hasNode } from "@/lib/has-node"
-import { Tooltip } from "@/components/ui/tooltip"
+import { InfoHint } from "@/components/ui/info-hint"
 
 import { CopyButton } from "./copy-button"
 
@@ -60,6 +60,13 @@ interface ItemInformationFieldProps {
   subTextStatus?: Exclude<FieldStatus, "information">
   labelInfo?: React.ReactNode
   valueInfo?: React.ReactNode
+  /**
+   * Особый заголовок мобильной шторы подсказки `labelInfo` (Правки UI-Kit от
+   * 25.10, значок «i» в мобильном виде — штора). По умолчанию «Информация».
+   */
+  labelInfoTitle?: React.ReactNode
+  /** То же для подсказки `valueInfo`. */
+  valueInfoTitle?: React.ReactNode
   copyable?: boolean
   /**
    * Разделитель под строкой (только у типа Label Left).
@@ -90,11 +97,18 @@ interface ItemInformationFieldProps {
 //
 // Крупная строка (H2, 44px) в макете имеет `pb-[18px]`, то есть глиф стоит
 // на 4px выше baseline — отсюда отрицательный сдвиг.
+//
+// Правки UI-Kit от 25.10: значок — через `InfoHint`: на десктопе тултип по
+// наведению, в мобильном виде нажатие открывает штору с текстом (заголовок
+// `labelInfoTitle`/`valueInfoTitle` или «Информация»), наведение на значок
+// там не действует.
 function InfoIcon({
   content,
+  title,
   large = false,
 }: {
   content: React.ReactNode
+  title?: React.ReactNode
   large?: boolean
 }) {
   return (
@@ -121,18 +135,20 @@ function InfoIcon({
           large ? "top-[-4px]" : "top-[2px]"
         )}
       >
-        <Tooltip content={content}>
+        <InfoHint content={content} title={title}>
           <button
             type="button"
             aria-label="Информация"
             // Дизайн-чек от 07.09, замечание 19: значок отзывается на
             // наведение сам, а не только всплывающей через 400 мс
-            // подсказкой — иначе он читается как нарисованный.
-            className="flex size-4 shrink-0 cursor-help items-center justify-center text-[var(--ifield-icon-fg)] outline-none transition-colors hover:text-[var(--ifield-icon-fg-hover)] focus-visible:focus-ring"
+            // подсказкой — иначе он читается как нарисованный. Только на
+            // десктопе: в мобильном виде значок на наведение не реагирует
+            // (Правки UI-Kit от 25.10).
+            className="flex size-4 shrink-0 cursor-help items-center justify-center text-[var(--ifield-icon-fg)] outline-none transition-colors desktop:hover:text-[var(--ifield-icon-fg-hover)] focus-visible:focus-ring"
           >
             <Info aria-hidden="true" className="size-4" />
           </button>
-        </Tooltip>
+        </InfoHint>
       </span>
     </NoOrphan>
   )
@@ -148,6 +164,8 @@ function ItemInformationField({
   subTextStatus = "default",
   labelInfo,
   valueInfo,
+  labelInfoTitle,
+  valueInfoTitle,
   copyable = false,
   divider,
   className,
@@ -177,9 +195,9 @@ function ItemInformationField({
   // «корпоративного» не переносилось и выталкивало строку за поле (аудит 21).
   // `anywhere` рвёт слово, только когда оно одно не помещается в строку.
   const labelRow = (
-    <span className="block min-w-0 [overflow-wrap:anywhere] text-p2-medium text-[var(--ifield-label-fg)] desktop:text-p1-medium">
+    <span className="block min-w-0 [overflow-wrap:anywhere] text-p1-medium-adaptive text-[var(--ifield-label-fg)]">
       {label}
-      {hasContent(labelInfo) && <InfoIcon content={labelInfo} />}
+      {hasContent(labelInfo) && <InfoIcon content={labelInfo} title={labelInfoTitle} />}
     </span>
   )
 
@@ -191,13 +209,15 @@ function ItemInformationField({
         // которой он нужен. На мобильном: 22/30 у большого значения и
         // 14/20 у остальных.
         "block min-w-0 [overflow-wrap:anywhere]",
-        large ? "text-h2-mobile desktop:text-h2" : "text-p2-medium desktop:text-p1-medium",
+        large ? "text-h2-adaptive" : "text-p1-medium-adaptive",
         VALUE_COLOR[valueStatus]
       )}
     >
       {/* Обёртка — источник текста для копирования, если `copyValue` нет. */}
       <span data-slot="item-information-field-value">{value}</span>
-      {hasContent(valueInfo) && <InfoIcon content={valueInfo} large={large} />}
+      {hasContent(valueInfo) && (
+        <InfoIcon content={valueInfo} title={valueInfoTitle} large={large} />
+      )}
     </span>
   )
 
@@ -206,7 +226,7 @@ function ItemInformationField({
   const subTextRow = hasNode(subText) && (
     <span
       className={cn(
-        "text-p3-medium [overflow-wrap:anywhere] desktop:text-p2-medium",
+        "text-p2-medium-adaptive [overflow-wrap:anywhere]",
         SUBTEXT_COLOR[subTextStatus]
       )}
     >

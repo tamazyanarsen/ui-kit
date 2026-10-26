@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { useHeaderBottom } from "@/lib/use-header-bottom"
 import { useViewportInsetTop } from "@/lib/use-viewport-inset-top"
 import { resolveFavouriteLinks } from "@/components/ui/header-menu"
 
@@ -84,8 +85,12 @@ mobile = false) {
 
   // Что именно закрепляется — см. `pinned`. Если нижний ряд есть, липнет
   // только он; если его нет, липнет вся шапка.
-  const pinnedRow = pinned && showNavRow && !mobile
-  const pinnedRoot = pinned && (!showNavRow || mobile)
+  //
+  // Мобильная форма закрепляется только по явному `"always"` (Правки UI-Kit
+  // от 25.10): она прозрачная, и закреплённой легла бы поверх содержимого.
+  const pinnedOn = mobile ? pinned === "always" : Boolean(pinned)
+  const pinnedRow = pinnedOn && showNavRow && !mobile
+  const pinnedRoot = pinnedOn && (!showNavRow || mobile)
 
   // Смена формы (Desktop ↔ Mobile) закрывает панель: кнопки, которые её
   // открыли и закрывают, переехали в другую полосу, а наполнение меню —
@@ -101,6 +106,9 @@ mobile = false) {
   const navRowRef = React.useRef<HTMLDivElement>(null)
   useViewportInsetTop(rootRef, pinnedRoot)
   useViewportInsetTop(navRowRef, pinnedRow)
+  // Нижняя кромка шапки — для стопки тостов; публикуется всегда, в любой
+  // форме и при любом закреплении (см. `use-header-bottom.ts`).
+  useHeaderBottom(rootRef, true, `${mobile}:${pinnedRow}`)
 
   return {
     isBlocked,

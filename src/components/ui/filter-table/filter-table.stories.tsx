@@ -8,7 +8,7 @@ import {
   toggleArgType,
   type PlaygroundState,
 } from "@/stories/matrix"
-import { type Viewport } from "@/lib/viewport"
+import { ViewportScope, type Viewport } from "@/lib/viewport"
 
 import { FilterTable, type FilterTableProps } from "./filter-table"
 import { FilterTableSelect } from "./filter-table-select"
@@ -131,12 +131,16 @@ export const Matrix: Story = {
 export const Opened: Story = {
   name: "Раскрытый фильтр",
   parameters: { layout: "padded", controls: { disable: true } },
+  // Поповер — десктопная форма: уже 1280 фильтр открывает штору (Правки
+  // UI-Kit от 25.10), поэтому витрина форсирует Desktop.
   render: () => (
-    <div className="flex h-96 items-start gap-4">
-      <FilterTableSelect label="Статус" open />
-      <FilterTableSelect label="Сумма" type="text" />
-      <FilterTableSelect label="Период" type="counter" count={3} />
-      <FilterTableSelect label="Тип" defaultValue="Оплачен" />
-    </div>
+    <ViewportScope viewport="desktop">
+      <div className="flex h-96 items-start gap-4">
+        <FilterTableSelect label="Статус" open />
+        <FilterTableSelect label="Сумма" type="text" />
+        <FilterTableSelect label="Период" type="counter" count={3} />
+        <FilterTableSelect label="Тип" defaultValue="Оплачен" />
+      </div>
+    </ViewportScope>
   ),
 }

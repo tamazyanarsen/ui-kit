@@ -4,7 +4,7 @@ import { Check, ChevronRight, ChevronUp, Info } from "@/icons"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Toggle } from "@/components/ui/toggle"
-import { Tooltip } from "@/components/ui/tooltip"
+import { InfoHint } from "@/components/ui/info-hint"
 
 // Области нажатия у правых элементов (по разделу макета «Активные
 // области»): у Navigation, Accordion (Select), Check, Text и None
@@ -30,6 +30,8 @@ interface RightElementProps {
   /** Панель, которую раскрывает строка, сейчас открыта (тип `select`). */
   open?: boolean
   informationText?: React.ReactNode
+  /** Особый заголовок мобильной шторы подсказки; по умолчанию «Информация». */
+  informationTitle?: React.ReactNode
   rightText?: React.ReactNode
   toggleChecked?: boolean
   onToggleChange?: (checked: boolean) => void
@@ -65,6 +67,7 @@ function RightElement({
   disabled,
   open = false,
   informationText,
+  informationTitle,
   rightText,
   toggleChecked,
   onToggleChange,
@@ -120,9 +123,10 @@ function RightElement({
 
     case "text":
       return (
-        // Мобильная форма — ступенью ниже, как и весь текст строки
+        // Мобильная форма — мобильная пара P1 (адаптивная утилита, Правки
+        // UI-Kit от 25.10), как и весь текст строки
         // (дизайн-чек от 13.09, замечание 4).
-        <span className="max-w-[70%] min-w-0 text-right text-p2-medium [overflow-wrap:anywhere] text-[var(--item-right-text-fg)] desktop:text-p1-medium">
+        <span className="max-w-[70%] min-w-0 text-right text-p1-medium-adaptive [overflow-wrap:anywhere] text-[var(--item-right-text-fg)]">
           {rightText}
         </span>
       )
@@ -130,7 +134,9 @@ function RightElement({
     case "information":
       return (
         <IsolatedControl className="justify-center">
-          <Tooltip content={informationText}>
+          {/* Правки UI-Kit от 25.10: тултип на десктопе, штора в мобильном
+              виде (`InfoHint`). */}
+          <InfoHint content={informationText} title={informationTitle}>
             <button
               type="button"
               disabled={disabled}
@@ -145,7 +151,7 @@ function RightElement({
             >
               <Info aria-hidden="true" className="size-4" />
             </button>
-          </Tooltip>
+          </InfoHint>
         </IsolatedControl>
       )
 

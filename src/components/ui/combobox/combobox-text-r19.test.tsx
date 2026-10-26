@@ -27,9 +27,11 @@ describe("Combobox: длинные тексты", () => {
       expect(label).toHaveClass("min-w-0")
       expect(label).toHaveClass("text-ellipsis")
       expect(label).toHaveClass("whitespace-nowrap")
-      // Сверка r19: подпись забирает боковые поля кнопки, иначе короткое
-      // «Сбросить» в поле 200px обрезалось, хотя раньше помещалось.
-      expect(label).toHaveClass("-mx-4")
+      // Сверка r19: у подписи боковое поле 8px, иначе короткое «Сбросить»
+      // в поле 200px обрезалось, хотя раньше помещалось. С 25.10 поле
+      // задаёт сама кнопка подвала (`px-2`), а не отрицательный отступ
+      // подписи поверх полей Button.
+      expect(label.closest("button")).toHaveClass("px-2")
     }
   })
 })

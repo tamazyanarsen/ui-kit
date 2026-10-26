@@ -27,8 +27,8 @@ export const selectTriggerVariants = cva(
         // минимума, `items-center` держит его по центру.
         // Полный проход 30.09: S/Mobile в макете — 12/16 (P2 Medium Mobile), а
         // S/Desktop — 14/20; стояло 14/20 на обоих.
-        sm: "min-h-8 gap-2 rounded-[8px] px-4 text-p3-medium desktop:text-p2-medium",
-        lg: "min-h-12 gap-2 rounded-[16px] px-4 text-p2-medium desktop:min-h-14 desktop:text-p1-medium",
+        sm: "min-h-8 gap-2 rounded-[8px] px-4 text-p2-medium-adaptive",
+        lg: "min-h-12 gap-2 rounded-[16px] px-4 text-p1-medium-adaptive desktop:min-h-14",
       },
       invalid: {
         true: "border-[var(--select-border-error)] hover:border-[var(--select-border-error-hover)] focus:border-[var(--select-border-error-hover)]",
@@ -67,13 +67,13 @@ export const selectTriggerVariants = cva(
 // как у Input: отступ 16 + шеврон 16 + зазор 8 = `right-10`; при значении
 // рядом встаёт ещё крестик очистки (16 + 8) — `right-16`.
 export const selectFloatingLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate group-[&:not([data-placeholder])]/trigger:right-16 text-p2-medium text-[var(--select-label-fg)] transition-all desktop:text-p1-medium group-data-popup-open/trigger:top-[6px] desktop:group-data-popup-open/trigger:top-[7px] group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-medium desktop:group-data-popup-open/trigger:text-p3-medium group-[&:not([data-placeholder])]/trigger:top-[6px] desktop:group-[&:not([data-placeholder])]/trigger:top-[7px] group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-medium desktop:group-[&:not([data-placeholder])]/trigger:text-p3-medium group-data-disabled/trigger:text-[var(--select-label-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate group-[&:not([data-placeholder])]/trigger:right-16 text-p1-medium-adaptive text-[var(--select-label-fg)] transition-all group-data-popup-open/trigger:top-[6px] desktop:group-data-popup-open/trigger:top-[7px] group-data-popup-open/trigger:translate-y-0 group-data-popup-open/trigger:text-p3-medium desktop:group-data-popup-open/trigger:text-p3-medium group-[&:not([data-placeholder])]/trigger:top-[6px] desktop:group-[&:not([data-placeholder])]/trigger:top-[7px] group-[&:not([data-placeholder])]/trigger:translate-y-0 group-[&:not([data-placeholder])]/trigger:text-p3-medium desktop:group-[&:not([data-placeholder])]/trigger:text-p3-medium group-data-disabled/trigger:text-[var(--select-label-fg-disabled)]"
 
 // Статичная подпись (S) видна только в пустом поле — крестика рядом ещё
 // нет, поэтому граница одна: `right-10`. Центрируется сдвигом, а не
 // флексом: у flex-контейнера текст — анонимный элемент, и `truncate`
 // обрезал его без многоточия.
 export const selectStaticLabelClassName =
-  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate text-p3-medium desktop:text-p2-medium text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-label-fg-disabled)]"
+  "pointer-events-none absolute top-1/2 left-4 right-10 -translate-y-1/2 truncate text-p2-medium-adaptive text-[var(--select-label-fg)] transition-opacity group-[&:not([data-placeholder])]/trigger:opacity-0 group-data-disabled/trigger:text-[var(--select-label-fg-disabled)]"
 
 export const SELECT_ICON_SIZE = { sm: "size-4", lg: "size-4" } as const

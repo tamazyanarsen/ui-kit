@@ -1,12 +1,25 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { ChevronDown, ChevronUp, X } from "@/icons"
+import { ChevronDown, X } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { POPUP_COLLISION } from "@/lib/popup-position"
+import { useIsDesktop } from "@/lib/use-is-desktop"
+import { useViewportAttr } from "@/lib/viewport"
 import { filterTablePillClass } from "./filter-table"
 import { Badge } from "@/components/ui/badge"
 import { Dropdown } from "@/components/ui/dropdown"
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/ui/modal"
+
+import { FitLabel } from "./fit-label"
 
 // FilterShell — триггер-чип и всплывающее окно, общие для всех видов
 // фильтра.
@@ -23,6 +36,13 @@ import { Dropdown } from "@/components/ui/dropdown"
 //
 // По видам меняются только тело всплывающего окна и его ширина — именно эти
 // две вещи оболочка и берёт у вызывающего кода.
+//
+// Правки UI-Kit от 25.10, «Выпадающие списки — нет мобильного варианта
+// „штора“»: в мобильном виде (уже 1280, `useIsDesktop()`) окно — не поповер у
+// триггера, а штора `Modal` кита: заголовок — название фильтра, ниже тело
+// (`sheetBody`, без него — те же `children`), внизу кнопки во всю ширину
+// (`sheetFooter`). Триггер тот же; крестик сброса на нём работает, не
+// открывая шторы.
 
 const ICON_SIZE = "size-4"
 
@@ -65,6 +85,17 @@ interface FilterShellProps {
   onOpenChange: (open: boolean) => void
   /** Ширина всплывающего окна в пикселях — 384 для большинства видов, 560 для даты. */
   width?: number
+  /**
+   * Короткая подпись выбранного фильтра — показывается, если `valueLabel` не
+   * помещается в чип (FilterRange: сумма без названия).
+   */
+  valueLabelShort?: React.ReactNode
+  /** Тело мобильной шторы. Без него в шторе рисуются `children`. */
+  sheetBody?: React.ReactNode
+  /** Кнопки подвала мобильной шторы — во всю ширину, см. `FilterSheetButtons`. */
+  sheetFooter?: React.ReactNode
+  /** Что получает фокус при открытии поповера (строка одиночного выбора). */
+  initialFocus?: React.RefObject<HTMLElement | null>
   children?: React.ReactNode
   className?: string
 }
@@ -80,10 +111,17 @@ function FilterShell({
   open,
   onOpenChange,
   width = 384,
+  valueLabelShort,
+  sheetBody,
+  sheetFooter,
+  initialFocus,
   children,
   className,
 }: FilterShellProps) {
   const anchorRef = React.useRef<HTMLDivElement>(null)
+  const isDesktop = useIsDesktop()
+  // Поповер уходит порталом за `ViewportScope` — форму ему передаёт атрибут.
+  const viewport = useViewportAttr()
 
   // Отключённый фильтр закрывается по-настоящему, а не только глушится
   // через `open={false}`: иначе внутреннее `open` владельца оставалось
@@ -104,72 +142,118 @@ function FilterShell({
             event.stopPropagation()
             onClear()
           }}
-          className="text-current outline-none focus-visible:focus-ring"
+          // Правки UI-Kit от 25.10: зона нажатия — не меньше 32×32 (на всю
+          // высоту чипа), а значок по-прежнему 16. Зону даёт прозрачный
+          // `::before` с выносом 8 во все стороны; вид кнопки не меняется.
+          className="relative text-current outline-none before:absolute before:-inset-2 focus-visible:focus-ring"
         >
           <X aria-hidden="true" className={ICON_SIZE} />
         </button>
       )
     }
     if (type !== "select") return null
-    const Chevron = open ? ChevronUp : ChevronDown
+    // Правки UI-Kit от 25.10, «Шеврон открытия — поворот, а не смена значка»:
+    // один и тот же значок поворачивается на 180° за 200 мс (ease-out), а не
+    // подменяется значком «вверх» — подмена читалась как вспышка.
     return (
-      <Chevron
+      <ChevronDown
         aria-hidden="true"
-        className={cn(ICON_SIZE, "shrink-0 text-current")}
+        data-slot="filter-chevron"
+        className={cn(
+          ICON_SIZE,
+          "shrink-0 text-current transition-[rotate] duration-200 ease-out motion-reduce:transition-none",
+          open && "rotate-180"
+        )}
       />
     )
   }
 
+  const shownOpen = disabled ? false : open
+  const fitLabel =
+    active && valueLabel !== undefined && valueLabelShort !== undefined
+
+  const triggerElement = (
+    <div
+      ref={anchorRef}
+      data-slot="filter"
+      data-type={type}
+      data-checked={active || undefined}
+      data-disabled={disabled || undefined}
+      className={cn(
+        "group/filter w-fit min-w-20 cursor-pointer outline-none select-none not-data-popup-open:focus-visible:focus-ring data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+        filterTablePillClass({ selected: active, disabled }),
+        className
+      )}
+    />
+  )
+
+  const triggerContent = (
+    <span className="relative flex w-full min-w-0 items-center gap-2">
+      {fitLabel ? (
+        <FitLabel full={valueLabel} short={valueLabelShort} />
+      ) : (
+        <span
+          data-slot="filter-label"
+          className={cn("min-w-0 truncate", !active && "flex-1 text-center")}
+        >
+          {active && valueLabel !== undefined ? valueLabel : label}
+        </span>
+      )}
+      {count !== undefined && (
+        <Badge
+          type="counter"
+          value={count}
+          color="dark-grey"
+          disabled={disabled}
+        />
+      )}
+      <span className="ml-auto flex shrink-0 items-center empty:hidden">
+        {renderTriggerAction()}
+      </span>
+    </span>
+  )
+
+  // Обёртка — флекс-контейнер с `max-w-full`, как у `FilterTableSelect`:
+  // в блочном `w-fit` минимальная ширина пилюли — вся её подпись без
+  // переноса, и колонка уже 256 выпускала чип за край. Флекс даёт пилюле
+  // сжаться до колонки, а подписи — обрезаться многоточием (ревью 10.10,
+  // п. 10: правка была только в одном из двух триггеров).
+  if (!isDesktop) {
+    return (
+      <div className="flex w-fit max-w-full min-w-0">
+        <Modal open={shownOpen} onOpenChange={onOpenChange}>
+          <ModalTrigger
+            disabled={disabled}
+            nativeButton={false}
+            render={triggerElement}
+          >
+            {triggerContent}
+          </ModalTrigger>
+          <ModalContent size="m" data-slot="filter-sheet">
+            <ModalHeader>
+              <ModalTitle>{label}</ModalTitle>
+            </ModalHeader>
+            {/* Поля тела задают сами виды фильтра: строкам выбора нужны
+                отступы 16 на всю ширину шторы, полям — свои. */}
+            <ModalBody className="p-0">{sheetBody ?? children}</ModalBody>
+            {sheetFooter !== undefined && (
+              <ModalFooter>{sheetFooter}</ModalFooter>
+            )}
+          </ModalContent>
+        </Modal>
+      </div>
+    )
+  }
+
   return (
-    // Обёртка — флекс-контейнер с `max-w-full`, как у `FilterTableSelect`:
-    // в блочном `w-fit` минимальная ширина пилюли — вся её подпись без
-    // переноса, и колонка уже 256 выпускала чип за край. Флекс даёт пилюле
-    // сжаться до колонки, а подписи — обрезаться многоточием (ревью 10.10,
-    // п. 10: правка была только в одном из двух триггеров).
     <div className="flex w-fit max-w-full min-w-0">
-      <PopoverPrimitive.Root
-        open={disabled ? false : open}
-        onOpenChange={onOpenChange}
-      >
+      <PopoverPrimitive.Root open={shownOpen} onOpenChange={onOpenChange}>
         <PopoverPrimitive.Trigger
           disabled={disabled}
           nativeButton={false}
-          render={
-            <div
-              ref={anchorRef}
-              data-slot="filter"
-              data-type={type}
-              data-checked={active || undefined}
-              data-disabled={disabled || undefined}
-              className={cn(
-                "group/filter w-fit min-w-20 cursor-pointer outline-none select-none not-data-popup-open:focus-visible:focus-ring data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
-                filterTablePillClass({ selected: active, disabled }),
-                className
-              )}
-            />
-          }
+          render={triggerElement}
         >
-          <span className="flex w-full min-w-0 items-center gap-2">
-            <span
-              className={cn(
-                "min-w-0 truncate",
-                !active && "flex-1 text-center"
-              )}
-            >
-              {active && valueLabel !== undefined ? valueLabel : label}
-            </span>
-            {count !== undefined && (
-              <Badge
-                type="counter"
-                value={count}
-                color="dark-grey"
-                disabled={disabled}
-              />
-            )}
-            <span className="ml-auto flex shrink-0 items-center empty:hidden">
-              {renderTriggerAction()}
-            </span>
-          </span>
+          {triggerContent}
         </PopoverPrimitive.Trigger>
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Positioner
@@ -182,6 +266,8 @@ function FilterShell({
           >
             <PopoverPrimitive.Popup
               data-slot="filter-content"
+              data-viewport={viewport}
+              initialFocus={initialFocus}
               // Аудит 13: в низком окне (400px) окно выше доступного места
               // уходило вниз, и «Применить» было не достать — позиционер
               // двигает окно вслед за прокруткой. Высота ограничена местом
@@ -205,7 +291,8 @@ function FilterShell({
 
 /** «Если выбранно несколько значений, то пишем количество в кнопке –
  * «Применить: 1»» — одна общая подпись, чтобы все виды фильтра
- * формулировали её одинаково. */
+ * формулировали её одинаково. С Правок UI-Kit от 25.10 у FilterRange в
+ * поповере — просто «Применить»; в мобильной шторе счётчик есть у всех. */
 function filterApplyLabel(count: number) {
   return count > 0 ? `Применить: ${count}` : "Применить"
 }

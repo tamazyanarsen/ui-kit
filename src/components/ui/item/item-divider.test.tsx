@@ -38,11 +38,13 @@ describe("Item: разделитель", () => {
     expect(divider(sub.container)!.className).toContain("desktop:left-[144px]")
   })
 
-  it("заливка Hover/Active одна, скругление только у десктопа", () => {
+  // Правки UI-Kit от 25.10: у нажатия своя заливка Grey 124 (было — одна
+  // заливка Grey 114 на Hover и Active), см. item-2510.test.tsx.
+  it("заливка Hover — Grey 114, у Active своя; скругление только у десктопа", () => {
     const { container } = render(<Item value="Значение" />)
     const row = container.querySelector<HTMLElement>("[data-slot='item']")!
     expect(row.className).toContain("not-data-[disabled]:hover:bg-[var(--item-hover-bg)]")
-    expect(row.className).toContain("not-data-[disabled]:active:bg-[var(--item-hover-bg)]")
+    expect(row.className).toMatch(/\]:bg-\[var\(--item-pressed-bg\)\]/)
     expect(row.className).toContain("desktop:rounded-[16px]")
   })
 })

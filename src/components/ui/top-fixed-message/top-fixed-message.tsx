@@ -153,7 +153,11 @@ function TopFixedMessage({
           <div className="flex min-w-0 flex-1 items-center gap-4">
             {icon}
 
-            <Tooltip content={text} disabled={!truncated}>
+            {/* Плашка прибита к верху окна: над ней места нет, поэтому
+                тултип — явно под плашкой (`top-center`, хвостик сверху), как
+                было до смены умолчания `Tooltip` на «над элементом» (Правки
+                UI-Kit от 25.10). */}
+            <Tooltip content={text} disabled={!truncated} direction="top-center">
               <span
                 ref={textRef}
                 className="min-w-0 truncate text-p2-medium text-[var(--top-fixed-message-title-fg)]"

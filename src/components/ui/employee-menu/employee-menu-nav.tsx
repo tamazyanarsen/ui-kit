@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 
 import { Check } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -59,7 +60,7 @@ function NavOverflow({
 }) {
   return (
     <MenuPrimitive.Root modal={false}>
-      <MenuPrimitive.Trigger
+      <MenuPrimitive.Trigger {...menuClickOpenProps}
         render={<NavOverflowTriggerButton slot="employee-menu-nav-overflow-trigger" />}
       />
       <MenuPrimitive.Portal>
@@ -84,9 +85,9 @@ function NavOverflow({
                 // объявляется атрибутом.
                 aria-current={link.value === activeLink ? "page" : undefined}
                 onClick={link.onClick}
-                className={menuItemRowClass(
-                  "cursor-pointer data-highlighted:bg-[var(--menu-item-bg-highlighted)]"
-                )}
+                // Наведение, подсветка, нажатие и курсор — общая строка
+                // списка `menu-row` (Правки UI-Kit от 25.10).
+                className={menuItemRowClass("menu-row")}
               >
                 <MenuItemContent
                   trailing={

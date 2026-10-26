@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 
 import { Check, Menu, Plus, X } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -64,7 +65,7 @@ function NavOverflow({
 }) {
   return (
     <MenuPrimitive.Root modal={false}>
-      <MenuPrimitive.Trigger
+      <MenuPrimitive.Trigger {...menuClickOpenProps}
         render={<NavOverflowTriggerButton slot="header-nav-overflow-trigger" />}
       />
       <HeaderMenuPopup slot="header-nav-overflow-content" align="start">

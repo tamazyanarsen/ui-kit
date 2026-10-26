@@ -49,14 +49,14 @@ function useHelpColumns() {
 
   const right = (
     <article className="flex flex-col gap-6 pb-2">
-      <h3 className="text-h4-mobile text-[var(--modal-title-fg)] desktop:text-h4">
+      <h3 className="text-h4-adaptive text-[var(--modal-title-fg)]">
         {HELP_ITEMS[active]}
       </h3>
       <div
         aria-hidden="true"
         className="aspect-[480/290] w-full rounded-[12px] border border-[var(--grey-124)] bg-[var(--card-bg)]"
       />
-      <p className="text-p2-medium text-[var(--modal-title-fg)] desktop:text-p1-medium">
+      <p className="text-p1-medium-adaptive text-[var(--modal-title-fg)]">
         {HELP_TEXT}
       </p>
     </article>
@@ -71,7 +71,7 @@ function HelpLink() {
     <a
       href="#help"
       onClick={(event) => event.preventDefault()}
-      className="text-p2-medium text-[var(--modal-title-fg)] underline decoration-from-font underline-offset-auto desktop:text-p1-medium"
+      className="text-p1-medium-adaptive text-[var(--modal-title-fg)] underline decoration-from-font underline-offset-auto"
     >
       Подробнее в разделе «Помощь»
     </a>

@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 
 import { Bell } from "@/icons"
 import { cn } from "@/lib/utils"
@@ -33,8 +34,27 @@ interface NotificationMenuItem {
 interface NotificationMenuProps {
   items: NotificationMenuItem[]
   unreadCount?: number
+  /**
+   * Нажатие ведёт в раздел уведомлений, а не раскрывает список. Мобильная
+   * шапка (Правки UI-Kit от 25.10): там колокольчик — обычная кнопка
+   * перехода, без выпадающего списка; счётчик, подсветка и сжатие те же.
+   */
+  onNavigate?: () => void
+  /** Без списка: значок — кнопка перехода (`onNavigate`). */
+  asLink?: boolean
   className?: string
 }
+
+/**
+ * Кнопка-значок шапки со счётчиком (уведомления, сообщения).
+ *
+ * Правки UI-Kit от 25.10: при нажатии значок вместе со счётчиком сжимается
+ * до 0,92, как маленькие кнопки-значки (нажатие 140 мс, отпускание 280 мс по
+ * мягкой кривой; при `prefers-reduced-motion` — без сжатия). Сжимается
+ * обёртка значка (`press-scale-content`), а не плитка: подсветка счётчика
+ * — фон самой плитки — остаётся на месте и своим переходом.
+ */
+const HEADER_ICON_PRESS = "press-scale-content [--press-scale:0.92]"
 
 /** Подписи под заголовком выровнены по тексту, а не по точке-индикатору. */
 const META_LINE = "pl-3.5 text-p3-medium text-[var(--header-meta-fg)]"
@@ -81,81 +101,112 @@ function NotificationRow({ item }: { item: NotificationMenuItem }) {
     <MenuPrimitive.Item
       onClick={item.onClick}
       data-slot="notification-menu-item"
-      className="flex cursor-default flex-col gap-1 px-4 py-3 outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+      // Общая строка выпадающего списка (Правки UI-Kit от 25.10): Grey 114 /
+      // Grey 124 от `menu-row`, рука, содержимое — одной обёрткой, которая
+      // сжимается к центру строки.
+      className="menu-row press-scale-content flex cursor-pointer flex-col px-4 py-3 outline-none select-none"
     >
-      <div className="flex items-start justify-between gap-3">
-        <span className="flex items-start gap-2">
-          {!item.viewed && (
-            <span
-              aria-hidden="true"
-              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--header-unread-dot)]"
-            />
-          )}
-          <span
-            className={cn(
-              "text-p2-medium",
-              item.viewed
-                ? "text-[var(--header-meta-fg)]"
-                : "font-medium text-[var(--header-fg)]"
+      <div className="flex flex-col gap-1">
+        <div className="flex items-start justify-between gap-3">
+          <span className="flex items-start gap-2">
+            {!item.viewed && (
+              <span
+                aria-hidden="true"
+                className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--header-unread-dot)]"
+              />
             )}
-          >
-            {item.title}
+            <span
+              className={cn(
+                "text-p2-medium",
+                item.viewed
+                  ? "text-[var(--header-meta-fg)]"
+                  : "font-medium text-[var(--header-fg)]"
+              )}
+            >
+              {item.title}
+            </span>
           </span>
-        </span>
-        {hasContent(item.status) && (
-          <span className="shrink-0 text-p2-medium text-[var(--header-fg)]">
-            {item.status}
-          </span>
-        )}
+          {hasContent(item.status) && (
+            <span className="shrink-0 text-p2-medium text-[var(--header-fg)]">
+              {item.status}
+            </span>
+          )}
+        </div>
+        <span className={META_LINE}>{item.org}</span>
+        <span className={META_LINE}>{item.timestamp}</span>
+        <span className={META_LINE}>{item.description}</span>
       </div>
-      <span className={META_LINE}>{item.org}</span>
-      <span className={META_LINE}>{item.timestamp}</span>
-      <span className={META_LINE}>{item.description}</span>
     </MenuPrimitive.Item>
+  )
+}
+
+/** Значок колокольчика со счётчиком — общий у списка и у кнопки перехода. */
+function BellGlyph({ count }: { count: number }) {
+  return (
+    // Бейдж крепится к самой иконке, а не к плитке: иначе он уезжает
+    // в угол блока 56×64 вместо угла глифа 24×24.
+    <span className="relative flex">
+      <Bell size={24} aria-hidden="true" className="size-6" />
+      {count > 0 && (
+        <Badge
+          type="counter"
+          color="red"
+          value={count}
+          className="absolute -top-1 -right-1"
+        />
+      )}
+    </span>
   )
 }
 
 function NotificationMenu({
   items: rawItems,
   unreadCount = 0,
+  onNavigate,
+  asLink = false,
   className,
 }: NotificationMenuProps) {
   // Меню экспортируется отдельно от Header: пустые элементы отбрасываются и здесь.
   const items = compactList(rawItems) ?? []
   const highlighted = useCounterHighlight(unreadCount)
+  const triggerClass = cn(
+    HEADER_ICON_TILE_ACCENT,
+    HEADER_ICON_PRESS,
+    // Grey 114 из документации; держится секунду и гаснет плавно.
+    "transition-colors duration-300 ease-out",
+    highlighted && "bg-[var(--header-notification-highlight-bg)]",
+    className
+  )
+
+  if (asLink) {
+    return (
+      <button
+        type="button"
+        aria-label="Уведомления"
+        data-slot="notification-menu-trigger"
+        data-highlighted={highlighted || undefined}
+        onClick={onNavigate}
+        className={triggerClass}
+      >
+        <BellGlyph count={unreadCount} />
+      </button>
+    )
+  }
 
   return (
     <MenuPrimitive.Root modal={false}>
-      <MenuPrimitive.Trigger
+      <MenuPrimitive.Trigger {...menuClickOpenProps}
         render={
           <button
             type="button"
             aria-label="Уведомления"
             data-slot="notification-menu-trigger"
             data-highlighted={highlighted || undefined}
-            className={cn(
-              HEADER_ICON_TILE_ACCENT,
-              // Grey 114 из документации; держится секунду и гаснет плавно.
-              "transition-colors duration-300 ease-out",
-              highlighted && "bg-[var(--header-notification-highlight-bg)]",
-              className
-            )}
+            className={triggerClass}
           />
         }
       >
-        {/* Бейдж крепится к самой иконке, а не к плитке: иначе он уезжает
-            в угол блока 56×64 вместо угла глифа 24×24. */}
-        <span className="relative flex">
-          <Bell size={24} aria-hidden="true" className="size-6" />
-          {unreadCount > 0 && (
-            <Badge
-              type="counter"
-              color="red"
-              value={unreadCount}
-              className="absolute -top-1 -right-1"
-            />
-          )}
-        </span>
+        <BellGlyph count={unreadCount} />
       </MenuPrimitive.Trigger>
 
       <HeaderMenuPopup
@@ -184,5 +235,5 @@ function NotificationMenu({
   )
 }
 
-export { NotificationMenu }
+export { HEADER_ICON_PRESS, NotificationMenu }
 export type { NotificationMenuItem, NotificationMenuProps }

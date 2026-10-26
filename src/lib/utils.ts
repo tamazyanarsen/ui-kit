@@ -26,6 +26,22 @@ const twMerge = extendTailwindMerge<"focus-ring">({
         "text-p2-regular", "text-p2-medium", "text-p2-heavy",
         "text-p3-regular", "text-p3-medium",
         "text-p4-regular", "text-p4-medium",
+        // Правки UI-Kit от 25.10: мобильные пары параграфов и адаптивные
+        // утилиты (мобильная пара, от 1280 — десктопный стиль; см.
+        // src/styles/rules-content.css). Тоже размер шрифта: вытесняют и
+        // вытесняются любым text-h*/text-p* шкалы.
+        "text-p1-mobile", "text-p2-mobile", "text-p3-mobile",
+        "text-p1-regular-mobile", "text-p1-medium-mobile", "text-p1-heavy-mobile",
+        "text-p1_1-medium-mobile",
+        "text-p2-regular-mobile", "text-p2-medium-mobile", "text-p2-heavy-mobile",
+        "text-p3-regular-mobile", "text-p3-medium-mobile",
+        "text-factoid-adaptive",
+        "text-h1-adaptive", "text-h2-adaptive", "text-h3-adaptive", "text-h4-adaptive",
+        "text-p1-adaptive", "text-p2-adaptive", "text-p3-adaptive", "text-p4-adaptive",
+        "text-p1-regular-adaptive", "text-p1-medium-adaptive", "text-p1-heavy-adaptive",
+        "text-p2-regular-adaptive", "text-p2-medium-adaptive", "text-p2-heavy-adaptive",
+        "text-p3-regular-adaptive", "text-p3-medium-adaptive",
+        "text-p4-regular-adaptive", "text-p4-medium-adaptive",
       ],
       // То же рассуждение и для единственного собственного ключа тени в
       // @theme («Universal shadow» в макете): незарегистрированным twMerge

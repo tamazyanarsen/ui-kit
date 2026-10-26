@@ -65,6 +65,7 @@ function menuButtons(type: MenuType, count: ButtonCount) {
 function overflow(props: {
   direction?: SelectionButtonDirection
   showDropdown?: boolean
+  sheetTitle?: string
 } = {}) {
   return (
     <ButtonMenuOverflow {...props}>
@@ -113,6 +114,8 @@ interface PlaygroundArgs {
   span: number
   overflowDirection: SelectionButtonDirection
   showDropdown: boolean
+  /** Заголовок мобильной шторы «ещё» (Правки UI-Kit от 25.10). */
+  sheetTitle: string
 }
 
 const meta = {
@@ -153,6 +156,13 @@ const meta = {
     },
     showDropdown: {
       ...toggleArgType("Show Dropdown"),
+      ...SELECTION_BUTTON,
+    },
+    sheetTitle: {
+      name: "Заголовок шторы (мобайл)",
+      description:
+        "Правки UI-Kit от 25.10: в мобильном виде «ещё» открывает штору; пусто — «Ещё»",
+      control: "text",
       ...SELECTION_BUTTON,
     },
     pinned: {
@@ -197,6 +207,7 @@ const meta = {
     span: 6,
     overflowDirection: "top-right",
     showDropdown: true,
+    sheetTitle: "",
   },
 } satisfies Meta<PlaygroundArgs>
 
@@ -215,6 +226,7 @@ export const Playground: Story = {
     span,
     overflowDirection,
     showDropdown,
+    sheetTitle,
   }) => (
     <ViewportScope viewport={viewport}>
     <div className={viewport === "mobile" ? "w-full max-w-[360px]" : undefined}>
@@ -235,7 +247,11 @@ export const Playground: Story = {
       >
         {menuButtons(type, buttons)}
         {withOverflow &&
-          overflow({ direction: overflowDirection, showDropdown })}
+          overflow({
+            direction: overflowDirection,
+            showDropdown,
+            sheetTitle: sheetTitle || undefined,
+          })}
       </ButtonMenu>
     </StoryContentArea>
     </div>

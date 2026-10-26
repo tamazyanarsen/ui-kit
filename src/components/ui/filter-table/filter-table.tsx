@@ -46,7 +46,7 @@ function filterTablePillClass({
     // выходит сама из line-height, отдельной высоты задавать не надо.
     // В ките 12/16 Medium — это ключ `p3`, см. таблицу масштаба: мобильный
     // P2 и десктопный P3 совпадают по числам.
-    "inline-flex max-w-64 min-w-20 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p3-medium whitespace-nowrap press-scale desktop:text-p2-medium",
+    "inline-flex max-w-64 min-w-20 items-center justify-center gap-2 rounded-[16px] px-4 py-1.5 text-p2-medium-adaptive whitespace-nowrap press-scale",
     disabled
       ? // «Disabled гасит ВСЁ» — сквозное правило проекта. В ките у
         // выключенного чипа гаснет подпись (#C8C8CB), а шеврон остаётся

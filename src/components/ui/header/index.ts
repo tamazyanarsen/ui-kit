@@ -5,6 +5,7 @@ export type {
   HeaderDocumentMenuItem,
   HeaderType,
   ClientHeaderType,
+  HeaderPinned,
 } from "./header"
 export { ProfileMenu } from "./profile-menu"
 export type { ProfileMenuProps, ProfileMenuOrganization } from "./profile-menu"

@@ -1,13 +1,13 @@
 import * as React from "react"
 import { useStableId } from "@/lib/use-stable-id"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Information, Lock } from "@/icons"
+import { Lock } from "@/icons"
 
 import { cn } from "@/lib/utils"
 import { hasNode } from "@/lib/has-node"
 import { useComposedRefs } from "@/lib/compose-refs"
 import { resolveCaption } from "@/components/ui/input/caption"
-import { Hint } from "@/components/ui/tooltip"
+import { CaptionInfo } from "@/components/ui/input/caption-info"
 import { FieldTooltip } from "@/components/ui/input/hover-tooltip"
 
 // Размеры сверены с вектором макета (точные прямоугольники, а не только
@@ -89,7 +89,8 @@ interface TextareaOwnProps {
    * . Дизайн-чек 3/3 №19: её не было ни в компоненте, ни в
    * контролах. По спеке «иконка предназначена для возможности отобразить
    * дополнительную информацию», поэтому она не декоративная: текст подсказки
-   * приходит в `commentHint` и раскрывается по клику через Hint.
+   * приходит в `commentHint` и раскрывается по клику через Hint (на мобиле —
+   * штора без кнопок, см. `CaptionInfo`).
    */
   showCommentIcon?: boolean
   commentHint?: React.ReactNode
@@ -215,7 +216,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
             // placeholder-подписи при наведении уходит с #999 на #6D6D6D —
             // тот же тон, что и --textarea-border-hover, — чего этот
             // компонент раньше не делал вовсе.
-            "themed-scrollbar order-2 min-w-0 flex-1 resize-none bg-transparent text-p2-medium text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring desktop:text-p1-medium",
+            "themed-scrollbar order-2 min-w-0 flex-1 resize-none bg-transparent text-p1-medium-adaptive text-[var(--input-fg)] outline-none transition-all placeholder:text-[var(--input-label-fg)] hover:placeholder:text-[var(--textarea-border-hover)] aria-disabled:cursor-not-allowed aria-disabled:text-[var(--textarea-fg-disabled)] aria-disabled:focus-visible:focus-ring",
             // Плавающая подпись перекрывает первую строку, поэтому в
             // «поднятом» состоянии текст уходит вниз ровно на её высоту
             // (строка 16px, зазора нет): 8px внутреннего отступа коробки
@@ -259,7 +260,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
               // темнеет до #6D6D6D (Hover/Empty в макете), но только пока
               // она лежит на месте текста — поднятая 12px-подпись остаётся
               // #999 (Hover/Filled, Focused).
-              "pointer-events-none absolute top-4 left-4 truncate text-p2-medium text-[var(--input-label-fg)] transition-all group-hover/textarea:text-[var(--textarea-border-hover)] group-focus-within/textarea:text-[var(--input-label-fg)]! group-has-[textarea:not(:placeholder-shown)]/textarea:text-[var(--input-label-fg)]! group-has-[[aria-disabled=true]]/textarea:text-[var(--input-label-fg)]! desktop:text-p1-medium",
+              "pointer-events-none absolute top-4 left-4 truncate text-p1-medium-adaptive text-[var(--input-label-fg)] transition-all group-hover/textarea:text-[var(--textarea-border-hover)] group-focus-within/textarea:text-[var(--input-label-fg)]! group-has-[textarea:not(:placeholder-shown)]/textarea:text-[var(--input-label-fg)]! group-has-[[aria-disabled=true]]/textarea:text-[var(--input-label-fg)]!",
               // Место под замок справа, чтобы длинная подпись под него не
               // подлезала.
               locked ? "right-10" : "right-4",
@@ -306,23 +307,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function T
           >
             {caption}
           </p>
-          {showCommentIcon &&
-            (commentHint ? (
-              <Hint content={commentHint} direction="down-center">
-                <button
-                  type="button"
-                  aria-label="Дополнительная информация"
-                  className="shrink-0 text-[var(--input-caption-fg)] outline-none focus-visible:focus-ring"
-                >
-                  <Information aria-hidden="true" className="size-4" />
-                </button>
-              </Hint>
-            ) : (
-              <Information
-                aria-hidden="true"
-                className="size-4 shrink-0 text-[var(--input-caption-fg)]"
-              />
-            ))}
+          {showCommentIcon && <CaptionInfo hint={commentHint} />}
         </div>
       )}
     </div>

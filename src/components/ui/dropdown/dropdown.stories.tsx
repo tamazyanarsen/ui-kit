@@ -65,6 +65,7 @@ interface PlaygroundArgs {
   showTextHelp: boolean
   showList: boolean
   showDescription: boolean
+  showCheck: boolean
   maxHeight: number
 }
 
@@ -100,15 +101,17 @@ function DropdownDemo({
   showTextHelp = false,
   showList = true,
   showDescription = true,
+  showCheck = false,
   maxHeight = 0,
 }: Partial<PlaygroundArgs>) {
   const [query, setQuery] = useState("")
   const items = ITEMS.slice(0, value)
-  const list = items.map((item) => (
+  const list = items.map((item, index) => (
     <DropdownItem
       key={item.text}
       text={item.text}
       description={showDescription ? item.description : undefined}
+      checked={showCheck ? index === 0 : undefined}
     />
   ))
   const mobile = size !== "desktop"
@@ -210,6 +213,12 @@ const meta = {
       name: "Описание в строке",
       description: "Строка меню со вторым уровнем текста (P3 Medium)",
     },
+    showCheck: {
+      control: "boolean",
+      name: "Отметка выбранного (checked)",
+      description:
+        "Галка 16 у выбранной строки (первой) и место 48 справа у всех — как у SelectItem (Правки UI-Kit от 25.10)",
+    },
     maxHeight: {
       control: { type: "range", min: 0, max: 400, step: 20 },
       description: "Максимальная высота списка; 0 — без ограничения и без скролла",
@@ -225,6 +234,7 @@ const meta = {
     showTextHelp: false,
     showList: true,
     showDescription: true,
+    showCheck: false,
     maxHeight: 0,
   },
 } satisfies Meta<PlaygroundArgs>

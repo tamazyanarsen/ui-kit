@@ -23,6 +23,9 @@ import type { HeaderDocumentMenuItem } from "./top-row-menus"
 type HeaderType = "client" | "employee" | "sign-out"
 type ClientHeaderType = "client" | "client-without-account" | "client-is-blocked"
 
+/** Закрепление шапки: `true` = `"desktop"` — только десктоп, `"always"` — и мобильная. */
+type HeaderPinned = boolean | "desktop" | "always"
+
 interface HeaderProps {
   type?: HeaderType
   clientHeaderType?: ClientHeaderType
@@ -54,6 +57,12 @@ interface HeaderProps {
   messageCount?: number
   onMessagesClick?: () => void
   notificationItems?: NotificationMenuItem[]
+  /**
+   * Переход в раздел уведомлений — только в мобильной форме. Там нажатие на
+   * колокольчик не раскрывает список, а сразу ведёт в раздел (Правки UI-Kit
+   * от 25.10); на десктопе по-прежнему выпадающий список.
+   */
+  onNotificationsClick?: () => void
   organizations?: ProfileMenuOrganization[]
   organizationId?: string
   onOrganizationChange?: (id: string) => void
@@ -85,8 +94,14 @@ interface HeaderProps {
    *
    * Умолчание — выключено: закрепление задаёт каркас страницы, а витрины
    * кита ставят шапку в поток.
+   *
+   * ⚠️ Мобильная форма по умолчанию НЕ закрепляется (Правки UI-Kit от 25.10):
+   * у неё больше нет белой подложки, и прозрачная закреплённая шапка легла
+   * бы поверх прокручиваемого содержимого. Поэтому `true` (и равнозначное
+   * ему `"desktop"`) закрепляет только десктопную шапку, а мобильная едет со
+   * страницей. `"always"` — закрепить и мобильную, как было раньше.
    */
-  pinned?: boolean
+  pinned?: HeaderPinned
   className?: string
 }
 
@@ -105,4 +120,4 @@ function compactHeaderProps(props: HeaderProps): HeaderProps {
 }
 
 export { compactHeaderProps }
-export type { ClientHeaderType, HeaderProps, HeaderType }
+export type { ClientHeaderType, HeaderPinned, HeaderProps, HeaderType }

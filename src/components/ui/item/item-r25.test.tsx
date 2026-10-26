@@ -20,14 +20,14 @@ describe("Item", () => {
     const { container } = render(<Item value="Значение" thumbnail={null} />)
     expect(container.querySelector(".shrink-0.opacity-50")).toBeNull()
     expect(
-      container.querySelector('[data-slot="item"] > span > span.shrink-0')
+      container.querySelector('[data-slot="item-content"] > span > span.shrink-0')
     ).toBeNull()
   })
 
   it("thumbnail = «» тоже не рисуется", () => {
     const { container } = render(<Item value="Значение" thumbnail="" />)
     expect(
-      container.querySelector('[data-slot="item"] > span > span.shrink-0')
+      container.querySelector('[data-slot="item-content"] > span > span.shrink-0')
     ).toBeNull()
   })
 

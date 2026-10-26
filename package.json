@@ -52,6 +52,10 @@
       "types": "./dist/components/ui/block-widget/index.d.ts",
       "import": "./dist/components/ui/block-widget/index.js"
     },
+    "./block-with-banner": {
+      "types": "./dist/components/ui/block-with-banner/index.d.ts",
+      "import": "./dist/components/ui/block-with-banner/index.js"
+    },
     "./button": {
       "types": "./dist/components/ui/button/index.d.ts",
       "import": "./dist/components/ui/button/index.js"
@@ -75,6 +79,10 @@
     "./card-box": {
       "types": "./dist/components/ui/card-box/index.d.ts",
       "import": "./dist/components/ui/card-box/index.js"
+    },
+    "./carousel-dots": {
+      "types": "./dist/components/ui/carousel-dots/index.d.ts",
+      "import": "./dist/components/ui/carousel-dots/index.js"
     },
     "./checkbox": {
       "types": "./dist/components/ui/checkbox/index.d.ts",
@@ -103,6 +111,10 @@
     "./divider": {
       "types": "./dist/components/ui/divider/index.d.ts",
       "import": "./dist/components/ui/divider/index.js"
+    },
+    "./donut": {
+      "types": "./dist/components/ui/donut/index.d.ts",
+      "import": "./dist/components/ui/donut/index.js"
     },
     "./dropdown": {
       "types": "./dist/components/ui/dropdown/index.d.ts",
@@ -148,6 +160,10 @@
       "types": "./dist/components/ui/icon/index.d.ts",
       "import": "./dist/components/ui/icon/index.js"
     },
+    "./info-hint": {
+      "types": "./dist/components/ui/info-hint/index.d.ts",
+      "import": "./dist/components/ui/info-hint/index.js"
+    },
     "./informer": {
       "types": "./dist/components/ui/informer/index.d.ts",
       "import": "./dist/components/ui/informer/index.js"
@@ -184,6 +200,10 @@
       "types": "./dist/components/ui/menu-item/index.d.ts",
       "import": "./dist/components/ui/menu-item/index.js"
     },
+    "./menu-sheet": {
+      "types": "./dist/components/ui/menu-sheet/index.d.ts",
+      "import": "./dist/components/ui/menu-sheet/index.js"
+    },
     "./modal": {
       "types": "./dist/components/ui/modal/index.d.ts",
       "import": "./dist/components/ui/modal/index.js"
@@ -204,6 +224,10 @@
       "types": "./dist/components/ui/otp/index.d.ts",
       "import": "./dist/components/ui/otp/index.js"
     },
+    "./paged-list": {
+      "types": "./dist/components/ui/paged-list/index.d.ts",
+      "import": "./dist/components/ui/paged-list/index.js"
+    },
     "./pagination": {
       "types": "./dist/components/ui/pagination/index.d.ts",
       "import": "./dist/components/ui/pagination/index.js"
@@ -211,6 +235,10 @@
     "./progress-bar": {
       "types": "./dist/components/ui/progress-bar/index.d.ts",
       "import": "./dist/components/ui/progress-bar/index.js"
+    },
+    "./promo-carousel": {
+      "types": "./dist/components/ui/promo-carousel/index.d.ts",
+      "import": "./dist/components/ui/promo-carousel/index.js"
     },
     "./radio": {
       "types": "./dist/components/ui/radio/index.d.ts",
@@ -247,6 +275,10 @@
     "./sortable": {
       "types": "./dist/components/ui/sortable/index.d.ts",
       "import": "./dist/components/ui/sortable/index.js"
+    },
+    "./stack-bar": {
+      "types": "./dist/components/ui/stack-bar/index.d.ts",
+      "import": "./dist/components/ui/stack-bar/index.js"
     },
     "./status-screen": {
       "types": "./dist/components/ui/status-screen/index.d.ts",

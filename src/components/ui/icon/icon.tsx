@@ -59,22 +59,43 @@ function toKebab(name: string) {
 // В список для контролов попадает одно имя на глиф — первое по алфавиту
 // (ключи модульного пространства имён отсортированы), иначе выпадающий
 // список дублировал бы каждую иконку с псевдонимом.
+//
+// Правки UI-Kit от 25.10 добавили к правилу два исключения:
+//  • устаревшие написания (`gouverment` — опечатка из ALL ICONS) по имени
+//    по-прежнему находятся, но в список не попадают, даже если они первые
+//    по алфавиту: каноническим становится правильное имя (`government`);
+//  • имена, которые из имени экспорта не выводятся: `number-1` / `number-2`
+//    (в JS-имени `Number1` перед цифрой дефис не встаёт — это сломало бы
+//    `loader2` и `share-network1`). Такие имена — канонические для своего глифа.
+const DEPRECATED_NAMES = new Set(["gouverment"])
+const EXTRA_NAMES = {
+  "number-1": glyphs.NumberOne,
+  "number-2": glyphs.NumberTwo,
+} as const
+
 const REGISTRY = new Map<string, GlyphComponent>()
 const canonical: string[] = []
 const seen = new Set<GlyphComponent>()
+
+for (const [name, value] of Object.entries(EXTRA_NAMES)) {
+  const glyph = value as GlyphComponent
+  REGISTRY.set(name, glyph)
+  seen.add(glyph)
+  canonical.push(name)
+}
 
 for (const [exportName, value] of Object.entries(glyphs)) {
   if (typeof value !== "function") continue
   const glyph = value as GlyphComponent
   const name = toKebab(exportName)
   REGISTRY.set(name, glyph)
-  if (seen.has(glyph)) continue
+  if (seen.has(glyph) || DEPRECATED_NAMES.has(name)) continue
   seen.add(glyph)
   canonical.push(name)
 }
 
 /** Имя иконки набора: `check`, `circle-alert`, `arrow-down-chevron`… */
-type IconName = KebabFrom<GlyphExport & string, "">
+type IconName = KebabFrom<GlyphExport & string, ""> | keyof typeof EXTRA_NAMES
 
 /** Имена всех иконок набора — годится как `options` для контролов. */
 const ICON_NAMES = canonical.sort() as readonly IconName[]

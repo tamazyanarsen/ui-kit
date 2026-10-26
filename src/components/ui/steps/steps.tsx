@@ -327,7 +327,11 @@ function Steps({
         ref={stripRef}
         data-slot="steps-strip"
         data-scroll-window=""
-        className="flex items-stretch gap-4 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        // Запас под кольцо фокуса карточки по оси без прокрутки (Правки
+        // UI-Kit от 25.10): лента режет всё за своей кромкой, а `focus-ring`
+        // выходит за карточку на 4. Поле `--ring-room` внутри и такое же
+        // отрицательное снаружи — раскладка не сдвигается.
+        className="-my-(--ring-room) flex items-stretch gap-4 overflow-x-auto scroll-smooth py-(--ring-room) [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {steps.map((step, index) => (
           <StepCard

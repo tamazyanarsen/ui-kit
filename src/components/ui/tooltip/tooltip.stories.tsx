@@ -80,7 +80,7 @@ const meta = {
   /* Порядок ключей здесь задаёт порядок строк в панели Storybook (argTypes
      на него не влияет), поэтому он повторяет порядок таблицы свойств. */
   args: {
-    direction: "top-center",
+    direction: "down-center",
     showTitle: false,
     showCross: false,
     width: "base",

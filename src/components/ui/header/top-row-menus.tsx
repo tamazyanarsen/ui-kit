@@ -1,11 +1,13 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import { menuClickOpenProps } from "@/lib/menu-click-open"
 
 import { Admin, ChevronDown, CircleUser, Wallet } from "@/icons"
 import { cn } from "@/lib/utils"
 import { ButtonMenuOverflowItem } from "@/components/ui/button-menu"
 
 import { HEADER_ICON_TILE_ACCENT, HeaderMenuPopup } from "./menu-popup"
+import { MENU_ITEM, MENU_ITEM_CONTENT } from "./profile-menu-blocks"
 
 // Меню верхней полосы шапки, у которых нет своего файла: «Документы»
 // (клиент) и меню сотрудника. Уведомления и профиль организации крупнее и
@@ -20,7 +22,7 @@ interface HeaderDocumentMenuItem {
 function DocumentMenu({ items }: { items: HeaderDocumentMenuItem[] }) {
   return (
     <MenuPrimitive.Root modal={false}>
-      <MenuPrimitive.Trigger
+      <MenuPrimitive.Trigger {...menuClickOpenProps}
         render={
           <button
             type="button"
@@ -67,7 +69,7 @@ function EmployeeUserMenu({
 }) {
   return (
     <MenuPrimitive.Root modal={false}>
-      <MenuPrimitive.Trigger
+      <MenuPrimitive.Trigger {...menuClickOpenProps}
         render={
           <button
             type="button"
@@ -92,12 +94,16 @@ function EmployeeUserMenu({
         />
       </MenuPrimitive.Trigger>
       <HeaderMenuPopup slot="header-employee-menu-content">
+        {/* Общая строка выпадающего списка (Правки UI-Kit от 25.10) — та
+            же, что «Профиль и настройки» в меню организации. */}
         <MenuPrimitive.Item
           onClick={onSettingsClick}
-          className="flex w-full cursor-default items-center gap-2 p-4 text-p1-medium text-[var(--header-fg)] outline-none select-none data-highlighted:bg-[var(--header-item-hover-bg)]"
+          className={cn(MENU_ITEM, "items-center text-p1-medium text-[var(--header-fg)]")}
         >
-          <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
-          Профиль и настройки
+          <span className={cn(MENU_ITEM_CONTENT, "items-center")}>
+            <Admin size={24} aria-hidden="true" className="size-6 shrink-0" />
+            <span>Профиль и настройки</span>
+          </span>
         </MenuPrimitive.Item>
       </HeaderMenuPopup>
     </MenuPrimitive.Root>

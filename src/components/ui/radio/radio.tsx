@@ -151,7 +151,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Radio({
           проверено, что они совпадают с Checkbox. */}
       <span className={CONTROL_TEXT_COLUMN_CLASS}>
         {hasNode(label) && (
-          <span className="text-p2-medium text-[var(--radio-label-fg)] desktop:text-p1-medium group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
+          <span className="text-p1-medium-adaptive text-[var(--radio-label-fg)] group-has-data-[disabled]:text-[var(--radio-label-fg-disabled)]">
             {label}
           </span>
         )}

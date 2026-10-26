@@ -89,7 +89,7 @@ function ResendCode({ seconds = 60, onResend, className }: ResendCodeProps) {
       role="status"
       tabIndex={-1}
       className={cn(
-        "flex h-12 outline-none w-full items-center justify-center rounded-[16px] bg-[var(--btn-secondary-white-bg)] px-[25px] text-p2-medium text-[var(--btn-secondary-white-fg)] desktop:h-14 desktop:px-[33px] desktop:text-p1-medium",
+        "flex h-12 outline-none w-full items-center justify-center rounded-[16px] bg-[var(--btn-secondary-white-bg)] px-[25px] text-p1-medium-adaptive text-[var(--btn-secondary-white-fg)] desktop:h-14 desktop:px-[33px]",
         className
       )}
     >

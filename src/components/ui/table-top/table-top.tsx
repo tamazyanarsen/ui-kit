@@ -296,12 +296,16 @@ const TableTopDetails = React.forwardRef<
             `scrollbar-none`: своей полосы прокрутки у ленты нет ни в одном
             варианте сета — вторая полоса рядом со стрелками была бы вторым
             органом управления той же ленты. Листается она стрелками, колесом
-            и трекпадом. */}
+            и трекпадом.
+            `py-/-my-(--ring-room)` — запас под кольцо фокуса по оси без
+            прокрутки (Правки UI-Kit от 25.10): лента режет всё за своей
+            кромкой, а `focus-ring` выходит за элемент на 4; отрицательное
+            поле того же размера держит раскладку на месте. */}
         <div
           ref={trackRef}
           data-slot="table-top-details-track"
           data-scroll-window=""
-          className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto rounded-[16px] px-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-my-(--ring-room) flex min-w-0 flex-1 items-center gap-4 overflow-x-auto rounded-[16px] px-1 py-(--ring-room) [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {items.filter(Boolean).map((item, index) => (
             <span
